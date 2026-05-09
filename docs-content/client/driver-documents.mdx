@@ -1,0 +1,160 @@
+---
+slug: driver-documents
+title: Driver Documents
+summary: Document upload/view with R2 presigned URLs, expiry tracking, and compliance status for licenses, medical cards, and certifications.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Driver Documents
+
+<Callout variant="info">
+Driver Documents is your digital filing cabinet. Upload compliance documents, track expiration dates, and get alerts before certifications expire — all from your phone.
+</Callout>
+
+## Overview
+
+The Documents screen shows all your uploaded compliance files:
+
+- **Driver's License** — CDL, Class A/B/C
+- **Medical Card** — DOT physical exam certificate
+- **Endorsements** — Hazmat, tanker, doubles/triples
+- **Certifications** — Twic card, port access, customer-specific badges
+- **Insurance** — Proof of insurance (if required)
+
+Each document shows:
+
+- **Document type**
+- **Expiration date** (if applicable)
+- **Upload date**
+- **Status indicator** (valid, expiring soon, expired)
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Upload a document
+
+<StepFlow>
+  <StepFlow.Step title="Open Documents">
+    Navigate to **More → Documents**.
+  </StepFlow.Step>
+  <StepFlow.Step title="Tap Upload">
+    Tap the blue **+** (plus) button at the bottom right.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select document type">
+    Choose from the dropdown:
+    - Driver's License
+    - Medical Card
+    - Hazmat Endorsement
+    - Other Certification
+  </StepFlow.Step>
+  <StepFlow.Step title="Take or select photo">
+    Options:
+    - **Take Photo** — Capture with your camera (recommended for clear images)
+    - **Choose from Library** — Upload an existing photo
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter expiration date">
+    For documents that expire (license, medical card, endorsements), select the expiration date from the date picker.
+  </StepFlow.Step>
+  <StepFlow.Step title="Upload">
+    Tap **Upload Document**. You'll see a progress bar as the file uploads. When complete, the document appears in your list.
+  </StepFlow.Step>
+</StepFlow>
+
+<Callout variant="tip" title="Photo tips">
+- Use good lighting (avoid shadows and glare)
+- Capture the entire document (all four corners visible)
+- Ensure text is readable (check focus before uploading)
+- Hold your phone directly above the document (no angles)
+
+Clear photos prevent rejection and re-upload requests from dispatch.
+</Callout>
+
+## Document status indicators
+
+Each document has a colored dot indicator:
+
+- **Green dot** — Valid (more than 30 days until expiration)
+- **Yellow dot** — Expiring soon (less than 30 days remaining)
+- **Red dot** — Expired
+
+Your fleet manager sees the same indicators on their compliance dashboard.
+
+## Expiration alerts
+
+You'll receive push notifications at:
+
+- **30 days before expiration** — "Your medical card expires in 30 days"
+- **14 days before expiration** — Second reminder
+- **7 days before expiration** — Final warning
+- **Day of expiration** — "Your medical card expired today"
+
+<Callout variant="danger" title="Driving with expired documents">
+Operating a CMV with an expired license or medical card is a federal violation. You can be placed out-of-service immediately and may face fines. Upload renewed documents before the expiration date.
+</Callout>
+
+## View a document
+
+Tap any document in the list to open the detail view. You'll see:
+
+- **Full-size image** — Zoom and pan to read details
+- **Document info** — Type, upload date, expiration date
+- **Download option** — Save a copy to your phone
+
+The document opens in your phone's default image viewer.
+
+## Replace a document
+
+To upload a renewed version:
+
+1. Upload the new document using the same document type
+2. The system automatically archives the old version
+3. Your compliance status updates immediately
+
+Old versions are retained for audit history but marked as "Superseded."
+
+## Document storage
+
+Documents are stored securely in encrypted cloud storage (Cloudflare R2). Access is restricted to:
+
+- You (the driver)
+- Your fleet manager
+- SysAdmin (for compliance audits only)
+
+Documents are never shared with third parties without your explicit consent.
+
+## Compliance dashboard
+
+Your fleet manager monitors document compliance across the entire fleet. When your documents are up-to-date:
+
+- Your driver profile shows a green compliance dot
+- You remain eligible for load assignments
+- No compliance holds are placed on your account
+
+## Related features
+
+<FeatureCard slug="compliance-dashboard" />
+<FeatureCard slug="driver-dashboard" />
+
+## Frequently asked questions
+
+**What file formats are supported?**
+
+Images only: JPG, PNG, HEIC (iPhone photos), WebP. Maximum file size: 10 MB. If you have a PDF, take a screenshot of it and upload the image.
+
+**Can I delete a document?**
+
+No. Once uploaded, documents are permanent (even archived versions). This maintains audit integrity. If you uploaded the wrong file, upload the correct one to replace it.
+
+**What if my document doesn't have an expiration date?**
+
+Leave the expiration date field blank. Some certifications (like training certificates) don't expire.
+
+**Why was my document rejected?**
+
+Common reasons:
+- Image too blurry or dark
+- Document cropped (corners cut off)
+- Wrong document type uploaded
+- Expiration date doesn't match the image
+
+Check your notifications for the specific rejection reason, then re-upload.

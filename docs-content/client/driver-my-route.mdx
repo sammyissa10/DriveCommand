@@ -1,0 +1,130 @@
+---
+slug: driver-my-route
+title: Driver My Route
+summary: Route view with loads timeline, truck info, route-scoped messages, and stop details for multi-stop assignments.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Driver My Route
+
+<Callout variant="info">
+My Route shows your complete multi-stop assignment. View all loads in sequence, see truck details, and communicate with dispatch about route-specific issues — all in one place.
+</Callout>
+
+## Overview
+
+When dispatch assigns you to a route with multiple stops, the My Route screen becomes your trip overview. It shows:
+
+- **Route name and date** — e.g., "Chicago to Detroit Run - May 9"
+- **Truck assignment** — Vehicle unit number, license plate, VIN
+- **Loads timeline** — All pickups and deliveries in stop order
+- **Route messages** — Thread for route-level communication
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Route vs. Load
+
+**What's the difference?**
+
+- **Load** — A single shipment from one pickup to one delivery
+- **Route** — A planned sequence of multiple stops (which may include multiple loads)
+
+Example route: Pick up Load A in Chicago → Deliver Load A in Indianapolis → Pick up Load B in Indianapolis → Deliver Load B in Detroit.
+
+You can access individual load details from the loads timeline, or view the entire route in one screen.
+
+## Loads timeline
+
+The timeline shows all stops in order:
+
+<ProcessDiagram steps={[
+  { label: "Stop 1: Pickup", description: "Chicago Warehouse, Load A" },
+  { label: "Stop 2: Delivery", description: "Indianapolis Distribution Center, Load A" },
+  { label: "Stop 3: Pickup", description: "Indianapolis Factory, Load B" },
+  { label: "Stop 4: Delivery", description: "Detroit Fulfillment, Load B" }
+]} />
+
+Each stop card shows:
+
+- **Stop number and type** — "Stop 1: Pickup" or "Stop 2: Delivery"
+- **Address** — City and state
+- **Scheduled time** — When you need to arrive
+- **Load ID** — Reference for this shipment
+- **Contact** — Name and phone (tap to call)
+- **BOL/PO numbers** — Document references
+
+### Stop status indicators
+
+- **Green checkmark** — Completed stop
+- **Blue dot** — Current stop (where you should be now)
+- **Gray dot** — Upcoming stop
+
+## Truck details card
+
+The truck card shows:
+
+- **Unit number** — Fleet identifier (e.g., "Truck 42")
+- **Make/model** — e.g., "2022 Freightliner Cascadia"
+- **License plate** — For reference during inspections
+- **Odometer reading** — Last reported mileage
+- **Fuel level** — Last reported percentage
+
+Truck details are read-only. If you notice incorrect information (e.g., wrong unit number), contact dispatch via route messages.
+
+## Route messages
+
+At the bottom of the My Route screen, you'll see a message thread specific to this route. Use it for:
+
+- **ETA updates** — "Traffic on I-94, will be 30 min late to Stop 3"
+- **Route questions** — "Stop 2 contact not answering, should I wait?"
+- **Issue reports** — "Shipper says Load B isn't ready, waiting on paperwork"
+
+<Callout variant="tip" title="Route vs. Load messages">
+**Route messages** are for multi-stop coordination and trip-level issues. **Load messages** (accessible from individual load screens) are for single-shipment questions. If in doubt, use route messages — dispatch will redirect you if needed.
+</Callout>
+
+## Access My Route
+
+There are two ways to open My Route:
+
+1. **From Dashboard** — If you're assigned to a route, a "My Route" button appears on the dashboard
+2. **From Loads tab** — Tap the active load card, then tap "View Full Route" at the top
+
+If you're assigned to a single load (not part of a multi-stop route), the My Route screen won't appear.
+
+## Sequence order
+
+Routes are pre-planned by dispatch. You cannot reorder stops or skip ahead. The timeline always shows stops in the sequence dispatch created.
+
+If you need to change the stop order due to road closures, shipper delays, or other issues, contact dispatch immediately via route messages. Only dispatchers can modify route sequences.
+
+<Callout variant="warning" title="Do not skip stops">
+Skipping stops or delivering out of sequence can cause billing errors, missed appointments, and customer complaints. Always follow the planned sequence unless dispatch explicitly approves a change.
+</Callout>
+
+## Navigation
+
+From the My Route screen, tap **Start Navigation** to open your preferred navigation app (Google Maps, Waze, or Apple Maps) with the next stop pre-loaded.
+
+You can change your navigation preference in **More → Settings → Navigation**.
+
+## Related features
+
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="driver-messages" />
+<FeatureCard slug="routes" />
+
+## Frequently asked questions
+
+**Why don't I see a My Route screen?**
+
+My Route only appears when you're assigned to a multi-stop route. Single-load assignments don't have a separate route screen — just use the load detail screen.
+
+**Can I see routes I've already completed?**
+
+Not yet. Route history is planned for a future release. Currently, you can view completed loads in **Loads → History** tab.
+
+**What if one stop gets delayed?**
+
+Contact dispatch immediately via route messages. They can notify customers, adjust ETAs, and potentially reorder stops if needed. Do not make stop order changes yourself.

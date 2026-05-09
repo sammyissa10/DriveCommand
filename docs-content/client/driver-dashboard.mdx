@@ -1,0 +1,115 @@
+---
+slug: driver-dashboard
+title: Driver Dashboard
+summary: Driver home screen with active load card, stat chips, alerts, and My Route shortcut for quick access to your current assignment.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Driver Dashboard
+
+<Callout variant="info">
+The Driver Dashboard is your mobile command center. See your active load, today's stats, important alerts, and quick access to your route — all in one screen optimized for on-the-go use.
+</Callout>
+
+## Overview
+
+When you open the DriveCommand mobile app, the dashboard is the first thing you see. It's designed to answer three key questions:
+
+1. **What am I hauling today?** — Active load card with pickup/delivery details
+2. **How am I doing?** — Stat chips showing deliveries, miles, and HOS hours
+3. **What needs my attention?** — Alert banners for upcoming deadlines or issues
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Dashboard layout
+
+### Active load card
+
+The top section shows your currently assigned load (if you have one):
+
+- **Load ID** — Reference number for dispatch communication
+- **Pickup location** — City and state of origin
+- **Delivery location** — Final destination
+- **Scheduled pickup time** — When you need to be at the shipper
+- **Status** — PENDING, PICKED_UP, IN_TRANSIT, or DELIVERED
+
+Tap the load card to view full load details including stop timeline, BOL number, and contact info.
+
+<Callout variant="tip" title="No active load?">
+If you don't have an active load, the card shows "No Active Load" with a message to contact dispatch. The card disappears once you complete your delivery.
+</Callout>
+
+### Stat chips
+
+Three compact stat cards show your performance for today:
+
+- **Deliveries** — Number of loads delivered today
+- **Miles** — Total miles driven in current duty period
+- **HOS Remaining** — Hours left in your 14-hour window
+
+These update automatically as you advance load statuses and log HOS changes.
+
+### My Route shortcut
+
+If you're assigned to a multi-stop route, a "My Route" button appears below the load card. Tap it to see:
+
+- Full route timeline with all stops
+- Truck assignment details
+- Route-scoped messages from dispatch
+
+<FeatureCard slug="driver-my-route" />
+
+### Alerts section
+
+Important notifications appear as colored banners:
+
+- **Red alerts** — HOS violation warnings, document expirations
+- **Yellow alerts** — Upcoming deadlines (HOS approaching limit, maintenance due)
+- **Blue alerts** — New messages from dispatch, route updates
+
+Tap any alert to jump directly to the relevant screen (Hours, Documents, Messages, etc.).
+
+## Quick actions
+
+From the dashboard, use the bottom navigation to access:
+
+- **Loads** — View load history and current assignment details
+- **Hours** — Log HOS status changes
+- **Incidents** — Report accidents or vehicle issues
+- **Documents** — Upload compliance docs (license, medical card)
+- **Messages** — Communicate with dispatch
+- **More** — Settings, support, and additional tools
+
+<Callout variant="success">
+The dashboard refreshes automatically when you return to the app from the background. No need to manually pull-to-refresh.
+</Callout>
+
+## Mobile-first design
+
+The driver dashboard is optimized for one-handed use while stationary:
+
+- Large touch targets (minimum 48px)
+- High contrast text readable in sunlight
+- Auto dark mode during nighttime hours
+- Minimal scrolling — key info above the fold
+
+## Related features
+
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="driver-hours" />
+<FeatureCard slug="driver-messages" />
+
+## Frequently asked questions
+
+**Why don't I see my load on the dashboard?**
+
+Loads appear on the dashboard only after dispatch assigns them to you. If you've been notified about a load but don't see it, check your push notifications or contact dispatch.
+
+**Can I change my HOS status from the dashboard?**
+
+No. Tap the **Hours** tab in the bottom navigation to log duty status changes. The dashboard only displays your remaining hours.
+
+**What does the GPS dot in the tab bar mean?**
+
+Green = GPS tracking active, Yellow = GPS paused, Red = GPS disabled. Background GPS tracking is required for automatic geofencing alerts and route progress updates.

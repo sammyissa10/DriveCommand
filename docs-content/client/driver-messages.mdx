@@ -1,0 +1,134 @@
+---
+slug: driver-messages
+title: Driver Messaging
+summary: Load-scoped messaging with owner/dispatcher, unread badges, 30s polling, and push notifications for real-time communication.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Driver Messaging
+
+<Callout variant="info">
+Driver Messaging keeps you connected with dispatch. Send and receive messages about your current load, get real-time updates, and ask questions without leaving the app.
+</Callout>
+
+## Overview
+
+The Messages screen shows all your message threads with dispatch. Messages are organized by load, so you can easily find communication about a specific shipment.
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Message types
+
+### Load-scoped messages
+
+When you're working on a load, all messages about that load appear in a dedicated thread. Tap the load to see:
+
+- Delivery instructions from dispatch
+- Customer contact updates
+- Rate changes or accessorial charges
+- Special handling requirements
+
+Load messages are archived after delivery but remain accessible in your message history.
+
+### Broadcast messages
+
+Fleet-wide announcements from dispatch appear with a megaphone icon:
+
+- Policy updates
+- Weather alerts
+- Holiday schedules
+- General company news
+
+You cannot reply to broadcast messages.
+
+## Send a message
+
+<StepFlow>
+  <StepFlow.Step title="Open Messages">
+    Tap **Messages** in the bottom navigation.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select a thread">
+    Tap the load or route you want to message about. Or tap **New Message** to start a thread.
+  </StepFlow.Step>
+  <StepFlow.Step title="Type your message">
+    Tap the text input at the bottom. Type your message (up to 500 characters).
+  </StepFlow.Step>
+  <StepFlow.Step title="Send">
+    Tap the send button (paper plane icon). Your message delivers instantly if you're online, or queues for sending when you reconnect.
+  </StepFlow.Step>
+</StepFlow>
+
+<Callout variant="tip" title="Pro Tip">
+Be specific in your messages. Instead of "Running late," say "I-90 traffic accident, ETA now 3:45 PM instead of 3:00 PM." Specific details help dispatch notify customers and avoid upset.
+</Callout>
+
+## Unread badges
+
+Unread message counts appear as red badges:
+
+- **Messages tab icon** — Total unread across all threads
+- **Thread list** — Unread count per load/route
+
+Messages are marked as read automatically when you open a thread. The badge updates within 30 seconds.
+
+### Push notifications
+
+When you receive a new message while the app is closed or in the background, you'll get a push notification:
+
+- **Banner** — Shows sender (Dispatch) and message preview
+- **Sound/vibration** — Standard notification alert
+- **Badge** — App icon badge count
+
+Tap the notification to open the thread directly.
+
+<Callout variant="info">
+Enable push notifications in your phone's Settings → DriveCommand → Notifications. Without notification permission, you'll only see messages when you open the app.
+</Callout>
+
+## Message polling
+
+The app checks for new messages every 30 seconds while the Messages screen is open. When you navigate away, polling stops to save battery. New messages still trigger push notifications.
+
+If you need instant delivery, enable push notifications. Polling is a backup for when notifications are delayed.
+
+## Offline messaging
+
+If you lose cellular signal:
+
+- **Sent messages queue locally** and deliver when you reconnect
+- **New messages won't arrive** until you're back online
+- **Blue "Syncing..." banner** appears when queued messages are flushing
+
+Queued messages send automatically within 60 seconds of reconnection.
+
+## Message etiquette
+
+- **Reply promptly** — Dispatch needs timely updates to manage customer expectations
+- **Be professional** — Messages are logged and may be reviewed by management
+- **Use the right thread** — Load messages for load questions, route messages for route issues
+- **Don't spam** — If dispatch doesn't reply immediately, they're likely helping another driver
+
+## Related features
+
+<FeatureCard slug="carrier-messages" />
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="driver-my-route" />
+
+## Frequently asked questions
+
+**Can I message other drivers?**
+
+Not yet. Driver-to-driver messaging is planned for a future release. Currently, all messages go through dispatch.
+
+**How long are messages stored?**
+
+Messages are stored indefinitely. You can scroll back through old threads to review past communication about delivered loads.
+
+**What if I don't get a reply?**
+
+Dispatchers juggle many drivers. If your message is urgent (breakdown, accident, customer issue), call dispatch instead of waiting for a message reply. Phone numbers are in **More → Settings → Support**.
+
+**Can dispatch see when I read a message?**
+
+Yes. Read receipts are enabled. When you open a thread, dispatch sees a "Read" indicator. This helps them know whether you've seen important updates.

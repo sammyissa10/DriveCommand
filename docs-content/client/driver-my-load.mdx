@@ -1,0 +1,147 @@
+---
+slug: driver-my-load
+title: Driver My Load
+summary: Current load status management with forward-only status advancement, stop timeline, and real-time updates to dispatch.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Driver My Load
+
+<Callout variant="info">
+My Load is where you manage your current assignment. Update your status as you progress through pickup, transit, and delivery. Dispatch sees your updates in real-time.
+</Callout>
+
+## Overview
+
+The My Load screen shows:
+
+- **Load details** — BOL number, PO number, pickup/delivery addresses, scheduled times
+- **Stop timeline** — Visual progress bar with pickup → delivery stops
+- **Truck assignment** — Vehicle you're driving for this load
+- **Contact info** — Shipper and receiver phone numbers (tap to call)
+- **Status update button** — Advance to the next status
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Load status workflow
+
+Loads follow a forward-only progression. You cannot skip statuses or move backwards.
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Load assigned, waiting for pickup" },
+  { label: "PICKED_UP", description: "Freight loaded at shipper, BOL signed" },
+  { label: "IN_TRANSIT", description: "En route to delivery location" },
+  { label: "DELIVERED", description: "Freight unloaded at receiver, POD signed" }
+]} />
+
+### Status rules
+
+- **PENDING → PICKED_UP** — Confirms you've loaded the freight and obtained BOL signature
+- **PICKED_UP → IN_TRANSIT** — Marks departure from shipper location
+- **IN_TRANSIT → DELIVERED** — Confirms delivery completed and POD obtained
+
+<Callout variant="warning" title="Cannot undo status changes">
+Once you advance a load status, you cannot revert it. If you accidentally tap the wrong status, contact dispatch immediately to correct it.
+</Callout>
+
+## Update load status
+
+<StepFlow>
+  <StepFlow.Step title="Open your load">
+    From the **Dashboard**, tap the active load card. Or navigate to **Loads → Active** tab.
+  </StepFlow.Step>
+  <StepFlow.Step title="Tap Update Status">
+    The blue **Update Status** button shows the next available status (e.g., "Mark as Picked Up").
+  </StepFlow.Step>
+  <StepFlow.Step title="Confirm the change">
+    A confirmation modal appears showing:
+    - Current status → New status
+    - Timestamp of the change
+    - Warning if you're advancing before the scheduled time
+  </StepFlow.Step>
+  <StepFlow.Step title="Submit">
+    Tap **Confirm**. The status updates immediately and dispatch receives a push notification.
+  </StepFlow.Step>
+</StepFlow>
+
+### Offline status updates
+
+If you lose cellular signal, status updates queue locally and sync when you reconnect. You'll see a blue "Syncing..." banner at the top of the screen. Queued updates flush automatically within 60 seconds of reconnection.
+
+<Callout variant="tip" title="Pro Tip">
+Update your status as soon as you complete each step. Timely updates help dispatch provide accurate ETAs to customers and prevent "where's my load?" calls.
+</Callout>
+
+## Stop timeline
+
+The stop timeline shows:
+
+- **Pickup stop** — Address, scheduled time, contact name/phone
+- **Delivery stop** — Address, scheduled time, contact name/phone
+- **Completed stops** — Green checkmark indicator
+- **Current stop** — Blue dot indicator
+- **Upcoming stops** — Gray dot indicator
+
+For multi-stop routes (more than one pickup or delivery), the timeline shows all stops in sequence order.
+
+## Load details
+
+### Freight information
+
+- **BOL Number** — Bill of Lading reference
+- **PO Number** — Customer purchase order
+- **Commodity** — Type of freight (e.g., "Refrigerated Food", "Building Materials")
+- **Weight** — Total load weight in pounds
+- **Pieces** — Number of pallets or units
+
+### Schedule
+
+- **Pickup scheduled** — When you need to arrive at shipper
+- **Delivery scheduled** — When freight is due at receiver
+- **Created date** — When dispatch created the load
+
+### Contact info
+
+Tap phone numbers to call directly:
+
+- **Pickup contact** — Shipper dock supervisor
+- **Delivery contact** — Receiver dock supervisor
+- **Dispatch** — Your fleet manager
+
+## Load-scoped messages
+
+At the bottom of the load screen, you'll see a **Messages** button. This opens a thread for this specific load where you can:
+
+- Ask dispatch questions about the load
+- Report delays or issues
+- Confirm special instructions
+
+Messages are scoped to this load only. General fleet messages go through the main **Messages** tab.
+
+<FeatureCard slug="driver-messages" />
+
+## Related features
+
+<FeatureCard slug="driver-my-route" />
+<FeatureCard slug="driver-dashboard" />
+<FeatureCard slug="carrier-loads" />
+
+## Frequently asked questions
+
+**Can I see loads I've already delivered?**
+
+Yes. Go to **Loads → History** tab to see all completed loads. Tap any load to view final details and delivery timestamp.
+
+**What if I need to cancel a load?**
+
+Drivers cannot cancel loads. Contact dispatch via the Messages tab or phone. Only dispatchers can cancel or reassign loads.
+
+**Why can't I update my status?**
+
+Common reasons:
+- You're offline (updates will queue and sync when reconnected)
+- The load is already at DELIVERED status
+- Dispatch has locked the load for editing (rare)
+
+If none of these apply, contact support.
