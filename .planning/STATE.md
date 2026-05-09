@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-09 - Completed quick-289: Driver Pay Phase 2 compensation template wizard + active card + history; Completed quick-294: Generate remaining MDX documentation files
+Last activity: 2026-05-09 - Completed quick-289: Driver Pay Phase 2 — Compensation Template Wizard (schemas, server actions, 3-step wizard, live preview, active card, history)
 Last session: 2026-05-09T06:40:40Z
 Stopped at: Completed quick-289-PLAN.md + quick-294
 
@@ -6581,6 +6581,7 @@ None blocking immediate progress.
 | 286 | Fix "Vehicle not found" error in Start Checklist dialog — entity lookup uses legacy Truck model instead of CarrierTruck | 2026-04-26 | 5b42d39 | [286-fix-vehicle-not-found-error-in-start-che](./quick/286-fix-vehicle-not-found-error-in-start-che/) |
 | 287 | Fix Active Work Board not showing NOT_STARTED checklist instances — status filter excludes NOT_STARTED | 2026-04-26 | 8a8f1d4 | [287-fix-active-work-board-not-showing-not-st](./quick/287-fix-active-work-board-not-showing-not-st/) |
 | 288 | Tenant automation activity log — triggeredBy + triggeredEvent on PlaybookInstance, listActivityLog tRPC procedure, AutomationActivityLog feed on Automation page | 2026-04-28 | 0bf36a2 | [288-tenant-automation-activity-log](./quick/288-tenant-automation-activity-log/) |
+| 289 | Driver Pay Phase 2 — Compensation Template Wizard: Zod schemas, 4 server actions, 3-step wizard with live preview + starter templates, active template card, history list, driver profile Compensation section | 2026-05-09 | 1e41f2f | [289-driver-pay-phase-2-compensation-template](./quick/289-driver-pay-phase-2-compensation-template/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
