@@ -1,0 +1,27 @@
+name: Doc Drift Check
+
+on:
+  pull_request:
+    paths:
+      - 'apps/web/src/lib/docs/**'
+      - 'docs-content/**'
+      - 'apps/web/src/app/**'
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run doc-drift check
+        working-directory: apps/web
+        run: npx tsx scripts/check-doc-drift.ts
