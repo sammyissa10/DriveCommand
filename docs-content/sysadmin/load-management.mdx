@@ -1,0 +1,189 @@
+---
+slug: load-management
+title: Load Management — Technical Reference
+summary: Server actions, database schema, and RLS policies for the load management subsystem.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All load queries are tenant-scoped via RLS"
+  - "bypass_rls only used in cron jobs with explicit tenant context"
+  - "Driver role can only update status on loads assigned to them"
+---
+
+# Load Management — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on load management.
+</Callout>
+
+## Overview
+
+The load management subsystem handles CRUD operations for trucking loads (shipments), status workflow transitions, driver/truck assignments, and route integration. All operations are tenant-scoped via RLS policies and role-based access controls.
+
+## Server Actions
+
+The load management feature is implemented via server actions in `apps/web/src/app/(owner)/actions/loads.ts`.
+
+<ApiTable rows={[
+  { name: "createLoad", roleGuard: "OWNER | MANAGER", inputSchema: "loadCreateSchema", returnType: "ActionState<Load>" },
+  { name: "updateLoad", roleGuard: "OWNER | MANAGER", inputSchema: "loadUpdateSchema", returnType: "ActionState<Load>" },
+  { name: "updateLoadStatus", roleGuard: "OWNER | MANAGER | DRIVER", inputSchema: "LoadStatus enum", returnType: "ActionState<Load>" },
+  { name: "dispatchLoad", roleGuard: "OWNER | MANAGER", inputSchema: "dispatchLoadSchema", returnType: "ActionState<Load>" },
+  { name: "deleteLoad", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "revertLoadStatus", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<Load>" }
+]} />
+
+All actions use `requireRole()` to enforce RBAC and `getTenantPrisma()` to ensure tenant isolation. Driver role is only permitted to call `updateLoadStatus` and only for loads assigned to their driver ID.
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "loadNumber: String (format: LD-NNNN, unique per tenant)",
+  "status: LoadStatus enum (PENDING | DISPATCHED | PICKED_UP | IN_TRANSIT | DELIVERED | INVOICED)",
+  "origin: String (pickup address)",
+  "destination: String (delivery address)",
+  "pickupLat: Decimal? (geocoded latitude)",
+  "pickupLng: Decimal? (geocoded longitude)",
+  "deliveryLat: Decimal? (geocoded latitude)",
+  "deliveryLng: Decimal? (geocoded longitude)",
+  "pickupDate: DateTime",
+  "deliveryDate: DateTime?",
+  "rate: Decimal",
+  "customerId: String (foreign key to Customer)",
+  "routeId: String? (optional foreign key to Route)",
+  "driverId: String? (optional foreign key to Driver)",
+  "truckId: String? (optional foreign key to Truck)",
+  "weight: Decimal?",
+  "commodity: String?",
+  "notes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+## Status Workflow
+
+Status transitions follow a strict progression. The `updateLoadStatus` action validates that transitions are legal (e.g., cannot go from DELIVERED back to IN_TRANSIT without using `revertLoadStatus`).
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Initial state, awaiting dispatch" },
+  { label: "DISPATCHED", description: "Driver and truck assigned" },
+  { label: "PICKED_UP", description: "Driver confirmed pickup" },
+  { label: "IN_TRANSIT", description: "En route to destination" },
+  { label: "DELIVERED", description: "Delivery confirmed by driver" },
+  { label: "INVOICED", description: "Invoice created and linked" }
+]} />
+
+The `revertLoadStatus` action allows stepping back one status level (e.g., from DELIVERED to IN_TRANSIT) for correction scenarios. It requires OWNER or MANAGER role and logs the reversion in the audit trail.
+
+## RLS Policy
+
+Tenant isolation is enforced at the database level via Row Level Security.
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Load"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+The `app.current_tenant_id` session variable is set by the `getTenantPrisma()` helper before any query execution. This ensures complete isolation between tenants even if application-level checks are bypassed.
+
+## RouteStop Integration
+
+When a load is assigned to a route (via `routeId` field), the system automatically creates or updates corresponding RouteStop records:
+
+- **Pickup stop**: Created with `loadId` reference, `stopType: PICKUP`, coordinates from `pickupLat/Lng`
+- **Delivery stop**: Created with `loadId` reference, `stopType: DELIVERY`, coordinates from `deliveryLat/Lng`
+
+The Load model also maintains reverse foreign keys: `pickupStopId` and `deliveryStopId` for fast lookups.
+
+<CodeBlock language="typescript">
+{`// Example: Creating a load with route assignment
+export async function createLoad(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Load>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Validate input
+  const validated = loadCreateSchema.parse(Object.fromEntries(formData));
+
+  // Geocode addresses if needed
+  const pickupCoords = await geocodeAddress(validated.origin);
+  const deliveryCoords = await geocodeAddress(validated.destination);
+
+  // Create load
+  const load = await prisma.load.create({
+    data: {
+      ...validated,
+      tenantId,
+      loadNumber: await generateLoadNumber(prisma, tenantId),
+      pickupLat: pickupCoords?.lat,
+      pickupLng: pickupCoords?.lng,
+      deliveryLat: deliveryCoords?.lat,
+      deliveryLng: deliveryCoords?.lng,
+      status: LoadStatus.PENDING,
+    },
+  });
+
+  // If routeId provided, sync RouteStops
+  if (validated.routeId) {
+    await syncRouteStopsForLoad(prisma, load);
+  }
+
+  return { success: true, data: load };
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="RLS Bypass">
+Never use `bypass_rls` or raw SQL in user-facing code paths. The `bypass_rls` flag is reserved exclusively for system cron jobs that explicitly set tenant context via environment variables.
+</Callout>
+
+<Callout variant="warning" title="Driver Access">
+When drivers call `updateLoadStatus`, the action verifies that `load.driverId === currentUser.driverId` before allowing the update. This prevents drivers from updating loads assigned to other drivers.
+</Callout>
+
+## Related Models
+
+- <PrismaModelRef model="RouteStop" /> — Pickup and delivery stops are auto-synced when load is assigned to a route
+- <PrismaModelRef model="Invoice" /> — A load must have an associated invoice before it can transition to INVOICED status
+- <PrismaModelRef model="Driver" /> — Foreign key relationship for assigned driver
+- <PrismaModelRef model="Truck" /> — Foreign key relationship for assigned vehicle
+- <PrismaModelRef model="Customer" /> — Foreign key relationship for billing customer
+
+## Rate Confirmation PDF
+
+Loads support generating rate confirmation PDFs via the `generateRateConfirmation` utility. This creates a standardized document with:
+
+- Load details (origin, destination, dates, rate)
+- Customer information
+- Truck and driver assignment
+- Special instructions and commodity details
+
+The PDF is stored in Cloudflare R2 and a presigned URL is returned for download or email attachment.
+
+<CodeBlock language="typescript">
+{`// Generate rate confirmation
+const pdfUrl = await generateRateConfirmation(load.id);
+
+// Returns: https://r2.drivecommand.com/rate-confirmations/LD-1234.pdf?signature=...`}
+</CodeBlock>
+
+## Mobile API Endpoints
+
+Driver mobile app accesses loads via REST endpoints at `/api/mobile/loads/*`:
+
+- `GET /api/mobile/loads` - List loads assigned to authenticated driver
+- `GET /api/mobile/loads/[id]` - Get load details
+- `POST /api/mobile/loads/[id]/status` - Update load status
+
+All endpoints require Bearer token authentication via `validateMobileToken()` middleware.

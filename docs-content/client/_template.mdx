@@ -1,0 +1,96 @@
+---
+# Required frontmatter fields
+slug: feature-slug-here  # Must match feature registry slug
+title: Feature Title
+summary: One-sentence summary for search results (max 300 chars)
+lastReviewed: "2026-01-01T00:00:00Z"  # ISO date
+estimatedReadMinutes: 5  # 1-60
+
+# Optional
+videoUrl: https://www.loom.com/share/...
+---
+
+# {title}
+
+{/* Use Callout for important notices */}
+<Callout variant="info">
+Introductory context about this feature. Explain what it does and why it matters.
+</Callout>
+
+## Section Heading
+
+Regular markdown content here. Use clear, concise language. Write for non-technical fleet owners and dispatchers.
+
+{/* Use StepFlow for multi-step processes */}
+<StepFlow>
+  <StepFlow.Step title="Step 1 Title">
+    Step 1 description with specific instructions...
+  </StepFlow.Step>
+  <StepFlow.Step title="Step 2 Title">
+    Step 2 description with specific instructions...
+  </StepFlow.Step>
+  <StepFlow.Step title="Step 3 Title">
+    Step 3 description with specific instructions...
+  </StepFlow.Step>
+</StepFlow>
+
+{/* Use ProcessDiagram for workflows/lifecycles */}
+<ProcessDiagram steps={[
+  { label: "State 1", description: "Description of first state" },
+  { label: "State 2", description: "Description of second state" },
+  { label: "State 3", description: "Description of third state" }
+]} />
+
+{/* Use ComparisonTable for comparing options */}
+<ComparisonTable
+  headers={["Option", "Pros", "Cons"]}
+  rows={[
+    ["Option A", "Benefit of A", "Limitation of A"],
+    ["Option B", "Benefit of B", "Limitation of B"],
+    ["Option C", "Benefit of C", "Limitation of C"]
+  ]}
+/>
+
+{/* Use Screenshot with required alt and caption */}
+<Screenshot
+  src="/docs/images/screenshot-name.png"
+  alt="Descriptive alt text for accessibility (describe what's in the image)"
+  caption="Caption shown below the image explaining what the user is seeing"
+  hotspots={[
+    { x: 50, y: 30, label: "Important UI element" },
+    { x: 75, y: 60, label: "Action button location" }
+  ]}
+/>
+
+{/* Use VideoEmbed for tutorials */}
+<VideoEmbed
+  url="https://www.loom.com/share/your-video-id"
+  title="Video title for accessibility"
+  captions="Brief description of video content for screen readers"
+/>
+
+{/* Use KeyboardShortcut for hotkeys */}
+Use <KeyboardShortcut keys="Cmd+K" /> to quickly search, or <KeyboardShortcut keys="Ctrl+Shift+P" /> to open the command palette.
+
+{/* Use FeatureCard to link related features */}
+<FeatureCard slug="related-feature-slug" />
+
+{/* Use PlanBadge to show plan requirements */}
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+{/* Callout variants: info, tip, success, warning, danger */}
+<Callout variant="warning" title="Important Note">
+Warning message content. Use for cautionary information that users should pay attention to.
+</Callout>
+
+<Callout variant="tip" title="Pro Tip">
+Helpful advice or best practice information.
+</Callout>
+
+<Callout variant="success">
+Success message or confirmation information.
+</Callout>
+
+<Callout variant="danger" title="Critical Warning">
+Critical warning that could result in data loss or errors if ignored.
+</Callout>

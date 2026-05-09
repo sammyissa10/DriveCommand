@@ -1,0 +1,100 @@
+---
+slug: load-management
+title: Managing Your Loads
+summary: Learn how to create, assign, and track loads from pickup to delivery in DriveCommand.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Managing Your Loads
+
+<Callout variant="info">
+Loads are the heart of your dispatch operation. Each load represents a shipment from origin to destination, containing all the details you need to move freight efficiently.
+</Callout>
+
+## What is a Load?
+
+A load in DriveCommand represents a single shipment from a pickup location to a delivery destination. Each load includes customer information, origin and destination addresses, pickup and delivery dates, rate information, and optional details like commodity type, weight, and special handling instructions.
+
+Loads can exist independently or be linked to multi-stop routes for complex trips. When you assign a load to a route, DriveCommand automatically creates the corresponding route stops and keeps everything in sync.
+
+## Creating a New Load
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to Loads">
+    From the sidebar, click **Loads** to open the load management screen. You'll see a list of all your loads organized by status (Pending, Dispatched, In Transit, Delivered).
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Create Load">
+    Click the **+ New Load** button in the top right corner to open the load creation form.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter Load Details">
+    Fill in the required fields: customer name, origin address, destination address, pickup date, and rate. You can also add optional information like delivery date, weight, commodity type, and internal notes. DriveCommand will automatically calculate the distance using real road miles.
+  </StepFlow.Step>
+  <StepFlow.Step title="Dispatch or Save">
+    Click **Save as Pending** to save the load for later assignment, or **Dispatch Now** to immediately assign a driver and truck. If you choose to dispatch, you'll select the driver and vehicle in the next step.
+  </StepFlow.Step>
+</StepFlow>
+
+## Load Status Workflow
+
+Every load moves through a standard lifecycle. Understanding these statuses helps you track progress and identify where attention is needed.
+
+<ProcessDiagram steps={[
+  { label: "Pending", description: "Awaiting dispatch" },
+  { label: "Dispatched", description: "Driver assigned" },
+  { label: "In Transit", description: "On the road" },
+  { label: "Delivered", description: "At destination" },
+  { label: "Invoiced", description: "Billed to customer" }
+]} />
+
+Your driver can update the load status from their mobile app as they progress through pickup and delivery. You'll see these updates in real-time on your dashboard.
+
+## Dispatch Methods Comparison
+
+DriveCommand offers multiple ways to assign loads to drivers. Choose the method that fits your workflow.
+
+<ComparisonTable
+  headers={["Method", "Best For", "Time to Dispatch"]}
+  rows={[
+    ["Manual Dispatch", "One-off loads, special handling requirements", "2-3 minutes"],
+    ["Route Assignment", "Multi-stop trips, regular lanes", "30 seconds"],
+    ["AI Suggested", "Optimized driver and truck matching based on location and availability", "Instant"]
+  ]}
+/>
+
+Manual dispatch gives you full control for custom situations. Route assignment is perfect when you're building complex multi-stop trips. AI suggestions help you make the best choice quickly when you have multiple available drivers.
+
+## The Load Detail Screen
+
+<Screenshot
+  src="/docs/images/load-detail-screen.png"
+  alt="Load detail screen showing status, route info, and action buttons"
+  caption="The load detail screen gives you full visibility into shipment status, assigned resources, and quick actions"
+  hotspots={[
+    { x: 15, y: 20, label: "Load status badge" },
+    { x: 85, y: 20, label: "Quick actions menu" },
+    { x: 50, y: 60, label: "Route timeline" }
+  ]}
+/>
+
+The load detail screen is your command center for each shipment. You can see the current status, assigned driver and truck, route information, customer details, and all documents related to the load. Use the quick actions menu to update status, reassign resources, or generate documents like rate confirmations.
+
+## Keyboard Shortcuts
+
+Speed up your workflow with these shortcuts when you're on the loads screen:
+
+- <KeyboardShortcut keys="Cmd+N" /> - Create new load
+- <KeyboardShortcut keys="Cmd+D" /> - Dispatch selected load
+- <KeyboardShortcut keys="Cmd+E" /> - Edit selected load
+
+## Related Features
+
+<FeatureCard slug="route-planning" />
+
+<Callout variant="tip" title="Pro Tip">
+Link loads to routes for automatic stop creation and optimized sequencing. When you assign a load to an existing route, DriveCommand creates pickup and delivery stops automatically and maintains consistency if you edit the load later.
+</Callout>
+
+## Available on All Plans
+
+<PlanBadge tier="free" /> Load management is available on all DriveCommand plans, starting with the Free tier.

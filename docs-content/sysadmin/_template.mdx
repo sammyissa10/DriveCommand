@@ -1,0 +1,196 @@
+---
+# Required frontmatter (same as client)
+slug: feature-slug-here  # Must match feature registry slug
+title: Feature Title — Technical Reference
+summary: Technical summary for engineering search (max 300 chars)
+lastReviewed: "2026-01-01T00:00:00Z"
+estimatedReadMinutes: 8
+
+# Sysadmin-specific fields
+engineeringOwner: "Team Name"  # e.g., "Platform Team", "Mobile Team"
+runbookUrl: https://notion.so/runbook/...  # Optional link to runbook
+securityNotes:  # Optional array of security considerations
+  - "All queries are tenant-scoped via RLS"
+  - "Sensitive fields are encrypted at rest"
+  - "API endpoints require role-based access"
+---
+
+# {title} — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Brief technical overview of the subsystem. What does it do? What are the key components? What are the main data flows?
+
+## Server Actions
+
+Document all server actions for this feature. Include file path, exported functions, role guards, input schemas, and return types.
+
+<ApiTable rows={[
+  { name: "actionName", roleGuard: "OWNER | MANAGER", inputSchema: "schemaName", returnType: "ActionState<Type>" },
+  { name: "anotherAction", roleGuard: "DRIVER", inputSchema: "anotherSchema", returnType: "ActionState<void>" }
+]} />
+
+Explain any special behavior, validation logic, or side effects of each action.
+
+## Database Schema
+
+Reference the relevant Prisma model(s). Include key fields and their types.
+
+<PrismaModelRef model="ModelName" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "field1: Type (description)",
+  "field2: Type (description)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+Explain any indexes, unique constraints, or relationships that are important for understanding the schema.
+
+## Workflow / State Machine
+
+If the feature involves a workflow or state transitions, document it here.
+
+<ProcessDiagram steps={[
+  { label: "State 1", description: "Initial state" },
+  { label: "State 2", description: "Intermediate state" },
+  { label: "State 3", description: "Final state" }
+]} />
+
+Explain the rules for state transitions, who can trigger them, and any validation that occurs.
+
+## RLS Policy
+
+Document the Row Level Security policy that enforces tenant isolation.
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "TableName"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+Explain how the policy works, when it's applied, and any exceptions (e.g., cron jobs with bypass_rls).
+
+## Code Examples
+
+Include relevant code snippets showing typical usage patterns.
+
+<CodeBlock language="typescript">
+{`// Example: Creating a resource
+export async function createResource(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Resource>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Validate, create, return...
+}`}
+</CodeBlock>
+
+You can include multiple code blocks for different scenarios (creation, updates, complex queries, etc.).
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Example SQL query for debugging
+SELECT * FROM "Load"
+WHERE tenant_id = 'xxx'
+  AND status = 'PENDING'
+ORDER BY created_at DESC;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical Security Note">
+Document any security-critical behaviors. Use "danger" callout variant for things that could cause data leaks, unauthorized access, or other serious issues if misconfigured.
+</Callout>
+
+<Callout variant="warning" title="Important">
+Use "warning" callout for important but non-critical security notes (e.g., rate limiting, input validation).
+</Callout>
+
+Common topics:
+- When/how to use `bypass_rls` (almost never in user-facing code)
+- Role-based access control patterns
+- Input validation and sanitization
+- Sensitive data handling (PII, credentials)
+- API authentication requirements
+
+## Related Models
+
+List other Prisma models that have relationships with this feature's main model.
+
+- <PrismaModelRef model="RelatedModel1" /> — Explain the relationship
+- <PrismaModelRef model="RelatedModel2" /> — Explain the relationship
+
+## Mobile API Endpoints
+
+If the feature has mobile API endpoints, document them here.
+
+<CodeBlock language="typescript">
+{`// Endpoint: GET /api/mobile/resource/[id]
+// Auth: Bearer token required
+// Returns: { resource: Resource }
+
+// Example response:
+{
+  "resource": {
+    "id": "uuid",
+    "name": "Example",
+    ...
+  }
+}`}
+</CodeBlock>
+
+## Cron Jobs / Background Tasks
+
+If the feature includes cron jobs or background processing, document them here.
+
+<CodeBlock language="typescript">
+{`// Cron: /api/cron/process-resources
+// Schedule: Every hour
+// Auth: CRON_SECRET header
+
+// What it does:
+// 1. Finds all pending resources
+// 2. Processes each one
+// 3. Updates status
+// 4. Sends notifications`}
+</CodeBlock>
+
+## Testing Notes
+
+Include any important testing considerations or known edge cases.
+
+- Test case 1: Description
+- Test case 2: Description
+- Edge case to watch for: Description
+
+## Performance Considerations
+
+Document any performance-related information:
+
+- Query optimization notes
+- Index requirements
+- Caching strategies
+- Known bottlenecks
+
+## Troubleshooting
+
+Common issues and how to resolve them:
+
+1. **Issue description**: How to diagnose and fix
+2. **Another issue**: Diagnostic steps and resolution
+
+## Related Features
+
+Link to other technical docs for related subsystems.
+
+<FeatureCard slug="related-feature-slug" />
