@@ -1,0 +1,399 @@
+---
+slug: support-tickets
+title: Support Tickets — Technical Reference
+summary: In-app support ticket system with screenshot capture, R2 file attachments, message threading, and status workflow management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Tickets are tenant-scoped via RLS"
+  - "File attachments stored in R2 with presigned URLs (7-day expiry)"
+  - "Screenshots auto-captured via html2canvas (client-side)"
+  - "Reply threads stored as JSON array (no separate table)"
+---
+
+# Support Tickets — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Support Tickets provide an in-app support system for owners and drivers to request help. Key features:
+
+- **Ticket creation** — subject, description, screenshot, file attachments
+- **Screenshot auto-capture** — html2canvas captures current page on submit
+- **R2 file storage** — attachments uploaded to Cloudflare R2 with presigned URLs
+- **Message threading** — replies stored as JSON array in `replies` field
+- **Status workflow** — OPEN → IN_PROGRESS → RESOLVED → CLOSED
+- **Email notifications** — user receives email when support replies
+
+Available in both Owner and Driver portals via SupportTicketFAB component.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getTickets", roleGuard: "OWNER | DRIVER", inputSchema: "{ status?: string }", returnType: "ActionState<SupportTicket[]>" },
+  { name: "getTicket", roleGuard: "OWNER | DRIVER", inputSchema: "{ ticketId: string }", returnType: "ActionState<SupportTicket>" },
+  { name: "createTicket", roleGuard: "OWNER | DRIVER", inputSchema: "CreateTicketSchema", returnType: "ActionState<SupportTicket>" },
+  { name: "addReply", roleGuard: "OWNER | DRIVER | SYSADMIN", inputSchema: "AddReplySchema", returnType: "ActionState<void>" },
+  { name: "updateTicketStatus", roleGuard: "SYSADMIN", inputSchema: "UpdateTicketStatusSchema", returnType: "ActionState<void>" }
+]} />
+
+### `createTicket()`
+
+Creates a new support ticket with optional screenshot and file attachments.
+
+<CodeBlock language="typescript">
+{`export async function createTicket(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<SupportTicket>> {
+  await requireRole([UserRole.OWNER, UserRole.DRIVER]);
+  const tenantId = await requireTenantId();
+  const userId = await requireUserId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = CreateTicketSchema.parse({
+    subject: formData.get('subject'),
+    description: formData.get('description'),
+    priority: formData.get('priority') || 'NORMAL',
+  });
+
+  // Upload files to R2 if present
+  const attachmentUrls: string[] = [];
+  const files = formData.getAll('files') as File[];
+
+  for (const file of files) {
+    const key = \`support-tickets/\${crypto.randomUUID()}-\${file.name}\`;
+    await uploadToR2(key, file);
+    const presignedUrl = await getPresignedUrl(key, 7 * 24 * 60 * 60); // 7 days
+    attachmentUrls.push(presignedUrl);
+  }
+
+  // Upload screenshot if present
+  let screenshotUrl: string | null = null;
+  const screenshot = formData.get('screenshot') as File | null;
+
+  if (screenshot) {
+    const key = \`support-tickets/screenshot-\${crypto.randomUUID()}.png\`;
+    await uploadToR2(key, screenshot);
+    screenshotUrl = await getPresignedUrl(key, 7 * 24 * 60 * 60);
+  }
+
+  const ticket = await prisma.supportTicket.create({
+    data: {
+      tenantId,
+      userId,
+      subject: parsed.subject,
+      description: parsed.description,
+      priority: parsed.priority,
+      status: 'OPEN',
+      attachmentUrls,
+      screenshotUrl,
+      replies: [],
+    },
+  });
+
+  // Send notification email to support team
+  await sendEmail({
+    to: 'support@drivecommand.com',
+    subject: \`New support ticket: \${ticket.subject}\`,
+    html: newTicketEmailTemplate(ticket),
+  });
+
+  return { success: true, data: ticket };
+}`}
+</CodeBlock>
+
+**File upload flow:**
+1. Client captures screenshot via html2canvas (optional)
+2. Client selects files from device (optional)
+3. FormData includes files + screenshot
+4. Server uploads to R2 with unique keys
+5. Server generates presigned URLs (7-day expiry)
+6. Server stores URLs in `attachmentUrls` and `screenshotUrl` fields
+
+### `addReply()`
+
+Adds a message to the ticket reply thread (available to both users and SysAdmin).
+
+<CodeBlock language="typescript">
+{`export async function addReply(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  const ticketId = formData.get('ticketId') as string;
+  const message = formData.get('message') as string;
+
+  const userId = await requireUserId();
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  const ticket = await prisma.supportTicket.findUnique({
+    where: { id: ticketId },
+  });
+
+  if (!ticket) {
+    return { success: false, error: 'Ticket not found' };
+  }
+
+  // Authorization check
+  if (user.role !== 'SYSADMIN' && ticket.userId !== userId) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
+  // Append to replies array
+  const newReply = {
+    id: crypto.randomUUID(),
+    userId,
+    userName: user.name,
+    message,
+    timestamp: new Date().toISOString(),
+  };
+
+  await prisma.supportTicket.update({
+    where: { id: ticketId },
+    data: {
+      replies: {
+        push: newReply,
+      },
+    },
+  });
+
+  // Send email notification
+  if (user.role === 'SYSADMIN') {
+    // Notify ticket creator
+    await sendEmail({
+      to: ticket.user.email,
+      subject: \`Reply to your support ticket: \${ticket.subject}\`,
+      html: replyEmailTemplate(ticket, newReply),
+    });
+  } else {
+    // Notify support team
+    await sendEmail({
+      to: 'support@drivecommand.com',
+      subject: \`New reply on ticket: \${ticket.subject}\`,
+      html: replyEmailTemplate(ticket, newReply),
+    });
+  }
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+**Reply structure:**
+
+<CodeBlock language="json">
+{`{
+  "replies": [
+    {
+      "id": "uuid",
+      "userId": "user-uuid",
+      "userName": "John Doe",
+      "message": "Thank you for reporting this issue...",
+      "timestamp": "2026-05-09T10:30:00Z"
+    },
+    {
+      "id": "uuid2",
+      "userId": "user-uuid2",
+      "userName": "Support Team",
+      "message": "We've identified the issue and will deploy a fix shortly.",
+      "timestamp": "2026-05-09T11:00:00Z"
+    }
+  ]
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="SupportTicket" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "userId: String (foreign key to User)",
+  "subject: String",
+  "description: String (full ticket content)",
+  "status: SupportTicketStatus (OPEN | IN_PROGRESS | RESOLVED | CLOSED)",
+  "priority: Priority (LOW | MEDIUM | HIGH | URGENT)",
+  "attachmentUrls: String[] (R2 presigned URLs)",
+  "screenshotUrl: String? (R2 presigned URL)",
+  "replies: Json[] (message thread)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `(tenantId, status)` — used by ticket list queries
+- `(userId)` — used by user's ticket history
+
+**Relationships:**
+- `tenant: Tenant` — ticket belongs to one tenant
+- `user: User` — ticket created by one user
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "OPEN", description: "Ticket created, awaiting support response" },
+  { label: "IN_PROGRESS", description: "Support team investigating" },
+  { label: "RESOLVED", description: "Issue resolved, awaiting user confirmation" },
+  { label: "CLOSED", description: "Ticket closed, no further action" }
+]} />
+
+**State transitions:**
+- OPEN → IN_PROGRESS: Support adds first reply (auto)
+- IN_PROGRESS → RESOLVED: Support marks as resolved (manual)
+- RESOLVED → CLOSED: User confirms or auto-closed after 7 days
+- Any status → OPEN: User replies (reopens ticket)
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "SupportTicket"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+**User-level isolation:**
+Users can only view their own tickets (enforced in server actions, not RLS).
+
+<CodeBlock language="typescript">
+{`// Example: Filter by userId
+const tickets = await prisma.supportTicket.findMany({
+  where: {
+    tenantId, // RLS enforced
+    userId,   // User-level filter
+  },
+});`}
+</CodeBlock>
+
+## Code Examples
+
+### Screenshot capture (client-side)
+
+<CodeBlock language="typescript">
+{`import html2canvas from 'html2canvas';
+
+async function captureScreenshot() {
+  const canvas = await html2canvas(document.body, {
+    ignoreElements: (element) => {
+      // Don't capture the support form itself
+      return element.id === 'support-ticket-form';
+    },
+  });
+
+  return new Promise<File>((resolve) => {
+    canvas.toBlob((blob) => {
+      const file = new File([blob!], 'screenshot.png', { type: 'image/png' });
+      resolve(file);
+    });
+  });
+}`}
+</CodeBlock>
+
+### R2 file upload
+
+<CodeBlock language="typescript">
+{`import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint: \`https:/\${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com\`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+async function uploadToR2(key: string, file: File) {
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME!,
+      Key: key,
+      Body: buffer,
+      ContentType: file.type,
+    })
+  );
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: User Authorization">
+Always verify ticket ownership before allowing access. Use `ticket.userId === currentUserId` check. Do NOT rely on RLS alone (RLS is tenant-scoped, not user-scoped).
+</Callout>
+
+<Callout variant="warning" title="File Upload Validation">
+Validate file types and sizes before uploading to R2. Max file size: 10MB. Allowed types: images, PDFs, text files.
+</Callout>
+
+**Other security notes:**
+- Presigned URLs expire after 7 days
+- Screenshots do NOT include password fields (html2canvas ignores input[type=password])
+- Reply threads cannot be edited (append-only)
+
+## Mobile API Endpoints
+
+Mobile app has separate endpoints for ticket management:
+
+<CodeBlock language="typescript">
+{`// POST /api/mobile/support/tickets
+// Auth: Bearer token required
+// Body: { subject, description, priority?, attachmentUrls?, screenshotUrl? }
+
+// GET /api/mobile/support/tickets
+// Auth: Bearer token required
+// Returns: { tickets: SupportTicket[] }
+
+// POST /api/mobile/support/tickets/[id]/replies
+// Auth: Bearer token required
+// Body: { message }
+// Returns: { success: boolean }`}
+</CodeBlock>
+
+## Performance Considerations
+
+- Ticket queries are paginated (20 per page) in UI
+- R2 presigned URLs cached (5-minute TTL) to reduce API calls
+- Reply threads limited to 100 messages (UI shows "Load more" if > 10)
+
+## Troubleshooting
+
+**Issue: File upload fails**
+
+Check:
+1. File size < 10MB
+2. R2 credentials are correct (`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`)
+3. R2 bucket exists and is writable
+
+**Issue: Screenshot not captured**
+
+Verify:
+1. User granted browser screenshot permission (if required)
+2. html2canvas loaded successfully (check browser console)
+3. No CSP violations blocking canvas rendering
+
+**Issue: Reply not visible**
+
+Check:
+1. Reply was added to `replies` JSON array (query database)
+2. UI is refreshing after reply submission (optimistic update)
+3. User has permission to view ticket
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT replies FROM "SupportTicket"
+WHERE id = 'ticket-uuid';`}
+</CodeBlock>
+
+## Related Features
+
+<FeatureCard slug="admin-support" />
+<FeatureCard slug="help-center" />

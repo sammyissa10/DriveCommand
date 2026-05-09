@@ -1,0 +1,429 @@
+---
+slug: shipment-tracking
+title: Public Shipment Tracking — Technical Reference
+summary: Public tracking page with unique token-based access, GPS map polling, status timeline, and no-auth load visibility for customers.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Public route with no authentication required"
+  - "Access controlled by unique tracking token (UUID)"
+  - "GPS updates refreshed every 60 seconds (client-side polling)"
+  - "No PII exposed beyond driver name/phone (if enabled)"
+---
+
+# Public Shipment Tracking — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Public Shipment Tracking provides a customer-facing tracking page accessible via unique token URL. Key features:
+
+- **Public access** — no authentication required, accessed via `/track/[token]`
+- **Unique tracking tokens** — UUID generated when load is created
+- **GPS map** — Mapbox with 60-second auto-refresh polling
+- **Status timeline** — visual progress indicator with completed/upcoming stops
+- **ETA calculation** — based on OSRM distance and current location
+- **Driver contact** — optional display of driver name/phone
+
+Used by carriers to share shipment visibility with customers without requiring them to create accounts.
+
+## Public API Route
+
+**Route:** `/api/track/[token]`
+
+**Auth:** None (public endpoint)
+
+**Response:**
+
+<CodeBlock language="typescript">
+{`// GET /api/track/abc123xyz
+export async function GET(
+  request: Request,
+  { params }: { params: { token: string } }
+) {
+  const token = params.token;
+
+  // Find load by tracking token
+  const load = await prisma.load.findUnique({
+    where: { trackingToken: token },
+    include: {
+      route: {
+        include: {
+          stops: {
+            orderBy: { sequence: 'asc' },
+          },
+        },
+      },
+      driver: {
+        select: {
+          name: true,
+          phone: true,
+        },
+      },
+      gpsReports: {
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+      },
+      tenant: {
+        select: {
+          companyName: true,
+          settings: {
+            select: {
+              shareDriverContactOnTracking: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!load) {
+    return Response.json({ error: 'Invalid tracking token' }, { status: 404 });
+  }
+
+  // Check if load is trackable (not PENDING or CANCELLED)
+  if (load.status === 'PENDING' || load.status === 'CANCELLED') {
+    return Response.json({
+      error: 'This shipment is not currently trackable',
+      status: load.status,
+    }, { status: 400 });
+  }
+
+  // Hide driver contact if tenant setting disabled
+  const showDriverContact = load.tenant.settings?.shareDriverContactOnTracking ?? true;
+
+  return Response.json({
+    load: {
+      id: load.id,
+      status: load.status,
+      commodity: load.commodity,
+      pickupAddress: load.pickupAddress,
+      deliveryAddress: load.deliveryAddress,
+      bolNumber: load.bolNumber,
+      poNumber: load.poNumber,
+      estimatedDeliveryDate: load.estimatedDeliveryDate,
+    },
+    route: {
+      stops: load.route?.stops.map(stop => ({
+        sequence: stop.sequence,
+        location: stop.location,
+        contactName: stop.contactName,
+        contactPhone: stop.contactPhone,
+        scheduledArrival: stop.scheduledArrival,
+        actualArrival: stop.actualArrival,
+      })),
+    },
+    driver: showDriverContact ? {
+      name: load.driver?.name,
+      phone: load.driver?.phone,
+    } : null,
+    gps: load.gpsReports[0] ? {
+      latitude: load.gpsReports[0].latitude,
+      longitude: load.gpsReports[0].longitude,
+      timestamp: load.gpsReports[0].createdAt,
+    } : null,
+    carrier: {
+      name: load.tenant.companyName,
+    },
+  });
+}`}
+</CodeBlock>
+
+**Security considerations:**
+- No authentication required (public endpoint)
+- Token is UUID (unguessable, effectively secret)
+- Only load-specific data returned (no tenant-wide access)
+- Driver contact optional (tenant setting)
+
+## Tracking Token Generation
+
+Tracking tokens are generated when a load is created:
+
+<CodeBlock language="typescript">
+{`export async function createLoad(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Load>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // ... other validation
+
+  const trackingToken = crypto.randomUUID(); // <-- Unique token
+
+  const load = await prisma.load.create({
+    data: {
+      tenantId,
+      trackingToken,  // <-- Stored in database
+      // ... other fields
+    },
+  });
+
+  return { success: true, data: load };
+}`}
+</CodeBlock>
+
+**Token format:** UUID v4 (e.g., `550e8400-e29b-41d4-a716-446655440000`)
+
+**Token properties:**
+- Unique per load
+- Unguessable (cryptographically random)
+- Permanent (does not expire until load is delivered/cancelled)
+- Shareable via URL: `https://drivecommand.com/track/{token}`
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "trackingToken: String @unique (UUID for public tracking)",
+  "status: LoadStatus (PENDING | IN_TRANSIT | DELIVERED | CANCELLED)",
+  "commodity: String",
+  "pickupAddress: String",
+  "deliveryAddress: String",
+  "bolNumber: String?",
+  "poNumber: String?",
+  "estimatedDeliveryDate: DateTime?",
+  "routeId: String? (foreign key to Route)",
+  "driverId: String? (foreign key to Driver)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="GpsReport" fields={[
+  "id: String @id @default(uuid())",
+  "loadId: String? (foreign key to Load)",
+  "latitude: Decimal",
+  "longitude: Decimal",
+  "speed: Decimal? (mph)",
+  "heading: Int? (degrees, 0-360)",
+  "accuracy: Decimal? (meters)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+**Indexes:**
+- `(trackingToken)` — unique constraint for token lookup
+- `(loadId, createdAt)` — used by GPS report queries
+
+## Client-Side Polling
+
+The tracking page auto-refreshes GPS position every 60 seconds:
+
+<CodeBlock language="typescript">
+{`// Client component
+'use client';
+
+export function TrackingMap({ token }: { token: string }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(\`/api/track/\${token}\`);
+      const json = await res.json();
+      setData(json);
+    };
+
+    fetchData(); // Initial fetch
+
+    const interval = setInterval(fetchData, 60000); // Every 60 seconds
+
+    return () => clearInterval(interval);
+  }, [token]);
+
+  if (!data) return <Skeleton />;
+
+  return (
+    <Mapbox
+      latitude={data.gps.latitude}
+      longitude={data.gps.longitude}
+      route={data.route.stops}
+    />
+  );
+}`}
+</CodeBlock>
+
+**Polling behavior:**
+- Initial fetch on page load
+- Refresh every 60 seconds while page is open
+- Stop polling when page is hidden (Page Visibility API)
+- Exponential backoff if API errors (60s → 120s → 240s)
+
+## ETA Calculation
+
+ETA is calculated based on:
+
+1. **Current GPS position** — from most recent GpsReport
+2. **Remaining distance** — OSRM distance from current position to delivery address
+3. **Average speed** — calculated from last 10 GPS reports
+4. **Formula:** `ETA = currentTime + (remainingDistance / averageSpeed)`
+
+<CodeBlock language="typescript">
+{`async function calculateETA(load: Load, currentGps: GpsReport) {
+  // Get last 10 GPS reports
+  const recentReports = await prisma.gpsReport.findMany({
+    where: { loadId: load.id },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+  });
+
+  // Calculate average speed (mph)
+  const speeds = recentReports.filter(r => r.speed).map(r => r.speed);
+  const averageSpeed = speeds.reduce((sum, s) => sum + s, 0) / speeds.length;
+
+  // Get remaining distance from OSRM
+  const remainingDistance = await getOSRMDistance(
+    { lat: currentGps.latitude, lng: currentGps.longitude },
+    { lat: load.deliveryLatitude, lng: load.deliveryLongitude }
+  );
+
+  // Calculate ETA (hours)
+  const hoursRemaining = remainingDistance / averageSpeed;
+  const eta = new Date(Date.now() + hoursRemaining * 60 * 60 * 1000);
+
+  return eta;
+}`}
+</CodeBlock>
+
+**Fallback:** If no GPS reports or speed data, use `estimatedDeliveryDate` from load.
+
+## Status Timeline
+
+Status timeline shows completed and upcoming stops:
+
+<ProcessDiagram steps={[
+  { label: "Pickup", description: "Load picked up at origin" },
+  { label: "In Transit", description: "Load en route to delivery" },
+  { label: "Delivery", description: "Load delivered to destination" }
+]} />
+
+**Visual indicators:**
+- ✓ Completed stops (green checkmark)
+- ⊙ Current stop (blue dot, pulsing)
+- ○ Upcoming stops (gray outline)
+
+## Privacy Settings
+
+Tenant admins can control driver contact visibility:
+
+<CodeBlock language="typescript">
+{`// Tenant settings model
+model TenantSettings {
+  id: String @id
+  tenantId: String @unique
+  shareDriverContactOnTracking: Boolean @default(true)  // <-- Privacy toggle
+  // ... other settings
+}`}
+</CodeBlock>
+
+**Setting behavior:**
+- `true` (default) → Driver name and phone visible on tracking page
+- `false` → Driver contact hidden, shows "Contact carrier at [carrier phone]"
+
+## Code Examples
+
+### Sharing tracking link
+
+<CodeBlock language="typescript">
+{`// Owner portal: Load detail page
+function LoadDetail({ load }: { load: Load }) {
+  const trackingUrl = \`https://drivecommand.com/track/\${load.trackingToken}\`;
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(trackingUrl);
+    toast.success('Tracking link copied');
+  };
+
+  return (
+    <div>
+      <h3>Customer Tracking</h3>
+      <input value={trackingUrl} readOnly />
+      <button onClick={copyToClipboard}>Copy Link</button>
+    </div>
+  );
+}`}
+</CodeBlock>
+
+### Querying GPS reports
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find most recent GPS position for a load
+SELECT latitude, longitude, created_at
+FROM "GpsReport"
+WHERE load_id = 'load-uuid'
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- Find all GPS reports from last 24 hours
+SELECT * FROM "GpsReport"
+WHERE load_id = 'load-uuid'
+  AND created_at > NOW() - INTERVAL '24 hours'
+ORDER BY created_at ASC;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Public Endpoint">
+This is a PUBLIC endpoint with NO authentication. Never expose sensitive data (financials, PII beyond driver name/phone, other loads).
+</Callout>
+
+<Callout variant="warning" title="Token Security">
+Tracking tokens are effectively secrets. If a token is leaked, anyone can view the load. Consider adding a "revoke token" feature for sensitive loads.
+</Callout>
+
+**Other security notes:**
+- No rate limiting (low abuse risk, read-only endpoint)
+- GPS updates are tenant-scoped (cannot query other tenants' loads)
+- Driver contact can be hidden via tenant setting
+
+## Performance Considerations
+
+- Tracking page is static HTML + client-side JS (no SSR overhead)
+- GPS polling is client-side only (no server-side cron)
+- API response cached in Vercel Edge (30-second TTL)
+- Mapbox tile caching (CDN)
+
+## Troubleshooting
+
+**Issue: Tracking link shows "Invalid token"**
+
+Check:
+1. Load exists with matching `trackingToken`
+2. Token is valid UUID (no typos)
+3. Load status is not PENDING or CANCELLED
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "Load"
+WHERE tracking_token = 'token-uuid';`}
+</CodeBlock>
+
+**Issue: GPS position not updating**
+
+Verify:
+1. Driver has active GPS (check mobile app)
+2. GpsReport records exist in database
+3. Client-side polling is running (check browser console)
+
+**Issue: ETA is incorrect**
+
+Check:
+1. GPS reports have valid `speed` field
+2. OSRM distance calculation is accurate
+3. `estimatedDeliveryDate` is set as fallback
+
+## Related Features
+
+<FeatureCard slug="live-map" />
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="driver-my-route" />

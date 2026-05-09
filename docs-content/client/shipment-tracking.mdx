@@ -1,0 +1,146 @@
+---
+slug: shipment-tracking
+title: Public Shipment Tracking
+summary: Share real-time shipment tracking links with customers via unique tracking tokens with GPS map, status timeline, and ETA.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Public Shipment Tracking
+
+<Callout variant="info">
+Give your customers visibility into their shipments with shareable tracking links. No login required.
+</Callout>
+
+## Overview
+
+Public Shipment Tracking allows you to share a unique tracking link with customers so they can see:
+
+- **Live GPS location** — Real-time truck position on a map
+- **Status timeline** — Pickup, in-transit, delivery milestones
+- **Estimated arrival** — ETA based on current location and route
+- **Contact info** — Driver name and phone number (if enabled)
+
+Customers access the tracking page without needing to create an account or log in.
+
+## Generating a Tracking Link
+
+Every load automatically gets a unique tracking token when created. Here's how to share it with customers:
+
+<StepFlow>
+  <StepFlow.Step title="Open Load Details">
+    Navigate to **Loads** and click on the load you want to share.
+  </StepFlow.Step>
+  <StepFlow.Step title="Find the Tracking Link">
+    In the load detail panel, you'll see a "Customer Tracking" section with a unique URL like `drivecommand.com/track/abc123xyz`.
+  </StepFlow.Step>
+  <StepFlow.Step title="Share the Link">
+    Click "Copy Link" and send it to your customer via email, SMS, or your load confirmation. The link works immediately and stays active until the load is delivered.
+  </StepFlow.Step>
+</StepFlow>
+
+<Callout variant="tip" title="Pro Tip">
+Add the tracking link to your automated load confirmation emails so customers get instant visibility without having to ask.
+</Callout>
+
+## What Customers See
+
+When a customer clicks the tracking link, they see:
+
+- **Interactive map** — Real-time truck position with route polyline
+- **Shipment details** — Load number, pickup/delivery addresses, commodity
+- **Status timeline** — Visual progress indicator showing completed and upcoming stops
+- **ETA countdown** — Hours remaining until delivery
+- **Driver contact** — Name and phone number (if you've enabled sharing)
+
+<Screenshot
+  src="/docs/images/tracking-page.png"
+  alt="Public tracking page showing GPS map, status timeline, and ETA countdown"
+  caption="Customers see a clean, mobile-friendly tracking page with all shipment details"
+  hotspots={[
+    { x: 50, y: 30, label: "Live GPS map" },
+    { x: 50, y: 70, label: "Status timeline" }
+  ]}
+/>
+
+## Privacy & Security
+
+<Callout variant="success">
+Tracking links are secure and only show information relevant to the specific load. Customers cannot see your other loads or fleet data.
+</Callout>
+
+**What's visible:**
+- Load-specific GPS updates (refreshed every 5 minutes)
+- Pickup and delivery addresses
+- Commodity and reference numbers (BOL, PO)
+- Driver name and phone (if enabled in settings)
+
+**What's NOT visible:**
+- Other loads or routes
+- Truck details (VIN, registration)
+- Your company financials or invoices
+- Driver personal information (beyond name/phone)
+
+## Disabling Driver Contact Sharing
+
+By default, customers can see the driver's name and phone number. To disable this:
+
+1. Go to **Settings** → **Privacy**
+2. Toggle **"Share driver contact on public tracking"** to OFF
+3. Future tracking links will hide driver contact info
+
+This applies to all new tracking links. Existing links are not affected retroactively.
+
+## Tracking Link Expiry
+
+Tracking links automatically expire after the load is marked as **DELIVERED** or **CANCELLED**. Customers will see:
+
+> "This shipment has been delivered. Tracking is no longer available."
+
+If you need to extend tracking after delivery (e.g., for proof of delivery), contact support.
+
+## Mobile-Friendly Design
+
+The tracking page is fully responsive and optimized for mobile devices. Customers can check shipment status from their phone, tablet, or desktop without any app installation.
+
+## Customization
+
+<PlanBadge tier="business" /> Business plan customers can customize the tracking page:
+
+- **Company logo** — Display your logo at the top of the tracking page
+- **Brand colors** — Match the page to your company branding
+- **Custom domain** — Use `tracking.yourcompany.com` instead of `drivecommand.com/track`
+
+Contact support to enable these customization options.
+
+## GPS Update Frequency
+
+GPS updates are refreshed every:
+
+- **5 minutes** — When driver is on an active route
+- **10 minutes** — When driver is off-duty but load is in-transit
+- **No updates** — When load status is PENDING or DELIVERED
+
+<Callout variant="warning" title="GPS Accuracy">
+GPS accuracy depends on the driver's device signal strength. In areas with poor cell coverage, updates may be delayed or less accurate.
+</Callout>
+
+## Common Questions
+
+**Can I regenerate a tracking link?**
+
+No. Each load has a permanent tracking token that cannot be changed. If you need to revoke access, mark the load as CANCELLED and create a new load.
+
+**Do customers need to refresh the page?**
+
+No. The tracking page auto-refreshes GPS position every 60 seconds while the page is open.
+
+**Can I see who viewed the tracking link?**
+
+Not currently. This feature is planned for a future release.
+
+## Related Features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="live-map" />
+<FeatureCard slug="driver-my-route" />
