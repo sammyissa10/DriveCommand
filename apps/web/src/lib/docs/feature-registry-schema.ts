@@ -21,6 +21,7 @@ export const categorySchema = z.enum([
   'admin',
   'support',
   'settings',
+  'workflows',
 ]);
 export type Category = z.infer<typeof categorySchema>;
 
