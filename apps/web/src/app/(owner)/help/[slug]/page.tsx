@@ -4,12 +4,25 @@ import { renderClientDoc } from '@/lib/docs/render-mdx';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { FeedbackWidget } from '@/components/help/FeedbackWidget';
+import { HelpBreadcrumbs } from '@/components/help/HelpBreadcrumbs';
+import { RelatedArticles } from '@/components/help/RelatedArticles';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ArrowLeft, Clock, Sparkles } from 'lucide-react';
+import { Clock, Sparkles } from 'lucide-react';
+import ia from '../../../../../../../docs-content/_ia.json';
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+// Find which hub contains a given feature slug
+function findHubForFeature(slug: string): { id: string; name: string } | undefined {
+  for (const hub of ia.clientHubs) {
+    if (hub.features.includes(slug)) {
+      return { id: hub.id, name: hub.name };
+    }
+  }
+  return undefined;
 }
 
 export default async function HelpArticlePage({ params }: Props) {
@@ -45,16 +58,17 @@ export default async function HelpArticlePage({ params }: Props) {
   const featurePlanIndex = planHierarchy.indexOf(featurePlanTier);
   const needsUpgrade = featurePlanIndex > tenantPlanIndex;
 
+  // Find the hub this article belongs to
+  const hub = findHubForFeature(slug);
+
   return (
     <div className="max-w-4xl">
-      {/* Back link */}
-      <Link
-        href="/owner/help"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Help Center
-      </Link>
+      {/* Breadcrumbs */}
+      <HelpBreadcrumbs
+        hubName={hub?.name}
+        hubId={hub?.id}
+        articleTitle={frontmatter.title}
+      />
 
       {/* Header */}
       <div className="mb-6">
@@ -96,6 +110,9 @@ export default async function HelpArticlePage({ params }: Props) {
       <div className="mt-12 pt-6 border-t">
         <FeedbackWidget docSlug={slug} />
       </div>
+
+      {/* Related Articles */}
+      <RelatedArticles slug={slug} />
     </div>
   );
 }
