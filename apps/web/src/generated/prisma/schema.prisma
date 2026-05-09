@@ -206,6 +206,7 @@ model Tenant {
   payComponentAttachments PayComponentAttachment[]
   driverDisputes          DriverDispute[]
   driverPayAuditLogs      DriverPayAuditLog[]
+  docFeedback             DocFeedback[]
 }
 
 model User {
@@ -2872,4 +2873,19 @@ model DriverPayAuditLog {
   @@index([tenantId, entityType, entityId])
   @@index([tenantId, createdAt])
   @@map("driver_pay_audit_logs")
+}
+
+model DocFeedback {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @db.Uuid
+  userId    String   @db.Uuid
+  docSlug   String
+  helpful   Boolean
+  comment   String?
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([docSlug])
 }

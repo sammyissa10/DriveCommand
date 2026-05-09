@@ -1545,6 +1545,16 @@ exports.Prisma.DriverPayAuditLogScalarFieldEnum = {
   createdBy: 'createdBy'
 };
 
+exports.Prisma.DocFeedbackScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  docSlug: 'docSlug',
+  helpful: 'helpful',
+  comment: 'comment',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2176,7 +2186,8 @@ exports.Prisma.ModelName = {
   DriverSettlement: 'DriverSettlement',
   PayComponentAttachment: 'PayComponentAttachment',
   DriverDispute: 'DriverDispute',
-  DriverPayAuditLog: 'DriverPayAuditLog'
+  DriverPayAuditLog: 'DriverPayAuditLog',
+  DocFeedback: 'DocFeedback'
 };
 
 /**

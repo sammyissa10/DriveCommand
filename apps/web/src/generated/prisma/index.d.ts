@@ -408,6 +408,11 @@ export type DriverDispute = $Result.DefaultSelection<Prisma.$DriverDisputePayloa
  * 
  */
 export type DriverPayAuditLog = $Result.DefaultSelection<Prisma.$DriverPayAuditLogPayload>
+/**
+ * Model DocFeedback
+ * 
+ */
+export type DocFeedback = $Result.DefaultSelection<Prisma.$DocFeedbackPayload>
 
 /**
  * Enums
@@ -2295,6 +2300,16 @@ export class PrismaClient<
     * ```
     */
   get driverPayAuditLog(): Prisma.DriverPayAuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.docFeedback`: Exposes CRUD operations for the **DocFeedback** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocFeedbacks
+    * const docFeedbacks = await prisma.docFeedback.findMany()
+    * ```
+    */
+  get docFeedback(): Prisma.DocFeedbackDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -2807,7 +2822,8 @@ export namespace Prisma {
     DriverSettlement: 'DriverSettlement',
     PayComponentAttachment: 'PayComponentAttachment',
     DriverDispute: 'DriverDispute',
-    DriverPayAuditLog: 'DriverPayAuditLog'
+    DriverPayAuditLog: 'DriverPayAuditLog',
+    DocFeedback: 'DocFeedback'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2823,7 +2839,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -8673,6 +8689,80 @@ export namespace Prisma {
           }
         }
       }
+      DocFeedback: {
+        payload: Prisma.$DocFeedbackPayload<ExtArgs>
+        fields: Prisma.DocFeedbackFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocFeedbackFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocFeedbackFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>
+          }
+          findFirst: {
+            args: Prisma.DocFeedbackFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocFeedbackFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>
+          }
+          findMany: {
+            args: Prisma.DocFeedbackFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>[]
+          }
+          create: {
+            args: Prisma.DocFeedbackCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>
+          }
+          createMany: {
+            args: Prisma.DocFeedbackCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocFeedbackCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>[]
+          }
+          delete: {
+            args: Prisma.DocFeedbackDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>
+          }
+          update: {
+            args: Prisma.DocFeedbackUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocFeedbackDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocFeedbackUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DocFeedbackUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>[]
+          }
+          upsert: {
+            args: Prisma.DocFeedbackUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocFeedbackPayload>
+          }
+          aggregate: {
+            args: Prisma.DocFeedbackAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocFeedback>
+          }
+          groupBy: {
+            args: Prisma.DocFeedbackGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocFeedbackGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocFeedbackCountArgs<ExtArgs>
+            result: $Utils.Optional<DocFeedbackCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -8860,6 +8950,7 @@ export namespace Prisma {
     payComponentAttachment?: PayComponentAttachmentOmit
     driverDispute?: DriverDisputeOmit
     driverPayAuditLog?: DriverPayAuditLogOmit
+    docFeedback?: DocFeedbackOmit
   }
 
   /* Types for Logging */
@@ -9001,6 +9092,7 @@ export namespace Prisma {
     payComponentAttachments: number
     driverDisputes: number
     driverPayAuditLogs: number
+    docFeedback: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9065,6 +9157,7 @@ export namespace Prisma {
     payComponentAttachments?: boolean | TenantCountOutputTypeCountPayComponentAttachmentsArgs
     driverDisputes?: boolean | TenantCountOutputTypeCountDriverDisputesArgs
     driverPayAuditLogs?: boolean | TenantCountOutputTypeCountDriverPayAuditLogsArgs
+    docFeedback?: boolean | TenantCountOutputTypeCountDocFeedbackArgs
   }
 
   // Custom InputTypes
@@ -9503,6 +9596,13 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountDriverPayAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DriverPayAuditLogWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountDocFeedbackArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocFeedbackWhereInput
   }
 
 
@@ -11711,6 +11811,7 @@ export namespace Prisma {
     payComponentAttachments?: boolean | Tenant$payComponentAttachmentsArgs<ExtArgs>
     driverDisputes?: boolean | Tenant$driverDisputesArgs<ExtArgs>
     driverPayAuditLogs?: boolean | Tenant$driverPayAuditLogsArgs<ExtArgs>
+    docFeedback?: boolean | Tenant$docFeedbackArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -11837,6 +11938,7 @@ export namespace Prisma {
     payComponentAttachments?: boolean | Tenant$payComponentAttachmentsArgs<ExtArgs>
     driverDisputes?: boolean | Tenant$driverDisputesArgs<ExtArgs>
     driverPayAuditLogs?: boolean | Tenant$driverPayAuditLogsArgs<ExtArgs>
+    docFeedback?: boolean | Tenant$docFeedbackArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -11909,6 +12011,7 @@ export namespace Prisma {
       payComponentAttachments: Prisma.$PayComponentAttachmentPayload<ExtArgs>[]
       driverDisputes: Prisma.$DriverDisputePayload<ExtArgs>[]
       driverPayAuditLogs: Prisma.$DriverPayAuditLogPayload<ExtArgs>[]
+      docFeedback: Prisma.$DocFeedbackPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12385,6 +12488,7 @@ export namespace Prisma {
     payComponentAttachments<T extends Tenant$payComponentAttachmentsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$payComponentAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PayComponentAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverDisputes<T extends Tenant$driverDisputesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverDisputesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverDisputePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayAuditLogs<T extends Tenant$driverPayAuditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverPayAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    docFeedback<T extends Tenant$docFeedbackArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$docFeedbackArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14341,6 +14445,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverPayAuditLogScalarFieldEnum | DriverPayAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.docFeedback
+   */
+  export type Tenant$docFeedbackArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    where?: DocFeedbackWhereInput
+    orderBy?: DocFeedbackOrderByWithRelationInput | DocFeedbackOrderByWithRelationInput[]
+    cursor?: DocFeedbackWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocFeedbackScalarFieldEnum | DocFeedbackScalarFieldEnum[]
   }
 
   /**
@@ -115313,6 +115441,1095 @@ export namespace Prisma {
 
 
   /**
+   * Model DocFeedback
+   */
+
+  export type AggregateDocFeedback = {
+    _count: DocFeedbackCountAggregateOutputType | null
+    _min: DocFeedbackMinAggregateOutputType | null
+    _max: DocFeedbackMaxAggregateOutputType | null
+  }
+
+  export type DocFeedbackMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    docSlug: string | null
+    helpful: boolean | null
+    comment: string | null
+    createdAt: Date | null
+  }
+
+  export type DocFeedbackMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    docSlug: string | null
+    helpful: boolean | null
+    comment: string | null
+    createdAt: Date | null
+  }
+
+  export type DocFeedbackCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    userId: number
+    docSlug: number
+    helpful: number
+    comment: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DocFeedbackMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    docSlug?: true
+    helpful?: true
+    comment?: true
+    createdAt?: true
+  }
+
+  export type DocFeedbackMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    docSlug?: true
+    helpful?: true
+    comment?: true
+    createdAt?: true
+  }
+
+  export type DocFeedbackCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    docSlug?: true
+    helpful?: true
+    comment?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DocFeedbackAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocFeedback to aggregate.
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocFeedbacks to fetch.
+     */
+    orderBy?: DocFeedbackOrderByWithRelationInput | DocFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocFeedbacks
+    **/
+    _count?: true | DocFeedbackCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocFeedbackMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocFeedbackMaxAggregateInputType
+  }
+
+  export type GetDocFeedbackAggregateType<T extends DocFeedbackAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocFeedback]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocFeedback[P]>
+      : GetScalarType<T[P], AggregateDocFeedback[P]>
+  }
+
+
+
+
+  export type DocFeedbackGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocFeedbackWhereInput
+    orderBy?: DocFeedbackOrderByWithAggregationInput | DocFeedbackOrderByWithAggregationInput[]
+    by: DocFeedbackScalarFieldEnum[] | DocFeedbackScalarFieldEnum
+    having?: DocFeedbackScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocFeedbackCountAggregateInputType | true
+    _min?: DocFeedbackMinAggregateInputType
+    _max?: DocFeedbackMaxAggregateInputType
+  }
+
+  export type DocFeedbackGroupByOutputType = {
+    id: string
+    tenantId: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment: string | null
+    createdAt: Date
+    _count: DocFeedbackCountAggregateOutputType | null
+    _min: DocFeedbackMinAggregateOutputType | null
+    _max: DocFeedbackMaxAggregateOutputType | null
+  }
+
+  type GetDocFeedbackGroupByPayload<T extends DocFeedbackGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocFeedbackGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocFeedbackGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocFeedbackGroupByOutputType[P]>
+            : GetScalarType<T[P], DocFeedbackGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocFeedbackSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    docSlug?: boolean
+    helpful?: boolean
+    comment?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docFeedback"]>
+
+  export type DocFeedbackSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    docSlug?: boolean
+    helpful?: boolean
+    comment?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docFeedback"]>
+
+  export type DocFeedbackSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    docSlug?: boolean
+    helpful?: boolean
+    comment?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docFeedback"]>
+
+  export type DocFeedbackSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    docSlug?: boolean
+    helpful?: boolean
+    comment?: boolean
+    createdAt?: boolean
+  }
+
+  export type DocFeedbackOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "userId" | "docSlug" | "helpful" | "comment" | "createdAt", ExtArgs["result"]["docFeedback"]>
+  export type DocFeedbackInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type DocFeedbackIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type DocFeedbackIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $DocFeedbackPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocFeedback"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      userId: string
+      docSlug: string
+      helpful: boolean
+      comment: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["docFeedback"]>
+    composites: {}
+  }
+
+  type DocFeedbackGetPayload<S extends boolean | null | undefined | DocFeedbackDefaultArgs> = $Result.GetResult<Prisma.$DocFeedbackPayload, S>
+
+  type DocFeedbackCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DocFeedbackFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DocFeedbackCountAggregateInputType | true
+    }
+
+  export interface DocFeedbackDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocFeedback'], meta: { name: 'DocFeedback' } }
+    /**
+     * Find zero or one DocFeedback that matches the filter.
+     * @param {DocFeedbackFindUniqueArgs} args - Arguments to find a DocFeedback
+     * @example
+     * // Get one DocFeedback
+     * const docFeedback = await prisma.docFeedback.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocFeedbackFindUniqueArgs>(args: SelectSubset<T, DocFeedbackFindUniqueArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DocFeedback that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DocFeedbackFindUniqueOrThrowArgs} args - Arguments to find a DocFeedback
+     * @example
+     * // Get one DocFeedback
+     * const docFeedback = await prisma.docFeedback.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocFeedbackFindUniqueOrThrowArgs>(args: SelectSubset<T, DocFeedbackFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DocFeedback that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackFindFirstArgs} args - Arguments to find a DocFeedback
+     * @example
+     * // Get one DocFeedback
+     * const docFeedback = await prisma.docFeedback.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocFeedbackFindFirstArgs>(args?: SelectSubset<T, DocFeedbackFindFirstArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DocFeedback that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackFindFirstOrThrowArgs} args - Arguments to find a DocFeedback
+     * @example
+     * // Get one DocFeedback
+     * const docFeedback = await prisma.docFeedback.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocFeedbackFindFirstOrThrowArgs>(args?: SelectSubset<T, DocFeedbackFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DocFeedbacks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocFeedbacks
+     * const docFeedbacks = await prisma.docFeedback.findMany()
+     * 
+     * // Get first 10 DocFeedbacks
+     * const docFeedbacks = await prisma.docFeedback.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const docFeedbackWithIdOnly = await prisma.docFeedback.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocFeedbackFindManyArgs>(args?: SelectSubset<T, DocFeedbackFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DocFeedback.
+     * @param {DocFeedbackCreateArgs} args - Arguments to create a DocFeedback.
+     * @example
+     * // Create one DocFeedback
+     * const DocFeedback = await prisma.docFeedback.create({
+     *   data: {
+     *     // ... data to create a DocFeedback
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocFeedbackCreateArgs>(args: SelectSubset<T, DocFeedbackCreateArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DocFeedbacks.
+     * @param {DocFeedbackCreateManyArgs} args - Arguments to create many DocFeedbacks.
+     * @example
+     * // Create many DocFeedbacks
+     * const docFeedback = await prisma.docFeedback.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocFeedbackCreateManyArgs>(args?: SelectSubset<T, DocFeedbackCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocFeedbacks and returns the data saved in the database.
+     * @param {DocFeedbackCreateManyAndReturnArgs} args - Arguments to create many DocFeedbacks.
+     * @example
+     * // Create many DocFeedbacks
+     * const docFeedback = await prisma.docFeedback.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocFeedbacks and only return the `id`
+     * const docFeedbackWithIdOnly = await prisma.docFeedback.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocFeedbackCreateManyAndReturnArgs>(args?: SelectSubset<T, DocFeedbackCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DocFeedback.
+     * @param {DocFeedbackDeleteArgs} args - Arguments to delete one DocFeedback.
+     * @example
+     * // Delete one DocFeedback
+     * const DocFeedback = await prisma.docFeedback.delete({
+     *   where: {
+     *     // ... filter to delete one DocFeedback
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocFeedbackDeleteArgs>(args: SelectSubset<T, DocFeedbackDeleteArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DocFeedback.
+     * @param {DocFeedbackUpdateArgs} args - Arguments to update one DocFeedback.
+     * @example
+     * // Update one DocFeedback
+     * const docFeedback = await prisma.docFeedback.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocFeedbackUpdateArgs>(args: SelectSubset<T, DocFeedbackUpdateArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DocFeedbacks.
+     * @param {DocFeedbackDeleteManyArgs} args - Arguments to filter DocFeedbacks to delete.
+     * @example
+     * // Delete a few DocFeedbacks
+     * const { count } = await prisma.docFeedback.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocFeedbackDeleteManyArgs>(args?: SelectSubset<T, DocFeedbackDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocFeedbacks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocFeedbacks
+     * const docFeedback = await prisma.docFeedback.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocFeedbackUpdateManyArgs>(args: SelectSubset<T, DocFeedbackUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocFeedbacks and returns the data updated in the database.
+     * @param {DocFeedbackUpdateManyAndReturnArgs} args - Arguments to update many DocFeedbacks.
+     * @example
+     * // Update many DocFeedbacks
+     * const docFeedback = await prisma.docFeedback.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DocFeedbacks and only return the `id`
+     * const docFeedbackWithIdOnly = await prisma.docFeedback.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DocFeedbackUpdateManyAndReturnArgs>(args: SelectSubset<T, DocFeedbackUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DocFeedback.
+     * @param {DocFeedbackUpsertArgs} args - Arguments to update or create a DocFeedback.
+     * @example
+     * // Update or create a DocFeedback
+     * const docFeedback = await prisma.docFeedback.upsert({
+     *   create: {
+     *     // ... data to create a DocFeedback
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocFeedback we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocFeedbackUpsertArgs>(args: SelectSubset<T, DocFeedbackUpsertArgs<ExtArgs>>): Prisma__DocFeedbackClient<$Result.GetResult<Prisma.$DocFeedbackPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DocFeedbacks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackCountArgs} args - Arguments to filter DocFeedbacks to count.
+     * @example
+     * // Count the number of DocFeedbacks
+     * const count = await prisma.docFeedback.count({
+     *   where: {
+     *     // ... the filter for the DocFeedbacks we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocFeedbackCountArgs>(
+      args?: Subset<T, DocFeedbackCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocFeedbackCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocFeedback.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocFeedbackAggregateArgs>(args: Subset<T, DocFeedbackAggregateArgs>): Prisma.PrismaPromise<GetDocFeedbackAggregateType<T>>
+
+    /**
+     * Group by DocFeedback.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocFeedbackGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocFeedbackGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocFeedbackGroupByArgs['orderBy'] }
+        : { orderBy?: DocFeedbackGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocFeedbackGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocFeedbackGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocFeedback model
+   */
+  readonly fields: DocFeedbackFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocFeedback.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocFeedbackClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocFeedback model
+   */
+  interface DocFeedbackFieldRefs {
+    readonly id: FieldRef<"DocFeedback", 'String'>
+    readonly tenantId: FieldRef<"DocFeedback", 'String'>
+    readonly userId: FieldRef<"DocFeedback", 'String'>
+    readonly docSlug: FieldRef<"DocFeedback", 'String'>
+    readonly helpful: FieldRef<"DocFeedback", 'Boolean'>
+    readonly comment: FieldRef<"DocFeedback", 'String'>
+    readonly createdAt: FieldRef<"DocFeedback", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocFeedback findUnique
+   */
+  export type DocFeedbackFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which DocFeedback to fetch.
+     */
+    where: DocFeedbackWhereUniqueInput
+  }
+
+  /**
+   * DocFeedback findUniqueOrThrow
+   */
+  export type DocFeedbackFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which DocFeedback to fetch.
+     */
+    where: DocFeedbackWhereUniqueInput
+  }
+
+  /**
+   * DocFeedback findFirst
+   */
+  export type DocFeedbackFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which DocFeedback to fetch.
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocFeedbacks to fetch.
+     */
+    orderBy?: DocFeedbackOrderByWithRelationInput | DocFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocFeedbacks.
+     */
+    cursor?: DocFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocFeedbacks.
+     */
+    distinct?: DocFeedbackScalarFieldEnum | DocFeedbackScalarFieldEnum[]
+  }
+
+  /**
+   * DocFeedback findFirstOrThrow
+   */
+  export type DocFeedbackFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which DocFeedback to fetch.
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocFeedbacks to fetch.
+     */
+    orderBy?: DocFeedbackOrderByWithRelationInput | DocFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocFeedbacks.
+     */
+    cursor?: DocFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocFeedbacks.
+     */
+    distinct?: DocFeedbackScalarFieldEnum | DocFeedbackScalarFieldEnum[]
+  }
+
+  /**
+   * DocFeedback findMany
+   */
+  export type DocFeedbackFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter, which DocFeedbacks to fetch.
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocFeedbacks to fetch.
+     */
+    orderBy?: DocFeedbackOrderByWithRelationInput | DocFeedbackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocFeedbacks.
+     */
+    cursor?: DocFeedbackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocFeedbacks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocFeedbacks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocFeedbacks.
+     */
+    distinct?: DocFeedbackScalarFieldEnum | DocFeedbackScalarFieldEnum[]
+  }
+
+  /**
+   * DocFeedback create
+   */
+  export type DocFeedbackCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocFeedback.
+     */
+    data: XOR<DocFeedbackCreateInput, DocFeedbackUncheckedCreateInput>
+  }
+
+  /**
+   * DocFeedback createMany
+   */
+  export type DocFeedbackCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocFeedbacks.
+     */
+    data: DocFeedbackCreateManyInput | DocFeedbackCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocFeedback createManyAndReturn
+   */
+  export type DocFeedbackCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * The data used to create many DocFeedbacks.
+     */
+    data: DocFeedbackCreateManyInput | DocFeedbackCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocFeedback update
+   */
+  export type DocFeedbackUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocFeedback.
+     */
+    data: XOR<DocFeedbackUpdateInput, DocFeedbackUncheckedUpdateInput>
+    /**
+     * Choose, which DocFeedback to update.
+     */
+    where: DocFeedbackWhereUniqueInput
+  }
+
+  /**
+   * DocFeedback updateMany
+   */
+  export type DocFeedbackUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocFeedbacks.
+     */
+    data: XOR<DocFeedbackUpdateManyMutationInput, DocFeedbackUncheckedUpdateManyInput>
+    /**
+     * Filter which DocFeedbacks to update
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * Limit how many DocFeedbacks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DocFeedback updateManyAndReturn
+   */
+  export type DocFeedbackUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * The data used to update DocFeedbacks.
+     */
+    data: XOR<DocFeedbackUpdateManyMutationInput, DocFeedbackUncheckedUpdateManyInput>
+    /**
+     * Filter which DocFeedbacks to update
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * Limit how many DocFeedbacks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocFeedback upsert
+   */
+  export type DocFeedbackUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocFeedback to update in case it exists.
+     */
+    where: DocFeedbackWhereUniqueInput
+    /**
+     * In case the DocFeedback found by the `where` argument doesn't exist, create a new DocFeedback with this data.
+     */
+    create: XOR<DocFeedbackCreateInput, DocFeedbackUncheckedCreateInput>
+    /**
+     * In case the DocFeedback was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocFeedbackUpdateInput, DocFeedbackUncheckedUpdateInput>
+  }
+
+  /**
+   * DocFeedback delete
+   */
+  export type DocFeedbackDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+    /**
+     * Filter which DocFeedback to delete.
+     */
+    where: DocFeedbackWhereUniqueInput
+  }
+
+  /**
+   * DocFeedback deleteMany
+   */
+  export type DocFeedbackDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocFeedbacks to delete
+     */
+    where?: DocFeedbackWhereInput
+    /**
+     * Limit how many DocFeedbacks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DocFeedback without action
+   */
+  export type DocFeedbackDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocFeedback
+     */
+    select?: DocFeedbackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocFeedback
+     */
+    omit?: DocFeedbackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocFeedbackInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -116988,6 +118205,19 @@ export namespace Prisma {
   export type DriverPayAuditLogScalarFieldEnum = (typeof DriverPayAuditLogScalarFieldEnum)[keyof typeof DriverPayAuditLogScalarFieldEnum]
 
 
+  export const DocFeedbackScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    docSlug: 'docSlug',
+    helpful: 'helpful',
+    comment: 'comment',
+    createdAt: 'createdAt'
+  };
+
+  export type DocFeedbackScalarFieldEnum = (typeof DocFeedbackScalarFieldEnum)[keyof typeof DocFeedbackScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -118129,6 +119359,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentListRelationFilter
     driverDisputes?: DriverDisputeListRelationFilter
     driverPayAuditLogs?: DriverPayAuditLogListRelationFilter
+    docFeedback?: DocFeedbackListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -118212,6 +119443,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentOrderByRelationAggregateInput
     driverDisputes?: DriverDisputeOrderByRelationAggregateInput
     driverPayAuditLogs?: DriverPayAuditLogOrderByRelationAggregateInput
+    docFeedback?: DocFeedbackOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -118298,6 +119530,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentListRelationFilter
     driverDisputes?: DriverDisputeListRelationFilter
     driverPayAuditLogs?: DriverPayAuditLogListRelationFilter
+    docFeedback?: DocFeedbackListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -127384,6 +128617,71 @@ export namespace Prisma {
     createdBy?: UuidWithAggregatesFilter<"DriverPayAuditLog"> | string
   }
 
+  export type DocFeedbackWhereInput = {
+    AND?: DocFeedbackWhereInput | DocFeedbackWhereInput[]
+    OR?: DocFeedbackWhereInput[]
+    NOT?: DocFeedbackWhereInput | DocFeedbackWhereInput[]
+    id?: UuidFilter<"DocFeedback"> | string
+    tenantId?: UuidFilter<"DocFeedback"> | string
+    userId?: UuidFilter<"DocFeedback"> | string
+    docSlug?: StringFilter<"DocFeedback"> | string
+    helpful?: BoolFilter<"DocFeedback"> | boolean
+    comment?: StringNullableFilter<"DocFeedback"> | string | null
+    createdAt?: DateTimeFilter<"DocFeedback"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }
+
+  export type DocFeedbackOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    docSlug?: SortOrder
+    helpful?: SortOrder
+    comment?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+  }
+
+  export type DocFeedbackWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DocFeedbackWhereInput | DocFeedbackWhereInput[]
+    OR?: DocFeedbackWhereInput[]
+    NOT?: DocFeedbackWhereInput | DocFeedbackWhereInput[]
+    tenantId?: UuidFilter<"DocFeedback"> | string
+    userId?: UuidFilter<"DocFeedback"> | string
+    docSlug?: StringFilter<"DocFeedback"> | string
+    helpful?: BoolFilter<"DocFeedback"> | boolean
+    comment?: StringNullableFilter<"DocFeedback"> | string | null
+    createdAt?: DateTimeFilter<"DocFeedback"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }, "id">
+
+  export type DocFeedbackOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    docSlug?: SortOrder
+    helpful?: SortOrder
+    comment?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: DocFeedbackCountOrderByAggregateInput
+    _max?: DocFeedbackMaxOrderByAggregateInput
+    _min?: DocFeedbackMinOrderByAggregateInput
+  }
+
+  export type DocFeedbackScalarWhereWithAggregatesInput = {
+    AND?: DocFeedbackScalarWhereWithAggregatesInput | DocFeedbackScalarWhereWithAggregatesInput[]
+    OR?: DocFeedbackScalarWhereWithAggregatesInput[]
+    NOT?: DocFeedbackScalarWhereWithAggregatesInput | DocFeedbackScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"DocFeedback"> | string
+    tenantId?: UuidWithAggregatesFilter<"DocFeedback"> | string
+    userId?: UuidWithAggregatesFilter<"DocFeedback"> | string
+    docSlug?: StringWithAggregatesFilter<"DocFeedback"> | string
+    helpful?: BoolWithAggregatesFilter<"DocFeedback"> | boolean
+    comment?: StringNullableWithAggregatesFilter<"DocFeedback"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DocFeedback"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -127465,6 +128763,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -127548,6 +128847,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -127631,6 +128931,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -127714,6 +129015,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -137929,6 +139231,75 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
   }
 
+  export type DocFeedbackCreateInput = {
+    id?: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment?: string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutDocFeedbackInput
+  }
+
+  export type DocFeedbackUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocFeedbackUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutDocFeedbackNestedInput
+  }
+
+  export type DocFeedbackUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocFeedbackCreateManyInput = {
+    id?: string
+    tenantId: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocFeedbackUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocFeedbackUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -138411,6 +139782,12 @@ export namespace Prisma {
     none?: DriverPayAuditLogWhereInput
   }
 
+  export type DocFeedbackListRelationFilter = {
+    every?: DocFeedbackWhereInput
+    some?: DocFeedbackWhereInput
+    none?: DocFeedbackWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -138657,6 +140034,10 @@ export namespace Prisma {
   }
 
   export type DriverPayAuditLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocFeedbackOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -145505,6 +146886,36 @@ export namespace Prisma {
     createdBy?: SortOrder
   }
 
+  export type DocFeedbackCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    docSlug?: SortOrder
+    helpful?: SortOrder
+    comment?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocFeedbackMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    docSlug?: SortOrder
+    helpful?: SortOrder
+    comment?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocFeedbackMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    docSlug?: SortOrder
+    helpful?: SortOrder
+    comment?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -145950,6 +147361,13 @@ export namespace Prisma {
     connect?: DriverPayAuditLogWhereUniqueInput | DriverPayAuditLogWhereUniqueInput[]
   }
 
+  export type DocFeedbackCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DocFeedbackCreateWithoutTenantInput, DocFeedbackUncheckedCreateWithoutTenantInput> | DocFeedbackCreateWithoutTenantInput[] | DocFeedbackUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DocFeedbackCreateOrConnectWithoutTenantInput | DocFeedbackCreateOrConnectWithoutTenantInput[]
+    createMany?: DocFeedbackCreateManyTenantInputEnvelope
+    connect?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -146393,6 +147811,13 @@ export namespace Prisma {
     connectOrCreate?: DriverPayAuditLogCreateOrConnectWithoutTenantInput | DriverPayAuditLogCreateOrConnectWithoutTenantInput[]
     createMany?: DriverPayAuditLogCreateManyTenantInputEnvelope
     connect?: DriverPayAuditLogWhereUniqueInput | DriverPayAuditLogWhereUniqueInput[]
+  }
+
+  export type DocFeedbackUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DocFeedbackCreateWithoutTenantInput, DocFeedbackUncheckedCreateWithoutTenantInput> | DocFeedbackCreateWithoutTenantInput[] | DocFeedbackUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DocFeedbackCreateOrConnectWithoutTenantInput | DocFeedbackCreateOrConnectWithoutTenantInput[]
+    createMany?: DocFeedbackCreateManyTenantInputEnvelope
+    connect?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -147319,6 +148744,20 @@ export namespace Prisma {
     deleteMany?: DriverPayAuditLogScalarWhereInput | DriverPayAuditLogScalarWhereInput[]
   }
 
+  export type DocFeedbackUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DocFeedbackCreateWithoutTenantInput, DocFeedbackUncheckedCreateWithoutTenantInput> | DocFeedbackCreateWithoutTenantInput[] | DocFeedbackUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DocFeedbackCreateOrConnectWithoutTenantInput | DocFeedbackCreateOrConnectWithoutTenantInput[]
+    upsert?: DocFeedbackUpsertWithWhereUniqueWithoutTenantInput | DocFeedbackUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DocFeedbackCreateManyTenantInputEnvelope
+    set?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    disconnect?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    delete?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    connect?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    update?: DocFeedbackUpdateWithWhereUniqueWithoutTenantInput | DocFeedbackUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DocFeedbackUpdateManyWithWhereWithoutTenantInput | DocFeedbackUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DocFeedbackScalarWhereInput | DocFeedbackScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -148201,6 +149640,20 @@ export namespace Prisma {
     update?: DriverPayAuditLogUpdateWithWhereUniqueWithoutTenantInput | DriverPayAuditLogUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: DriverPayAuditLogUpdateManyWithWhereWithoutTenantInput | DriverPayAuditLogUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: DriverPayAuditLogScalarWhereInput | DriverPayAuditLogScalarWhereInput[]
+  }
+
+  export type DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DocFeedbackCreateWithoutTenantInput, DocFeedbackUncheckedCreateWithoutTenantInput> | DocFeedbackCreateWithoutTenantInput[] | DocFeedbackUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DocFeedbackCreateOrConnectWithoutTenantInput | DocFeedbackCreateOrConnectWithoutTenantInput[]
+    upsert?: DocFeedbackUpsertWithWhereUniqueWithoutTenantInput | DocFeedbackUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DocFeedbackCreateManyTenantInputEnvelope
+    set?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    disconnect?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    delete?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    connect?: DocFeedbackWhereUniqueInput | DocFeedbackWhereUniqueInput[]
+    update?: DocFeedbackUpdateWithWhereUniqueWithoutTenantInput | DocFeedbackUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DocFeedbackUpdateManyWithWhereWithoutTenantInput | DocFeedbackUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DocFeedbackScalarWhereInput | DocFeedbackScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutUsersInput = {
@@ -156585,6 +158038,20 @@ export namespace Prisma {
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutDriverPayAuditLogsInput, TenantUpdateWithoutDriverPayAuditLogsInput>, TenantUncheckedUpdateWithoutDriverPayAuditLogsInput>
   }
 
+  export type TenantCreateNestedOneWithoutDocFeedbackInput = {
+    create?: XOR<TenantCreateWithoutDocFeedbackInput, TenantUncheckedCreateWithoutDocFeedbackInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDocFeedbackInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutDocFeedbackNestedInput = {
+    create?: XOR<TenantCreateWithoutDocFeedbackInput, TenantUncheckedCreateWithoutDocFeedbackInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDocFeedbackInput
+    upsert?: TenantUpsertWithoutDocFeedbackInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutDocFeedbackInput, TenantUpdateWithoutDocFeedbackInput>, TenantUncheckedUpdateWithoutDocFeedbackInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -161199,6 +162666,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DocFeedbackCreateWithoutTenantInput = {
+    id?: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocFeedbackUncheckedCreateWithoutTenantInput = {
+    id?: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocFeedbackCreateOrConnectWithoutTenantInput = {
+    where: DocFeedbackWhereUniqueInput
+    create: XOR<DocFeedbackCreateWithoutTenantInput, DocFeedbackUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DocFeedbackCreateManyTenantInputEnvelope = {
+    data: DocFeedbackCreateManyTenantInput | DocFeedbackCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutTenantInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutTenantInput, UserUncheckedUpdateWithoutTenantInput>
@@ -163607,6 +165102,35 @@ export namespace Prisma {
     createdBy?: UuidFilter<"DriverPayAuditLog"> | string
   }
 
+  export type DocFeedbackUpsertWithWhereUniqueWithoutTenantInput = {
+    where: DocFeedbackWhereUniqueInput
+    update: XOR<DocFeedbackUpdateWithoutTenantInput, DocFeedbackUncheckedUpdateWithoutTenantInput>
+    create: XOR<DocFeedbackCreateWithoutTenantInput, DocFeedbackUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DocFeedbackUpdateWithWhereUniqueWithoutTenantInput = {
+    where: DocFeedbackWhereUniqueInput
+    data: XOR<DocFeedbackUpdateWithoutTenantInput, DocFeedbackUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type DocFeedbackUpdateManyWithWhereWithoutTenantInput = {
+    where: DocFeedbackScalarWhereInput
+    data: XOR<DocFeedbackUpdateManyMutationInput, DocFeedbackUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type DocFeedbackScalarWhereInput = {
+    AND?: DocFeedbackScalarWhereInput | DocFeedbackScalarWhereInput[]
+    OR?: DocFeedbackScalarWhereInput[]
+    NOT?: DocFeedbackScalarWhereInput | DocFeedbackScalarWhereInput[]
+    id?: UuidFilter<"DocFeedback"> | string
+    tenantId?: UuidFilter<"DocFeedback"> | string
+    userId?: UuidFilter<"DocFeedback"> | string
+    docSlug?: StringFilter<"DocFeedback"> | string
+    helpful?: BoolFilter<"DocFeedback"> | boolean
+    comment?: StringNullableFilter<"DocFeedback"> | string | null
+    createdAt?: DateTimeFilter<"DocFeedback"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -163687,6 +165211,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -163769,6 +165294,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -165482,6 +167008,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -165564,6 +167091,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutDriverInput = {
@@ -166221,6 +167749,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTrucksInput = {
@@ -166303,6 +167832,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTrucksInput = {
@@ -167025,6 +168555,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTrucksInput = {
@@ -167107,6 +168638,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutTrucksCreatedInput = {
@@ -167539,6 +169071,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverInvitationsInput = {
@@ -167621,6 +169154,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverInvitationsInput = {
@@ -167719,6 +169253,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverInvitationsInput = {
@@ -167801,6 +169336,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutesInput = {
@@ -167883,6 +169419,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutesInput = {
@@ -167965,6 +169502,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutesInput = {
@@ -168783,6 +170321,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutesInput = {
@@ -168865,6 +170404,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAssignedRoutesInput = {
@@ -169787,6 +171327,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDocumentsInput = {
@@ -169869,6 +171410,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDocumentsInput = {
@@ -170364,6 +171906,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDocumentsInput = {
@@ -170446,6 +171989,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutDocumentsInput = {
@@ -170955,6 +172499,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutMaintenanceEventsInput = {
@@ -171037,6 +172582,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutMaintenanceEventsInput = {
@@ -171196,6 +172742,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutMaintenanceEventsInput = {
@@ -171278,6 +172825,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutMaintenanceEventsInput = {
@@ -171427,6 +172975,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutScheduledServicesInput = {
@@ -171509,6 +173058,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutScheduledServicesInput = {
@@ -171668,6 +173218,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutScheduledServicesInput = {
@@ -171750,6 +173301,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutScheduledServicesInput = {
@@ -171899,6 +173451,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutNotificationLogsInput = {
@@ -171981,6 +173534,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutNotificationLogsInput = {
@@ -172079,6 +173633,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
@@ -172161,6 +173716,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutGpsLocationsInput = {
@@ -172243,6 +173799,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutGpsLocationsInput = {
@@ -172325,6 +173882,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutGpsLocationsInput = {
@@ -172549,6 +174107,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutGpsLocationsInput = {
@@ -172631,6 +174190,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutGpsLocationsInput = {
@@ -172851,6 +174411,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSafetyEventsInput = {
@@ -172933,6 +174494,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSafetyEventsInput = {
@@ -173254,6 +174816,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSafetyEventsInput = {
@@ -173336,6 +174899,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutSafetyEventsInput = {
@@ -173659,6 +175223,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutFuelRecordsInput = {
@@ -173741,6 +175306,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutFuelRecordsInput = {
@@ -173900,6 +175466,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutFuelRecordsInput = {
@@ -173982,6 +175549,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutFuelRecordsInput = {
@@ -174131,6 +175699,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagsInput = {
@@ -174213,6 +175782,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagsInput = {
@@ -174337,6 +175907,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -174419,6 +175990,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
@@ -174517,6 +176089,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagAssignmentsInput = {
@@ -174599,6 +176172,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagAssignmentsInput = {
@@ -174878,6 +176452,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -174960,6 +176535,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagUpsertWithoutAssignmentsInput = {
@@ -175241,6 +176817,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseCategoriesInput = {
@@ -175323,6 +176900,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -175481,6 +177059,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseCategoriesInput = {
@@ -175563,6 +177142,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -175677,6 +177257,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteExpensesInput = {
@@ -175759,6 +177340,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteExpensesInput = {
@@ -175947,6 +177529,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteExpensesInput = {
@@ -176029,6 +177612,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutExpensesInput = {
@@ -176213,6 +177797,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplatesInput = {
@@ -176295,6 +177880,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplatesInput = {
@@ -176419,6 +178005,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplatesInput = {
@@ -176501,6 +178088,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ExpenseTemplateItemUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -176645,6 +178233,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplateItemsInput = {
@@ -176727,6 +178316,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplateItemsInput = {
@@ -176883,6 +178473,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplateItemsInput = {
@@ -176965,6 +178556,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutePaymentsInput = {
@@ -177047,6 +178639,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutePaymentsInput = {
@@ -177129,6 +178722,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutePaymentsInput = {
@@ -177292,6 +178886,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutePaymentsInput = {
@@ -177374,6 +178969,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutPaymentsInput = {
@@ -177527,6 +179123,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomersInput = {
@@ -177609,6 +179206,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomersInput = {
@@ -177821,6 +179419,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomersInput = {
@@ -177903,6 +179502,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerInteractionUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -178017,6 +179617,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomerInteractionsInput = {
@@ -178099,6 +179700,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomerInteractionsInput = {
@@ -178250,6 +179852,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomerInteractionsInput = {
@@ -178332,6 +179935,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutInteractionsInput = {
@@ -178473,6 +180077,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoicesInput = {
@@ -178555,6 +180160,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoicesInput = {
@@ -178956,6 +180562,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoicesInput = {
@@ -179038,6 +180645,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInvoicesCreatedInput = {
@@ -179488,6 +181096,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoiceItemsInput = {
@@ -179570,6 +181179,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoiceItemsInput = {
@@ -179737,6 +181347,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -179819,6 +181430,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSysAdminInvoicesInput = {
@@ -179901,6 +181513,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSysAdminInvoicesInput = {
@@ -179983,6 +181596,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSysAdminInvoicesInput = {
@@ -180109,6 +181723,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSysAdminInvoicesInput = {
@@ -180191,6 +181806,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -180394,6 +182010,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayrollRecordsInput = {
@@ -180476,6 +182093,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayrollRecordsInput = {
@@ -180865,6 +182483,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -180947,6 +182566,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutPayrollRecordsInput = {
@@ -181338,6 +182958,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadsInput = {
@@ -181420,6 +183041,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadsInput = {
@@ -182276,6 +183898,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadsInput = {
@@ -182358,6 +183981,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutLoadsInput = {
@@ -183116,6 +184740,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantIntegrationsInput = {
@@ -183198,6 +184823,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantIntegrationsInput = {
@@ -183296,6 +184922,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantIntegrationsInput = {
@@ -183378,6 +185005,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteCreateWithoutStopsInput = {
@@ -183525,6 +185153,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteStopsInput = {
@@ -183607,6 +185236,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteStopsInput = {
@@ -184017,6 +185647,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteStopsInput = {
@@ -184099,6 +185730,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadUpsertWithoutRouteStopsInput = {
@@ -184296,6 +185928,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -184378,6 +186011,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -184638,6 +186272,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -184720,6 +186355,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutDriverAssignmentsInput = {
@@ -185456,6 +187092,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverHOSEntriesInput = {
@@ -185538,6 +187175,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverHOSEntriesInput = {
@@ -185733,6 +187371,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverHOSEntriesInput = {
@@ -185815,6 +187454,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutHosEntriesInput = {
@@ -186000,6 +187640,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverIncidentsInput = {
@@ -186082,6 +187723,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverIncidentsInput = {
@@ -186277,6 +187919,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverIncidentsInput = {
@@ -186359,6 +188002,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutIncidentsInput = {
@@ -186544,6 +188188,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierClientsInput = {
@@ -186626,6 +188271,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierClientsInput = {
@@ -187202,6 +188848,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierClientsInput = {
@@ -187284,6 +188931,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierContractUpsertWithWhereUniqueWithoutClientInput = {
@@ -187513,6 +189161,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierContractsInput = {
@@ -187595,6 +189244,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierContractsInput = {
@@ -187980,6 +189630,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierContractsInput = {
@@ -188062,6 +189713,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutContractsInput = {
@@ -188273,6 +189925,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierFacilitiesInput = {
@@ -188355,6 +190008,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierFacilitiesInput = {
@@ -188653,6 +190307,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierFacilitiesInput = {
@@ -188735,6 +190390,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithWhereUniqueWithoutHomeTerminalInput = {
@@ -188886,6 +190542,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDriversInput = {
@@ -188968,6 +190625,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDriversInput = {
@@ -189952,6 +191610,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDriversInput = {
@@ -190034,6 +191693,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCarrierDriverProfileInput = {
@@ -190474,6 +192134,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierTrucksInput = {
@@ -190556,6 +192217,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierTrucksInput = {
@@ -190886,6 +192548,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierTrucksInput = {
@@ -190968,6 +192631,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithWhereUniqueWithoutTruckInput = {
@@ -191114,6 +192778,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteTemplatesInput = {
@@ -191196,6 +192861,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteTemplatesInput = {
@@ -191678,6 +193344,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -191760,6 +193427,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutRouteTemplatesInput = {
@@ -192412,6 +194080,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDispatchesInput = {
@@ -192494,6 +194163,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDispatchesInput = {
@@ -193414,6 +195084,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDispatchesInput = {
@@ -193496,6 +195167,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteTemplateUpsertWithoutDispatchesInput = {
@@ -194160,6 +195832,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierLoadsInput = {
@@ -194242,6 +195915,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierLoadsInput = {
@@ -194941,6 +196615,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -195023,6 +196698,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutCarrierLoadsInput = {
@@ -197476,6 +199152,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDocumentTypesInput = {
@@ -197558,6 +199235,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDocumentTypesInput = {
@@ -197710,6 +199388,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDocumentTypesInput = {
@@ -197792,6 +199471,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput = {
@@ -197890,6 +199570,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierExpensesInput = {
@@ -197972,6 +199653,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierExpensesInput = {
@@ -198589,6 +200271,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierExpensesInput = {
@@ -198671,6 +200354,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutExpensesInput = {
@@ -199314,6 +200998,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -199396,6 +201081,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -199891,6 +201577,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -199973,6 +201660,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverPayRecordsInput = {
@@ -200482,6 +202170,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInAppNotificationsInput = {
@@ -200564,6 +202253,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInAppNotificationsInput = {
@@ -200759,6 +202449,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInAppNotificationsInput = {
@@ -200841,6 +202532,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInAppNotificationsInput = {
@@ -201026,6 +202718,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutStepTemplatesInput = {
@@ -201108,6 +202801,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutStepTemplatesInput = {
@@ -201294,6 +202988,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutStepTemplatesInput = {
@@ -201376,6 +203071,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput = {
@@ -201532,6 +203228,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybooksInput = {
@@ -201614,6 +203311,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybooksInput = {
@@ -201836,6 +203534,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybooksInput = {
@@ -201918,6 +203617,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput = {
@@ -202204,6 +203904,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybookInstancesInput = {
@@ -202286,6 +203987,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybookInstancesInput = {
@@ -202503,6 +204205,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybookInstancesInput = {
@@ -202585,6 +204288,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookUpsertWithoutInstancesInput = {
@@ -202914,6 +204618,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybookNotificationsInput = {
@@ -202996,6 +204701,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybookNotificationsInput = {
@@ -203139,6 +204845,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybookNotificationsInput = {
@@ -203221,6 +204928,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookInstanceUpsertWithoutNotificationsInput = {
@@ -203391,6 +205099,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybookTriggersInput = {
@@ -203473,6 +205182,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybookTriggersInput = {
@@ -203614,6 +205324,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybookTriggersInput = {
@@ -203696,6 +205407,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutDispatchOverrideAuditsInput = {
@@ -203778,6 +205490,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDispatchOverrideAuditsInput = {
@@ -203860,6 +205573,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDispatchOverrideAuditsInput = {
@@ -203958,6 +205672,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDispatchOverrideAuditsInput = {
@@ -204040,6 +205755,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SubscriptionCreateWithoutPlanInput = {
@@ -204258,6 +205974,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSubscriptionInput = {
@@ -204340,6 +206057,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSubscriptionInput = {
@@ -204516,6 +206234,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSubscriptionInput = {
@@ -204598,6 +206317,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlanUpsertWithoutSubscriptionsInput = {
@@ -204770,6 +206490,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutActivationProgressInput = {
@@ -204852,6 +206573,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutActivationProgressInput = {
@@ -204950,6 +206672,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutActivationProgressInput = {
@@ -205032,6 +206755,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutAutomationRulesInput = {
@@ -205114,6 +206838,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAutomationRulesInput = {
@@ -205196,6 +206921,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAutomationRulesInput = {
@@ -205330,6 +207056,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAutomationRulesInput = {
@@ -205412,6 +207139,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AutomationRunUpsertWithWhereUniqueWithoutRuleInput = {
@@ -205549,6 +207277,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAutomationRunsInput = {
@@ -205631,6 +207360,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAutomationRunsInput = {
@@ -205774,6 +207504,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAutomationRunsInput = {
@@ -205856,6 +207587,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutAppEventsInput = {
@@ -205938,6 +207670,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAppEventsInput = {
@@ -206020,6 +207753,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAppEventsInput = {
@@ -206118,6 +207852,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAppEventsInput = {
@@ -206200,6 +207935,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutTenantMetricsInput = {
@@ -206282,6 +208018,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantMetricsInput = {
@@ -206364,6 +208101,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantMetricsInput = {
@@ -206462,6 +208200,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantMetricsInput = {
@@ -206544,6 +208283,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutTenantHealthScoreInput = {
@@ -206626,6 +208366,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantHealthScoreInput = {
@@ -206708,6 +208449,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantHealthScoreInput = {
@@ -206806,6 +208548,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantHealthScoreInput = {
@@ -206888,6 +208631,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutDriverCompTemplatesInput = {
@@ -206970,6 +208714,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverCompTemplatesInput = {
@@ -207052,6 +208797,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverCompTemplatesInput = {
@@ -207305,6 +209051,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverCompTemplatesInput = {
@@ -207387,6 +209134,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutCompensationTemplatesInput = {
@@ -207564,6 +209312,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadDriverAssignmentsInput = {
@@ -207646,6 +209395,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadDriverAssignmentsInput = {
@@ -208128,6 +209878,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadDriverAssignmentsInput = {
@@ -208210,6 +209961,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierLoadUpsertWithoutDriverAssignmentsInput = {
@@ -208624,6 +210376,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadPayComponentsInput = {
@@ -208706,6 +210459,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadPayComponentsInput = {
@@ -209189,6 +210943,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadPayComponentsInput = {
@@ -209271,6 +211026,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadDriverAssignmentUpsertWithoutPayComponentsInput = {
@@ -209650,6 +211406,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverBonusesInput = {
@@ -209732,6 +211489,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverBonusesInput = {
@@ -210140,6 +211898,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverBonusesInput = {
@@ -210222,6 +211981,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverBonusesInput = {
@@ -210596,6 +212356,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverDeductionsInput = {
@@ -210678,6 +212439,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverDeductionsInput = {
@@ -210849,6 +212611,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverDeductionsInput = {
@@ -210931,6 +212694,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverDeductionsInput = {
@@ -211092,6 +212856,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverSettlementsInput = {
@@ -211174,6 +212939,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverSettlementsInput = {
@@ -211485,6 +213251,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverSettlementsInput = {
@@ -211567,6 +213334,7 @@ export namespace Prisma {
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverSettlementsInput = {
@@ -211760,6 +213528,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayComponentAttachmentsInput = {
@@ -211842,6 +213611,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayComponentAttachmentsInput = {
@@ -212080,6 +213850,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayComponentAttachmentsInput = {
@@ -212162,6 +213933,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadPayComponentUpsertWithoutAttachmentsInput = {
@@ -212396,6 +214168,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementCreateNestedManyWithoutTenantInput
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverDisputesInput = {
@@ -212478,6 +214251,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUncheckedCreateNestedManyWithoutTenantInput
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverDisputesInput = {
@@ -212712,6 +214486,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUpdateManyWithoutTenantNestedInput
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverDisputesInput = {
@@ -212794,6 +214569,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUncheckedUpdateManyWithoutTenantNestedInput
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverDisputesInput = {
@@ -213024,6 +214800,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementCreateNestedManyWithoutTenantInput
     payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverPayAuditLogsInput = {
@@ -213106,6 +214883,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUncheckedCreateNestedManyWithoutTenantInput
     payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
     driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverPayAuditLogsInput = {
@@ -213204,6 +214982,7 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUpdateManyWithoutTenantNestedInput
     payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverPayAuditLogsInput = {
@@ -213286,6 +215065,355 @@ export namespace Prisma {
     driverSettlements?: DriverSettlementUncheckedUpdateManyWithoutTenantNestedInput
     payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
     driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutDocFeedbackInput = {
+    id?: string
+    name: string
+    slug: string
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fleetSizeBucket?: $Enums.FleetSizeBucket
+    status?: $Enums.TenantStatus
+    manualTrial?: boolean
+    emailConfirmedAt?: Date | string | null
+    sampleDataSeeded?: boolean
+    provisioningPhase?: $Enums.ProvisioningPhase
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
+    subscription?: SubscriptionCreateNestedOneWithoutTenantInput
+    activationProgress?: ActivationProgressCreateNestedOneWithoutTenantInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutTenantInput
+    automationRuns?: AutomationRunCreateNestedManyWithoutTenantInput
+    appEvents?: AppEventCreateNestedManyWithoutTenantInput
+    tenantMetrics?: TenantMetricsDailyCreateNestedManyWithoutTenantInput
+    tenantHealthScore?: TenantHealthScoreCreateNestedOneWithoutTenantInput
+    driverCompTemplates?: DriverCompensationTemplateCreateNestedManyWithoutTenantInput
+    loadDriverAssignments?: LoadDriverAssignmentCreateNestedManyWithoutTenantInput
+    loadPayComponents?: LoadPayComponentCreateNestedManyWithoutTenantInput
+    driverBonuses?: DriverBonusCreateNestedManyWithoutTenantInput
+    driverDeductions?: DriverDeductionCreateNestedManyWithoutTenantInput
+    driverSettlements?: DriverSettlementCreateNestedManyWithoutTenantInput
+    payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
+    driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
+    driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutDocFeedbackInput = {
+    id?: string
+    name: string
+    slug: string
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fleetSizeBucket?: $Enums.FleetSizeBucket
+    status?: $Enums.TenantStatus
+    manualTrial?: boolean
+    emailConfirmedAt?: Date | string | null
+    sampleDataSeeded?: boolean
+    provisioningPhase?: $Enums.ProvisioningPhase
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    activationProgress?: ActivationProgressUncheckedCreateNestedOneWithoutTenantInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutTenantInput
+    automationRuns?: AutomationRunUncheckedCreateNestedManyWithoutTenantInput
+    appEvents?: AppEventUncheckedCreateNestedManyWithoutTenantInput
+    tenantMetrics?: TenantMetricsDailyUncheckedCreateNestedManyWithoutTenantInput
+    tenantHealthScore?: TenantHealthScoreUncheckedCreateNestedOneWithoutTenantInput
+    driverCompTemplates?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutTenantInput
+    loadDriverAssignments?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    loadPayComponents?: LoadPayComponentUncheckedCreateNestedManyWithoutTenantInput
+    driverBonuses?: DriverBonusUncheckedCreateNestedManyWithoutTenantInput
+    driverDeductions?: DriverDeductionUncheckedCreateNestedManyWithoutTenantInput
+    driverSettlements?: DriverSettlementUncheckedCreateNestedManyWithoutTenantInput
+    payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
+    driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
+    driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutDocFeedbackInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutDocFeedbackInput, TenantUncheckedCreateWithoutDocFeedbackInput>
+  }
+
+  export type TenantUpsertWithoutDocFeedbackInput = {
+    update: XOR<TenantUpdateWithoutDocFeedbackInput, TenantUncheckedUpdateWithoutDocFeedbackInput>
+    create: XOR<TenantCreateWithoutDocFeedbackInput, TenantUncheckedCreateWithoutDocFeedbackInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutDocFeedbackInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutDocFeedbackInput, TenantUncheckedUpdateWithoutDocFeedbackInput>
+  }
+
+  export type TenantUpdateWithoutDocFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+    manualTrial?: BoolFieldUpdateOperationsInput | boolean
+    emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sampleDataSeeded?: BoolFieldUpdateOperationsInput | boolean
+    provisioningPhase?: EnumProvisioningPhaseFieldUpdateOperationsInput | $Enums.ProvisioningPhase
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
+    subscription?: SubscriptionUpdateOneWithoutTenantNestedInput
+    activationProgress?: ActivationProgressUpdateOneWithoutTenantNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutTenantNestedInput
+    automationRuns?: AutomationRunUpdateManyWithoutTenantNestedInput
+    appEvents?: AppEventUpdateManyWithoutTenantNestedInput
+    tenantMetrics?: TenantMetricsDailyUpdateManyWithoutTenantNestedInput
+    tenantHealthScore?: TenantHealthScoreUpdateOneWithoutTenantNestedInput
+    driverCompTemplates?: DriverCompensationTemplateUpdateManyWithoutTenantNestedInput
+    loadDriverAssignments?: LoadDriverAssignmentUpdateManyWithoutTenantNestedInput
+    loadPayComponents?: LoadPayComponentUpdateManyWithoutTenantNestedInput
+    driverBonuses?: DriverBonusUpdateManyWithoutTenantNestedInput
+    driverDeductions?: DriverDeductionUpdateManyWithoutTenantNestedInput
+    driverSettlements?: DriverSettlementUpdateManyWithoutTenantNestedInput
+    payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
+    driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
+    driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutDocFeedbackInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+    manualTrial?: BoolFieldUpdateOperationsInput | boolean
+    emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sampleDataSeeded?: BoolFieldUpdateOperationsInput | boolean
+    provisioningPhase?: EnumProvisioningPhaseFieldUpdateOperationsInput | $Enums.ProvisioningPhase
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    activationProgress?: ActivationProgressUncheckedUpdateOneWithoutTenantNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutTenantNestedInput
+    automationRuns?: AutomationRunUncheckedUpdateManyWithoutTenantNestedInput
+    appEvents?: AppEventUncheckedUpdateManyWithoutTenantNestedInput
+    tenantMetrics?: TenantMetricsDailyUncheckedUpdateManyWithoutTenantNestedInput
+    tenantHealthScore?: TenantHealthScoreUncheckedUpdateOneWithoutTenantNestedInput
+    driverCompTemplates?: DriverCompensationTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    loadDriverAssignments?: LoadDriverAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    loadPayComponents?: LoadPayComponentUncheckedUpdateManyWithoutTenantNestedInput
+    driverBonuses?: DriverBonusUncheckedUpdateManyWithoutTenantNestedInput
+    driverDeductions?: DriverDeductionUncheckedUpdateManyWithoutTenantNestedInput
+    driverSettlements?: DriverSettlementUncheckedUpdateManyWithoutTenantNestedInput
+    payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
+    driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -214365,6 +216493,15 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
+  }
+
+  export type DocFeedbackCreateManyTenantInput = {
+    id?: string
+    userId: string
+    docSlug: string
+    helpful: boolean
+    comment?: string | null
+    createdAt?: Date | string
   }
 
   export type UserUpdateWithoutTenantInput = {
@@ -217842,6 +219979,33 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type DocFeedbackUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocFeedbackUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocFeedbackUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    docSlug?: StringFieldUpdateOperationsInput | string
+    helpful?: BoolFieldUpdateOperationsInput | boolean
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RouteCreateManyDriverInput = {
