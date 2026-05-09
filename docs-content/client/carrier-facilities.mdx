@@ -1,0 +1,51 @@
+---
+slug: carrier-facilities
+title: Facility Management
+summary: Manage yards, warehouses, and terminals with geofencing and driver check-in tracking for better asset control.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Facility Management
+
+<Callout variant="info">
+Facility Management lets you define and track your physical locations—yards, terminals, warehouses—with geofencing to monitor when trucks and drivers enter or exit.
+</Callout>
+
+## What this is
+
+A location registry for your owned or frequently used facilities. Define facility names, addresses, geofence boundaries (radius around the facility), and track when trucks arrive or depart. Useful for monitoring yard dwell time, ensuring trucks park at approved locations, and automating check-in/check-out workflows.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Add a facility">
+    Navigate to **Carrier → Facilities** and click **New Facility**. Enter the facility name (e.g., "Main Yard" or "Dallas Terminal") and full address.
+  </StepFlow.Step>
+  <StepFlow.Step title="Set geofence radius">
+    Define the geofence radius in meters (default is 100m). When a truck's GPS enters this radius, DriveCommand logs a check-in event.
+  </StepFlow.Step>
+  <StepFlow.Step title="Configure facility type">
+    Tag the facility as Yard, Terminal, Warehouse, or Customer Site. This helps filter facilities on maps and reports.
+  </StepFlow.Step>
+  <StepFlow.Step title="Monitor check-ins">
+    The facility detail page shows all trucks currently inside the geofence and a log of recent check-in/check-out events with timestamps.
+  </StepFlow.Step>
+  <StepFlow.Step title="Use for route planning">
+    When creating routes, select facilities as stop locations to auto-populate addresses and enable geofence-based status updates.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Set up your main yard as a facility with a tight geofence. You'll get automatic alerts when trucks return home, making it easier to track asset utilization and schedule maintenance.
+</Callout>
+
+Geofencing relies on GPS reports from trucks. If a truck doesn't have active GPS tracking enabled, check-in events won't be logged. Ensure drivers keep the mobile app running with location permissions.
+
+## Related
+
+<FeatureCard slug="carrier-stops" />

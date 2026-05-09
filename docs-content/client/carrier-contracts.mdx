@@ -1,0 +1,52 @@
+---
+slug: carrier-contracts
+title: Contract Management
+summary: Create and manage carrier contracts with templates, rate tables, and renewal tracking to lock in pricing with shippers.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# Contract Management
+
+<Callout variant="info">
+Contract Management helps you create, track, and renew carrier contracts with shippers, storing rate tables and terms in one central location.
+</Callout>
+
+## What this is
+
+A system for managing formal agreements with your customers. Store contract terms, effective dates, expiration dates, and lane-specific rate tables. Set reminders for upcoming renewals so you never lose negotiated rates due to an expired contract.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Create a contract">
+    Navigate to **Carrier → Contracts** and click **New Contract**. Select the client from your existing customer list.
+  </StepFlow.Step>
+  <StepFlow.Step title="Set contract dates">
+    Enter the effective start date and expiration date. DriveCommand will automatically flag contracts expiring within 30 days.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add rate tables">
+    Define rates per lane (origin-destination pairs) or per mile. You can upload a CSV rate sheet or enter rates manually in the table editor.
+  </StepFlow.Step>
+  <StepFlow.Step title="Attach contract document">
+    Upload the signed PDF contract for reference. This is stored securely and accessible to anyone with Contract Management permissions.
+  </StepFlow.Step>
+  <StepFlow.Step title="Monitor renewal dates">
+    The Contracts dashboard shows all contracts expiring in the next 60 days. Click **Renew** to duplicate the contract with a new effective period.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Set up rate tables in your contracts, then reference them when creating loads. DriveCommand can auto-populate the load rate based on the contract terms, reducing data entry errors.
+</Callout>
+
+Contracts can be linked to individual loads for audit trails. When a contract expires, loads created under that contract remain tied to it for historical reporting.
+
+## Related
+
+<FeatureCard slug="carrier-clients" />
+<FeatureCard slug="carrier-templates" />

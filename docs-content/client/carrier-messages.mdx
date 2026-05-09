@@ -1,0 +1,51 @@
+---
+slug: carrier-messages
+title: Fleet Messaging
+summary: iMessage-style fleet communication with broadcast and targeted messaging, unread badges, and push notifications to keep your team connected.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Fleet Messaging
+
+<Callout variant="info">
+Fleet Messaging provides real-time communication between dispatchers and drivers with iMessage-style threads, broadcast announcements, and mobile push notifications.
+</Callout>
+
+## What this is
+
+A dedicated messaging system built into DriveCommand. Send messages to individual drivers, broadcast announcements to all drivers, or reply to driver-initiated threads. All messages sync instantly to the driver's mobile app with push notifications, ensuring critical updates aren't missed.
+
+Unlike SMS or external chat apps, fleet messages are tied directly to loads, routes, and your tenant, keeping all communication in one auditable system.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Compose a message">
+    Navigate to **Carrier → Messages** and click **New Message**. Choose between targeting a specific driver or broadcasting to all drivers.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select recipient">
+    For targeted messages, pick the driver from the dropdown. For broadcasts, toggle the "Send to all drivers" option.
+  </StepFlow.Step>
+  <StepFlow.Step title="Write your message">
+    Type your message (up to 500 characters). Keep it concise—drivers read these on mobile while managing loads.
+  </StepFlow.Step>
+  <StepFlow.Step title="Send and track delivery">
+    Click **Send**. The message is delivered instantly via push notification if the driver has notifications enabled. Unread messages show a badge count.
+  </StepFlow.Step>
+  <StepFlow.Step title="View message history">
+    The Messages page shows all sent messages with read/unread status. Click any message to see the full thread if the driver replied.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Use broadcasts sparingly for truly fleet-wide announcements (weather alerts, policy changes). For routine updates, message drivers individually to avoid notification fatigue.
+</Callout>
+
+Messages can be scoped to specific loads or routes. When creating a load-scoped message, only the assigned driver receives it, and the message appears in the load detail view for context.
+
+## Related
+
+<FeatureCard slug="driver-messages" />

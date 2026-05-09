@@ -1,0 +1,53 @@
+---
+slug: carrier-loads
+title: Carrier Load Management
+summary: Load creation, status workflow, route assignment, and tracking from PENDING to DELIVERED with full lifecycle management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# Carrier Load Management
+
+<Callout variant="info">
+Carrier Load Management is the core of your dispatch operation: create loads, assign them to routes and drivers, track status changes, and manage the complete lifecycle from tender to delivery.
+</Callout>
+
+## What this is
+
+Your central dispatch board for managing freight. Create new loads with pickup and delivery details, assign them to routes, update status as drivers progress, and track completion. Loads flow through a status workflow: PENDING → ASSIGNED → IN_TRANSIT → DELIVERED.
+
+This is the primary interface for day-to-day dispatch operations, replacing spreadsheets and whiteboards with a structured, trackable system.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Create a new load">
+    Go to **Carrier → Loads** and click **New Load**. Enter customer, commodity, weight, pickup and delivery addresses, and agreed rate.
+  </StepFlow.Step>
+  <StepFlow.Step title="Assign to a route">
+    Link the load to an existing route or create a new route on the fly. The route defines the multi-stop sequence and driver assignment.
+  </StepFlow.Step>
+  <StepFlow.Step title="Track status updates">
+    As the driver picks up and delivers freight, the load status advances. You can manually update status or let drivers update from their mobile app.
+  </StepFlow.Step>
+  <StepFlow.Step title="View load details">
+    Click any load to see full details: route info, driver, truck, stop timeline, BOL/PO numbers, messages, and attached documents like rate confirmations.
+  </StepFlow.Step>
+  <StepFlow.Step title="Manage load lifecycle">
+    Use action buttons to reassign drivers, change routes, cancel loads, or mark as delivered. All changes are logged with timestamps and user attribution.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Use the load status filters to quickly find loads that need attention. "PENDING" loads are waiting for route assignment. "IN_TRANSIT" loads should be monitored for on-time delivery.
+</Callout>
+
+Loads can be linked to multiple stops on the same route. For LTL or multi-pickup scenarios, create one load per bill of lading and assign all loads to the same route.
+
+## Related
+
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="driver-my-load" />

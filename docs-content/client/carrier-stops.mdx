@@ -1,0 +1,49 @@
+---
+slug: carrier-stops
+title: Stop Management
+summary: Manage route stops with pickup/delivery details, contact info, BOL/PO numbers, and load linkage for accurate dispatch records.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Stop Management
+
+<Callout variant="info">
+Stop Management organizes all pickup and delivery stops across your routes, storing addresses, contact details, and reference numbers for each location.
+</Callout>
+
+## What this is
+
+A centralized stop registry. Every route is made up of stops (pickup, delivery, fuel, rest). Each stop stores the address, contact name and phone, BOL number, PO number, and which load it's associated with. Stops link directly to loads, so changing a load's pickup address updates the corresponding route stop automatically.
+
+This feature ensures drivers have accurate addresses and contact info without needing to reference external paperwork.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="View all stops">
+    Go to **Carrier → Stops** to see a list of all stops across all routes. Filter by route, load, or date range.
+  </StepFlow.Step>
+  <StepFlow.Step title="Edit stop details">
+    Click any stop to update the address, contact name, phone number, or reference numbers (BOL/PO). Changes sync immediately to the driver's mobile app.
+  </StepFlow.Step>
+  <StepFlow.Step title="Link stops to loads">
+    When creating a load, specify the pickup and delivery stops. DriveCommand auto-creates route stops and links them to the load via foreign keys.
+  </StepFlow.Step>
+  <StepFlow.Step title="Monitor stop completion">
+    The stop detail page shows whether the driver has checked in, the arrival time, and any notes or photos they submitted upon arrival.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Store contact phone numbers for each stop. If a driver has trouble finding the dock or gate, they can call directly from the stop detail screen without searching for the shipper's main line.
+</Callout>
+
+Stops are sequenced within routes. The route detail page shows stops in order (Stop 1, Stop 2, etc.). Drivers see the same sequence in their mobile app.
+
+## Related
+
+<FeatureCard slug="routes" />
+<FeatureCard slug="carrier-loads" />
