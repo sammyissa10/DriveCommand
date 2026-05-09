@@ -1,0 +1,368 @@
+---
+slug: tenant-management
+title: Tenant Management — Technical Reference
+summary: Multi-tenant administration with server actions for tenant CRUD, owner invitation flow, and status lifecycle management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 12
+engineeringOwner: "Platform Team"
+runbookUrl: https://notion.so/drivecommand/tenant-management-runbook
+securityNotes:
+  - "SysAdmin-only feature — requires ADMIN_SECRET_KEY"
+  - "Tenant creation triggers owner invitation email"
+  - "Suspension locks out all users immediately"
+  - "No permanent deletion — suspend instead"
+---
+
+# Tenant Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the SysAdmin portal.
+</Callout>
+
+## Overview
+
+Tenant Management is the SysAdmin interface for managing all fleet accounts on the DriveCommand platform. Key responsibilities:
+
+- **Tenant CRUD** — create, read, update tenant records
+- **Owner invitation** — send invitation emails to primary account owners
+- **Status management** — activate, suspend, reactivate accounts
+- **Subscription control** — assign and change plans
+
+**No deletion:** Tenants cannot be permanently deleted due to audit requirements.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getTenants", roleGuard: "SYSADMIN", inputSchema: "void", returnType: "ActionState<Tenant[]>" },
+  { name: "getTenant", roleGuard: "SYSADMIN", inputSchema: "{ tenantId: string }", returnType: "ActionState<Tenant>" },
+  { name: "createTenant", roleGuard: "SYSADMIN", inputSchema: "CreateTenantSchema", returnType: "ActionState<Tenant>" },
+  { name: "updateTenant", roleGuard: "SYSADMIN", inputSchema: "UpdateTenantSchema", returnType: "ActionState<Tenant>" },
+  { name: "suspendTenant", roleGuard: "SYSADMIN", inputSchema: "{ tenantId: string, reason: string }", returnType: "ActionState<void>" },
+  { name: "reactivateTenant", roleGuard: "SYSADMIN", inputSchema: "{ tenantId: string }", returnType: "ActionState<void>" }
+]} />
+
+### `createTenant()`
+
+Creates a new tenant and sends owner invitation email.
+
+<CodeBlock language="typescript">
+{`export async function createTenant(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Tenant>> {
+  // SysAdmin auth check
+  await requireSysAdmin();
+
+  const parsed = CreateTenantSchema.parse({
+    companyName: formData.get('companyName'),
+    ownerEmail: formData.get('ownerEmail'),
+    ownerName: formData.get('ownerName'),
+    subscriptionPlan: formData.get('subscriptionPlan'),
+  });
+
+  // Create tenant
+  const tenant = await prisma.tenant.create({
+    data: {
+      companyName: parsed.companyName,
+      status: TenantStatus.PENDING,
+      subscriptionPlan: parsed.subscriptionPlan,
+      subscriptionStartDate: new Date(),
+    },
+  });
+
+  // Create owner user (password not set until invitation accepted)
+  const owner = await prisma.user.create({
+    data: {
+      tenantId: tenant.id,
+      email: parsed.ownerEmail,
+      name: parsed.ownerName,
+      role: UserRole.OWNER,
+      // Supabase auth user created when invitation is accepted
+    },
+  });
+
+  // Generate invitation token
+  const invitationToken = crypto.randomUUID();
+  await prisma.driverInvitation.create({
+    data: {
+      tenantId: tenant.id,
+      email: parsed.ownerEmail,
+      role: UserRole.OWNER,
+      invitedBy: 'sysadmin',
+      token: invitationToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    },
+  });
+
+  // Send invitation email
+  await sendOwnerInvitationEmail({
+    email: parsed.ownerEmail,
+    name: parsed.ownerName,
+    companyName: parsed.companyName,
+    invitationUrl: \`\${process.env.NEXT_PUBLIC_BASE_URL}/accept-invitation?token=\${invitationToken}\`,
+  });
+
+  return { success: true, data: tenant };
+}`}
+</CodeBlock>
+
+**Side effects:**
+1. Tenant created with PENDING status
+2. Owner user created (no password yet)
+3. Invitation token generated (7-day expiry)
+4. Invitation email sent via Nodemailer
+
+**Owner invitation flow:**
+1. Owner clicks link in email
+2. `/accept-invitation?token=xxx` page loads
+3. Owner sets password + completes profile
+4. Supabase Auth user created
+5. Tenant status → ACTIVE
+
+### `suspendTenant()`
+
+Suspends a tenant account, locking out all users.
+
+<CodeBlock language="typescript">
+{`export async function suspendTenant(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireSysAdmin();
+
+  const parsed = SuspendTenantSchema.parse({
+    tenantId: formData.get('tenantId'),
+    reason: formData.get('reason'),
+  });
+
+  // Update tenant status
+  await prisma.tenant.update({
+    where: { id: parsed.tenantId },
+    data: {
+      status: TenantStatus.SUSPENDED,
+      suspensionReason: parsed.reason,
+      suspendedAt: new Date(),
+    },
+  });
+
+  // Revoke all active sessions (Supabase Auth API)
+  const users = await prisma.user.findMany({
+    where: { tenantId: parsed.tenantId },
+  });
+
+  for (const user of users) {
+    if (user.supabaseUserId) {
+      await revokeUserSessions(user.supabaseUserId);
+    }
+  }
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+**Impact:**
+- Tenant status → SUSPENDED
+- All user sessions immediately revoked
+- Users see "Account suspended" message on next request
+- All API requests return 403 Forbidden
+- Data is retained (not deleted)
+
+<Callout variant="danger" title="Critical: Immediate Lockout">
+Suspension takes effect immediately. All users are logged out and cannot access any data. Use this action only for serious violations or non-payment.
+</Callout>
+
+### `reactivateTenant()`
+
+Reactivates a suspended tenant.
+
+<CodeBlock language="typescript">
+{`export async function reactivateTenant(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireSysAdmin();
+
+  const parsed = ReactivateTenantSchema.parse({
+    tenantId: formData.get('tenantId'),
+  });
+
+  await prisma.tenant.update({
+    where: { id: parsed.tenantId },
+    data: {
+      status: TenantStatus.ACTIVE,
+      suspensionReason: null,
+      suspendedAt: null,
+    },
+  });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+**Impact:**
+- Tenant status → ACTIVE
+- Users can log in immediately
+- All data is accessible again
+
+## Database Schema
+
+<PrismaModelRef model="Tenant" fields={[
+  "id: String @id @default(uuid())",
+  "companyName: String",
+  "status: TenantStatus (PENDING | ACTIVE | SUSPENDED)",
+  "subscriptionPlan: SubscriptionPlan (FREE | STARTER | PRO | BUSINESS | ENTERPRISE)",
+  "subscriptionStartDate: DateTime",
+  "subscriptionEndDate: DateTime?",
+  "suspensionReason: String? (shown to users on login)",
+  "suspendedAt: DateTime?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Related models:**
+- `User` — has `tenantId` FK, one-to-many relationship
+- `SubscriptionPlan` — referenced by `subscriptionPlan` field
+
+**Indexes:**
+- `(status)` — used by getTenants query with status filter
+- `(subscriptionPlan)` — used by SysAdmin billing queries
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Tenant created, owner invitation sent" },
+  { label: "ACTIVE", description: "Owner accepted invitation, users can log in" },
+  { label: "SUSPENDED", description: "Account temporarily disabled, data retained" }
+]} />
+
+**State transitions:**
+- PENDING → ACTIVE: Owner accepts invitation (automated via `/accept-invitation` page)
+- ACTIVE → SUSPENDED: SysAdmin suspends account
+- SUSPENDED → ACTIVE: SysAdmin reactivates account
+- **No deletion state** — tenants are never permanently removed
+
+## RLS Policy
+
+**Tenants table has NO RLS policy** because it's accessed exclusively by SysAdmins with `bypass_rls`.
+
+For all other tables (Load, Truck, etc.):
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Load"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+**How tenant context is set:**
+1. User logs in → `tenantId` retrieved from `app_metadata`
+2. Middleware sets `current_tenant_id` session variable
+3. All queries automatically filter by `tenant_id`
+
+**SysAdmin bypass:**
+SysAdmin sessions do NOT set `current_tenant_id` because they need cross-tenant access. All SysAdmin queries use `bypass_rls`.
+
+## Code Examples
+
+### Creating a tenant with error handling
+
+<CodeBlock language="typescript">
+{`// Example: SysAdmin UI form submission
+async function handleCreateTenant(formData: FormData) {
+  const result = await createTenant(null, formData);
+
+  if (!result.success) {
+    toast.error(result.error || 'Failed to create tenant');
+    return;
+  }
+
+  toast.success(\`Tenant created: \${result.data.companyName}\`);
+  toast.info('Owner invitation email sent');
+  router.push(\`/sysadmin/tenants/\${result.data.id}\`);
+}`}
+</CodeBlock>
+
+### Querying tenants by status
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all suspended tenants
+SELECT * FROM "Tenant"
+WHERE status = 'SUSPENDED'
+ORDER BY suspended_at DESC;
+
+-- Find tenants with expiring subscriptions
+SELECT * FROM "Tenant"
+WHERE subscription_end_date IS NOT NULL
+  AND subscription_end_date < NOW() + INTERVAL '7 days'
+  AND status = 'ACTIVE';`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: SysAdmin Auth">
+All tenant management actions require SYSADMIN role. Verify `ADMIN_SECRET_KEY` on every request. Do NOT use JWT-based auth for SysAdmin routes.
+</Callout>
+
+<Callout variant="warning" title="Session Revocation">
+When suspending a tenant, ensure all Supabase sessions are revoked. Otherwise, users with active tokens can continue accessing the API until token expiry.
+</Callout>
+
+**Other security notes:**
+- Invitation tokens expire after 7 days
+- Invitation tokens are single-use (deleted after acceptance)
+- Suspension reason is visible to users on login (do not include sensitive info)
+
+## Cron Jobs
+
+No cron jobs directly related to tenant management, but related:
+
+- **Trial expiry reminder** (`/api/cron/automations`) — sends email 3 days before trial end
+- **Subscription renewal** (planned) — auto-charge or downgrade on subscription end date
+
+## Testing Notes
+
+**Test cases:**
+1. Create tenant → verify invitation email sent
+2. Suspend tenant → verify user logged out immediately
+3. Reactivate tenant → verify user can log in
+4. Attempt to create duplicate tenant (same company name) → should succeed (not a unique constraint)
+
+**Edge cases:**
+- Suspending a tenant with active routes/loads — loads remain in database, drivers cannot access
+- Reactivating a tenant after 6 months — all data intact, users can log in
+
+## Performance Considerations
+
+- `getTenants` query is not paginated — returns all tenants (assumes < 10,000 tenants)
+- If tenant count exceeds 10,000, implement cursor-based pagination
+- Suspension revokes sessions via Supabase API — can take 1-2 seconds per user (async recommended for large tenants)
+
+## Troubleshooting
+
+**Issue: Invitation email not received**
+
+Check:
+1. Email is in `DriverInvitation` table with valid token
+2. Nodemailer logs for send errors
+3. Spam folder (emails from noreply@drivecommand.com)
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "DriverInvitation"
+WHERE email = 'owner@example.com'
+  AND expires_at > NOW()
+ORDER BY created_at DESC;`}
+</CodeBlock>
+
+**Issue: User still logged in after suspension**
+
+Session revocation may not have completed. Manually revoke via Supabase dashboard or wait for token expiry (default 1 hour).
+
+## Related Features
+
+<FeatureCard slug="admin-billing" />
+<FeatureCard slug="admin-plans" />
+<FeatureCard slug="subscription" />

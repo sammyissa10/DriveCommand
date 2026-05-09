@@ -1,0 +1,370 @@
+---
+slug: carrier-dispatches
+title: Dispatch Board — Technical Reference
+summary: Ready-to-dispatch workflow with server actions for load-to-route assignment, driver availability computation, and status transition logic.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Carrier Ops Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Driver availability computed server-side to prevent client manipulation"
+  - "Route creation requires OWNER or MANAGER role"
+---
+
+# Dispatch Board — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Dispatch Board subsystem provides a centralized interface for matching PENDING loads with available drivers and trucks. Key components:
+
+- **Server actions** — `getReadyToDispatchLoads`, `dispatchLoad`, `getAvailableDrivers`, `getAvailableTrucks`
+- **Database models** — Load, Route, RouteStop, Driver, Truck
+- **State transitions** — PENDING → DISPATCHED
+- **Side effects** — Push notification to assigned driver, route creation, status update
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getReadyToDispatchLoads", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<Load[]>" },
+  { name: "dispatchLoad", roleGuard: "OWNER | MANAGER", inputSchema: "DispatchLoadSchema", returnType: "ActionState<Route>" },
+  { name: "getAvailableDrivers", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<DriverWithStatus[]>" },
+  { name: "getAvailableTrucks", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<TruckWithStatus[]>" }
+]} />
+
+### `getReadyToDispatchLoads()`
+
+Fetches all loads in PENDING status for the current tenant.
+
+<CodeBlock language="typescript">
+{`export async function getReadyToDispatchLoads(
+  prevState: ActionState | null
+): Promise<ActionState<Load[]>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  const loads = await prisma.load.findMany({
+    where: { status: LoadStatus.PENDING },
+    include: {
+      customer: true,
+      pickupStop: true,
+      deliveryStop: true,
+    },
+    orderBy: { pickupDate: 'asc' },
+  });
+
+  return { success: true, data: loads };
+}`}
+</CodeBlock>
+
+**Key behavior:**
+- Ordered by `pickupDate` ascending (earliest pickups first)
+- Includes customer and stop relations for display
+- No pagination (assumes < 500 pending loads per tenant)
+
+### `dispatchLoad()`
+
+Creates a route and assigns a driver/truck to a load. Advances load status to DISPATCHED.
+
+<CodeBlock language="typescript">
+{`export async function dispatchLoad(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Route>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  const parsed = DispatchLoadSchema.parse({
+    loadId: formData.get('loadId'),
+    driverId: formData.get('driverId'),
+    truckId: formData.get('truckId'),
+  });
+
+  // Validation: Check driver availability
+  const driver = await prisma.driver.findUnique({
+    where: { id: parsed.driverId },
+    include: { activeRoute: true },
+  });
+
+  if (driver?.activeRoute) {
+    return {
+      success: false,
+      error: 'Driver is already assigned to an active route',
+    };
+  }
+
+  // Validation: Check truck status
+  const truck = await prisma.truck.findUnique({
+    where: { id: parsed.truckId },
+    include: { documents: true },
+  });
+
+  const expiredDocs = truck?.documents.filter(d => d.expiryDate < new Date());
+  if (expiredDocs && expiredDocs.length > 0) {
+    return {
+      success: false,
+      error: 'Truck has expired documents and cannot be dispatched',
+    };
+  }
+
+  // Transaction: Create route + update load status
+  const route = await prisma.$transaction(async (tx) => {
+    const newRoute = await tx.route.create({
+      data: {
+        tenantId: await requireTenantId(),
+        driverId: parsed.driverId,
+        truckId: parsed.truckId,
+        status: RouteStatus.IN_PROGRESS,
+        routeStops: {
+          connect: [
+            { id: load.pickupStopId },
+            { id: load.deliveryStopId },
+          ],
+        },
+      },
+    });
+
+    await tx.load.update({
+      where: { id: parsed.loadId },
+      data: {
+        status: LoadStatus.DISPATCHED,
+        routeId: newRoute.id,
+      },
+    });
+
+    return newRoute;
+  });
+
+  // Side effect: Send push notification to driver
+  await sendPushToUser(parsed.driverId, {
+    title: 'New Load Dispatched',
+    body: \`You've been assigned load \${load.loadNumber}\`,
+    data: { type: 'load_dispatched', loadId: parsed.loadId },
+  });
+
+  return { success: true, data: route };
+}`}
+</CodeBlock>
+
+**Critical validations:**
+1. Driver must not have an active route
+2. Truck documents must be current
+3. Load must be in PENDING status (implicit FK constraint)
+
+**Side effects:**
+- Route created with IN_PROGRESS status
+- Load status → DISPATCHED
+- Push notification sent to driver
+
+### `getAvailableDrivers()`
+
+Returns drivers with computed availability status based on active route assignments and HOS limits.
+
+<CodeBlock language="typescript">
+{`export async function getAvailableDrivers(
+  prevState: ActionState | null
+): Promise<ActionState<DriverWithStatus[]>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  const drivers = await prisma.driver.findMany({
+    include: {
+      user: true,
+      activeRoute: true,
+      hosEntries: {
+        where: {
+          createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+    },
+  });
+
+  // Compute availability status for each driver
+  const driversWithStatus = drivers.map((driver) => {
+    let status: 'available' | 'on_route' | 'hos_limit' | 'off_duty';
+
+    if (driver.activeRoute) {
+      status = 'on_route';
+    } else {
+      const latestHOS = driver.hosEntries[0];
+      const { remaining14h, remaining11h } = calculateHOSRemaining(latestHOS);
+
+      if (remaining14h <= 0 || remaining11h <= 0) {
+        status = 'hos_limit';
+      } else if (latestHOS?.dutyStatus === HOSDutyStatus.OFF_DUTY) {
+        status = 'off_duty';
+      } else {
+        status = 'available';
+      }
+    }
+
+    return { ...driver, status };
+  });
+
+  return { success: true, data: driversWithStatus };
+}`}
+</CodeBlock>
+
+**Availability logic:**
+1. If driver has `activeRoute`, status = `on_route`
+2. If latest HOS entry shows 14h or 11h limit reached, status = `hos_limit`
+3. If latest HOS entry is OFF_DUTY, status = `off_duty`
+4. Otherwise, status = `available`
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (FK to Tenant)",
+  "status: LoadStatus (PENDING | DISPATCHED | PICKED_UP | IN_TRANSIT | DELIVERED | INVOICED)",
+  "loadNumber: String @unique",
+  "customerId: String (FK to Customer)",
+  "routeId: String? (FK to Route, null until dispatched)",
+  "pickupStopId: String (FK to RouteStop)",
+  "deliveryStopId: String (FK to RouteStop)",
+  "pickupDate: DateTime",
+  "deliveryDate: DateTime?",
+  "rate: Decimal",
+  "weight: Decimal?",
+  "commodity: String?",
+  "trackingToken: String @unique (for public tracking page)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `(tenantId, status)` — used by `getReadyToDispatchLoads` query
+- `(trackingToken)` — used by public tracking page
+
+**Constraints:**
+- `loadNumber` must be unique per tenant (enforced by composite unique index)
+- `pickupStopId` and `deliveryStopId` must exist (FK constraint)
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Load created, not yet dispatched" },
+  { label: "DISPATCHED", description: "Driver assigned, route created" },
+  { label: "PICKED_UP", description: "Driver marked load as picked up" },
+  { label: "IN_TRANSIT", description: "Load in transit to delivery" },
+  { label: "DELIVERED", description: "Load delivered to destination" },
+  { label: "INVOICED", description: "Invoice created for this load" }
+]} />
+
+**State transition rules:**
+- PENDING → DISPATCHED: Requires `dispatchLoad` action (OWNER/MANAGER)
+- DISPATCHED → PICKED_UP: Driver updates status from mobile app
+- PICKED_UP → IN_TRANSIT: Driver updates status
+- IN_TRANSIT → DELIVERED: Driver updates status
+- DELIVERED → INVOICED: Owner creates invoice from load detail page
+
+**Reversions:**
+- DISPATCHED can revert to PENDING via "Revert Status" action (removes route assignment)
+- All other transitions are forward-only
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Load"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+**How it works:**
+- Every query automatically adds `WHERE tenant_id = {current_tenant}` filter
+- Prevents cross-tenant data leaks
+- Enforced at Postgres level (cannot be bypassed from application code without `bypass_rls`)
+
+**Exceptions:**
+- Cron jobs use `bypass_rls` to query across all tenants
+- Public tracking page (`/track/[token]`) uses `bypass_rls` and filters by `trackingToken` instead
+
+## Mobile API Endpoints
+
+Drivers interact with dispatched loads via mobile API:
+
+<CodeBlock language="typescript">
+{`// GET /api/mobile/driver/loads
+// Returns active load for authenticated driver
+// Auth: Bearer token required
+
+// Response:
+{
+  "load": {
+    "id": "uuid",
+    "loadNumber": "L-00123",
+    "status": "DISPATCHED",
+    "pickupStop": { ... },
+    "deliveryStop": { ... },
+    "customer": { ... }
+  }
+}
+
+// PATCH /api/mobile/driver/loads/[id]/status
+// Updates load status (forward-only transitions)
+// Body: { status: "PICKED_UP" | "IN_TRANSIT" | "DELIVERED" }
+// Auth: Bearer token required
+
+// Response:
+{
+  "load": { ... }
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Driver Assignment">
+Always validate driver availability server-side. Do NOT trust client-side availability checks. Drivers must not be double-assigned.
+</Callout>
+
+<Callout variant="warning" title="Truck Document Validation">
+Enforce truck document expiry checks before dispatch. Dispatching with expired documents can result in compliance violations and fines.
+</Callout>
+
+**Other security notes:**
+- Load status transitions are role-gated (OWNER/MANAGER for dispatch, DRIVER for pickup/delivery)
+- `trackingToken` is a random UUID — do not expose load IDs on public pages
+- Push notifications contain minimal data (no PII in notification body)
+
+## Performance Considerations
+
+- `getReadyToDispatchLoads` is not paginated — assumes < 500 pending loads per tenant
+- If tenants regularly exceed 500 pending loads, add cursor-based pagination
+- `getAvailableDrivers` queries HOS entries for last 24h — index on `(driverId, createdAt)` required
+
+## Troubleshooting
+
+**Issue: Driver appears unavailable but has no active route**
+
+Check HOS entries. Driver may be at 14h or 11h limit. Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "DriverHOSEntry"
+WHERE driver_id = 'xxx'
+ORDER BY created_at DESC
+LIMIT 10;`}
+</CodeBlock>
+
+**Issue: Dispatch fails with "Truck has expired documents"**
+
+Check truck documents:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "Document"
+WHERE truck_id = 'xxx'
+  AND expiry_date < NOW()
+ORDER BY expiry_date ASC;`}
+</CodeBlock>
+
+## Related Features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="driver-my-load" />
