@@ -1,0 +1,412 @@
+---
+slug: driver-documents
+title: Driver Documents — Technical Reference
+summary: Document upload/view with R2 presigned URLs, expiry tracking, compliance status computation, and automated alert system.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Mobile Team"
+securityNotes:
+  - "Documents stored in R2 with tenant-scoped prefixes"
+  - "Presigned URLs expire after 15 minutes"
+  - "Drivers can only access their own documents"
+---
+
+# Driver Documents — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Driver Documents enables drivers to upload compliance documents (CDL, medical card, endorsements) via the mobile app and provides automated expiry tracking with alerts. All documents are stored in R2 and accessed via presigned URLs for security.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/documents`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 34)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/documents
+
+Returns list of documents uploaded by the authenticated driver.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "documents": [
+    {
+      "id": "uuid",
+      "documentType": "LICENSE",
+      "documentTypeName": "Driver's License",
+      "fileName": "cdl-photo.jpg",
+      "uploadedAt": "2024-05-09T08:00:00Z",
+      "expiresAt": "2026-05-09T00:00:00Z",
+      "status": "VALID", // VALID | EXPIRING_SOON | EXPIRED
+      "daysUntilExpiry": 730,
+      "url": null // Not returned in list (only in detail)
+    },
+    {
+      "id": "uuid",
+      "documentType": "MEDICAL_CARD",
+      "documentTypeName": "Medical Card",
+      "fileName": "medical-cert.jpg",
+      "uploadedAt": "2024-01-15T10:00:00Z",
+      "expiresAt": "2024-05-20T00:00:00Z",
+      "status": "EXPIRING_SOON",
+      "daysUntilExpiry": 11
+    }
+  ]
+}`}
+</CodeBlock>
+
+**Status computation:**
+
+<CodeBlock language="typescript">
+{`function computeDocumentStatus(expiresAt: Date | null): {
+  status: string;
+  daysUntilExpiry: number | null;
+} {
+  if (!expiresAt) return { status: 'VALID', daysUntilExpiry: null };
+
+  const now = new Date();
+  const daysUntil = differenceInDays(expiresAt, now);
+
+  if (daysUntil < 0) {
+    return { status: 'EXPIRED', daysUntilExpiry: daysUntil };
+  } else if (daysUntil <= 30) {
+    return { status: 'EXPIRING_SOON', daysUntilExpiry: daysUntil };
+  } else {
+    return { status: 'VALID', daysUntilExpiry: daysUntil };
+  }
+}`}
+</CodeBlock>
+
+### GET /api/mobile/driver/documents/[id]
+
+Returns document details with presigned URL for viewing.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "document": {
+    "id": "uuid",
+    "documentType": "LICENSE",
+    "fileName": "cdl-photo.jpg",
+    "url": "https://r2.drivecommand.com/documents/tenant-uuid/doc-uuid.jpg?X-Amz-Signature=...",
+    "expiresAt": "2026-05-09T00:00:00Z",
+    "uploadedAt": "2024-05-09T08:00:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Presigned URL generation:**
+
+<CodeBlock language="typescript">
+{`import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY
+  }
+});
+
+export async function getDocumentPresignedUrl(
+  documentKey: string
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: process.env.R2_BUCKET_NAME,
+    Key: documentKey
+  });
+
+  return await getSignedUrl(s3, command, { expiresIn: 900 }); // 15 minutes
+}`}
+</CodeBlock>
+
+**Security:** Verify `document.userId === currentUser.id` before generating presigned URL.
+
+### POST /api/mobile/driver/documents/upload-url
+
+Returns a presigned URL for uploading a document to R2.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/documents/upload-url
+{
+  "fileName": "cdl-photo.jpg",
+  "fileType": "image/jpeg",
+  "fileSize": 2048576 // bytes
+}
+
+// Response
+{
+  "uploadUrl": "https://r2.drivecommand.com/documents/tenant-uuid/doc-uuid.jpg?X-Amz-Signature=...",
+  "documentKey": "documents/tenant-uuid/doc-uuid.jpg",
+  "documentId": "uuid" // Pre-generated document ID
+}`}
+</CodeBlock>
+
+**Upload flow:**
+
+1. Driver selects photo in mobile app
+2. App calls `/upload-url` → receives presigned PUT URL
+3. App uploads file directly to R2 using presigned URL (no server proxy)
+4. App calls `/create` with documentId + metadata
+
+### POST /api/mobile/driver/documents/create
+
+Creates document metadata record after successful R2 upload.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/documents/create
+{
+  "documentId": "uuid", // From upload-url response
+  "documentType": "LICENSE",
+  "fileName": "cdl-photo.jpg",
+  "expiresAt": "2026-05-09T00:00:00Z"
+}
+
+// Response
+{
+  "document": {
+    "id": "uuid",
+    "documentType": "LICENSE",
+    "uploadedAt": "2024-05-09T08:10:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- documentId must match pre-generated ID from /upload-url
+- documentType must be valid enum
+- expiresAt must be in the future (for expiring docs)
+- Verify file exists in R2 before creating record
+
+**Side effects:**
+- If existing document of same type exists, mark old one as superseded
+- Recompute driver compliance status
+- If expiry < 30 days, trigger alert to fleet manager
+
+## Database Schema
+
+<PrismaModelRef model="Document" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "userId: String? (FK to User, for driver docs)",
+  "driverId: String? (FK to Driver)",
+  "truckId: String? (FK to Truck, for vehicle docs)",
+  "documentType: String (LICENSE | MEDICAL_CARD | ENDORSEMENT | INSURANCE | OTHER)",
+  "fileName: String",
+  "fileKey: String (R2 object key)",
+  "fileSize: Int (bytes)",
+  "mimeType: String",
+  "uploadedAt: DateTime @default(now())",
+  "expiresAt: DateTime? (nullable for non-expiring docs)",
+  "supersededAt: DateTime? (when replaced by newer version)",
+  "supersededById: String? (FK to Document that replaced this one)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Document types:**
+
+<CodeBlock language="typescript">
+{`export enum DocumentType {
+  LICENSE = 'LICENSE', // CDL, Class A/B/C
+  MEDICAL_CARD = 'MEDICAL_CARD', // DOT physical
+  ENDORSEMENT = 'ENDORSEMENT', // Hazmat, tanker, etc.
+  INSURANCE = 'INSURANCE', // Proof of insurance
+  CERTIFICATION = 'CERTIFICATION', // Twic, port access, etc.
+  OTHER = 'OTHER'
+}`}
+</CodeBlock>
+
+**Indexes:**
+- `@@index([tenantId, userId, documentType])` — Fast driver document queries
+- `@@index([tenantId, expiresAt])` — Expiry alert cron job
+- `@@index([supersededAt])` — Filter active documents (WHERE supersededAt IS NULL)
+
+## R2 Storage Structure
+
+Documents are stored in R2 with tenant isolation:
+
+```
+documents/
+  {tenantId}/
+    driver-{userId}/
+      {documentId}.jpg
+      {documentId}.pdf
+    truck-{truckId}/
+      {documentId}.jpg
+```
+
+**Naming convention:** `documents/{tenantId}/driver-{userId}/{documentId}.{ext}`
+
+**File constraints:**
+- Max size: 10 MB
+- Supported formats: JPG, PNG, HEIC, PDF
+- PDF limit: 5 pages (for mobile viewing)
+
+## Document Replacement (Versioning)
+
+When a driver uploads a new document of the same type, the old one is superseded.
+
+<CodeBlock language="typescript">
+{`// In POST /api/mobile/driver/documents/create
+const existingDoc = await prisma.document.findFirst({
+  where: {
+    tenantId: currentUser.tenantId,
+    userId: currentUser.id,
+    documentType,
+    supersededAt: null // Only active docs
+  }
+});
+
+if (existingDoc) {
+  await prisma.document.update({
+    where: { id: existingDoc.id },
+    data: {
+      supersededAt: new Date(),
+      supersededById: newDocumentId
+    }
+  });
+}`}
+</CodeBlock>
+
+**Old versions retained for audit history but excluded from compliance checks.**
+
+## Expiry Alerts
+
+Drivers receive push notifications at:
+- **30 days before expiry** — "Your medical card expires in 30 days"
+- **14 days before expiry** — Second reminder
+- **7 days before expiry** — Final warning
+- **Day of expiry** — "Your medical card expired today"
+
+Fleet managers receive alerts for all driver document expirations.
+
+**Cron job:** `/api/cron/document-expiry-alerts` runs daily at 6 AM.
+
+<CodeBlock language="typescript">
+{`// Cron job logic
+const expiringDocs = await prisma.document.findMany({
+  where: {
+    expiresAt: {
+      gte: now,
+      lte: addDays(now, 30)
+    },
+    supersededAt: null,
+    userId: { not: null } // Only driver docs
+  },
+  include: { user: true }
+});
+
+for (const doc of expiringDocs) {
+  const daysUntil = differenceInDays(doc.expiresAt, now);
+
+  if ([30, 14, 7, 0].includes(daysUntil)) {
+    await sendPushToUser(doc.userId, {
+      title: 'Document Expiring Soon',
+      body: \`Your \${doc.documentType} expires in \${daysUntil} days\`,
+      data: { type: 'DOCUMENT_EXPIRY', documentId: doc.id }
+    });
+  }
+}`}
+</CodeBlock>
+
+## Compliance Status
+
+Driver compliance is computed from document expiry dates.
+
+**Compliance dot colors:**
+- **Green** — All docs valid (> 30 days until expiry)
+- **Yellow** — One or more docs expiring soon (< 30 days)
+- **Red** — One or more docs expired
+
+<CodeBlock language="typescript">
+{`// Used in driver list, dashboard, fleet manager views
+async function getDriverComplianceStatus(userId: string): Promise<string> {
+  const docs = await prisma.document.findMany({
+    where: { userId, supersededAt: null, expiresAt: { not: null } }
+  });
+
+  const statuses = docs.map(d => computeDocumentStatus(d.expiresAt).status);
+
+  if (statuses.includes('EXPIRED')) return 'red';
+  if (statuses.includes('EXPIRING_SOON')) return 'yellow';
+  return 'green';
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+- **Presigned URLs:** Generated on-demand (not cached, expire in 15 min)
+- **Direct upload:** Files uploaded directly to R2 (no server proxy), reduces server load
+- **Expiry cron:** Runs daily, processes ~1000 docs in < 5s
+- **Index usage:** Query uses `@@index([userId, documentType])` for fast document lookups
+
+**Optimization:** Consider caching compliance status in Redis (TTL 1 hour) to avoid repeated queries.
+
+## Security
+
+<Callout variant="danger" title="Driver Document Isolation">
+Drivers can ONLY access their own documents. Always verify `document.userId === currentUser.id` before generating presigned URLs or returning metadata.
+</Callout>
+
+**Access control:**
+
+<CodeBlock language="typescript">
+{`const document = await prisma.document.findUnique({ where: { id } });
+
+if (document.userId !== currentUser.id || document.tenantId !== currentUser.tenantId) {
+  throw new Error('Forbidden: Not your document');
+}`}
+</CodeBlock>
+
+**Fleet managers can view all driver documents via owner portal.**
+
+## Related Features
+
+<FeatureCard slug="compliance-dashboard" />
+<FeatureCard slug="driver-dashboard" />
+
+## Troubleshooting
+
+**Driver cannot view document:**
+
+1. Check if presigned URL expired (15 min TTL)
+2. Verify document.fileKey exists in R2
+3. Check R2 bucket permissions (GetObject allowed)
+4. Regenerate presigned URL via GET /api/mobile/driver/documents/[id]
+
+**Document upload fails:**
+
+1. Check file size < 10 MB
+2. Verify MIME type is image/jpeg, image/png, image/heic, or application/pdf
+3. Check presigned URL not expired
+4. Verify R2 credentials in environment variables
+
+**Expiry alerts not sending:**
+
+1. Check cron job last run: `SELECT * FROM CronLog WHERE job = 'document-expiry-alerts'`
+2. Verify PushToken exists for driver
+3. Check Document.expiresAt is set (not null)
+4. Confirm document not superseded (supersededAt IS NULL)

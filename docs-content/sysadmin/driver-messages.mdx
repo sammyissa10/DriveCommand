@@ -1,0 +1,367 @@
+---
+slug: driver-messages
+title: Driver Messaging — Technical Reference
+summary: Load-scoped messaging with 30s polling, push notifications, unread tracking, and MMKV-backed read receipts.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Mobile Team"
+securityNotes:
+  - "Messages filtered by loadId or routeId for scope isolation"
+  - "Drivers can only access messages for their assigned loads/routes"
+  - "Push notifications include message preview (max 100 chars)"
+---
+
+# Driver Messaging — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Driver Messaging enables real-time communication between drivers and dispatch. Messages are scoped to loads or routes, with unread tracking, 30s polling, and push notifications for offline drivers.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/messages`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 34)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/messages/unread-count
+
+Returns total unread message count for the authenticated driver.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "unreadCount": 3,
+  "unreadByThread": [
+    { "loadId": "uuid1", "count": 2 },
+    { "loadId": "uuid2", "count": 1 }
+  ]
+}`}
+</CodeBlock>
+
+**Query:**
+
+<CodeBlock language="typescript">
+{`const unreadMessages = await prisma.fleetMessage.findMany({
+  where: {
+    tenantId: currentUser.tenantId,
+    OR: [
+      { recipientId: currentUser.id, isRead: false },
+      { isBroadcast: true, isRead: false }
+    ]
+  }
+});
+
+const unreadByThread = groupBy(unreadMessages, 'loadId');`}
+</CodeBlock>
+
+### GET /api/mobile/driver/messages/thread
+
+Returns messages for a specific load or route.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+**Query params:** `?loadId=uuid` OR `?routeId=uuid`
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "messages": [
+    {
+      "id": "uuid",
+      "senderId": "uuid",
+      "senderName": "Dispatch",
+      "senderRole": "OWNER",
+      "message": "Customer wants delivery moved to 3 PM",
+      "createdAt": "2024-05-09T10:30:00Z",
+      "isRead": true
+    },
+    {
+      "id": "uuid",
+      "senderId": "uuid",
+      "senderName": "Mike (Driver)",
+      "senderRole": "DRIVER",
+      "message": "Confirmed, I can make 3 PM",
+      "createdAt": "2024-05-09T10:35:00Z",
+      "isRead": false
+    }
+  ]
+}`}
+</CodeBlock>
+
+**Security:** Verify driver is assigned to the load/route before returning messages.
+
+### POST /api/mobile/driver/messages/send
+
+Sends a message to dispatch.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/messages/send
+{
+  "loadId": "uuid", // OR routeId
+  "message": "Traffic on I-94, ETA delayed 30 minutes"
+}
+
+// Response
+{
+  "message": {
+    "id": "uuid",
+    "createdAt": "2024-05-09T11:00:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- message length 1-500 characters
+- loadId OR routeId required (not both)
+- Driver must be assigned to the load/route
+
+**Side effects:**
+- Push notification sent to all OWNER/MANAGER users in tenant
+- FleetMessage.recipientId set to null (broadcast to dispatch)
+
+### POST /api/mobile/driver/messages/mark-read
+
+Marks messages in a thread as read.
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/messages/mark-read
+{
+  "loadId": "uuid" // OR routeId
+}
+
+// Response
+{
+  "markedCount": 3
+}`}
+</CodeBlock>
+
+**Update:**
+
+<CodeBlock language="typescript">
+{`await prisma.fleetMessage.updateMany({
+  where: {
+    tenantId: currentUser.tenantId,
+    loadId,
+    OR: [
+      { recipientId: currentUser.id },
+      { isBroadcast: true }
+    ],
+    isRead: false
+  },
+  data: { isRead: true }
+});`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="FleetMessage" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "senderId: String (FK to User)",
+  "recipientId: String? (FK to User, null for broadcast/dispatch)",
+  "loadId: String? (FK to Load, for load-scoped messages)",
+  "routeId: String? (FK to Route, for route-scoped messages)",
+  "message: String (max 500 chars)",
+  "isBroadcast: Boolean @default(false) (fleet-wide announcements)",
+  "isRead: Boolean @default(false)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `@@index([tenantId, loadId, createdAt])` — Fast load thread queries
+- `@@index([tenantId, routeId, createdAt])` — Fast route thread queries
+- `@@index([recipientId, isRead])` — Unread count queries
+
+**Message scopes:**
+
+1. **Load-scoped:** `loadId` set, `routeId` null → messages about specific shipment
+2. **Route-scoped:** `routeId` set, `loadId` null → messages about multi-stop trip
+3. **Broadcast:** `isBroadcast = true` → fleet-wide announcements (driver cannot reply)
+
+## 30-Second Polling
+
+The mobile app polls for new messages every 30s while the Messages screen is open.
+
+<CodeBlock language="typescript">
+{`// Mobile app (apps/mobile)
+import { useQuery } from '@tanstack/react-query';
+
+export default function MessagesScreen({ loadId }: { loadId: string }) {
+  const { data } = useQuery({
+    queryKey: ['messages', loadId],
+    queryFn: () => driverApi.getMessages({ loadId }),
+    refetchInterval: 30000, // 30s polling
+    refetchOnWindowFocus: true
+  });
+
+  // Mark as read when screen is focused
+  useFocusEffect(() => {
+    driverApi.markMessagesRead({ loadId });
+  });
+
+  return <MessageThread messages={data?.messages ?? []} />;
+}`}
+</CodeBlock>
+
+**Polling stops when:**
+- User navigates away from Messages screen
+- App goes to background
+
+**Push notifications** deliver new messages instantly when polling is inactive.
+
+## Unread Badge Tracking
+
+Unread counts are tracked per thread and aggregated for the Messages tab badge.
+
+**Mobile implementation:**
+
+<CodeBlock language="typescript">
+{`// MMKV storage for last-read timestamp per thread
+import { MMKV } from 'react-native-mmkv';
+
+const storage = new MMKV();
+
+// Store last-read timestamp when user opens thread
+storage.set(\`last-read-load-\${loadId}\`, Date.now());
+
+// Compute unread count client-side
+const lastRead = storage.getNumber(\`last-read-load-\${loadId}\`) ?? 0;
+const unreadCount = messages.filter(m =>
+  new Date(m.createdAt).getTime() > lastRead
+).length;`}
+</CodeBlock>
+
+**Server-side tracking:** `FleetMessage.isRead` is authoritative. Client MMKV is for optimistic UI.
+
+## Push Notifications
+
+When a message is sent while the driver's app is closed/backgrounded, a push notification is delivered.
+
+<CodeBlock language="typescript">
+{`// From POST /api/mobile/driver/messages/send
+import { sendPushToUser } from '@/lib/push/send';
+
+// After creating FleetMessage
+const driverTokens = await prisma.pushToken.findMany({
+  where: { userId: recipientDriverId }
+});
+
+for (const token of driverTokens) {
+  await sendPushToUser(recipientDriverId, {
+    title: 'New Message from Dispatch',
+    body: message.substring(0, 100), // Preview first 100 chars
+    data: {
+      type: 'FLEET_MESSAGE',
+      loadId: message.loadId,
+      routeId: message.routeId,
+      url: \`/driver/messages?loadId=\${message.loadId}\`
+    }
+  });
+}`}
+</CodeBlock>
+
+**Deep linking:** Tapping notification opens the Messages screen with the thread pre-loaded.
+
+## Message Sending Flow
+
+<ProcessDiagram steps={[
+  { label: "Driver types message", description: "Max 500 characters, load/route scoped" },
+  { label: "POST /api/mobile/driver/messages/send", description: "Server validates, creates FleetMessage" },
+  { label: "Push notification sent", description: "All OWNER/MANAGER users notified" },
+  { label: "Polling picks up reply", description: "Driver sees dispatch reply within 30s" }
+]} />
+
+## Broadcast Messages
+
+Fleet managers can send broadcast messages visible to all drivers.
+
+**Characteristics:**
+- `isBroadcast = true`
+- `recipientId = null`
+- `loadId = null` and `routeId = null`
+- Drivers cannot reply (read-only)
+
+**Query for broadcast messages:**
+
+<CodeBlock language="typescript">
+{`const broadcasts = await prisma.fleetMessage.findMany({
+  where: {
+    tenantId: currentUser.tenantId,
+    isBroadcast: true
+  },
+  orderBy: { createdAt: 'desc' },
+  take: 10
+});`}
+</CodeBlock>
+
+Broadcasts appear at the top of the Messages screen with a megaphone icon.
+
+## Security
+
+<Callout variant="danger" title="Message Scope Isolation">
+Drivers can ONLY access messages for loads/routes they are assigned to. Always verify `load.driverId === currentUser.id` before returning messages.
+</Callout>
+
+**Access control pattern:**
+
+<CodeBlock language="typescript">
+{`// Before returning messages
+const load = await prisma.load.findUnique({
+  where: { id: loadId },
+  select: { driverId: true, tenantId: true }
+});
+
+if (load.driverId !== currentUser.id || load.tenantId !== currentUser.tenantId) {
+  throw new Error('Forbidden: Not assigned to this load');
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+- **Polling overhead:** 30s interval × N active drivers = moderate server load. Consider WebSocket upgrade for real-time.
+- **Index usage:** Query uses `@@index([loadId, createdAt])` for fast thread retrieval
+- **Message limit:** Return max 100 messages per thread (pagination for older messages)
+
+**Optimization:** Consider Redis pub/sub for real-time message delivery instead of polling.
+
+## Related Features
+
+<FeatureCard slug="carrier-messages" />
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="driver-my-route" />
+
+## Troubleshooting
+
+**Driver not receiving push notifications:**
+
+1. Check PushToken exists for driver (table: PushToken)
+2. Verify Expo push token is valid (not expired)
+3. Check notification permissions on device (Settings → DriveCommand → Notifications)
+4. Test push delivery manually via Expo push tool
+
+**Messages not appearing:**
+
+1. Verify FleetMessage.loadId or routeId matches the thread
+2. Check tenantId isolation
+3. Confirm isRead filter (unread-only vs. all messages)
+4. Check polling is active (refetchInterval running)
+
+**Unread count incorrect:**
+
+1. Compare MMKV last-read timestamp with server isRead flag
+2. Force mark-read via POST /api/mobile/driver/messages/mark-read
+3. Clear MMKV storage and re-sync: `storage.delete(\`last-read-load-\${loadId}\`)`

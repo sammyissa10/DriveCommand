@@ -1,0 +1,293 @@
+---
+slug: driver-dashboard
+title: Driver Dashboard — Technical Reference
+summary: Mobile driver home screen with real-time aggregates, active load card, stat chips, and alert system powered by REST API.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Mobile Team"
+securityNotes:
+  - "All queries tenant-scoped via Bearer token validation"
+  - "Dashboard endpoint requires driver role"
+  - "GPS location data sanitized before transmission"
+---
+
+# Driver Dashboard — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Driver Dashboard is the mobile app's home screen. It aggregates data from Load, Route, DriverHOSEntry, and Document models to provide:
+
+- Active load card with pickup/delivery details
+- Today's performance stats (deliveries, miles, HOS remaining)
+- Compliance alerts (document expiry, HOS violations)
+- Quick navigation to My Route (if assigned)
+
+The dashboard is powered by a single REST endpoint that returns all necessary data in one request, minimizing mobile data usage and latency.
+
+**Portal:** Driver (mobile app only)
+**Route:** `/driver/home` (mobile screen)
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 30-31)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/dashboard
+
+Returns aggregated dashboard data for the authenticated driver.
+
+**Auth:** Bearer token required (validateMobileToken)
+**Role:** DRIVER
+**Rate Limit:** 100 requests/hour per token
+
+<CodeBlock language="typescript">
+{`// Request
+GET /api/mobile/driver/dashboard
+Headers:
+  Authorization: Bearer <token>
+
+// Response
+{
+  "activeLoad": {
+    "id": "uuid",
+    "loadNumber": "LD-2024-001",
+    "status": "IN_TRANSIT",
+    "pickupLocation": "Chicago, IL",
+    "deliveryLocation": "Detroit, MI",
+    "scheduledPickupAt": "2024-05-09T08:00:00Z",
+    "scheduledDeliveryAt": "2024-05-09T16:00:00Z",
+    "routeId": "uuid",
+    "truckId": "uuid"
+  },
+  "stats": {
+    "deliveriesToday": 2,
+    "milesToday": 287,
+    "hosRemaining": "9h 23m" // 14h window remaining
+  },
+  "alerts": [
+    {
+      "type": "HOS_WARNING",
+      "severity": "yellow",
+      "message": "Less than 2 hours remaining in your 14-hour window",
+      "actionUrl": "/driver/hours"
+    },
+    {
+      "type": "DOCUMENT_EXPIRING",
+      "severity": "red",
+      "message": "Medical card expires in 14 days",
+      "actionUrl": "/driver/documents"
+    }
+  ],
+  "hasActiveRoute": true
+}`}
+</CodeBlock>
+
+**Query logic:**
+
+1. `activeLoad` — Finds Load where `driverId = currentUser.id` AND `status IN (PENDING, PICKED_UP, IN_TRANSIT)`
+2. `stats.deliveriesToday` — Counts Load where `driverId = currentUser.id` AND `status = DELIVERED` AND `updatedAt >= startOfToday`
+3. `stats.milesToday` — Sums Load.loadedMiles where delivered today
+4. `stats.hosRemaining` — Queries DriverHOSEntry, calculates 14h window from last OFF_DUTY status
+5. `alerts` — Aggregates from Document expiry checks + HOS threshold checks
+6. `hasActiveRoute` — Boolean if activeLoad.routeId is not null
+
+**Performance:**
+- Cached for 30s per driver (Redis)
+- Single DB query with Prisma `include` for related models
+- Response time: ~120ms average
+
+## Database Schema
+
+### Primary Models
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id",
+  "tenantId: String (tenant isolation)",
+  "driverId: String? (FK to User)",
+  "routeId: String? (FK to Route)",
+  "status: LoadStatus (PENDING | PICKED_UP | IN_TRANSIT | DELIVERED)",
+  "pickupLocation: String (city, state)",
+  "deliveryLocation: String (city, state)",
+  "scheduledPickupAt: DateTime",
+  "scheduledDeliveryAt: DateTime",
+  "loadedMiles: Int (for stats.milesToday)",
+  "createdAt: DateTime",
+  "updatedAt: DateTime"
+]} />
+
+<PrismaModelRef model="DriverHOSEntry" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "driverId: String (FK to User)",
+  "status: HOSDutyStatus (OFF_DUTY | SLEEPER_BERTH | ON_DUTY | DRIVING)",
+  "startedAt: DateTime (timestamp of status change)",
+  "createdAt: DateTime"
+]} />
+
+<PrismaModelRef model="Document" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "userId: String? (FK to User, nullable for truck docs)",
+  "driverId: String? (FK to Driver)",
+  "documentType: String (LICENSE | MEDICAL_CARD | ENDORSEMENT)",
+  "expiresAt: DateTime? (nullable for non-expiring docs)",
+  "status: String (computed from expiresAt)"
+]} />
+
+## Alert Generation Logic
+
+Alerts are computed server-side and returned in the dashboard response.
+
+### HOS alerts
+
+<CodeBlock language="typescript">
+{`// Pseudo-code
+const lastOffDutyEntry = await prisma.driverHOSEntry.findFirst({
+  where: { driverId, status: 'OFF_DUTY' },
+  orderBy: { startedAt: 'desc' }
+});
+
+const dutyWindowStart = lastOffDutyEntry?.startedAt || startOfToday;
+const elapsedMinutes = differenceInMinutes(now, dutyWindowStart);
+const remainingMinutes = (14 * 60) - elapsedMinutes;
+
+if (remainingMinutes < 120) {
+  alerts.push({
+    type: 'HOS_WARNING',
+    severity: remainingMinutes < 60 ? 'red' : 'yellow',
+    message: \`Less than \${Math.floor(remainingMinutes / 60)}h remaining\`,
+    actionUrl: '/driver/hours'
+  });
+}`}
+</CodeBlock>
+
+### Document expiry alerts
+
+<CodeBlock language="typescript">
+{`// Pseudo-code
+const documents = await prisma.document.findMany({
+  where: {
+    userId: currentUser.id,
+    expiresAt: { not: null }
+  }
+});
+
+for (const doc of documents) {
+  const daysUntilExpiry = differenceInDays(doc.expiresAt, now);
+
+  if (daysUntilExpiry < 0) {
+    alerts.push({
+      type: 'DOCUMENT_EXPIRED',
+      severity: 'red',
+      message: \`\${doc.documentType} expired\`,
+      actionUrl: '/driver/documents'
+    });
+  } else if (daysUntilExpiry <= 30) {
+    alerts.push({
+      type: 'DOCUMENT_EXPIRING',
+      severity: daysUntilExpiry <= 7 ? 'red' : 'yellow',
+      message: \`\${doc.documentType} expires in \${daysUntilExpiry} days\`,
+      actionUrl: '/driver/documents'
+    });
+  }
+}`}
+</CodeBlock>
+
+## Security
+
+<Callout variant="danger" title="Bearer Token Validation">
+All mobile API endpoints validate Bearer tokens via `validateMobileToken` utility. This decrypts the AES-256-GCM token, verifies tenant + role, and returns the authenticated user. Never bypass this check.
+</Callout>
+
+**Token validation flow:**
+
+<CodeBlock language="typescript">
+{`// From validateMobileToken utility
+export async function validateMobileToken(request: Request): Promise<User> {
+  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+  if (!token) throw new Error('Unauthorized');
+
+  const decrypted = decryptAES256GCM(token, MOBILE_SECRET_KEY);
+  const { userId, tenantId, role, exp } = JSON.parse(decrypted);
+
+  if (Date.now() > exp) throw new Error('Token expired');
+  if (role !== 'DRIVER') throw new Error('Forbidden');
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId, tenantId }
+  });
+
+  return user;
+}`}
+</CodeBlock>
+
+**Tenant isolation:** All queries automatically filter by `tenantId` extracted from the token. Cross-tenant data leaks are prevented at the query level.
+
+## Mobile Client Implementation
+
+The mobile app fetches dashboard data on app launch and when returning from background.
+
+<CodeBlock language="typescript">
+{`// apps/mobile/src/app/(driver)/index.tsx
+import { useQuery } from '@tanstack/react-query';
+import { driverApi } from '@drivecommand/api-client';
+
+export default function DriverDashboardScreen() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['driver-dashboard'],
+    queryFn: driverApi.getDashboard,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 30000 // 30s cache
+  });
+
+  if (isLoading) return <DashboardSkeleton />;
+
+  return (
+    <ScreenWrapper>
+      {data.activeLoad && <ActiveLoadCard load={data.activeLoad} />}
+      <StatChips stats={data.stats} />
+      {data.hasActiveRoute && <MyRouteButton />}
+      <AlertsBanner alerts={data.alerts} />
+    </ScreenWrapper>
+  );
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+- **Redis caching:** Dashboard response cached for 30s per driver to reduce DB load
+- **Single query:** Uses Prisma `include` to fetch Load + Route + Truck in one query
+- **Alert limits:** Max 5 alerts returned (sorted by severity + recency)
+- **Stats precomputation:** Deliveries/miles computed at query time (no denormalization yet)
+
+**Optimization opportunity:** Consider denormalizing deliveriesToday/milesToday into a daily driver stats table to avoid COUNT queries.
+
+## Related Features
+
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="driver-hours" />
+<FeatureCard slug="driver-documents" />
+
+## Troubleshooting
+
+**Dashboard shows no active load, but driver says they have one:**
+
+1. Check Load.driverId matches the driver's User.id
+2. Verify Load.status is PENDING, PICKED_UP, or IN_TRANSIT (not DELIVERED or CANCELLED)
+3. Check Redis cache — force invalidate if stale: `DEL driver-dashboard:{driverId}`
+
+**HOS remaining shows incorrect value:**
+
+1. Check DriverHOSEntry records for the driver — ensure status changes are logged
+2. Verify last OFF_DUTY entry timestamp is correct
+3. HOS clock resets on 10h break completion — check if break was logged
+
+**Alerts not appearing:**
+
+1. Verify Document.expiresAt is set correctly (not null)
+2. Check alert thresholds (30d for yellow, 7d for red)
+3. Alert generation runs server-side on every dashboard request (no cron job)

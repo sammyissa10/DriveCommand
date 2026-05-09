@@ -1,0 +1,387 @@
+---
+slug: driver-incidents
+title: Incident Reporting — Technical Reference
+summary: Incident reporting with photo capture, severity classification, R2 storage, and fleet manager notifications.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Mobile Team"
+securityNotes:
+  - "Photos stored in R2 with tenant-scoped prefixes"
+  - "Incident records are immutable once created"
+  - "GPS coordinates auto-captured if available"
+---
+
+# Incident Reporting — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Incident Reporting system allows drivers to document accidents, breakdowns, cargo damage, and safety hazards from the mobile app. All incidents are stored immutably for insurance claims, DOT audits, and safety analytics.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/incidents`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 32)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/incidents
+
+Returns list of incidents reported by the authenticated driver.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "incidents": [
+    {
+      "id": "uuid",
+      "incidentNumber": "INC-2024-001234",
+      "category": "ACCIDENT",
+      "severity": "MODERATE",
+      "description": "Side-swipe collision at mile marker 142 on I-94",
+      "location": "I-94 near Detroit, MI",
+      "lat": 42.3314,
+      "lng": -83.0458,
+      "photoUrls": [
+        "https://r2.drivecommand.com/incidents/uuid1.jpg",
+        "https://r2.drivecommand.com/incidents/uuid2.jpg"
+      ],
+      "occurredAt": "2024-05-09T14:30:00Z",
+      "createdAt": "2024-05-09T14:45:00Z"
+    }
+  ]
+}`}
+</CodeBlock>
+
+### POST /api/mobile/driver/incidents
+
+Creates a new incident report.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/incidents
+{
+  "category": "ACCIDENT", // ACCIDENT | BREAKDOWN | CARGO_DAMAGE | SAFETY_HAZARD | CITATION | OTHER
+  "severity": "MODERATE", // MINOR | MODERATE | SEVERE
+  "description": "Side-swipe collision at mile marker 142 on I-94",
+  "location": "I-94 near Detroit, MI",
+  "lat": 42.3314, // Optional, auto-captured from GPS
+  "lng": -83.0458,
+  "occurredAt": "2024-05-09T14:30:00Z", // Optional, defaults to now()
+  "photoIds": ["photo-uuid-1", "photo-uuid-2"] // Photos uploaded via /upload-photo first
+}
+
+// Response
+{
+  "incident": {
+    "id": "uuid",
+    "incidentNumber": "INC-2024-001234",
+    "createdAt": "2024-05-09T14:45:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- description minimum 20 characters
+- category must be valid enum
+- severity must be valid enum
+- photoIds must reference existing uploaded photos
+- occurredAt cannot be in the future
+
+**Side effects:**
+- Push notification sent to all OWNER/MANAGER users
+- Email sent to fleet manager (configurable)
+- Incident appears in fleet manager's incident dashboard
+
+### POST /api/mobile/driver/incidents/upload-photo
+
+Uploads a photo for an incident report.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request (multipart/form-data)
+POST /api/mobile/driver/incidents/upload-photo
+Content-Type: multipart/form-data
+{
+  photo: <binary image data>
+}
+
+// Response
+{
+  "photoId": "photo-uuid",
+  "url": "https://r2.drivecommand.com/incidents/tenant-uuid/photo-uuid.jpg",
+  "expiresAt": "2024-05-09T15:00:00Z" // Presigned URL expires in 15 minutes
+}`}
+</CodeBlock>
+
+**Photo upload flow:**
+
+1. Driver captures photo with camera
+2. App uploads to /upload-photo endpoint → receives photoId
+3. Repeat for up to 5 photos
+4. Submit incident with array of photoIds
+
+Photos are stored in R2 with tenant-scoped prefix: `incidents/{tenantId}/{photoId}.jpg`
+
+## Database Schema
+
+<PrismaModelRef model="DriverIncident" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "driverId: String @index (FK to User)",
+  "truckId: String? (FK to Truck, if known)",
+  "loadId: String? (FK to Load, if occurred during load)",
+  "incidentNumber: String @unique (auto-generated INC-YYYY-NNNNNN)",
+  "category: IncidentCategory (enum)",
+  "severity: IncidentSeverity (enum)",
+  "description: String (min 20 chars, max 2000)",
+  "location: String? (human-readable location)",
+  "lat: Float? (GPS latitude)",
+  "lng: Float? (GPS longitude)",
+  "photoUrls: String[] (array of R2 URLs)",
+  "occurredAt: DateTime (when incident happened)",
+  "createdAt: DateTime @default(now()) (when report was filed)",
+  "updatedAt: DateTime @updatedAt",
+  "resolvedAt: DateTime? (when fleet manager marked resolved)",
+  "resolution: String? (fleet manager notes)"
+]} />
+
+**Enums:**
+
+<CodeBlock language="typescript">
+{`export enum IncidentCategory {
+  ACCIDENT = 'ACCIDENT', // Collision with vehicle/property
+  BREAKDOWN = 'BREAKDOWN', // Mechanical failure
+  CARGO_DAMAGE = 'CARGO_DAMAGE', // Damaged freight
+  SAFETY_HAZARD = 'SAFETY_HAZARD', // Unsafe conditions
+  CITATION = 'CITATION', // Traffic ticket, violation
+  OTHER = 'OTHER' // Miscellaneous
+}
+
+export enum IncidentSeverity {
+  MINOR = 'MINOR', // No injuries, minimal damage, no tow
+  MODERATE = 'MODERATE', // Damage requiring repair, possible tow
+  SEVERE = 'SEVERE' // Injuries, major damage, emergency services
+}`}
+</CodeBlock>
+
+**Indexes:**
+- `@@index([tenantId, driverId, occurredAt])` — Fast driver incident history queries
+- `@@index([tenantId, severity, resolvedAt])` — Fleet manager unresolved incidents filter
+- `@@unique([incidentNumber])` — Ensures unique incident IDs
+
+## Incident Number Generation
+
+Incident numbers follow format: `INC-YYYY-NNNNNN`
+
+<CodeBlock language="typescript">
+{`async function generateIncidentNumber(tenantId: string): Promise<string> {
+  const year = new Date().getFullYear();
+
+  const lastIncident = await prisma.driverIncident.findFirst({
+    where: {
+      tenantId,
+      incidentNumber: { startsWith: \`INC-\${year}-\` }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  let sequence = 1;
+  if (lastIncident) {
+    const lastSequence = parseInt(lastIncident.incidentNumber.split('-')[2]);
+    sequence = lastSequence + 1;
+  }
+
+  return \`INC-\${year}-\${sequence.toString().padStart(6, '0')}\`;
+}`}
+</CodeBlock>
+
+**Collision handling:** Use database transaction with row-level lock to prevent duplicate incident numbers.
+
+## Photo Storage (R2)
+
+Photos are stored in Cloudflare R2 with tenant isolation.
+
+**Bucket structure:**
+```
+incidents/
+  {tenantId}/
+    {photoId}.jpg
+    {photoId}.jpg
+```
+
+**Upload process:**
+
+<CodeBlock language="typescript">
+{`import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY
+  }
+});
+
+export async function uploadIncidentPhoto(
+  tenantId: string,
+  photoId: string,
+  buffer: Buffer,
+  mimeType: string
+): Promise<string> {
+  const key = \`incidents/\${tenantId}/\${photoId}.jpg\`;
+
+  await s3.send(new PutObjectCommand({
+    Bucket: process.env.R2_BUCKET_NAME,
+    Key: key,
+    Body: buffer,
+    ContentType: mimeType,
+    Metadata: {
+      tenantId,
+      photoId
+    }
+  }));
+
+  return \`https://\${process.env.R2_PUBLIC_URL}/\${key}\`;
+}`}
+</CodeBlock>
+
+**Photo constraints:**
+- Max file size: 10 MB
+- Supported formats: JPG, PNG, HEIC
+- Max 5 photos per incident
+
+## Fleet Manager Notifications
+
+When a driver submits an incident, fleet managers receive immediate notifications.
+
+<CodeBlock language="typescript">
+{`// After incident creation
+import { sendPushToUser } from '@/lib/push/send';
+import { sendEmail } from '@/lib/email/send';
+
+const managers = await prisma.user.findMany({
+  where: {
+    tenantId: incident.tenantId,
+    role: { in: ['OWNER', 'MANAGER'] }
+  }
+});
+
+for (const manager of managers) {
+  // Push notification
+  await sendPushToUser(manager.id, {
+    title: \`New \${incident.severity} Incident Reported\`,
+    body: \`\${driverName} reported \${incident.category}\`,
+    data: {
+      type: 'INCIDENT',
+      incidentId: incident.id,
+      url: \`/carrier/safety/incidents/\${incident.id}\`
+    }
+  });
+
+  // Email (if severity is MODERATE or SEVERE)
+  if (incident.severity !== 'MINOR') {
+    await sendEmail({
+      to: manager.email,
+      subject: \`Incident Alert: \${incident.incidentNumber}\`,
+      template: 'incident-alert',
+      data: { incident, driver, photos: incident.photoUrls }
+    });
+  }
+}`}
+</CodeBlock>
+
+## Immutability
+
+<Callout variant="danger" title="Immutable Records">
+DriverIncident records are immutable after creation. Drivers cannot edit or delete incidents. Only fleet managers can append resolution notes. This maintains audit integrity for insurance claims and DOT investigations.
+</Callout>
+
+**Allowed updates:**
+- Fleet manager can set `resolvedAt` + `resolution` (via owner portal)
+- System can add `truckId` if detected retroactively
+
+**Prohibited updates:**
+- Driver cannot modify category, severity, description, photos, occurredAt
+- No DELETE operations allowed
+
+## GPS Auto-Capture
+
+When a driver creates an incident, the mobile app captures GPS coordinates automatically.
+
+<CodeBlock language="typescript">
+{`// Mobile app (apps/mobile)
+import * as Location from 'expo-location';
+
+async function createIncident(data: IncidentFormData) {
+  let location = null;
+
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status === 'granted') {
+      const position = await Location.getCurrentPositionAsync({});
+      location = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+    }
+  } catch (error) {
+    // GPS unavailable, proceed without coordinates
+  }
+
+  await driverApi.createIncident({
+    ...data,
+    lat: location?.lat,
+    lng: location?.lng
+  });
+}`}
+</CodeBlock>
+
+GPS coordinates are used for safety heat maps in the fleet manager dashboard.
+
+## Performance Considerations
+
+- **Photo upload:** Limit 5 photos × 10 MB = 50 MB max per incident
+- **R2 latency:** ~200ms average for photo upload
+- **Index usage:** Query uses `@@index([tenantId, driverId])` for fast driver history
+
+**Optimization:** Consider lazy-loading photos in incident list (only load thumbnails, full images on tap).
+
+## Related Features
+
+<FeatureCard slug="safety-analytics" />
+<FeatureCard slug="driver-dashboard" />
+
+## Troubleshooting
+
+**Photo upload fails:**
+
+1. Check R2 credentials in environment variables
+2. Verify file size < 10 MB
+3. Check MIME type is image/jpeg, image/png, or image/heic
+4. Check R2 bucket CORS policy allows mobile app domain
+
+**Incident not appearing in fleet manager dashboard:**
+
+1. Verify DriverIncident.tenantId matches fleet manager's tenant
+2. Check filter settings (severity, date range)
+3. Confirm incident is not resolved (resolvedAt IS NULL)
+
+**GPS coordinates not captured:**
+
+1. Check mobile app has location permission
+2. Verify expo-location is installed
+3. Check if driver denied permission prompt
+4. Coordinates are optional — incident can be created without GPS

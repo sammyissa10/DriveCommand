@@ -1,0 +1,339 @@
+---
+slug: driver-my-route
+title: Driver My Route — Technical Reference
+summary: Multi-stop route view with loads timeline, truck details, route-scoped messaging, and stop sequencing.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Mobile Team"
+securityNotes:
+  - "Drivers can only view routes they are assigned to"
+  - "Stop sequence is read-only (only dispatch can modify)"
+  - "Route messages are scoped to routeId"
+---
+
+# Driver My Route — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Driver My Route displays multi-stop route assignments with all pickups and deliveries in sequence order. It integrates Load, RouteStop, Route, and Truck data into a single timeline view with route-level messaging.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/my-route`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 37.1)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/routes/current
+
+Returns the driver's currently assigned route with all stops and loads.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "route": {
+    "id": "uuid",
+    "name": "Chicago to Detroit Multi-Stop",
+    "date": "2024-05-09",
+    "status": "IN_PROGRESS",
+    "truckId": "uuid",
+    "truck": {
+      "id": "uuid",
+      "unitNumber": "Truck 42",
+      "make": "Freightliner",
+      "model": "Cascadia",
+      "year": 2022,
+      "licensePlate": "ABC1234",
+      "vin": "1FUJA6CV...",
+      "odometerReading": 87432,
+      "fuelLevel": 68
+    },
+    "stops": [
+      {
+        "id": "uuid",
+        "type": "PICKUP",
+        "sequence": 1,
+        "address": "123 Warehouse St, Chicago, IL 60601",
+        "scheduledAt": "2024-05-09T08:00:00Z",
+        "contactName": "John Doe",
+        "contactPhone": "+15551234567",
+        "loadId": "uuid",
+        "load": {
+          "loadNumber": "LD-2024-001",
+          "status": "PICKED_UP",
+          "bolNumber": "BOL-12345",
+          "poNumber": "PO-67890"
+        },
+        "isCompleted": true
+      },
+      {
+        "id": "uuid",
+        "type": "DELIVERY",
+        "sequence": 2,
+        "address": "456 Distribution Ave, Detroit, MI 48201",
+        "scheduledAt": "2024-05-09T16:00:00Z",
+        "contactName": "Jane Smith",
+        "contactPhone": "+15559876543",
+        "loadId": "uuid",
+        "load": {
+          "loadNumber": "LD-2024-001",
+          "status": "IN_TRANSIT",
+          "bolNumber": "BOL-12345",
+          "poNumber": "PO-67890"
+        },
+        "isCompleted": false
+      }
+    ]
+  }
+}`}
+</CodeBlock>
+
+**Query logic:**
+
+1. Find Route where any Load has `driverId = currentUser.id` AND `status NOT IN (DELIVERED, CANCELLED)`
+2. Include RouteStop (ordered by sequence) + Load (via loadId FK) + Truck
+3. Compute `isCompleted` per stop based on Load.status and stop type
+
+**Performance:** Single query with nested includes. Response cached for 60s.
+
+### GET /api/mobile/driver/routes/[id]/messages
+
+Returns route-scoped messages for the given route.
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "messages": [
+    {
+      "id": "uuid",
+      "senderId": "uuid",
+      "senderName": "Dispatch",
+      "senderRole": "OWNER",
+      "message": "Stop 3 contact changed to Mike Johnson, +15551112222",
+      "createdAt": "2024-05-09T10:30:00Z",
+      "isRead": true
+    }
+  ]
+}`}
+</CodeBlock>
+
+**Note:** Route messages use FleetMessage model with `routeId` scope (not `loadId`).
+
+### POST /api/mobile/driver/routes/[id]/messages
+
+Sends a route-scoped message to dispatch.
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/routes/[id]/messages
+{
+  "message": "Traffic on I-94, ETA delayed 30 minutes"
+}
+
+// Response
+{
+  "message": {
+    "id": "uuid",
+    "createdAt": "2024-05-09T11:00:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Side effects:**
+- Push notification sent to all OWNER/MANAGER users in tenant
+- FleetMessage record created with `routeId` + `senderId`
+
+## Database Schema
+
+<PrismaModelRef model="Route" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "name: String",
+  "date: DateTime (scheduled route date)",
+  "status: RouteStatus (PLANNED | IN_PROGRESS | COMPLETED | CANCELLED)",
+  "truckId: String? (FK to Truck)",
+  "createdAt: DateTime",
+  "updatedAt: DateTime"
+]} />
+
+<PrismaModelRef model="RouteStop" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "routeId: String @index",
+  "loadId: String? (FK to Load)",
+  "type: RouteStopType (PICKUP | DELIVERY)",
+  "sequence: Int (stop order, 1-indexed)",
+  "address: String",
+  "city: String",
+  "state: String",
+  "lat: Float",
+  "lng: Float",
+  "scheduledAt: DateTime",
+  "contactName: String?",
+  "contactPhone: String?",
+  "bolNumber: String?",
+  "poNumber: String?",
+  "completedAt: DateTime? (timestamp when load status advanced)"
+]} />
+
+<PrismaModelRef model="FleetMessage" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "senderId: String (FK to User)",
+  "recipientId: String? (FK to User, null for broadcast)",
+  "loadId: String? (FK to Load)",
+  "routeId: String? (FK to Route) — for route-scoped messages",
+  "message: String (max 500 chars)",
+  "isBroadcast: Boolean",
+  "isRead: Boolean @default(false)",
+  "createdAt: DateTime"
+]} />
+
+## Stop Sequence Logic
+
+RouteStop.sequence determines timeline order. Stops are always displayed in ascending sequence order.
+
+<CodeBlock language="typescript">
+{`// Query from endpoint
+const route = await prisma.route.findFirst({
+  where: {
+    tenantId: currentUser.tenantId,
+    loads: {
+      some: {
+        driverId: currentUser.id,
+        status: { notIn: ['DELIVERED', 'CANCELLED'] }
+      }
+    }
+  },
+  include: {
+    truck: true,
+    stops: {
+      orderBy: { sequence: 'asc' }, // Critical for timeline order
+      include: {
+        load: true
+      }
+    }
+  }
+});`}
+</CodeBlock>
+
+**Sequence modification:** Only dispatch (owner portal) can reorder stops. Drivers cannot skip stops or change sequence.
+
+## Route vs. Load Messaging
+
+**Two message scopes:**
+
+1. **Load messages** (`FleetMessage.loadId`) — Specific to one shipment
+2. **Route messages** (`FleetMessage.routeId`) — Multi-stop trip coordination
+
+**When to use route messages:**
+- ETA changes affecting multiple stops
+- Truck issues (breakdown, flat tire)
+- Sequence change requests
+- General trip-level questions
+
+**When to use load messages:**
+- Questions about specific freight
+- BOL/PO issues
+- Single-stop delays
+
+Mobile UI separates these into different threads.
+
+## Stop Completion Status
+
+`isCompleted` is computed server-side based on Load.status and stop type:
+
+<CodeBlock language="typescript">
+{`function computeStopCompletion(
+  stop: RouteStop & { load: Load }
+): boolean {
+  if (!stop.load) return false;
+
+  if (stop.type === 'PICKUP') {
+    return ['PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(stop.load.status);
+  }
+
+  if (stop.type === 'DELIVERY') {
+    return stop.load.status === 'DELIVERED';
+  }
+
+  return false;
+}`}
+</CodeBlock>
+
+**Visual indicators in mobile app:**
+- Green checkmark = completed
+- Blue dot = current stop
+- Gray dot = upcoming
+
+## Truck Details
+
+Truck info is read-only in the driver app. Odometer and fuel level are last-reported values (updated via mobile GPS reports or manual entry in owner portal).
+
+**Fields displayed:**
+- unitNumber, make, model, year
+- licensePlate, VIN
+- odometerReading (last reported)
+- fuelLevel (last reported %, nullable)
+
+## Security
+
+<Callout variant="danger" title="Route Access Control">
+Drivers can only view routes where at least one Load in the route has `driverId` matching the authenticated user. Never expose routes for other drivers.
+</Callout>
+
+**Validation pattern:**
+
+<CodeBlock language="typescript">
+{`const route = await prisma.route.findUnique({
+  where: { id: routeId },
+  include: {
+    loads: { where: { driverId: currentUser.id } }
+  }
+});
+
+if (!route || route.loads.length === 0) {
+  throw new Error('Forbidden: Not assigned to this route');
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+- **Single query:** Route + Truck + Stops + Loads fetched with one Prisma include
+- **Caching:** Route data cached for 60s in Redis (longer than dashboard due to less frequent changes)
+- **Stop limit:** Routes with > 20 stops may paginate (rare in trucking)
+
+**Index:** `@@index([routeId, sequence])` on RouteStop for fast ordered retrieval.
+
+## Related Features
+
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="driver-messages" />
+
+## Troubleshooting
+
+**Driver can't see My Route screen:**
+
+1. Verify Load.routeId is not null (single loads without multi-stop routes don't show My Route)
+2. Check Route.status is IN_PROGRESS (COMPLETED/CANCELLED routes are hidden)
+3. Confirm driver is assigned to at least one load in the route
+
+**Stop sequence is wrong:**
+
+1. Check RouteStop.sequence values in DB (should be 1, 2, 3, ...)
+2. Verify query uses `orderBy: { sequence: 'asc' }`
+3. Sequence gaps are allowed (e.g., 1, 3, 5) — still displays in order
+
+**Route messages not appearing:**
+
+1. Verify FleetMessage.routeId matches the route
+2. Check senderId/recipientId — route messages should have recipientId = null (broadcast to dispatch)
+3. Confirm tenantId matches

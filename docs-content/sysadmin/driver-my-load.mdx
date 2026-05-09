@@ -1,0 +1,317 @@
+---
+slug: driver-my-load
+title: Driver My Load — Technical Reference
+summary: Load status management with forward-only state machine, stop timeline, and real-time updates via REST API.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Mobile Team"
+securityNotes:
+  - "Drivers can only view/update loads assigned to them"
+  - "Status transitions are forward-only (no rollback)"
+  - "All updates emit real-time events to dispatch"
+---
+
+# Driver My Load — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Driver My Load provides mobile drivers with current load details and status update controls. The feature enforces a forward-only state machine (PENDING → PICKED_UP → IN_TRANSIT → DELIVERED) and emits real-time events to notify dispatch of progress.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/my-load`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 31)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/loads
+
+Returns list of loads assigned to the authenticated driver.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+**Query params:** `?status=ACTIVE` (optional filter)
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "loads": [
+    {
+      "id": "uuid",
+      "loadNumber": "LD-2024-001",
+      "status": "IN_TRANSIT",
+      "pickupLocation": "Chicago, IL",
+      "deliveryLocation": "Detroit, MI",
+      "scheduledPickupAt": "2024-05-09T08:00:00Z",
+      "scheduledDeliveryAt": "2024-05-09T16:00:00Z",
+      "bolNumber": "BOL-12345",
+      "poNumber": "PO-67890",
+      "commodity": "Refrigerated Food",
+      "weight": 42000,
+      "pieces": 24,
+      "routeId": "uuid",
+      "truckId": "uuid",
+      "truck": {
+        "unitNumber": "Truck 42",
+        "licensePlate": "ABC1234"
+      }
+    }
+  ]
+}`}
+</CodeBlock>
+
+### GET /api/mobile/driver/loads/[id]
+
+Returns detailed information for a specific load.
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "load": {
+    "id": "uuid",
+    "loadNumber": "LD-2024-001",
+    "status": "IN_TRANSIT",
+    // ... all load fields
+    "stops": [
+      {
+        "id": "uuid",
+        "type": "PICKUP",
+        "address": "123 Warehouse St, Chicago, IL 60601",
+        "scheduledAt": "2024-05-09T08:00:00Z",
+        "contactName": "John Doe",
+        "contactPhone": "+15551234567",
+        "bolNumber": "BOL-12345",
+        "isCompleted": true,
+        "sequence": 1
+      },
+      {
+        "id": "uuid",
+        "type": "DELIVERY",
+        "address": "456 Distribution Ave, Detroit, MI 48201",
+        "scheduledAt": "2024-05-09T16:00:00Z",
+        "contactName": "Jane Smith",
+        "contactPhone": "+15559876543",
+        "isCompleted": false,
+        "sequence": 2
+      }
+    ]
+  }
+}`}
+</CodeBlock>
+
+**Security:** Endpoint verifies `load.driverId === currentUser.id` before returning data. Cross-driver access blocked.
+
+### PATCH /api/mobile/driver/loads/[id]/status
+
+Updates load status to the next valid state.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+PATCH /api/mobile/driver/loads/[id]/status
+{
+  "status": "PICKED_UP"
+}
+
+// Response
+{
+  "load": {
+    "id": "uuid",
+    "status": "PICKED_UP",
+    "statusUpdatedAt": "2024-05-09T08:15:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- Status must be next in sequence (cannot skip or rollback)
+- Driver must be assigned to the load
+- Timestamp is server-generated (client cannot spoof)
+
+**Side effects:**
+- Push notification sent to dispatch
+- Load.updatedAt timestamp updated
+- FleetMessage auto-created (optional, configurable)
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "driverId: String? (FK to User)",
+  "routeId: String? (FK to Route)",
+  "truckId: String? (FK to Truck)",
+  "loadNumber: String @unique",
+  "status: LoadStatus (PENDING | PICKED_UP | IN_TRANSIT | DELIVERED | CANCELLED)",
+  "pickupLocation: String (city, state for display)",
+  "deliveryLocation: String (city, state for display)",
+  "scheduledPickupAt: DateTime",
+  "scheduledDeliveryAt: DateTime",
+  "bolNumber: String?",
+  "poNumber: String?",
+  "commodity: String?",
+  "weight: Int? (pounds)",
+  "pieces: Int?",
+  "loadedMiles: Int?",
+  "pickupStopId: String? (FK to RouteStop)",
+  "deliveryStopId: String? (FK to RouteStop)",
+  "statusUpdatedAt: DateTime? (last status change timestamp)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="RouteStop" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "routeId: String (FK to Route)",
+  "loadId: String? (FK to Load)",
+  "type: RouteStopType (PICKUP | DELIVERY)",
+  "address: String (full street address)",
+  "city: String",
+  "state: String",
+  "zipCode: String",
+  "lat: Float",
+  "lng: Float",
+  "scheduledAt: DateTime",
+  "contactName: String?",
+  "contactPhone: String?",
+  "bolNumber: String?",
+  "poNumber: String?",
+  "sequence: Int (stop order in route)",
+  "completedAt: DateTime? (timestamp when status advanced)"
+]} />
+
+## Load Status State Machine
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Load created, driver assigned, awaiting pickup" },
+  { label: "PICKED_UP", description: "Freight loaded, BOL signed, ready to depart" },
+  { label: "IN_TRANSIT", description: "En route to delivery location" },
+  { label: "DELIVERED", description: "Freight unloaded, POD signed" }
+]} />
+
+### Transition Rules
+
+<CodeBlock language="typescript">
+{`// Server-side validation
+const VALID_TRANSITIONS: Record<LoadStatus, LoadStatus[]> = {
+  PENDING: ['PICKED_UP'],
+  PICKED_UP: ['IN_TRANSIT'],
+  IN_TRANSIT: ['DELIVERED'],
+  DELIVERED: [], // Terminal state
+  CANCELLED: [] // Terminal state
+};
+
+export function validateStatusTransition(
+  currentStatus: LoadStatus,
+  newStatus: LoadStatus
+): boolean {
+  return VALID_TRANSITIONS[currentStatus]?.includes(newStatus) ?? false;
+}`}
+</CodeBlock>
+
+**CANCELLED status:** Only dispatch (via owner portal) can cancel loads. Drivers cannot cancel or revert statuses.
+
+## Offline Queue Support
+
+The mobile app queues status updates when offline and flushes when reconnected.
+
+<CodeBlock language="typescript">
+{`// Mobile implementation (apps/mobile)
+import { callOrQueue } from '@/lib/offline/queue';
+
+async function updateLoadStatus(loadId: string, status: LoadStatus) {
+  await callOrQueue({
+    key: \`update-load-\${loadId}\`,
+    fn: () => driverApi.updateLoadStatus(loadId, status),
+    dedupe: true // Only keep latest status update per load
+  });
+}`}
+</CodeBlock>
+
+Queued updates flush with exponential backoff (1s, 2s, 4s, 8s) on reconnection.
+
+## Real-time Notifications
+
+When a driver updates load status, dispatch receives a push notification.
+
+<CodeBlock language="typescript">
+{`// From PATCH /api/mobile/driver/loads/[id]/status
+import { sendPushToUser } from '@/lib/push/send';
+
+// After successful status update
+const dispatchUsers = await prisma.user.findMany({
+  where: {
+    tenantId: load.tenantId,
+    role: { in: ['OWNER', 'MANAGER'] }
+  }
+});
+
+for (const user of dispatchUsers) {
+  await sendPushToUser(user.id, {
+    title: \`Load \${load.loadNumber} Updated\`,
+    body: \`Driver advanced status to \${newStatus}\`,
+    data: {
+      type: 'LOAD_STATUS_UPDATE',
+      loadId: load.id,
+      url: \`/carrier/loads/\${load.id}\`
+    }
+  });
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+- **Stop timeline:** Uses Prisma `include` to fetch RouteStop in single query
+- **Status index:** `@@index([tenantId, status, driverId])` for fast active load queries
+- **Cache invalidation:** Status updates clear Redis cache for dashboard/loads list
+
+**Optimization:** Consider using Prisma transactions for status updates to ensure atomicity when updating Load + RouteStop.completedAt simultaneously.
+
+## Related Models
+
+- <PrismaModelRef model="Route" /> — Parent route containing multiple stops
+- <PrismaModelRef model="Truck" /> — Vehicle assigned to this load
+- <PrismaModelRef model="FleetMessage" /> — Load-scoped messages
+- <PrismaModelRef model="User" /> — Driver assigned to load
+
+## Security
+
+<Callout variant="danger" title="Driver Isolation">
+Drivers can ONLY view and update loads where `driverId` matches their authenticated user ID. Always validate ownership before returning load data or accepting status updates.
+</Callout>
+
+<CodeBlock language="typescript">
+{`// Example ownership check
+const load = await prisma.load.findUnique({ where: { id: loadId } });
+
+if (load.driverId !== currentUser.id) {
+  throw new Error('Forbidden: Not assigned to this load');
+}`}
+</CodeBlock>
+
+## Troubleshooting
+
+**Status update returns 400 "Invalid transition":**
+
+1. Check current load status in DB
+2. Verify requested status is next in sequence
+3. Ensure load is not in DELIVERED or CANCELLED state
+
+**Driver can't see their load:**
+
+1. Verify Load.driverId matches User.id
+2. Check tenant isolation — Load.tenantId === User.tenantId
+3. Confirm status is not CANCELLED
+
+**Offline queue not syncing:**
+
+1. Check NetInfo reconnection event listener in mobile app
+2. Verify queued mutation key matches pattern in MMKV storage
+3. Check exponential backoff retry count (max 5 retries)

@@ -1,0 +1,423 @@
+---
+slug: driver-tasks
+title: Driver Workflow Tasks — Technical Reference
+summary: Workflow task completion with checklist progression, step validation, photo/signature capture, and ActiveChecklist state management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Mobile Team"
+runbookUrl: https://notion.so/drivecommand/Workflow-Engine-Architecture
+securityNotes:
+  - "Task completion is sequential (cannot skip steps)"
+  - "Completed tasks are immutable"
+  - "Photos/signatures stored in R2 with tenant isolation"
+---
+
+# Driver Workflow Tasks — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center. For workflow engine architecture, see docs/specs/workflow-engine.md.
+</Callout>
+
+## Overview
+
+Driver Workflow Tasks enable standardized process execution via mobile checklists. Tasks can require simple confirmation, photo capture, signature, or text entry. Each ActiveChecklist tracks completion progress and stores all responses immutably.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/tasks`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (workflow engine)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/tasks/active
+
+Returns all active checklists assigned to the authenticated driver.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "activeChecklists": [
+    {
+      "id": "uuid",
+      "checklistId": "uuid",
+      "checklistName": "Pre-Trip Inspection",
+      "status": "IN_PROGRESS",
+      "progress": {
+        "completed": 3,
+        "total": 12,
+        "percentage": 25
+      },
+      "tasks": [
+        {
+          "id": "uuid",
+          "stepId": "uuid",
+          "name": "Check tire pressure",
+          "instruction": "Verify all tires are inflated to 110 PSI",
+          "type": "CHECKBOX",
+          "isCompleted": true,
+          "sequence": 1
+        },
+        {
+          "id": "uuid",
+          "stepId": "uuid",
+          "name": "Photograph secured cargo",
+          "instruction": "Take photo showing all straps tight",
+          "type": "PHOTO",
+          "isCompleted": false,
+          "sequence": 2
+        }
+      ],
+      "startedAt": "2024-05-09T08:00:00Z",
+      "dueAt": "2024-05-09T12:00:00Z"
+    }
+  ]
+}`}
+</CodeBlock>
+
+### GET /api/mobile/driver/tasks/[id]
+
+Returns detailed information for a specific active checklist.
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "activeChecklist": {
+    "id": "uuid",
+    "checklistName": "Pre-Trip Inspection",
+    "description": "Complete before starting your shift",
+    "status": "IN_PROGRESS",
+    "tasks": [/* full task array */],
+    "completedTasks": [
+      {
+        "taskId": "uuid",
+        "stepId": "uuid",
+        "response": {
+          "type": "CHECKBOX",
+          "value": true
+        },
+        "completedAt": "2024-05-09T08:05:00Z"
+      }
+    ]
+  }
+}`}
+</CodeBlock>
+
+### POST /api/mobile/driver/tasks/[id]/complete-step
+
+Completes a single task step in the checklist.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/tasks/[id]/complete-step
+{
+  "stepId": "uuid",
+  "response": {
+    "type": "CHECKBOX", // CHECKBOX | PHOTO | SIGNATURE | TEXT
+    "value": true, // or photoUrl, signatureUrl, text string
+    "photoId": "uuid", // if type=PHOTO
+    "signatureId": "uuid" // if type=SIGNATURE
+  }
+}
+
+// Response
+{
+  "task": {
+    "id": "uuid",
+    "isCompleted": true,
+    "completedAt": "2024-05-09T08:10:00Z"
+  },
+  "progress": {
+    "completed": 4,
+    "total": 12,
+    "percentage": 33
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- stepId must be the next incomplete task (sequential completion enforced)
+- response.type must match step.type
+- PHOTO/SIGNATURE require photoId/signatureId referencing uploaded asset
+
+### POST /api/mobile/driver/tasks/[id]/submit
+
+Submits a completed checklist.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/tasks/[id]/submit
+
+// Response
+{
+  "activeChecklist": {
+    "id": "uuid",
+    "status": "COMPLETED",
+    "completedAt": "2024-05-09T08:30:00Z"
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- All tasks must be completed (progress.completed === progress.total)
+- Status must be IN_PROGRESS (cannot re-submit COMPLETED checklists)
+
+**Side effects:**
+- ActiveChecklist.status → COMPLETED
+- Fleet manager notified via push notification (if checklist requires approval)
+
+### POST /api/mobile/driver/tasks/upload-photo
+
+Uploads a photo for a PHOTO task.
+
+<CodeBlock language="typescript">
+{`// Request (multipart/form-data)
+POST /api/mobile/driver/tasks/upload-photo
+Content-Type: multipart/form-data
+{
+  photo: <binary image data>
+}
+
+// Response
+{
+  "photoId": "photo-uuid",
+  "url": "https://r2.drivecommand.com/tasks/tenant-uuid/photo-uuid.jpg"
+}`}
+</CodeBlock>
+
+Similar endpoint for signatures: `/upload-signature`
+
+## Database Schema
+
+<PrismaModelRef model="ActiveChecklist" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "checklistId: String (FK to Checklist template)",
+  "assignedToId: String (FK to User, the driver)",
+  "assignedById: String? (FK to User, who assigned it)",
+  "status: ActiveChecklistStatus (PENDING | IN_PROGRESS | COMPLETED | CANCELLED)",
+  "triggerType: TriggerType? (MANUAL | AUTO_START | SCHEDULED)",
+  "triggerContext: Json? (load, route, shift context)",
+  "completedTasksCount: Int @default(0)",
+  "totalTasksCount: Int (copied from template)",
+  "startedAt: DateTime?",
+  "completedAt: DateTime?",
+  "dueAt: DateTime?",
+  "createdAt: DateTime @default(now())"
+]} />
+
+<PrismaModelRef model="Task" fields={[
+  "id: String @id",
+  "activeChecklistId: String @index (FK to ActiveChecklist)",
+  "stepId: String (FK to step template)",
+  "name: String (copied from template)",
+  "instruction: String?",
+  "type: TaskType (CHECKBOX | PHOTO | SIGNATURE | TEXT)",
+  "sequence: Int (step order)",
+  "isCompleted: Boolean @default(false)",
+  "response: Json? (task completion data)",
+  "completedAt: DateTime?",
+  "createdAt: DateTime @default(now())"
+]} />
+
+**Enums:**
+
+<CodeBlock language="typescript">
+{`export enum TaskType {
+  CHECKBOX = 'CHECKBOX', // Simple yes/no confirmation
+  PHOTO = 'PHOTO', // Photo capture required
+  SIGNATURE = 'SIGNATURE', // Signature pad required
+  TEXT = 'TEXT' // Text input (free-form or numeric)
+}
+
+export enum ActiveChecklistStatus {
+  PENDING = 'PENDING', // Created but not started
+  IN_PROGRESS = 'IN_PROGRESS', // Driver has started
+  COMPLETED = 'COMPLETED', // All tasks done
+  CANCELLED = 'CANCELLED' // Cancelled by manager
+}`}
+</CodeBlock>
+
+## Task Completion Workflow
+
+<ProcessDiagram steps={[
+  { label: "Checklist assigned", description: "ActiveChecklist created with status=PENDING" },
+  { label: "Driver starts", description: "First task completed → status=IN_PROGRESS" },
+  { label: "Sequential completion", description: "Tasks completed in order (sequence enforced)" },
+  { label: "All tasks done", description: "Driver taps Submit → status=COMPLETED" }
+]} />
+
+## Sequential Completion Enforcement
+
+Tasks must be completed in sequence order. Drivers cannot skip tasks.
+
+<CodeBlock language="typescript">
+{`// Server-side validation in complete-step endpoint
+const incompleteTasks = await prisma.task.findMany({
+  where: {
+    activeChecklistId,
+    isCompleted: false
+  },
+  orderBy: { sequence: 'asc' }
+});
+
+const nextTask = incompleteTasks[0];
+
+if (nextTask.stepId !== requestedStepId) {
+  throw new Error(\`Must complete task \${nextTask.sequence} first\`);
+}`}
+</CodeBlock>
+
+**Why enforce sequence?**
+- Ensures critical steps aren't skipped (e.g., tire check before departure)
+- Maintains audit trail order
+- Prevents accidental task completion
+
+## Auto-Start Checklists
+
+Checklists can auto-start based on triggers:
+
+<CodeBlock language="typescript">
+{`// Example: Pre-trip checklist auto-starts when driver goes ON_DUTY
+// From POST /api/mobile/driver/hos
+
+if (newStatus === 'ON_DUTY') {
+  const preTripTemplate = await prisma.checklist.findFirst({
+    where: {
+      tenantId,
+      triggerType: 'AUTO_START',
+      triggerCondition: { type: 'HOS_STATUS_CHANGE', status: 'ON_DUTY' }
+    }
+  });
+
+  if (preTripTemplate) {
+    await createActiveChecklist({
+      checklistId: preTripTemplate.id,
+      assignedToId: currentUser.id,
+      triggerType: 'AUTO_START',
+      triggerContext: { hosEntryId: newEntry.id }
+    });
+
+    // Push notification to driver
+    await sendPushToUser(currentUser.id, {
+      title: 'Pre-Trip Inspection Required',
+      body: 'Complete your pre-trip checklist before driving'
+    });
+  }
+}`}
+</CodeBlock>
+
+**Auto-start triggers:**
+- HOS status change (ON_DUTY, DRIVING)
+- Load status change (PICKED_UP)
+- Route started
+- Time-based (daily at 6 AM)
+
+## Photo/Signature Storage
+
+Photos and signatures are stored in R2 with tenant isolation.
+
+**Bucket structure:**
+```
+tasks/
+  {tenantId}/
+    photos/
+      {photoId}.jpg
+    signatures/
+      {signatureId}.png
+```
+
+**Upload flow:**
+1. Driver captures photo/signature in mobile app
+2. App uploads to `/upload-photo` or `/upload-signature` → receives ID
+3. Driver completes task with `photoId` or `signatureId` in response
+4. Server validates ID exists, stores URL in Task.response
+
+## Progress Calculation
+
+Progress is computed server-side and cached on ActiveChecklist.
+
+<CodeBlock language="typescript">
+{`// After completing a task
+const completedCount = await prisma.task.count({
+  where: { activeChecklistId, isCompleted: true }
+});
+
+const totalCount = await prisma.task.count({
+  where: { activeChecklistId }
+});
+
+await prisma.activeChecklist.update({
+  where: { id: activeChecklistId },
+  data: {
+    completedTasksCount: completedCount,
+    totalTasksCount: totalCount
+  }
+});
+
+return {
+  completed: completedCount,
+  total: totalCount,
+  percentage: Math.round((completedCount / totalCount) * 100)
+};`}
+</CodeBlock>
+
+**Optimization:** `completedTasksCount` and `totalTasksCount` are denormalized for fast dashboard queries.
+
+## Immutability
+
+<Callout variant="danger" title="Completed Tasks Are Immutable">
+Once a task is marked complete (isCompleted=true), it cannot be edited. Task.response and Task.completedAt are locked. This maintains audit integrity for compliance checklists (DVIR, load securement).
+</Callout>
+
+**Allowed updates:**
+- Fleet manager can cancel ActiveChecklist (status → CANCELLED)
+- System can update progress counters
+
+**Prohibited updates:**
+- Driver cannot un-complete a task
+- Driver cannot edit response after submission
+
+## Performance Considerations
+
+- **Batch task creation:** When ActiveChecklist is created, all Task records are inserted in one transaction
+- **Index usage:** `@@index([activeChecklistId, sequence])` for fast task ordering
+- **Cache progress:** `completedTasksCount` cached on ActiveChecklist to avoid COUNT queries
+
+**Optimization:** Consider lazy-loading photos (only load full images when user taps task).
+
+## Related Features
+
+<FeatureCard slug="checklists" />
+<FeatureCard slug="driver-hours" />
+<FeatureCard slug="driver-my-load" />
+
+## Troubleshooting
+
+**Driver cannot complete a task:**
+
+1. Check if task is next in sequence (query incompleteTasks ordered by sequence)
+2. Verify task type matches response type
+3. Check if photo/signature ID exists for PHOTO/SIGNATURE tasks
+4. Confirm ActiveChecklist status is IN_PROGRESS (not COMPLETED or CANCELLED)
+
+**Progress percentage incorrect:**
+
+1. Verify completedTasksCount and totalTasksCount are in sync
+2. Run manual recount: `SELECT COUNT(*) FROM Task WHERE activeChecklistId = ? AND isCompleted = true`
+3. Update ActiveChecklist with correct counts
+
+**Auto-start checklist not triggering:**
+
+1. Check Checklist.triggerType and triggerCondition in template
+2. Verify trigger event fired (e.g., HOS status change logged)
+3. Check driver has permission to receive checklist (role-based assignment)
+4. Verify no existing PENDING/IN_PROGRESS checklist of same type (deduplication rule)

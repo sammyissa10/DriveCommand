@@ -1,0 +1,312 @@
+---
+slug: driver-hours
+title: Hours of Service — Technical Reference
+summary: HOS logging with 14h/11h duty clock math, status transitions, FMCSA compliance enforcement, and immutable audit trail.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Mobile Team"
+runbookUrl: https://notion.so/drivecommand/HOS-Violations-Runbook
+securityNotes:
+  - "HOS entries are immutable once created (audit trail)"
+  - "All queries tenant-scoped via Bearer token"
+  - "Drivers can only create entries for themselves"
+---
+
+# Hours of Service — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Hours of Service (HOS) system logs driver duty status changes and enforces FMCSA regulations:
+
+- **14-hour on-duty limit** — Drivers cannot operate after 14 consecutive hours on duty
+- **11-hour driving limit** — Maximum 11 hours of driving within the 14-hour window
+- **10-hour break requirement** — Mandatory 10-hour off-duty period before resetting clocks
+
+HOS entries are immutable audit records. All clock math is server-computed to prevent client-side tampering.
+
+**Portal:** Driver (mobile app)
+**Route:** `/driver/hours`
+**Plan Tier:** Pro
+**Added:** v2.0.0 (Phase 32)
+
+## Mobile API Endpoints
+
+### GET /api/mobile/driver/hos
+
+Returns driver's HOS entries for today + computed clock values.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Response
+{
+  "currentStatus": "DRIVING",
+  "currentStatusStartedAt": "2024-05-09T08:00:00Z",
+  "clocks": {
+    "duty14hRemaining": "8h 23m", // 14h window remaining
+    "drive11hRemaining": "6h 45m", // 11h drive time remaining
+    "dutyWindowStartedAt": "2024-05-09T05:00:00Z",
+    "nextBreakRequiredAt": "2024-05-09T19:00:00Z"
+  },
+  "todayEntries": [
+    {
+      "id": "uuid",
+      "status": "OFF_DUTY",
+      "startedAt": "2024-05-08T20:00:00Z",
+      "endedAt": "2024-05-09T06:00:00Z",
+      "durationMinutes": 600 // 10h break
+    },
+    {
+      "id": "uuid",
+      "status": "ON_DUTY",
+      "startedAt": "2024-05-09T06:00:00Z",
+      "endedAt": "2024-05-09T08:00:00Z",
+      "durationMinutes": 120
+    },
+    {
+      "id": "uuid",
+      "status": "DRIVING",
+      "startedAt": "2024-05-09T08:00:00Z",
+      "endedAt": null, // Current status
+      "durationMinutes": null
+    }
+  ],
+  "violations": [
+    {
+      "type": "APPROACHING_14H_LIMIT",
+      "severity": "warning",
+      "message": "Less than 2 hours remaining in 14-hour window"
+    }
+  ]
+}`}
+</CodeBlock>
+
+**Clock computation:**
+
+<CodeBlock language="typescript">
+{`// Pseudo-code
+const lastBreak = findLastEntry({ status: 'OFF_DUTY', duration >= 10h });
+const dutyWindowStart = lastBreak.endedAt;
+
+const onDutyEntries = findEntriesSince(dutyWindowStart, ['ON_DUTY', 'DRIVING']);
+const totalOnDutyMinutes = sum(onDutyEntries.map(e => e.durationMinutes));
+const totalDriveMinutes = sum(
+  onDutyEntries.filter(e => e.status === 'DRIVING').map(e => e.durationMinutes)
+);
+
+const duty14hRemaining = (14 * 60) - totalOnDutyMinutes;
+const drive11hRemaining = (11 * 60) - totalDriveMinutes;`}
+</CodeBlock>
+
+### POST /api/mobile/driver/hos
+
+Creates a new HOS status entry.
+
+**Auth:** Bearer token required
+**Role:** DRIVER
+
+<CodeBlock language="typescript">
+{`// Request
+POST /api/mobile/driver/hos
+{
+  "status": "DRIVING", // OFF_DUTY | SLEEPER_BERTH | ON_DUTY | DRIVING
+  "startedAt": "2024-05-09T08:00:00Z" // Optional, defaults to now()
+}
+
+// Response
+{
+  "entry": {
+    "id": "uuid",
+    "status": "DRIVING",
+    "startedAt": "2024-05-09T08:00:00Z",
+    "createdAt": "2024-05-09T08:00:05Z"
+  },
+  "clocks": {
+    "duty14hRemaining": "8h 23m",
+    "drive11hRemaining": "6h 45m"
+  }
+}`}
+</CodeBlock>
+
+**Validation:**
+- startedAt cannot be in the future
+- startedAt cannot be before last HOS entry
+- If attempting DRIVING with < 30min remaining, return 400 error
+- If attempting ON_DUTY/DRIVING without 10h break, return 400 error
+
+**Side effects:**
+- Previous HOS entry (if exists) is updated with `endedAt = new startedAt`
+- Dashboard clocks update
+- If violation threshold crossed, push notification sent to fleet manager
+
+**Immutability:** Once created, DriverHOSEntry records cannot be edited or deleted. This maintains DOT audit compliance.
+
+## Database Schema
+
+<PrismaModelRef model="DriverHOSEntry" fields={[
+  "id: String @id",
+  "tenantId: String @index",
+  "driverId: String @index (FK to User)",
+  "status: HOSDutyStatus (OFF_DUTY | SLEEPER_BERTH | ON_DUTY | DRIVING)",
+  "startedAt: DateTime @index (when this status began)",
+  "endedAt: DateTime? (when this status ended, null for current)",
+  "createdAt: DateTime @default(now()) (when record was created)"
+]} />
+
+**Enum: HOSDutyStatus**
+
+<CodeBlock language="typescript">
+{`export enum HOSDutyStatus {
+  OFF_DUTY = 'OFF_DUTY', // Not working, counts toward 10h break
+  SLEEPER_BERTH = 'SLEEPER_BERTH', // Resting in sleeper, counts toward 10h break
+  ON_DUTY = 'ON_DUTY', // Working but not driving (loading, fueling, inspection)
+  DRIVING = 'DRIVING' // Actively operating the vehicle
+}`}
+</CodeBlock>
+
+**Indexes:**
+- `@@index([tenantId, driverId, startedAt])` — Fast queries for driver HOS history
+- `@@index([driverId, endedAt])` — Find current status (where endedAt IS NULL)
+
+## HOS Workflow
+
+<ProcessDiagram steps={[
+  { label: "OFF_DUTY (10h)", description: "Mandatory break period, resets duty clock" },
+  { label: "ON_DUTY", description: "Pre-trip inspection, counts against 14h limit" },
+  { label: "DRIVING", description: "Counts against both 14h and 11h limits" },
+  { label: "ON_DUTY", description: "Unloading, fueling, counts against 14h only" },
+  { label: "OFF_DUTY", description: "Next break period begins" }
+]} />
+
+## FMCSA Compliance Rules
+
+### 14-hour on-duty limit
+
+Driver cannot operate CMV after 14 consecutive hours on duty (ON_DUTY + DRIVING), following 10 consecutive hours off duty.
+
+**Enforcement:**
+- Server computes total on-duty time since last 10h break
+- If >= 14h, PATCH /api/mobile/driver/hos with status=DRIVING returns 400 error
+- Warning threshold: < 2h remaining
+
+### 11-hour driving limit
+
+Driver may drive a maximum of 11 hours after 10 consecutive hours off duty.
+
+**Enforcement:**
+- Server sums all DRIVING time since last 10h break
+- If >= 11h, PATCH /api/mobile/driver/hos with status=DRIVING returns 400 error
+- Warning threshold: < 30min remaining
+
+### 10-hour break requirement
+
+Driver must take 10 consecutive hours off duty before starting a new duty period.
+
+**Enforcement:**
+- Server checks last OFF_DUTY or SLEEPER_BERTH entry
+- If duration < 10h, attempting to go ON_DUTY/DRIVING returns 400 error
+- Break can be split: 8h sleeper + 2h off-duty (split sleeper provision)
+
+<Callout variant="info">
+Split sleeper provision: FMCSA allows 7h + 3h split if certain conditions are met. Not yet implemented in DriveCommand. Planned for Phase 40.
+</Callout>
+
+## Violation Detection
+
+Violations are computed server-side on every GET /api/mobile/driver/hos request.
+
+<CodeBlock language="typescript">
+{`type Violation = {
+  type: string;
+  severity: 'warning' | 'critical';
+  message: string;
+};
+
+function detectViolations(clocks: Clocks): Violation[] {
+  const violations: Violation[] = [];
+
+  if (clocks.duty14hRemaining < 120) { // < 2h
+    violations.push({
+      type: 'APPROACHING_14H_LIMIT',
+      severity: clocks.duty14hRemaining < 60 ? 'critical' : 'warning',
+      message: \`Less than \${Math.floor(clocks.duty14hRemaining / 60)}h remaining\`
+    });
+  }
+
+  if (clocks.drive11hRemaining < 60) { // < 1h
+    violations.push({
+      type: 'APPROACHING_11H_LIMIT',
+      severity: clocks.drive11hRemaining < 30 ? 'critical' : 'warning',
+      message: \`Less than \${clocks.drive11hRemaining}m drive time remaining\`
+    });
+  }
+
+  return violations;
+}`}
+</CodeBlock>
+
+**Fleet manager alerts:**
+
+When a violation reaches critical severity, a push notification is sent to all OWNER/MANAGER users in the tenant.
+
+## ELD Integration
+
+When ELD integration is enabled (Samsara, Motive/KeepTruckin), HOS data syncs bidirectionally:
+
+- **From ELD → DriveCommand:** Status changes pushed via webhook, create DriverHOSEntry
+- **From DriveCommand → ELD:** POST /api/mobile/driver/hos triggers API call to ELD provider
+
+**Conflict resolution:** ELD is source of truth. If DriveCommand and ELD disagree, ELD wins.
+
+**Integration status:** Not yet implemented. Planned for Phase 42.
+
+## Performance Considerations
+
+- **Clock computation:** Expensive (scans all entries since last break). Cache clocks for 60s in Redis.
+- **Index usage:** Query uses `@@index([driverId, startedAt])` for fast range scans
+- **Pagination:** HOS history endpoint returns max 7 days (configurable)
+
+**Optimization:** Consider denormalizing current duty window start time to avoid scanning all entries.
+
+## Security
+
+<Callout variant="danger" title="Immutable Audit Trail">
+DriverHOSEntry records are IMMUTABLE. No UPDATE or DELETE operations allowed. This is critical for DOT compliance. Violating immutability can result in federal fines.
+</Callout>
+
+**Timestamp validation:**
+- startedAt must be server-validated (never trust client timestamps)
+- Prevent backdating (startedAt cannot be before last entry)
+- Prevent future-dating (startedAt cannot be > now())
+
+## Related Features
+
+<FeatureCard slug="driver-dashboard" />
+<FeatureCard slug="integrations" />
+<FeatureCard slug="compliance-dashboard" />
+
+## Troubleshooting
+
+**Driver says HOS clocks are wrong:**
+
+1. Check DriverHOSEntry records for the driver
+2. Verify last 10h break was logged correctly (OFF_DUTY or SLEEPER_BERTH >= 600 minutes)
+3. Verify all entries have endedAt (except current status)
+4. Recalculate clocks manually using query logic above
+
+**Driver cannot log DRIVING status:**
+
+1. Check if duty14hRemaining or drive11hRemaining < 0
+2. Verify last break was >= 10h
+3. Check for violation thresholds (< 30min remaining)
+
+**HOS entries missing:**
+
+1. Check if ELD integration is enabled — may be creating entries via webhook
+2. Verify POST /api/mobile/driver/hos succeeded (check logs)
+3. Check tenantId/driverId match authenticated user
