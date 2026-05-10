@@ -1,49 +1,136 @@
 ---
 slug: carrier-templates
-title: Dispatch Templates
-summary: Reusable dispatch and route templates for common lanes and workflows to speed up load creation.
-lastReviewed: "2026-05-09T00:00:00Z"
+title: Dispatch Checklists
+summary: Step-by-step checklists that auto-start when loads are dispatched to ensure consistent dispatch procedures.
+lastReviewed: "2026-05-10T00:00:00Z"
 estimatedReadMinutes: 5
 ---
 
-# Dispatch Templates
+# Dispatch Checklists
 
 <Callout variant="info">
-Dispatch Templates let you save common lanes, routes, and dispatch configurations as reusable templates, reducing repetitive data entry.
+Dispatch Checklists automate dispatch procedures with step-by-step verification to ensure drivers complete all required tasks before departing.
 </Callout>
 
 ## What this is
 
-Pre-configured dispatch setups for routes you run frequently. If you regularly haul from Chicago to Dallas, or run a weekly dedicated lane, save those details once as a template. When you need to dispatch that route again, load the template and fill in only the unique details like pickup date or specific driver.
+Pre-configured checklist workflows that trigger automatically when loads are dispatched. Use them to ensure drivers complete required steps like document verification, truck inspection, and load acceptance before leaving the yard.
 
-Templates store pickup/delivery addresses, typical rates, commodity types, and stop sequences. Perfect for dedicated lanes and recurring freight.
+Dispatch Checklists help you:
+- Standardize pre-departure procedures across all drivers
+- Reduce missed steps that cause delays or compliance issues
+- Create a documented record of dispatch readiness
+- Catch problems before trucks hit the road
+
+Perfect for owner-operators and small fleets who want consistent dispatch quality without manual oversight.
 
 ## How to use it
 
 <StepFlow>
-  <StepFlow.Step title="Create from an existing dispatch">
-    When viewing a completed route or load, click **Save as Template**. Give it a descriptive name like "CHI-DAL Express" or "Weekly Walmart Run".
+  <StepFlow.Step title="Navigate to Workflows">
+    Click **Workflows → Checklists & Workflows** in the sidebar.
   </StepFlow.Step>
-  <StepFlow.Step title="Or build a template from scratch">
-    Go to **Carrier → Templates** and click **New Template**. Configure the route stops, typical rate, and any standard notes or instructions.
+  <StepFlow.Step title="Click New Checklist">
+    The checklist builder opens. Select **DISPATCH** as the entity type.
   </StepFlow.Step>
-  <StepFlow.Step title="Use a template for new loads">
-    When creating a new load or route, click **Use Template** and select from your saved templates. DriveCommand auto-fills all template fields.
+  <StepFlow.Step title="Add phases">
+    Organize your checklist into phases like "Pre-Departure", "Load Verification", and "Safety Check". Click **Add Phase** for each grouping.
   </StepFlow.Step>
-  <StepFlow.Step title="Customize as needed">
-    Edit any pre-filled values (like pickup date or driver assignment) before saving the new dispatch. The template itself remains unchanged.
+  <StepFlow.Step title="Add steps to each phase">
+    Click **Add Step** within a phase. Configure the step name, instructions, and type (Simple, Photo Required, Signature Required, or Text Entry).
+  </StepFlow.Step>
+  <StepFlow.Step title="Enable auto-start">
+    In the automation settings, enable the **On Load Dispatch** rule. The checklist will automatically start when a load is assigned to a driver.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save and publish">
+    Click **Save as Template**. The checklist is now live and will trigger on every load dispatch.
   </StepFlow.Step>
 </StepFlow>
 
-## Good to know
+## Step types
+
+Different step types capture different kinds of evidence:
+
+<ComparisonTable
+  headers={["Step Type", "Use Case", "Completion Requirement"]}
+  rows={[
+    ["Simple", "Basic confirmation task (check tire pressure, verify fuel level)", "Check the checkbox"],
+    ["Photo Required", "Visual inspection or damage documentation (truck condition, load securement)", "Upload at least one photo"],
+    ["Signature Required", "Acknowledgment or approval (driver accepts load terms, safety briefing)", "Draw signature on touchscreen or trackpad"],
+    ["Text Entry", "Notes, readings, or observations (odometer reading, special instructions)", "Enter text (minimum 10 characters)"]
+  ]}
+/>
 
 <Callout variant="tip" title="Pro Tip">
-Create templates for your top 5 lanes. Even if the pickup and delivery addresses vary slightly, having the general route, rate structure, and commodity details pre-loaded saves significant time during busy dispatch hours.
+Use Photo Required steps for load securement verification. Require drivers to photograph the loaded trailer before departure. This creates a visual record that protects you in damage claims and ensures proper securement.
 </Callout>
 
-Templates are tenant-wide, meaning all dispatchers on your team can access them. Use clear naming conventions so everyone knows which template to use.
+## Common dispatch checklist examples
+
+**Basic Pre-Departure Checklist:**
+1. Verify driver has valid license and medical card
+2. Confirm truck inspection is current (photo of inspection report)
+3. Review BOL and load details with driver (signature required)
+4. Check fuel level and DEF (text entry: fuel percentage)
+5. Confirm driver has ELD logged in and on-duty
+
+**Hazmat Load Checklist:**
+1. All basic pre-departure steps
+2. Verify hazmat endorsement on license (photo)
+3. Confirm placards are correct and visible (photo)
+4. Review emergency response information with driver (signature)
+5. Verify hazmat documents in truck (photo of document packet)
+
+**High-Value Load Checklist:**
+1. All basic pre-departure steps
+2. Verify cargo insurance coverage (text entry: policy number)
+3. Photograph load securement from multiple angles (4+ photos required)
+4. Review security protocols with driver (signature)
+5. Confirm GPS tracking is active (driver confirms in app)
+
+## Auto-start rules
+
+Dispatch Checklists can trigger automatically based on load conditions:
+
+- **On any load dispatch** — checklist starts when load status changes to "Dispatched"
+- **On specific commodity types** — only start for hazmat, refrigerated, or high-value loads
+- **For specific drivers** — new drivers get extended checklists; experienced drivers get streamlined versions
+- **For specific routes** — cross-border loads trigger customs compliance checklists
+
+Configure auto-start rules in the automation settings when creating or editing a checklist template.
+
+## Driver experience
+
+When you dispatch a load with an active Dispatch Checklist:
+
+1. **Driver receives push notification** — "Pre-Departure Checklist for Load #1234 ready"
+2. **Checklist appears in driver app** — under Tasks tab with progress indicator
+3. **Driver completes steps** — one at a time, with required photos/signatures captured in-app
+4. **Owner sees real-time progress** — checklist status updates live in the web dashboard
+5. **Load cannot start until complete** — drivers must finish all required steps before marking load "In Transit"
+
+Drivers complete checklists directly in the DriveCommand mobile app. Photos are captured with the device camera. Signatures use the touchscreen.
+
+## Good to know
+
+**Checklists are per-load, not per-route:**
+If a route has multiple loads, each load gets its own checklist instance. This ensures thorough verification for every pickup.
+
+**You can pause and resume:**
+Drivers can partially complete a checklist, then return to finish it later. Progress is saved automatically.
+
+**View completion history:**
+Go to **Workflows → Instances** to see all completed checklists. Click any instance to view who completed each step, when, and what evidence was captured (photos, signatures, text).
+
+**Edit templates anytime:**
+Changes to checklist templates only affect new instances. Running checklists use the template version from when they started.
+
+<Callout variant="warning" title="Important">
+Required steps block load progress. If a driver cannot complete a required step (e.g., missing document), they cannot mark the load "In Transit". Make sure required steps are truly mandatory to avoid blocking legitimate dispatches.
+</Callout>
 
 ## Related
 
+<FeatureCard slug="checklists" />
+<FeatureCard slug="workflow-automation" />
 <FeatureCard slug="carrier-dispatches" />
-<FeatureCard slug="routes" />
