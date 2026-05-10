@@ -6583,6 +6583,7 @@ None blocking immediate progress.
 | 288 | Tenant automation activity log — triggeredBy + triggeredEvent on PlaybookInstance, listActivityLog tRPC procedure, AutomationActivityLog feed on Automation page | 2026-04-28 | 0bf36a2 | [288-tenant-automation-activity-log](./quick/288-tenant-automation-activity-log/) |
 | 289 | Driver Pay Phase 2 — Compensation Template Wizard: Zod schemas, 4 server actions, 3-step wizard with live preview + starter templates, active template card, history list, driver profile Compensation section | 2026-05-09 | 1e41f2f | [289-driver-pay-phase-2-compensation-template](./quick/289-driver-pay-phase-2-compensation-template/) |
 | 295 | Interactive Database Schema Viewer for SysAdmin Docs — Prisma parser utility, /docs/database overview with 80 models in 14 modules, /docs/database/[model] detail pages with fields, relations, cascade warnings | 2026-05-10 | 13d8417 | [295-interactive-database-schema-viewer-for-s](./quick/295-interactive-database-schema-viewer-for-s/) |
+| 296 | Redesign Client Help Center — fix dual sidebar nav cutoff, single-sidebar layout, operations-first 10 hubs, Getting Started onboarding guide | 2026-05-10 | 7b213b3 | [296-redesign-client-help-center-fix-nav-cuto](./quick/296-redesign-client-help-center-fix-nav-cuto/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
