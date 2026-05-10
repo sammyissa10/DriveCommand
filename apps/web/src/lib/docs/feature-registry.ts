@@ -781,6 +781,24 @@ const rawFeatures = [
     serverActionPaths: [],
     prismaModels: [],
   },
+  {
+    slug: 'getting-started',
+    name: 'Getting Started',
+    shortDescription:
+      'Complete onboarding guide to set up your trucking operation from scratch in under 30 minutes.',
+    portal: 'owner',
+    category: 'support',
+    planTier: 'free',
+    status: 'stable',
+    route: '/help/getting-started',
+    addedInVersion: '1.0.0',
+    lastDocReviewedAt: '2026-05-09T00:00:00Z',
+    relatedFeatureSlugs: ['trucks', 'drivers', 'loads', 'invoices'],
+    requiresClientDoc: true,
+    requiresSysadminDoc: false,
+    serverActionPaths: [],
+    prismaModels: [],
+  },
 
   // ============================================================
   // DRIVER PORTAL
