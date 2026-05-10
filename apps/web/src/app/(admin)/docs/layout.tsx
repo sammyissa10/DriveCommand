@@ -14,6 +14,10 @@ const operationalDocs = [
   { slug: 'troubleshooting', name: 'Troubleshooting' },
 ];
 
+const directLinks = [
+  { href: '/docs/database', name: 'Database Schema' },
+];
+
 export default function AdminDocsLayout({
   children,
 }: {
@@ -70,6 +74,16 @@ export default function AdminDocsLayout({
                     className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
                   >
                     {doc.name}
+                  </Link>
+                </li>
+              ))}
+              {directLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                  >
+                    {link.name}
                   </Link>
                 </li>
               ))}
