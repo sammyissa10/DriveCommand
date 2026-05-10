@@ -62,7 +62,7 @@ export function HelpSidebar({ hubs }: HelpSidebarProps) {
   const currentSlug = pathname.split('/').pop();
 
   return (
-    <aside className="w-64 border-r bg-card shrink-0 hidden lg:block">
+    <aside className="w-64 border-r bg-card shrink-0 hidden lg:block sticky top-0 h-screen overflow-y-auto">
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="border-b px-4 py-3">
