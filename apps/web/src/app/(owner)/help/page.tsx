@@ -39,6 +39,65 @@ export default function HelpHomePage() {
 
   return (
     <div className="space-y-8">
+      {/* Getting Started Section */}
+      <section>
+        <div className="flex items-center gap-2 mb-4">
+          <Rocket className="h-5 w-5" />
+          <div>
+            <h2 className="text-lg font-semibold">Getting Started</h2>
+            <p className="text-sm text-muted-foreground">
+              New to DriveCommand? Start here to set up your operation.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link href="/help/getting-started">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader className="p-4">
+                <CardTitle className="text-base">Complete Setup Guide</CardTitle>
+                <CardDescription className="text-sm">
+                  Step-by-step walkthrough from adding trucks to generating your first invoice
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+          <div className="grid grid-cols-2 gap-4">
+            <Link href="/help/trucks">
+              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+                <CardHeader className="p-3">
+                  <CardTitle className="text-sm">Add a Truck</CardTitle>
+                  <CardDescription className="text-xs">Set up your fleet</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+            <Link href="/help/drivers">
+              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+                <CardHeader className="p-3">
+                  <CardTitle className="text-sm">Invite a Driver</CardTitle>
+                  <CardDescription className="text-xs">Build your team</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+            <Link href="/help/loads">
+              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+                <CardHeader className="p-3">
+                  <CardTitle className="text-sm">Create a Load</CardTitle>
+                  <CardDescription className="text-xs">Start dispatching</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+            <Link href="/help/invoices">
+              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+                <CardHeader className="p-3">
+                  <CardTitle className="text-sm">Generate Invoice</CardTitle>
+                  <CardDescription className="text-xs">Get paid faster</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link href="/help/whats-new">

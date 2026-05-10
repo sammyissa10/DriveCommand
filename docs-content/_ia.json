@@ -5,58 +5,45 @@
     {
       "id": "getting-started",
       "name": "Getting Started",
-      "description": "Learn the basics of DriveCommand",
+      "description": "Set up your account and learn the basics",
       "icon": "Rocket",
-      "features": []
+      "features": ["getting-started"]
     },
     {
-      "id": "dispatch-operations",
-      "name": "Dispatch & Operations",
-      "description": "Manage loads, routes, and dispatches",
+      "id": "daily-dispatch",
+      "name": "Dispatch & Loads",
+      "description": "Create routes, assign loads, track deliveries",
       "icon": "Truck",
       "features": [
         "carrier-dashboard",
         "carrier-dispatches",
         "carrier-loads",
+        "loads",
+        "routes",
         "carrier-stops",
         "carrier-templates",
-        "routes",
-        "loads",
         "driver-dashboard",
         "driver-my-load",
         "driver-my-route"
       ]
     },
     {
-      "id": "fleet-management",
-      "name": "Fleet Management",
-      "description": "Trucks, drivers, and facilities",
+      "id": "drivers-trucks",
+      "name": "Drivers & Trucks",
+      "description": "Manage your fleet and team",
       "icon": "Users",
       "features": [
+        "trucks",
+        "drivers",
         "carrier-fleet-trucks",
         "carrier-fleet-drivers",
-        "carrier-facilities",
-        "trucks",
-        "drivers"
+        "carrier-facilities"
       ]
     },
     {
-      "id": "workflows-automation",
-      "name": "Workflows & Automation",
-      "description": "Checklists, playbooks, and automated tasks",
-      "icon": "ListChecks",
-      "features": [
-        "checklists",
-        "playbook-builder",
-        "workflow-automation",
-        "workflow-analytics",
-        "driver-tasks"
-      ]
-    },
-    {
-      "id": "finance-billing",
-      "name": "Finance & Billing",
-      "description": "Invoicing, payroll, and expenses",
+      "id": "money-matters",
+      "name": "Billing & Payroll",
+      "description": "Invoices, driver pay, and expenses",
       "icon": "DollarSign",
       "features": [
         "invoices",
@@ -70,23 +57,36 @@
       ]
     },
     {
-      "id": "compliance-safety",
+      "id": "stay-compliant",
       "name": "Compliance & Safety",
-      "description": "Documents, HOS, and safety tracking",
+      "description": "Documents, HOS, inspections, and IFTA",
       "icon": "Shield",
       "features": [
         "compliance-dashboard",
-        "ifta-reporting",
-        "safety-analytics",
         "driver-hours",
+        "driver-documents",
         "driver-incidents",
-        "driver-documents"
+        "ifta-reporting",
+        "safety-analytics"
       ]
     },
     {
-      "id": "intelligence-ai",
-      "name": "Intelligence & AI",
-      "description": "Maps, analytics, and AI-powered tools",
+      "id": "automation",
+      "name": "Checklists & Automation",
+      "description": "Automate routine tasks and inspections",
+      "icon": "ListChecks",
+      "features": [
+        "checklists",
+        "playbook-builder",
+        "workflow-automation",
+        "workflow-analytics",
+        "driver-tasks"
+      ]
+    },
+    {
+      "id": "smart-tools",
+      "name": "Maps & Analytics",
+      "description": "Track fleet, analyze profitability, AI tools",
       "icon": "Brain",
       "features": [
         "live-map",
@@ -99,7 +99,7 @@
     {
       "id": "communication",
       "name": "Communication",
-      "description": "Messaging and customer tracking",
+      "description": "Message drivers and share tracking links",
       "icon": "MessageSquare",
       "features": [
         "carrier-messages",
@@ -108,16 +108,14 @@
       ]
     },
     {
-      "id": "settings-integrations",
-      "name": "Settings & Integrations",
-      "description": "Configuration and third-party connections",
+      "id": "settings",
+      "name": "Settings & Setup",
+      "description": "Team permissions, integrations, and preferences",
       "icon": "Settings",
       "features": [
         "team-permissions",
         "subscription",
         "integrations",
-        "expense-categories",
-        "expense-templates",
         "tags",
         "crm",
         "carrier-clients",
@@ -126,13 +124,10 @@
     },
     {
       "id": "support",
-      "name": "Support & Help",
-      "description": "Get help and learn features",
+      "name": "Get Help",
+      "description": "Contact support and troubleshoot issues",
       "icon": "LifeBuoy",
-      "features": [
-        "support-tickets",
-        "help-center"
-      ]
+      "features": ["support-tickets"]
     }
   ],
   "sysadminHubs": [
