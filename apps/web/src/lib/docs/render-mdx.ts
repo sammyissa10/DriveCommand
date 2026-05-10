@@ -16,7 +16,8 @@ import {
 import { clientComponents, sysadminComponents } from '@/components/docs/mdx-components';
 import { getFeatureBySlug } from './get-features';
 
-const DOCS_ROOT = path.join(process.cwd(), 'docs-content');
+// docs-content is at monorepo root, not inside apps/web
+const DOCS_ROOT = path.resolve(process.cwd(), '..', '..', 'docs-content');
 
 interface RenderResult<T> {
   frontmatter: T;

@@ -21,6 +21,7 @@ import { sendEmail } from '@/lib/email/gmail-client';
 import { WorkflowSafetyDigestEmail } from '@/emails/workflow-safety-digest';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,9 +35,8 @@ interface DigestStats {
 export async function GET(request: NextRequest): Promise<NextResponse> {
   logger.info('[CRON] workflow-digest: Starting daily digest sweep');
 
-  // Auth guard
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Auth guard — timing-safe CRON_SECRET verification
+  if (!verifyCronSecret(request)) {
     logger.error('[CRON] workflow-digest: Unauthorized request');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

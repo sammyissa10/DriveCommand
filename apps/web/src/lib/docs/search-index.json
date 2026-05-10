@@ -369,6 +369,15 @@
     "route": "/help"
   },
   {
+    "slug": "getting-started",
+    "name": "Getting Started",
+    "shortDescription": "Complete onboarding guide to set up your trucking operation from scratch in under 30 minutes.",
+    "category": "support",
+    "portal": "owner",
+    "planTier": "free",
+    "route": "/help/getting-started"
+  },
+  {
     "slug": "driver-dashboard",
     "name": "Driver Dashboard",
     "shortDescription": "Driver home screen with active load card, stat chips, alerts, and My Route shortcut.",

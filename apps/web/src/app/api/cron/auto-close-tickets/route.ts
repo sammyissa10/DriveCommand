@@ -1,18 +1,18 @@
 /**
  * Cron endpoint: auto-close RESOLVED support tickets after 7 days of inactivity.
  * Schedule: Daily at 02:00 UTC
- * Authentication: CRON_SECRET bearer token
+ * Authentication: CRON_SECRET bearer token (timing-safe comparison)
  */
 import { NextRequest } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response('Unauthorized', { status: 401 });
+  if (!verifyCronSecret(request)) {
+    return cronUnauthorizedResponse();
   }
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);

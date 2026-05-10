@@ -5,7 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000;
-const DOCS_ROOT = path.join(process.cwd(), '../../docs-content');
+// docs-content is at monorepo root, not inside apps/web
+const DOCS_ROOT = path.resolve(process.cwd(), '..', '..', 'docs-content');
 
 export async function DocDriftIndicator() {
   const missingDocs: string[] = [];

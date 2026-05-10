@@ -12,16 +12,14 @@ import { syncSamsaraLocations } from '@/lib/integrations/samsara';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret } from '@/lib/security/cron-auth';
 
 export async function POST(request: NextRequest) {
   try {
     let tenantId: string | undefined;
 
-    // Auth: check CRON_SECRET first, then fall back to session
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+    // Auth: check CRON_SECRET first (timing-safe), then fall back to session
+    if (verifyCronSecret(request)) {
       // Cron mode: tenantId must be in request body
       const body = await request.json().catch(() => ({}));
       tenantId = body.tenantId;

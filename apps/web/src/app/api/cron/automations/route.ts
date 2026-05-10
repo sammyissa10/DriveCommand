@@ -19,12 +19,12 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { runEvaluator } from '@/lib/automations/evaluator';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export async function GET(request: NextRequest) {
-  // Verify CRON_SECRET
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response('Unauthorized', { status: 401 });
+  // Verify CRON_SECRET (timing-safe comparison)
+  if (!verifyCronSecret(request)) {
+    return cronUnauthorizedResponse();
   }
 
   console.log('[cron/automations] Starting evaluator run');

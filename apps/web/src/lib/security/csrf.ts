@@ -25,12 +25,30 @@ function getAllowedOrigins(): string[] {
 }
 
 /**
- * Validates the Origin header on state-changing requests to prevent CSRF.
+ * Extracts the origin from a Referer URL.
+ * Returns null if the Referer is missing or malformed.
+ */
+function extractOriginFromReferer(referer: string | null): string | null {
+  if (!referer) return null;
+
+  try {
+    const url = new URL(referer);
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Validates the Origin (or Referer) header on state-changing requests to prevent CSRF.
  *
  * Safe methods (GET, HEAD, OPTIONS) are always allowed.
- * Requests without an Origin header on mutation requests are rejected
- * (modern browsers always send Origin on cross-origin requests; same-origin
- * requests from the browser also include Origin or Referer).
+ *
+ * For mutation requests, checks:
+ * 1. Origin header (preferred, sent by all modern browsers on cross-origin requests)
+ * 2. Referer header (fallback per OWASP guidance, for browsers/clients that don't send Origin)
+ *
+ * Requests without either header on mutation requests are rejected.
  *
  * @returns true if the request should be allowed, false if it should be blocked
  */
@@ -40,13 +58,22 @@ export function validateOrigin(request: NextRequest): boolean {
     return true;
   }
 
-  const origin = request.headers.get('origin');
+  const allowedOrigins = getAllowedOrigins();
 
-  // No Origin header on a mutation request — block it
-  if (!origin) {
-    return false;
+  // Check Origin header first (preferred)
+  const origin = request.headers.get('origin');
+  if (origin) {
+    return allowedOrigins.includes(origin);
   }
 
-  const allowedOrigins = getAllowedOrigins();
-  return allowedOrigins.includes(origin);
+  // Fall back to Referer header per OWASP guidance
+  // Some clients (older browsers, privacy extensions) may strip Origin but keep Referer
+  const referer = request.headers.get('referer');
+  const refererOrigin = extractOriginFromReferer(referer);
+  if (refererOrigin) {
+    return allowedOrigins.includes(refererOrigin);
+  }
+
+  // No Origin or Referer header on a mutation request — block it
+  return false;
 }

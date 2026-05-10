@@ -1,18 +1,18 @@
 /**
  * Cron endpoint: mark SENT SysAdminInvoices as OVERDUE when past due date.
  * Schedule: Daily at 03:00 UTC
- * Authentication: CRON_SECRET bearer token
+ * Authentication: CRON_SECRET bearer token (timing-safe comparison)
  */
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response('Unauthorized', { status: 401 });
+  if (!verifyCronSecret(request)) {
+    return cronUnauthorizedResponse();
   }
 
   const now = new Date();

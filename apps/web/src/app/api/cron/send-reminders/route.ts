@@ -31,6 +31,7 @@ import {
   markNotificationSent,
 } from '@/lib/notifications/notification-deduplication';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic'; // CRITICAL: Prevent Next.js caching
 
@@ -43,13 +44,10 @@ interface NotificationStats {
 export async function GET(request: NextRequest) {
   logger.info('[CRON] send-reminders: Starting daily reminder processing');
 
-  // 1. Verify CRON_SECRET
-  const authHeader = request.headers.get('authorization');
-  const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
-
-  if (authHeader !== expectedAuth) {
+  // 1. Verify CRON_SECRET (timing-safe comparison)
+  if (!verifyCronSecret(request)) {
     logger.error('[CRON] send-reminders: Unauthorized request');
-    return new Response('Unauthorized', { status: 401 });
+    return cronUnauthorizedResponse();
   }
 
   /**

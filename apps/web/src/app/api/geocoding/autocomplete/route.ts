@@ -92,12 +92,22 @@ export async function POST(req: NextRequest) {
       addressdetails: '1',
     });
 
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'DriveCommand/1.0 (geocoding-proxy)',
-      },
-    });
+    // Timeout protection: abort after 5 seconds to prevent indefinite hangs
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5_000);
+
+    let res: Response;
+    try {
+      res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'DriveCommand/1.0 (geocoding-proxy)',
+        },
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!res.ok) {
       // Graceful degradation — return empty array on upstream failure

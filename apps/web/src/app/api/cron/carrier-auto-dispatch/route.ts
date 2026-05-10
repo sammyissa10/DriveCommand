@@ -20,6 +20,7 @@ import { prisma } from '@/lib/db/prisma';
 import { generateDispatches } from '@/lib/carrier/dispatch-generator';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,13 +34,10 @@ function toISODate(d: Date): string {
 export async function GET(request: NextRequest) {
   logger.info('[CRON] carrier-auto-dispatch: Starting nightly dispatch generation');
 
-  // 1. Verify CRON_SECRET
-  const authHeader = request.headers.get('authorization');
-  const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
-
-  if (authHeader !== expectedAuth) {
+  // 1. Verify CRON_SECRET (timing-safe comparison)
+  if (!verifyCronSecret(request)) {
     logger.error('[CRON] carrier-auto-dispatch: Unauthorized request');
-    return new Response('Unauthorized', { status: 401 });
+    return cronUnauthorizedResponse();
   }
 
   /**

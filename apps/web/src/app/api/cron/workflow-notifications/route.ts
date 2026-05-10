@@ -21,6 +21,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendStepOverdue, sendInstanceBlockedEmail } from '@/server/services/workflows/notifications';
 import { logger } from '@/lib/logger';
+import { verifyCronSecret } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic'; // Prevent Next.js caching
 
@@ -34,11 +35,8 @@ interface CronStats {
 export async function GET(request: NextRequest): Promise<NextResponse> {
   logger.info('[CRON] workflow-notifications: Starting sweep');
 
-  // Auth guard — all cron routes use CRON_SECRET bearer token
-  const authHeader = request.headers.get('authorization');
-  const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
-
-  if (authHeader !== expectedAuth) {
+  // Auth guard — timing-safe CRON_SECRET verification
+  if (!verifyCronSecret(request)) {
     logger.error('[CRON] workflow-notifications: Unauthorized request');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

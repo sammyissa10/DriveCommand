@@ -96,16 +96,24 @@ function AuthGuard() {
   }, [logout])
 
   // Handle notification taps — deep-link to the relevant screen
+  // SECURITY: Whitelist valid screens to prevent malicious deep links
   useEffect(() => {
+    const ALLOWED_SCREENS: Record<string, string> = {
+      messages: '/(driver)/messages',
+      loads: '/(driver)/loads',
+      documents: '/(driver)/documents',
+    }
+
     const sub = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as Record<string, string> | undefined
-      if (!data) return
+      if (!data?.screen) return
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const push = (path: string) => router.push(path as any)
-      if (data.screen === 'messages') push('/(driver)/messages')
-      else if (data.screen === 'loads') push('/(driver)/loads')
-      else if (data.screen === 'documents') push('/(driver)/documents')
+      // Only navigate to whitelisted screens — ignore unknown screen values
+      const targetPath = ALLOWED_SCREENS[data.screen]
+      if (targetPath) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        router.push(targetPath as any)
+      }
     })
     return () => sub.remove()
   }, [router])
