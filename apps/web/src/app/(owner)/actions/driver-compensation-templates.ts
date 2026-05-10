@@ -117,7 +117,7 @@ export async function listTemplatesForDriver(
 
   // CarrierDriver is NOT auto-tenant-scoped — always add orgId manually
   const cd = await prisma.carrierDriver.findFirst({
-    where: { userId: driverId, orgId: tenantId },
+    where: { id: driverId, orgId: tenantId },
   });
   if (!cd) {
     return { data: { templates: [] } };
@@ -145,7 +145,7 @@ export async function getActiveTemplate(
 
   // CarrierDriver is NOT auto-tenant-scoped — always add orgId manually
   const cd = await prisma.carrierDriver.findFirst({
-    where: { userId: driverId, orgId: tenantId },
+    where: { id: driverId, orgId: tenantId },
   });
   if (!cd) {
     return { data: { template: null } };
@@ -180,7 +180,7 @@ export async function createTemplate(
 
   // CarrierDriver is NOT auto-tenant-scoped — always add orgId manually
   const cd = await prisma.carrierDriver.findFirst({
-    where: { userId: driverId, orgId: tenantId },
+    where: { id: driverId, orgId: tenantId },
   });
   if (!cd) {
     return { error: 'Driver not found.' };
