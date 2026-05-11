@@ -1,136 +1,267 @@
 ---
 slug: carrier-templates
 title: Dispatch Checklists
-summary: Step-by-step checklists that auto-start when loads are dispatched to ensure consistent dispatch procedures.
-lastReviewed: "2026-05-10T00:00:00Z"
-estimatedReadMinutes: 5
+summary: Pre-departure checklists that auto-start when loads are dispatched, ensuring drivers complete required verification steps before marking loads in transit.
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 10
 ---
 
 # Dispatch Checklists
 
 <Callout variant="info">
-Dispatch Checklists automate dispatch procedures with step-by-step verification to ensure drivers complete all required tasks before departing.
+Dispatch Checklists are pre-configured workflows that auto-start when you dispatch a load. They ensure drivers complete required verification steps — document checks, inspections, signatures — before they can mark a load "In Transit".
 </Callout>
 
-## What this is
+## What this solves
 
-Pre-configured checklist workflows that trigger automatically when loads are dispatched. Use them to ensure drivers complete required steps like document verification, truck inspection, and load acceptance before leaving the yard.
+**The problem:** Drivers leave the yard without proper documentation, miss pre-trip inspections, or forget to verify load details. You find out hours later when there's a problem on the road or at delivery.
 
-Dispatch Checklists help you:
-- Standardize pre-departure procedures across all drivers
-- Reduce missed steps that cause delays or compliance issues
-- Create a documented record of dispatch readiness
-- Catch problems before trucks hit the road
+**The solution:** Create a checklist of required steps. When you dispatch a load, the checklist auto-starts and the driver must complete all blocking steps before they can update the load status. Nothing gets missed.
 
-Perfect for owner-operators and small fleets who want consistent dispatch quality without manual oversight.
+## How it works
 
-## How to use it
+1. **You create a checklist template** with the steps drivers must complete
+2. **You enable auto-start** so it triggers on load dispatch
+3. **Driver gets a notification** when assigned a load: "Complete Pre-Trip Checklist"
+4. **Driver completes each step** — uploading documents, taking photos, signing acknowledgments
+5. **Load status is blocked** until all required steps are done
+6. **Driver marks load "In Transit"** only after checklist is complete
+
+The checklist becomes a documented record of what was verified before departure.
+
+## Creating a Dispatch Checklist
 
 <StepFlow>
-  <StepFlow.Step title="Navigate to Workflows">
-    Click **Workflows → Checklists & Workflows** in the sidebar.
+  <StepFlow.Step title="Navigate to Checklists">
+    Go to **Workflows → Checklists & Workflows** in the sidebar.
   </StepFlow.Step>
-  <StepFlow.Step title="Click New Checklist">
-    The checklist builder opens. Select **DISPATCH** as the entity type.
+  <StepFlow.Step title="Click Create New Playbook">
+    The playbook builder opens.
   </StepFlow.Step>
-  <StepFlow.Step title="Add phases">
-    Organize your checklist into phases like "Pre-Departure", "Load Verification", and "Safety Check". Click **Add Phase** for each grouping.
+  <StepFlow.Step title="Set entity type to Dispatch">
+    Select **DISPATCH** as the entity type. This tells the system this checklist applies to loads.
   </StepFlow.Step>
-  <StepFlow.Step title="Add steps to each phase">
-    Click **Add Step** within a phase. Configure the step name, instructions, and type (Simple, Photo Required, Signature Required, or Text Entry).
+  <StepFlow.Step title="Name your checklist">
+    Give it a clear name: "Pre-Trip Inspection", "Load Acceptance Checklist", "Hazmat Verification".
   </StepFlow.Step>
-  <StepFlow.Step title="Enable auto-start">
-    In the automation settings, enable the **On Load Dispatch** rule. The checklist will automatically start when a load is assigned to a driver.
+  <StepFlow.Step title="Add steps">
+    Click **Add Step** and configure each verification step (see Step Types below).
   </StepFlow.Step>
-  <StepFlow.Step title="Save and publish">
-    Click **Save as Template**. The checklist is now live and will trigger on every load dispatch.
+  <StepFlow.Step title="Mark blocking steps">
+    Toggle **Required Before Dispatch** on steps that must be completed before the driver can mark the load "In Transit".
+  </StepFlow.Step>
+  <StepFlow.Step title="Enable auto-start rule">
+    Go to **Workflows → Automation** and enable the "Pre-Trip Inspection" recipe (ON_DISPATCH_CREATE trigger).
   </StepFlow.Step>
 </StepFlow>
 
-## Step types
+## Step Types
 
-Different step types capture different kinds of evidence:
+DriveCommand supports 8 step types for different verification needs:
 
 <ComparisonTable
-  headers={["Step Type", "Use Case", "Completion Requirement"]}
+  headers={["Step Type", "What It Captures", "Use Case"]}
   rows={[
-    ["Simple", "Basic confirmation task (check tire pressure, verify fuel level)", "Check the checkbox"],
-    ["Photo Required", "Visual inspection or damage documentation (truck condition, load securement)", "Upload at least one photo"],
-    ["Signature Required", "Acknowledgment or approval (driver accepts load terms, safety briefing)", "Draw signature on touchscreen or trackpad"],
-    ["Text Entry", "Notes, readings, or observations (odometer reading, special instructions)", "Enter text (minimum 10 characters)"]
+    ["Document Upload", "Driver uploads a file or photo", "BOL copy, rate confirmation, permits, licenses"],
+    ["Form Fill", "Driver completes a structured form", "Fuel level reading, odometer, tire pressure, load weight"],
+    ["Signature", "Driver draws signature on screen", "Safety acknowledgment, load acceptance, hazmat briefing"],
+    ["Inspection Item", "Pass/Fail check with photo on failure", "Pre-trip inspection points: brakes, tires, lights, mirrors"],
+    ["Training Acknowledgment", "Driver confirms they reviewed material", "Policy updates, route-specific instructions, safety reminders"],
+    ["Approval", "Requires manager or mechanic sign-off", "Auto-created when inspection item fails, repair verification"],
+    ["Third Party", "External verification with notes/files", "Customer confirmation, broker approval, shipper sign-off"],
+    ["Custom Note", "Free-form text entry", "Special instructions, observations, delivery notes"]
   ]}
 />
 
+### Inspection Items (Pass/Fail)
+
+Inspection Items are special: they present the driver with PASS or FAIL buttons.
+
+**On PASS:** The step is marked complete and the checklist advances.
+
+**On FAIL:**
+1. Driver must take a photo documenting the issue
+2. Driver can add a note explaining the problem
+3. The system automatically creates an APPROVAL step assigned to a mechanic
+4. The load becomes **blocked** until the mechanic signs off on the repair
+5. Dispatcher and mechanic receive notifications
+
+This flow ensures failed inspection items get documented and fixed before the truck leaves.
+
+<Callout variant="warning" title="Inspection Failures Block Dispatch">
+When a driver fails an inspection item, the load cannot proceed until a mechanic approves the repair. This prevents trucks with safety issues from leaving the yard.
+</Callout>
+
+## Dispatch Blocking
+
+Steps marked **Required Before Dispatch** (dispatch blockers) prevent the driver from updating the load status until completed.
+
+**How it works:**
+- Driver tries to mark load "In Transit"
+- System checks: are all blocking steps complete?
+- If NO → shows message "Complete checklist before starting load" with list of remaining steps
+- If YES → load status updates normally
+
+**The Dispatch Ready indicator:**
+- On the Load detail screen, you'll see "Dispatch Ready" (green) or "Blocked" (red)
+- Blocked state shows which steps are incomplete
+- Once all blockers are done, it flips to "Dispatch Ready"
+
 <Callout variant="tip" title="Pro Tip">
-Use Photo Required steps for load securement verification. Require drivers to photograph the loaded trailer before departure. This creates a visual record that protects you in damage claims and ensures proper securement.
+Only mark truly critical steps as blockers. Too many blockers frustrates drivers. Use blockers for: safety inspection sign-off, BOL verification, hazmat acknowledgment. Make "nice to have" steps optional.
 </Callout>
 
-## Common dispatch checklist examples
+## Auto-Start Rules
 
-**Basic Pre-Departure Checklist:**
-1. Verify driver has valid license and medical card
-2. Confirm truck inspection is current (photo of inspection report)
-3. Review BOL and load details with driver (signature required)
-4. Check fuel level and DEF (text entry: fuel percentage)
-5. Confirm driver has ELD logged in and on-duty
+Dispatch Checklists can trigger automatically based on different events:
 
-**Hazmat Load Checklist:**
-1. All basic pre-departure steps
-2. Verify hazmat endorsement on license (photo)
-3. Confirm placards are correct and visible (photo)
-4. Review emergency response information with driver (signature)
-5. Verify hazmat documents in truck (photo of document packet)
+| Trigger Event | When It Fires | Example Use |
+|--------------|---------------|-------------|
+| ON_DISPATCH_CREATE | When a load is created and assigned to a driver | Pre-trip inspection, load acceptance |
+| ON_DISPATCH_DEPART | When driver marks load "In Transit" | Post-departure verification |
+| ON_DISPATCH_DELIVER | When driver marks load "Delivered" | Post-trip inspection, POD capture |
 
-**High-Value Load Checklist:**
-1. All basic pre-departure steps
-2. Verify cargo insurance coverage (text entry: policy number)
-3. Photograph load securement from multiple angles (4+ photos required)
-4. Review security protocols with driver (signature)
-5. Confirm GPS tracking is active (driver confirms in app)
+### Setting Up Auto-Start
 
-## Auto-start rules
+<StepFlow>
+  <StepFlow.Step title="Go to Automation">
+    Navigate to **Workflows → Automation**.
+  </StepFlow.Step>
+  <StepFlow.Step title="Find the Pre-Trip Inspection recipe">
+    Look for the "Pre-Trip Inspection" card in the Recipes section.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select your checklist">
+    Choose which Dispatch Checklist should run when loads are dispatched.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enable the rule">
+    Toggle the rule to Active.
+  </StepFlow.Step>
+</StepFlow>
 
-Dispatch Checklists can trigger automatically based on load conditions:
+Now every time you dispatch a load, the checklist auto-starts for the assigned driver.
 
-- **On any load dispatch** — checklist starts when load status changes to "Dispatched"
-- **On specific commodity types** — only start for hazmat, refrigerated, or high-value loads
-- **For specific drivers** — new drivers get extended checklists; experienced drivers get streamlined versions
-- **For specific routes** — cross-border loads trigger customs compliance checklists
+### Conditional Auto-Start
 
-Configure auto-start rules in the automation settings when creating or editing a checklist template.
+You can add conditions to control when checklists trigger:
 
-## Driver experience
+- **Commodity type** — Only start hazmat checklist for hazmat loads
+- **Customer** — Extra verification for high-value customers
+- **Driver experience** — Extended checklist for new drivers, streamlined for veterans
 
-When you dispatch a load with an active Dispatch Checklist:
+Conditions use simple key-value matching (e.g., "Only if commodityType = HAZMAT").
 
-1. **Driver receives push notification** — "Pre-Departure Checklist for Load #1234 ready"
-2. **Checklist appears in driver app** — under Tasks tab with progress indicator
-3. **Driver completes steps** — one at a time, with required photos/signatures captured in-app
-4. **Owner sees real-time progress** — checklist status updates live in the web dashboard
-5. **Load cannot start until complete** — drivers must finish all required steps before marking load "In Transit"
+## Common Checklist Examples
 
-Drivers complete checklists directly in the DriveCommand mobile app. Photos are captured with the device camera. Signatures use the touchscreen.
+### Basic Pre-Departure
 
-## Good to know
+For every load, verify the fundamentals before departure:
 
-**Checklists are per-load, not per-route:**
-If a route has multiple loads, each load gets its own checklist instance. This ensures thorough verification for every pickup.
+| Step | Type | Blocking |
+|------|------|----------|
+| Verify driver's license on file | Document Upload | Yes |
+| Confirm truck inspection current | Document Upload | Yes |
+| Review BOL with driver | Signature | Yes |
+| Check fuel level | Form Fill (percentage) | No |
+| Confirm ELD logged in | Training Ack | Yes |
 
-**You can pause and resume:**
-Drivers can partially complete a checklist, then return to finish it later. Progress is saved automatically.
+### Pre-Trip Inspection (DOT Compliant)
 
-**View completion history:**
-Go to **Workflows → Instances** to see all completed checklists. Click any instance to view who completed each step, when, and what evidence was captured (photos, signatures, text).
+Full vehicle inspection before route:
 
-**Edit templates anytime:**
-Changes to checklist templates only affect new instances. Running checklists use the template version from when they started.
+| Step | Type | Blocking |
+|------|------|----------|
+| Front brakes | Inspection Item | Yes |
+| Rear brakes | Inspection Item | Yes |
+| All tires | Inspection Item | Yes |
+| All lights | Inspection Item | Yes |
+| Mirrors | Inspection Item | Yes |
+| Windshield/wipers | Inspection Item | Yes |
+| Horn | Inspection Item | Yes |
+| Fuel level | Form Fill | No |
+| Engine/fluids | Inspection Item | Yes |
+| Coupling devices | Inspection Item | Yes |
+| Emergency equipment | Inspection Item | Yes |
+| Driver signature | Signature | Yes |
 
-<Callout variant="warning" title="Important">
-Required steps block load progress. If a driver cannot complete a required step (e.g., missing document), they cannot mark the load "In Transit". Make sure required steps are truly mandatory to avoid blocking legitimate dispatches.
-</Callout>
+### Hazmat Load Verification
+
+Additional checks for hazardous materials:
+
+| Step | Type | Blocking |
+|------|------|----------|
+| All basic pre-departure steps | — | — |
+| Verify hazmat endorsement | Document Upload (license photo) | Yes |
+| Confirm placards correct | Document Upload (placard photo) | Yes |
+| Review emergency response info | Signature | Yes |
+| Verify hazmat documents in truck | Document Upload (packet photo) | Yes |
+| Confirm spill kit present | Inspection Item | Yes |
+
+### High-Value Load
+
+Extra security for expensive freight:
+
+| Step | Type | Blocking |
+|------|------|----------|
+| All basic pre-departure steps | — | — |
+| Verify cargo insurance | Form Fill (policy number) | Yes |
+| Photo load securement (4+ angles) | Document Upload | Yes |
+| Review security protocols | Signature | Yes |
+| Confirm GPS tracking active | Training Ack | Yes |
+| Seal number verification | Form Fill | Yes |
+
+## Driver Experience
+
+When you dispatch a load with a Dispatch Checklist enabled:
+
+1. **Push notification** — Driver receives: "Pre-Trip Checklist for Load #1234 ready"
+2. **Checklist card on dashboard** — Shows progress bar and "Start" button
+3. **Step-by-step completion** — Driver taps each step, completes the requirement
+4. **Inspection mode** — For vehicle inspections, enters full-screen mode: one item at a time, PASS/FAIL buttons, auto-advance
+5. **Progress saved** — Can pause and resume; progress persists
+6. **Completion** — Shows summary: "12 passed, 0 failed" with timestamp
+7. **Load unlocked** — Can now mark load "In Transit"
+
+### Mobile Inspection Mode
+
+For vehicle inspections, the mobile app enters a focused full-screen mode:
+
+- Large PASS (green) and FAIL (red) buttons
+- One inspection item at a time
+- Auto-advances on PASS
+- On FAIL: camera opens for photo, notes field appears
+- Progress counter: "4 of 12"
+- No distractions — driver focuses on the inspection
+
+## Viewing Completed Checklists
+
+All completed checklists are saved with full audit trail:
+
+1. Go to **Workflows → Instances**
+2. Filter by status (Completed, In Progress, Blocked)
+3. Click any instance to view:
+   - Who completed each step
+   - When each step was completed
+   - Photos, signatures, and form data captured
+   - Any failed inspection items and their resolutions
+
+This data is available for DOT audits, insurance claims, and customer disputes.
+
+## Important Notes
+
+**Checklists are immutable once started:**
+When a checklist starts, it takes a snapshot of the template at that moment. If you later edit the template, running checklists aren't affected — they use the version from when they started. This ensures consistency and audit compliance.
+
+**One checklist per load:**
+Each dispatch can have one active checklist at a time. If you need multiple verification workflows, combine the steps into one comprehensive checklist with phases.
+
+**Blocking steps vs. required steps:**
+- **Blocking steps** prevent load status changes until completed
+- **Required steps** must be completed to mark the checklist "done" but don't block load progress
+- Use blocking for safety-critical items; use required for documentation items
 
 ## Related
 
 <FeatureCard slug="checklists" />
 <FeatureCard slug="workflow-automation" />
-<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="driver-tasks" />
+<FeatureCard slug="loads" />

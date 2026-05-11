@@ -1,0 +1,169 @@
+---
+slug: carrier-operations
+title: How Carrier Operations Work
+summary: Technical reference for the carrier operations workflow — load lifecycle, status transitions, and system integration points.
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# How Carrier Operations Work (Technical Reference)
+
+## Overview
+
+This document describes the carrier operations workflow from a technical perspective, covering the data models, status transitions, and integration points.
+
+## Load Lifecycle
+
+Loads follow a defined status progression:
+
+```
+PENDING → DISPATCHED → AT_PICKUP → IN_TRANSIT → AT_DELIVERY → DELIVERED → INVOICED → PAID
+```
+
+### Status Transitions
+
+| From | To | Trigger | Side Effects |
+|------|-----|---------|--------------|
+| PENDING | DISPATCHED | Assign driver + truck | Fires ON_DISPATCH_CREATE event, creates PlaybookInstance if trigger exists |
+| DISPATCHED | AT_PICKUP | Driver status update | Geofence alert if configured |
+| AT_PICKUP | IN_TRANSIT | Driver status update | Blocked if active PlaybookInstance has incomplete dispatch blockers |
+| IN_TRANSIT | AT_DELIVERY | Driver status update | — |
+| AT_DELIVERY | DELIVERED | Driver status update | Fires ON_DISPATCH_DELIVER event |
+| DELIVERED | INVOICED | Invoice created | Links Invoice to Load |
+| INVOICED | PAID | Payment recorded | Updates aging metrics |
+
+### Dispatch Blocking
+
+When `PlaybookInstance.isDispatchReady = false`, the load cannot transition from DISPATCHED/AT_PICKUP to IN_TRANSIT.
+
+The `isDispatchReady` flag is recomputed by `computeDispatchReadiness()` after every step completion:
+
+```typescript
+isDispatchReady = stepInstances
+  .filter(s => s.stepSnapshot.isDispatchBlocker)
+  .every(s => s.status === 'COMPLETE' || s.status === 'SKIPPED')
+```
+
+## Data Models
+
+### Load
+
+```prisma
+model Load {
+  id            String
+  tenantId      String
+  customerId    String
+  driverId      String?
+  truckId       String?
+  status        LoadStatus
+  pickupStopId  String
+  deliveryStopId String
+  routeId       String?
+  rate          Decimal
+  ...
+}
+```
+
+### PlaybookInstance (Checklist Instance)
+
+```prisma
+model PlaybookInstance {
+  id               String
+  tenantId         String
+  playbookId       String
+  playbookSnapshot Json      // Immutable copy of template at creation
+  entityType       PlaybookEntityType  // DISPATCH for loads
+  entityId         String              // Load ID
+  status           InstanceStatus
+  isDispatchReady  Boolean
+  completionPercent Float
+  ...
+}
+```
+
+### StepInstance
+
+```prisma
+model StepInstance {
+  id                 String
+  playbookInstanceId String
+  stepTemplateId     String
+  stepSnapshot       Json     // Immutable copy of step config
+  status             StepStatus
+  result             Json?    // { fileUrls?, formData?, signatureUrl?, passOrFail?, photoUrls?, note? }
+  ...
+}
+```
+
+## Event System
+
+The workflow engine fires events that trigger automated checklists:
+
+| Event | Fired When | Data Passed |
+|-------|------------|-------------|
+| ON_DISPATCH_CREATE | Load assigned to driver | Load record |
+| ON_DISPATCH_DEPART | Load status → IN_TRANSIT | Load record |
+| ON_DISPATCH_DELIVER | Load status → DELIVERED | Load record |
+
+Events are processed by `fireEvent()` which:
+1. Queries all active `PlaybookTrigger` records for the event
+2. Evaluates flat conditions against entity data
+3. Calls `generatePlaybookInstance()` for matches
+
+## Integration Points
+
+### GPS Tracking
+
+- `GpsReport` records from mobile app or ELD integrations
+- Polled by Live Map at 60s intervals
+- Geofence alerts configured per RouteStop
+
+### HOS
+
+- `DriverHOSEntry` tracks duty status changes
+- Drive time / duty time calculated from entries
+- Blocks dispatch if driver lacks sufficient hours (optional setting)
+
+### Invoicing
+
+- Invoice links to Load via `loadId`
+- Invoice items typed: LINEHAUL, FSC, DETENTION, STOP_OFF, etc.
+- FSC auto-calculates from configured percentage
+
+## API Endpoints
+
+### Load Operations
+
+```
+GET    /api/loads              - List loads with filters
+POST   /api/loads              - Create load
+GET    /api/loads/[id]         - Get load detail
+PUT    /api/loads/[id]         - Update load
+POST   /api/loads/[id]/status  - Update load status (triggers events)
+```
+
+### Mobile Driver APIs
+
+```
+GET    /api/mobile/driver/loads        - Driver's assigned loads
+POST   /api/mobile/driver/loads/[id]/status - Driver updates load status
+GET    /api/mobile/driver/tasks        - Open checklist steps
+POST   /api/mobile/driver/tasks/[id]/complete - Complete step
+POST   /api/mobile/driver/tasks/[id]/fail     - Fail inspection item
+```
+
+## Metrics
+
+Key operational metrics tracked:
+
+- **Loads per day** — Load create count by date
+- **On-time delivery %** — Delivered before deliveryDate
+- **HOS violations** — Entries exceeding drive/duty limits
+- **Checklist completion rate** — Completed / (Completed + Incomplete) instances
+- **Average inspection time** — Mean duration of VEHICLE_INSPECTION instances
+
+## Related
+
+<FeatureCard slug="getting-started" />
+<FeatureCard slug="loads" />
+<FeatureCard slug="checklists" />

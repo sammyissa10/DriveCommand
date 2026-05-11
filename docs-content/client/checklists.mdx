@@ -2,7 +2,7 @@
 slug: checklists
 title: Checklists & Workflows
 summary: Create and manage checklists and workflows for onboarding, inspections, and operational procedures to ensure consistency across your fleet.
-lastReviewed: "2026-05-09T00:00:00Z"
+lastReviewed: "2026-05-11T00:00:00Z"
 estimatedReadMinutes: 8
 ---
 
@@ -45,8 +45,9 @@ Use checklists to:
     Click **Add Step** within a phase. For each step, configure:
     - **Step name** (e.g., "Verify driver's license")
     - **Instructions** — detailed guidance for the person completing the step
-    - **Type** — Simple (checkbox), Photo Required, Signature Required, or Text Entry
-    - **Required** — whether the step must be completed to finish the checklist
+    - **Type** — Document Upload, Form Fill, Signature, Inspection Item, Training Ack, Approval, Third Party, or Custom Note
+    - **Assignee role** — who completes this step (Driver, Dispatcher, Safety Manager, Mechanic)
+    - **Required before dispatch** — whether completing this step is required before the load can start
   </StepFlow.Step>
   <StepFlow.Step title="Save the checklist">
     Click **Save as Template**. The checklist is now available to run manually or auto-start via automation rules.
@@ -60,15 +61,19 @@ Different step types capture different evidence:
 <ComparisonTable
   headers={["Step Type", "Use Case", "Completion Requirement"]}
   rows={[
-    ["Simple", "Basic confirmation task", "Check the checkbox"],
-    ["Photo Required", "Visual inspection or damage documentation", "Upload at least one photo"],
-    ["Signature Required", "Acknowledgment or approval", "Draw signature on touchscreen or trackpad"],
-    ["Text Entry", "Notes, readings, or observations", "Enter text (minimum 10 characters)"]
+    ["Document Upload", "Upload files or photos (BOL, permits, licenses)", "Upload at least one file"],
+    ["Form Fill", "Structured data entry (odometer, fuel level, tire pressure)", "Complete all required fields"],
+    ["Signature", "Acknowledgment or approval", "Draw signature on touchscreen or trackpad"],
+    ["Inspection Item", "Pass/Fail check (pre-trip inspection points)", "Select PASS or FAIL (photo required on fail)"],
+    ["Training Acknowledgment", "Confirm review of material (policies, instructions)", "Acknowledge or add note"],
+    ["Approval", "Manager or mechanic sign-off", "Approve the request"],
+    ["Third Party", "External verification (customer, broker)", "Add notes or upload files"],
+    ["Custom Note", "Free-form observations", "Enter text"]
   ]}
 />
 
 <Callout variant="tip" title="Pro Tip">
-Use Photo Required steps for pre-trip inspections to create a visual record of truck condition before each route. This helps resolve damage disputes and insurance claims.
+Use Inspection Item steps for pre-trip inspections. They give drivers clear PASS/FAIL buttons, and failures automatically require photo documentation and create mechanic approval workflows.
 </Callout>
 
 ## Run a checklist

@@ -2,21 +2,68 @@
 slug: getting-started
 title: Getting Started with DriveCommand
 summary: Set up your trucking operation in DriveCommand - add trucks, invite drivers, create your first load, and start dispatching.
-lastReviewed: "2026-05-09T00:00:00Z"
-estimatedReadMinutes: 10
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 12
 ---
 
 # Getting Started with DriveCommand
 
-Welcome to DriveCommand! This guide walks you through setting up your trucking operation from scratch.
+## What is DriveCommand?
 
-<Callout variant="tip" title="First Time Here?">
-Complete these steps in order. Each one builds on the previous. You'll be dispatching loads in under 30 minutes.
+DriveCommand is a fleet management platform built for small-to-mid-size trucking companies. It brings together everything you need to run your operation: dispatch, driver management, compliance tracking, invoicing, HOS logging, GPS tracking, and communication — all in one system.
+
+**Built for owner-operators and small fleets** who don't have time for complex enterprise software but need more than spreadsheets and phone calls.
+
+## What problems does it solve?
+
+| Problem | How DriveCommand Helps |
+|---------|------------------------|
+| **Dispatch chaos** — loads assigned via text, phone, sticky notes | All loads in one place with status tracking, driver assignment, and push notifications |
+| **Compliance headaches** — expired documents discovered during an audit | Document expiration dashboard with automated alerts before things expire |
+| **Missing paperwork** — PODs lost between driver and office | Drivers upload photos and documents directly to the load record in the app |
+| **HOS violations** — drivers running out of hours on the road | Real-time HOS tracking with countdown timers and violation warnings |
+| **Cash flow problems** — invoices sent late or not at all | One-click invoice generation from delivered loads with aging reports |
+| **No visibility** — calling drivers to ask "where are you?" | Live GPS map showing all trucks in real-time |
+
+## Who uses DriveCommand?
+
+**Owners and Dispatchers** use the web dashboard to:
+- Create and manage loads
+- Track fleet location and status
+- Monitor compliance and document expirations
+- Generate invoices and track payments
+- View analytics and reports
+
+**Drivers** use the mobile app to:
+- See assigned loads and routes
+- Update load status (picked up, in transit, delivered)
+- Log Hours of Service (HOS)
+- Complete pre-trip inspections and checklists
+- Upload documents and POD photos
+- Message with dispatch
+
+## Key concepts
+
+Before setting up, understand these terms:
+
+- **Load** — A single shipment from pickup to delivery. Loads have a customer, origin, destination, rate, and assigned driver/truck.
+- **Route** — A sequence of stops. Routes can contain multiple loads (multi-stop).
+- **Tenant** — Your company account. All your trucks, drivers, loads, and data are scoped to your tenant.
+- **Checklist** — A sequence of steps (inspection items, document uploads, signatures) that drivers complete. Can auto-start on dispatch.
+
+<Callout variant="tip" title="New to trucking software?">
+Read **[How Carrier Operations Work](/help/carrier-operations)** first to understand the full workflow from load acquisition to payment, and how DriveCommand fits into each stage.
 </Callout>
 
-## Step 1: Add Your Trucks
+---
 
-Before you can dispatch, DriveCommand needs to know about your fleet.
+## Quick Setup Guide
+
+Complete these steps in order. You'll be dispatching your first load in under 30 minutes.
+
+### Step 1: Add Your Trucks
+
+Before you can dispatch, DriveCommand needs to know about your equipment.
 
 <StepFlow>
   <StepFlow.Step title="Go to Trucks">
@@ -36,9 +83,13 @@ Before you can dispatch, DriveCommand needs to know about your fleet.
   </StepFlow.Step>
 </StepFlow>
 
+<Callout variant="info">
+You can add trucks later as your fleet grows. Start with the trucks you're using today.
+</Callout>
+
 <FeatureCard slug="trucks" />
 
-## Step 2: Invite Your Drivers
+### Step 2: Invite Your Drivers
 
 Drivers use the DriveCommand mobile app to receive loads, update statuses, and log hours.
 
@@ -50,20 +101,22 @@ Drivers use the DriveCommand mobile app to receive loads, update statuses, and l
     Enter the driver's email address.
   </StepFlow.Step>
   <StepFlow.Step title="Set permissions">
-    Choose what the driver can access (loads, documents, messages).
+    Choose what the driver can access (loads, documents, messages). Most carriers give drivers full access.
   </StepFlow.Step>
   <StepFlow.Step title="Send invitation">
-    The driver receives an email with setup instructions.
+    The driver receives an email with setup instructions and a link to download the app.
   </StepFlow.Step>
 </StepFlow>
 
-<Callout variant="info">
-Drivers download the DriveCommand app from the App Store or Google Play. They sign in with the email you invited.
-</Callout>
+**What the driver does:**
+1. Opens the invitation email
+2. Downloads DriveCommand from App Store or Google Play
+3. Signs in with the email you invited
+4. Sees their dashboard and any assigned loads
 
 <FeatureCard slug="drivers" />
 
-## Step 3: Add Your First Customer
+### Step 3: Add Your First Customer
 
 Customers are the shippers or brokers who give you loads.
 
@@ -79,9 +132,13 @@ Customers are the shippers or brokers who give you loads.
   </StepFlow.Step>
 </StepFlow>
 
+<Callout variant="tip" title="Pro Tip">
+Add your most frequent customers first. You can add more later as you book new freight.
+</Callout>
+
 <FeatureCard slug="crm" />
 
-## Step 4: Create Your First Load
+### Step 4: Create Your First Load
 
 Now you're ready to dispatch!
 
@@ -96,43 +153,101 @@ Now you're ready to dispatch!
     Choose the customer you just added.
   </StepFlow.Step>
   <StepFlow.Step title="Enter pickup">
-    Address, contact name, phone, date/time.
+    Address, contact name, phone, pickup date/time.
   </StepFlow.Step>
   <StepFlow.Step title="Enter delivery">
-    Destination address, contact, date/time.
+    Destination address, contact, delivery date/time.
   </StepFlow.Step>
   <StepFlow.Step title="Add rate">
-    Enter what you're charging for this load.
+    Enter what you're charging for this load (line haul rate).
   </StepFlow.Step>
   <StepFlow.Step title="Assign driver and truck">
-    Select who's hauling it and which truck.
+    Select which driver will haul it and which truck they'll use.
   </StepFlow.Step>
   <StepFlow.Step title="Save">
-    The driver sees the load in their app immediately.
+    The load is created. The driver receives a push notification and sees the load in their app immediately.
   </StepFlow.Step>
 </StepFlow>
 
+**What the driver sees:**
+- Push notification: "New load assigned: Load #1234"
+- Load card on their dashboard with pickup address and time
+- Tapping the load shows full details: pickup, delivery, customer contact, BOL if attached
+
 <FeatureCard slug="loads" />
 
-## Step 5: Track and Invoice
+### Step 5: Track Progress
 
-Once the driver marks the load delivered:
+Once the driver starts working the load:
 
-1. **Generate invoice** — Go to Invoices, select the delivered load, create invoice
-2. **Send to customer** — Email or download PDF
-3. **Track payment** — Mark as paid when funds arrive
+1. **Driver updates status** — At Pickup → In Transit → At Delivery → Delivered
+2. **You see updates in real-time** — Load list and dashboard show current status
+3. **Live Map** — Click the map icon to see the truck's current location
+4. **Driver captures POD** — Photos and signatures uploaded to the load record
+
+<FeatureCard slug="live-map" />
+
+### Step 6: Invoice the Customer
+
+After the driver marks the load delivered:
+
+<StepFlow>
+  <StepFlow.Step title="Go to Invoices">
+    Click **Invoices** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Invoice">
+    Select the delivered load from the list.
+  </StepFlow.Step>
+  <StepFlow.Step title="Review details">
+    Customer, rate, and load details auto-populate. Add line items if needed (detention, fuel surcharge, accessorials).
+  </StepFlow.Step>
+  <StepFlow.Step title="Generate and send">
+    Click **Create Invoice**, then email the PDF to your customer.
+  </StepFlow.Step>
+</StepFlow>
 
 <FeatureCard slug="invoices" />
 
-## What's Next?
+---
 
-You've completed the basics! Explore these features to get more from DriveCommand:
+## You're dispatching!
 
-- **[Compliance Dashboard](/help/compliance-dashboard)** — Track document expirations
-- **[Live Map](/help/live-map)** — See your fleet in real-time
-- **[Checklists](/help/checklists)** — Automate pre-trip inspections
-- **[Profit Predictor](/help/profit-predictor)** — Analyze lane profitability before accepting loads
+You've completed the basics:
+- Fleet is set up (trucks and drivers)
+- First customer added
+- First load created and assigned
+- Driver received the notification
+
+Now explore these features to get more from DriveCommand:
+
+### Automate Dispatch Procedures
+
+Create checklists that auto-start when you dispatch loads. Drivers complete pre-trip inspections, document verification, and safety acknowledgments before they can mark a load "In Transit".
+
+<FeatureCard slug="carrier-templates" />
+
+### Track Compliance
+
+Upload driver licenses, medical cards, and truck documents. DriveCommand alerts you before anything expires.
+
+<FeatureCard slug="compliance-dashboard" />
+
+### Monitor Your Fleet
+
+See all trucks on a real-time map. Know exactly where everyone is without calling.
+
+<FeatureCard slug="live-map" />
+
+### Analyze Profitability
+
+Use Profit Predictor before accepting loads to see estimated profit. Lane Analytics shows which routes make you money.
+
+<FeatureCard slug="profit-predictor" />
+
+---
 
 ## Need Help?
 
-Click the **?** button in the bottom-right corner of any page to contact support.
+Click the **?** button in the bottom-right corner of any page to contact support or search the help center.
+
+<FeatureCard slug="support-tickets" />

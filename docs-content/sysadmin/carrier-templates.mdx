@@ -1,17 +1,17 @@
 ---
 slug: carrier-templates
-title: Dispatch Templates — Technical Reference
-summary: Reusable dispatch and route templates with JSON-based stop sequences and pre-filled load details.
-lastReviewed: "2026-05-09T00:00:00Z"
-estimatedReadMinutes: 8
+title: Dispatch Checklists — Technical Reference
+summary: Pre-departure workflow checklists using the Playbook system with dispatch blocking, step types, and automation triggers.
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 10
 engineeringOwner: "Platform Team"
 securityNotes:
-  - "Templates are tenant-scoped"
-  - "Template JSON schema validated on create/update"
-  - "Templates do not store driver assignments (populated at runtime)"
+  - "Playbooks and instances are tenant-scoped"
+  - "stepSnapshot and playbookSnapshot are immutable after instance creation"
+  - "Dispatch blocking enforced at API layer"
 ---
 
-# Dispatch Templates — Technical Reference
+# Dispatch Checklists — Technical Reference
 
 <Callout variant="warning">
 Internal engineering documentation. For user-facing docs, see the client Help Center.
@@ -19,33 +19,196 @@ Internal engineering documentation. For user-facing docs, see the client Help Ce
 
 ## Overview
 
-Dispatch Templates store reusable route and load configurations as JSON.
+Dispatch Checklists are Playbooks with `entityType: DISPATCH` that auto-start via `PlaybookTrigger` when loads are dispatched. They enforce pre-departure verification through dispatch blocking.
 
 **Portal:** Owner
-**Route:** `/carrier/templates`
+**Route:** `/checklists`
 **Plan Tier:** Pro+
 
-## Server Actions
+## Architecture
 
-<ApiTable rows={[
-  { name: "getTemplates", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<DispatchTemplate[]>" },
-  { name: "createTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "CreateTemplateSchema", returnType: "ActionState<DispatchTemplate>" },
-  { name: "applyTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "{ templateId: string }", returnType: "ActionState<RouteData>" }
-]} />
+```
+Playbook (template)
+  └── PlaybookStep[] (ordered, with isDispatchBlocker flag)
+        └── StepTemplate (reusable step definition)
+
+PlaybookInstance (runtime)
+  └── StepInstance[] (immutable snapshots)
+        └── result: Json (fileUrls, formData, signatureUrl, passOrFail, photoUrls, note)
+```
+
+### Two-World Model
+
+- **Template World:** Playbook, PlaybookStep, StepTemplate — mutable design-time objects
+- **Instance World:** PlaybookInstance, StepInstance — immutable runtime snapshots
+
+Template changes never affect running instances because `playbookSnapshot` and `stepSnapshot` are deep-copied at instance creation.
 
 ## Database Schema
 
-<PrismaModelRef model="DispatchTemplate" fields={[
-  "id: String @id @default(uuid())",
-  "tenantId: String",
-  "name: String (user-facing template name)",
-  "stops: Json (array of { address, type, contactName })",
-  "defaultRate: Decimal?",
-  "commodityType: String?",
-  "notes: String?"
-]} />
+### PlaybookInstance
 
-## Related Features
+```prisma
+model PlaybookInstance {
+  id               String             @id @default(uuid())
+  tenantId         String
+  playbookId       String
+  playbookSnapshot Json               // Immutable copy of Playbook + PlaybookSteps
+  entityType       PlaybookEntityType // DISPATCH for loads
+  entityId         String             // Load ID
+  status           InstanceStatus     // NOT_STARTED, IN_PROGRESS, COMPLETED, BLOCKED
+  isDispatchReady  Boolean            // Derived from blocker steps
+  completionPercent Float
+  triggeredBy      String             // 'manual' | 'trigger'
+  triggeredEvent   TriggerEvent?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  dueDate          DateTime?
+}
+```
 
-<FeatureCard slug="carrier-dispatches" />
-<FeatureCard slug="routes" />
+### StepInstance
+
+```prisma
+model StepInstance {
+  id                 String           @id @default(uuid())
+  playbookInstanceId String
+  stepTemplateId     String
+  stepSnapshot       Json             // Immutable copy of step config
+  status             StepStatus       // NOT_STARTED, IN_PROGRESS, COMPLETE, FAILED, SKIPPED
+  assigneeRole       AssigneeRole
+  assignedUserId     String?
+  result             Json?            // Type-specific result data
+  completedByUserId  String?
+  completedAt        DateTime?
+  dueDate            DateTime?
+  isOverdue          Boolean
+  skipReason         String?
+}
+```
+
+### PlaybookTrigger
+
+```prisma
+model PlaybookTrigger {
+  id            String        @id @default(uuid())
+  playbookId    String
+  tenantId      String
+  triggerEvent  TriggerEvent  // ON_DISPATCH_CREATE, ON_DISPATCH_DEPART, ON_DISPATCH_DELIVER
+  conditions    Json?         // Flat key-value equality conditions
+  isActive      Boolean
+}
+```
+
+## Step Types
+
+| Type | StepType Enum | Result Schema | Validation |
+|------|---------------|---------------|------------|
+| Document Upload | DOCUMENT_UPLOAD | `{ fileUrls: string[] }` | `fileUrls.length > 0` |
+| Form Fill | FORM_FILL | `{ formData: Record<string, any> }` | Validates against `defaultConfig.formSchema` |
+| Signature | SIGNATURE | `{ signatureUrl: string }` | Valid URL |
+| Inspection Item | INSPECTION_ITEM | `{ passOrFail: 'pass' \| 'fail', photoUrls?: string[], note?: string }` | On fail: `photoUrls.length > 0` if `requiresPhoto` |
+| Training Ack | TRAINING_ACK | `{ acknowledged: boolean, note?: string }` | `acknowledged === true` OR `note.length > 0` |
+| Approval | APPROVAL | `{ approved: boolean }` | Role-gated at tRPC layer |
+| Third Party | THIRD_PARTY | `{ note?: string, fileUrls?: string[] }` | `note` OR `fileUrls.length > 0` |
+| Custom Note | CUSTOM_NOTE | `{ note: string }` | `note.length > 0` |
+
+## Service Layer
+
+### generatePlaybookInstance()
+
+Located at `src/server/services/workflows/generatePlaybookInstance.ts`.
+
+1. Load Playbook with ordered PlaybookSteps
+2. Verify entity exists (Load for DISPATCH)
+3. Check for duplicate active instance (409 if exists)
+4. Deep-copy Playbook + PlaybookSteps into `playbookSnapshot`
+5. Create PlaybookInstance with `status=NOT_STARTED, isDispatchReady=false`
+6. For each PlaybookStep: create StepInstance with deep-copied `stepSnapshot`
+7. Send STEP_ASSIGNED notifications to assignees
+
+### computeDispatchReadiness()
+
+Located at `src/server/services/workflows/computeDispatchReadiness.ts`.
+
+```typescript
+isDispatchReady = stepInstances
+  .filter(s => s.stepSnapshot.isDispatchBlocker)
+  .every(s => s.status === 'COMPLETE' || s.status === 'SKIPPED')
+```
+
+Fires `DISPATCH_READY` notification only on `false → true` flip.
+
+### fireEvent()
+
+Located at `src/server/services/workflows/fireEvent.ts`.
+
+1. Query active PlaybookTriggers for (tenantId, triggerEvent)
+2. Evaluate flat conditions against entity data
+3. Call `generatePlaybookInstance()` for matches
+4. Best-effort: one trigger failure doesn't block others
+
+## Dispatch Blocking
+
+When `PlaybookInstance.isDispatchReady = false`:
+
+- Load status cannot transition from `DISPATCHED`/`AT_PICKUP` to `IN_TRANSIT`
+- API returns 400 with `{ blockedByChecklist: true, remainingSteps: StepInstance[] }`
+- UI shows "Complete checklist before starting load"
+
+Blocking is enforced in:
+- `src/app/api/mobile/driver/loads/[id]/status/route.ts`
+- `src/actions/carrier/loads.ts` (updateLoadStatus)
+
+## Inspection Failure Flow
+
+When driver calls `failInspectionItem()`:
+
+1. Set stepInstance `status=FAILED`, persist result with photos
+2. If playbook category = `VEHICLE_INSPECTION`:
+   - Create ad-hoc StepInstance of type APPROVAL
+   - Assign to MECHANIC role
+   - Title: "Repair sign-off: {step name}"
+3. Set PlaybookInstance `status=BLOCKED`
+4. Emit STEP_FAILED notification to dispatcher + mechanic
+5. `computeDispatchReadiness()` → `isDispatchReady=false`
+
+## tRPC Routers
+
+### instance.ts
+
+| Procedure | Auth | Input |
+|-----------|------|-------|
+| `generate` | OWNER, MANAGER | `{ playbookId, entityId, entityType }` |
+| `list` | tenant member | `{ status?, entityId? }` (paginated) |
+| `get` | tenant member | `{ id }` |
+| `getForEntity` | tenant member | `{ entityId, entityType }` |
+
+### stepInstance.ts
+
+| Procedure | Auth | Input |
+|-----------|------|-------|
+| `complete` | assignee | `{ stepInstanceId, result }` |
+| `fail` | assignee | `{ stepInstanceId, result: { photoUrls, note? } }` |
+| `skip` | OWNER, MANAGER | `{ stepInstanceId, reason }` |
+
+### trigger.ts
+
+| Procedure | Input |
+|-----------|-------|
+| `listRecipes` | — |
+| `enableRecipe` | `{ recipeKey, playbookId }` |
+| `disableRecipe` | `{ recipeKey }` |
+
+## Built-in Recipes
+
+| Key | Trigger Event | Default Condition |
+|-----|---------------|-------------------|
+| `pre_trip_inspection` | ON_DISPATCH_CREATE | none |
+| `post_trip_inspection` | ON_DISPATCH_DELIVER | none |
+
+## Related
+
+<FeatureCard slug="checklists" />
+<FeatureCard slug="workflow-automation" />
+<FeatureCard slug="loads" />

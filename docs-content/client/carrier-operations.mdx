@@ -1,0 +1,185 @@
+---
+slug: carrier-operations
+title: How Carrier Operations Work
+summary: Understand the trucking workflow from load acquisition to payment, and how DriveCommand supports each stage of your operation.
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 8
+---
+
+# How Carrier Operations Work
+
+<Callout variant="info">
+This guide explains the typical workflow of a small-to-mid-size trucking company and shows how DriveCommand supports each stage. Read this first to understand the big picture before diving into specific features.
+</Callout>
+
+## The Trucking Business Cycle
+
+Every trucking operation follows the same fundamental cycle, whether you run 2 trucks or 200:
+
+```
+Load Acquisition → Dispatch → Transit → Delivery → Documentation → Invoice → Payment
+```
+
+Most carriers struggle because this cycle involves dozens of moving parts: brokers, shippers, drivers, compliance documents, HOS regulations, fuel costs, and unpredictable delays. DriveCommand brings everything into one system so nothing falls through the cracks.
+
+## Stage 1: Load Acquisition
+
+**What happens:** You find freight to haul. This comes from brokers (via load boards), direct shippers, or repeat customers.
+
+**The challenge:** Evaluating whether a load is profitable requires knowing your costs per mile, fuel prices, driver availability, and equipment suitability. Most carriers accept loads without full visibility into true profitability.
+
+**How DriveCommand helps:**
+- **CRM** — Track your customers, contacts, and rate history. See which customers pay on time and which are problematic.
+- **Profit Predictor** — Enter origin/destination before accepting a load. DriveCommand calculates estimated fuel cost, miles, tolls, and shows predicted profit. Stop guessing if a lane is worth running.
+- **Lane Analytics** — View historical profitability by lane. See which routes consistently make money and which ones lose.
+
+<FeatureCard slug="crm" />
+<FeatureCard slug="profit-predictor" />
+
+## Stage 2: Dispatch
+
+**What happens:** You assign a load to a driver and truck, confirm pickup details, and ensure the driver is ready to roll.
+
+**The challenge:** Dispatch is where things break down. Did the driver get the BOL? Is the truck inspection current? Does the driver have enough HOS hours? Is the right equipment assigned? Missing any of these causes delays, service failures, or compliance violations.
+
+**How DriveCommand helps:**
+- **Load Management** — Create loads with pickup/delivery details, rate, and customer. Assign driver and truck in one place.
+- **Driver & Truck Readiness** — See at a glance if a driver is compliant (valid license, medical card, HOS hours available) and if a truck is ready (inspection current, no maintenance due).
+- **Dispatch Checklists** — Create step-by-step pre-departure checklists that auto-start when you dispatch. Drivers complete document verification, truck inspection, and load acceptance in the app before they can mark the load "In Transit". Nothing gets missed.
+- **Push Notifications** — Drivers receive instant alerts when assigned to a load. No phone calls needed.
+
+<FeatureCard slug="loads" />
+<FeatureCard slug="carrier-templates" />
+
+## Stage 3: Transit
+
+**What happens:** The driver is on the road, moving freight from pickup to delivery.
+
+**The challenge:** You need to know where your trucks are, whether drivers are on schedule, and if they're staying within HOS regulations. Customers call asking for ETAs. Drivers encounter issues (traffic, weather, mechanical problems) that need real-time response.
+
+**How DriveCommand helps:**
+- **Live Map** — See all your trucks on a real-time map with current location, speed, and status. Know exactly where every driver is without calling them.
+- **GPS Tracking** — Background GPS tracking from the driver's phone or ELD integration. Track location history and geofence alerts.
+- **HOS Management** — Drivers log duty status in the app. You see remaining drive time, duty time, and break requirements. Prevent HOS violations before they happen.
+- **Fleet Messaging** — Send messages to individual drivers or broadcast to the entire fleet. Drivers respond directly in the app.
+
+<FeatureCard slug="live-map" />
+<FeatureCard slug="driver-hours" />
+<FeatureCard slug="carrier-messages" />
+
+## Stage 4: Delivery
+
+**What happens:** Driver arrives at the delivery location, unloads, gets proof of delivery (POD) signed, and marks the load complete.
+
+**The challenge:** POD capture, load status updates, and communicating delivery to customers often gets delayed or lost. Missing PODs delay invoicing.
+
+**How DriveCommand helps:**
+- **Status Updates** — Drivers update load status (At Pickup, In Transit, At Delivery, Delivered) directly in the mobile app.
+- **Photo Capture** — Drivers photograph POD, load condition, and any damage directly in the app. Photos attached to the load record.
+- **Checklist Completion** — Post-delivery checklists can capture POD signature, confirm load count, and document any exceptions.
+- **Customer Tracking** — Generate a tracking link to share with customers. They see real-time status without calling you.
+
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="shipment-tracking" />
+
+## Stage 5: Documentation
+
+**What happens:** After delivery, you need to organize all paperwork: BOL, POD, rate confirmation, fuel receipts, lumper receipts, and any other load-specific documents.
+
+**The challenge:** Paperwork gets lost between driver, truck, office, and filing cabinet. Missing documents delay invoicing and cause disputes.
+
+**How DriveCommand helps:**
+- **Document Storage** — Upload and attach documents to loads, drivers, and trucks. Everything in one place, accessible from anywhere.
+- **Rate Confirmation Storage** — Attach rate cons to loads so you always have proof of agreed rates.
+- **Compliance Documents** — Track driver licenses, medical cards, truck registrations, and insurance. Get alerts before documents expire.
+
+<FeatureCard slug="driver-documents" />
+<FeatureCard slug="compliance-dashboard" />
+
+## Stage 6: Invoice
+
+**What happens:** You generate and send an invoice to the customer for the completed load.
+
+**The challenge:** Invoicing often gets delayed because paperwork isn't organized or you're too busy dispatching new loads. Delayed invoicing means delayed payment.
+
+**How DriveCommand helps:**
+- **One-Click Invoice Generation** — Create invoices directly from delivered loads. Customer, rate, and load details auto-populate.
+- **Trucking-Standard Fields** — BOL number, PRO number, commodity, weight, loaded miles, fuel surcharge (FSC) — all the fields brokers and shippers expect.
+- **PDF Export** — Generate professional invoice PDFs with your company branding.
+- **Email Delivery** — Send invoices directly from DriveCommand.
+
+<FeatureCard slug="invoices" />
+
+## Stage 7: Payment
+
+**What happens:** You track invoices until payment is received, follow up on overdue invoices, and reconcile with your books.
+
+**The challenge:** Tracking who owes you money and chasing late payments is tedious but critical. Cash flow problems sink trucking companies faster than anything else.
+
+**How DriveCommand helps:**
+- **Aging Report** — See all outstanding invoices by age (current, 30 days, 60 days, 90+ days). Know exactly who owes what.
+- **Payment Tracking** — Mark invoices as paid when funds arrive. Track partial payments.
+- **Overdue Alerts** — Automatic reminders when invoices pass due date.
+
+<FeatureCard slug="carrier-reports-aging" />
+
+## The Complete Picture
+
+Here's how all the pieces fit together in DriveCommand:
+
+| Stage | Key Features | Owner Actions | Driver Actions |
+|-------|--------------|---------------|----------------|
+| **Load Acquisition** | CRM, Profit Predictor | Evaluate loads, negotiate rates | — |
+| **Dispatch** | Loads, Dispatch Checklists | Create load, assign driver/truck | Complete pre-departure checklist |
+| **Transit** | Live Map, HOS, Messages | Monitor progress, communicate | Update status, log HOS |
+| **Delivery** | Status Updates, Photos | Track delivery confirmation | Mark delivered, capture POD |
+| **Documentation** | Document Storage | Organize and verify docs | Upload photos/receipts |
+| **Invoice** | Invoicing | Generate and send invoice | — |
+| **Payment** | Aging Reports | Track and collect payment | — |
+
+## Who Uses What
+
+DriveCommand has different interfaces for different roles:
+
+**Owners/Dispatchers (Web + Mobile)**
+- Full access to all features
+- Dashboard with KPIs, revenue, compliance alerts
+- Create and manage loads, routes, invoices
+- Monitor drivers and fleet in real-time
+- Run reports and analytics
+
+**Drivers (Mobile App)**
+- See assigned loads and routes
+- Update load status
+- Log HOS and duty status
+- Complete checklists and inspections
+- Upload documents and photos
+- Message with dispatch
+
+## Common Workflows
+
+**Morning dispatch routine:**
+1. Check Dashboard for overnight alerts
+2. Review today's scheduled pickups in Loads
+3. Verify driver HOS availability
+4. Dispatch loads to available drivers
+5. Drivers complete pre-trip checklists
+6. Monitor departures on Live Map
+
+**End of day:**
+1. Check for delivered loads needing invoicing
+2. Generate invoices for completed loads
+3. Review HOS compliance for tomorrow
+4. Respond to any open driver messages
+5. Check aging report for overdue invoices
+
+## Next Steps
+
+Now that you understand how carrier operations flow through DriveCommand:
+
+1. **[Getting Started](/help/getting-started)** — Set up your trucks, drivers, and first load
+2. **[Dispatch Checklists](/help/carrier-templates)** — Automate pre-departure verification
+3. **[Live Map](/help/live-map)** — Track your fleet in real-time
+4. **[Invoicing](/help/invoices)** — Generate professional invoices
+
+<FeatureCard slug="getting-started" />

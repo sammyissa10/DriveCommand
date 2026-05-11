@@ -28,12 +28,12 @@
   },
   {
     "slug": "carrier-templates",
-    "name": "Dispatch Templates",
-    "shortDescription": "Reusable dispatch and route templates for common lanes and workflows.",
+    "name": "Dispatch Checklists",
+    "shortDescription": "Pre-departure checklists that auto-start when loads are dispatched, ensuring drivers complete required verification steps.",
     "category": "dispatch",
     "portal": "owner",
     "planTier": "pro",
-    "route": "/carrier/templates"
+    "route": "/checklists"
   },
   {
     "slug": "carrier-dispatches",
@@ -367,6 +367,15 @@
     "portal": "owner",
     "planTier": "free",
     "route": "/help"
+  },
+  {
+    "slug": "carrier-operations",
+    "name": "How Carrier Operations Work",
+    "shortDescription": "High-level overview of the trucking workflow from load acquisition to payment, and how DriveCommand supports each stage.",
+    "category": "support",
+    "portal": "owner",
+    "planTier": "free",
+    "route": "/help/carrier-operations"
   },
   {
     "slug": "getting-started",

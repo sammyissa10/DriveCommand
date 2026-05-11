@@ -7,7 +7,7 @@
       "name": "Getting Started",
       "description": "Set up your account and learn the basics",
       "icon": "Rocket",
-      "features": ["getting-started"]
+      "features": ["carrier-operations", "getting-started"]
     },
     {
       "id": "daily-dispatch",
