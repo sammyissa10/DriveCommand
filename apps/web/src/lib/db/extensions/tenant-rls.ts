@@ -8,16 +8,28 @@ import { Prisma } from '../../../generated/prisma/client';
  * Prisma operation on models that have a tenantId field. This ensures tenant
  * isolation at the application layer regardless of database-level RLS status.
  *
- * DEFENSE-IN-DEPTH: set_config still runs.
- * Every query is also wrapped in a sequential transaction that sets the
- * app.current_tenant_id session variable via set_config. This is belt-and-suspenders
- * in case any future DB-level RLS policies are re-enabled.
- *
  * WHY APPLICATION-LAYER INJECTION:
  * The previous approach relied solely on PostgreSQL RLS policies. However, Supabase's
  * postgres role has BYPASSRLS privilege, which means all queries run through the
  * Prisma connection pool (using the postgres role) bypass RLS entirely. This resulted
  * in every tenant being able to see every other tenant's data — a critical P0 breach.
+ *
+ * WHY set_config WAS REMOVED:
+ * The previous defense-in-depth layer wrapped every query in a sequential
+ * client.$transaction([set_config(...), query(...)]) call. This is incompatible
+ * with Prisma's driver-adapter mode (pg.Pool) on limited-connection deployments
+ * (e.g. Supabase Session Pooler, max:1 pool). When a server action opens an outer
+ * $transaction(async (tx) => { ... }), the inner extension tries to open a new
+ * top-level transaction on the bare client, which can't acquire a connection because
+ * the outer transaction already holds the only one — causing P2028 deadlocks.
+ * Application-layer injection alone provides full tenant isolation; set_config was
+ * never load-bearing for isolation, only for hypothetical future RLS policies.
+ *
+ * IF RLS POLICIES ARE RE-ADDED IN FUTURE:
+ * Do not re-introduce per-query $transaction wrapping here. Instead, set
+ * app.current_tenant_id at connection checkout time (e.g. via a pg.Pool
+ * 'connect' event handler or a Prisma middleware that runs SET LOCAL outside
+ * of query-level transactions), so it is nested-transaction-safe.
  *
  * EXEMPT MODELS:
  * Models without a tenantId field are skipped — queries run normally without injection.
@@ -56,16 +68,6 @@ export function withTenantRLS(tenantId: string) {
       query: {
         $allModels: {
           async $allOperations({ operation, model, args, query }) {
-            // Belt-and-suspenders: set_config runs alongside application-layer injection.
-            // Uses sequential transaction form to guarantee same DB connection.
-            async function runWithSetConfig(q: typeof query, a: typeof args) {
-              const [, result] = await client.$transaction([
-                client.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`,
-                q(a),
-              ]);
-              return result;
-            }
-
             // Exempt models: no tenantId field, pass through without injection.
             if (EXEMPT_MODELS.has(model ?? '')) {
               return query(args);
@@ -92,7 +94,7 @@ export function withTenantRLS(tenantId: string) {
               // so we cannot add tenantId directly. Instead, run the query then verify
               // the result belongs to this tenant.
               case 'findUnique': {
-                const result = await runWithSetConfig(query, args);
+                const result = await query(args);
                 if (result && (result as any).tenantId !== tenantId) {
                   return null; // Treat cross-tenant record as not found
                 }
@@ -100,7 +102,7 @@ export function withTenantRLS(tenantId: string) {
               }
 
               case 'findUniqueOrThrow': {
-                const result = await runWithSetConfig(query, args);
+                const result = await query(args);
                 if (result && (result as any).tenantId !== tenantId) {
                   throw new Error(
                     `Tenant isolation violation: record belongs to another tenant`
@@ -154,8 +156,7 @@ export function withTenantRLS(tenantId: string) {
                 return query(args);
             }
 
-            // Execute with set_config defense-in-depth for all non-early-return paths.
-            return runWithSetConfig(query, args);
+            return query(args);
           },
         },
       },
