@@ -187,6 +187,31 @@ export async function createTemplate(
   }
 
   const effectiveFromDate = new Date(data.effectiveFrom);
+
+  // Reject same-day or backdated replacement before touching the DB.
+  // "End and replace" is for rate changes over time — corrections belong in Edit.
+  const currentTemplate = await prisma.driverCompensationTemplate.findFirst({
+    where: { driverId: cd.id, effectiveTo: null, deletedAt: null },
+  });
+  if (currentTemplate) {
+    const prevDay = Date.UTC(
+      currentTemplate.effectiveFrom.getUTCFullYear(),
+      currentTemplate.effectiveFrom.getUTCMonth(),
+      currentTemplate.effectiveFrom.getUTCDate(),
+    );
+    const newDay = Date.UTC(
+      effectiveFromDate.getUTCFullYear(),
+      effectiveFromDate.getUTCMonth(),
+      effectiveFromDate.getUTCDate(),
+    );
+    if (prevDay >= newDay) {
+      return {
+        error:
+          "Cannot replace this template on the same day it became effective. Choose a date at least one day after the current template's effective date, or end the current template manually first.",
+      };
+    }
+  }
+
   const oneDayBefore = new Date(effectiveFromDate.getTime() - 86400000);
 
   let newId: string;
