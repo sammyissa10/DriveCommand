@@ -7,6 +7,7 @@ import { LoadForm } from '@/components/carrier/loads/LoadForm';
 import type { LoadData } from '@/components/carrier/loads/LoadForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
 import { LoadDetailActions } from '@/components/carrier/loads/LoadDetailActions';
+import { DriverAssignmentSection } from '@/components/driver-pay/assignment-section';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -196,6 +197,18 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
         initialData={initialData}
         clients={clients}
         loadId={id}
+      />
+
+      <DriverAssignmentSection
+        loadId={id}
+        load={{
+          id: load.id,
+          hazmat: load.hazmat,
+          referenceNumber: load.referenceNumber ?? null,
+          rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
+          createdAt: (load.createdAt as Date).toISOString(),
+        }}
+        drivers={rawDrivers}
       />
     </div>
   );
