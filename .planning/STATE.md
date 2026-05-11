@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-09 - Completed quick-296: Redesign Client Help Center & Fix Navigation Cutoff (single-sidebar layout, operations-first 10 hubs, Getting Started guide)
-Last session: 2026-05-09T06:40:40Z
-Stopped at: Completed quick-289-PLAN.md + quick-294
+Last activity: 2026-05-11 - Completed quick-298: Driver Pay Phase 3 — load driver assignment CRUD with pay template snapshotting, per-load override with reason, UI components, 12 unit tests
+Last session: 2026-05-11T04:00:46Z
+Stopped at: Completed 298-driver-pay-phase-3-assignment-snapshot/298-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -5440,6 +5440,7 @@ None blocking immediate progress.
 - Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 - Quick-290 (2026-05-09): Build MDX Component Library and Rendering Pipeline — RSC-native MDX pipeline with 14 blocks (Callout/StepFlow/Screenshot/FeatureCard + sysadmin CodeBlock/ApiTable/RlsPolicyBox/PrismaModelRef), next-mdx-remote v5, Zod frontmatter validation, registry cross-check — 3 tasks, 26 files, [290-build-mdx-component-library-and-renderin](./quick/290-build-mdx-component-library-and-renderin/)
 | Phase quick-297 P01 | 549 | 3 tasks | 4 files |
+| Phase quick-298 P01 | 389 | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -9373,9 +9374,15 @@ None blocking immediate progress.
 | Phase 51 P01 | 5min | 3 tasks | 1 files |
 | Phase 51 P05 | 2min | 3 tasks | 1 files |
 
+**Quick-298 decisions (Driver Pay Phase 3 — assignment snapshot):**
+- AssignmentSection split into server wrapper + AssignmentSectionClient to colocate server-side data fetch with client state without violating React server/client boundary rules
+- Zod v4 UUID validation requires version bits [1-8] in third group; sequential test IDs like 00000000-0000-0000-0000-000000000001 are rejected — use real v4 format (e.g., 550e8400-e29b-41d4-a716-446655440000) in tests
+- computeIsOverride has zero server-only imports — safe to import in client components; enables green/amber banner logic without server round-trip
+- Holiday detection uses static list (2026-2027 US federal holidays) with dateKey = createdAt ISO string slice(0,10); no external API needed
+
 ## Session Continuity
 
-Last session: 2026-05-03T21:31:45Z
-Stopped at: Completed 51-05-PLAN.md — Phase 51 COMPLETE (all 5 plans done)
+Last session: 2026-05-11T04:00:46Z
+Stopped at: Completed 298-driver-pay-phase-3-assignment-snapshot/298-PLAN.md
 Resume file: None
-Next action: Phase 51 complete — determine next phase
+Next action: Driver Pay Phase 3 complete — continue with Phase 4 (pay component line items / pay calculation)
