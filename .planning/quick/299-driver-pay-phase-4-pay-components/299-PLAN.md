@@ -129,6 +129,7 @@ Output: calculator.ts with 10 formula functions + dispatcher, and detention.ts w
           - `'LUMPER_REIMBURSEMENT'` | `'SCALE_REIMBURSEMENT'` | `'FUEL_REIMBURSEMENT'` → `calcFlat(input.rate, input.multiplier)` (reimbursements are flat amounts)
           - `'ADVANCE_REPAYMENT'` | `'ESCROW_CONTRIBUTION'` | `'FUEL_CARD_DEBT'` | `'CARGO_CLAIM'` | `'EQUIPMENT_DAMAGE'` | `'GARNISHMENT'` | `'CHILD_SUPPORT'` → `calcFlat(input.rate, input.multiplier)` (category enforcement in the API will negate the result)
           - Default (unknown type): `new Decimal(0)` — do not throw; callers can handle zero gracefully.
+          - Note: `calcSplit` is exported for direct caller use (e.g., settlement aggregation) — no PayComponentType routes to it through the dispatcher.
         - The function must handle all 30 PayComponentType enum values listed in schema.prisma.
   </action>
   <verify>
@@ -536,15 +537,15 @@ Output: Three route files totalling 5 HTTP handlers.
        ```typescript
        prisma.loadDriverAssignment.findFirst({
          where: { id: assignmentId, deletedAt: null },
-         include: { template: { select: { detentionRate: true } } },
+         include: { template: { select: { detentionRatePerHour: true } } },
        })
        ```
        Not found → 404.
-       Note: check schema — `DriverCompensationTemplate` may not have a `detentionRate` field. If it does not exist on the schema, fall back to org default `$25.00/hr`. Read schema to confirm field existence before writing this query. If `detentionRate` is not on the template model, skip the include and use the hardcoded default.
-    6. Fetch stop: `prisma.routeStop.findFirst({ where: { id: stopId } })`. (RouteStop model — check schema for exact field names: look for `arrivedAt`/`departedAt` or `arrivalTime`/`departureTime`). If stop not found → 404.
+       Note: the schema field is `detentionRatePerHour` (mapped from `detention_rate_per_hour` at schema.prisma line 1672). Use `template?.detentionRatePerHour` in all downstream references.
+    6. Fetch stop: `prisma.carrierStop.findFirst({ where: { id: stopId } })`. (CarrierStop model — confirmed fields at schema.prisma line 1979: `arrivedAt` (line 1989), `departedAt` (line 1990), `freeTimeMinutes` (line 2006, default 120)). If stop not found → 404.
     7. If stop timestamps are null/missing → return 200 `{ suggestion: null, reason: 'Stop has no arrival or departure timestamps.' }`.
     8. Determine detention rate:
-       - If template has `detentionRate` and it's not null: use it.
+       - If template has `detentionRatePerHour` and it's not null: use it.
        - Otherwise: `new Decimal('25.00')` (org default $25/hr).
     9. Call `suggestDetention({ arrivedAt: stop.arrivedAt, departedAt: stop.departedAt, freeTimeMinutes: stop.freeTimeMinutes ?? 120, detentionRate })`.
     10. If result is null → return 200 `{ suggestion: null, reason: 'No detention earned within free time window.' }`.
@@ -560,7 +561,7 @@ Output: Three route files totalling 5 HTTP handlers.
         ```
         (Serialize Decimal values to string.)
 
-    Important: before writing the RouteStop query, check the actual field names in schema.prisma by reading the model definition. Search for `model RouteStop` and confirm fields like `arrivedAt`, `departedAt`, `freeTimeMinutes`. Use exact Prisma field names.
+    Important: use `prisma.carrierStop` (not `prisma.routeStop`). `RouteStop` does not have `freeTimeMinutes`. `CarrierStop` has all three required fields: `arrivedAt`, `departedAt`, `freeTimeMinutes` (default 120). Use exact Prisma field names.
   </action>
   <verify>
     - `grep -n "export async function PATCH\|export async function DELETE" "apps/web/src/app/api/driver-pay/assignments/[assignmentId]/components/[componentId]/route.ts"` shows both.
@@ -1368,13 +1369,9 @@ Output: 4 test files, 26 total tests, all passing.
     1. `'calcCpm: 412 miles × $0.58/mi × 1.0 = $238.96'`
        ```typescript
        const result = calcCpm(new Decimal('412'), new Decimal('0.58'), new Decimal('1.0'));
-       expect(result.toString()).toBe('239.0000');
-       // Wait — 412 × 0.58 = 238.96 exactly. Verify: 412 * 0.58 = 238.96.
-       // Decimal('412').mul(Decimal('0.58')) = Decimal('238.96')
-       // Then .mul(Decimal('1.0')) = Decimal('238.960') — toString gives '238.960'
-       // Use toFixed(2): expect(result.toFixed(2)).toBe('238.96')
+       expect(result.toFixed(2)).toBe('238.96');
        ```
-       Pattern for all tests: use `result.toFixed(2)` for dollar comparisons, `result.toString()` only where exact Decimal string matters.
+       Pattern for all tests: use `result.toFixed(2)` for all dollar comparisons. Never use `toString()` for money assertions — Decimal string representations include trailing zeros that vary by operation.
 
     2. `'calcCpm: loaded_miles_only — pass 380 loaded miles (not 412 total) → $220.40'`
        ```typescript
