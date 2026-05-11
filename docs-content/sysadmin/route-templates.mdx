@@ -1,0 +1,248 @@
+---
+slug: route-templates
+title: Route Templates — Technical Reference
+summary: RRULE-based recurring dispatch generation with immutable snapshot architecture and contract-linked rate inheritance.
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Template deletion blocked if dispatches exist (referential integrity)"
+  - "Dispatch generation cron runs with bypass_rls across all tenants"
+---
+
+# Route Templates — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Route Templates implement recurring dispatch generation using the iCal RRULE standard. Templates sit at Tier 3 of the entity hierarchy (Operational Blueprint layer) between commercial agreements (CarrierContract) and execution (CarrierDispatch).
+
+**Key architectural decisions:**
+1. Generated dispatches are immutable snapshots — template edits don't affect existing dispatches
+2. Templates link to contracts, not directly to clients — rate terms flow through the contract
+3. RRULE evaluation happens in a nightly cron, not on-demand
+
+## Entity Hierarchy
+
+```
+CarrierClient (Tier 1: Commercial Entity)
+    └── CarrierContract (Tier 2: Commercial Agreement)
+            └── CarrierRouteTemplate (Tier 3: Operational Blueprint)
+                    └── CarrierDispatch (Tier 4: Execution Instance)
+                            └── Load (Tier 5: Freight Unit)
+```
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "createRouteTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "CreateRouteTemplateSchema", returnType: "ActionState<CarrierRouteTemplate>" },
+  { name: "updateRouteTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateRouteTemplateSchema", returnType: "ActionState<CarrierRouteTemplate>" },
+  { name: "toggleTemplateActive", roleGuard: "OWNER | MANAGER", inputSchema: "{ templateId: string, active: boolean }", returnType: "ActionState<void>" },
+  { name: "deleteRouteTemplate", roleGuard: "OWNER", inputSchema: "{ templateId: string }", returnType: "ActionState<void>" },
+  { name: "generateDispatchesManually", roleGuard: "OWNER | MANAGER", inputSchema: "{ templateId: string, dates: Date[] }", returnType: "ActionState<CarrierDispatch[]>" }
+]} />
+
+### Delete Validation
+
+`deleteRouteTemplate` fails with 400 if any dispatches exist for the template:
+
+```typescript
+const dispatchCount = await prisma.carrierDispatch.count({
+  where: { templateId }
+});
+if (dispatchCount > 0) {
+  throw new Error('Cannot delete template with existing dispatches. Deactivate instead.');
+}
+```
+
+## Database Schema
+
+<PrismaModelRef model="CarrierRouteTemplate" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "contractId: String (foreign key to CarrierContract)",
+  "name: String (human-readable identifier)",
+  "rrule: String (iCal RRULE string)",
+  "horizonDays: Int @default(14) (days ahead to generate)",
+  "isActive: Boolean @default(false)",
+  "lastGeneratedAt: DateTime? (last successful cron run)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="CarrierRouteTemplateStop" fields={[
+  "id: String @id @default(uuid())",
+  "templateId: String (foreign key to CarrierRouteTemplate)",
+  "sequence: Int (ordering)",
+  "stopType: StopType (PICKUP | DELIVERY)",
+  "address: String",
+  "contactName: String?",
+  "contactPhone: String?",
+  "appointmentWindow: Json? ({ start: time, end: time })"
+]} />
+
+## RRULE Processing
+
+The system uses the `rrule` npm package to parse and evaluate RRULE strings.
+
+<CodeBlock language="typescript">
+{`import { RRule } from 'rrule';
+
+function getUpcomingDates(rruleString: string, horizonDays: number): Date[] {
+  const rule = RRule.fromString(rruleString);
+  const now = new Date();
+  const horizon = addDays(now, horizonDays);
+
+  return rule.between(now, horizon);
+}`}
+</CodeBlock>
+
+### Supported RRULE Components
+
+| Component | Example | Notes |
+|-----------|---------|-------|
+| FREQ | WEEKLY, DAILY, MONTHLY | Required |
+| BYDAY | MO,WE,FR | Day-of-week |
+| INTERVAL | 2 | Every Nth occurrence |
+| UNTIL | 20261231T235959Z | End date (ISO 8601) |
+| COUNT | 52 | Max occurrences |
+
+## Cron Job: Dispatch Generation
+
+<CodeBlock language="typescript">
+{`// Cron: /api/cron/generate-dispatches
+// Schedule: 0 2 * * * (2am daily)
+// Auth: CRON_SECRET header
+
+// Process flow:
+// 1. Fetch all active templates (bypass_rls)
+// 2. For each template:
+//    a. Parse RRULE and get dates in horizon
+//    b. Filter out dates that already have dispatches
+//    c. Generate CarrierDispatch for each new date
+//    d. Copy stops from template to dispatch
+// 3. Update lastGeneratedAt timestamp`}
+</CodeBlock>
+
+<Callout variant="danger" title="Critical Security Note">
+The dispatch generation cron uses `bypass_rls` to iterate across all tenants. This is intentional for background processing but must NEVER be exposed in user-facing code paths. Always set tenant context before any user-initiated operations.
+</Callout>
+
+## Dispatch Generation Logic
+
+<CodeBlock language="typescript">
+{`async function generateDispatchForDate(
+  template: CarrierRouteTemplate,
+  date: Date
+): Promise<CarrierDispatch> {
+  // Check for existing dispatch on this date
+  const existing = await prisma.carrierDispatch.findFirst({
+    where: {
+      templateId: template.id,
+      scheduledDate: startOfDay(date)
+    }
+  });
+
+  if (existing) return existing; // Idempotent
+
+  // Create dispatch snapshot
+  const dispatch = await prisma.carrierDispatch.create({
+    data: {
+      tenantId: template.tenantId,
+      templateId: template.id,
+      contractId: template.contractId,
+      scheduledDate: startOfDay(date),
+      status: 'PENDING',
+      // Snapshot contract rate at generation time
+      rateType: template.contract.rateType,
+      rateValue: template.contract.rateValue,
+    }
+  });
+
+  // Copy stops from template (immutable snapshot)
+  const stops = await prisma.carrierRouteTemplateStop.findMany({
+    where: { templateId: template.id },
+    orderBy: { sequence: 'asc' }
+  });
+
+  await prisma.carrierDispatchStop.createMany({
+    data: stops.map(stop => ({
+      dispatchId: dispatch.id,
+      sequence: stop.sequence,
+      stopType: stop.stopType,
+      address: stop.address,
+      contactName: stop.contactName,
+      contactPhone: stop.contactPhone,
+      appointmentWindow: stop.appointmentWindow
+    }))
+  });
+
+  return dispatch;
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="template_tenant_isolation" policy={`CREATE POLICY template_tenant_isolation ON "CarrierRouteTemplate"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Rate Inheritance Flow
+
+When a load is created from a dispatch:
+
+1. Dispatch inherits `rateType` and `rateValue` from contract at generation time
+2. Load inherits from dispatch (can be overridden)
+3. Invoice line items use load's rate values
+
+This snapshot architecture ensures rate changes don't retroactively affect historical loads.
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "DRAFT", description: "Template created but not active" },
+  { label: "ACTIVE", description: "Cron will generate dispatches" },
+  { label: "INACTIVE", description: "Paused, no new dispatches generated" }
+]} />
+
+Template state only affects future dispatch generation. Existing dispatches follow their own workflow (PENDING → ASSIGNED → IN_PROGRESS → COMPLETED).
+
+## Testing Notes
+
+- **RRULE parsing**: Test with various RRULE formats including edge cases (UNTIL in past, INTERVAL > 1)
+- **Idempotency**: Run dispatch generation twice for same date, verify no duplicates
+- **Timezone handling**: RRULE uses UTC; verify date boundaries work correctly
+- **Contract deletion**: Verify template cannot reference deleted contract
+
+## Performance Considerations
+
+- **Index on scheduledDate**: Required for efficient date-range queries on dispatches
+- **Batch stop creation**: Use `createMany` for stops, not individual creates
+- **Horizon tuning**: Default 14 days; larger horizons increase cron runtime
+
+```sql
+-- Recommended indexes
+CREATE INDEX idx_dispatch_template_date ON "CarrierDispatch" (template_id, scheduled_date);
+CREATE INDEX idx_template_active ON "CarrierRouteTemplate" (is_active) WHERE is_active = true;
+```
+
+## Troubleshooting
+
+1. **Dispatches not generating**: Check `isActive` flag, verify RRULE syntax, check cron logs
+2. **Duplicate dispatches**: Should be impossible due to unique constraint; check for race conditions in manual generation
+3. **Wrong rate on dispatch**: Rate is snapshotted at generation time; if contract changed after, that's expected behavior
+
+## Related Features
+
+<FeatureCard slug="carrier-contracts" />
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="carrier-loads" />

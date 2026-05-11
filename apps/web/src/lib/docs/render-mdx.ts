@@ -6,6 +6,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import remarkGfm from 'remark-gfm';
 
 import {
   clientFrontmatterSchema,
@@ -73,6 +74,7 @@ export async function renderClientDoc(
     components: clientComponents,
     options: {
       mdxOptions: {
+        remarkPlugins: [remarkGfm],
         rehypePlugins: [
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: 'wrap' }],
@@ -136,6 +138,7 @@ export async function renderSysadminDoc(
     components: sysadminComponents,
     options: {
       mdxOptions: {
+        remarkPlugins: [remarkGfm],
         rehypePlugins: [
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: 'wrap' }],

@@ -27,6 +27,15 @@
     "route": "/carrier/contracts"
   },
   {
+    "slug": "route-templates",
+    "name": "Route Templates",
+    "shortDescription": "Reusable blueprints for recurring freight runs — set the schedule once, dispatches generate automatically.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/route-templates"
+  },
+  {
     "slug": "carrier-templates",
     "name": "Dispatch Checklists",
     "shortDescription": "Pre-departure checklists that auto-start when loads are dispatched, ensuring drivers complete required verification steps.",

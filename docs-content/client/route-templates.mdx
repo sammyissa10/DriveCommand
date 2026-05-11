@@ -1,0 +1,179 @@
+---
+slug: route-templates
+title: Route Templates
+summary: Create reusable blueprints for recurring freight runs with automatic dispatch generation on a schedule.
+lastReviewed: "2026-05-11T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Route Templates
+
+<Callout variant="info">
+Route Templates are reusable blueprints for recurring freight runs. Define a lane once, set a schedule, and DriveCommand generates dispatches automatically. No more re-entering the same routes every week.
+</Callout>
+
+## What is a Route Template?
+
+A Route Template answers the question: "Every Monday and Thursday, we run Chicago → Indianapolis → Cincinnati for ACME Logistics under contract X, with these stops in this order."
+
+Instead of manually creating the same dispatch every time, you:
+
+1. Save the pattern once as a template
+2. Link it to a contract (which carries the rate agreement)
+3. Set a recurring schedule (daily, weekly, specific days)
+4. The system generates dispatches automatically going forward
+
+## How It Works
+
+### Automatic Dispatch Creation
+
+When you activate a template, DriveCommand automatically creates dispatches on your schedule. If you set a template to run every Monday, you'll see a new dispatch appear for each upcoming Monday — no manual entry required.
+
+<Callout variant="warning" title="Important">
+**Changing a template doesn't affect existing dispatches.** Once a dispatch is created, it's a separate record. If you update the template (change a stop address, for example), only future dispatches will use the new information. Already-created dispatches stay as they were — this protects your historical records and prevents surprises on dispatches already in progress.
+</Callout>
+
+### Stops Are Copied to Each Dispatch
+
+The template defines your pickup and delivery stops in a specific order. When a dispatch is created:
+
+1. Stops are copied from the template
+2. The order you set is preserved
+3. Each dispatch has its own copy of the stops (so template changes don't affect active dispatches)
+
+### Rate and Pay Information
+
+When loads are created against a dispatch:
+
+- **Revenue** is calculated from the contract you linked — flat rate, per-mile, per-hour, or other rate types
+- **Driver pay** uses the pay model you've set up — flat rate, per-mile, percentage of load, per-stop, or hourly
+
+## Setting Up a Route Template
+
+### One-Time Setup (Per Recurring Lane)
+
+<StepFlow>
+  <StepFlow.Step title="Create the Client">
+    Go to **Carrier Ops → Clients** and add the shipper or broker.
+  </StepFlow.Step>
+  <StepFlow.Step title="Create a Contract">
+    Go to **Carrier Ops → Contracts** and create a contract with that client. This locks in the rate type and price.
+  </StepFlow.Step>
+  <StepFlow.Step title="Create a Route Template">
+    Go to **Carrier Ops → Route Templates** and create a template linked to that contract.
+    - Define the stops and their sequence
+    - Set the recurring schedule
+  </StepFlow.Step>
+  <StepFlow.Step title="Activate the Template">
+    Toggle the template to Active. Dispatches will start appearing automatically.
+  </StepFlow.Step>
+</StepFlow>
+
+### Daily Operations
+
+Once templates are set up, your daily workflow becomes:
+
+1. **Dispatches appear automatically** on the Dispatches list as they're generated ahead of schedule
+2. **Assign driver and truck** to each dispatch
+3. **Driver executes via mobile app**:
+   - Arrives at stops
+   - Uploads BOL at pickup
+   - Uploads POD at delivery
+4. **Completed stops trigger**:
+   - Load revenue calculation
+   - Driver pay record generation
+
+## Creating a Route Template
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to Route Templates">
+    Go to **Carrier Ops → Route Templates** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Template">
+    The template builder opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select a Contract">
+    Choose the contract this template is linked to. The client relationship and rate terms come from the contract.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add Stops">
+    Define the pickup and delivery stops in order:
+    - Address
+    - Contact name and phone
+    - Stop type (pickup/delivery)
+    - Appointment window (optional)
+  </StepFlow.Step>
+  <StepFlow.Step title="Set the Schedule">
+    Choose when this route should run:
+    - How often (daily, weekly, monthly)
+    - Which days (Monday only, Mon/Wed/Fri, every weekday, etc.)
+    - End date (optional — for seasonal contracts)
+  </StepFlow.Step>
+  <StepFlow.Step title="Set How Far Ahead to Generate">
+    How many days ahead should dispatches be created? (Default: 14 days)
+  </StepFlow.Step>
+  <StepFlow.Step title="Save and Activate">
+    Save the template and toggle it to Active.
+  </StepFlow.Step>
+</StepFlow>
+
+## Common Schedule Examples
+
+| When you want to run | How to set it up |
+|---------------------|------------------|
+| Every Monday | Weekly, select Monday |
+| Monday, Wednesday, Friday | Weekly, select Mon/Wed/Fri |
+| Every weekday | Weekly, select Mon through Fri |
+| First Monday of every month | Monthly, select "First Monday" |
+| Every other Tuesday | Weekly, every 2 weeks, select Tuesday |
+| Until end of year | Set end date to Dec 31 |
+
+## What NOT to Do
+
+<Callout variant="warning" title="Common Mistakes">
+**Don't edit a template expecting it to change dispatches already created** — it won't (and shouldn't, to protect your records). If you need to change an existing dispatch, edit the dispatch directly.
+
+**Don't try to attach a client directly to a dispatch** — the client relationship comes from the contract, which is linked to the template.
+
+**Don't create loads without a client** — loads must be connected to a client through the proper dispatch flow.
+</Callout>
+
+## Why This Saves You Time
+
+### 1. No More Repetitive Data Entry
+A carrier running the same 4 lanes every week shouldn't re-key the same stops 200 times a year. Save it once, let the system generate it automatically.
+
+### 2. Clean Records
+Each dispatch preserves exactly what was planned when it was created. A load run in March doesn't change when someone updates the template in June.
+
+### 3. Rates Stay Separate from Operations
+If you renegotiate rates with a customer, that doesn't affect dispatches already in progress. The contract holds business terms; the template holds the route pattern; the dispatch is the actual work order.
+
+## Understanding the Relationship
+
+| What | Purpose | Can you change it? |
+|------|---------|-------------------|
+| **Route Template** | The recurring pattern — which stops, which days | Yes — changes affect future dispatches only |
+| **Dispatch** | A specific occurrence of that pattern | Limited — it's the "work order" |
+| **Load** | The actual freight being hauled | Yes, until it's delivered |
+
+**Flow:** Template → creates → Dispatch → contains → Load(s)
+
+## Managing Templates
+
+### Pausing a Template
+
+Toggle a template to Inactive to stop creating new dispatches. Dispatches already created are not affected.
+
+### Deleting a Template
+
+Templates with dispatches created from them cannot be deleted. Deactivate instead — this keeps your historical records intact.
+
+### Viewing Generated Dispatches
+
+From the template detail view, click "View Dispatches" to see all dispatches created from this template, with their status and dates.
+
+## Related
+
+<FeatureCard slug="carrier-contracts" />
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="carrier-loads" />

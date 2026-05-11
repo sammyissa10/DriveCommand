@@ -70,6 +70,24 @@ const rawFeatures = [
     prismaModels: ['Contract'],
   },
   {
+    slug: 'route-templates',
+    name: 'Route Templates',
+    shortDescription:
+      'Reusable blueprints for recurring freight runs — set the schedule once, dispatches generate automatically.',
+    portal: 'owner',
+    category: 'dispatch',
+    planTier: 'business',
+    status: 'stable',
+    route: '/carrier/route-templates',
+    addedInVersion: '5.0.0',
+    lastDocReviewedAt: '2026-05-11T00:00:00Z',
+    relatedFeatureSlugs: ['carrier-contracts', 'carrier-dispatches', 'carrier-loads'],
+    requiresClientDoc: true,
+    requiresSysadminDoc: true,
+    serverActionPaths: ['src/actions/carrier/route-templates.ts'],
+    prismaModels: ['CarrierRouteTemplate', 'CarrierDispatch'],
+  },
+  {
     slug: 'carrier-templates',
     name: 'Dispatch Checklists',
     shortDescription:
