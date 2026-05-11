@@ -6,6 +6,7 @@ import { ActiveTemplateCard } from '@/components/driver-compensation/active-temp
 import { TemplateHistory } from '@/components/driver-compensation/template-history';
 import { requireTenantId, getTenantPrisma } from '@/lib/context/tenant-context';
 import { Button } from '@/components/ui/button';
+import { PayComponentsList } from '@/components/driver-pay/pay-components-list';
 
 interface CompensationPageProps {
   params: Promise<{ id: string }>;
@@ -16,16 +17,18 @@ export default async function DriverCompensationPage({ params }: CompensationPag
 
   // Look up driver name for the header
   let driverName = 'Driver';
+  let carrierDriverId: string | null = null;
   try {
     const tenantId = await requireTenantId();
     const prisma = await getTenantPrisma();
     // CarrierDriver is not auto-scoped — add orgId manually
     const cd = await prisma.carrierDriver.findFirst({
       where: { userId: driverId, orgId: tenantId },
-      select: { firstName: true, lastName: true },
+      select: { id: true, firstName: true, lastName: true },
     });
     if (cd) {
       driverName = `${cd.firstName} ${cd.lastName}`;
+      carrierDriverId = cd.id;
     } else {
       // Try User model as fallback
       const user = await prisma.user.findUnique({
@@ -51,6 +54,51 @@ export default async function DriverCompensationPage({ params }: CompensationPag
   const allTemplates = historyResult.data?.templates ?? [];
 
   const hasNoTemplates = !activeTemplate && allTemplates.length === 0;
+
+  // Fetch recent assignments and their pay components for this driver
+  type AssignmentWithComponents = {
+    id: string;
+    loadId: string;
+    payStatus: string;
+    load: { referenceNumber: string | null } | null;
+    payComponents: {
+      id: string;
+      assignmentId: string;
+      componentType: string;
+      category: string;
+      description: string;
+      quantity: { toString(): string };
+      unit: string;
+      rate: { toString(): string };
+      multiplier: { toString(): string };
+      grossAmount: { toString(): string };
+      isTaxable: boolean;
+      isReimbursement: boolean;
+      visibleToDriver: boolean;
+      notes: string | null;
+      enteredBy: string;
+      createdAt: Date;
+    }[];
+  };
+
+  let assignmentsResult: AssignmentWithComponents[] = [];
+  if (carrierDriverId) {
+    try {
+      const tenantId = await requireTenantId();
+      const prisma = await getTenantPrisma();
+      assignmentsResult = await prisma.loadDriverAssignment.findMany({
+        where: { driverId: carrierDriverId, deletedAt: null, tenantId },
+        include: {
+          load: { select: { referenceNumber: true } },
+          payComponents: { where: { deletedAt: null }, orderBy: { createdAt: 'asc' } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      });
+    } catch {
+      // Non-fatal — default to empty array
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -105,6 +153,51 @@ export default async function DriverCompensationPage({ params }: CompensationPag
 
           {/* History */}
           <TemplateHistory templates={allTemplates} />
+
+          {/* Load assignments with pay components */}
+          {assignmentsResult.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Load Assignments</h2>
+              <p className="text-sm text-muted-foreground">
+                Pay components for this driver&apos;s recent load assignments.
+              </p>
+              {assignmentsResult.map((assignment) => (
+                <div key={assignment.id} className="rounded-xl border bg-card p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">
+                      Load{' '}
+                      {assignment.load?.referenceNumber ?? assignment.loadId.slice(0, 8)}
+                    </span>
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {assignment.payStatus.toLowerCase().replace('_', ' ')}
+                    </span>
+                  </div>
+                  <PayComponentsList
+                    assignmentId={assignment.id}
+                    payStatus={assignment.payStatus}
+                    initialComponents={assignment.payComponents.map((c) => ({
+                      id: c.id,
+                      assignmentId: c.assignmentId,
+                      componentType: c.componentType,
+                      category: c.category,
+                      description: c.description,
+                      quantity: c.quantity.toString(),
+                      unit: c.unit,
+                      rate: c.rate.toString(),
+                      multiplier: c.multiplier.toString(),
+                      grossAmount: c.grossAmount.toString(),
+                      isTaxable: c.isTaxable,
+                      isReimbursement: c.isReimbursement,
+                      visibleToDriver: c.visibleToDriver,
+                      notes: c.notes,
+                      enteredBy: c.enteredBy,
+                      createdAt: c.createdAt.toISOString(),
+                    }))}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
