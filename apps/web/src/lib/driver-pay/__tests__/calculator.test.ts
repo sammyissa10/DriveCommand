@@ -5,6 +5,7 @@ import {
   calcFuelSurcharge,
   calcHourly,
   calcFlat,
+  calcQuantityRate,
   calcPercentage,
   calcDaily,
   calcSplit,
@@ -45,6 +46,18 @@ describe('calcFlat', () => {
   it('calcFlat: $250 × 2.0 = $500.00', () => {
     const result = calcFlat(new Decimal('250'), new Decimal('2.0'));
     expect(result.toFixed(2)).toBe('500.00');
+  });
+});
+
+describe('calcQuantityRate', () => {
+  it('calcQuantityRate: 2 stops × $30 × 1.0 = $60.00', () => {
+    const result = calcQuantityRate(new Decimal('2'), new Decimal('30'), new Decimal('1.0'));
+    expect(result.toFixed(2)).toBe('60.00');
+  });
+
+  it('calcQuantityRate: 3 stops × $25 × 1.5 = $112.50', () => {
+    const result = calcQuantityRate(new Decimal('3'), new Decimal('25'), new Decimal('1.5'));
+    expect(result.toFixed(2)).toBe('112.50');
   });
 });
 
@@ -113,5 +126,56 @@ describe('computeGrossAmount dispatcher', () => {
       multiplier: new Decimal('1.0'),
     });
     expect(result.toFixed(2)).toBe('238.96');
+  });
+
+  // Regression: STOP_OFF was using calcFlat (rate × multiplier), ignoring quantity
+  it('STOP_OFF qty=2 rate=$30 mult=1.0 → $60.00 (not $30 — regression guard)', () => {
+    const result = computeGrossAmount({
+      componentType: 'STOP_OFF',
+      quantity: new Decimal('2'),
+      rate: new Decimal('30'),
+      multiplier: new Decimal('1.0'),
+    });
+    expect(result.toFixed(2)).toBe('60.00');
+  });
+
+  it('STOP_OFF qty=3 rate=$25 mult=1.5 → $112.50', () => {
+    const result = computeGrossAmount({
+      componentType: 'STOP_OFF',
+      quantity: new Decimal('3'),
+      rate: new Decimal('25'),
+      multiplier: new Decimal('1.5'),
+    });
+    expect(result.toFixed(2)).toBe('112.50');
+  });
+
+  it('LAYOVER qty=2 rate=$75 mult=1.0 → $150.00 (not $75 — regression guard)', () => {
+    const result = computeGrossAmount({
+      componentType: 'LAYOVER',
+      quantity: new Decimal('2'),
+      rate: new Decimal('75'),
+      multiplier: new Decimal('1.0'),
+    });
+    expect(result.toFixed(2)).toBe('150.00');
+  });
+
+  it('TARP qty=3 rate=$40 mult=1.0 → $120.00 (not $40 — regression guard)', () => {
+    const result = computeGrossAmount({
+      componentType: 'TARP',
+      quantity: new Decimal('3'),
+      rate: new Decimal('40'),
+      multiplier: new Decimal('1.0'),
+    });
+    expect(result.toFixed(2)).toBe('120.00');
+  });
+
+  it('PER_DIEM qty=4 days rate=$50 mult=1.0 → $200.00', () => {
+    const result = computeGrossAmount({
+      componentType: 'PER_DIEM',
+      quantity: new Decimal('4'),
+      rate: new Decimal('50'),
+      multiplier: new Decimal('1.0'),
+    });
+    expect(result.toFixed(2)).toBe('200.00');
   });
 });

@@ -48,6 +48,14 @@ export function calcFlat(rate: Decimal, multiplier: Decimal): Decimal {
 }
 
 /**
+ * Quantity-rate: quantity × rate × multiplier
+ * Used for unit-billed accessorials (STOP_OFF, LAYOVER, TARP) and daily pay (PER_DIEM, BASE_PAY_DAILY).
+ */
+export function calcQuantityRate(quantity: Decimal, rate: Decimal, multiplier: Decimal): Decimal {
+  return quantity.mul(rate).mul(multiplier).toDecimalPlaces(2);
+}
+
+/**
  * Percentage of revenue: revenue × rate (rate is a decimal fraction, e.g. 0.80 = 80%)
  */
 export function calcPercentage(revenue: Decimal, rate: Decimal): Decimal {
@@ -139,14 +147,17 @@ export function computeGrossAmount(input: ComputeInput): Decimal {
     case 'FUEL_EFFICIENCY_BONUS':
     case 'HAZMAT_PREMIUM':
     case 'HOLIDAY_PREMIUM':
-    case 'LAYOVER':
     case 'TONU':
-    case 'STOP_OFF':
-    case 'TARP':
     case 'BREAKDOWN':
     case 'ADJUSTMENT_POSITIVE':
     case 'ADJUSTMENT_NEGATIVE':
       return calcFlat(input.rate, input.multiplier);
+
+    // ── Quantity-billed accessorials (stops, days, units) ─────────────────────
+    case 'STOP_OFF':
+    case 'LAYOVER':
+    case 'TARP':
+      return calcQuantityRate(input.quantity, input.rate, input.multiplier);
 
     // ── Percentage of load revenue ────────────────────────────────────────────
     case 'BASE_PAY_PERCENTAGE':
@@ -155,7 +166,7 @@ export function computeGrossAmount(input: ComputeInput): Decimal {
     // ── Daily base pay + per diem ─────────────────────────────────────────────
     case 'BASE_PAY_DAILY':
     case 'PER_DIEM':
-      return calcDaily(input.quantity, input.rate);
+      return calcQuantityRate(input.quantity, input.rate, input.multiplier);
 
     // ── Detention ─────────────────────────────────────────────────────────────
     case 'DETENTION':
