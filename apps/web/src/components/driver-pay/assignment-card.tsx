@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { computeIsOverride } from '@/lib/driver-pay/snapshot';
 import { deleteAssignment } from '@/app/(owner)/actions/load-driver-assignments';
 import type { SerializedAssignment } from '@/app/(owner)/actions/load-driver-assignments';
 import { OverrideForm } from './override-form';
+import { PayComponentsList } from './pay-components-list';
+import { SuggestDetentionButton } from './suggest-detention-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,8 +19,32 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
+// Matches the serialized shape returned by GET /api/driver-pay/assignments/{id}/components
+type SerializedComponent = {
+  id: string;
+  assignmentId: string;
+  componentType: string;
+  category: string;
+  description: string;
+  quantity: string;
+  unit: string;
+  rate: string;
+  multiplier: string;
+  grossAmount: string;
+  isTaxable: boolean;
+  isReimbursement: boolean;
+  visibleToDriver: boolean;
+  notes: string | null;
+  enteredBy: string;
+  createdAt: string;
+  stopId: string | null;
+};
+
+type StopRef = { id: string; facilityName: string; stopType: string };
+
 interface AssignmentCardProps {
   assignment: SerializedAssignment;
+  stops?: StopRef[];
   onDeleted: () => void;
   onUpdated: (updated: SerializedAssignment) => void;
 }
@@ -43,10 +69,32 @@ function formatRate(a: SerializedAssignment): string {
   }
 }
 
-export function AssignmentCard({ assignment, onDeleted, onUpdated }: AssignmentCardProps) {
+export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: AssignmentCardProps) {
   const [showOverrideForm, setShowOverrideForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Pay components state — fetched once on mount, updated when detention is added
+  const [components, setComponents] = useState<SerializedComponent[] | null>(null);
+  // Incrementing key forces PayComponentsList to remount with fresh initialComponents
+  const [listKey, setListKey] = useState(0);
+
+  useEffect(() => {
+    fetch(`/api/driver-pay/assignments/${assignment.id}/components`)
+      .then((r) => r.json())
+      .then((data: { components?: SerializedComponent[] }) => {
+        setComponents(data.components ?? []);
+      })
+      .catch(() => setComponents([]));
+  }, [assignment.id]);
+
+  function handleDetentionAdded(component: unknown) {
+    setComponents((prev) => {
+      const c = component as SerializedComponent;
+      return prev ? [...prev, c] : [c];
+    });
+    setListKey((k) => k + 1);
+  }
 
   const isOverride =
     assignment.template != null
@@ -67,6 +115,8 @@ export function AssignmentCard({ assignment, onDeleted, onUpdated }: AssignmentC
     setShowDeleteConfirm(false);
     onDeleted();
   }
+
+  const persistedStops = (stops ?? []).filter((s) => !s.id.startsWith('pending-'));
 
   return (
     <>
@@ -144,6 +194,59 @@ export function AssignmentCard({ assignment, onDeleted, onUpdated }: AssignmentC
               }}
               onCancel={() => setShowOverrideForm(false)}
             />
+          )}
+
+          {/* Pay Components */}
+          <div className="border-t border-border pt-3 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Pay Components
+            </p>
+            {components === null ? (
+              <div className="h-8 animate-pulse rounded bg-muted" />
+            ) : (
+              <PayComponentsList
+                key={listKey}
+                assignmentId={assignment.id}
+                payStatus={assignment.payStatus}
+                initialComponents={components}
+              />
+            )}
+          </div>
+
+          {/* Per-stop detention suggestions */}
+          {persistedStops.length > 0 && (
+            <div className="border-t border-border pt-3 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Detention by Stop
+              </p>
+              <div className="space-y-2">
+                {persistedStops.map((stop) => {
+                  const hasDetention = (components ?? []).some(
+                    (c) => c.componentType === 'DETENTION' && c.stopId === stop.id,
+                  );
+                  return (
+                    <div
+                      key={stop.id}
+                      className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2"
+                    >
+                      <div className="min-w-0">
+                        <span className="text-sm font-medium truncate">{stop.facilityName}</span>
+                        <span className="ml-2 text-xs text-muted-foreground capitalize">
+                          {stop.stopType.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                      <SuggestDetentionButton
+                        assignmentId={assignment.id}
+                        stopId={stop.id}
+                        payStatus={assignment.payStatus}
+                        hasDetentionComponent={hasDetention}
+                        onAdded={handleDetentionAdded}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -209,6 +209,11 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
           createdAt: (load.createdAt as Date).toISOString(),
         }}
         drivers={rawDrivers}
+        stops={mappedStops.map((s) => ({
+          id: s.id,
+          facilityName: s.facility_name,
+          stopType: s.stop_type,
+        }))}
       />
     </div>
   );

@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { AssignmentCard } from './assignment-card';
 import { AssignDriverModal } from './assign-driver-modal';
 
+type StopRef = { id: string; facilityName: string; stopType: string };
+
 interface AssignmentSectionClientProps {
   initialAssignments: SerializedAssignment[];
   load: {
@@ -17,12 +19,14 @@ interface AssignmentSectionClientProps {
     createdAt: string;
   };
   drivers: { id: string; firstName: string; lastName: string; status: string }[];
+  stops?: StopRef[];
 }
 
 export function AssignmentSectionClient({
   initialAssignments,
   load,
   drivers,
+  stops,
 }: AssignmentSectionClientProps) {
   const [assignments, setAssignments] = useState<SerializedAssignment[]>(initialAssignments);
   const [modalOpen, setModalOpen] = useState(false);
@@ -68,6 +72,7 @@ export function AssignmentSectionClient({
             <AssignmentCard
               key={a.id}
               assignment={a}
+              stops={stops}
               onDeleted={() => handleDeleted(a.id)}
               onUpdated={handleUpdated}
             />
