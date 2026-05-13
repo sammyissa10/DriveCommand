@@ -172,8 +172,8 @@ export async function generateSettlementForDriver(
           const cat = c.category as string;
 
           if (cat === 'DEDUCTION') {
-            // Deduction components stored as positive; subtract at end
-            componentDeductions = componentDeductions.plus(amount);
+            // Deduction components stored as negative in DB; take abs value
+            componentDeductions = componentDeductions.plus(amount.abs());
           } else if (
             cat === 'EARNING' ||
             cat === 'BONUS' ||
