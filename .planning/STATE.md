@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-13 - Completed quick-301: Driver Pay Phase 6 — State Machine + Approval Workflow — pure FSM module (43 tests), transitions API with audit log, pending queue API + two-panel approval UI with keyboard nav, corrections API + modal, sidebar badge (87 total tests passing)
-Last session: 2026-05-13T01:10:00Z
-Stopped at: Completed quick-301: Driver Pay Phase 6 state machine + approvals
+Last activity: 2026-05-13 - Completed quick-302: Driver Pay Phase 6 gap fix — ensureBasePayComponent wired into submit transition, actualMiles + mileageSource added end-to-end (validation schema, server action, override form UI), 5 new tests, 58 driver-pay tests passing
+Last session: 2026-05-13T16:29:45Z
+Stopped at: Completed quick-302: Driver Pay Phase 6 gap fix — auto base pay wiring + actualMiles/mileageSource fields
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -9251,6 +9251,7 @@ None blocking immediate progress.
 | 299 | Driver Pay Phase 4 — pay components CRUD, auto base-pay, auto-detention suggestion, calculator service, grouped UI with subtotals, 9 unit tests | 2026-05-11 | 0da2d8b | [299-driver-pay-phase-4-pay-components](./quick/299-driver-pay-phase-4-pay-components/) |
 | 300 | Driver Pay Phase 5 — Receipt Attachments (web + mobile) — storage abstraction, two-step upload flow, drag-drop web UI, mobile receipt capture, 5 tests passing | 2026-05-13 | f7c6541 | [300-driver-pay-phase-5-receipt-attachments-w](./quick/300-driver-pay-phase-5-receipt-attachments-w/) |
 | 301 | Driver Pay Phase 6 — State Machine, Approval Queue, Corrections workflow, Audit log, Sidebar badge — pure FSM (43 tests), transitions API, pending queue + two-panel approval UI, corrections API + modal, 87 tests total | 2026-05-13 | 3906f90 | [301-driver-pay-phase-6-state-machine-approva](./quick/301-driver-pay-phase-6-state-machine-approva/) |
+| 302 | Driver Pay Phase 6 gap fix — wire ensureBasePayComponent into submit transition (CPM/HOURLY guard), add actualMiles + mileageSource end-to-end (validation schema + server action + override form UI), 5 new tests, 58 total driver-pay tests passing | 2026-05-13 | 3df7f29 | [302-phase-6-gap-fix-auto-base-pay-wiring-act](./quick/302-phase-6-gap-fix-auto-base-pay-wiring-act/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -9392,9 +9393,15 @@ None blocking immediate progress.
 - ReceiptCapture uses ImagePicker.launchCameraAsync (not CameraView directly) — matches all other camera captures in codebase
 - Download URL has Cache-Control: no-store header to prevent client-side caching of presigned URLs
 
+**Quick-302 decisions (Driver Pay Phase 6 gap fix):**
+- Guard CPM/HOURLY submit: only call ensureBasePayComponent when quantity data exists (actualMiles/estimatedMiles for CPM, actualHours/estimatedHours for HOURLY), preserving FSM 422 gate for no-miles/no-hours cases rather than writing zero-amount BASE_PAY rows
+- Cast proxied getTenantPrisma() client to PrismaClient when calling ensureBasePayComponent (typed to PrismaClient, proxy is compatible at runtime)
+- loadDriverAssignmentUpdateSchema converted from plain z.object to chained .superRefine for Pattern B cross-field rule (both actualMiles+mileageSource required together or both null)
+- MileageSource cast as enum union type in Prisma update call to satisfy strict typing without schema change
+
 ## Session Continuity
 
-Last session: 2026-05-13T04:34:37Z
-Stopped at: Completed 300-driver-pay-phase-5-receipt-attachments-w/300-PLAN.md
+Last session: 2026-05-13T16:29:45Z
+Stopped at: Completed quick-302: Driver Pay Phase 6 gap fix — auto base pay wiring + actualMiles/mileageSource fields
 Resume file: None
-Next action: Driver Pay Phase 5 complete — continue with Phase 6 (status workflow, approval queue, corrections)
+Next action: Driver Pay Phase 6 complete — submit flow now fully functional with auto base pay creation
