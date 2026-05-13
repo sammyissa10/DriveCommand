@@ -300,20 +300,39 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                 )}
-                {/* Driver Pay queue — OWNER always; MANAGER with driverPayReport permission */}
+                {/* Driver Pay — OWNER always; MANAGER with driverPayReport permission */}
                 {(isOwner || (isManager && managerHasPermission(perms, 'driverPayReport'))) && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      asChild
-                      isActive={pathname === "/carrier/driver-pay/pending"}
+                      isActive={pathname.startsWith("/carrier/driver-pay")}
                       tooltip="Driver Pay"
                     >
-                      <Link href="/carrier/driver-pay/pending" onClick={handleNavClick}>
-                        <CreditCard />
-                        <span>Driver Pay</span>
-                        <PendingPayBadge />
-                      </Link>
+                      <CreditCard />
+                      <span>Driver Pay</span>
                     </SidebarMenuButton>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname.startsWith("/carrier/driver-pay/pending")}
+                        >
+                          <Link href="/carrier/driver-pay/pending" onClick={handleNavClick}>
+                            Pending Pay
+                            <PendingPayBadge />
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname.startsWith("/carrier/driver-pay/settlements")}
+                        >
+                          <Link href="/carrier/driver-pay/settlements" onClick={handleNavClick}>
+                            Settlements
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
                   </SidebarMenuItem>
                 )}
                 {/* Reports sub-group — only show if user has any report permission */}
