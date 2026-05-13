@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-13 - Completed quick-303: Driver Pay Phase 7 — bonuses/deductions/installment scheduler APIs, UI tabs on driver profile, 16 new tests (6 scheduler unit + 10 API integration)
-Last session: 2026-05-13T17:15:05Z
-Stopped at: Completed quick-303: Driver Pay Phase 7 — bonus/deduction CRUD APIs, penny-exact installment scheduler, garnishment cap, driver profile tabs
+Last activity: 2026-05-13 - Completed quick-304: Driver Pay Phase 8 — settlement generator (Serializable tx, decimal.js, garnishment cap), 7 REST API routes, owner UI pages, 52 Vitest tests
+Last session: 2026-05-13T21:30:00Z
+Stopped at: Completed quick-304: Driver Pay Phase 8 — settlement generation service, PDF renderer, anomaly detection, 7 API routes, 3 UI pages + 3 components, 8 test files (52 tests pass)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -9397,12 +9397,19 @@ None blocking immediate progress.
 **Quick-302 decisions (Driver Pay Phase 6 gap fix):**
 - Guard CPM/HOURLY submit: only call ensureBasePayComponent when quantity data exists (actualMiles/estimatedMiles for CPM, actualHours/estimatedHours for HOURLY), preserving FSM 422 gate for no-miles/no-hours cases rather than writing zero-amount BASE_PAY rows
 - Cast proxied getTenantPrisma() client to PrismaClient when calling ensureBasePayComponent (typed to PrismaClient, proxy is compatible at runtime)
+
+**Quick-304 decisions (Driver Pay Phase 8 — settlement generation):**
+- Deduction snapshot stored in settlement.notes JSON ({_deductionsApplied: [...]}) — avoids a separate join table for v1 void reversal and detail display
+- v1 carryover: garnishment cap does not bump amountCollected by uncollected portion — next period re-requests same amountPerPeriod and is re-capped; documented behavior not a bug
+- Use Collapsible (not Accordion) and Switch (not Checkbox) in owner UI — only available shadcn/ui components in project
+- PDF served on-the-fly for DRAFT settlements; R2 presigned URL for FINALIZED/PAID (already persisted)
+- Vitest mutex pattern (txQueue promise chain) for simulating Serializable transaction ordering — JS is single-threaded so Promise.all starts both transactions before either resolves; mutex ensures second tx sees committed state
 - loadDriverAssignmentUpdateSchema converted from plain z.object to chained .superRefine for Pattern B cross-field rule (both actualMiles+mileageSource required together or both null)
 - MileageSource cast as enum union type in Prisma update call to satisfy strict typing without schema change
 
 ## Session Continuity
 
-Last session: 2026-05-13T16:29:45Z
-Stopped at: Completed quick-302: Driver Pay Phase 6 gap fix — auto base pay wiring + actualMiles/mileageSource fields
+Last session: 2026-05-13T21:30:00Z
+Stopped at: Completed quick-304: Driver Pay Phase 8 — settlement generator (Serializable tx, decimal.js, garnishment cap, anomaly detection), 7 REST API routes, 3 owner UI pages + 3 components, 8 test files (52 tests pass)
 Resume file: None
-Next action: Driver Pay Phase 6 complete — submit flow now fully functional with auto base pay creation
+Next action: Driver Pay Phase 8 complete — settlement generation, finalize, mark-paid, void, PDF, and anomaly detection fully implemented
