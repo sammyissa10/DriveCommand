@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
     where,
     include: {
       driver: { select: { id: true, firstName: true, lastName: true } },
-      load: { select: { id: true, loadNumber: true } },
+      load: { select: { id: true, referenceNumber: true } },
       payComponents: {
         where: { deletedAt: null },
         select: { grossAmount: true },
@@ -105,8 +105,9 @@ export async function GET(req: NextRequest) {
 
   // 7. Compute totalPay per row and apply amount filters
   let serialized = rows.map((row) => {
-    const totalPay = row.payComponents.reduce(
-      (sum, c) => sum.plus(new Decimal(c.grossAmount.toString())),
+    const totalPay = (row.payComponents ?? []).reduce(
+      (sum: Decimal, c: { grossAmount: { toString(): string } }) =>
+        sum.plus(new Decimal(c.grossAmount.toString())),
       new Decimal(0),
     );
 
@@ -119,7 +120,8 @@ export async function GET(req: NextRequest) {
       driverId: row.driverId,
       driverName: `${row.driver.firstName} ${row.driver.lastName}`,
       loadId: row.loadId,
-      loadNumber: row.load?.loadNumber ?? null,
+      // Use referenceNumber as the load identifier shown in the UI
+      loadNumber: row.load?.referenceNumber ?? null,
       payStatus: row.payStatus as 'PENDING_REVIEW' | 'DISPUTED',
       paymentModel: row.payType as string,
       totalPay: totalPay.toDecimalPlaces(2).toString(),
