@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-11 - Completed quick-298: Driver Pay Phase 3 — load driver assignment CRUD with pay template snapshotting, per-load override with reason, UI components, 12 unit tests
+Last activity: 2026-05-13 - Completed quick-300: Driver Pay Phase 5 — Receipt Attachments (web + mobile) — storage abstraction, two-step upload flow, drag-drop web UI, mobile receipt capture, 5 tests passing
 Last session: 2026-05-11T04:00:46Z
 Stopped at: Completed 298-driver-pay-phase-3-assignment-snapshot/298-PLAN.md
 
@@ -9247,6 +9247,9 @@ None blocking immediate progress.
 | 295 | Interactive Database Schema Viewer for SysAdmin Docs — Prisma parser utility, /docs/database overview with 80 models in 14 modules, /docs/database/[model] detail pages with fields, relations, cascade warnings | 2026-05-10 | 13d8417 | [295-interactive-database-schema-viewer-for-s](./quick/295-interactive-database-schema-viewer-for-s/) |
 | 296 | Redesign Client Help Center — fix dual sidebar nav cutoff, single-sidebar layout, operations-first 10 hubs, Getting Started onboarding guide | 2026-05-10 | 7b213b3 | [296-redesign-client-help-center-fix-nav-cuto](./quick/296-redesign-client-help-center-fix-nav-cuto/) |
 | 297 | Help Center Docs Quality — sticky sidebar, remove pricing UI, create DOCS-IMPROVEMENT-GUIDE.md, rewrite carrier-templates.mdx as Dispatch Checklists | 2026-05-10 | fe30d1d | [297-help-center-docs-quality-sticky-nav-remo](./quick/297-help-center-docs-quality-sticky-nav-remo/) |
+| 298 | Driver Pay Phase 3 — load driver assignment CRUD with pay template snapshotting, per-load override with reason, UI components, 12 unit tests | 2026-05-11 | da5d06d | [298-driver-pay-phase-3-assignment-snapshot](./quick/298-driver-pay-phase-3-assignment-snapshot/) |
+| 299 | Driver Pay Phase 4 — pay components CRUD, auto base-pay, auto-detention suggestion, calculator service, grouped UI with subtotals, 9 unit tests | 2026-05-11 | 0da2d8b | [299-driver-pay-phase-4-pay-components](./quick/299-driver-pay-phase-4-pay-components/) |
+| 300 | Driver Pay Phase 5 — Receipt Attachments (web + mobile) — storage abstraction, two-step upload flow, drag-drop web UI, mobile receipt capture, 5 tests passing | 2026-05-13 | f7c6541 | [300-driver-pay-phase-5-receipt-attachments-w](./quick/300-driver-pay-phase-5-receipt-attachments-w/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -9381,9 +9384,16 @@ None blocking immediate progress.
 - computeIsOverride has zero server-only imports — safe to import in client components; enables green/amber banner logic without server round-trip
 - Holiday detection uses static list (2026-2027 US federal holidays) with dateKey = createdAt ISO string slice(0,10); no external API needed
 
+**Quick-300 decisions (Driver Pay Phase 5 — receipt attachments):**
+- Storage abstraction facade (attachments.ts) wraps s3-client.ts with attachment-specific key convention; does NOT reuse presigned.ts generateUploadUrl (incompatible prefix format)
+- Cross-tenant access always returns 404 (not 403) — prevents tenant enumeration
+- expo-image-manipulator compression skips gracefully if package not installed; run `npx expo install expo-image-manipulator` to enable 2MB compression
+- ReceiptCapture uses ImagePicker.launchCameraAsync (not CameraView directly) — matches all other camera captures in codebase
+- Download URL has Cache-Control: no-store header to prevent client-side caching of presigned URLs
+
 ## Session Continuity
 
-Last session: 2026-05-11T04:00:46Z
-Stopped at: Completed 298-driver-pay-phase-3-assignment-snapshot/298-PLAN.md
+Last session: 2026-05-13T04:34:37Z
+Stopped at: Completed 300-driver-pay-phase-5-receipt-attachments-w/300-PLAN.md
 Resume file: None
-Next action: Driver Pay Phase 3 complete — continue with Phase 4 (pay component line items / pay calculation)
+Next action: Driver Pay Phase 5 complete — continue with Phase 6 (status workflow, approval queue, corrections)
