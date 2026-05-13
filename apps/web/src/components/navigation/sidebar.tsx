@@ -44,6 +44,7 @@ import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { PermissionGuard } from "@/lib/auth/guards"
 import { DispatchBadge } from "@/components/navigation/dispatch-badge"
 import { MessagesBadge } from "@/components/navigation/messages-badge"
+import { PendingPayBadge } from "@/components/navigation/pending-pay-badge"
 import type { UserPermissions } from "@/lib/auth/permissions"
 
 interface AppSidebarProps {
@@ -297,6 +298,22 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                         </SidebarMenuSubItem>
                       </PermissionGuard>
                     </SidebarMenuSub>
+                  </SidebarMenuItem>
+                )}
+                {/* Driver Pay queue — OWNER always; MANAGER with driverPayReport permission */}
+                {(isOwner || (isManager && managerHasPermission(perms, 'driverPayReport'))) && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === "/carrier/driver-pay/pending"}
+                      tooltip="Driver Pay"
+                    >
+                      <Link href="/carrier/driver-pay/pending" onClick={handleNavClick}>
+                        <CreditCard />
+                        <span>Driver Pay</span>
+                        <PendingPayBadge />
+                      </Link>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {/* Reports sub-group — only show if user has any report permission */}
