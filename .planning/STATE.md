@@ -9250,6 +9250,7 @@ None blocking immediate progress.
 | 298 | Driver Pay Phase 3 — load driver assignment CRUD with pay template snapshotting, per-load override with reason, UI components, 12 unit tests | 2026-05-11 | da5d06d | [298-driver-pay-phase-3-assignment-snapshot](./quick/298-driver-pay-phase-3-assignment-snapshot/) |
 | 299 | Driver Pay Phase 4 — pay components CRUD, auto base-pay, auto-detention suggestion, calculator service, grouped UI with subtotals, 9 unit tests | 2026-05-11 | 0da2d8b | [299-driver-pay-phase-4-pay-components](./quick/299-driver-pay-phase-4-pay-components/) |
 | 300 | Driver Pay Phase 5 — Receipt Attachments (web + mobile) — storage abstraction, two-step upload flow, drag-drop web UI, mobile receipt capture, 5 tests passing | 2026-05-13 | f7c6541 | [300-driver-pay-phase-5-receipt-attachments-w](./quick/300-driver-pay-phase-5-receipt-attachments-w/) |
+| 301 | Driver Pay Phase 6 — State Machine, Approval Queue, Corrections workflow, Audit log, Sidebar badge — pure FSM (43 tests), transitions API, pending queue + two-panel approval UI, corrections API + modal, 87 tests total | 2026-05-13 | 3906f90 | [301-driver-pay-phase-6-state-machine-approva](./quick/301-driver-pay-phase-6-state-machine-approva/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
