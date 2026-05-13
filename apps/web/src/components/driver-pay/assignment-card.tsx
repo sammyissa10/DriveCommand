@@ -8,6 +8,7 @@ import type { SerializedAssignment } from '@/app/(owner)/actions/load-driver-ass
 import { OverrideForm } from './override-form';
 import { PayComponentsList } from './pay-components-list';
 import { SuggestDetentionButton } from './suggest-detention-button';
+import { CorrectionModal } from './correction-modal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -73,6 +74,7 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
   const [showOverrideForm, setShowOverrideForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCorrectionModal, setShowCorrectionModal] = useState(false);
 
   // Pay components state — fetched once on mount, updated when detention is added
   const [components, setComponents] = useState<SerializedComponent[] | null>(null);
@@ -143,6 +145,15 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
               >
                 {showOverrideForm ? 'Cancel edit' : 'Edit pay'}
               </Button>
+              {(assignment.payStatus === 'PAID' || assignment.payStatus === 'CORRECTED') && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCorrectionModal(true)}
+                >
+                  Add correction
+                </Button>
+              )}
               {assignment.payStatus === 'DRAFT' && (
                 <Button
                   variant="ghost"
@@ -250,6 +261,29 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
           )}
         </CardContent>
       </Card>
+
+      {/* Correction modal — only for PAID/CORRECTED assignments */}
+      {(assignment.payStatus === 'PAID' || assignment.payStatus === 'CORRECTED') && (
+        <CorrectionModal
+          open={showCorrectionModal}
+          onOpenChange={setShowCorrectionModal}
+          assignmentId={assignment.id}
+          payStatus={assignment.payStatus as 'PAID' | 'CORRECTED'}
+          components={(components ?? []).map((c) => ({
+            id: c.id,
+            componentType: c.componentType,
+            description: c.description,
+            grossAmount: c.grossAmount,
+          }))}
+          onCreated={(newComponent) => {
+            setComponents((prev) => {
+              const c = newComponent as SerializedComponent;
+              return prev ? [...prev, c] : [c];
+            });
+            setListKey((k) => k + 1);
+          }}
+        />
+      )}
 
       {/* Delete confirm dialog */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
