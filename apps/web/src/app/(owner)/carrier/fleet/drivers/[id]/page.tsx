@@ -4,9 +4,13 @@ import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getCarrierDriver, getLatestInvitationStatus } from '@/lib/carrier/fleet-drivers';
 import { listFacilities } from '@/lib/carrier/facilities';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { CarrierDriverForm } from '@/components/carrier/fleet/CarrierDriverForm';
 import { DriverDetailActions } from '@/components/carrier/fleet/DriverDetailActions';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { BonusesTab } from '@/components/driver-pay/bonuses/bonuses-tab';
+import { DeductionsTab } from '@/components/driver-pay/deductions/deductions-tab';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -56,12 +60,28 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
   const { id } = await params;
   const orgId = session.tenantId;
 
+  const role = (session.role ?? '').toUpperCase();
+  const canEdit = role === 'SYSTEM_ADMIN' || role === 'OWNER';
+  const canMarkPaid = role === 'SYSTEM_ADMIN' || role === 'OWNER' || role === 'MANAGER';
+
   const [driver, facilitiesResult] = await Promise.all([
     getCarrierDriver(orgId, id),
     listFacilities(orgId),
   ]);
 
   if (!driver) notFound();
+
+  // Fetch peer drivers for the REFERRAL picker (same tenant)
+  const prisma = await getTenantPrisma();
+  const tenantDriversRaw = await prisma.carrierDriver.findMany({
+    where: { id: { not: id } },
+    select: { id: true, firstName: true, lastName: true },
+    orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+  });
+  const tenantDrivers = tenantDriversRaw.map((d) => ({
+    id: d.id,
+    name: `${d.firstName} ${d.lastName}`,
+  }));
 
   const invitationStatus = driver.email
     ? await getLatestInvitationStatus(orgId, driver.email)
@@ -226,6 +246,30 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
           facilities={facilitiesResult.items.map((f) => ({ id: f.id, name: f.name }))}
         />
       </div>
+
+      {/* Bonuses & Deductions tabs */}
+      <Tabs defaultValue="bonuses" className="mt-8">
+        <TabsList>
+          <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+          <TabsTrigger value="deductions">Deductions</TabsTrigger>
+        </TabsList>
+        <TabsContent value="bonuses" className="mt-4">
+          <BonusesTab
+            driverId={id}
+            driverName={`${driver.firstName} ${driver.lastName}`}
+            canEdit={canEdit}
+            canMarkPaid={canMarkPaid}
+            tenantDrivers={tenantDrivers}
+          />
+        </TabsContent>
+        <TabsContent value="deductions" className="mt-4">
+          <DeductionsTab
+            driverId={id}
+            driverName={`${driver.firstName} ${driver.lastName}`}
+            canEdit={canEdit}
+          />
+        </TabsContent>
+      </Tabs>
 
       {/* Dispatch history */}
       {allDispatches.length > 0 && (
