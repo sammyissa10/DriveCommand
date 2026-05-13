@@ -4400,6 +4400,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 52-02]: Vercel Hobby plan limits cron to once-per-day — /api/cron/automations uses daily schedule (0 0 * * *); upgrade to Vercel Pro for 5-minute cadence
 - [Phase 52-02]: scheduleCronDrivenRule() uses lifetime dedup (runOncePerTenant=true) for onboarding nudges; windowed dedup (20h window on firedAt+PENDING.scheduledAt) for trial_ending_soon
 - [Phase quick-290]: Skip shiki syntax highlighting to reduce bundle weight - use simple monospace with copy button
+- [Phase quick-300]: Storage abstraction facade over s3-client.ts enables future Supabase Storage swap without API/UI changes
 
 ### Pending Todos
 
