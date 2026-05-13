@@ -151,7 +151,7 @@ export async function GET(
     >[0]['deductionsApplied'],
   });
 
-  return new NextResponse(buffer as unknown as BodyInit, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `inline; filename="settlement-${settlement.settlementReference ?? settlementId}.pdf"`,

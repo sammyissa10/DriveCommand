@@ -11,7 +11,7 @@ import {
   Text,
   View,
   StyleSheet,
-  pdf,
+  renderToBuffer,
 } from '@react-pdf/renderer';
 import React from 'react';
 import type {
@@ -409,36 +409,6 @@ function SettlementDoc(props: SettlementPdfInput) {
 export async function generateSettlementPdf(
   input: SettlementPdfInput,
 ): Promise<Buffer> {
-  const instance = pdf(<SettlementDoc {...input} />);
-  // @react-pdf/renderer v4 returns a ReadableStream from toBuffer() on some builds;
-  // convert to Node.js Buffer via Uint8Array collection.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: unknown = await instance.toBuffer();
-
-  if (Buffer.isBuffer(result)) {
-    return result;
-  }
-
-  // Collect ReadableStream chunks
-  if (result && typeof (result as ReadableStream).getReader === 'function') {
-    const reader = (result as ReadableStream<Uint8Array>).getReader();
-    const chunks: Uint8Array[] = [];
-    let done = false;
-    while (!done) {
-      const { value, done: d } = await reader.read();
-      if (value) chunks.push(value);
-      done = d;
-    }
-    const total = chunks.reduce((sum, c) => sum + c.length, 0);
-    const merged = new Uint8Array(total);
-    let offset = 0;
-    for (const chunk of chunks) {
-      merged.set(chunk, offset);
-      offset += chunk.length;
-    }
-    return Buffer.from(merged);
-  }
-
-  // Fallback
-  return Buffer.from(result as ArrayBuffer);
+  const result = await renderToBuffer(<SettlementDoc {...input} />);
+  return Buffer.from(result);
 }
