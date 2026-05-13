@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -36,7 +36,6 @@ interface Props {
   totalCount: number;
   page: number;
   pageSize: number;
-  onPageChange: (page: number) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -100,10 +99,17 @@ export function SettlementListTable({
   totalCount,
   page,
   pageSize,
-  onPageChange,
 }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const totalPages = Math.ceil(totalCount / pageSize);
+
+  function goToPage(p: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(p));
+    router.push(`${pathname}?${params.toString()}`);
+  }
 
   if (settlements.length === 0) {
     return (
@@ -176,7 +182,7 @@ export function SettlementListTable({
               variant="outline"
               size="sm"
               disabled={page <= 1}
-              onClick={() => onPageChange(page - 1)}
+              onClick={() => goToPage(page - 1)}
               aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -185,7 +191,7 @@ export function SettlementListTable({
               variant="outline"
               size="sm"
               disabled={page >= totalPages}
-              onClick={() => onPageChange(page + 1)}
+              onClick={() => goToPage(page + 1)}
               aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />

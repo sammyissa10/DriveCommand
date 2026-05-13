@@ -107,7 +107,6 @@ export default async function SettlementsPage({
         totalCount={totalCount}
         page={page}
         pageSize={pageSize}
-        onPageChange={() => {}}
       />
     </div>
   );
