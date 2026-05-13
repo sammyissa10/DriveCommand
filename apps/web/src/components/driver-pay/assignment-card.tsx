@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { computeIsOverride } from '@/lib/driver-pay/snapshot';
 import { deleteAssignment } from '@/app/(owner)/actions/load-driver-assignments';
 import type { SerializedAssignment } from '@/app/(owner)/actions/load-driver-assignments';
@@ -75,6 +77,9 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitFlashGreen, setSubmitFlashGreen] = useState(false);
 
   // Pay components state — fetched once on mount, updated when detention is added
   const [components, setComponents] = useState<SerializedComponent[] | null>(null);
@@ -103,6 +108,32 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
       ? computeIsOverride(assignment, assignment.template)
       : false;
 
+  async function handleSubmitForReview() {
+    setIsSubmitting(true);
+    setSubmitError(null);
+    const res = await fetch(`/api/driver-pay/assignments/${assignment.id}/transitions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'submit' }),
+    });
+    setIsSubmitting(false);
+
+    if (res.status === 422) {
+      const j = await res.json();
+      const hint = j.actionHint ? ` — ${j.actionHint}` : '';
+      setSubmitError((j.error ?? 'Pre-condition failed.') + hint);
+      return;
+    }
+    if (!res.ok) {
+      setSubmitError('Could not submit for review. Please try again.');
+      return;
+    }
+
+    setSubmitFlashGreen(true);
+    onUpdated({ ...assignment, payStatus: 'PENDING_REVIEW' });
+    setTimeout(() => setSubmitFlashGreen(false), 350);
+  }
+
   async function handleDelete() {
     setIsDeleting(true);
     const result = await deleteAssignment(assignment.id);
@@ -122,7 +153,12 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
 
   return (
     <>
-      <Card>
+      <Card
+        className={cn(
+          submitFlashGreen &&
+            'ring-1 ring-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 transition-colors duration-300',
+        )}
+      >
         <CardContent className="pt-4 space-y-3">
           {/* Header */}
           <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -145,13 +181,22 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
               >
                 {showOverrideForm ? 'Cancel edit' : 'Edit pay'}
               </Button>
+              {assignment.payStatus === 'DRAFT' && (
+                <Button
+                  size="sm"
+                  disabled={isSubmitting}
+                  onClick={handleSubmitForReview}
+                >
+                  {isSubmitting ? 'Submitting…' : 'Submit for review'}
+                </Button>
+              )}
               {(assignment.payStatus === 'PAID' || assignment.payStatus === 'CORRECTED') && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowCorrectionModal(true)}
                 >
-                  Add correction
+                  Issue correction
                 </Button>
               )}
               {assignment.payStatus === 'DRAFT' && (
@@ -166,6 +211,25 @@ export function AssignmentCard({ assignment, stops, onDeleted, onUpdated }: Assi
               )}
             </div>
           </div>
+
+          {/* Inline transition error — shown below header, cleared on next attempt */}
+          {submitError && (
+            <p className="text-xs text-destructive">{submitError}</p>
+          )}
+
+          {/* Queue hint for PENDING_REVIEW / DISPUTED */}
+          {(assignment.payStatus === 'PENDING_REVIEW' || assignment.payStatus === 'DISPUTED') && (
+            <p className="text-xs text-muted-foreground">
+              This assignment is awaiting review in the{' '}
+              <Link
+                href="/carrier/driver-pay/pending"
+                className="underline text-foreground hover:text-foreground/80"
+              >
+                Pending Pay queue
+              </Link>
+              .
+            </p>
+          )}
 
           {/* Pay rate */}
           <p className="text-sm text-muted-foreground">{formatRate(assignment)}</p>
