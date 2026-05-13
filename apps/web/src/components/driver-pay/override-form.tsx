@@ -31,6 +31,8 @@ export function OverrideForm({ assignment, onSaved, onCancel }: OverrideFormProp
   const [fuelSurchargeRate, setFuelSurchargeRate] = useState(assignment.fuelSurchargeRate ?? '');
   const [perDiemEnabled, setPerDiemEnabled] = useState(assignment.perDiemEnabled);
   const [perDiemRate, setPerDiemRate] = useState(assignment.perDiemRate ?? '');
+  const [actualMiles, setActualMiles] = useState(assignment.actualMiles ?? '');
+  const [mileageSource, setMileageSource] = useState(assignment.mileageSource ?? '');
   const [overrideReason, setOverrideReason] = useState(assignment.overrideReason ?? '');
   const [isSaving, setIsSaving] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -43,13 +45,24 @@ export function OverrideForm({ assignment, onSaved, onCancel }: OverrideFormProp
     loadedMilesOnly !== assignment.loadedMilesOnly ||
     (fuelSurchargeRate || null) !== assignment.fuelSurchargeRate ||
     perDiemEnabled !== assignment.perDiemEnabled ||
-    (perDiemRate || null) !== assignment.perDiemRate;
+    (perDiemRate || null) !== assignment.perDiemRate ||
+    (actualMiles || null) !== assignment.actualMiles ||
+    (mileageSource || null) !== assignment.mileageSource;
 
   async function handleSubmit() {
     setSubmitError(null);
 
     if (isDirty && overrideReason.trim().length < 10) {
       setSubmitError('Please provide at least 10 characters explaining the override reason.');
+      return;
+    }
+
+    const hasActual = actualMiles.trim() !== '';
+    const hasSource = mileageSource.trim() !== '';
+    if (hasActual !== hasSource) {
+      setSubmitError(
+        'Both Actual miles and Mileage source must be set together (or both left blank).',
+      );
       return;
     }
 
@@ -64,6 +77,14 @@ export function OverrideForm({ assignment, onSaved, onCancel }: OverrideFormProp
       perDiemEnabled,
       perDiemRate: perDiemRate || null,
       estimatedMiles: null,
+      actualMiles: actualMiles || null,
+      mileageSource: (mileageSource || null) as
+        | 'PCMILER'
+        | 'GOOGLE'
+        | 'ELD'
+        | 'MANUAL'
+        | 'RAND_MCNALLY'
+        | null,
       overrideReason,
     });
 
@@ -86,6 +107,8 @@ export function OverrideForm({ assignment, onSaved, onCancel }: OverrideFormProp
       fuelSurchargeRate: fuelSurchargeRate || null,
       perDiemEnabled,
       perDiemRate: perDiemRate || null,
+      actualMiles: actualMiles || null,
+      mileageSource: mileageSource || null,
       overrideReason: overrideReason || null,
     };
 
@@ -150,6 +173,42 @@ export function OverrideForm({ assignment, onSaved, onCancel }: OverrideFormProp
             value={fuelSurchargeRate}
             onChange={(e) => setFuelSurchargeRate(e.target.value)}
           />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label htmlFor="actualMiles">Actual miles</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              id="actualMiles"
+              type="number"
+              inputMode="numeric"
+              min="0"
+              step="0.0001"
+              placeholder={assignment.estimatedMiles ?? 'Optional'}
+              value={actualMiles}
+              onChange={(e) => setActualMiles(e.target.value)}
+              className="w-[14ch]"
+            />
+            <span className="text-sm text-muted-foreground">mi</span>
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="mileageSource">Mileage source</Label>
+          <Select value={mileageSource} onValueChange={setMileageSource}>
+            <SelectTrigger id="mileageSource">
+              <SelectValue placeholder="Select source" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="PCMILER">PC*MILER</SelectItem>
+              <SelectItem value="GOOGLE">Google Maps</SelectItem>
+              <SelectItem value="ELD">ELD</SelectItem>
+              <SelectItem value="MANUAL">Manual</SelectItem>
+              <SelectItem value="RAND_MCNALLY">Rand McNally</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
