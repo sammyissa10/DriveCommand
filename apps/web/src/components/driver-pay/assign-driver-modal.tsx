@@ -153,6 +153,8 @@ export function AssignDriverModal({
         perDiemEnabled: false,
         perDiemRate: null,
         estimatedMiles: null,
+        actualMiles: null,
+        mileageSource: null,
         overrideReason: null,
         payStatus: 'DRAFT',
         createdAt: new Date().toISOString(),

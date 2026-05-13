@@ -137,6 +137,8 @@ describe('updateAssignment', () => {
       perDiemEnabled: false,
       perDiemRate: null,
       estimatedMiles: null,
+      actualMiles: null,
+      mileageSource: null,
       overrideReason: null,
       payStatus: 'DRAFT',
       template: existingTemplate,
@@ -159,5 +161,97 @@ describe('updateAssignment', () => {
     const result = await updateAssignment('assign-1', { baseRate: '0.9000' });
 
     expect(result.error).toContain('A reason is required');
+  });
+});
+
+describe('updateAssignment — actual miles + mileage source', () => {
+  it('(d) persists actualMiles + mileageSource via Prisma update', async () => {
+    const { Prisma } = await import('@/generated/prisma');
+
+    const existingAssignment = {
+      id: 'assign-miles-1',
+      loadId: 'load-1',
+      payType: 'CPM',
+      baseRate: new Prisma.Decimal('0.5500'),
+      rateUnit: 'PER_MILE',
+      loadedMilesOnly: false,
+      fuelSurchargeRate: null,
+      perDiemEnabled: false,
+      perDiemRate: null,
+      estimatedMiles: null,
+      actualMiles: null,
+      mileageSource: null,
+      overrideReason: null,
+      payStatus: 'DRAFT',
+      template: null,
+    };
+
+    const mockPrisma = makePrisma({
+      loadDriverAssignment: {
+        findFirst: vi.fn().mockResolvedValue(existingAssignment),
+        update: vi.fn().mockResolvedValue({ id: 'assign-miles-1' }),
+      },
+    });
+    vi.mocked(getTenantPrisma).mockResolvedValue(mockPrisma as never);
+
+    const result = await updateAssignment('assign-miles-1', {
+      actualMiles: '412',
+      mileageSource: 'MANUAL',
+    });
+
+    expect(result.error).toBeUndefined();
+    expect(mockPrisma.loadDriverAssignment.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          mileageSource: 'MANUAL',
+          actualMiles: expect.objectContaining({
+            // Prisma.Decimal wraps the value — verify via toString()
+          }),
+        }),
+      }),
+    );
+
+    // Verify the actualMiles Decimal value by checking the call args
+    const updateCall = (mockPrisma.loadDriverAssignment.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateCall.data.actualMiles.toString()).toBe('412');
+    expect(updateCall.data.mileageSource).toBe('MANUAL');
+  });
+
+  it('(e) Pattern B violation (actualMiles without mileageSource) returns validation error and does not call update', async () => {
+    const { Prisma } = await import('@/generated/prisma');
+
+    const existingAssignment = {
+      id: 'assign-miles-2',
+      loadId: 'load-1',
+      payType: 'CPM',
+      baseRate: new Prisma.Decimal('0.5500'),
+      rateUnit: 'PER_MILE',
+      loadedMilesOnly: false,
+      fuelSurchargeRate: null,
+      perDiemEnabled: false,
+      perDiemRate: null,
+      estimatedMiles: null,
+      actualMiles: null,
+      mileageSource: null,
+      overrideReason: null,
+      payStatus: 'DRAFT',
+      template: null,
+    };
+
+    const mockPrisma = makePrisma({
+      loadDriverAssignment: {
+        findFirst: vi.fn().mockResolvedValue(existingAssignment),
+        update: vi.fn(),
+      },
+    });
+    vi.mocked(getTenantPrisma).mockResolvedValue(mockPrisma as never);
+
+    // actualMiles provided but mileageSource omitted — should trigger Pattern B
+    const result = await updateAssignment('assign-miles-2', { actualMiles: '412' });
+
+    expect(result.error).toBeDefined();
+    expect(result.error).toContain('mileageSource');
+    expect(mockPrisma.loadDriverAssignment.update).not.toHaveBeenCalled();
   });
 });

@@ -39,6 +39,8 @@ export type SerializedAssignment = {
   perDiemEnabled: boolean;
   perDiemRate: string | null;
   estimatedMiles: string | null;
+  actualMiles: string | null;
+  mileageSource: string | null;
   overrideReason: string | null;
   payStatus: string;
   createdAt: string;
@@ -71,6 +73,8 @@ function serializeAssignment(a: {
   perDiemEnabled: boolean;
   perDiemRate: Prisma.Decimal | null;
   estimatedMiles: Prisma.Decimal | null;
+  actualMiles: Prisma.Decimal | null;
+  mileageSource: string | null;
   overrideReason: string | null;
   payStatus: string;
   createdAt: Date;
@@ -102,6 +106,8 @@ function serializeAssignment(a: {
     perDiemEnabled: a.perDiemEnabled,
     perDiemRate: serializeDecimal(a.perDiemRate),
     estimatedMiles: serializeDecimal(a.estimatedMiles),
+    actualMiles: serializeDecimal(a.actualMiles),
+    mileageSource: a.mileageSource ?? null,
     overrideReason: a.overrideReason,
     payStatus: a.payStatus,
     createdAt: a.createdAt.toISOString(),
@@ -284,6 +290,14 @@ export async function updateAssignment(
         ? new Decimal(data.estimatedMiles)
         : null
       : existing.estimatedMiles;
+  const mergedActualMiles =
+    data.actualMiles !== undefined
+      ? data.actualMiles != null && data.actualMiles !== ''
+        ? new Decimal(data.actualMiles)
+        : null
+      : existing.actualMiles;
+  const mergedMileageSource =
+    data.mileageSource !== undefined ? data.mileageSource : existing.mileageSource;
 
   // Check whether any overrideable field was changed in this update
   const anyFieldDefined =
@@ -328,6 +342,14 @@ export async function updateAssignment(
       perDiemEnabled: mergedPerDiemEnabled,
       perDiemRate: mergedPerDiemRate,
       estimatedMiles: mergedEstimatedMiles,
+      actualMiles: mergedActualMiles,
+      mileageSource: mergedMileageSource as
+        | 'PCMILER'
+        | 'GOOGLE'
+        | 'ELD'
+        | 'MANUAL'
+        | 'RAND_MCNALLY'
+        | null,
       overrideReason: data.overrideReason ?? existing.overrideReason,
     },
   });
