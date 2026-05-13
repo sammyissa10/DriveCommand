@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { AddComponentModal } from './add-component-modal';
+import { AttachmentUploader, type SerializedAttachment } from './attachment-uploader';
+import { AttachmentList } from './attachment-list';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -117,6 +120,45 @@ function formatRelativeTime(iso: string): string {
 export function PayComponentsList({ assignmentId, payStatus, initialComponents }: Props) {
   const [components, setComponents] = useState<SerializedComponent[]>(initialComponents);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [expandedComponentId, setExpandedComponentId] = useState<string | null>(null);
+  // attachmentsByComponent: undefined = not yet fetched, [] = fetched (empty), [...] = fetched (populated)
+  const [attachmentsByComponent, setAttachmentsByComponent] = useState<
+    Record<string, SerializedAttachment[]>
+  >({});
+  const [fetchingAttachments, setFetchingAttachments] = useState<Set<string>>(new Set());
+
+  async function loadAttachments(componentId: string) {
+    if (attachmentsByComponent[componentId] !== undefined) return; // already loaded
+    if (fetchingAttachments.has(componentId)) return;
+
+    setFetchingAttachments((prev) => new Set(prev).add(componentId));
+    try {
+      const res = await fetch(
+        `/api/driver-pay/assignments/${assignmentId}/components/${componentId}/attachments`,
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = (await res.json()) as { attachments: SerializedAttachment[] };
+      setAttachmentsByComponent((prev) => ({ ...prev, [componentId]: data.attachments }));
+    } catch {
+      toast.error('Could not load receipts. Please refresh and try again.');
+      setAttachmentsByComponent((prev) => ({ ...prev, [componentId]: [] }));
+    } finally {
+      setFetchingAttachments((prev) => {
+        const next = new Set(prev);
+        next.delete(componentId);
+        return next;
+      });
+    }
+  }
+
+  function toggleExpand(componentId: string) {
+    if (expandedComponentId === componentId) {
+      setExpandedComponentId(null);
+    } else {
+      setExpandedComponentId(componentId);
+      loadAttachments(componentId);
+    }
+  }
 
   const isPaid = payStatus === 'PAID';
 
@@ -180,9 +222,9 @@ export function PayComponentsList({ assignmentId, payStatus, initialComponents }
                 const isDeduction = cat === 'DEDUCTION';
 
                 return (
-                  <>
+                  <React.Fragment key={cat}>
                     {/* Category heading */}
-                    <tr key={`heading-${cat}`} className="bg-muted/40">
+                    <tr className="bg-muted/40">
                       <td
                         colSpan={4}
                         className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
@@ -192,58 +234,138 @@ export function PayComponentsList({ assignmentId, payStatus, initialComponents }
                     </tr>
 
                     {/* Component rows */}
-                    {rows.map((c) => (
-                      <tr
-                        key={c.id}
-                        className={`border-t border-muted/50 hover:bg-muted/20 ${
-                          isDeduction ? 'text-destructive' : ''
-                        }`}
-                      >
-                        <td className="px-3 py-2 align-top">
-                          <span className="font-medium">
-                            {TYPE_LABELS[c.componentType] ?? c.componentType}
-                          </span>
-                        </td>
-                        <td className="px-3 py-2 align-top">
-                          <span>{c.description}</span>
-                          {c.isReimbursement && !c.notes && (
-                            <span className="ml-2 rounded px-1.5 py-0.5 text-xs font-medium text-amber-700 bg-amber-100 dark:text-amber-400 dark:bg-amber-900/40">
-                              No receipt
-                            </span>
+                    {rows.map((c) => {
+                      const isReimbursement = c.category === 'REIMBURSEMENT';
+                      const isExpanded = expandedComponentId === c.id;
+                      const componentAttachments = attachmentsByComponent[c.id];
+                      // Show "No receipt" chip when: it's a reimbursement AND
+                      // (attachments not yet fetched, OR fetched and empty)
+                      const showNoReceiptChip =
+                        isReimbursement &&
+                        (componentAttachments === undefined || componentAttachments.length === 0);
+
+                      return (
+                        <React.Fragment key={c.id}>
+                          <tr
+                            className={`border-t border-muted/50 hover:bg-muted/20 ${
+                              isDeduction ? 'text-destructive' : ''
+                            }`}
+                          >
+                            <td className="px-3 py-2 align-top">
+                              <span className="font-medium">
+                                {TYPE_LABELS[c.componentType] ?? c.componentType}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 align-top">
+                              <div className="flex items-center flex-wrap gap-1.5">
+                                <span>{c.description}</span>
+                                {showNoReceiptChip && (
+                                  <button
+                                    type="button"
+                                    className="text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors"
+                                    onClick={() => toggleExpand(c.id)}
+                                    title="No receipt attached — click to add"
+                                  >
+                                    No receipt
+                                  </button>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-0.5">
+                                Added by {c.enteredBy.slice(0, 8)}&hellip;{' '}
+                                {formatRelativeTime(c.createdAt)}
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-right align-top text-muted-foreground">
+                              {c.quantity} &times; ${Number(c.rate).toFixed(4)}
+                            </td>
+                            <td className="px-3 py-2 text-right align-top font-medium">
+                              <div className="flex items-center justify-end gap-2">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="cursor-default">
+                                      {isDeduction
+                                        ? `−$${Math.abs(Number(c.grossAmount)).toFixed(2)}`
+                                        : `$${Number(c.grossAmount).toFixed(2)}`}
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="left">
+                                    <span className="text-xs">
+                                      {c.quantity} &times; ${Number(c.rate).toFixed(4)} &times;{' '}
+                                      {c.multiplier} ={' '}
+                                      {isDeduction
+                                        ? `−$${Math.abs(Number(c.grossAmount)).toFixed(2)}`
+                                        : `$${Number(c.grossAmount).toFixed(2)}`}
+                                    </span>
+                                  </TooltipContent>
+                                </Tooltip>
+                                {isReimbursement && (
+                                  <button
+                                    type="button"
+                                    className="text-muted-foreground hover:text-foreground transition-colors"
+                                    onClick={() => toggleExpand(c.id)}
+                                    aria-label={isExpanded ? 'Collapse receipts' : 'Expand receipts'}
+                                    title={isExpanded ? 'Hide receipts' : 'View/upload receipts'}
+                                  >
+                                    {isExpanded ? (
+                                      <ChevronUp size={14} />
+                                    ) : (
+                                      <ChevronDown size={14} />
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+
+                          {/* Expandable receipt panel for REIMBURSEMENT rows */}
+                          {isReimbursement && isExpanded && (
+                            <tr className="border-t border-muted/30">
+                              <td colSpan={4} className="px-4 py-3 bg-muted/10">
+                                <div className="space-y-3">
+                                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                    Receipts
+                                  </p>
+                                  {componentAttachments === undefined ? (
+                                    <p className="text-xs text-muted-foreground">
+                                      Loading receipts…
+                                    </p>
+                                  ) : (
+                                    <>
+                                      <AttachmentList
+                                        assignmentId={assignmentId}
+                                        componentId={c.id}
+                                        payStatus={payStatus}
+                                        attachments={componentAttachments}
+                                        onChanged={(next) =>
+                                          setAttachmentsByComponent((prev) => ({
+                                            ...prev,
+                                            [c.id]: next,
+                                          }))
+                                        }
+                                      />
+                                      <AttachmentUploader
+                                        assignmentId={assignmentId}
+                                        componentId={c.id}
+                                        payStatus={payStatus}
+                                        onUploaded={(attachment) =>
+                                          setAttachmentsByComponent((prev) => ({
+                                            ...prev,
+                                            [c.id]: [...(prev[c.id] ?? []), attachment],
+                                          }))
+                                        }
+                                      />
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
                           )}
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            Added by {c.enteredBy.slice(0, 8)}&hellip;{' '}
-                            {formatRelativeTime(c.createdAt)}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 text-right align-top text-muted-foreground">
-                          {c.quantity} &times; ${Number(c.rate).toFixed(4)}
-                        </td>
-                        <td className="px-3 py-2 text-right align-top font-medium">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="cursor-default">
-                                {isDeduction
-                                  ? `−$${Math.abs(Number(c.grossAmount)).toFixed(2)}`
-                                  : `$${Number(c.grossAmount).toFixed(2)}`}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="left">
-                              <span className="text-xs">
-                                {c.quantity} &times; ${Number(c.rate).toFixed(4)} &times;{' '}
-                                {c.multiplier} ={' '}
-                                {isDeduction
-                                  ? `−$${Math.abs(Number(c.grossAmount)).toFixed(2)}`
-                                  : `$${Number(c.grossAmount).toFixed(2)}`}
-                              </span>
-                            </TooltipContent>
-                          </Tooltip>
-                        </td>
-                      </tr>
-                    ))}
+                        </React.Fragment>
+                      );
+                    })}
 
                     {/* Category subtotal */}
-                    <tr key={`subtotal-${cat}`} className="border-t border-muted">
+                    <tr className="border-t border-muted">
                       <td
                         colSpan={3}
                         className="px-3 py-1 text-xs text-muted-foreground text-right"
@@ -256,7 +378,7 @@ export function PayComponentsList({ assignmentId, payStatus, initialComponents }
                           : `$${subtotal.toFixed(2)}`}
                       </td>
                     </tr>
-                  </>
+                  </React.Fragment>
                 );
               })}
 
