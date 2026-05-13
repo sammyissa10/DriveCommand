@@ -13,6 +13,8 @@ import {
   type ComponentSnapshotForFsm,
 } from '@/lib/driver-pay/state-machine';
 import { Prisma } from '@/generated/prisma';
+import type { PrismaClient } from '@/generated/prisma';
+import { ensureBasePayComponent } from '@/lib/driver-pay/auto-base-pay';
 
 // ---------------------------------------------------------------------------
 // Serializer
@@ -157,6 +159,29 @@ export async function POST(
   });
   if (!assignment) {
     return NextResponse.json({ error: 'Assignment not found.' }, { status: 404 });
+  }
+
+  // 4b. Auto-create base pay component before FSM check (submit only)
+  if (body.action === 'submit') {
+    const shouldEnsureBasePay: boolean = (() => {
+      switch (assignment.payType) {
+        case 'CPM':
+          return assignment.actualMiles != null || assignment.estimatedMiles != null;
+        case 'HOURLY':
+          return assignment.actualHours != null || assignment.estimatedHours != null;
+        default:
+          return true;
+      }
+    })();
+
+    if (shouldEnsureBasePay) {
+      await ensureBasePayComponent(
+        assignmentId,
+        assignment.tenantId,
+        prisma as unknown as PrismaClient,
+        session.userId,
+      );
+    }
   }
 
   // 5. Load components

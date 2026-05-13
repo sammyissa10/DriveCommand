@@ -23,10 +23,15 @@ vi.mock('@/lib/driver-pay/state-machine', () => ({
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 
+vi.mock('@/lib/driver-pay/auto-base-pay', () => ({
+  ensureBasePayComponent: vi.fn().mockResolvedValue(undefined),
+}));
+
 import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { canTransition } from '@/lib/driver-pay/state-machine';
+import { ensureBasePayComponent } from '@/lib/driver-pay/auto-base-pay';
 import { POST } from '@/app/api/driver-pay/assignments/[assignmentId]/transitions/route';
 
 // ---------------------------------------------------------------------------
@@ -67,7 +72,10 @@ function makeDbAssignment(overrides: Partial<Record<string, unknown>> = {}) {
     currency: 'USD',
     payStatus: 'DRAFT',
     actualMiles: null,
+    estimatedMiles: null,
     mileageSource: null,
+    actualHours: null,
+    estimatedHours: null,
     loadRevenue: null,
     overrideReason: null,
     approvedBy: null,
@@ -309,5 +317,92 @@ describe('POST /transitions — business rules', () => {
         }),
       }),
     );
+  });
+});
+
+describe('POST /transitions — submit auto-base-pay wiring', () => {
+  beforeEach(() => {
+    vi.mocked(getSession).mockResolvedValue({
+      userId: 'owner-1',
+      email: 'owner@test.com',
+      role: 'OWNER',
+      tenantId: 'tenant-123',
+    });
+  });
+
+  it('13. CPM with actualMiles → ensureBasePayComponent called once', async () => {
+    const mockPrisma = makePrisma({
+      loadDriverAssignment: {
+        findFirst: vi.fn().mockResolvedValue(
+          makeDbAssignment({
+            payType: 'CPM',
+            actualMiles: { toString: () => '412' },
+            estimatedMiles: { toString: () => '400' },
+            payStatus: 'DRAFT',
+          }),
+        ),
+        update: vi.fn().mockResolvedValue(makeDbAssignment({ payStatus: 'PENDING_REVIEW' })),
+      },
+    });
+    vi.mocked(getTenantPrisma).mockResolvedValue(mockPrisma as never);
+    vi.mocked(canTransition).mockReturnValue({ ok: true, nextStatus: 'PENDING_REVIEW' });
+
+    const res = await POST(makeReq({ action: 'submit' }), mockParams);
+    expect(res.status).toBe(200);
+    expect(ensureBasePayComponent).toHaveBeenCalledTimes(1);
+    expect(ensureBasePayComponent).toHaveBeenCalledWith(
+      ASSIGNMENT_ID,
+      'tenant-123',
+      expect.anything(),
+      expect.any(String),
+    );
+  });
+
+  it('14. FLAT_PER_LOAD always calls ensureBasePayComponent (no quantity fields needed)', async () => {
+    const mockPrisma = makePrisma({
+      loadDriverAssignment: {
+        findFirst: vi.fn().mockResolvedValue(
+          makeDbAssignment({
+            payType: 'FLAT_PER_LOAD',
+            actualMiles: null,
+            estimatedMiles: null,
+            payStatus: 'DRAFT',
+          }),
+        ),
+        update: vi.fn().mockResolvedValue(makeDbAssignment({ payStatus: 'PENDING_REVIEW' })),
+      },
+    });
+    vi.mocked(getTenantPrisma).mockResolvedValue(mockPrisma as never);
+    vi.mocked(canTransition).mockReturnValue({ ok: true, nextStatus: 'PENDING_REVIEW' });
+
+    const res = await POST(makeReq({ action: 'submit' }), mockParams);
+    expect(res.status).toBe(200);
+    expect(ensureBasePayComponent).toHaveBeenCalledTimes(1);
+  });
+
+  it('15. CPM with no miles → ensureBasePayComponent NOT called, returns 422 from FSM', async () => {
+    const mockPrisma = makePrisma({
+      loadDriverAssignment: {
+        findFirst: vi.fn().mockResolvedValue(
+          makeDbAssignment({
+            payType: 'CPM',
+            actualMiles: null,
+            estimatedMiles: null,
+            payStatus: 'DRAFT',
+          }),
+        ),
+        update: vi.fn(),
+      },
+    });
+    vi.mocked(getTenantPrisma).mockResolvedValue(mockPrisma as never);
+    vi.mocked(canTransition).mockReturnValue({
+      ok: false,
+      reason: 'Add a base pay component before submitting.',
+      actionHint: 'add-base-pay',
+    });
+
+    const res = await POST(makeReq({ action: 'submit' }), mockParams);
+    expect(res.status).toBe(422);
+    expect(ensureBasePayComponent).not.toHaveBeenCalled();
   });
 });
