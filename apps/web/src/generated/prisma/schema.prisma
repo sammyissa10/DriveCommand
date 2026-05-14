@@ -207,6 +207,10 @@ model Tenant {
   driverDisputes          DriverDispute[]
   driverPayAuditLogs      DriverPayAuditLog[]
   docFeedback             DocFeedback[]
+
+  // Notification System reverse relations
+  notificationSettings      TenantNotificationSettings[]
+  notificationSubscriptions NotificationSubscription[]
 }
 
 model User {
@@ -258,6 +262,10 @@ model User {
   approvedExpenses     CarrierExpense[]    @relation(name: "CarrierExpenseApprover")
   approvedPayRecords   DriverPayRecord[]   @relation(name: "DriverPayApprover")
   inAppNotifications   InAppNotification[]
+
+  // Notification System reverse relations
+  notificationSubscriptions NotificationSubscription[]
+  notificationPreferences   UserNotificationPreference[]
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -2894,4 +2902,143 @@ model DocFeedback {
 
   @@index([tenantId])
   @@index([docSlug])
+}
+
+// ==============================================
+// Notification System — Phase 41
+// ==============================================
+
+enum NotificationCategory {
+  USER
+  LOAD
+  DRIVER
+  TRUCK
+  MESSAGE
+  FINANCE
+  ROUTE
+  CUSTOMER
+  DIGEST
+}
+
+enum NotificationChannel {
+  EMAIL
+  IN_APP
+}
+
+enum NotificationSendStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED_DISABLED
+  SKIPPED_USER_PREF
+  SKIPPED_IDEMPOTENT
+}
+
+/// Global, system-level templates. No tenantId — owned by the platform.
+model NotificationTemplate {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  triggerKey         String               @unique
+  category           NotificationCategory
+  displayName        String
+  description        String               @db.Text
+  defaultSubject     String
+  defaultBlockJson   Json
+  defaultHtmlCache   String?              @db.Text
+  availableVariables Json
+  defaultRecipients  Json
+  isActive           Boolean              @default(true)
+  inAppEnabled       Boolean              @default(true)
+  createdAt          DateTime             @default(now()) @db.Timestamptz
+  updatedAt          DateTime             @updatedAt @db.Timestamptz
+
+  @@index([category])
+  @@index([isActive])
+}
+
+/// Per-tenant overrides for each notification template. Auto-populated by trigger on Tenant insert.
+model TenantNotificationSettings {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @db.Uuid
+  triggerKey      String
+  isActive        Boolean  @default(true)
+  customSubject   String?
+  customBlockJson Json?
+  customHtmlCache String?  @db.Text
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, triggerKey])
+  @@index([tenantId])
+  @@index([triggerKey])
+}
+
+/// Users who subscribe to specific notification triggers within a tenant.
+model NotificationSubscription {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @db.Uuid
+  triggerKey String
+  userId     String   @db.Uuid
+  createdAt  DateTime @default(now()) @db.Timestamptz
+  updatedAt  DateTime @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, triggerKey, userId])
+  @@index([tenantId])
+  @@index([userId])
+}
+
+/// Per-user channel preferences for each notification trigger.
+model UserNotificationPreference {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @db.Uuid
+  triggerKey   String
+  emailEnabled Boolean  @default(true)
+  inAppEnabled Boolean  @default(true)
+  createdAt    DateTime @default(now()) @db.Timestamptz
+  updatedAt    DateTime @updatedAt @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, triggerKey])
+  @@index([userId])
+}
+
+/// Audit log of every notification send attempt. No RLS — system-level audit.
+model NotificationSendLog {
+  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String                 @db.Uuid
+  triggerKey        String
+  recipientUserId   String?                @db.Uuid
+  recipientEmail    String?
+  channel           NotificationChannel
+  subject           String?                @db.Text
+  status            NotificationSendStatus
+  errorMessage      String?                @db.Text
+  idempotencyKey    String
+  relatedEntityType String?
+  relatedEntityId   String?
+  sentAt            DateTime?              @db.Timestamptz
+  createdAt         DateTime               @default(now()) @db.Timestamptz
+  updatedAt         DateTime               @updatedAt @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([triggerKey])
+  @@index([idempotencyKey])
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Single-row global email config. Enforced by a partial unique index in the migration.
+model NotificationEmailConfig {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  singletonKey String   @default("singleton")
+  fromName     String
+  fromEmail    String
+  replyTo      String?
+  createdAt    DateTime @default(now()) @db.Timestamptz
+  updatedAt    DateTime @updatedAt @db.Timestamptz
 }

@@ -2931,6 +2931,7 @@ enum NotificationSendStatus {
   FAILED
   SKIPPED_DISABLED
   SKIPPED_USER_PREF
+  SKIPPED_IDEMPOTENT
 }
 
 /// Global, system-level templates. No tenantId — owned by the platform.

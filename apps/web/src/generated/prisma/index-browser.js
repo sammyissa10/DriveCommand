@@ -1556,6 +1556,82 @@ exports.Prisma.DocFeedbackScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.NotificationTemplateScalarFieldEnum = {
+  id: 'id',
+  triggerKey: 'triggerKey',
+  category: 'category',
+  displayName: 'displayName',
+  description: 'description',
+  defaultSubject: 'defaultSubject',
+  defaultBlockJson: 'defaultBlockJson',
+  defaultHtmlCache: 'defaultHtmlCache',
+  availableVariables: 'availableVariables',
+  defaultRecipients: 'defaultRecipients',
+  isActive: 'isActive',
+  inAppEnabled: 'inAppEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TenantNotificationSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  triggerKey: 'triggerKey',
+  isActive: 'isActive',
+  customSubject: 'customSubject',
+  customBlockJson: 'customBlockJson',
+  customHtmlCache: 'customHtmlCache',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationSubscriptionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  triggerKey: 'triggerKey',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserNotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  triggerKey: 'triggerKey',
+  emailEnabled: 'emailEnabled',
+  inAppEnabled: 'inAppEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationSendLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  triggerKey: 'triggerKey',
+  recipientUserId: 'recipientUserId',
+  recipientEmail: 'recipientEmail',
+  channel: 'channel',
+  subject: 'subject',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  idempotencyKey: 'idempotencyKey',
+  relatedEntityType: 'relatedEntityType',
+  relatedEntityId: 'relatedEntityId',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationEmailConfigScalarFieldEnum = {
+  id: 'id',
+  singletonKey: 'singletonKey',
+  fromName: 'fromName',
+  fromEmail: 'fromEmail',
+  replyTo: 'replyTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2108,6 +2184,32 @@ exports.DisputeStatus = exports.$Enums.DisputeStatus = {
   CLOSED: 'CLOSED'
 };
 
+exports.NotificationCategory = exports.$Enums.NotificationCategory = {
+  USER: 'USER',
+  LOAD: 'LOAD',
+  DRIVER: 'DRIVER',
+  TRUCK: 'TRUCK',
+  MESSAGE: 'MESSAGE',
+  FINANCE: 'FINANCE',
+  ROUTE: 'ROUTE',
+  CUSTOMER: 'CUSTOMER',
+  DIGEST: 'DIGEST'
+};
+
+exports.NotificationChannel = exports.$Enums.NotificationChannel = {
+  EMAIL: 'EMAIL',
+  IN_APP: 'IN_APP'
+};
+
+exports.NotificationSendStatus = exports.$Enums.NotificationSendStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  SKIPPED_DISABLED: 'SKIPPED_DISABLED',
+  SKIPPED_USER_PREF: 'SKIPPED_USER_PREF',
+  SKIPPED_IDEMPOTENT: 'SKIPPED_IDEMPOTENT'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -2188,7 +2290,13 @@ exports.Prisma.ModelName = {
   PayComponentAttachment: 'PayComponentAttachment',
   DriverDispute: 'DriverDispute',
   DriverPayAuditLog: 'DriverPayAuditLog',
-  DocFeedback: 'DocFeedback'
+  DocFeedback: 'DocFeedback',
+  NotificationTemplate: 'NotificationTemplate',
+  TenantNotificationSettings: 'TenantNotificationSettings',
+  NotificationSubscription: 'NotificationSubscription',
+  UserNotificationPreference: 'UserNotificationPreference',
+  NotificationSendLog: 'NotificationSendLog',
+  NotificationEmailConfig: 'NotificationEmailConfig'
 };
 
 /**
