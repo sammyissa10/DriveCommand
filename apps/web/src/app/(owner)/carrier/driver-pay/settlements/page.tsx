@@ -11,6 +11,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { Button } from '@/components/ui/button';
 import { SettlementListTable } from './_components/SettlementListTable';
 import type { SettlementRow } from './_components/SettlementListTable';
+import { ExportPayrollButton } from './_components/ExportPayrollButton';
 import { Plus } from 'lucide-react';
 import { Prisma } from '@/generated/prisma';
 
@@ -93,12 +94,17 @@ export default async function SettlementsPage({
             Driver pay settlement runs — draft, finalize, and mark paid.
           </p>
         </div>
-        <Link href="/carrier/driver-pay/settlements/generate">
-          <Button className="gap-1">
-            <Plus className="h-4 w-4" />
-            Generate Settlements
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {(role === UserRole.OWNER || role === UserRole.SYSTEM_ADMIN) && (
+            <ExportPayrollButton settlementIds={settlements.map((s) => s.id)} />
+          )}
+          <Link href="/carrier/driver-pay/settlements/generate">
+            <Button className="gap-1">
+              <Plus className="h-4 w-4" />
+              Generate Settlements
+            </Button>
+          </Link>
+        </div>
       </header>
 
       {/* Settlement table (client component for pagination) */}
