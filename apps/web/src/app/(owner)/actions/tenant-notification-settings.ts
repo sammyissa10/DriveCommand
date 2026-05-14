@@ -1,0 +1,543 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { requireRole, getSession } from '@/lib/auth/supabase';
+import { UserRole } from '@/lib/auth/roles';
+import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { renderTemplate } from '@/lib/notifications/template-renderer';
+import type { VariableDef } from '@/lib/notifications/types';
+import {
+  NotificationSendStatus,
+  NotificationChannel,
+  Prisma,
+} from '@/generated/prisma';
+
+// ---------------------------------------------------------------------------
+// Auth guard (private, not exported)
+// ---------------------------------------------------------------------------
+
+async function requireTenantAccess(): Promise<{ tenantId: string }> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const session = await getSession();
+  if (!session?.tenantId) {
+    throw new Error('Tenant context is required');
+  }
+  return { tenantId: session.tenantId };
+}
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export type TenantNotificationSettingRow = {
+  template: {
+    id: string;
+    triggerKey: string;
+    category: string;
+    displayName: string;
+    description: string;
+    defaultSubject: string;
+    defaultBlockJson: unknown;
+    defaultHtmlCache: string | null;
+    availableVariables: VariableDef[];
+    isActive: boolean;
+    updatedAt: Date;
+  };
+  tenantSetting: {
+    id: string;
+    tenantId: string;
+    triggerKey: string;
+    isActive: boolean;
+    customSubject: string | null;
+    customBlockJson: unknown | null;
+    customHtmlCache: string | null;
+    updatedAt: Date;
+  } | null;
+  hasOverride: boolean;
+  isActive: boolean;
+};
+
+export type TenantSubscriberRow = {
+  id: string;
+  tenantId: string;
+  triggerKey: string;
+  userId: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+    role: string;
+  };
+};
+
+export type SendLogRow = {
+  id: string;
+  tenantId: string;
+  triggerKey: string;
+  recipientUserId: string | null;
+  recipientEmail: string | null;
+  channel: string;
+  subject: string | null;
+  status: string;
+  errorMessage: string | null;
+  idempotencyKey: string;
+  relatedEntityType: string | null;
+  relatedEntityId: string | null;
+  sentAt: Date | null;
+  createdAt: Date;
+};
+
+export type SendLogPaginatedResult = {
+  rows: SendLogRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
+export type SendLogStats = {
+  total: number;
+  sent: number;
+  failed: number;
+  skipped: number;
+  pending: number;
+};
+
+export type TenantUserRow = {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  role: string;
+};
+
+export type ActiveTemplateForTenant = {
+  triggerKey: string;
+  displayName: string;
+  category: string;
+};
+
+// ---------------------------------------------------------------------------
+// listTenantNotificationSettings
+// ---------------------------------------------------------------------------
+
+export async function listTenantNotificationSettings(): Promise<TenantNotificationSettingRow[]> {
+  const { tenantId } = await requireTenantAccess();
+
+  const templates = await prisma.notificationTemplate.findMany({
+    orderBy: [{ category: 'asc' }, { displayName: 'asc' }],
+  });
+
+  const tenantDb = await getTenantPrisma();
+  const tenantSettings = await tenantDb.tenantNotificationSettings.findMany({
+    where: { tenantId },
+  });
+
+  const settingsByTrigger = new Map(tenantSettings.map((s) => [s.triggerKey, s]));
+
+  return templates.map((t) => {
+    const tenantSetting = settingsByTrigger.get(t.triggerKey) ?? null;
+    const hasOverride =
+      tenantSetting?.customBlockJson != null || tenantSetting?.customSubject != null;
+    return {
+      template: {
+        ...t,
+        availableVariables: t.availableVariables as VariableDef[],
+      },
+      tenantSetting: tenantSetting
+        ? {
+            ...tenantSetting,
+            customBlockJson: tenantSetting.customBlockJson ?? null,
+          }
+        : null,
+      hasOverride,
+      isActive: tenantSetting?.isActive ?? t.isActive,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// getSettingForTrigger
+// ---------------------------------------------------------------------------
+
+export async function getSettingForTrigger(
+  triggerKey: string,
+): Promise<TenantNotificationSettingRow> {
+  const { tenantId } = await requireTenantAccess();
+  z.string().min(1).parse(triggerKey);
+
+  const template = await prisma.notificationTemplate.findUniqueOrThrow({
+    where: { triggerKey },
+  });
+
+  const tenantDb = await getTenantPrisma();
+  const tenantSetting = await tenantDb.tenantNotificationSettings.findUnique({
+    where: { tenantId_triggerKey: { tenantId, triggerKey } },
+  });
+
+  const hasOverride =
+    tenantSetting?.customBlockJson != null || tenantSetting?.customSubject != null;
+
+  return {
+    template: {
+      ...template,
+      availableVariables: template.availableVariables as VariableDef[],
+    },
+    tenantSetting: tenantSetting
+      ? {
+          ...tenantSetting,
+          customBlockJson: tenantSetting.customBlockJson ?? null,
+        }
+      : null,
+    hasOverride,
+    isActive: tenantSetting?.isActive ?? template.isActive,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// customizeTemplate
+// ---------------------------------------------------------------------------
+
+export async function customizeTemplate(
+  triggerKey: string,
+  blockJson: unknown,
+  subject: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { tenantId } = await requireTenantAccess();
+
+  const schema = z.object({
+    triggerKey: z.string().min(1),
+    subject: z.string().min(1, 'Subject is required'),
+  });
+
+  const parsed = schema.safeParse({ triggerKey, subject });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? 'Validation error' };
+  }
+
+  try {
+    const template = await prisma.notificationTemplate.findUniqueOrThrow({
+      where: { triggerKey },
+      select: { availableVariables: true },
+    });
+
+    const vars = template.availableVariables as VariableDef[];
+    const samplePayload: Record<string, string> = {};
+    for (const v of vars) {
+      samplePayload[v.name] = v.sampleValue;
+    }
+
+    const { html: customHtmlCache } = await renderTemplate(blockJson, samplePayload, subject);
+
+    const tenantDb = await getTenantPrisma();
+    await tenantDb.tenantNotificationSettings.upsert({
+      where: { tenantId_triggerKey: { tenantId, triggerKey } },
+      create: {
+        tenantId,
+        triggerKey,
+        isActive: true,
+        customSubject: subject,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        customBlockJson: blockJson as any,
+        customHtmlCache,
+      },
+      update: {
+        customSubject: subject,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        customBlockJson: blockJson as any,
+        customHtmlCache,
+      },
+    });
+
+    revalidatePath('/settings/notifications');
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// restoreDefault
+// ---------------------------------------------------------------------------
+
+export async function restoreDefault(
+  triggerKey: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { tenantId } = await requireTenantAccess();
+  z.string().min(1).parse(triggerKey);
+
+  try {
+    const tenantDb = await getTenantPrisma();
+    await tenantDb.tenantNotificationSettings.updateMany({
+      where: { tenantId, triggerKey },
+      data: {
+        customSubject: null,
+        customBlockJson: Prisma.JsonNull,
+        customHtmlCache: null,
+      },
+    });
+
+    revalidatePath('/settings/notifications');
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// toggleTenantNotificationActive
+// ---------------------------------------------------------------------------
+
+export async function toggleTenantNotificationActive(
+  triggerKey: string,
+  isActive: boolean,
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { tenantId } = await requireTenantAccess();
+  z.string().min(1).parse(triggerKey);
+
+  try {
+    const template = await prisma.notificationTemplate.findUniqueOrThrow({
+      where: { triggerKey },
+      select: { isActive: true },
+    });
+
+    if (!template.isActive && isActive) {
+      return { success: false, error: 'Cannot enable: template is globally disabled by DriveCommand' };
+    }
+
+    const tenantDb = await getTenantPrisma();
+    await tenantDb.tenantNotificationSettings.upsert({
+      where: { tenantId_triggerKey: { tenantId, triggerKey } },
+      create: { tenantId, triggerKey, isActive },
+      update: { isActive },
+    });
+
+    revalidatePath('/settings/notifications');
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// listTenantSubscribers
+// ---------------------------------------------------------------------------
+
+export async function listTenantSubscribers(): Promise<TenantSubscriberRow[]> {
+  const { tenantId } = await requireTenantAccess();
+
+  const tenantDb = await getTenantPrisma();
+  const subscribers = await tenantDb.notificationSubscription.findMany({
+    where: { tenantId },
+    include: {
+      user: {
+        select: { id: true, email: true, firstName: true, lastName: true, role: true },
+      },
+    },
+    orderBy: [{ triggerKey: 'asc' }, { user: { email: 'asc' } }],
+  });
+
+  return subscribers.map((s) => ({
+    id: s.id,
+    tenantId: s.tenantId,
+    triggerKey: s.triggerKey,
+    userId: s.userId,
+    createdAt: s.createdAt,
+    user: {
+      id: s.user.id,
+      email: s.user.email,
+      firstName: s.user.firstName,
+      lastName: s.user.lastName,
+      role: s.user.role as string,
+    },
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// listTenantUsers
+// ---------------------------------------------------------------------------
+
+export async function listTenantUsers(): Promise<TenantUserRow[]> {
+  const { tenantId } = await requireTenantAccess();
+
+  const tenantDb = await getTenantPrisma();
+  const users = await tenantDb.user.findMany({
+    where: { tenantId, isActive: true },
+    select: { id: true, email: true, firstName: true, lastName: true, role: true },
+    orderBy: { email: 'asc' },
+  });
+
+  return users.map((u) => ({
+    id: u.id,
+    email: u.email,
+    firstName: u.firstName,
+    lastName: u.lastName,
+    role: u.role as string,
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// listActiveTemplatesForTenant
+// ---------------------------------------------------------------------------
+
+export async function listActiveTemplatesForTenant(): Promise<ActiveTemplateForTenant[]> {
+  const { tenantId } = await requireTenantAccess();
+
+  const templates = await prisma.notificationTemplate.findMany({
+    where: { isActive: true },
+    orderBy: [{ category: 'asc' }, { displayName: 'asc' }],
+    select: { triggerKey: true, displayName: true, category: true },
+  });
+
+  const tenantDb = await getTenantPrisma();
+  const tenantSettings = await tenantDb.tenantNotificationSettings.findMany({
+    where: { tenantId, isActive: false },
+    select: { triggerKey: true },
+  });
+
+  const disabledByTenant = new Set(tenantSettings.map((s) => s.triggerKey));
+
+  return templates
+    .filter((t) => !disabledByTenant.has(t.triggerKey))
+    .map((t) => ({
+      triggerKey: t.triggerKey,
+      displayName: t.displayName,
+      category: t.category as string,
+    }));
+}
+
+// ---------------------------------------------------------------------------
+// addSubscriber
+// ---------------------------------------------------------------------------
+
+export async function addSubscriber(
+  triggerKey: string,
+  userId: string,
+): Promise<{ success: true; id: string } | { success: false; error: string }> {
+  const { tenantId } = await requireTenantAccess();
+
+  const schema = z.object({
+    triggerKey: z.string().min(1),
+    userId: z.string().uuid(),
+  });
+
+  const parsed = schema.safeParse({ triggerKey, userId });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? 'Validation error' };
+  }
+
+  try {
+    const tenantDb = await getTenantPrisma();
+    const existing = await tenantDb.notificationSubscription.findUnique({
+      where: { tenantId_triggerKey_userId: { tenantId, triggerKey, userId } },
+    });
+
+    if (existing) {
+      return { success: false, error: 'Already subscribed' };
+    }
+
+    const created = await tenantDb.notificationSubscription.create({
+      data: { tenantId, triggerKey, userId },
+    });
+
+    revalidatePath('/settings/notifications');
+    return { success: true, id: created.id };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// removeSubscriber
+// ---------------------------------------------------------------------------
+
+export async function removeSubscriber(
+  id: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  await requireTenantAccess();
+  z.string().uuid().parse(id);
+
+  try {
+    const tenantDb = await getTenantPrisma();
+    await tenantDb.notificationSubscription.delete({ where: { id } });
+
+    revalidatePath('/settings/notifications');
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// listTenantSendLog
+// ---------------------------------------------------------------------------
+
+export async function listTenantSendLog(params: {
+  page?: number;
+  pageSize?: number;
+  status?: NotificationSendStatus;
+  triggerKey?: string;
+  channel?: NotificationChannel;
+}): Promise<SendLogPaginatedResult> {
+  const { tenantId } = await requireTenantAccess();
+
+  const pageSize = params.pageSize ?? 25;
+  const page = Math.max(1, params.page ?? 1);
+  const skip = (page - 1) * pageSize;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: Record<string, any> = { tenantId };
+  if (params.status) where.status = params.status;
+  if (params.triggerKey?.trim()) {
+    where.triggerKey = { contains: params.triggerKey.trim(), mode: 'insensitive' };
+  }
+  if (params.channel) where.channel = params.channel;
+
+  const [, total, rows] = await prisma.$transaction([
+    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
+    prisma.notificationSendLog.count({ where }),
+    prisma.notificationSendLog.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: pageSize,
+    }),
+  ]) as [unknown, number, SendLogRow[]];
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  return { rows, total, page, pageSize, totalPages };
+}
+
+// ---------------------------------------------------------------------------
+// getTenantSendLogStats
+// ---------------------------------------------------------------------------
+
+export async function getTenantSendLogStats(): Promise<SendLogStats> {
+  const { tenantId } = await requireTenantAccess();
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const where = { tenantId, createdAt: { gte: thirtyDaysAgo } };
+
+  const [, total, sent, failed, pending] = await prisma.$transaction([
+    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
+    prisma.notificationSendLog.count({ where }),
+    prisma.notificationSendLog.count({ where: { ...where, status: 'SENT' } }),
+    prisma.notificationSendLog.count({ where: { ...where, status: 'FAILED' } }),
+    prisma.notificationSendLog.count({ where: { ...where, status: 'PENDING' } }),
+  ]) as [unknown, number, number, number, number];
+
+  const skipped = total - sent - failed - pending;
+
+  return { total, sent, failed, skipped: skipped > 0 ? skipped : 0, pending };
+}
