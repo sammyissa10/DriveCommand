@@ -1,3 +1,10 @@
+/**
+ * WRAPPER (Phase 41 Plan 05): This file intentionally stays on the legacy path.
+ * No `truck.geofence` trigger key exists in the notification system yet.
+ * Dispatcher migration is deferred until that trigger is added in a future phase.
+ * The function signature is unchanged so no call sites need to be updated.
+ */
+
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendEmail } from './gmail-client';
 import { GeofenceArrivalAlert } from '@/emails/geofence-arrival-alert';
@@ -15,6 +22,9 @@ export interface GeofenceAlertData {
 /**
  * Send arrival alert to all OWNER and MANAGER users in the tenant.
  * Throws on failure so caller can catch and log.
+ *
+ * NOTE: No dispatcher migration — stays on legacy path until a `truck.geofence`
+ * trigger key is added to the notification system.
  */
 export async function sendGeofenceAlert(data: GeofenceAlertData): Promise<void> {
   // Find dispatcher email addresses (bypass RLS — called from non-session context)
