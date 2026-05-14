@@ -2759,6 +2759,11 @@ model DriverDeduction {
   @@map("driver_deductions")
 }
 
+/// Note: partial unique index `ds_unique_period_active` on
+/// (driver_id, period_start, period_end) WHERE deleted_at IS NULL AND status <> 'VOIDED'
+/// is defined manually in migration 20260514000001_driver_settlements_partial_unique
+/// because Prisma does not support partial unique indexes natively.
+/// @@unique partial — do NOT add @@unique([driverId, periodStart, periodEnd]) here.
 model DriverSettlement {
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId            String                @map("tenant_id") @db.Uuid
@@ -2787,7 +2792,6 @@ model DriverSettlement {
   assignments LoadDriverAssignment[]
   bonuses     DriverBonus[]
 
-  @@unique([driverId, periodStart, periodEnd])
   @@index([tenantId])
   @@index([driverId])
   @@index([tenantId, driverId])
