@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-14 - Completed quick-309: Close Residual Reporting Predicate Gaps in computeDriverDetail and computeDeductionBreakdown
+Last activity: 2026-05-14 - Completed quick-310: Driver Pay Phase 11 — Payroll Export (Generic CSV, QuickBooks, ADP, Gusto) with W-2 vs 1099 split
 Last session: 2026-05-14T00:16:26Z
 Stopped at: Completed quick-305: partial unique index (VOIDED/deleted excluded), void cascade transaction (MANAGER allowed, assignments reset to APPROVED, bonuses detached, amount_collected decremented from snapshot), unified Deductions section in settlement detail UI (Per-Load + Recurring badges, Load Breakdown filters DEDUCTION components)
 
@@ -21572,6 +21572,7 @@ None blocking immediate progress.
 | 307 | Driver Pay Phase 10 — Read-only reporting dashboard: aggregation library (11 fns, decimal.js), 4 GET API routes (overview/settlements/drivers/[id]/operational-metrics), carrier dashboard + per-driver detail pages, recharts line+donut charts, KPI strip with trends, 21 Vitest tests | 2026-05-14 | 34c9e63 | [307-driver-pay-phase-10-read-only-reporting-](./quick/307-driver-pay-phase-10-read-only-reporting-/) |
 | 308 | Standardize Driver Pay Reports Filter Semantics — canonical countedSettlementsWhere predicate, overlap semantics, PAID-only payroll_out scope, settlementId-joined bonus aggregation, 18 new regression tests (39 total passing) | 2026-05-14 | 399ee18 | [308-standardize-driver-pay-reports-filter-se](./quick/308-standardize-driver-pay-reports-filter-se/) |
 | 309 | Close Residual Reporting Predicate Gaps — harden computeDriverDetail ytdBonuses comment + cascade-revert invariant, refactor computeDeductionBreakdown to settled-money aggregation (drop updatedAt), 4 regression tests (43 total passing) | 2026-05-14 | 248033e | [309-close-residual-reporting-predicate-gaps-](./quick/309-close-residual-reporting-predicate-gaps-/) |
+| 310 | Driver Pay Phase 11 — Payroll Export (Generic CSV, QuickBooks, ADP, Gusto) with W-2 vs 1099 split: employmentTypeSnapshot field + migration + backfill, 4 streaming exporters (decimal.js), POST /api/reports/payroll-export (ADMIN-only, archiver zip for BOTH), Export Payroll modal (Pattern E + Pattern B blocker), 33 golden assertions + 6 RBAC + 5 audit log tests | 2026-05-14 | d37bc6d | [310-driver-pay-phase-11-payroll-export-gener](./quick/310-driver-pay-phase-11-payroll-export-gener/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
