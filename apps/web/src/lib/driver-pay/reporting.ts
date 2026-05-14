@@ -405,50 +405,88 @@ export async function computeDeductionBreakdown(
   range: PeriodRange,
   filters: ReportFilters,
 ): Promise<DeductionBreakdownItem[]> {
-  // Get the counted settlement set first.
-  // If empty, return early — no deductions to show.
+  // Get counted settlements (payroll_out scope, period overlap, PAID only)
   const countedWhere = countedSettlementsWhere(tenantId, range, filters, 'payroll_out');
   const countedSettlements = await prisma.driverSettlement.findMany({
     where: countedWhere,
-    select: { driverId: true },
+    select: { driverId: true, totalDeductions: true },
   });
 
   if (countedSettlements.length === 0) return [];
 
-  // Build driver id set from counted settlements
-  const countedDriverIds = [...new Set(countedSettlements.map((s) => s.driverId))];
+  // Aggregate the total deduction $ per driver from counted settlements.
+  // This is the source of truth for "deduction money actually paid out".
+  const totalsByDriver = new Map<string, Decimal>();
+  for (const s of countedSettlements) {
+    const prev = totalsByDriver.get(s.driverId) ?? new Decimal(0);
+    totalsByDriver.set(s.driverId, prev.plus(new Decimal(s.totalDeductions.toString())));
+  }
 
-  // TODO(phase-11): Replace with SettlementDeduction join when available.
-  // DriverDeduction has no settlementId FK, so we cannot directly join to counted
-  // settlements. Until Phase 11 adds a SettlementDeduction join table (or adds
-  // settlementId to DriverDeduction), we approximate by filtering on:
-  //   driverId IN (counted settlement driverIds) AND updatedAt overlaps the window
-  // This is semantically imperfect (updatedAt reflects master record activity, not
-  // settlement period), but it is gated on the counted driver set and is better
-  // than the prior approach (which was entirely disconnected from settlement counting).
-  const where: Prisma.DriverDeductionWhereInput = {
-    tenantId,
-    driverId: { in: countedDriverIds },
-    updatedAt: { gte: range.start, lte: range.end },
-    deletedAt: null,
-  };
+  const countedDriverIds = [...totalsByDriver.keys()];
 
-  const deductions = await prisma.driverDeduction.findMany({
-    where,
-    select: { deductionType: true, amountCollected: true },
+  // Look up which deduction TYPES each counted driver has (for breakdown labelling).
+  // No date filter here — we only use this for type attribution, not period gating.
+  // The MONEY comes from DriverSettlement.totalDeductions above; the TYPES come from here.
+  //
+  // TODO(phase-11): Add a SettlementDeduction join table (or settlementId FK on
+  //   DriverDeduction) so each deduction line item can be tied to its settlement.
+  //   Until then we attribute a driver's full counted-settlement totalDeductions
+  //   to the deduction types active for that driver. If a driver has multiple
+  //   active deduction types, we apportion their settlement totalDeductions
+  //   proportionally to each type's amountCollected weighting.
+  const driverDeductions = await prisma.driverDeduction.findMany({
+    where: {
+      tenantId,
+      driverId: { in: countedDriverIds },
+      deletedAt: null,
+    },
+    select: { driverId: true, deductionType: true, amountCollected: true },
   });
 
+  // Group deduction rows by driver
+  const deductionsByDriver = new Map<string, Array<{ deductionType: string; amountCollected: Decimal }>>();
+  for (const d of driverDeductions) {
+    const list = deductionsByDriver.get(d.driverId) ?? [];
+    list.push({
+      deductionType: d.deductionType,
+      amountCollected: new Decimal(d.amountCollected.toString()),
+    });
+    deductionsByDriver.set(d.driverId, list);
+  }
+
+  // Apportion each driver's counted totalDeductions across their deduction types,
+  // weighted by amountCollected. Drivers with no DriverDeduction rows are skipped
+  // (no type → can't attribute → omitted from the breakdown).
   const buckets = new Map<string, Decimal>();
-  for (const d of deductions) {
-    const prev = buckets.get(d.deductionType) ?? new Decimal(0);
-    buckets.set(d.deductionType, prev.plus(new Decimal(d.amountCollected.toString())));
+  for (const [driverId, settlementTotal] of totalsByDriver.entries()) {
+    const driverRows = deductionsByDriver.get(driverId);
+    if (!driverRows || driverRows.length === 0) continue;
+    if (settlementTotal.isZero()) continue;
+
+    const weightSum = driverRows.reduce(
+      (acc, r) => acc.plus(r.amountCollected),
+      new Decimal(0),
+    );
+
+    if (weightSum.isZero()) {
+      // No weights — split evenly across types
+      const evenShare = settlementTotal.div(new Decimal(driverRows.length));
+      for (const r of driverRows) {
+        const prev = buckets.get(r.deductionType) ?? new Decimal(0);
+        buckets.set(r.deductionType, prev.plus(evenShare));
+      }
+    } else {
+      for (const r of driverRows) {
+        const share = settlementTotal.mul(r.amountCollected).div(weightSum);
+        const prev = buckets.get(r.deductionType) ?? new Decimal(0);
+        buckets.set(r.deductionType, prev.plus(share));
+      }
+    }
   }
 
   return Array.from(buckets.entries())
     .map(([deductionType, total]) => ({ deductionType, total: total.toFixed(2) }))
-    .sort((a, b) =>
-      new Decimal(b.total).minus(new Decimal(a.total)).toNumber(),
-    );
+    .sort((a, b) => new Decimal(b.total).minus(new Decimal(a.total)).toNumber());
 }
 
 // ---------------------------------------------------------------------------
@@ -623,8 +661,13 @@ export async function computeDriverDetail(
     orderBy: { periodEnd: 'desc' },
   });
 
-  // YTD bonus aggregation: gate via settlementId IN (YTD approved settlements).
-  // Do NOT use triggerDate window — that counts unsettled master installments.
+  // YTD bonus aggregation — gated ENTIRELY on settlementId IN (counted YTD settlement ids).
+  // Why: DriverBonus master rows include unsettled installments (settlementId = null).
+  //   Querying by triggerDate would over-count those master rows (production bug — SAMMY
+  //   showed $1,500 of master rows when only $333.33 was actually paid out).
+  // Cascade revert: if the PAID settlement is voided, it leaves the 'approved' scope,
+  //   ytdSettlementIds becomes empty, and the bonus query is skipped → ytd.bonuses = $0.
+  // DO NOT add a triggerDate fallback. DO NOT widen this to all DriverBonus rows for the driver.
   const ytdSettlementIds = settlements.map((s) => s.id);
 
   const [bonuses, deductionBalances] = await Promise.all([
