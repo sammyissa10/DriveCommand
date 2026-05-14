@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MapPin, ClipboardList, MessageSquare, LayoutGrid } from 'lucide-react';
+import { Home, MapPin, ClipboardList, MessageSquare, LayoutGrid, DollarSign } from 'lucide-react';
 
 const navItems = [
   { href: '/home', label: 'Dashboard', icon: Home, exact: true },
   { href: '/my-route', label: 'Route', icon: MapPin, exact: false },
-  { href: '/tasks', label: 'Tasks', icon: ClipboardList, exact: false },
+  { href: '/pay', label: 'Pay', icon: DollarSign, exact: false },
   { href: '/messages', label: 'Messages', icon: MessageSquare, exact: false },
   { href: '/more', label: 'More', icon: LayoutGrid, exact: false },
 ];
