@@ -4,10 +4,12 @@
  * ExportPayrollButton — Opens the Export Payroll modal.
  *
  * Props:
- *   settlementIds: string[] — all currently-shown settlement IDs
+ *   eligibleSettlementIds: string[] — server-computed eligible IDs
+ *                                     (FINALIZED|PAID, deletedAt null, snapshot present)
+ *   eligibleTotal: string           — pre-computed decimal total (e.g. "641.13")
  *
- * For v1, exports all shown settlements (no per-row checkbox UI required).
- * Mount in the settlements page header alongside "Generate Settlements".
+ * VOIDED, DRAFT, soft-deleted, and snapshot-null settlements are excluded by the
+ * server-side eligibility query in settlements/page.tsx before being passed here.
  */
 
 import React, { useState } from 'react';
@@ -16,10 +18,11 @@ import { Download } from 'lucide-react';
 import { ExportPayrollModal } from './ExportPayrollModal';
 
 interface ExportPayrollButtonProps {
-  settlementIds: string[];
+  eligibleSettlementIds: string[];
+  eligibleTotal: string;
 }
 
-export function ExportPayrollButton({ settlementIds }: ExportPayrollButtonProps) {
+export function ExportPayrollButton({ eligibleSettlementIds, eligibleTotal }: ExportPayrollButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -28,7 +31,7 @@ export function ExportPayrollButton({ settlementIds }: ExportPayrollButtonProps)
         variant="outline"
         className="gap-1"
         onClick={() => setOpen(true)}
-        disabled={settlementIds.length === 0}
+        disabled={eligibleSettlementIds.length === 0}
       >
         <Download className="h-4 w-4" />
         Export Payroll
@@ -37,7 +40,8 @@ export function ExportPayrollButton({ settlementIds }: ExportPayrollButtonProps)
       <ExportPayrollModal
         open={open}
         onOpenChange={setOpen}
-        settlementIds={settlementIds}
+        eligibleSettlementIds={eligibleSettlementIds}
+        eligibleTotal={eligibleTotal}
       />
     </>
   );

@@ -6,7 +6,8 @@
  * Props:
  *   open: boolean — controls modal visibility
  *   onOpenChange: (open: boolean) => void
- *   settlementIds: string[] — list of settlement IDs to export
+ *   eligibleSettlementIds: string[] — server-computed eligible IDs (FINALIZED|PAID, snapshot present)
+ *   eligibleTotal: string           — decimal string like "641.13" (computed via decimal.js server-side)
  */
 
 import React, { useState } from 'react';
@@ -21,7 +22,8 @@ type EmploymentType = 'W2_EMPLOYEE' | 'OWNER_OPERATOR_1099' | 'BOTH';
 interface ExportPayrollModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  settlementIds: string[];
+  eligibleSettlementIds: string[];
+  eligibleTotal: string;
 }
 
 const FORMAT_LABELS: Record<ExportFormat, string> = {
@@ -37,14 +39,21 @@ const EMP_TYPE_LABELS: Record<EmploymentType, string> = {
   BOTH: 'Both (W-2 + 1099)',
 };
 
-export function ExportPayrollModal({ open, onOpenChange, settlementIds }: ExportPayrollModalProps) {
+export function buildConfirmText(count: number, total: string, formatLabel: string): string {
+  const noun = count === 1 ? 'settlement' : 'settlements';
+  return `Export ${count} ${noun} totaling $${total} in ${formatLabel}?`;
+}
+
+export function ExportPayrollModal({ open, onOpenChange, eligibleSettlementIds, eligibleTotal }: ExportPayrollModalProps) {
   const [format, setFormat] = useState<ExportFormat>('generic_csv');
   const [employmentType, setEmploymentType] = useState<EmploymentType>('W2_EMPLOYEE');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draftIds, setDraftIds] = useState<string[]>([]);
 
-  const confirmText = `Export ${settlementIds.length} settlement${settlementIds.length === 1 ? '' : 's'} in ${FORMAT_LABELS[format]}?`;
+  const count = eligibleSettlementIds.length;
+  const noun = count === 1 ? 'settlement' : 'settlements';
+  const confirmText = buildConfirmText(count, eligibleTotal, FORMAT_LABELS[format]);
 
   async function handleDownload() {
     setIsLoading(true);
@@ -55,7 +64,7 @@ export function ExportPayrollModal({ open, onOpenChange, settlementIds }: Export
       const res = await fetch('/api/reports/payroll-export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ format, employmentType, settlementIds }),
+        body: JSON.stringify({ format, employmentType, settlementIds: eligibleSettlementIds }),
       });
 
       if (!res.ok) {
@@ -147,9 +156,9 @@ export function ExportPayrollModal({ open, onOpenChange, settlementIds }: Export
             </Select>
           </div>
 
-          {/* Read-only count */}
+          {/* Read-only summary */}
           <p className="text-sm text-muted-foreground">
-            Exporting {settlementIds.length} settlement{settlementIds.length === 1 ? '' : 's'}
+            Exporting {count} {noun} totaling ${eligibleTotal}
           </p>
 
           {/* Error display */}
@@ -176,7 +185,7 @@ export function ExportPayrollModal({ open, onOpenChange, settlementIds }: Export
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
             Cancel
           </Button>
-          <Button onClick={handleDownload} disabled={isLoading || settlementIds.length === 0}>
+          <Button onClick={handleDownload} disabled={isLoading || count === 0}>
             {isLoading ? 'Building export...' : 'Download'}
           </Button>
         </DialogFooter>

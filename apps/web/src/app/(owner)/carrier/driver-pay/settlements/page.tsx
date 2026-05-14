@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { SettlementListTable } from './_components/SettlementListTable';
 import type { SettlementRow } from './_components/SettlementListTable';
 import { ExportPayrollButton } from './_components/ExportPayrollButton';
+import { computeExportEligibility } from './_lib/export-eligibility';
 import { Plus } from 'lucide-react';
 import { Prisma } from '@/generated/prisma';
 
@@ -72,6 +73,19 @@ export default async function SettlementsPage({
     prisma.driverSettlement.count({ where }),
   ]);
 
+  // Server-side eligibility for export: FINALIZED|PAID, not soft-deleted, snapshot present.
+  // Spans the full filtered set (no pagination) — the API will also enforce these criteria.
+  const eligibleRows = await prisma.driverSettlement.findMany({
+    where: {
+      ...where,
+      status: { in: ['FINALIZED', 'PAID'] },
+      deletedAt: null,
+      employmentTypeSnapshot: { not: null },
+    },
+    select: { id: true, netPay: true },
+  });
+  const { ids: eligibleSettlementIds, total: eligibleTotal } = computeExportEligibility(eligibleRows);
+
   const settlements: SettlementRow[] = rows.map((s) => ({
     id: s.id,
     settlementReference: s.settlementReference,
@@ -96,7 +110,10 @@ export default async function SettlementsPage({
         </div>
         <div className="flex items-center gap-2">
           {(role === UserRole.OWNER || role === UserRole.SYSTEM_ADMIN) && (
-            <ExportPayrollButton settlementIds={settlements.map((s) => s.id)} />
+            <ExportPayrollButton
+              eligibleSettlementIds={eligibleSettlementIds}
+              eligibleTotal={eligibleTotal}
+            />
           )}
           <Link href="/carrier/driver-pay/settlements/generate">
             <Button className="gap-1">
