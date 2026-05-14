@@ -314,11 +314,7 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
       }
 
       toast.success(isEdit ? 'Template updated' : 'Template created');
-      if (!isEdit && result.templateId) {
-        router.push(`/carrier/templates/${result.templateId}`);
-      } else {
-        router.refresh();
-      }
+      router.push('/carrier/templates');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
