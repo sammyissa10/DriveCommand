@@ -143,6 +143,7 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
     let emailSent = false;
     try {
       await sendDriverInvitation(email, {
+        tenantId,
         firstName,
         lastName,
         organizationName,

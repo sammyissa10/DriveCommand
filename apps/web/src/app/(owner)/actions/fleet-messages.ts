@@ -206,6 +206,7 @@ export async function sendOwnerReply(prevState: ActionState | null, formData: Fo
 
     try {
       await sendOwnerReplyNotification({
+        tenantId: user.tenantId,
         ownerName: senderName,
         messageBody: message.trim(),
         driverId: route.driverId,

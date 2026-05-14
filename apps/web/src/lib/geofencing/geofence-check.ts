@@ -263,6 +263,7 @@ async function notifyCustomer(load: any, newStatus: string): Promise<void> {
     : 'TBD';
 
   await sendLoadStatusEmail(load.customer.email, {
+    tenantId: load.tenantId,
     customerName: load.customer.contactName || load.customer.companyName,
     loadNumber: load.loadNumber,
     status: newStatus,

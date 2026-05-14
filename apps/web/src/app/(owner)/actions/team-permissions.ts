@@ -176,6 +176,7 @@ export async function inviteTeamMember(data: {
 
   try {
     await sendDriverInvitation(email, {
+      tenantId,
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
       organizationName,

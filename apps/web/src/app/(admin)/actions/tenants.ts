@@ -140,6 +140,7 @@ export async function createTenant(formData: FormData) {
 
     try {
       await sendOwnerInvitation(validation.data.ownerEmail, {
+        tenantId: tenant.id,
         firstName: validation.data.ownerFirstName,
         lastName: validation.data.ownerLastName,
         organizationName: validation.data.name,
@@ -372,6 +373,7 @@ export async function resendOwnerInvitation(tenantId: string) {
 
     try {
       await sendOwnerInvitation(invitation.email, {
+        tenantId,
         firstName: invitation.firstName,
         lastName: invitation.lastName,
         organizationName: tenant.name,

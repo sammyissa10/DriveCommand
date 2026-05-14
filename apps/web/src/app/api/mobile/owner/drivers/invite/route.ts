@@ -119,6 +119,7 @@ export async function POST(req: NextRequest) {
     let emailSent = false;
     try {
       await sendDriverInvitation(normalizedEmail, {
+        tenantId,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         organizationName,

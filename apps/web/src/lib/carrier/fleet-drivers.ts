@@ -212,6 +212,8 @@ export async function createCarrierDriver(
 
       try {
         await sendDriverInvitation(data.email, {
+          // NOTE: orgId and tenantId are the same value in this codebase (carrier scope === tenant scope).
+          tenantId: orgId,
           firstName: data.firstName,
           lastName: data.lastName,
           organizationName,
@@ -370,6 +372,8 @@ export async function resendCarrierDriverInvitation(
 
   try {
     await sendDriverInvitation(driver.email, {
+      // NOTE: orgId and tenantId are the same value in this codebase (carrier scope === tenant scope).
+      tenantId: orgId,
       firstName: driver.firstName,
       lastName: driver.lastName,
       organizationName,
