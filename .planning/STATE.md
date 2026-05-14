@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-13 - Completed quick-304: Driver Pay Phase 8 — settlement generator (Serializable tx, decimal.js, garnishment cap), 7 REST API routes, owner UI pages, 52 Vitest tests
-Last session: 2026-05-13T21:30:00Z
-Stopped at: Completed quick-304: Driver Pay Phase 8 — settlement generation service, PDF renderer, anomaly detection, 7 API routes, 3 UI pages + 3 components, 8 test files (52 tests pass)
+Last activity: 2026-05-14 - Completed quick-305: Phase 8 cleanup — partial unique index on driver_settlements, void cascade (MANAGER RBAC + payStatus reset), amount_collected rollback, unified deductions UI
+Last session: 2026-05-14T00:16:26Z
+Stopped at: Completed quick-305: partial unique index (VOIDED/deleted excluded), void cascade transaction (MANAGER allowed, assignments reset to APPROVED, bonuses detached, amount_collected decremented from snapshot), unified Deductions section in settlement detail UI (Per-Load + Recurring badges, Load Breakdown filters DEDUCTION components)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -9257,6 +9257,7 @@ None blocking immediate progress.
 | 302 | Driver Pay Phase 6 gap fix — wire ensureBasePayComponent into submit transition (CPM/HOURLY guard), add actualMiles + mileageSource end-to-end (validation schema + server action + override form UI), 5 new tests, 58 total driver-pay tests passing | 2026-05-13 | 3df7f29 | [302-phase-6-gap-fix-auto-base-pay-wiring-act](./quick/302-phase-6-gap-fix-auto-base-pay-wiring-act/) |
 | 303 | Driver Pay Phase 7 — bonuses/deductions/installment scheduler APIs, UI tabs on driver profile, 16 new tests (6 scheduler unit + 10 API integration) | 2026-05-13 | f0aa7d5 | [303-driver-pay-phase-7-bonuses-deductions](./quick/303-driver-pay-phase-7-bonuses-deductions/) |
 | 304 | Driver Pay Phase 8 — settlement generator (Serializable tx, decimal.js, garnishment cap), PDF renderer, anomaly detection, 7 REST API routes, 3 owner UI pages + 3 components, 8 test files (52 tests pass) | 2026-05-13 | 7084097 | [304-driver-pay-phase-8-settlement-generation](./quick/304-driver-pay-phase-8-settlement-generation/) |
+| 305 | Phase 8 cleanup — partial unique index on driver_settlements (VOIDED/deleted excluded), void cascade (MANAGER RBAC, payStatus reset, amount_collected rollback), unified Deductions UI (Per-Load + Recurring badges) | 2026-05-14 | 69fe832 | [305-close-four-phase-8-cleanup-gaps-partial-](./quick/305-close-four-phase-8-cleanup-gaps-partial-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
