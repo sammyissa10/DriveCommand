@@ -19,12 +19,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { Readable, PassThrough } from 'node:stream';
-import { createRequire } from 'node:module';
-
-// archiver is a CommonJS module — use createRequire for Turbopack compatibility
-const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const archiverLib = require('archiver') as typeof import('archiver');
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
@@ -272,7 +266,10 @@ export async function POST(req: NextRequest) {
   try {
     if (employmentType === 'BOTH') {
       // Zip two streams together
-      const archive = archiverLib('zip');
+      // archiver is CommonJS — use createRequire for Turbopack + vitest compatibility
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const archiverCreate = (require('archiver') as typeof import('archiver'));
+      const archive = archiverCreate('zip');
       const passThrough = new PassThrough();
       archive.pipe(passThrough);
 

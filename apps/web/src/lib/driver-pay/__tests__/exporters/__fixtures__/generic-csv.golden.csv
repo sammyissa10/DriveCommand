@@ -1,0 +1,3 @@
+settlement_reference,driver_id,driver_first_name,driver_last_name,driver_email,period_start,period_end,employment_type,gross_taxable,gross_non_taxable,total_deductions,net_pay,line_count,bonus_count,deduction_count
+SET-2026-04-W2-001,bbbbbbbb-0000-0000-0000-000000000001,FIRST_W2,LAST_W2,w2.driver+test@example.invalid,2026-04-01,2026-04-07,W2_EMPLOYEE,2500.00,50.00,425.50,2124.50,3,2,2
+SET-2026-04-1099-001,dddddddd-0000-0000-0000-000000000002,FIRST_1099,LAST_1099,c1099.driver+test@example.invalid,2026-04-01,2026-04-07,OWNER_OPERATOR_1099,3800.00,0.00,950.00,2850.00,2,1,1
