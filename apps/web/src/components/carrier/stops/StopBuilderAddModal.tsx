@@ -147,6 +147,7 @@ export function StopBuilderAddModal({
                   setShowFacilitySheet(false);
                   handleFacilitySelect(created);
                 }}
+                onCancel={() => setShowFacilitySheet(false)}
               />
             </div>
           </SheetContent>

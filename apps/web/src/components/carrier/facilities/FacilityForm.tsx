@@ -81,6 +81,8 @@ interface FacilityFormProps {
   initialData?: FacilityData;
   /** Called after a successful save instead of navigating to /carrier/facilities */
   onSuccess?: (created: { id: string; name: string; city: string | null; state: string | null; facilityType: string | null }) => void;
+  /** Called when Cancel is clicked instead of navigating to /carrier/facilities */
+  onCancel?: () => void;
 }
 
 const FACILITY_TYPES = [
@@ -128,7 +130,7 @@ function normalizeContacts(raw: unknown): FacilityContact[] {
   });
 }
 
-export function FacilityForm({ initialData, onSuccess }: FacilityFormProps) {
+export function FacilityForm({ initialData, onSuccess, onCancel }: FacilityFormProps) {
   const router = useRouter();
   const isEdit = Boolean(initialData?.id);
 
@@ -547,7 +549,7 @@ export function FacilityForm({ initialData, onSuccess }: FacilityFormProps) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push('/carrier/facilities')}
+          onClick={() => onCancel ? onCancel() : router.push('/carrier/facilities')}
           disabled={isSubmitting}
         >
           Cancel
