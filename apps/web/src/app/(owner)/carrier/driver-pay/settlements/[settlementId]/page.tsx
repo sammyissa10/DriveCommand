@@ -81,6 +81,40 @@ export default async function SettlementDetailPage({
     }
   }
 
+  // Build unified deductions view (per-load DEDUCTION pay components + recurring)
+  type UnifiedDeduction = {
+    key: string;
+    source: 'per-load' | 'recurring';
+    label: string;
+    subLabel: string | null;
+    amount: string; // positive string e.g. "150.00"
+  };
+
+  const perLoadDeductions: UnifiedDeduction[] = settlement.assignments.flatMap((a) =>
+    a.payComponents
+      .filter((c) => c.deletedAt === null && c.category === 'DEDUCTION')
+      .map((c) => ({
+        key: `pc-${c.id}`,
+        source: 'per-load' as const,
+        label: c.description,
+        subLabel: `Load #${a.load?.referenceNumber ?? a.loadId.slice(0, 8)}`,
+        amount: new Decimal(c.grossAmount.toString()).abs().toFixed(2),
+      })),
+  );
+
+  const recurringDeductions: UnifiedDeduction[] = deductionsApplied.map((d) => {
+    const ded = d.deduction as { id: string; deductionType: string; schedule: string };
+    return {
+      key: `dd-${ded.id}`,
+      source: 'recurring' as const,
+      label: ded.deductionType,
+      subLabel: ded.schedule,
+      amount: new Decimal(d.appliedAmount).abs().toFixed(2),
+    };
+  });
+
+  const deductionsView: UnifiedDeduction[] = [...perLoadDeductions, ...recurringDeductions];
+
   // Anomaly detection
   const currentNet = new Decimal(settlement.netPay.toString());
   const fourWeekAverage = await computeFourWeekAverage(
@@ -164,7 +198,7 @@ export default async function SettlementDetailPage({
         driver={driverData}
         assignments={assignmentsData}
         bonuses={bonusesData}
-        deductionsApplied={deductionsApplied as Parameters<typeof SettlementDetailView>[0]['deductionsApplied']}
+        deductions={deductionsView}
         anomaly={anomalyData}
       />
     </div>

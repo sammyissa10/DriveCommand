@@ -69,13 +69,12 @@ interface Bonus {
   scheduledPayDate: string | null;
 }
 
-interface DeductionApplied {
-  deduction: {
-    id: string;
-    deductionType: string;
-    schedule: string;
-  };
-  appliedAmount: string;
+interface UnifiedDeduction {
+  key: string;
+  source: 'per-load' | 'recurring';
+  label: string;
+  subLabel: string | null;
+  amount: string;
 }
 
 interface AnomalyResult {
@@ -114,7 +113,7 @@ interface Props {
   driver: Driver | null;
   assignments: Assignment[];
   bonuses: Bonus[];
-  deductionsApplied: DeductionApplied[];
+  deductions: UnifiedDeduction[];
   anomaly: AnomalyResult;
 }
 
@@ -176,7 +175,7 @@ export function SettlementDetailView({
   driver,
   assignments,
   bonuses,
-  deductionsApplied,
+  deductions,
   anomaly,
 }: Props) {
   const router = useRouter();
@@ -494,30 +493,23 @@ export function SettlementDetailView({
                   </CollapsibleTrigger>
                   <CollapsibleContent className="px-4 pb-3">
                     <div className="space-y-1">
-                      {a.payComponents.map((c) => (
-                        <div key={c.id} className="flex justify-between items-start text-sm">
-                          <div>
-                            <span>{c.description}</span>
-                            <Badge
-                              variant="outline"
-                              className="ml-2 text-xs py-0"
-                            >
-                              {c.category}
-                            </Badge>
+                      {a.payComponents
+                        .filter((c) => c.category !== 'DEDUCTION')
+                        .map((c) => (
+                          <div key={c.id} className="flex justify-between items-start text-sm">
+                            <div>
+                              <span>{c.description}</span>
+                              <Badge
+                                variant="outline"
+                                className="ml-2 text-xs py-0"
+                              >
+                                {c.category}
+                              </Badge>
+                            </div>
+                            <span>{formatMoney(c.grossAmount)}</span>
                           </div>
-                          <span
-                            className={
-                              c.category === 'DEDUCTION'
-                                ? 'text-red-600 dark:text-red-400'
-                                : ''
-                            }
-                          >
-                            {c.category === 'DEDUCTION' ? '-' : ''}
-                            {formatMoney(c.grossAmount)}
-                          </span>
-                        </div>
-                      ))}
-                      {a.payComponents.length === 0 && (
+                        ))}
+                      {a.payComponents.filter((c) => c.category !== 'DEDUCTION').length === 0 && (
                         <p className="text-sm text-muted-foreground">No pay components.</p>
                       )}
                     </div>
@@ -554,24 +546,27 @@ export function SettlementDetailView({
         </Card>
       )}
 
-      {/* Deductions */}
-      {deductionsApplied.length > 0 && (
+      {/* Deductions — unified per-load + recurring */}
+      {deductions.length > 0 && (
         <Card>
           <CardContent className="pt-6">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Deductions
             </h2>
             <div className="space-y-2">
-              {deductionsApplied.map((d) => (
-                <div key={d.deduction.id} className="flex justify-between items-center text-sm">
-                  <div>
-                    <span>{d.deduction.deductionType}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      ({d.deduction.schedule})
-                    </span>
+              {deductions.map((d) => (
+                <div key={d.key} className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs py-0">
+                      {d.source === 'per-load' ? 'Per-Load' : 'Recurring'}
+                    </Badge>
+                    <span>{d.label}</span>
+                    {d.subLabel && (
+                      <span className="text-xs text-muted-foreground">({d.subLabel})</span>
+                    )}
                   </div>
                   <span className="font-medium text-red-600 dark:text-red-400">
-                    -{formatMoney(d.appliedAmount)}
+                    -{formatMoney(d.amount)}
                   </span>
                 </div>
               ))}
