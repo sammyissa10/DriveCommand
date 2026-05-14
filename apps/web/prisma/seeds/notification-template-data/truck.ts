@@ -1,4 +1,4 @@
-import { NotificationCategory } from '@prisma/client';
+import { NotificationCategory } from '../../../src/generated/prisma';
 import { buildDefaultTemplate } from '../../../src/lib/notifications/build-template';
 import type { NotificationTemplateSeed } from '../../../src/lib/notifications/types';
 
