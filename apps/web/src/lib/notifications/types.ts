@@ -1,6 +1,6 @@
 import type { NotificationCategory } from '@/generated/prisma';
 
-// Union of all 35 trigger keys (must match exactly the seed data)
+// Union of all 36 trigger keys (must match exactly the seed data)
 export type TriggerKey =
   // User (4)
   | 'user.welcome'
@@ -35,10 +35,11 @@ export type TriggerKey =
   | 'invoice.paid'
   | 'invoice.overdue'
   | 'payroll.processed'
-  // Route (3)
+  // Route (4)
   | 'route.assigned'
   | 'route.completed'
   | 'route.delayed'
+  | 'geofence.alert'
   // Customer (2)
   | 'customer.tracking_link_sent'
   | 'customer.delivered_notification'
@@ -86,6 +87,14 @@ export type NotificationPayload = {
   'route.assigned': { routeId: string; routeName: string; driverName: string; stopCount: string };
   'route.completed': { routeId: string; routeName: string; driverName: string; completedAt: string };
   'route.delayed': { routeId: string; routeName: string; driverName: string; reason: string };
+  'geofence.alert': {
+    loadId: string;
+    loadNumber: string;
+    stopType: string;
+    stopAddress: string;
+    driverName: string;
+    licensePlate: string;
+  };
 
   'customer.tracking_link_sent': { customerEmail: string; customerName: string; loadNumber: string; trackingUrl: string };
   'customer.delivered_notification': { customerEmail: string; customerName: string; loadNumber: string; deliveredAt: string };

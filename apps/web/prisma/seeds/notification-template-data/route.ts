@@ -72,4 +72,35 @@ export const routeTemplates: NotificationTemplateSeed[] = [
     isActive: true,
     inAppEnabled: true,
   },
+  {
+    triggerKey: 'geofence.alert',
+    category: NotificationCategory.ROUTE,
+    displayName: 'Geofence Alert',
+    description: 'Sent to dispatchers (owners + managers) when a truck enters the geofence radius of a load pickup or delivery address.',
+    defaultSubject: 'Truck arrived at {{stopType}} — Load {{loadNumber}}',
+    defaultBlockJson: buildDefaultTemplate({
+      headerText: 'Truck arrived at {{stopType}}',
+      paragraphTextWithVars:
+        '{{driverName}} (truck {{licensePlate}}) arrived at the {{stopType}} location for load {{loadNumber}}. Address: {{stopAddress}}.',
+      ctaLabel: 'View Load',
+      ctaUrl: 'https://app.drivecommand.com/loads/{{loadId}}',
+    }),
+    availableVariables: [
+      { name: 'loadId', description: 'Internal load ID', sampleValue: 'load_abc123' },
+      { name: 'loadNumber', description: 'Load number shown to users', sampleValue: 'L-1042' },
+      { name: 'stopType', description: 'Either "pickup" or "delivery"', sampleValue: 'pickup' },
+      { name: 'stopAddress', description: 'Full address of the geofenced stop', sampleValue: '123 Warehouse Rd, Phoenix, AZ' },
+      { name: 'driverName', description: 'Driver full name', sampleValue: 'Maria Garcia' },
+      { name: 'licensePlate', description: 'Truck license plate', sampleValue: 'AZ-72918' },
+    ],
+    // Recipients: dispatchers = OWNER + MANAGER (matches legacy sendGeofenceAlert behavior).
+    // Use TWO `role` rules — one for OWNER, one for MANAGER — because DefaultRecipientRule.role is a single literal.
+    // Both are User rows in the tenant, so `role` (not external_email) is correct.
+    defaultRecipients: [
+      { type: 'role', role: 'OWNER' },
+      { type: 'role', role: 'MANAGER' },
+    ],
+    isActive: true,
+    inAppEnabled: true,
+  },
 ];
