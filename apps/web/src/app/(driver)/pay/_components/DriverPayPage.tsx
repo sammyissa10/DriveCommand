@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Decimal from 'decimal.js';
 import { useRouter } from 'next/navigation';
+import { formatPayPeriodDate } from '@/lib/utils/date';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,11 +78,8 @@ interface Props {
 // ---------------------------------------------------------------------------
 
 function formatPeriod(start: string, end: string): string {
-  const s = new Date(start);
-  const e = new Date(end);
-  const fmt = (d: Date) =>
-    d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  return `${fmt(s)} – ${fmt(e)}`;
+  const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+  return `${formatPayPeriodDate(start, opts)} – ${formatPayPeriodDate(end, opts)}`;
 }
 
 function formatMoney(val: string): string {
