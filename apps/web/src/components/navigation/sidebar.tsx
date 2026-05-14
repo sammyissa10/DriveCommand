@@ -23,6 +23,7 @@ import {
   MessageSquare,
   ListChecks,
   HelpCircle,
+  Bell,
 } from "lucide-react"
 import {
   Sidebar,
@@ -490,6 +491,19 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
+                {/* Notifications — always accessible to OWNER/MANAGER */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings/notifications')}
+                    tooltip="Notifications"
+                  >
+                    <Link href="/settings/notifications" onClick={handleNavClick}>
+                      <Bell />
+                      <span>Notifications</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 {/* Expense Categories — always accessible to OWNER/MANAGER */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
@@ -526,6 +540,30 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     <Link href="/settings/integrations" onClick={handleNavClick}>
                       <Settings />
                       <span>Integrations</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+        {/* Account — all owner/manager roles (My Notifications accessible to all roles via shared layout) */}
+        {isOwnerOrManager && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Account
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings/my-notifications')}
+                    tooltip="My Notifications"
+                  >
+                    <Link href="/settings/my-notifications" onClick={handleNavClick}>
+                      <Bell />
+                      <span>My Notifications</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

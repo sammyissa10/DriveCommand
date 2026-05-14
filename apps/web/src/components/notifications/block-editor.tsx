@@ -8,7 +8,7 @@
  * is intentionally compatible with both approaches.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Mention from '@tiptap/extension-mention';
@@ -193,6 +193,13 @@ export function BlockEditor({
       }),
     ],
   });
+
+  // Sync readOnly prop changes to the editor — needed when parent switches
+  // between readonly/editing modes without unmounting BlockEditor.
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!readOnly);
+  }, [editor, readOnly]);
 
   const handleInsertVariable = useCallback(
     (name: string) => {
