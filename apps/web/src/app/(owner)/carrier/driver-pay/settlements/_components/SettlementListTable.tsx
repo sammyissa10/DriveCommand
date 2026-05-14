@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { formatPayPeriodDate } from '@/lib/utils/date';
 import {
   Table,
   TableBody,
@@ -155,7 +156,7 @@ export function SettlementListTable({
                   : s.driverId.slice(0, 8)}
               </TableCell>
               <TableCell className="text-sm text-muted-foreground">
-                {formatDate(s.periodStart)} – {formatDate(s.periodEnd)}
+                {formatPayPeriodDate(s.periodStart, { month: 'short', day: 'numeric', year: 'numeric' })} – {formatPayPeriodDate(s.periodEnd, { month: 'short', day: 'numeric', year: 'numeric' })}
               </TableCell>
               <TableCell className="text-right font-semibold">
                 {formatMoney(s.netPay)}

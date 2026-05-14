@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatPayPeriodDate } from '@/lib/utils/date';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -335,7 +336,7 @@ export function SettlementDetailView({
                 {formatMoney(settlement.netPay)}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Period: {formatDate(settlement.periodStart)} – {formatDate(settlement.periodEnd)}{' '}
+                Period: {formatPayPeriodDate(settlement.periodStart, { month: 'short', day: 'numeric', year: 'numeric' })} – {formatPayPeriodDate(settlement.periodEnd, { month: 'short', day: 'numeric', year: 'numeric' })}{' '}
                 · {driverName}
               </p>
             </div>
@@ -617,7 +618,7 @@ export function SettlementDetailView({
             <AlertDialogDescription>
               This cannot be undone. {driverName} will be marked as paid{' '}
               <strong>{formatMoney(settlement.netPay)}</strong> for the period{' '}
-              {formatDate(settlement.periodStart)}–{formatDate(settlement.periodEnd)}.{' '}
+              {formatPayPeriodDate(settlement.periodStart, { month: 'short', day: 'numeric', year: 'numeric' })}–{formatPayPeriodDate(settlement.periodEnd, { month: 'short', day: 'numeric', year: 'numeric' })}.{' '}
               {assignments.length} assignment{assignments.length !== 1 ? 's' : ''} will move to PAID
               status.
             </AlertDialogDescription>
