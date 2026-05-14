@@ -143,6 +143,7 @@ export async function dispatchNotification<K extends TriggerKey>(
             options.relatedEntity,
             r.userId,
             false,
+            r.email,
           );
           const alreadySent = await checkIdempotency(db, idemKey);
 
@@ -150,7 +151,7 @@ export async function dispatchNotification<K extends TriggerKey>(
             audits.push({
               tenantId: options.tenantId,
               triggerKey,
-              recipientUserId: r.userId,
+              recipientUserId: r.userId ?? null,
               recipientEmail: r.email,
               channel: 'EMAIL',
               subject: subjectFinal,
@@ -171,7 +172,7 @@ export async function dispatchNotification<K extends TriggerKey>(
               audits.push({
                 tenantId: options.tenantId,
                 triggerKey,
-                recipientUserId: r.userId,
+                recipientUserId: r.userId ?? null,
                 recipientEmail: r.email,
                 channel: 'EMAIL',
                 subject: subjectFinal,
@@ -185,7 +186,7 @@ export async function dispatchNotification<K extends TriggerKey>(
               audits.push({
                 tenantId: options.tenantId,
                 triggerKey,
-                recipientUserId: r.userId,
+                recipientUserId: r.userId ?? null,
                 recipientEmail: r.email,
                 channel: 'EMAIL',
                 subject: subjectFinal,
@@ -203,12 +204,12 @@ export async function dispatchNotification<K extends TriggerKey>(
           audits.push({
             tenantId: options.tenantId,
             triggerKey,
-            recipientUserId: r.userId,
+            recipientUserId: r.userId ?? null,
             recipientEmail: r.email,
             channel: 'EMAIL',
             subject: subjectFinal,
             status: 'SKIPPED_USER_PREF',
-            idempotencyKey: `pref-off:${triggerKey}:${r.userId}:${Date.now()}`,
+            idempotencyKey: `pref-off:${triggerKey}:${r.userId ?? `email:${r.email}`}:${Date.now()}`,
             relatedEntityType: options.relatedEntity?.type ?? null,
             relatedEntityId: options.relatedEntity?.id ?? null,
           });
@@ -218,7 +219,8 @@ export async function dispatchNotification<K extends TriggerKey>(
         // -------------------------------------------------------------------
         // Step 6b: IN_APP channel (independent of email outcome)
         // -------------------------------------------------------------------
-        if (r.inAppEnabled) {
+        if (r.userId !== null && r.inAppEnabled) {
+          // User-backed recipient with in-app enabled
           const idemKeyApp =
             buildIdempotencyKey(triggerKey, options.relatedEntity, r.userId, false) + ':inapp';
           try {
@@ -257,8 +259,25 @@ export async function dispatchNotification<K extends TriggerKey>(
             });
             failed++;
           }
+        } else if (r.userId === null) {
+          // External email recipient: no User row, no InAppNotification possible.
+          // Record a SKIPPED_DISABLED audit row so the log is complete.
+          audits.push({
+            tenantId: options.tenantId,
+            triggerKey,
+            recipientUserId: null,
+            recipientEmail: r.email,
+            channel: 'IN_APP',
+            subject: subjectFinal,
+            status: 'SKIPPED_DISABLED',
+            idempotencyKey: `no-userid-inapp:${triggerKey}:${r.email}:${Date.now()}`,
+            relatedEntityType: options.relatedEntity?.type ?? null,
+            relatedEntityId: options.relatedEntity?.id ?? null,
+            errorMessage: 'Recipient has no User row; in-app channel not applicable',
+          });
+          skipped++;
         } else {
-          // In-app channel disabled by user preference
+          // userId present but inAppEnabled false — user-pref-off
           audits.push({
             tenantId: options.tenantId,
             triggerKey,
@@ -276,9 +295,10 @@ export async function dispatchNotification<K extends TriggerKey>(
         // Step 8: Catch-all per recipient — one failure never kills the loop
         console.error(
           '[notifications] recipient dispatch failed',
-          r.userId,
+          r.userId ?? r.email,
           perRecipientErr,
         );
+        // TODO(quick-321): consider pushing an audit row here for per-recipient catch failures
         failed++;
       }
     }

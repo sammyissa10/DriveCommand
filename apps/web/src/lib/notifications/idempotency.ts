@@ -15,16 +15,21 @@ import type { PrismaClient } from '@/generated/prisma/client';
  *   Digest scope: `{triggerKey}:{entityType}:{entityId}:{userId}:{YYYY-MM-DD}`
  *
  * Entity parts fall back to the literal string "none" when relatedEntity is omitted.
+ *
+ * When userId is null (external-email recipient), emailFallback is used in its place
+ * formatted as `email:{address}` so the key remains unique per recipient.
  */
 export function buildIdempotencyKey(
   triggerKey: string,
   relatedEntity: { type: string; id: string } | undefined,
-  userId: string,
+  userId: string | null,
   isDigest: boolean,
+  emailFallback?: string,
 ): string {
   const entityType = relatedEntity?.type ?? 'none';
   const entityId = relatedEntity?.id ?? 'none';
-  const prefix = `${triggerKey}:${entityType}:${entityId}:${userId}`;
+  const recipient = userId ?? `email:${emailFallback ?? 'unknown'}`;
+  const prefix = `${triggerKey}:${entityType}:${entityId}:${recipient}`;
 
   if (isDigest) {
     const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)

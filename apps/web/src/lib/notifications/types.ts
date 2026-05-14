@@ -95,11 +95,26 @@ export type NotificationPayload = {
   'digest.compliance_30day': { ownerName: string; expiringDocCount: string; summaryHtml: string };
 };
 
-// Default recipient rules — resolved at dispatch time. Plan 02 implements resolution.
+/**
+ * Default recipient rules — resolved at dispatch time.
+ *
+ * - `role`: Broadcast to all active users with the specified role in the tenant.
+ * - `tenant_owners`: Broadcast to all active OWNER users in the tenant.
+ * - `related`: Look up an active User by userId (UUID). The payload value at
+ *   `payloadKey` must be a valid User.id UUID. Use for triggers where the
+ *   recipient is already a user in the system (e.g. load.assigned, user.welcome).
+ * - `external_email`: Used for triggers where the recipient is identified by a
+ *   raw email in the payload and may not yet have a User row in this tenant
+ *   (e.g. driver.invited, user.invited). The payload value at `payloadKey` MUST
+ *   be a valid email string. If a User row with this email exists in the tenant,
+ *   that user's prefs are loaded; otherwise the recipient is treated as
+ *   email-only (no in-app, defaults of emailEnabled=true).
+ */
 export type DefaultRecipientRule =
   | { type: 'role'; role: 'OWNER' | 'MANAGER' | 'DRIVER' }
   | { type: 'tenant_owners' }
-  | { type: 'related'; payloadKey: string };
+  | { type: 'related'; payloadKey: string }
+  | { type: 'external_email'; payloadKey: string };
 
 export type VariableDef = {
   name: string;         // e.g. "driverName"

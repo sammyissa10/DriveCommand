@@ -2,17 +2,18 @@
  * Recipient resolver for the notification dispatcher.
  *
  * Resolves who should receive a notification for a given tenant + trigger by:
- *   1. Expanding DefaultRecipientRules (role / tenant_owners / related)
+ *   1. Expanding DefaultRecipientRules (role / tenant_owners / related / external_email)
  *   2. Unioning explicit NotificationSubscription rows
- *   3. Deduplicating by userId
+ *   3. Deduplicating by userId (for User-backed recipients) or email (for external-email recipients)
  *   4. Attaching UserNotificationPreference (defaults: email=true, inApp=true)
+ *   5. Appending email-only recipients (userId=null) for external_email rule matches with no User row
  */
 
 import type { PrismaClient } from '@/generated/prisma/client';
 import type { DefaultRecipientRule } from './types';
 
 export type ResolvedRecipient = {
-  userId: string;
+  userId: string | null;
   email: string;
   emailEnabled: boolean;
   inAppEnabled: boolean;
@@ -31,8 +32,12 @@ export async function resolveRecipients(
   defaultRecipients: DefaultRecipientRule[],
   payload: Record<string, string>,
 ): Promise<ResolvedRecipient[]> {
-  // Map of userId -> email for deduplication
+  // Map of userId -> email for deduplication (User-backed recipients)
   const userMap = new Map<string, { email: string }>();
+
+  // Map of lowercased email -> { email } for deduplication (email-only recipients)
+  // Only used when external_email rule finds no matching User row.
+  const emailOnlyMap = new Map<string, { email: string }>();
 
   // -------------------------------------------------------------------------
   // Step 1-2: Expand DefaultRecipientRules
@@ -83,6 +88,25 @@ export async function resolveRecipients(
       if (user?.email) {
         userMap.set(user.id, { email: user.email });
       }
+    } else if (rule.type === 'external_email') {
+      const rawEmail = payload[rule.payloadKey];
+      if (!rawEmail || typeof rawEmail !== 'string') continue;
+      const email = rawEmail.trim().toLowerCase();
+
+      // Basic shape check — skip values that look like UUIDs or are obviously not emails
+      if (!email.includes('@') || email.includes(' ')) continue;
+
+      // Try to find an existing user with this email in the same tenant; if found,
+      // promote into userMap so prefs are honored. If not found, add to emailOnlyMap.
+      const existing = await prisma.user.findFirst({
+        where: { tenantId, email, isActive: true },
+        select: { id: true, email: true },
+      });
+      if (existing?.email) {
+        userMap.set(existing.id, { email: existing.email });
+      } else {
+        emailOnlyMap.set(email, { email });
+      }
     }
   }
 
@@ -103,29 +127,47 @@ export async function resolveRecipients(
   }
 
   // -------------------------------------------------------------------------
-  // Step 4: Load preferences in one query
+  // Step 4: Load preferences in one query (User-backed recipients only)
   // -------------------------------------------------------------------------
   const userIds = [...userMap.keys()];
-  if (userIds.length === 0) return [];
-
-  const prefs = await prisma.userNotificationPreference.findMany({
-    where: { userId: { in: userIds }, triggerKey },
-    select: { userId: true, emailEnabled: true, inAppEnabled: true },
-  });
-  const prefMap = new Map(prefs.map((p) => [p.userId, p]));
-
-  // -------------------------------------------------------------------------
-  // Step 5: Build result
-  // -------------------------------------------------------------------------
   const result: ResolvedRecipient[] = [];
-  for (const [userId, { email }] of userMap) {
-    if (!email) continue; // defensive
-    const p = prefMap.get(userId);
+
+  if (userIds.length > 0) {
+    const prefs = await prisma.userNotificationPreference.findMany({
+      where: { userId: { in: userIds }, triggerKey },
+      select: { userId: true, emailEnabled: true, inAppEnabled: true },
+    });
+    const prefMap = new Map(prefs.map((p) => [p.userId, p]));
+
+    // -------------------------------------------------------------------------
+    // Step 5a: Build result for User-backed recipients
+    // -------------------------------------------------------------------------
+    for (const [userId, { email }] of userMap) {
+      if (!email) continue; // defensive
+      const p = prefMap.get(userId);
+      result.push({
+        userId,
+        email,
+        emailEnabled: p?.emailEnabled ?? true,
+        inAppEnabled: p?.inAppEnabled ?? true,
+      });
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Step 5b: Append email-only recipients (external_email with no User row)
+  //
+  // inAppEnabled is always false here because:
+  //   (a) InAppNotification.userId is a non-null FK — cannot create without a User row
+  //   (b) Invitation templates already set inAppEnabled: false at the template level
+  // emailEnabled defaults to true — no UserNotificationPreference can exist without a User row.
+  // -------------------------------------------------------------------------
+  for (const [, { email }] of emailOnlyMap) {
     result.push({
-      userId,
+      userId: null,
       email,
-      emailEnabled: p?.emailEnabled ?? true,
-      inAppEnabled: p?.inAppEnabled ?? true,
+      emailEnabled: true,
+      inAppEnabled: false,
     });
   }
 
