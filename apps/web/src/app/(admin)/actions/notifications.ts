@@ -90,7 +90,8 @@ export async function updateNotificationTemplate(
       where: { id },
       data: {
         defaultSubject: data.defaultSubject,
-        defaultBlockJson: data.defaultBlockJson,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        defaultBlockJson: data.defaultBlockJson as any,
         defaultHtmlCache,
       },
     });
@@ -178,7 +179,7 @@ export async function updateNotificationEmailConfig(
 
   const parsed = schema.safeParse(data);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0]?.message ?? 'Validation error' };
+    return { success: false, error: parsed.error.issues[0]?.message ?? 'Validation error' };
   }
 
   try {
