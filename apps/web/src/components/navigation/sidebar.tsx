@@ -368,18 +368,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       </PermissionGuard>
-                      <PermissionGuard permission="driverPayReport">
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={pathname === "/carrier/reports/driver-pay"}
-                          >
-                            <Link href="/carrier/reports/driver-pay" onClick={handleNavClick}>
-                              Driver Pay
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </PermissionGuard>
                       <PermissionGuard permission="arAgingReport">
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton
