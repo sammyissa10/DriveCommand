@@ -1,3 +1,15 @@
+/**
+ * state-machine.ts — Per-assignment (LoadDriverAssignment) pay-status FSM.
+ *
+ * NOTE: Settlement-level status transitions (DRAFT → FINALIZED → PAID → VOIDED)
+ * do NOT live here. They live in the individual route handlers:
+ *   - FINALIZED: apps/web/src/app/api/driver-pay/settlements/[settlementId]/finalize/route.ts
+ *   - PAID:      apps/web/src/app/api/driver-pay/settlements/[settlementId]/mark-paid/route.ts
+ *   - VOIDED:    apps/web/src/app/api/driver-pay/settlements/[settlementId]/void/route.ts
+ * This file only governs per-component PayStatus transitions used by the
+ * settlement generation engine and approval workflow.
+ */
+
 import Decimal from 'decimal.js';
 
 // ---------------------------------------------------------------------------

@@ -2765,27 +2765,28 @@ model DriverDeduction {
 /// because Prisma does not support partial unique indexes natively.
 /// @@unique partial — do NOT add @@unique([driverId, periodStart, periodEnd]) here.
 model DriverSettlement {
-  id                  String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId            String                 @map("tenant_id") @db.Uuid
-  driverId            String                 @map("driver_id") @db.Uuid
-  periodStart         DateTime               @map("period_start") @db.Date
-  periodEnd           DateTime               @map("period_end") @db.Date
-  status              DriverSettlementStatus @default(DRAFT)
-  grossTaxable        Decimal                @map("gross_taxable") @db.Decimal(12, 2)
-  grossNonTaxable     Decimal                @map("gross_non_taxable") @db.Decimal(12, 2)
-  totalDeductions     Decimal                @map("total_deductions") @db.Decimal(12, 2)
-  netPay              Decimal                @map("net_pay") @db.Decimal(12, 2)
-  finalizedBy         String?                @map("finalized_by") @db.Uuid
-  finalizedAt         DateTime?              @map("finalized_at") @db.Timestamptz(6)
-  paidAt              DateTime?              @map("paid_at") @db.Timestamptz(6)
-  settlementReference String?                @map("settlement_reference") @db.VarChar(100)
-  pdfUrl              String?                @map("pdf_url") @db.VarChar(500)
-  notes               String?
+  id                     String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId               String                 @map("tenant_id") @db.Uuid
+  driverId               String                 @map("driver_id") @db.Uuid
+  periodStart            DateTime               @map("period_start") @db.Date
+  periodEnd              DateTime               @map("period_end") @db.Date
+  status                 DriverSettlementStatus @default(DRAFT)
+  grossTaxable           Decimal                @map("gross_taxable") @db.Decimal(12, 2)
+  grossNonTaxable        Decimal                @map("gross_non_taxable") @db.Decimal(12, 2)
+  totalDeductions        Decimal                @map("total_deductions") @db.Decimal(12, 2)
+  netPay                 Decimal                @map("net_pay") @db.Decimal(12, 2)
+  finalizedBy            String?                @map("finalized_by") @db.Uuid
+  finalizedAt            DateTime?              @map("finalized_at") @db.Timestamptz(6)
+  paidAt                 DateTime?              @map("paid_at") @db.Timestamptz(6)
+  settlementReference    String?                @map("settlement_reference") @db.VarChar(100)
+  pdfUrl                 String?                @map("pdf_url") @db.VarChar(500)
+  notes                  String?
+  employmentTypeSnapshot EmploymentType?        @map("employment_type_snapshot")
   // Standard tenant columns
-  createdAt           DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy           String                 @map("created_by") @db.Uuid
-  deletedAt           DateTime?              @map("deleted_at") @db.Timestamptz(6)
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy              String                 @map("created_by") @db.Uuid
+  deletedAt              DateTime?              @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver      CarrierDriver          @relation(fields: [driverId], references: [id], onDelete: Restrict)
@@ -2796,6 +2797,7 @@ model DriverSettlement {
   @@index([driverId])
   @@index([tenantId, driverId])
   @@index([tenantId, periodStart])
+  @@index([tenantId, employmentTypeSnapshot])
   @@map("driver_settlements")
 }
 

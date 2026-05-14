@@ -1489,6 +1489,7 @@ exports.Prisma.DriverSettlementScalarFieldEnum = {
   settlementReference: 'settlementReference',
   pdfUrl: 'pdfUrl',
   notes: 'notes',
+  employmentTypeSnapshot: 'employmentTypeSnapshot',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',

@@ -151,6 +151,26 @@ export async function POST(
     // TODO: make this a hard failure when S3_BUCKET is configured
   }
 
+  // 8a. Fetch active DriverCompensationTemplate to stamp employment type snapshot
+  const now = new Date();
+  const activeTemplate = await (prisma as unknown as PrismaClient).driverCompensationTemplate.findFirst({
+    where: {
+      driverId: settlement.driverId,
+      tenantId: session.tenantId,
+      effectiveFrom: { lte: now },
+      deletedAt: null,
+      OR: [{ effectiveTo: null }, { effectiveTo: { gte: now } }],
+    },
+    orderBy: { effectiveFrom: 'desc' },
+  });
+
+  if (!activeTemplate) {
+    return NextResponse.json(
+      { error: 'Cannot finalize: driver has no active compensation template' },
+      { status: 409 },
+    );
+  }
+
   // 8. Update settlement
   const updated = await prisma.driverSettlement.update({
     where: { id: settlementId },
@@ -159,6 +179,7 @@ export async function POST(
       finalizedBy: session.userId,
       finalizedAt: new Date(),
       pdfUrl: r2Key,
+      employmentTypeSnapshot: activeTemplate.employmentType,
     },
   });
 
@@ -170,7 +191,12 @@ export async function POST(
       entityId: settlementId,
       action: 'settlement:finalized',
       previousValue: { status: 'DRAFT' },
-      newValue: { status: 'FINALIZED', pdfUrl: r2Key, finalizedBy: session.userId },
+      newValue: {
+        status: 'FINALIZED',
+        pdfUrl: r2Key,
+        finalizedBy: session.userId,
+        employmentTypeSnapshot: activeTemplate.employmentType,
+      },
       actorId: session.userId,
       createdBy: session.userId,
     },

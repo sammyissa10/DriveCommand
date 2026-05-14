@@ -110513,6 +110513,7 @@ export namespace Prisma {
     settlementReference: string | null
     pdfUrl: string | null
     notes: string | null
+    employmentTypeSnapshot: $Enums.EmploymentType | null
     createdAt: Date | null
     updatedAt: Date | null
     createdBy: string | null
@@ -110536,6 +110537,7 @@ export namespace Prisma {
     settlementReference: string | null
     pdfUrl: string | null
     notes: string | null
+    employmentTypeSnapshot: $Enums.EmploymentType | null
     createdAt: Date | null
     updatedAt: Date | null
     createdBy: string | null
@@ -110559,6 +110561,7 @@ export namespace Prisma {
     settlementReference: number
     pdfUrl: number
     notes: number
+    employmentTypeSnapshot: number
     createdAt: number
     updatedAt: number
     createdBy: number
@@ -110598,6 +110601,7 @@ export namespace Prisma {
     settlementReference?: true
     pdfUrl?: true
     notes?: true
+    employmentTypeSnapshot?: true
     createdAt?: true
     updatedAt?: true
     createdBy?: true
@@ -110621,6 +110625,7 @@ export namespace Prisma {
     settlementReference?: true
     pdfUrl?: true
     notes?: true
+    employmentTypeSnapshot?: true
     createdAt?: true
     updatedAt?: true
     createdBy?: true
@@ -110644,6 +110649,7 @@ export namespace Prisma {
     settlementReference?: true
     pdfUrl?: true
     notes?: true
+    employmentTypeSnapshot?: true
     createdAt?: true
     updatedAt?: true
     createdBy?: true
@@ -110754,6 +110760,7 @@ export namespace Prisma {
     settlementReference: string | null
     pdfUrl: string | null
     notes: string | null
+    employmentTypeSnapshot: $Enums.EmploymentType | null
     createdAt: Date
     updatedAt: Date
     createdBy: string
@@ -110796,6 +110803,7 @@ export namespace Prisma {
     settlementReference?: boolean
     pdfUrl?: boolean
     notes?: boolean
+    employmentTypeSnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
@@ -110824,6 +110832,7 @@ export namespace Prisma {
     settlementReference?: boolean
     pdfUrl?: boolean
     notes?: boolean
+    employmentTypeSnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
@@ -110849,6 +110858,7 @@ export namespace Prisma {
     settlementReference?: boolean
     pdfUrl?: boolean
     notes?: boolean
+    employmentTypeSnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
@@ -110874,13 +110884,14 @@ export namespace Prisma {
     settlementReference?: boolean
     pdfUrl?: boolean
     notes?: boolean
+    employmentTypeSnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean
     deletedAt?: boolean
   }
 
-  export type DriverSettlementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "driverId" | "periodStart" | "periodEnd" | "status" | "grossTaxable" | "grossNonTaxable" | "totalDeductions" | "netPay" | "finalizedBy" | "finalizedAt" | "paidAt" | "settlementReference" | "pdfUrl" | "notes" | "createdAt" | "updatedAt" | "createdBy" | "deletedAt", ExtArgs["result"]["driverSettlement"]>
+  export type DriverSettlementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "driverId" | "periodStart" | "periodEnd" | "status" | "grossTaxable" | "grossNonTaxable" | "totalDeductions" | "netPay" | "finalizedBy" | "finalizedAt" | "paidAt" | "settlementReference" | "pdfUrl" | "notes" | "employmentTypeSnapshot" | "createdAt" | "updatedAt" | "createdBy" | "deletedAt", ExtArgs["result"]["driverSettlement"]>
   export type DriverSettlementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | CarrierDriverDefaultArgs<ExtArgs>
@@ -110922,6 +110933,7 @@ export namespace Prisma {
       settlementReference: string | null
       pdfUrl: string | null
       notes: string | null
+      employmentTypeSnapshot: $Enums.EmploymentType | null
       createdAt: Date
       updatedAt: Date
       createdBy: string
@@ -111369,6 +111381,7 @@ export namespace Prisma {
     readonly settlementReference: FieldRef<"DriverSettlement", 'String'>
     readonly pdfUrl: FieldRef<"DriverSettlement", 'String'>
     readonly notes: FieldRef<"DriverSettlement", 'String'>
+    readonly employmentTypeSnapshot: FieldRef<"DriverSettlement", 'EmploymentType'>
     readonly createdAt: FieldRef<"DriverSettlement", 'DateTime'>
     readonly updatedAt: FieldRef<"DriverSettlement", 'DateTime'>
     readonly createdBy: FieldRef<"DriverSettlement", 'String'>
@@ -118141,6 +118154,7 @@ export namespace Prisma {
     settlementReference: 'settlementReference',
     pdfUrl: 'pdfUrl',
     notes: 'notes',
+    employmentTypeSnapshot: 'employmentTypeSnapshot',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     createdBy: 'createdBy',
@@ -128190,6 +128204,7 @@ export namespace Prisma {
     settlementReference?: StringNullableFilter<"DriverSettlement"> | string | null
     pdfUrl?: StringNullableFilter<"DriverSettlement"> | string | null
     notes?: StringNullableFilter<"DriverSettlement"> | string | null
+    employmentTypeSnapshot?: EnumEmploymentTypeNullableFilter<"DriverSettlement"> | $Enums.EmploymentType | null
     createdAt?: DateTimeFilter<"DriverSettlement"> | Date | string
     updatedAt?: DateTimeFilter<"DriverSettlement"> | Date | string
     createdBy?: UuidFilter<"DriverSettlement"> | string
@@ -128217,6 +128232,7 @@ export namespace Prisma {
     settlementReference?: SortOrderInput | SortOrder
     pdfUrl?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    employmentTypeSnapshot?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: SortOrder
@@ -128247,6 +128263,7 @@ export namespace Prisma {
     settlementReference?: StringNullableFilter<"DriverSettlement"> | string | null
     pdfUrl?: StringNullableFilter<"DriverSettlement"> | string | null
     notes?: StringNullableFilter<"DriverSettlement"> | string | null
+    employmentTypeSnapshot?: EnumEmploymentTypeNullableFilter<"DriverSettlement"> | $Enums.EmploymentType | null
     createdAt?: DateTimeFilter<"DriverSettlement"> | Date | string
     updatedAt?: DateTimeFilter<"DriverSettlement"> | Date | string
     createdBy?: UuidFilter<"DriverSettlement"> | string
@@ -128274,6 +128291,7 @@ export namespace Prisma {
     settlementReference?: SortOrderInput | SortOrder
     pdfUrl?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    employmentTypeSnapshot?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: SortOrder
@@ -128305,6 +128323,7 @@ export namespace Prisma {
     settlementReference?: StringNullableWithAggregatesFilter<"DriverSettlement"> | string | null
     pdfUrl?: StringNullableWithAggregatesFilter<"DriverSettlement"> | string | null
     notes?: StringNullableWithAggregatesFilter<"DriverSettlement"> | string | null
+    employmentTypeSnapshot?: EnumEmploymentTypeNullableWithAggregatesFilter<"DriverSettlement"> | $Enums.EmploymentType | null
     createdAt?: DateTimeWithAggregatesFilter<"DriverSettlement"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"DriverSettlement"> | Date | string
     createdBy?: UuidWithAggregatesFilter<"DriverSettlement"> | string
@@ -138739,6 +138758,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -138766,6 +138786,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -138789,6 +138810,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -138816,6 +138838,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -138841,6 +138864,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -138862,6 +138886,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -138885,6 +138910,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -146580,6 +146606,13 @@ export namespace Prisma {
     not?: NestedEnumDriverSettlementStatusFilter<$PrismaModel> | $Enums.DriverSettlementStatus
   }
 
+  export type EnumEmploymentTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmploymentType | EnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumEmploymentTypeNullableFilter<$PrismaModel> | $Enums.EmploymentType | null
+  }
+
   export type DriverSettlementCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
@@ -146597,6 +146630,7 @@ export namespace Prisma {
     settlementReference?: SortOrder
     pdfUrl?: SortOrder
     notes?: SortOrder
+    employmentTypeSnapshot?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: SortOrder
@@ -146627,6 +146661,7 @@ export namespace Prisma {
     settlementReference?: SortOrder
     pdfUrl?: SortOrder
     notes?: SortOrder
+    employmentTypeSnapshot?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: SortOrder
@@ -146650,6 +146685,7 @@ export namespace Prisma {
     settlementReference?: SortOrder
     pdfUrl?: SortOrder
     notes?: SortOrder
+    employmentTypeSnapshot?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: SortOrder
@@ -146671,6 +146707,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDriverSettlementStatusFilter<$PrismaModel>
     _max?: NestedEnumDriverSettlementStatusFilter<$PrismaModel>
+  }
+
+  export type EnumEmploymentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmploymentType | EnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumEmploymentTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.EmploymentType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumEmploymentTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumEmploymentTypeNullableFilter<$PrismaModel>
   }
 
   export type LoadPayComponentScalarRelationFilter = {
@@ -157851,6 +157897,10 @@ export namespace Prisma {
     set?: $Enums.DriverSettlementStatus
   }
 
+  export type NullableEnumEmploymentTypeFieldUpdateOperationsInput = {
+    set?: $Enums.EmploymentType | null
+  }
+
   export type TenantUpdateOneRequiredWithoutDriverSettlementsNestedInput = {
     create?: XOR<TenantCreateWithoutDriverSettlementsInput, TenantUncheckedCreateWithoutDriverSettlementsInput>
     connectOrCreate?: TenantCreateOrConnectWithoutDriverSettlementsInput
@@ -159503,6 +159553,13 @@ export namespace Prisma {
     not?: NestedEnumDriverSettlementStatusFilter<$PrismaModel> | $Enums.DriverSettlementStatus
   }
 
+  export type NestedEnumEmploymentTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmploymentType | EnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumEmploymentTypeNullableFilter<$PrismaModel> | $Enums.EmploymentType | null
+  }
+
   export type NestedEnumDriverSettlementStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.DriverSettlementStatus | EnumDriverSettlementStatusFieldRefInput<$PrismaModel>
     in?: $Enums.DriverSettlementStatus[] | ListEnumDriverSettlementStatusFieldRefInput<$PrismaModel>
@@ -159511,6 +159568,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDriverSettlementStatusFilter<$PrismaModel>
     _max?: NestedEnumDriverSettlementStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumEmploymentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmploymentType | EnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.EmploymentType[] | ListEnumEmploymentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumEmploymentTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.EmploymentType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumEmploymentTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumEmploymentTypeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumDisputeTargetTypeFilter<$PrismaModel = never> = {
@@ -162496,6 +162563,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -162521,6 +162589,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -164986,6 +165055,7 @@ export namespace Prisma {
     settlementReference?: StringNullableFilter<"DriverSettlement"> | string | null
     pdfUrl?: StringNullableFilter<"DriverSettlement"> | string | null
     notes?: StringNullableFilter<"DriverSettlement"> | string | null
+    employmentTypeSnapshot?: EnumEmploymentTypeNullableFilter<"DriverSettlement"> | $Enums.EmploymentType | null
     createdAt?: DateTimeFilter<"DriverSettlement"> | Date | string
     updatedAt?: DateTimeFilter<"DriverSettlement"> | Date | string
     createdBy?: UuidFilter<"DriverSettlement"> | string
@@ -191427,6 +191497,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -191452,6 +191523,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -209638,6 +209710,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -209664,6 +209737,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -210228,6 +210302,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -210254,6 +210329,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -211655,6 +211731,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -211681,6 +211758,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -212165,6 +212243,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -212191,6 +212270,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -216439,6 +216519,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -219782,6 +219863,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -219807,6 +219889,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -219831,6 +219914,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -226306,6 +226390,7 @@ export namespace Prisma {
     settlementReference?: string | null
     pdfUrl?: string | null
     notes?: string | null
+    employmentTypeSnapshot?: $Enums.EmploymentType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
@@ -227118,6 +227203,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -227143,6 +227229,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
@@ -227167,6 +227254,7 @@ export namespace Prisma {
     settlementReference?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentTypeSnapshot?: NullableEnumEmploymentTypeFieldUpdateOperationsInput | $Enums.EmploymentType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string

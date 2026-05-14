@@ -2780,7 +2780,8 @@ model DriverSettlement {
   paidAt              DateTime?             @map("paid_at") @db.Timestamptz(6)
   settlementReference String?               @map("settlement_reference") @db.VarChar(100)
   pdfUrl              String?               @map("pdf_url") @db.VarChar(500)
-  notes               String?
+  notes                   String?
+  employmentTypeSnapshot  EmploymentType?       @map("employment_type_snapshot")
   // Standard tenant columns
   createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -2796,6 +2797,7 @@ model DriverSettlement {
   @@index([driverId])
   @@index([tenantId, driverId])
   @@index([tenantId, periodStart])
+  @@index([tenantId, employmentTypeSnapshot])
   @@map("driver_settlements")
 }
 
