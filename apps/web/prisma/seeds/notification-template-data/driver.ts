@@ -23,7 +23,7 @@ export const driverTemplates: NotificationTemplateSeed[] = [
       { name: 'tenantName', description: 'Name of the trucking company', sampleValue: 'Acme Trucking' },
       { name: 'inviteUrl', description: 'URL to accept the invitation', sampleValue: 'https://app.drivecommand.com/accept-invite?token=abc123' },
     ],
-    defaultRecipients: [{ type: 'related', payloadKey: 'driverEmail' }],
+    defaultRecipients: [{ type: 'external_email', payloadKey: 'driverEmail' }],
     isActive: true,
     inAppEnabled: false,
   },

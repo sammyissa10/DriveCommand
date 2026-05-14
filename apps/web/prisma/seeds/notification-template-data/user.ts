@@ -46,7 +46,7 @@ export const userTemplates: NotificationTemplateSeed[] = [
       { name: 'tenantName', description: 'Name of the company on DriveCommand', sampleValue: 'Acme Trucking' },
       { name: 'inviteUrl', description: 'URL to accept the invitation', sampleValue: 'https://app.drivecommand.com/accept-invite?token=abc123' },
     ],
-    defaultRecipients: [{ type: 'related', payloadKey: 'invitedEmail' }],
+    defaultRecipients: [{ type: 'external_email', payloadKey: 'invitedEmail' }],
     isActive: true,
     inAppEnabled: false,
   },
