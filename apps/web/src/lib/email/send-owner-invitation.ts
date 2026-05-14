@@ -15,23 +15,20 @@ export interface OwnerInvitationEmailData {
   organizationName: string;
   acceptUrl: string;
   expiresAt: string;
-  /** Optional: if provided, routes through dispatchNotification. */
-  tenantId?: string;
+  /** Tenant the email is being sent on behalf of — drives template lookup and audit log. */
+  tenantId: string;
 }
 
 /**
  * Send an owner invitation email.
- * Routes through dispatchNotification when tenantId is available; falls back to
- * legacy Gmail SMTP on dispatcher error.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  */
 export async function sendOwnerInvitation(
   toEmail: string,
   data: OwnerInvitationEmailData
 ): Promise<{ id: string }> {
   try {
-    if (!data.tenantId) {
-      return await legacySendOwnerInvitation(toEmail, data);
-    }
     const result = await dispatchNotification('user.invited', {
       tenantId: data.tenantId,
       payload: {

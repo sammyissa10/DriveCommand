@@ -89,24 +89,22 @@ export interface OwnerReplyNotificationParams {
   messageBody: string;
   driverId: string;
   routeName?: string;
-  tenantId?: string;
+  /** Tenant the email is being sent on behalf of — drives template lookup and audit log. */
+  tenantId: string;
   /** threadUrl for the notification payload. */
   threadUrl?: string;
 }
 
 /**
  * Notify the driver when an owner/manager replies to a fleet message.
- * Routes through dispatchNotification, falls back to legacy Gmail SMTP on error.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  * Fire-and-forget safe: all errors are caught and logged internally.
  */
 export async function sendOwnerReplyNotification(
   params: OwnerReplyNotificationParams
 ): Promise<void> {
   try {
-    if (!params.tenantId) {
-      await legacySendOwnerReplyNotification(params);
-      return;
-    }
     await dispatchNotification('message.received', {
       tenantId: params.tenantId,
       payload: {

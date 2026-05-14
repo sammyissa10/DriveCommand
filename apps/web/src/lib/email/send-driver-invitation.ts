@@ -15,23 +15,20 @@ export interface DriverInvitationEmailData {
   organizationName: string;
   acceptUrl: string;
   expiresAt: string;
-  /** Optional: if provided, routes through dispatchNotification. */
-  tenantId?: string;
+  /** Tenant the email is being sent on behalf of — drives template lookup and audit log. */
+  tenantId: string;
 }
 
 /**
  * Send a driver invitation email.
- * Routes through dispatchNotification when tenantId is available; falls back to
- * legacy Gmail SMTP on dispatcher error.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  */
 export async function sendDriverInvitation(
   toEmail: string,
   data: DriverInvitationEmailData
 ): Promise<{ id: string }> {
   try {
-    if (!data.tenantId) {
-      return await legacySendDriverInvitation(toEmail, data);
-    }
     const result = await dispatchNotification('driver.invited', {
       tenantId: data.tenantId,
       payload: {

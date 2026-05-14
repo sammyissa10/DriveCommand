@@ -19,8 +19,8 @@ export interface LoadStatusEmailData {
   truckInfo: string;
   estimatedDelivery?: string;
   trackingUrl: string;
-  /** Optional: if provided, routes through dispatchNotification. */
-  tenantId?: string;
+  /** Tenant the email is being sent on behalf of — drives template lookup and audit log. */
+  tenantId: string;
   /** Optional: load ID for the relatedEntity. */
   loadId?: string;
   /** Optional: delivered timestamp (used when status=DELIVERED). */
@@ -39,18 +39,14 @@ const IN_TRANSIT_STATUSES = new Set(['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT']);
 
 /**
  * Send a load status notification email to a customer.
- * Routes through dispatchNotification when tenantId is available; falls back to
- * legacy Gmail SMTP on dispatcher error.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  */
 export async function sendLoadStatusEmail(
   toEmail: string,
   data: LoadStatusEmailData
 ): Promise<{ id: string }> {
   try {
-    if (!data.tenantId) {
-      return await legacySendLoadStatusEmail(toEmail, data);
-    }
-
     const isDelivered = data.status === 'DELIVERED';
     const triggerKey = isDelivered
       ? ('customer.delivered_notification' as const)

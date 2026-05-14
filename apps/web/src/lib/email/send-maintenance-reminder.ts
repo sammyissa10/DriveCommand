@@ -17,25 +17,22 @@ export interface MaintenanceReminderProps {
   currentMileage: number;
   milesRemaining: number | null;
   dashboardUrl: string;
-  /** Optional: if provided, routes through dispatchNotification. */
-  tenantId?: string;
+  /** Tenant the email is being sent on behalf of — drives template lookup and audit log. */
+  tenantId: string;
   /** Optional: truck ID for the relatedEntity. */
   truckId?: string;
 }
 
 /**
  * Send maintenance reminder email.
- * Routes through dispatchNotification when tenantId is available; falls back to
- * legacy Gmail SMTP on dispatcher error.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  */
 export async function sendMaintenanceReminder(
   toEmail: string,
   data: MaintenanceReminderProps
 ): Promise<{ id: string }> {
   try {
-    if (!data.tenantId) {
-      return await legacySendMaintenanceReminder(toEmail, data);
-    }
     const result = await dispatchNotification('truck.maintenance_due', {
       tenantId: data.tenantId,
       payload: {

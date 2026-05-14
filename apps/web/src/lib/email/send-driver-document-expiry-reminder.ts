@@ -15,8 +15,8 @@ export interface DriverDocumentExpiryReminderProps {
   expiryDate: string;
   daysUntilExpiry: number;
   dashboardUrl: string;
-  /** Optional: if provided, routes through dispatchNotification. */
-  tenantId?: string;
+  /** Tenant the email is being sent on behalf of — drives template lookup and audit log. */
+  tenantId: string;
   /** Optional: driver ID for the relatedEntity. */
   driverId?: string;
 }
@@ -39,17 +39,14 @@ export function formatDocumentType(type: string): string {
 
 /**
  * Send driver document expiry reminder email.
- * Routes through dispatchNotification when tenantId is available; falls back to
- * legacy Gmail SMTP on dispatcher error.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  */
 export async function sendDriverDocumentExpiryReminder(
   toEmail: string,
   data: DriverDocumentExpiryReminderProps
 ): Promise<{ id: string }> {
   try {
-    if (!data.tenantId) {
-      return await legacySendDriverDocumentExpiryReminder(toEmail, data);
-    }
     const result = await dispatchNotification('driver.license_expiring', {
       tenantId: data.tenantId,
       payload: {
