@@ -17,6 +17,7 @@ import {
   type PeriodKey,
   type ReportFilters,
 } from '@/lib/driver-pay/reporting';
+import { countedSettlementsWhere } from '@/lib/driver-pay/reporting-predicate';
 import Decimal from 'decimal.js';
 
 export const dynamic = 'force-dynamic';
@@ -88,19 +89,10 @@ export async function GET(req: NextRequest) {
     // 3. Period range
     const range = getPeriodRange(periodParam, customStart, customEnd);
 
-    // 4. Build where clause
-    const where: Prisma.DriverSettlementWhereInput = {
-      tenantId: session.tenantId,
-      periodStart: { gte: range.start },
-      periodEnd: { lte: range.end },
-    };
-
-    if (filters.driverIds && filters.driverIds.length > 0) {
-      where.driverId = { in: filters.driverIds };
-    }
-    if (filters.status && filters.status !== 'ALL') {
-      where.status = filters.status as Prisma.DriverSettlementWhereInput['status'];
-    }
+    // 4. Build where clause using canonical predicate (payroll_out scope: PAID only,
+    //    period overlap semantics, soft-delete excluded). This fixes the mismatch
+    //    between the Settlements table and the KPI cards on the Reports page.
+    const where = countedSettlementsWhere(session.tenantId, range, filters, 'payroll_out');
 
     const skip = (page - 1) * pageSizeRaw;
     const prisma = await getTenantPrisma();

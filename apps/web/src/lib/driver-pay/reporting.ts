@@ -7,6 +7,29 @@
  * API route handlers and Vitest tests without module-level prisma coupling.
  *
  * DO NOT make any writes here — this module is read-only.
+ *
+ * -------------------------------------------------------------------------
+ * FILTER INVARIANT (quick-308)
+ * -------------------------------------------------------------------------
+ * Every function that aggregates settlements for payroll-out reporting on
+ * the Reports page MUST use `countedSettlementsWhere()` from
+ * `./reporting-predicate`. No function may inline its own periodStart/periodEnd
+ * containment or status filter — the predicate is the single source of truth.
+ *
+ * Period semantics: OVERLAP, not containment.
+ *   A settlement [periodStart, periodEnd] counts for window [range.start, range.end]
+ *   when periodStart <= range.end AND periodEnd >= range.start.
+ *
+ * Status semantics:
+ *   payroll_out scope = PAID only (no VOIDED, no FINALIZED, no DRAFT)
+ *   approved scope    = FINALIZED + PAID (for rolling avg / driver detail)
+ *
+ * Bonus aggregation: DriverBonus.amount WHERE settlementId IN (counted settlement ids).
+ *   Never use triggerDate window for payroll-out bonus totals.
+ *
+ * Soft-delete: deletedAt: null enforced by countedSettlementsWhere on settlements,
+ *   and explicitly on every bonus query.
+ * -------------------------------------------------------------------------
  */
 
 import Decimal from 'decimal.js';
@@ -26,6 +49,7 @@ import {
 import type { PrismaClient } from '@/generated/prisma';
 import type { Prisma } from '@/generated/prisma';
 import { DeductionType, DeductionSchedule, DriverAssignmentStatus, DisputeStatus } from '@/generated/prisma';
+import { countedSettlementsWhere } from './reporting-predicate';
 
 // ---------------------------------------------------------------------------
 // Type Exports
@@ -57,6 +81,8 @@ export interface KpiCountValue {
 export interface OverviewKpis {
   totalPayroll: KpiValue;
   driversPaid: KpiCountValue;
+  // avgNetPay.current is '—' (em dash) when driversPaid = 0, never '0.00'.
+  // We keep the type as string (not string | null) to avoid downstream churn.
   avgNetPay: KpiValue;
   totalDeductions: KpiValue;
   totalBonuses: KpiValue;
@@ -192,31 +218,8 @@ export function computeDeltaPct(current: Decimal, prior: Decimal): number | null
   return current.minus(prior).div(prior).mul(100).toDecimalPlaces(1).toNumber();
 }
 
-// ---------------------------------------------------------------------------
-// Internal: build settlement where clause
-// ---------------------------------------------------------------------------
-
-function buildSettlementWhere(
-  tenantId: string,
-  range: PeriodRange,
-  filters: ReportFilters,
-): Prisma.DriverSettlementWhereInput {
-  const where: Prisma.DriverSettlementWhereInput = {
-    tenantId,
-    periodStart: { gte: range.start },
-    periodEnd: { lte: range.end },
-  };
-
-  if (filters.driverIds && filters.driverIds.length > 0) {
-    where.driverId = { in: filters.driverIds };
-  }
-
-  if (filters.status && filters.status !== 'ALL') {
-    where.status = filters.status as Prisma.DriverSettlementWhereInput['status'];
-  }
-
-  return where;
-}
+// NOTE: The internal `buildSettlementWhere` function has been removed (quick-308).
+// All callers now use `countedSettlementsWhere` from `./reporting-predicate`.
 
 // ---------------------------------------------------------------------------
 // 4. computeOverviewKpis
@@ -228,58 +231,65 @@ export async function computeOverviewKpis(
   range: PeriodRange,
   filters: ReportFilters,
 ): Promise<OverviewKpis> {
-  const where = buildSettlementWhere(tenantId, range, filters);
+  // Canonical predicates — payroll_out scope (PAID only, period overlap, soft-delete safe)
+  const payrollWhere = countedSettlementsWhere(tenantId, range, filters, 'payroll_out');
   const priorRange = getPriorPeriodRange(range);
-  const priorWhere = buildSettlementWhere(tenantId, priorRange, filters);
+  const priorPayrollWhere = countedSettlementsWhere(tenantId, priorRange, filters, 'payroll_out');
 
-  const [settlements, priorSettlements, bonuses, priorBonusRows] = await Promise.all([
+  // Query current and prior settlements — include id for bonus join
+  const [settlements, priorSettlements] = await Promise.all([
     prisma.driverSettlement.findMany({
-      where,
+      where: payrollWhere,
       select: {
+        id: true,
         driverId: true,
-        status: true,
+        netPay: true,
+        totalDeductions: true,
+        // status is enforced by predicate — no need to select it for in-memory filter
+      },
+    }),
+    prisma.driverSettlement.findMany({
+      where: priorPayrollWhere,
+      select: {
+        id: true,
+        driverId: true,
         netPay: true,
         totalDeductions: true,
       },
-    }),
-    prisma.driverSettlement.findMany({
-      where: priorWhere,
-      select: {
-        driverId: true,
-        status: true,
-        netPay: true,
-        totalDeductions: true,
-      },
-    }),
-    prisma.driverBonus.findMany({
-      where: {
-        tenantId,
-        triggerDate: { gte: range.start, lte: range.end },
-        ...(filters.driverIds && filters.driverIds.length > 0
-          ? { driverId: { in: filters.driverIds } }
-          : {}),
-        deletedAt: null,
-      },
-      select: { amount: true },
-    }),
-    prisma.driverBonus.findMany({
-      where: {
-        tenantId,
-        triggerDate: { gte: priorRange.start, lte: priorRange.end },
-        ...(filters.driverIds && filters.driverIds.length > 0
-          ? { driverId: { in: filters.driverIds } }
-          : {}),
-        deletedAt: null,
-      },
-      select: { amount: true },
     }),
   ]);
 
-  // Filter by employment type if needed (via payModel on CarrierDriver)
-  // We do this in-memory since we can't join on employmentType without include
-  // Note: Phase 11 can optimize with a JOIN if needed
-  // For now, employmentType filter is applied at the where level only if it's not 'ALL'
+  // Bonus aggregation: gate via settlementId IN (counted settlements).
+  // Do NOT use triggerDate window — that counts master installment rows not yet
+  // attached to any settlement (settlementId = null) and excludes installments
+  // from settlements that started before the window but overlap it.
+  const currentSettlementIds = settlements.map((s) => s.id);
+  const priorSettlementIds = priorSettlements.map((s) => s.id);
 
+  const [bonuses, priorBonusRows] = await Promise.all([
+    currentSettlementIds.length > 0
+      ? prisma.driverBonus.findMany({
+          where: {
+            tenantId,
+            deletedAt: null,
+            settlementId: { in: currentSettlementIds },
+          },
+          select: { amount: true },
+        })
+      : Promise.resolve([]),
+    priorSettlementIds.length > 0
+      ? prisma.driverBonus.findMany({
+          where: {
+            tenantId,
+            deletedAt: null,
+            settlementId: { in: priorSettlementIds },
+          },
+          select: { amount: true },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  // Aggregate current period
   const currentTotal = settlements.reduce(
     (acc, s) => acc.plus(new Decimal(s.netPay.toString())),
     new Decimal(0),
@@ -289,19 +299,19 @@ export async function computeOverviewKpis(
     new Decimal(0),
   );
 
-  const currentPaid = new Set(
-    settlements.filter((s) => s.status === 'PAID').map((s) => s.driverId),
-  ).size;
-  const priorPaid = new Set(
-    priorSettlements.filter((s) => s.status === 'PAID').map((s) => s.driverId),
-  ).size;
+  // driversPaid: distinct driverIds in counted (PAID) settlements.
+  // No in-memory status filter needed — predicate already enforces PAID-only.
+  const currentPaid = new Set(settlements.map((s) => s.driverId)).size;
+  const priorPaid = new Set(priorSettlements.map((s) => s.driverId)).size;
 
-  const currentAvg = currentPaid > 0
+  // avgNetPay: return em dash '—' when no drivers paid (not '0.00').
+  // Keeps the type as string to avoid downstream interface churn.
+  const currentAvgDecimal = currentPaid > 0
     ? currentTotal.div(new Decimal(currentPaid))
-    : new Decimal(0);
-  const priorAvg = priorPaid > 0
+    : null;
+  const priorAvgDecimal = priorPaid > 0
     ? priorTotal.div(new Decimal(priorPaid))
-    : new Decimal(0);
+    : null;
 
   const currentDeductions = settlements.reduce(
     (acc, s) => acc.plus(new Decimal(s.totalDeductions.toString())),
@@ -334,8 +344,12 @@ export async function computeOverviewKpis(
       ),
     },
     avgNetPay: {
-      current: currentAvg.toFixed(2),
-      delta: computeDeltaPct(currentAvg, priorAvg),
+      // '—' when divisor is 0; toFixed(2) when there is a result.
+      current: currentAvgDecimal !== null ? currentAvgDecimal.toFixed(2) : '—',
+      delta: computeDeltaPct(
+        currentAvgDecimal ?? new Decimal(0),
+        priorAvgDecimal ?? new Decimal(0),
+      ),
     },
     totalDeductions: {
       current: currentDeductions.toFixed(2),
@@ -359,7 +373,8 @@ export async function computeNetPayTrend(
   range: PeriodRange,
   filters: ReportFilters,
 ): Promise<TrendPoint[]> {
-  const where = buildSettlementWhere(tenantId, range, filters);
+  // Canonical predicate — payroll_out scope, period overlap, PAID only.
+  const where = countedSettlementsWhere(tenantId, range, filters, 'payroll_out');
   const settlements = await prisma.driverSettlement.findMany({
     where,
     select: { periodStart: true, netPay: true },
@@ -390,17 +405,33 @@ export async function computeDeductionBreakdown(
   range: PeriodRange,
   filters: ReportFilters,
 ): Promise<DeductionBreakdownItem[]> {
-  // TODO: tie to DeductionApplication when Phase 7 lands a join table.
-  // For now we use updatedAt as the proxy for "deduction activity in range".
+  // Get the counted settlement set first.
+  // If empty, return early — no deductions to show.
+  const countedWhere = countedSettlementsWhere(tenantId, range, filters, 'payroll_out');
+  const countedSettlements = await prisma.driverSettlement.findMany({
+    where: countedWhere,
+    select: { driverId: true },
+  });
+
+  if (countedSettlements.length === 0) return [];
+
+  // Build driver id set from counted settlements
+  const countedDriverIds = [...new Set(countedSettlements.map((s) => s.driverId))];
+
+  // TODO(phase-11): Replace with SettlementDeduction join when available.
+  // DriverDeduction has no settlementId FK, so we cannot directly join to counted
+  // settlements. Until Phase 11 adds a SettlementDeduction join table (or adds
+  // settlementId to DriverDeduction), we approximate by filtering on:
+  //   driverId IN (counted settlement driverIds) AND updatedAt overlaps the window
+  // This is semantically imperfect (updatedAt reflects master record activity, not
+  // settlement period), but it is gated on the counted driver set and is better
+  // than the prior approach (which was entirely disconnected from settlement counting).
   const where: Prisma.DriverDeductionWhereInput = {
     tenantId,
+    driverId: { in: countedDriverIds },
     updatedAt: { gte: range.start, lte: range.end },
     deletedAt: null,
   };
-
-  if (filters.driverIds && filters.driverIds.length > 0) {
-    where.driverId = { in: filters.driverIds };
-  }
 
   const deductions = await prisma.driverDeduction.findMany({
     where,
@@ -423,6 +454,12 @@ export async function computeDeductionBreakdown(
 // ---------------------------------------------------------------------------
 // 7. computeOperationalMetrics
 // ---------------------------------------------------------------------------
+// NOTE: This function is intentionally exempt from `countedSettlementsWhere`.
+// It aggregates LoadDriverAssignment, DriverDispute, and DriverDeduction records,
+// not DriverSettlement payroll-out data. Its date anchors are approvedAt, createdAt,
+// and updatedAt on those models — not settlement periodStart/periodEnd.
+// Do not add countedSettlementsWhere here without a specific requirement to
+// tie operational metrics to settlement periods.
 
 export async function computeOperationalMetrics(
   prisma: PrismaClient,
@@ -561,44 +598,55 @@ export async function computeDriverDetail(
 
   if (!driver) return null;
 
-  const [settlements, bonuses, deductionBalances] = await Promise.all([
-    prisma.driverSettlement.findMany({
-      where: {
-        tenantId,
-        driverId,
-        periodEnd: { gte: ytdStart, lte: ytdEnd },
-        status: { in: ['FINALIZED', 'PAID'] },
-      },
-      select: {
-        id: true,
-        periodStart: true,
-        periodEnd: true,
-        status: true,
-        grossTaxable: true,
-        grossNonTaxable: true,
-        totalDeductions: true,
-        netPay: true,
-        paidAt: true,
-      },
-      orderBy: { periodEnd: 'desc' },
-    }),
-    prisma.driverBonus.findMany({
-      where: {
-        tenantId,
-        driverId,
-        triggerDate: { gte: ytdStart, lte: ytdEnd },
-        deletedAt: null,
-      },
-      select: {
-        id: true,
-        bonusType: true,
-        amount: true,
-        triggerDate: true,
-        installmentNumber: true,
-        totalInstallments: true,
-      },
-      orderBy: { triggerDate: 'desc' },
-    }),
+  // Use approved scope for per-driver YTD detail (FINALIZED + PAID settlements
+  // that overlap the YTD window). Period overlap semantics applied consistently.
+  const settlementWhere = countedSettlementsWhere(
+    tenantId,
+    { start: ytdStart, end: ytdEnd },
+    { driverIds: [driverId] },
+    'approved',
+  );
+
+  const settlements = await prisma.driverSettlement.findMany({
+    where: settlementWhere,
+    select: {
+      id: true,
+      periodStart: true,
+      periodEnd: true,
+      status: true,
+      grossTaxable: true,
+      grossNonTaxable: true,
+      totalDeductions: true,
+      netPay: true,
+      paidAt: true,
+    },
+    orderBy: { periodEnd: 'desc' },
+  });
+
+  // YTD bonus aggregation: gate via settlementId IN (YTD approved settlements).
+  // Do NOT use triggerDate window — that counts unsettled master installments.
+  const ytdSettlementIds = settlements.map((s) => s.id);
+
+  const [bonuses, deductionBalances] = await Promise.all([
+    ytdSettlementIds.length > 0
+      ? prisma.driverBonus.findMany({
+          where: {
+            tenantId,
+            driverId,
+            deletedAt: null,
+            settlementId: { in: ytdSettlementIds },
+          },
+          select: {
+            id: true,
+            bonusType: true,
+            amount: true,
+            triggerDate: true,
+            installmentNumber: true,
+            totalInstallments: true,
+          },
+          orderBy: { triggerDate: 'desc' },
+        })
+      : Promise.resolve([]),
     prisma.driverDeduction.findMany({
       where: {
         tenantId,
@@ -635,7 +683,8 @@ export async function computeDriverDetail(
     netPay: new Decimal(s.netPay.toString()).toFixed(2),
   }));
 
-  // Deduction balances (only FIXED_INSTALLMENTS)
+  // Deduction balances (only FIXED_INSTALLMENTS) — this is a running balance snapshot,
+  // not a period aggregation, so it is NOT gated by the YTD window.
   const deductionBalancesResult: DriverDetailDeductionBalance[] = deductionBalances
     .filter((d) => d.totalAmount !== null && d.totalAmount !== undefined)
     .map((d) => {
@@ -702,6 +751,12 @@ export function isNetPayAnomaly(currentNet: Decimal, rollingAvg: Decimal): boole
 // ---------------------------------------------------------------------------
 // 10. computeRollingAvgNetPay
 // ---------------------------------------------------------------------------
+// NOTE: This function intentionally does NOT use `countedSettlementsWhere`.
+// It uses the 'approved' scope (FINALIZED + PAID) because it serves anomaly
+// detection — where finalized-but-unpaid settlements represent legitimate
+// expected pay. It also does not take a PeriodRange; it uses a backwards
+// lookback anchored at `anchor` date with `take: weeks` — a fundamentally
+// different query shape than period aggregation.
 
 export async function computeRollingAvgNetPay(
   prisma: PrismaClient,
@@ -714,7 +769,7 @@ export async function computeRollingAvgNetPay(
     where: {
       tenantId,
       driverId,
-      status: { in: ['FINALIZED', 'PAID'] },
+      status: { in: ['FINALIZED', 'PAID'] }, // approved scope — intentional
       periodEnd: { lt: anchor },
     },
     orderBy: { periodEnd: 'desc' },

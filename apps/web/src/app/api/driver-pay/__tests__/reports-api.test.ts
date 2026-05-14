@@ -341,25 +341,28 @@ describe('Period boundary handling', () => {
     expect(range.start.getDate()).toBe(11);
   });
 
-  it('settlement on periodStart boundary date IS included (gte check)', async () => {
-    // Settlement with periodStart = 2026-05-11 (boundary day) must be counted
+  it('settlement on periodStart boundary date IS included (overlap check)', async () => {
+    // Settlement with periodStart = 2026-05-11 (boundary day) must be counted.
+    // With overlap semantics: periodStart <= range.end AND periodEnd >= range.start
     const boundarySettlement = makeSettlement('s-boundary', 'tenant-A', 'd1', {
       netPay: '1000.00',
       totalDeductions: '0.00',
       status: 'PAID',
       periodStart: new Date('2026-05-11'),
+      periodEnd: new Date('2026-05-17'),
     });
 
     const prisma = makePrisma({ settlements: [boundarySettlement], priorSettlements: [], bonuses: [], priorBonuses: [] });
     const range = { start: new Date('2026-05-11'), end: new Date('2026-05-17') };
 
-    // Verify the findMany call uses gte for periodStart
+    // Verify the findMany call uses overlap semantics (lte on periodStart, gte on periodEnd)
     const kpis = await computeOverviewKpis(prisma as never, 'tenant-A', range, {});
 
     expect(prisma.driverSettlement.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          periodStart: expect.objectContaining({ gte: range.start }),
+          periodStart: expect.objectContaining({ lte: range.end }),
+          periodEnd:   expect.objectContaining({ gte: range.start }),
         }),
       }),
     );
@@ -367,14 +370,14 @@ describe('Period boundary handling', () => {
     expect(kpis.totalPayroll.current).toBe('1000.00');
   });
 
-  it('settlement with periodStart one day before boundary is NOT in range (no mock hit)', () => {
-    // The where clause uses `periodStart: { gte: range.start }`.
-    // A settlement with periodStart=2026-05-10 would not satisfy gte 2026-05-11.
-    // We verify this by checking the range boundary (the mock above filtered correctly).
+  it('settlement fully BEFORE range window is excluded by overlap (periodEnd < range.start)', () => {
+    // Overlap semantics: periodEnd >= range.start is required.
+    // A settlement ending before range.start fails this condition → excluded.
+    // Example: settlement May 1-7 does NOT overlap window May 11-17.
     const range = getPeriodRange('this_week', undefined, undefined, new Date('2026-05-13T12:00:00Z'));
-    const dayBeforeStart = new Date('2026-05-10');
-    // dayBeforeStart < range.start → NOT gte → excluded
-    expect(dayBeforeStart < range.start).toBe(true);
+    const settlementPeriodEnd = new Date('2026-05-07'); // ends before window start (May 11)
+    // periodEnd < range.start → NOT gte range.start → excluded by overlap semantics
+    expect(settlementPeriodEnd < range.start).toBe(true);
   });
 });
 
