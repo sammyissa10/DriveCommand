@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-14 - Completed quick-318: Tenant Notification Settings UI (/settings/notifications, /settings/my-notifications, sidebar nav, 12 server actions, tsc passes)
+Last activity: 2026-05-14 - Completed quick-319: Phase 41 Plan 05 - Migrate Existing Senders and Wire Scheduled Notifications (8 send* wrappers, 3 digest cron routes, vercel.json 12 entries, SysAdmin HealthTile, docs/notifications.md)
 Last session: 2026-05-14T19:00:00Z
 Stopped at: Completed quick-318: Tenant notification settings — /settings/notifications 3-tab page (Notifications/Subscribers/Send Log), per-user /settings/my-notifications with useOptimistic toggles, TenantTemplateEditorPanel with restore-to-default, subscriber management, tenant-scoped send log. Added accordion+checkbox shadcn. tsc clean, 15 files.
 
@@ -36461,6 +36461,7 @@ None blocking immediate progress.
 | 313 | Fix Web Date Display Off-by-One on Settlement Pages: formatPayPeriodDate helper (UTC-midnight-safe DATE parsing via local-calendar new Date(y,m,d)), 19-test Vitest suite passing in 4 timezones, wired to all 5 settlement period display sites | 2026-05-14 | 9dbb6d0 | [313-fix-web-date-display-off-by-one-on-settl](./quick/313-fix-web-date-display-off-by-one-on-settl/) |
 | 314 | Fix Bug 42 + Bug 43 — Template Form Navigation Issues: Bug 42 — FacilityForm Cancel prop (onCancel) so Sheet close doesn't navigate away; Bug 43 — RouteTemplateForm unified router.push('/carrier/templates') after save (create + edit) | 2026-05-14 | 8f22706 | [314-fix-bug-42-bug-43-template-form-navigati](./quick/314-fix-bug-42-bug-43-template-form-navigati/) |
 | 318 | Phase 41 Plan 04 - Tenant Notification Settings UI and Per-User Preferences — /settings/notifications (3-tab: Notifications/Subscribers/Send Log), /settings/my-notifications (all roles, useOptimistic), TenantTemplateEditorPanel readonly→customize→restore, 12 server actions, (shared) layout, sidebar Bell+Account nav, accordion+checkbox shadcn added, tsc clean, 15 files | 2026-05-14 | aca81cc | [318-phase-41-plan-04-tenant-notification-set](./quick/318-phase-41-plan-04-tenant-notification-set/) |
+| 319 | Phase 41 Plan 05 - Migrate Existing Senders and Wire Scheduled Notifications — 8 send* senders wrapped with dispatchNotification + legacy fallback, send-reminders cron migrated, 3 digest cron routes (daily-driver-digest, weekly-owner-digest, compliance-30day-digest), vercel.json updated (12 cron entries), SysAdmin HealthTile with topFailingTrigger, docs/notifications.md developer reference | 2026-05-14 | a63dc98 | [319-phase-41-plan-05-migrate-existing-sender](./quick/319-phase-41-plan-05-migrate-existing-sender/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -36617,7 +36618,7 @@ None blocking immediate progress.
 
 ## Session Continuity
 
-Last session: 2026-05-13T21:30:00Z
-Stopped at: Completed quick-304: Driver Pay Phase 8 — settlement generator (Serializable tx, decimal.js, garnishment cap, anomaly detection), 7 REST API routes, 3 owner UI pages + 3 components, 8 test files (52 tests pass)
+Last session: 2026-05-14T20:30:01Z
+Stopped at: Completed quick-319: Phase 41 Plan 05 — Migrate Existing Senders and Wire Scheduled Notifications. 8 send* senders wrapped with dispatchNotification + legacy fallback. send-reminders cron migrated. 3 digest cron routes + vercel.json updated (12 cron entries). SysAdmin health tile. docs/notifications.md created.
 Resume file: None
-Next action: Driver Pay Phase 8 complete — settlement generation, finalize, mark-paid, void, PDF, and anomaly detection fully implemented
+Next action: Phase 41 (Tenant-Configurable Notification System) is fully complete. All 5 plans shipped.
