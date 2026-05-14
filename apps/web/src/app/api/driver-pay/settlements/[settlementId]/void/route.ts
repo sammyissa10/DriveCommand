@@ -40,11 +40,15 @@ export async function POST(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // 2. RBAC — OWNER only
+  // 2. RBAC — OWNER, MANAGER, SYSTEM_ADMIN only
   const role = session.role.toUpperCase();
-  if (role !== UserRole.OWNER && role !== UserRole.SYSTEM_ADMIN) {
+  if (
+    role !== UserRole.OWNER &&
+    role !== UserRole.MANAGER &&
+    role !== UserRole.SYSTEM_ADMIN
+  ) {
     return NextResponse.json(
-      { error: 'Only owners can void settlements.' },
+      { error: 'Only owners and managers can void settlements.' },
       { status: 403 },
     );
   }
@@ -147,10 +151,13 @@ export async function POST(
         notes: voidNotes,
       },
     }),
-    // Release child assignments
+    // Release child assignments — clear settlement link and revert pay_status to APPROVED
     prisma.loadDriverAssignment.updateMany({
       where: { settlementId },
-      data: { settlementId: null },
+      data: {
+        settlementId: null,
+        payStatus: 'APPROVED',
+      },
     }),
     // Release child bonuses
     prisma.driverBonus.updateMany({
