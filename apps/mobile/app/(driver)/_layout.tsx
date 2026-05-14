@@ -11,7 +11,7 @@ Mapbox.setAccessToken(
   (Constants.expoConfig?.extra?.mapboxToken as string | undefined) ??
   ''
 )
-import { House, Truck, MessageSquare, Navigation, Grid2X2, CheckSquare } from 'lucide-react-native'
+import { House, Truck, MessageSquare, Navigation, Grid2X2, CheckSquare, DollarSign } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
@@ -243,7 +243,21 @@ export default function DriverLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
 
-        {/* Tab 3: Map — NEW */}
+        {/* Tab 3: Pay */}
+        <Tabs.Screen
+          name="pay"
+          options={{
+            tabBarLabel: 'Pay',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <DollarSign color={color} size={tabBar.iconSize} />
+              </TabIcon>
+            ),
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
+        />
+
+        {/* Tab 4: Map */}
         <Tabs.Screen
           name="map"
           options={{
@@ -257,7 +271,7 @@ export default function DriverLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
 
-        {/* Tab 4: Messages */}
+        {/* Tab 5: Messages */}
         <Tabs.Screen
           name="messages"
           options={{
@@ -271,7 +285,7 @@ export default function DriverLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
 
-        {/* Tab 5: Tasks */}
+        {/* Tab 6: Tasks */}
         <Tabs.Screen
           name="tasks"
           options={{
@@ -292,7 +306,7 @@ export default function DriverLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
 
-        {/* Tab 6: More */}
+        {/* Tab 7: More */}
         <Tabs.Screen
           name="more"
           options={{
