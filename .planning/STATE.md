@@ -14871,6 +14871,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-307]: Read-only driver pay reporting layer: 1 aggregation lib + 4 API routes + 2 pages + 8 components + 21 Vitest tests; CSV export stubs left for Phase 11
 - [Phase quick-309]: computeDeductionBreakdown aggregates from DriverSettlement.totalDeductions over counted settlements — not DriverDeduction.amountCollected by updatedAt window
 - [Phase quick-309]: TODO(phase-11): SettlementDeduction join table or settlementId FK on DriverDeduction needed for per-line-item settlement attribution
+- [Phase quick]: QuickBooks export uses CSV (General Journal Entry) not IIF — Intuit deprecated IIF for new integrations
+- [Phase quick]: employmentTypeSnapshot stamped at FINALIZED transition from active DriverCompensationTemplate — immutable history for payroll exports
 
 ### Pending Todos
 
