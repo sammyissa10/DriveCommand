@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-14 - Completed quick-313: Fix Web Date Display Off-By-One on Settlement Pages
+Last activity: 2026-05-14 - Completed quick-314: Fix Bug 42 + Bug 43 — Template Form Navigation Issues
 Last session: 2026-05-14T11:53:00Z
 Stopped at: Completed quick-313: formatPayPeriodDate helper (UTC-midnight-safe DATE parsing), 19-test Vitest suite (4 TZs all return May 11, 2026), wired to all 5 settlement period display sites (SettlementListTable, SettlementDetailView, DriverSettlementDetailView, DriverPayPage)
 
@@ -36454,6 +36454,8 @@ None blocking immediate progress.
 | 310 | Driver Pay Phase 11 — Payroll Export (Generic CSV, QuickBooks, ADP, Gusto) with W-2 vs 1099 split: employmentTypeSnapshot field + migration + backfill, 4 streaming exporters (decimal.js), POST /api/reports/payroll-export (ADMIN-only, archiver zip for BOTH), Export Payroll modal (Pattern E + Pattern B blocker), 33 golden assertions + 6 RBAC + 5 audit log tests | 2026-05-14 | d37bc6d | [310-driver-pay-phase-11-payroll-export-gener](./quick/310-driver-pay-phase-11-payroll-export-gener/) |
 | 311 | Phase 11 Hotfix — Backfill employment_type_snapshot on Existing Settlements: root cause (b) WHERE clause too narrow in original migration, idempotent retry migration, eligibility filter fix (VOIDED excluded), modal confirm string pluralized with decimal.js total, 7 regression tests | 2026-05-14 | 3961765 | [311-phase-11-hotfix-backfill-employment-type](./quick/311-phase-11-hotfix-backfill-employment-type/) |
 | 312 | Sidebar Cleanup — Remove Duplicate Legacy Navigation Entries: audited 7 candidate entries, removed 1 (Driver Pay sub-item under Reports pointing to /carrier/reports/driver-pay), no other duplicates found, 0 INVESTIGATE flags, tsc clean | 2026-05-14 | a751fee | [312-sidebar-cleanup-remove-duplicate-legacy-](./quick/312-sidebar-cleanup-remove-duplicate-legacy-/) |
+| 313 | Fix Web Date Display Off-by-One on Settlement Pages: formatPayPeriodDate helper (UTC-midnight-safe DATE parsing via local-calendar new Date(y,m,d)), 19-test Vitest suite passing in 4 timezones, wired to all 5 settlement period display sites | 2026-05-14 | 9dbb6d0 | [313-fix-web-date-display-off-by-one-on-settl](./quick/313-fix-web-date-display-off-by-one-on-settl/) |
+| 314 | Fix Bug 42 + Bug 43 — Template Form Navigation Issues: Bug 42 — FacilityForm Cancel prop (onCancel) so Sheet close doesn't navigate away; Bug 43 — RouteTemplateForm unified router.push('/carrier/templates') after save (create + edit) | 2026-05-14 | 8f22706 | [314-fix-bug-42-bug-43-template-form-navigati](./quick/314-fix-bug-42-bug-43-template-form-navigati/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
