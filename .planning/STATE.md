@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-14 - Completed quick-317: SysAdmin Notification Management UI (/notifications page, BlockEditor, VariablePicker, SandboxedPreview, 3 tabs, build passed)
-Last session: 2026-05-14T18:19:30Z
-Stopped at: Completed quick-317: SysAdmin notifications page — /notifications with 3 tabs (Templates/Email Config/Send Log), BlockEditor (Tiptap + mention chips, bidirectional {{token}} ↔ mention JSON walker), VariablePicker, SandboxedPreview (debounced 250ms), TanStack Table, KPI cards, send log with expandable FAILED rows. Build passed, admin nav updated.
+Last activity: 2026-05-14 - Completed quick-318: Tenant Notification Settings UI (/settings/notifications, /settings/my-notifications, sidebar nav, 12 server actions, tsc passes)
+Last session: 2026-05-14T19:00:00Z
+Stopped at: Completed quick-318: Tenant notification settings — /settings/notifications 3-tab page (Notifications/Subscribers/Send Log), per-user /settings/my-notifications with useOptimistic toggles, TenantTemplateEditorPanel with restore-to-default, subscriber management, tenant-scoped send log. Added accordion+checkbox shadcn. tsc clean, 15 files.
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
