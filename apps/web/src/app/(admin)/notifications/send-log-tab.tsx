@@ -11,6 +11,7 @@ import {
   type SendLogRow,
 } from '@/app/(admin)/actions/notifications';
 import type { NotificationSendStatus } from '@/generated/prisma';
+import { HealthTile } from './health-tile';
 
 // ---------------------------------------------------------------------------
 // Status badge
@@ -124,6 +125,9 @@ export function SendLogTab({ initialStats, initialRows, initialTotal }: SendLogT
 
   return (
     <div className="space-y-6">
+      {/* Health Tile — last-24h sent/failed/failure rate */}
+      <HealthTile />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Sent Today" value={initialStats.sentToday} />

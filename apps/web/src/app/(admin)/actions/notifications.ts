@@ -310,10 +310,17 @@ export type SendLogStats = {
   failedToday: number;
   sent30d: number;
   failureRate: number;
+  /**
+   * The triggerKey with the most FAILED rows in the last 24 hours.
+   * Only populated when at least one failure exists; null otherwise.
+   * Used by the HealthTile to surface the top failing trigger when failure rate > 5%.
+   */
+  topFailingTrigger: string | null;
 };
 
 /**
  * KPI stats for the send log dashboard.
+ * Extended in Phase 41 Plan 05 to include topFailingTrigger for the HealthTile.
  */
 export async function getNotificationSendLogStats(): Promise<SendLogStats> {
   await requireAdminAccess();
@@ -322,10 +329,12 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
   const todayStart = new Date(now);
   todayStart.setHours(0, 0, 0, 0);
 
+  const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(now.getDate() - 30);
 
-  const [sentToday, failedToday, sent30d, failed30d] = await Promise.all([
+  const [sentToday, failedToday, sent30d, failed30d, failedByTrigger] = await Promise.all([
     prisma.notificationSendLog.count({
       where: { status: 'SENT', createdAt: { gte: todayStart } },
     }),
@@ -338,12 +347,23 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
     prisma.notificationSendLog.count({
       where: { status: 'FAILED', createdAt: { gte: thirtyDaysAgo } },
     }),
+    // Group FAILED rows by triggerKey in the last 24h to find the top offender
+    prisma.notificationSendLog.groupBy({
+      by: ['triggerKey'],
+      where: { status: 'FAILED', createdAt: { gte: last24h } },
+      _count: { triggerKey: true },
+      orderBy: { _count: { triggerKey: 'desc' } },
+      take: 1,
+    }),
   ]);
 
   const total30d = sent30d + failed30d;
   const failureRate = total30d > 0 ? Math.round((failed30d / total30d) * 100) : 0;
 
-  return { sentToday, failedToday, sent30d, failureRate };
+  const topFailingTrigger =
+    failedByTrigger.length > 0 ? failedByTrigger[0].triggerKey : null;
+
+  return { sentToday, failedToday, sent30d, failureRate, topFailingTrigger };
 }
 
 // ---------------------------------------------------------------------------
