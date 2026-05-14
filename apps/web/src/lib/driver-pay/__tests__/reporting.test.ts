@@ -23,6 +23,7 @@ import {
   computeOverviewKpis,
   computeNetPayTrend,
   computeDriverDetail,
+  computeDeductionBreakdown,
   type PeriodRange,
   type ReportFilters,
 } from '../reporting';
@@ -510,5 +511,140 @@ describe('computeDriverDetail — YTD bonuses via settlementId', () => {
     const result = await computeDriverDetail(prisma as never, TENANT, DRIVER_ID, 2026);
     expect(result).not.toBeNull();
     expect(result!.ytd.earnings).toBe('641.13');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeDriverDetail — cascade revert & unsettled-installment exclusion (quick-309)
+// ---------------------------------------------------------------------------
+
+describe('computeDriverDetail — cascade revert when PAID settlement is voided (quick-309)', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('19. YTD bonuses = $0.00 when the PAID settlement is voided (cascade revert via settlementId)', async () => {
+    // Scenario: Settlement A is VOIDED instead of PAID.
+    // 'approved' scope = FINALIZED + PAID → Settlement A NOT counted → ytdSettlementIds = []
+    // Bonus query is skipped (Promise.resolve([])) → ytd.bonuses = $0.00
+    //
+    // Even though bonusC has settlementId = SETTLEMENT_A_ID, the predicate filters
+    // out the settlement first, so the bonus has no counted parent → not aggregated.
+    const prisma = makePrisma({
+      currentSettlements: [],          // Settlement A is VOIDED, not in 'approved' scope
+      bonusesForCurrentIds: [],        // bonus query should be skipped
+      deductions: [],
+      carrierDriver: { id: DRIVER_ID, firstName: 'Sammy', lastName: 'Issa', payModel: 'CONTRACTOR' },
+    });
+
+    const result = await computeDriverDetail(prisma as never, TENANT, DRIVER_ID, 2026);
+    expect(result).not.toBeNull();
+    expect(result!.ytd.bonuses).toBe('0.00');
+    expect(result!.ytd.earnings).toBe('0.00');
+
+    // The bonus query must NOT be called when no settlements are counted
+    expect(prisma.driverBonus.findMany).not.toHaveBeenCalled();
+  });
+
+  it('20. YTD bonuses excludes unsettled master installments (settlementId = null) even when triggerDate is in YTD', async () => {
+    // bonusD/E/F all have triggerDate in 2026 AND settlementId = null.
+    // A pre-fix triggerDate-window query would sum these into ytd.bonuses.
+    // The fixed code uses settlementId join — DB-level filter excludes settlementId=null rows
+    // when settlementId: { in: [SETTLEMENT_A_ID] } is applied → mock returns only [bonusC].
+    const prisma = makePrisma({
+      currentSettlements: [settlementA],
+      // Mock represents DB result: only bonusC matches settlementId IN ([SETTLEMENT_A_ID]).
+      // bonusD/E/F (settlementId=null) are filtered out by the DB and never reach the function.
+      bonusesForCurrentIds: [bonusC],
+      deductions: [],
+      carrierDriver: { id: DRIVER_ID, firstName: 'Sammy', lastName: 'Issa', payModel: 'CONTRACTOR' },
+    });
+
+    const result = await computeDriverDetail(prisma as never, TENANT, DRIVER_ID, 2026);
+    expect(result).not.toBeNull();
+    expect(result!.ytd.bonuses).toBe('333.33');
+
+    // Verify the bonus query passes settlementId IN ([SETTLEMENT_A_ID]) — not triggerDate.
+    expect(prisma.driverBonus.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          settlementId: expect.objectContaining({
+            in: expect.arrayContaining([SETTLEMENT_A_ID]),
+          }),
+        }),
+      }),
+    );
+    const bonusCallArg = (prisma.driverBonus.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(bonusCallArg.where).not.toHaveProperty('triggerDate');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeDeductionBreakdown — counted-settlement gated (quick-309)
+// ---------------------------------------------------------------------------
+
+describe('computeDeductionBreakdown — counted-settlement gated (quick-309)', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('21. returns [] for a window with no counted PAID settlements, even when DriverDeduction.updatedAt is recent', async () => {
+    // SCENARIO: A window that does NOT overlap Settlement A (PAID May 9-15).
+    // E.g. April 1 - April 30 — no PAID settlement overlaps.
+    // deductionG has updatedAt May 14 (recent), but the function must IGNORE it
+    // because there are no counted settlements driving the aggregation.
+    //
+    // Pre-fix bug: queried DriverDeduction by updatedAt window — would have returned
+    //   the $100.00 STANDARD bucket for an April window because updatedAt May 14 was
+    //   "recent enough" (depending on exact filter — but conceptually wrong).
+    // Post-fix: countedSettlements is empty → function returns [] immediately.
+
+    const APRIL_WINDOW: PeriodRange = {
+      start: new Date('2026-04-01'),
+      end:   new Date('2026-04-30'),
+    };
+
+    const prisma = makePrisma({
+      currentSettlements: [],          // No PAID settlements overlap April 2026
+      deductions: [deductionG],        // updatedAt May 14 — irrelevant to April window
+    });
+
+    const result = await computeDeductionBreakdown(prisma as never, TENANT, APRIL_WINDOW, {});
+    expect(result).toEqual([]);
+
+    // The function must NOT fall back to DriverDeduction.updatedAt — verify by checking
+    // that driverDeduction.findMany was never even called (short-circuited at empty settlements).
+    expect(prisma.driverDeduction.findMany).not.toHaveBeenCalled();
+  });
+
+  it('22. aggregates DriverSettlement.totalDeductions over counted settlements (NOT DriverDeduction.amountCollected by updatedAt window)', async () => {
+    // SCENARIO: May 11-27 window. Settlement A (PAID, $100 totalDeductions) is counted.
+    // SAMMY has one DriverDeduction row (STANDARD, amountCollected $100).
+    // Expected breakdown: [{ deductionType: 'STANDARD', total: '100.00' }]
+    //   (100% of the $100 settlement totalDeductions attributed to the single STANDARD type)
+    //
+    // Verifies:
+    //   - Money source is DriverSettlement.totalDeductions (not DriverDeduction.amountCollected sum)
+    //   - DriverDeduction is queried WITHOUT an updatedAt filter (type lookup only)
+
+    const prisma = makePrisma({
+      currentSettlements: [settlementA],   // PAID, totalDeductions $100
+      deductions: [deductionG],             // STANDARD type for SAMMY
+    });
+
+    const result = await computeDeductionBreakdown(prisma as never, TENANT, RANGE_MAY_11_27, {});
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({ deductionType: 'STANDARD', total: '100.00' });
+
+    // Verify DriverDeduction was queried by driverId (no updatedAt window)
+    expect(prisma.driverDeduction.findMany).toHaveBeenCalled();
+    const deductionCallArg = (prisma.driverDeduction.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(deductionCallArg.where).not.toHaveProperty('updatedAt');
+    expect(deductionCallArg.where).toHaveProperty('driverId');
+
+    // Verify settlement query uses the canonical payroll_out predicate (PAID only)
+    expect(prisma.driverSettlement.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          status: expect.objectContaining({ in: expect.arrayContaining(['PAID']) }),
+        }),
+      }),
+    );
   });
 });
