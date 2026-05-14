@@ -7892,6 +7892,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-305]: Replaced blanket unique constraint on driver_settlements with partial unique index excluding VOIDED and soft-deleted rows
 - [Phase quick-305]: Void route now accepts MANAGER role and resets released assignment payStatus to APPROVED inside the existing transaction
 - [Phase quick-306]: DriverDispute model pre-existing in schema (no migration needed); dual-auth helper requireDriverContext() handles both Supabase cookie and Bearer token; CarrierDriver uses orgId not tenantId
+- [Phase quick-307]: Read-only driver pay reporting layer: 1 aggregation lib + 4 API routes + 2 pages + 8 components + 21 Vitest tests; CSV export stubs left for Phase 11
 
 ### Pending Todos
 
