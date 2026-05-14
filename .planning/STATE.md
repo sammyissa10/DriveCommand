@@ -4401,6 +4401,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 52-02]: scheduleCronDrivenRule() uses lifetime dedup (runOncePerTenant=true) for onboarding nudges; windowed dedup (20h window on firedAt+PENDING.scheduledAt) for trial_ending_soon
 - [Phase quick-290]: Skip shiki syntax highlighting to reduce bundle weight - use simple monospace with copy button
 - [Phase quick-300]: Storage abstraction facade over s3-client.ts enables future Supabase Storage swap without API/UI changes
+- [Phase quick-305]: Replaced blanket unique constraint on driver_settlements with partial unique index excluding VOIDED and soft-deleted rows
+- [Phase quick-305]: Void route now accepts MANAGER role and resets released assignment payStatus to APPROVED inside the existing transaction
 
 ### Pending Todos
 
