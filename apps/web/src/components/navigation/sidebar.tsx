@@ -332,6 +332,16 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname.startsWith("/carrier/driver-pay/reports")}
+                        >
+                          <Link href="/carrier/driver-pay/reports" onClick={handleNavClick}>
+                            Reports
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                 )}

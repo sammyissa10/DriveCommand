@@ -390,7 +390,11 @@ export type DriverBonus = $Result.DefaultSelection<Prisma.$DriverBonusPayload>
 export type DriverDeduction = $Result.DefaultSelection<Prisma.$DriverDeductionPayload>
 /**
  * Model DriverSettlement
- * 
+ * Note: partial unique index `ds_unique_period_active` on
+ * (driver_id, period_start, period_end) WHERE deleted_at IS NULL AND status <> 'VOIDED'
+ * is defined manually in migration 20260514000001_driver_settlements_partial_unique
+ * because Prisma does not support partial unique indexes natively.
+ * @@unique partial — do NOT add @@unique([driverId, periodStart, periodEnd]) here.
  */
 export type DriverSettlement = $Result.DefaultSelection<Prisma.$DriverSettlementPayload>
 /**
@@ -128225,7 +128229,6 @@ export namespace Prisma {
 
   export type DriverSettlementWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    driverId_periodStart_periodEnd?: DriverSettlementDriverIdPeriodStartPeriodEndCompoundUniqueInput
     AND?: DriverSettlementWhereInput | DriverSettlementWhereInput[]
     OR?: DriverSettlementWhereInput[]
     NOT?: DriverSettlementWhereInput | DriverSettlementWhereInput[]
@@ -128252,7 +128255,7 @@ export namespace Prisma {
     driver?: XOR<CarrierDriverScalarRelationFilter, CarrierDriverWhereInput>
     assignments?: LoadDriverAssignmentListRelationFilter
     bonuses?: DriverBonusListRelationFilter
-  }, "id" | "driverId_periodStart_periodEnd">
+  }, "id">
 
   export type DriverSettlementOrderByWithAggregationInput = {
     id?: SortOrder
@@ -146575,12 +146578,6 @@ export namespace Prisma {
     in?: $Enums.DriverSettlementStatus[] | ListEnumDriverSettlementStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.DriverSettlementStatus[] | ListEnumDriverSettlementStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumDriverSettlementStatusFilter<$PrismaModel> | $Enums.DriverSettlementStatus
-  }
-
-  export type DriverSettlementDriverIdPeriodStartPeriodEndCompoundUniqueInput = {
-    driverId: string
-    periodStart: Date | string
-    periodEnd: Date | string
   }
 
   export type DriverSettlementCountOrderByAggregateInput = {
