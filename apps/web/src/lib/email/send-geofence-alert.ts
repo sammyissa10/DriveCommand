@@ -1,16 +1,17 @@
 /**
- * WRAPPER (Phase 41 Plan 05): This file intentionally stays on the legacy path.
- * No `truck.geofence` trigger key exists in the notification system yet.
- * Dispatcher migration is deferred until that trigger is added in a future phase.
- * The function signature is unchanged so no call sites need to be updated.
+ * WRAPPER (Phase 41 Cleanup quick-322): This file now routes through dispatchNotification.
+ * The original implementation is preserved below as `legacySendGeofenceAlert` and serves as the
+ * fallback path inside the try/catch. Do NOT delete — slated for cleanup after
+ * two weeks of stable production operation.
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendEmail } from './gmail-client';
 import { GeofenceArrivalAlert } from '@/emails/geofence-arrival-alert';
+import { dispatchNotification } from '@/lib/notifications/dispatcher';
 
 export interface GeofenceAlertData {
-  tenantId: string;
+  tenantId: string;        // already required — keep required
   loadId: string;
   loadNumber: string;
   stopType: 'pickup' | 'delivery';
@@ -20,13 +21,32 @@ export interface GeofenceAlertData {
 }
 
 /**
- * Send arrival alert to all OWNER and MANAGER users in the tenant.
- * Throws on failure so caller can catch and log.
- *
- * NOTE: No dispatcher migration — stays on legacy path until a `truck.geofence`
- * trigger key is added to the notification system.
+ * Send geofence arrival alert to dispatchers.
+ * Routes through dispatchNotification (tenant-aware). Falls back to legacy Gmail SMTP only when
+ * the dispatcher itself throws.
  */
 export async function sendGeofenceAlert(data: GeofenceAlertData): Promise<void> {
+  try {
+    await dispatchNotification('geofence.alert', {
+      tenantId: data.tenantId,
+      payload: {
+        loadId: data.loadId,
+        loadNumber: data.loadNumber,
+        stopType: data.stopType,
+        stopAddress: data.stopAddress,
+        driverName: data.driverName,
+        licensePlate: data.licensePlate,
+      },
+      relatedEntity: { type: 'Load', id: data.loadId },
+    });
+  } catch (err) {
+    console.warn('[notifications] dispatcher failed, falling back to legacy geofence sender', err);
+    await legacySendGeofenceAlert(data);
+  }
+}
+
+/** Legacy implementation — preserved as fallback. Original Phase-20 code. */
+async function legacySendGeofenceAlert(data: GeofenceAlertData): Promise<void> {
   // Find dispatcher email addresses (bypass RLS — called from non-session context)
   const dispatchers = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
