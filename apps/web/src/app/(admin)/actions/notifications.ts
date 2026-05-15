@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { NotificationSendStatus } from '@/generated/prisma';
-import { renderTemplate } from '@/lib/notifications/template-renderer';
 import type { VariableDef } from '@/lib/notifications/types';
 
 // ---------------------------------------------------------------------------
@@ -58,41 +57,25 @@ export async function getNotificationTemplate(id: string) {
 }
 
 /**
- * Update a template's subject and blockJson, then regenerate the HTML cache.
+ * Update a template's subject, blockJson, and pre-rendered HTML cache.
+ *
+ * The cachedHtml is produced in the browser by editor.getHTML() at save time
+ * (quick-task-335 — Tiptap no longer runs on the server).
  */
 export async function updateNotificationTemplate(
   id: string,
-  data: { defaultSubject: string; defaultBlockJson: unknown },
+  data: { defaultSubject: string; defaultBlockJson: unknown; cachedHtml: string },
 ): Promise<{ success: true } | { success: false; error: string }> {
   await requireAdminAccess();
 
   try {
-    // Fetch current template to get availableVariables for sample payload
-    const template = await prisma.notificationTemplate.findUniqueOrThrow({
-      where: { id },
-      select: { availableVariables: true },
-    });
-
-    const vars = template.availableVariables as VariableDef[];
-    const samplePayload: Record<string, string> = {};
-    for (const v of vars) {
-      samplePayload[v.name] = v.sampleValue;
-    }
-
-    // Regenerate HTML cache with the new content
-    const { html: defaultHtmlCache } = await renderTemplate(
-      data.defaultBlockJson,
-      samplePayload,
-      data.defaultSubject,
-    );
-
     await prisma.notificationTemplate.update({
       where: { id },
       data: {
         defaultSubject: data.defaultSubject,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         defaultBlockJson: data.defaultBlockJson as any,
-        defaultHtmlCache,
+        defaultHtmlCache: data.cachedHtml,
       },
     });
 
@@ -366,26 +349,3 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
   return { sentToday, failedToday, sent30d, failureRate, topFailingTrigger };
 }
 
-// ---------------------------------------------------------------------------
-// Preview action
-// ---------------------------------------------------------------------------
-
-/**
- * Build a sample HTML preview of a template using its sample variable values.
- * Used by the SandboxedPreview component in the BlockEditor.
- */
-export async function renderNotificationTemplatePreview(
-  blockJson: unknown,
-  subject: string,
-  availableVariables: Array<{ name: string; sampleValue: string }>,
-): Promise<{ html: string }> {
-  await requireAdminAccess();
-
-  const samplePayload: Record<string, string> = {};
-  for (const v of availableVariables) {
-    samplePayload[v.name] = v.sampleValue;
-  }
-
-  const { html } = await renderTemplate(blockJson, samplePayload, subject);
-  return { html };
-}

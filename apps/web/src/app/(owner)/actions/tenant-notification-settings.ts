@@ -7,7 +7,6 @@ import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { createTenantClient } from '@/lib/db/tenant-client';
-import { renderTemplate } from '@/lib/notifications/template-renderer';
 import type { VariableDef } from '@/lib/notifications/types';
 import {
   NotificationSendStatus,
@@ -207,6 +206,7 @@ export async function customizeTemplate(
   triggerKey: string,
   blockJson: unknown,
   subject: string,
+  cachedHtml: string,
 ): Promise<{ success: true } | { success: false; error: string }> {
   const { tenantId } = await requireTenantAccess();
 
@@ -221,19 +221,6 @@ export async function customizeTemplate(
   }
 
   try {
-    const template = await prisma.notificationTemplate.findUniqueOrThrow({
-      where: { triggerKey },
-      select: { availableVariables: true },
-    });
-
-    const vars = template.availableVariables as VariableDef[];
-    const samplePayload: Record<string, string> = {};
-    for (const v of vars) {
-      samplePayload[v.name] = v.sampleValue;
-    }
-
-    const { html: customHtmlCache } = await renderTemplate(blockJson, samplePayload, subject);
-
     const tenantDb = await getTenantPrisma();
     await tenantDb.tenantNotificationSettings.upsert({
       where: { tenantId_triggerKey: { tenantId, triggerKey } },
@@ -244,13 +231,13 @@ export async function customizeTemplate(
         customSubject: subject,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         customBlockJson: blockJson as any,
-        customHtmlCache,
+        customHtmlCache: cachedHtml,
       },
       update: {
         customSubject: subject,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         customBlockJson: blockJson as any,
-        customHtmlCache,
+        customHtmlCache: cachedHtml,
       },
     });
 

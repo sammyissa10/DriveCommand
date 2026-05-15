@@ -61,8 +61,8 @@ export function TenantTemplateEditorPanel({
     availableVariables: template.availableVariables as VariableDef[],
   };
 
-  const handleSave = async (blockJson: unknown, subject: string) => {
-    const result = await customizeTemplate(template.triggerKey, blockJson, subject);
+  const handleSave = async (blockJson: unknown, subject: string, cachedHtml: string) => {
+    const result = await customizeTemplate(template.triggerKey, blockJson, subject, cachedHtml);
     if (result.success) {
       toast.success('Template saved');
       onUpdated({

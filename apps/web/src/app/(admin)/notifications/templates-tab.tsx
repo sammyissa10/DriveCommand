@@ -80,11 +80,12 @@ export function TemplatesTab({ templates }: TemplatesTabProps) {
     router.refresh();
   };
 
-  const handleSave = async (blockJson: unknown, subject: string) => {
+  const handleSave = async (blockJson: unknown, subject: string, cachedHtml: string) => {
     if (!selectedTemplate) return;
     await updateNotificationTemplate(selectedTemplate.id, {
       defaultSubject: subject,
       defaultBlockJson: blockJson,
+      cachedHtml,
     });
     router.refresh();
     setSheetOpen(false);

@@ -113,6 +113,9 @@ function makeActiveTemplate(overrides: Record<string, unknown> = {}) {
         },
       ],
     },
+    // quick-task-335: dispatcher now reads defaultHtmlCache (browser-rendered cache)
+    // instead of calling Tiptap's generateHTML on the server.
+    defaultHtmlCache: '<p>Hello {{varA}}</p>',
     defaultRecipients: [],
     ...overrides,
   };
@@ -295,6 +298,8 @@ describe('dispatchNotification', () => {
     db.notificationTemplate.findUnique.mockResolvedValue(
       makeActiveTemplate({
         defaultBlockJson: blockJson,
+        // quick-task-335: pre-rendered HTML cache (as if editor.getHTML() was called at save time)
+        defaultHtmlCache: '<p>Hi {{driverName}}</p>',
         defaultSubject: 'Welcome {{driverName}}',
         defaultRecipients: [{ type: 'related', payloadKey: 'driverId' }],
       }),

@@ -31,7 +31,12 @@ interface BlockEditorProps {
     availableVariables: unknown; // cast to VariableDef[]
   };
   readOnly?: boolean;
-  onSave: (blockJson: unknown, subject: string) => Promise<void> | void;
+  /**
+   * Called when the user saves the template.
+   * cachedHtml is produced by editor.getHTML() with mention spans post-processed
+   * back to {{varName}} tokens — ready for the dispatcher's substituteVariables call.
+   */
+  onSave: (blockJson: unknown, subject: string, cachedHtml: string) => Promise<void> | void;
   onCancel: () => void;
   onRestoreDefault?: () => void;
 }
@@ -219,23 +224,39 @@ export function BlockEditor({
     try {
       const rawJson = editor.getJSON();
       const cleanJson = mentionsToPlainText(rawJson as TiptapNode);
-      await onSave(cleanJson, subject);
+
+      // Get the browser-rendered HTML from the editor. The Mention extension's
+      // renderHTML config produces <span data-mention="varName">{{varName}}</span>.
+      // Post-process these spans back to bare {{varName}} tokens so the dispatcher's
+      // substituteVariables can replace them during actual email sends.
+      const rawHtml = editor.getHTML();
+      const cachedHtml = rawHtml.replace(
+        /<span[^>]+data-mention="([^"]+)"[^>]*>\{\{[^}]+\}\}<\/span>/g,
+        '{{$1}}',
+      );
+
+      await onSave(cleanJson, subject, cachedHtml);
     } finally {
       setIsSaving(false);
     }
     onCancel();
   }, [editor, subject, onSave, onCancel]);
 
-  // Live preview uses the current editor state
-  const previewBlockJson = useMemo(() => {
-    if (!editor) return template.defaultBlockJson;
+  // Live preview: get current editor HTML with mention spans post-processed to {{varName}}
+  // so SandboxedPreview can substitute sample values client-side.
+  const previewHtml = useMemo(() => {
+    if (!editor) return '';
     try {
-      return mentionsToPlainText(editor.getJSON() as TiptapNode);
+      const rawHtml = editor.getHTML();
+      return rawHtml.replace(
+        /<span[^>]+data-mention="([^"]+)"[^>]*>\{\{[^}]+\}\}<\/span>/g,
+        '{{$1}}',
+      );
     } catch {
-      return template.defaultBlockJson;
+      return '';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor?.state, template.defaultBlockJson]);
+  }, [editor?.state]);
 
   return (
     <div className="flex flex-col h-full gap-3">
@@ -278,7 +299,7 @@ export function BlockEditor({
         {/* Right: Sandboxed preview */}
         <div className="w-64 shrink-0 flex flex-col border border-gray-200 rounded-md p-2 bg-gray-50">
           <SandboxedPreview
-            blockJson={previewBlockJson}
+            html={previewHtml}
             subject={subject}
             availableVariables={vars}
           />
