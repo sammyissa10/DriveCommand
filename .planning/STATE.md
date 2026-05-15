@@ -65308,6 +65308,8 @@ None blocking immediate progress.
 | 324 | Fix Send Log Tab Crash - Radix Select Empty Value Violation in /settings/notifications and /admin/notifications Send Log tabs | 2026-05-15 | e095bb8 | [324-fix-send-log-tab-crash-radix-select-empt](./quick/324-fix-send-log-tab-crash-radix-select-empt/) |
 | 326 | DB security audit script - read-only tenant audit against DatabaseSecurity_MultiTenant_Spec_v1.md | 2026-05-15 | 1ce0a69 | [326-db-security-audit-script-read-only-tenan](./quick/326-db-security-audit-script-read-only-tenan/) |
 | 327 | DB security standardization - RLS, FORCE RLS, policies, and indexes for all 77 tenant-scoped tables | 2026-05-15 | d4a8a40 | [327-db-security-standardization-rls-force-rl](./quick/327-db-security-standardization-rls-force-rl/) |
+| 328 | Lock in cross-tenant leak fix — raw-Prisma scanner + CI gate + 5 dropdown isolation regression tests (spec §6.3) | 2026-05-15 | 626b2f7 | [328-lock-in-cross-tenant-leak-fix-raw-prisma](./quick/328-lock-in-cross-tenant-leak-fix-raw-prisma/) |
+| 329 | Field-level AES-256-GCM encryption for carrier_drivers.cdl_number — crypto wrapper, key registry, audit_log table (RLS+append-only), dual-write, RBAC-gated decrypt, 1-row backfill verified (PR1 of 2) | 2026-05-15 | 1ce74f6 | [329-add-field-level-aes-256-gcm-encryption-i](./quick/329-add-field-level-aes-256-gcm-encryption-i/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
