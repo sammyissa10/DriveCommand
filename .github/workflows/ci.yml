@@ -39,3 +39,7 @@ jobs:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+
+      - name: Raw Prisma usage audit
+        run: npm run audit:raw-prisma
+        working-directory: apps/web

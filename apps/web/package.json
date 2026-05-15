@@ -17,6 +17,7 @@
     "seed:fleet": "tsx prisma/seeds/seed-fleet-intelligence.ts",
     "seed:notifications": "tsx prisma/seeds/seed-notifications.ts",
     "generate:openapi": "npx tsx scripts/generate-openapi.ts",
+    "audit:raw-prisma": "tsx scripts/audit/raw-prisma-usage.ts",
     "check:docs": "tsx scripts/check-doc-drift.ts"
   },
   "dependencies": {

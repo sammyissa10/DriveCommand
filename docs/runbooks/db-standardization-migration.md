@@ -100,3 +100,14 @@ WHERE n.nspname = 'public' AND c.relkind = 'r'
 - Mixed naming convention is preserved (`org_id` for carrier_* and Driver Pay tables, `tenantId` for older PascalCase tables). Spec mandates DB column = `snake_case`, but renaming would require a full app-wide find/replace and a multi-PR migration. Decision: standardize naming in a separate phase. RLS works with both.
 - `bypass_rls_policy` uses `current_setting('app.bypass_rls', TRUE) = 'on'` (text comparison, no cast) to match the existing pattern in `00000000000000_init/migration.sql` line 69.
 - `CREATE INDEX CONCURRENTLY` was replaced with `CREATE INDEX` because Prisma `migrate deploy` wraps everything in a transaction block. Non-concurrent indexing is acceptable for these table sizes.
+
+## Raw Prisma usage gate (quick-328)
+
+After the standardization migration, any new feature code that calls `prisma.$queryRaw`, `$executeRaw`, `$queryRawUnsafe`, or instantiates `new PrismaClient(` bypasses the tenant-scoped client and reopens the dropdown-leak class of bugs. To prevent regression:
+
+- Static gate: `npm run audit:raw-prisma` (from `apps/web/`) — writes `docs/audits/raw-prisma-usage.md` and exits non-zero on any `LEAK_RISK` finding.
+- CI: runs on every PR after Vitest.
+- Allowlist: infrastructure files (`lib/db/*`, `lib/context/tenant-context.ts`), migrations, scripts/, and reporting endpoints that explicitly call `requireTenantContext` first. See `scripts/audit/raw-prisma-usage.ts` for the canonical list.
+- If a new file legitimately needs raw SQL (reporting/analytics): place it under `src/lib/reports/` or `src/app/api/reports/`, call `requireTenantId()` / `tenantRawQuery()` first, and the audit will classify it as `INTENTIONAL_ALLOWED`. Do not edit the allowlist to whitelist feature code.
+
+Dropdown regression coverage: `apps/web/tests/isolation/dropdowns.test.ts` seeds 3 rows per tenant in Load, Truck, CarrierDriver, CarrierClient, CarrierFacility and asserts the tenant-scoped query returns exactly 3, all belonging to the calling tenant. Spec §6.3.
