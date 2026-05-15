@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-15 - Completed quick-324: Fix Send Log Tab Crash - Radix Select Empty Value Violation in /settings/notifications and /admin/notifications Send Log tabs
+Last activity: 2026-05-15 - Completed quick-326: DB security audit script - read-only tenant audit against DatabaseSecurity_MultiTenant_Spec_v1.md
 Last session: 2026-05-14T19:00:00Z
 Stopped at: Completed quick-318: Tenant notification settings — /settings/notifications 3-tab page (Notifications/Subscribers/Send Log), per-user /settings/my-notifications with useOptimistic toggles, TenantTemplateEditorPanel with restore-to-default, subscriber management, tenant-scoped send log. Added accordion+checkbox shadcn. tsc clean, 15 files.
 
@@ -36467,6 +36467,7 @@ None blocking immediate progress.
 | 321 | Fix Dispatcher Recipient Resolver - UUID Confusion on Invitation Triggers — added external_email rule type to DefaultRecipientRule union; resolver promotes email to User-backed when found, returns userId=null for pre-User invitations; dispatcher skips in-app branch for null userId; both invitation seeds updated; 6 new unit tests passing; tsc clean, build green | 2026-05-14 | 870590f | [321-fix-dispatcher-recipient-resolver-uuid-c](./quick/321-fix-dispatcher-recipient-resolver-uuid-c/) |
 | 323 | P0 cross-tenant data leak and broken Send Log tab fix — listTenantUsers switched to createTenantClient(sessionTenantId) eliminating header/session divergence; listTenantSendLog + getTenantSendLogStats removed deprecated $transaction+$executeRaw bypass_rls pattern (P2028 deadlock risk per tenant-rls.ts comment), replaced with createTenantClient + Promise.all; tsc clean, build green | 2026-05-15 | fbbb53c | [323-p0-cross-tenant-data-leak-and-broken-sen](./quick/323-p0-cross-tenant-data-leak-and-broken-sen/) |
 | 324 | Fix Send Log Tab Crash - Radix Select Empty Value Violation in /settings/notifications and /admin/notifications Send Log tabs | 2026-05-15 | e095bb8 | [324-fix-send-log-tab-crash-radix-select-empt](./quick/324-fix-send-log-tab-crash-radix-select-empt/) |
+| 326 | DB security audit script - read-only tenant audit against DatabaseSecurity_MultiTenant_Spec_v1.md | 2026-05-15 | 1ce0a69 | [326-db-security-audit-script-read-only-tenan](./quick/326-db-security-audit-script-read-only-tenan/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
