@@ -2,6 +2,24 @@ import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: [
+    '@tiptap/core',
+    '@tiptap/extension-bold',
+    '@tiptap/extension-bullet-list',
+    '@tiptap/extension-document',
+    '@tiptap/extension-hard-break',
+    '@tiptap/extension-heading',
+    '@tiptap/extension-italic',
+    '@tiptap/extension-link',
+    '@tiptap/extension-list-item',
+    '@tiptap/extension-ordered-list',
+    '@tiptap/extension-paragraph',
+    '@tiptap/extension-text',
+    '@tiptap/html',
+    'prosemirror-model',
+    'prosemirror-state',
+    'prosemirror-transform',
+  ],
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
