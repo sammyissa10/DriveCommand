@@ -124,6 +124,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
   await tx.playbookStep.createMany({
     data: [
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: uploadLicense.id,
         sequence: 1,
@@ -131,6 +132,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: uploadMedical.id,
         sequence: 2,
@@ -138,6 +140,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: drugTest.id,
         sequence: 3,
@@ -145,6 +148,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: applicationForm.id,
         sequence: 4,
@@ -152,6 +156,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: fmcsaQuery.id,
         sequence: 5,
@@ -160,6 +165,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         dueDaysFromStart: 3,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: mvrCheck.id,
         sequence: 6,
@@ -168,6 +174,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         dueDaysFromStart: 3,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: safetyAck.id,
         sequence: 7,
@@ -175,6 +182,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         isDispatchBlocker: false,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: eldTraining.id,
         sequence: 8,
@@ -182,6 +190,7 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
         isDispatchBlocker: false,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: driverSignature.id,
         sequence: 9,
@@ -281,6 +290,7 @@ async function createPreTripInspection(tx: TxClient, tenantId: string): Promise<
 
   const stepData = [
     ...inspectionTemplates.map((t, i) => ({
+      tenantId,
       playbookId: playbook.id,
       stepTemplateId: t.id,
       sequence: i + 1,
@@ -288,6 +298,7 @@ async function createPreTripInspection(tx: TxClient, tenantId: string): Promise<
       isDispatchBlocker: true,
     })),
     {
+      tenantId,
       playbookId: playbook.id,
       stepTemplateId: signatureTemplate.id,
       sequence: 12,
@@ -387,6 +398,7 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
   await tx.playbookStep.createMany({
     data: [
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: uploadW9.id,
         sequence: 1,
@@ -394,6 +406,7 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: uploadCOI.id,
         sequence: 2,
@@ -401,6 +414,7 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: uploadLetterOfAuthority.id,
         sequence: 3,
@@ -408,6 +422,7 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: brokerAgreement.id,
         sequence: 4,
@@ -415,6 +430,7 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
         isDispatchBlocker: true,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: paymentTerms.id,
         sequence: 5,
@@ -422,6 +438,7 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
         isDispatchBlocker: false,
       },
       {
+        tenantId,
         playbookId: playbook.id,
         stepTemplateId: partnerApproval.id,
         sequence: 6,

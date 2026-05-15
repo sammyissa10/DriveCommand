@@ -69,6 +69,7 @@ export async function failInspectionItem(args: {
     const stepName = snap.name ?? 'Inspection Item';
     const adHocStep = await prisma.stepInstance.create({
       data: {
+        tenantId, // required after quick-327 tenantId backfill
         playbookInstanceId: stepInstance.playbookInstanceId,
         stepTemplateId: null, // ad-hoc step — no template
         stepSnapshot: {

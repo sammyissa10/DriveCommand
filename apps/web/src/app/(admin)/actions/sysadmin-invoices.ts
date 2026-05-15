@@ -96,6 +96,7 @@ export async function createSysAdminInvoice(data: {
         quantity: item.quantity.toString(),
         unitPrice: item.unitPrice.toString(),
         amount: amount.toFixed(2),
+        tenantId, // required after quick-327 tenantId backfill
       };
     });
 
@@ -230,6 +231,7 @@ export async function updateSysAdminInvoice(
         quantity: item.quantity.toString(),
         unitPrice: item.unitPrice.toString(),
         amount: amount.toFixed(2),
+        tenantId: invoice.tenantId, // required after quick-327 tenantId backfill
       };
     });
 

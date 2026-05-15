@@ -193,6 +193,7 @@ export async function createRoute(prevState: ActionState | null, formData: FormD
             routeId: route.id,
             driverId,
             role: 'co-driver',
+            tenantId, // required after quick-327 tenantId backfill
           })),
         });
       }
@@ -449,6 +450,7 @@ export async function updateRoute(id: string, prevState: ActionState | null, for
             routeId: id,
             driverId,
             role: 'co-driver',
+            tenantId, // required after quick-327 tenantId backfill
           })),
         });
       }
@@ -633,6 +635,7 @@ export async function getRoute(id: string) {
 export async function updateRouteCoDrivers(routeId: string, coDriverIds: string[]) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
+  const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
 
   try {
@@ -645,6 +648,7 @@ export async function updateRouteCoDrivers(routeId: string, coDriverIds: string[
                 routeId,
                 driverId,
                 role: 'co-driver',
+                tenantId, // required after quick-327 tenantId backfill
               })),
             }),
           ]

@@ -85,6 +85,7 @@ export async function generatePlaybookInstance(args: {
 
       await tx.stepInstance.create({
         data: {
+          tenantId, // required after quick-327 tenantId backfill
           playbookInstanceId: newInstance.id,
           stepTemplateId: step.stepTemplateId,
           stepSnapshot: stepSnapshot as Prisma.InputJsonValue,

@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
           userId: auth.userId,
           token: pushToken,
           platform,
+          tenantId: auth.tenantId, // required after quick-327 tenantId backfill
         },
       });
     }, TX_OPTIONS);

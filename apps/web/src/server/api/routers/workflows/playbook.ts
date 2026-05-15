@@ -136,6 +136,7 @@ const duplicate = adminProcedure
             isDispatchBlocker: s.isDispatchBlocker,
             dueDaysFromStart: s.dueDaysFromStart,
             dueBeforeDispatch: s.dueBeforeDispatch,
+            tenantId: ctx.tenantId, // required after quick-327 tenantId backfill
           })),
         });
       }
@@ -175,6 +176,7 @@ const addStep = adminProcedure
 
     return prisma.playbookStep.create({
       data: {
+        tenantId: ctx.tenantId, // required after quick-327 tenantId backfill
         playbookId: input.playbookId,
         stepTemplateId: input.stepTemplateId,
         playbookPhase: input.playbookPhase,
