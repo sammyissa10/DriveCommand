@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-15 - Completed quick-328: raw-Prisma usage scanner + 5 dropdown isolation regression tests + CI gate + runbook note
-Last session: 2026-05-15T00:17:00Z
-Stopped at: Completed quick-328: raw-Prisma scanner (0 LEAK_RISK on first run), dropdown tests for Load/Truck/CarrierDriver/CarrierClient/CarrierFacility, CI gate, runbook update
+Last activity: 2026-05-15 - Completed quick-329: field-level AES-256-GCM encryption for carrier_drivers.cdl_number + audit_log table + dual-write + RBAC-gated decrypt
+Last session: 2026-05-15T01:15:00Z
+Stopped at: Completed quick-329: field-crypto + key-registry + audit-log primitives, migration 20260515_pii_encryption_pr1 (carrier_drivers encrypted columns + audit_log table + RLS), backfill 1 row verified, dual-write + redacted reads + decryptCarrierDriverCDL in fleet-drivers.ts, 3 security test files, 3 runbooks
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
