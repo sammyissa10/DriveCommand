@@ -76,7 +76,7 @@ describe('renderTemplate — real pipeline', () => {
 
     // Paragraph rendered
     expect(result.html).toContain('Hello');
-    expect(result.html).toMatch(/<p[^>]*>.*Hello.*<\/p>/s);
+    expect(result.html).toMatch(/<p[^>]*>[^<]*Hello[^<]*<\/p>/);
 
     // Subject unchanged when no vars in payload
     expect(result.subjectFinal).toBe('Simple subject');
