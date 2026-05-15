@@ -23,7 +23,11 @@ export const userTemplates: NotificationTemplateSeed[] = [
       { name: 'userId', description: "The user's internal ID", sampleValue: 'usr_123' },
     ],
     defaultRecipients: [{ type: 'related', payloadKey: 'userId' }],
-    isActive: true,
+    // Deactivated (quick-325, Phase 41 wire-up batch 1):
+    // Supabase Auth sends the welcome email natively. Wiring this trigger
+    // would cause duplicate emails to land in the user's inbox.
+    // Re-activate ONLY if Supabase Auth's native welcome email is disabled.
+    isActive: false,
     inAppEnabled: true,
   },
   {
@@ -70,7 +74,11 @@ export const userTemplates: NotificationTemplateSeed[] = [
       { name: 'resetUrl', description: 'Password reset URL', sampleValue: 'https://app.drivecommand.com/reset-password?token=xyz' },
     ],
     defaultRecipients: [{ type: 'related', payloadKey: 'userId' }],
-    isActive: true,
+    // Deactivated (quick-325, Phase 41 wire-up batch 1):
+    // Supabase Auth sends password reset emails natively via auth.resetPasswordForEmail().
+    // Wiring this trigger would cause duplicate emails. Re-activate ONLY if
+    // Supabase Auth's native password reset email is disabled.
+    isActive: false,
     inAppEnabled: false,
   },
   {

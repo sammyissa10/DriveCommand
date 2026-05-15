@@ -4,6 +4,7 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import type { LoadStatus } from '@/generated/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { dispatchNotification } from '@/lib/notifications/dispatcher';
 
 /**
  * POST /api/mobile/driver/loads/[id]/status
@@ -125,6 +126,7 @@ export async function POST(
         include: {
           customer: { select: { id: true, companyName: true } },
           truck: { select: { id: true, make: true, model: true, licensePlate: true } },
+          driver: { select: { firstName: true, lastName: true } },
         },
       });
 
@@ -133,6 +135,43 @@ export async function POST(
 
     if ('error' in result && result.error) {
       return NextResponse.json({ error: result.error }, { status: result.status });
+    }
+
+    // Fire-and-forget INTERNAL notification (Phase 41 wire-up, quick-325).
+    // Mobile transitions: ACCEPTED skips notif (handled by owner dispatch flow);
+    // EN_ROUTE → load.in_transit; DELIVERED → load.delivered.
+    if (result.load && (newDriverStatus === 'EN_ROUTE' || newDriverStatus === 'DELIVERED')) {
+      const load = result.load;
+      const driverName = load.driver
+        ? `${load.driver.firstName} ${load.driver.lastName}`
+        : 'Driver';
+      const nowFormatted = new Date().toLocaleString('en-US', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+
+      if (newDriverStatus === 'EN_ROUTE') {
+        dispatchNotification('load.in_transit', {
+          tenantId,
+          payload: {
+            loadId: load.id,
+            loadNumber: load.loadNumber,
+            driverName,
+          },
+          relatedEntity: { type: 'Load', id: load.id },
+        }).catch((err) => logger.error('[notifications] load.in_transit (mobile) dispatch failed', err));
+      } else if (newDriverStatus === 'DELIVERED') {
+        dispatchNotification('load.delivered', {
+          tenantId,
+          payload: {
+            loadId: load.id,
+            loadNumber: load.loadNumber,
+            driverName,
+            deliveryTime: nowFormatted,
+          },
+          relatedEntity: { type: 'Load', id: load.id },
+        }).catch((err) => logger.error('[notifications] load.delivered (mobile) dispatch failed', err));
+      }
     }
 
     return NextResponse.json({ success: true, load: result.load });

@@ -69,7 +69,11 @@ export const routeTemplates: NotificationTemplateSeed[] = [
       { name: 'reason', description: 'Delay reason reported by the driver', sampleValue: 'Traffic accident on I-10' },
     ],
     defaultRecipients: [{ type: 'role', role: 'OWNER' }],
-    isActive: true,
+    // Deactivated (quick-325, Phase 41 wire-up batch 1):
+    // No automated delay-detection mechanism exists. There is no cron, server
+    // action, or background job that compares ETA vs. actual progress and fires
+    // this trigger. Re-activate when Phase 42 builds route monitoring.
+    isActive: false,
     inAppEnabled: true,
   },
   {
