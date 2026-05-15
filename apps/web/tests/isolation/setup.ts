@@ -64,13 +64,122 @@ export async function createTestUser(
 }
 
 /**
+ * Create a test Customer for a specific tenant with bypass_rls flag.
+ * Customer is required as the FK for Load.
+ */
+export async function createTestCustomer(tenantId: string, companyName: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.customer.create({
+      data: { tenantId, companyName },
+    });
+  });
+}
+
+/**
+ * Create a test Load for a specific tenant with bypass_rls flag.
+ * Requires a Customer FK (customerId).
+ */
+export async function createTestLoad(tenantId: string, customerId: string, loadNumber: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.load.create({
+      data: {
+        tenantId,
+        loadNumber,
+        customerId,
+        origin: 'Origin City',
+        destination: 'Destination City',
+        pickupDate: new Date(),
+        rate: 1000,
+      },
+    });
+  });
+}
+
+/**
+ * Create a test Truck for a specific tenant with bypass_rls flag.
+ * VIN must be unique per (tenantId, vin) — callers provide a distinguishable VIN.
+ */
+export async function createTestTruck(tenantId: string, vin: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.truck.create({
+      data: {
+        tenantId,
+        make: 'TestMake',
+        model: 'TestModel',
+        year: 2024,
+        vin,
+        licensePlate: vin.slice(0, 7),
+        odometer: 0,
+      },
+    });
+  });
+}
+
+/**
+ * Create a test CarrierDriver for a specific tenant with bypass_rls flag.
+ * CarrierDriver uses orgId (mapped from org_id) as the tenant FK column.
+ */
+export async function createTestCarrierDriver(tenantId: string, firstName: string, lastName: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.carrierDriver.create({
+      data: { orgId: tenantId, firstName, lastName },
+    });
+  });
+}
+
+/**
+ * Create a test CarrierClient for a specific tenant with bypass_rls flag.
+ * CarrierClient uses orgId as the tenant FK column.
+ */
+export async function createTestCarrierClient(tenantId: string, name: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.carrierClient.create({
+      data: { orgId: tenantId, name },
+    });
+  });
+}
+
+/**
+ * Create a test CarrierFacility for a specific tenant with bypass_rls flag.
+ * CarrierFacility uses orgId as the tenant FK column.
+ */
+export async function createTestCarrierFacility(tenantId: string, name: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.carrierFacility.create({
+      data: { orgId: tenantId, name },
+    });
+  });
+}
+
+/**
  * Clean up all test data after suite completes.
  * Uses bypass_rls to remove data created during tests.
+ * Deletes in dependency order (children first, then users, then tenants).
  */
 export async function cleanupTestData() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return prisma.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+    // Delete dropdown test fixtures in dependency order
+    await tx.load.deleteMany({ where: { loadNumber: { startsWith: 'TEST-LOAD-' } } });
+    await tx.truck.deleteMany({ where: { vin: { startsWith: 'TESTVIN' } } });
+    await tx.carrierDriver.deleteMany({ where: { firstName: 'TestDriver' } });
+    await tx.carrierClient.deleteMany({ where: { name: { startsWith: 'TestClient ' } } });
+    await tx.carrierFacility.deleteMany({ where: { name: { startsWith: 'TestFacility ' } } });
+    await tx.customer.deleteMany({ where: { companyName: { startsWith: 'TestCustomer ' } } });
 
     // Delete in dependency order (users first, then tenants)
     await tx.user.deleteMany({
