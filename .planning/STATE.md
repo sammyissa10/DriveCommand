@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-15 - Completed quick-326: DB security audit script - read-only tenant audit against DatabaseSecurity_MultiTenant_Spec_v1.md
-Last session: 2026-05-14T19:00:00Z
-Stopped at: Completed quick-318: Tenant notification settings — /settings/notifications 3-tab page (Notifications/Subscribers/Send Log), per-user /settings/my-notifications with useOptimistic toggles, TenantTemplateEditorPanel with restore-to-default, subscriber management, tenant-scoped send log. Added accordion+checkbox shadcn. tsc clean, 15 files.
+Last activity: 2026-05-15 - Completed quick-327: DB security standardization — FORCE RLS + tenant_isolation_policy + bypass_rls_policy on all 77 tenant-scoped tables, tenantId backfill on 6 missing tables, 81 indexes, 17 isolation tests, tsc clean
+Last session: 2026-05-15T04:53:26Z
+Stopped at: Completed quick-327: DB security standardization (full RLS standardization migration applied, Prisma schema updated, TypeScript call sites fixed, isolation tests written)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -28829,6 +28829,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-311]: Idempotent backfill retry migration with dct.deleted_at IS NULL + ds.deleted_at IS NULL guards — root cause (b)
 - [Phase quick-315]: Notification system schema: imported from generated prisma path (src/generated/prisma) not @prisma/client stub; used PrismaPg adapter in seed runner for Prisma 7; manually created migration due to shadow DB issue (P3006)
 - [Phase quick-326]: camelCase+snake_case dual detection needed in audit script — original Prisma models use camelCase DB column names while carrier tables use snake_case; both detected in audit
+- [Phase quick-327]: Mixed column naming preserved (org_id for carrier_*/driver_pay, tenantId for PascalCase tables) — renaming deferred to separate phase to avoid full-app find/replace
+- [Phase quick-327]: CREATE INDEX CONCURRENTLY replaced with CREATE INDEX — Prisma migrate deploy wraps SQL in transaction block; CONCURRENTLY requires autocommit mode
 
 ### Pending Todos
 
