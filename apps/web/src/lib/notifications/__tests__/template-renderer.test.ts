@@ -1,199 +1,94 @@
-/**
- * Real-pipeline Vitest for template-renderer.
- *
- * No mocks of @tiptap/html, @tiptap/html/server, or the renderer module — the
- * entire Tiptap JSON -> HTML -> variable substitution -> React Email render path
- * runs in Node via happy-dom (peer dep of @tiptap/html/server).
- *
- * quick-331: these tests would have caught the bug that shipped — Test 4 in
- * particular asserts that malformed JSON throws (no silent fallback) and Test 1
- * asserts the rendered HTML never contains the JSON-stringified doc shape.
- */
+// quick-task-335: renderTemplate now consumes cached HTML strings; Tiptap runs in browser at save time.
 
 import { describe, it, expect, vi } from 'vitest';
-import { renderTemplate } from '../template-renderer';
-import { buildDefaultTemplate } from '../build-template';
+import { renderTemplate, substituteVariables } from '../template-renderer';
 
 // ---------------------------------------------------------------------------
-// Test 1: buildDefaultTemplate-shaped doc renders to correct HTML + substituted vars
+// substituteVariables tests (retained from prior test suite)
 // ---------------------------------------------------------------------------
-describe('renderTemplate — real pipeline', () => {
-  it('renders a buildDefaultTemplate-shaped doc to HTML containing <h2>, <p>, <a> with substituted vars', async () => {
-    const blockJson = buildDefaultTemplate({
-      headerText: 'Load #{{loadNumber}}',
-      paragraphTextWithVars: 'Hi {{driverName}}, you have a new load from {{originCity}} to {{destCity}}.',
-      ctaLabel: 'View load',
-      ctaUrl: 'https://app.example.com/loads/{{loadId}}',
-      footerNote: 'Sent by DriveCommand',
-    });
-
-    const result = await renderTemplate(
-      blockJson,
-      {
+describe('substituteVariables', () => {
+  it('replaces known tokens with payload values', () => {
+    expect(
+      substituteVariables('Hello {{name}}, your load is {{loadNumber}}', {
+        name: 'Alex',
         loadNumber: 'LD-1042',
-        driverName: 'Alex',
-        originCity: 'Chicago',
-        destCity: 'Dallas',
-        loadId: 'load-xyz',
-      },
-      'Load {{loadNumber}} assigned',
-    );
-
-    // Subject substitution
-    expect(result.subjectFinal).toBe('Load LD-1042 assigned');
-
-    // Heading rendered (h2 since buildDefaultTemplate uses level 2)
-    expect(result.html).toMatch(/<h2/);
-
-    // Text variables substituted in body
-    expect(result.html).toContain('Hi Alex');
-    expect(result.html).toContain('Chicago');
-    expect(result.html).toContain('Dallas');
-
-    // Variable substituted INSIDE link href — proves substitution runs AFTER HTML conversion
-    expect(result.html).toContain('href="https://app.example.com/loads/load-xyz"');
-
-    // No unsubstituted variable tokens remain
-    expect(result.html).not.toContain('{{');
-
-    // Regression guard: output must NOT contain JSON-stringified doc shape
-    // (this assertion would have caught quick-331 — the fallback emitted exactly this)
-    expect(result.html).not.toContain('"type":"doc"');
-    expect(result.html).not.toContain('"type":"heading"');
-    expect(result.html).not.toContain(JSON.stringify(blockJson));
+      }),
+    ).toBe('Hello Alex, your load is LD-1042');
   });
 
-  // ---------------------------------------------------------------------------
-  // Test (quick-task-333): heading level=2 fixture renders <h2> via serverExtensions
-  // — regression guard for "Cannot access level on the server" RSC error
-  // ---------------------------------------------------------------------------
-  it('renders a heading level=2 + paragraph fixture to <h2> + <p> via serverExtensions (quick-333)', async () => {
-    const blockJson = {
-      type: 'doc',
-      content: [
-        {
-          type: 'heading',
-          attrs: { level: 2 },
-          content: [{ type: 'text', text: 'Load {{loadNumber}} assigned' }],
-        },
-        {
-          type: 'paragraph',
-          content: [
-            { type: 'text', text: 'Driver {{driverId}}, please review the new load.' },
-          ],
-        },
-      ],
-    };
+  it('replaces unknown tokens with empty string and warns', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = substituteVariables('Hello {{unknownVar}}', {});
+    expect(result).toBe('Hello ');
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('missing variable'));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('unknownVar'));
+    warnSpy.mockRestore();
+  });
 
+  it('handles tokens with extra whitespace inside braces', () => {
+    expect(substituteVariables('Hi {{ name }}', { name: 'Sam' })).toBe('Hi Sam');
+  });
+
+  it('returns the string unchanged when there are no tokens', () => {
+    expect(substituteVariables('No tokens here', { name: 'Sam' })).toBe('No tokens here');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// renderTemplate tests (new signature: cachedHtml: string)
+// ---------------------------------------------------------------------------
+describe('renderTemplate — cached HTML pipeline', () => {
+  // -------------------------------------------------------------------------
+  // Test 1 (basic): literal HTML + payload + subject
+  // -------------------------------------------------------------------------
+  it('substitutes variables into HTML and subject, wraps in React Email shell', async () => {
+    const cachedHtml = '<h2>Test heading</h2><p>Hello {{name}}</p>';
     const result = await renderTemplate(
-      blockJson,
-      { loadNumber: 'LD-9001', driverId: 'drv-123' },
-      'New load {{loadNumber}}',
+      cachedHtml,
+      { name: 'World' },
+      'Hi {{name}}',
     );
 
-    // Heading level=2 must render as <h2> — this exercises the exact code path
-    // that crashed in production with "Cannot access level on the server".
-    expect(result.html).toMatch(/<h2[^>]*>[^<]*Load LD-9001 assigned[^<]*<\/h2>/);
+    // Variable substituted in body
+    expect(result.html).toContain('Hello World');
+    expect(result.html).toContain('Test heading');
 
-    // Paragraph rendered with substituted driverId
-    expect(result.html).toMatch(/<p[^>]*>[^<]*Driver drv-123[^<]*<\/p>/);
+    // Variable substituted in subject
+    expect(result.subjectFinal).toBe('Hi World');
 
-    // Subject substitution
-    expect(result.subjectFinal).toBe('New load LD-9001');
+    // React Email shell wraps in a full HTML document — check for <html> wrapper
+    expect(result.html).toMatch(/<html/i);
+  });
+
+  // -------------------------------------------------------------------------
+  // Test 2 (missing variable): token replaced with empty string
+  // -------------------------------------------------------------------------
+  it('replaces missing variable tokens with empty string', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const cachedHtml = '<p>Hello {{missing}}</p>';
+    const result = await renderTemplate(cachedHtml, {}, 'Subject');
 
     // No unsubstituted tokens remain
     expect(result.html).not.toContain('{{');
+    expect(result.html).not.toContain('{{missing}}');
 
-    // Regression guard: never emit JSON-stringified doc shape
-    expect(result.html).not.toContain('"type":"doc"');
-    expect(result.html).not.toContain('"type":"heading"');
-  });
-
-  // ---------------------------------------------------------------------------
-  // Test 2: Minimal paragraph-only doc renders without throwing
-  // ---------------------------------------------------------------------------
-  it('renders a minimal paragraph-only doc without throwing', async () => {
-    const blockJson = {
-      type: 'doc',
-      content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }],
-    };
-
-    const result = await renderTemplate(blockJson, {}, 'Simple subject');
-
-    // Paragraph rendered
-    expect(result.html).toContain('Hello');
-    expect(result.html).toMatch(/<p[^>]*>[^<]*Hello[^<]*<\/p>/);
-
-    // Subject unchanged when no vars in payload
-    expect(result.subjectFinal).toBe('Simple subject');
-
-    // Regression guard
-    expect(result.html).not.toContain('"type":"doc"');
-  });
-
-  // ---------------------------------------------------------------------------
-  // Test 3: Missing variable resolves to empty string and emits console.warn
-  // ---------------------------------------------------------------------------
-  it('missing variable resolves to empty string and emits console.warn', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-    const blockJson = {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [{ type: 'text', text: 'Hello {{unknownVar}}' }],
-        },
-      ],
-    };
-
-    const result = await renderTemplate(blockJson, {}, 'Subject');
-
-    // console.warn called with a message referencing the missing var name
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('missing variable'),
-    );
-    const warnMessage = (warnSpy.mock.calls[0] as string[])[0] as string;
-    expect(warnMessage).toContain('unknownVar');
-
-    // The unresolved token is replaced with empty string (not left as {{unknownVar}})
-    expect(result.html).not.toContain('{{unknownVar}}');
+    // warn emitted
+    expect(warnSpy).toHaveBeenCalled();
 
     warnSpy.mockRestore();
   });
 
-  // ---------------------------------------------------------------------------
-  // Test 4: Malformed blockJson throws — no silent fallback (regression guard for quick-331)
-  // ---------------------------------------------------------------------------
-  it('malformed blockJson throws — no silent JSON.stringify fallback', async () => {
-    // Pass a doc with an invalid/nonexistent node type that Tiptap cannot render
-    const malformedJson = {
-      type: 'doc',
-      content: [{ type: 'nonexistent_node_type_quick331', content: [] }],
-    };
+  // -------------------------------------------------------------------------
+  // Test 3 (subject-only var): empty body, subject with variable
+  // -------------------------------------------------------------------------
+  it('substitutes subject variable independently of body', async () => {
+    const result = await renderTemplate(
+      '',
+      { loadNumber: 'LD-9001' },
+      'Load {{loadNumber}}',
+    );
 
-    // The real renderer (without try/catch) must throw instead of swallowing the error
-    // and silently emitting JSON-stringified content. This is the regression guard for quick-331.
-    //
-    // Note: Tiptap's generateHTML with StarterKit may silently skip unknown node types
-    // rather than throwing. If that's the case, we verify the output is still valid HTML
-    // (not JSON-stringified content) — the key invariant is that "type":"doc" never appears.
-    let result: { html: string; subjectFinal: string } | null = null;
-    let threwError = false;
-    try {
-      result = await renderTemplate(malformedJson, {}, 'Subject');
-    } catch {
-      threwError = true;
-    }
-
-    if (threwError) {
-      // Best outcome: error propagated, no silent fallback
-      expect(threwError).toBe(true);
-    } else {
-      // Acceptable outcome: Tiptap silently skipped unknown node, but JSON must not appear
-      expect(result!.html).not.toContain('"type":"doc"');
-      expect(result!.html).not.toContain('"type":"nonexistent_node_type_quick331"');
-      expect(result!.html).not.toContain(JSON.stringify(malformedJson));
-    }
+    expect(result.subjectFinal).toBe('Load LD-9001');
   });
 });

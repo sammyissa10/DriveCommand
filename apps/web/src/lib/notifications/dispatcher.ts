@@ -120,11 +120,26 @@ export async function dispatchNotification<K extends TriggerKey>(
     // -----------------------------------------------------------------------
     // Steps 4-5: Pick content + render once (shared by all recipients)
     // -----------------------------------------------------------------------
-    const blockJson = tenantSettings?.customBlockJson ?? template.defaultBlockJson;
+    const cachedHtml = tenantSettings?.customHtmlCache ?? template.defaultHtmlCache;
     const subjectTemplate = (tenantSettings?.customSubject ?? template.defaultSubject) as string;
 
+    if (!cachedHtml) {
+      audits.push({
+        tenantId: options.tenantId,
+        triggerKey,
+        channel: 'EMAIL',
+        status: 'FAILED',
+        idempotencyKey: `no-cached-html:${triggerKey}:${Date.now()}`,
+        relatedEntityType: options.relatedEntity?.type ?? null,
+        relatedEntityId: options.relatedEntity?.id ?? null,
+        errorMessage: 'No cached HTML available for trigger — seed migration missing or save flow not run',
+      });
+      failed++;
+      return { sent, skipped, failed };
+    }
+
     const { html, subjectFinal } = await renderTemplate(
-      blockJson,
+      cachedHtml,
       options.payload as Record<string, string>,
       subjectTemplate,
     );

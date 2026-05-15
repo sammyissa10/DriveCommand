@@ -1,21 +1,21 @@
 /**
  * Template rendering pipeline for the notification dispatcher.
  *
- * Flow: Tiptap blockJson -> raw HTML -> variable substitution -> DynamicTemplateEmail shell -> string
+ * Flow: cached HTML string -> variable substitution -> DynamicTemplateEmail shell -> string
  *
- * Variable substitution happens AFTER Tiptap JSON->HTML conversion so that
- * {{var}} tokens in paragraph text are not altered by the HTML parser.
+ * Tiptap is NOT invoked on the server. The cached HTML is produced at template
+ * save time in the browser (block-editor.tsx -> editor.getHTML()) and persisted
+ * to NotificationTemplate.defaultHtmlCache / TenantNotificationSettings.customHtmlCache.
+ *
+ * This decouples the server render path from React Server Component bundling
+ * concerns — the Next 16 RSC graph was promoting Tiptap extension symbols to
+ * Client References because the client editor imports the same packages.
+ * Quick-task-335 moved rendering off the server entirely.
  */
 
-import { generateHTML } from '@tiptap/html/server';
-import { serverExtensions } from './server-extensions';
 import { render } from '@react-email/render';
 import React from 'react';
 import DynamicTemplateEmail from '@/emails/dynamic-template';
-
-// ---------------------------------------------------------------------------
-// Public exports
-// ---------------------------------------------------------------------------
 
 /**
  * Pure variable substitution.
@@ -40,38 +40,24 @@ export function substituteVariables(
 }
 
 /**
- * Full template render: Tiptap blockJson + payload variables -> final HTML string + subject.
+ * Full template render: cached HTML + payload variables -> final HTML string + subject.
  *
  * Steps:
- *   1. generateHTML(blockJson, serverExtensions) — Tiptap JSON -> raw HTML
- *   2. substituteVariables(rawHtml, payload) — replace {{tokens}} in body
- *   3. substituteVariables(subject, payload) — replace {{tokens}} in subject
- *   4. render(<DynamicTemplateEmail bodyHtml={...} />) — wrap in React Email shell
+ *   1. substituteVariables(cachedHtml, payload) — replace {{tokens}} in body HTML
+ *   2. substituteVariables(subject, payload) — replace {{tokens}} in subject
+ *   3. render(<DynamicTemplateEmail bodyHtml={...} />) — wrap in React Email shell
  *
  * Returns { html, subjectFinal }.
  */
 export async function renderTemplate(
-  blockJson: unknown,
+  cachedHtml: string,
   payload: Record<string, string>,
   subject: string,
 ): Promise<{ html: string; subjectFinal: string }> {
-  // Step 1: Tiptap JSON -> raw HTML
-  // No try/catch here — if generateHTML throws, let it propagate.
-  // The dispatcher's outer try/catch writes a FAILED audit row, and the
-  // preview action surfaces the error to the iframe. Silently emitting
-  // JSON-stringified blockJson is what caused quick-331.
-  const rawHtml = generateHTML(blockJson as Parameters<typeof generateHTML>[0], serverExtensions);
-
-  // Step 2: Substitute variables in body HTML
-  const bodyHtml = substituteVariables(rawHtml, payload);
-
-  // Step 3: Substitute variables in subject
+  const bodyHtml = substituteVariables(cachedHtml, payload);
   const subjectFinal = substituteVariables(subject, payload);
-
-  // Step 4: Wrap body HTML in React Email shell and render to string
   const html = await render(
     React.createElement(DynamicTemplateEmail, { bodyHtml }),
   );
-
   return { html, subjectFinal };
 }
