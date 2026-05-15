@@ -6,6 +6,7 @@ import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { createTenantClient } from '@/lib/db/tenant-client';
 import { renderTemplate } from '@/lib/notifications/template-renderer';
 import type { VariableDef } from '@/lib/notifications/types';
 import {
@@ -367,9 +368,11 @@ export async function listTenantSubscribers(): Promise<TenantSubscriberRow[]> {
 export async function listTenantUsers(): Promise<TenantUserRow[]> {
   const { tenantId } = await requireTenantAccess();
 
-  const tenantDb = await getTenantPrisma();
+  // Use createTenantClient(tenantId) — session-bound, not header-bound — so the
+  // RLS extension and the explicit where filter both use the same session tenantId.
+  const tenantDb = createTenantClient(tenantId);
   const users = await tenantDb.user.findMany({
-    where: { tenantId, isActive: true },
+    where: { isActive: true },
     select: { id: true, email: true, firstName: true, lastName: true, role: true },
     orderBy: { email: 'asc' },
   });
@@ -494,6 +497,10 @@ export async function listTenantSendLog(params: {
   const page = Math.max(1, params.page ?? 1);
   const skip = (page - 1) * pageSize;
 
+  // NotificationSendLog has no Postgres RLS. Use createTenantClient(tenantId) so the
+  // extension injects tenantId, and keep explicit where: { tenantId } as defense-in-depth.
+  // The postgres role has BYPASSRLS privilege so no bypass_rls SET is needed — removing
+  // the array-form $transaction eliminates the P2028 deadlock risk with connection pool.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: Record<string, any> = { tenantId };
   if (params.status) where.status = params.status;
@@ -502,19 +509,19 @@ export async function listTenantSendLog(params: {
   }
   if (params.channel) where.channel = params.channel;
 
-  const [, total, rows] = await prisma.$transaction([
-    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
-    prisma.notificationSendLog.count({ where }),
-    prisma.notificationSendLog.findMany({
+  const tenantDb = createTenantClient(tenantId);
+  const [total, rows] = await Promise.all([
+    tenantDb.notificationSendLog.count({ where }),
+    tenantDb.notificationSendLog.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       skip,
       take: pageSize,
     }),
-  ]) as [unknown, number, SendLogRow[]];
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  return { rows, total, page, pageSize, totalPages };
+  return { rows: rows as SendLogRow[], total, page, pageSize, totalPages };
 }
 
 // ---------------------------------------------------------------------------
@@ -527,15 +534,19 @@ export async function getTenantSendLogStats(): Promise<SendLogStats> {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+  // NotificationSendLog has no Postgres RLS. Use createTenantClient(tenantId) so the
+  // extension injects tenantId, and keep explicit where: { tenantId } as defense-in-depth.
+  // The postgres role has BYPASSRLS privilege so no bypass_rls SET is needed — removing
+  // the array-form $transaction eliminates the P2028 deadlock risk with connection pool.
   const where = { tenantId, createdAt: { gte: thirtyDaysAgo } };
+  const tenantDb = createTenantClient(tenantId);
 
-  const [, total, sent, failed, pending] = await prisma.$transaction([
-    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
-    prisma.notificationSendLog.count({ where }),
-    prisma.notificationSendLog.count({ where: { ...where, status: 'SENT' } }),
-    prisma.notificationSendLog.count({ where: { ...where, status: 'FAILED' } }),
-    prisma.notificationSendLog.count({ where: { ...where, status: 'PENDING' } }),
-  ]) as [unknown, number, number, number, number];
+  const [total, sent, failed, pending] = await Promise.all([
+    tenantDb.notificationSendLog.count({ where }),
+    tenantDb.notificationSendLog.count({ where: { ...where, status: NotificationSendStatus.SENT } }),
+    tenantDb.notificationSendLog.count({ where: { ...where, status: NotificationSendStatus.FAILED } }),
+    tenantDb.notificationSendLog.count({ where: { ...where, status: NotificationSendStatus.PENDING } }),
+  ]);
 
   const skipped = total - sent - failed - pending;
 
