@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-15 - Completed quick-329: field-level AES-256-GCM encryption for carrier_drivers.cdl_number + audit_log table + dual-write + RBAC-gated decrypt
+Last activity: 2026-05-15 - Completed quick-330: add /notifications to ADMIN_ALLOWED_PATHS in middleware.ts so sysadmins can reach the Notifications page
 Last session: 2026-05-15T01:15:00Z
-Stopped at: Completed quick-329: field-crypto + key-registry + audit-log primitives, migration 20260515_pii_encryption_pr1 (carrier_drivers encrypted columns + audit_log table + RLS), backfill 1 row verified, dual-write + redacted reads + decryptCarrierDriverCDL in fleet-drivers.ts, 3 security test files, 3 runbooks
+Stopped at: Completed quick-330: single-line fix to ADMIN_ALLOWED_PATHS in middleware.ts — '/notifications' added after '/automations'
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -57792,6 +57792,7 @@ None blocking immediate progress.
 - Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 - Quick-290 (2026-05-09): Build MDX Component Library and Rendering Pipeline — RSC-native MDX pipeline with 14 blocks (Callout/StepFlow/Screenshot/FeatureCard + sysadmin CodeBlock/ApiTable/RlsPolicyBox/PrismaModelRef), next-mdx-remote v5, Zod frontmatter validation, registry cross-check — 3 tasks, 26 files, [290-build-mdx-component-library-and-renderin](./quick/290-build-mdx-component-library-and-renderin/)
 | Phase quick-328 P01 | 45 | 2 tasks | 7 files |
+- Quick-330 (2026-05-15): Add /notifications to ADMIN_ALLOWED_PATHS — single-line fix in middleware.ts so sysadmins can navigate to the Notifications page without being redirected to /admin-support — 1 task, 1 file
 
 ## Accumulated Context
 
