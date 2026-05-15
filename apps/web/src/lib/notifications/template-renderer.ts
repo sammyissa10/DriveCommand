@@ -8,7 +8,7 @@
  */
 
 import { generateHTML } from '@tiptap/html/server';
-import StarterKit from '@tiptap/starter-kit';
+import { serverExtensions } from './server-extensions';
 import { render } from '@react-email/render';
 import React from 'react';
 import DynamicTemplateEmail from '@/emails/dynamic-template';
@@ -43,7 +43,7 @@ export function substituteVariables(
  * Full template render: Tiptap blockJson + payload variables -> final HTML string + subject.
  *
  * Steps:
- *   1. generateHTML(blockJson, [StarterKit]) — Tiptap JSON -> raw HTML
+ *   1. generateHTML(blockJson, serverExtensions) — Tiptap JSON -> raw HTML
  *   2. substituteVariables(rawHtml, payload) — replace {{tokens}} in body
  *   3. substituteVariables(subject, payload) — replace {{tokens}} in subject
  *   4. render(<DynamicTemplateEmail bodyHtml={...} />) — wrap in React Email shell
@@ -60,7 +60,7 @@ export async function renderTemplate(
   // The dispatcher's outer try/catch writes a FAILED audit row, and the
   // preview action surfaces the error to the iframe. Silently emitting
   // JSON-stringified blockJson is what caused quick-331.
-  const rawHtml = generateHTML(blockJson as Parameters<typeof generateHTML>[0], [StarterKit]);
+  const rawHtml = generateHTML(blockJson as Parameters<typeof generateHTML>[0], serverExtensions);
 
   // Step 2: Substitute variables in body HTML
   const bodyHtml = substituteVariables(rawHtml, payload);
