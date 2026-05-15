@@ -28828,6 +28828,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-311]: Server-side eligibility filter for export (FINALIZED|PAID + snapshot not null) computed in page.tsx, not client-side
 - [Phase quick-311]: Idempotent backfill retry migration with dct.deleted_at IS NULL + ds.deleted_at IS NULL guards — root cause (b)
 - [Phase quick-315]: Notification system schema: imported from generated prisma path (src/generated/prisma) not @prisma/client stub; used PrismaPg adapter in seed runner for Prisma 7; manually created migration due to shadow DB issue (P3006)
+- [Phase quick-326]: camelCase+snake_case dual detection needed in audit script — original Prisma models use camelCase DB column names while carrier tables use snake_case; both detected in audit
 
 ### Pending Todos
 
