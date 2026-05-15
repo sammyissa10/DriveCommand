@@ -228,7 +228,13 @@ exports.Prisma.RouteDriverScalarFieldEnum = {
   routeId: 'routeId',
   driverId: 'driverId',
   role: 'role',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  tenantId: 'tenantId',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 };
 
 exports.Prisma.DocumentScalarFieldEnum = {
@@ -524,7 +530,14 @@ exports.Prisma.SysAdminInvoiceItemScalarFieldEnum = {
   description: 'description',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
-  amount: 'amount'
+  amount: 'amount',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 };
 
 exports.Prisma.PayrollRecordScalarFieldEnum = {
@@ -687,7 +700,12 @@ exports.Prisma.PushTokenScalarFieldEnum = {
   token: 'token',
   platform: 'platform',
   updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  tenantId: 'tenantId',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 };
 
 exports.Prisma.DriverHOSEntryScalarFieldEnum = {
@@ -1132,7 +1150,12 @@ exports.Prisma.PlaybookStepScalarFieldEnum = {
   overdueRecipient: 'overdueRecipient',
   dueBeforeDispatch: 'dueBeforeDispatch',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  tenantId: 'tenantId',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 };
 
 exports.Prisma.PlaybookInstanceScalarFieldEnum = {
@@ -1170,7 +1193,12 @@ exports.Prisma.StepInstanceScalarFieldEnum = {
   dueDate: 'dueDate',
   isOverdue: 'isOverdue',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  tenantId: 'tenantId',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 };
 
 exports.Prisma.PlaybookNotificationScalarFieldEnum = {
@@ -1601,7 +1629,12 @@ exports.Prisma.UserNotificationPreferenceScalarFieldEnum = {
   emailEnabled: 'emailEnabled',
   inAppEnabled: 'inAppEnabled',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  tenantId: 'tenantId',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
 };
 
 exports.Prisma.NotificationSendLogScalarFieldEnum = {

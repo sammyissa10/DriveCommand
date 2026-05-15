@@ -30,13 +30,23 @@
     "type": "feature"
   },
   {
+    "slug": "route-templates",
+    "name": "Route Templates",
+    "shortDescription": "Reusable blueprints for recurring freight runs — set the schedule once, dispatches generate automatically.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/route-templates",
+    "type": "feature"
+  },
+  {
     "slug": "carrier-templates",
-    "name": "Dispatch Templates",
-    "shortDescription": "Reusable dispatch and route templates for common lanes and workflows.",
+    "name": "Dispatch Checklists",
+    "shortDescription": "Pre-departure checklists that auto-start when loads are dispatched, ensuring drivers complete required verification steps.",
     "category": "dispatch",
     "portal": "owner",
     "planTier": "pro",
-    "route": "/carrier/templates",
+    "route": "/checklists",
     "type": "feature"
   },
   {
@@ -410,6 +420,16 @@
     "type": "feature"
   },
   {
+    "slug": "carrier-operations",
+    "name": "How Carrier Operations Work",
+    "shortDescription": "High-level overview of the trucking workflow from load acquisition to payment, and how DriveCommand supports each stage.",
+    "category": "support",
+    "portal": "owner",
+    "planTier": "free",
+    "route": "/help/carrier-operations",
+    "type": "feature"
+  },
+  {
     "slug": "getting-started",
     "name": "Getting Started",
     "shortDescription": "Complete onboarding guide to set up your trucking operation from scratch in under 30 minutes.",
@@ -702,6 +722,12 @@
     "type": "sysadmin-doc"
   },
   {
+    "slug": "carrier-operations",
+    "title": "How Carrier Operations Work",
+    "summary": "Technical reference for the carrier operations workflow — load lifecycle, status transitions, and system integration points.",
+    "type": "sysadmin-doc"
+  },
+  {
     "slug": "carrier-reports-aging",
     "title": "AR Aging Report — Technical Reference",
     "summary": "Accounts receivable aging analysis with 30/60/90 day buckets based on Invoice.dueDate calculations.",
@@ -733,8 +759,8 @@
   },
   {
     "slug": "carrier-templates",
-    "title": "Dispatch Templates — Technical Reference",
-    "summary": "Reusable dispatch and route templates with JSON-based stop sequences and pre-filled load details.",
+    "title": "Dispatch Checklists — Technical Reference",
+    "summary": "Pre-departure workflow checklists using the Playbook system with dispatch blocking, step types, and automation triggers.",
     "type": "sysadmin-doc"
   },
   {
@@ -897,6 +923,12 @@
     "slug": "route-planning",
     "title": "Route Planning — Technical Reference",
     "summary": "Multi-stop route creation with leg sequencing, continuity warnings, driver assignment, and RouteStop auto-sync system.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "route-templates",
+    "title": "Route Templates — Technical Reference",
+    "summary": "RRULE-based recurring dispatch generation with immutable snapshot architecture and contract-linked rate inheritance.",
     "type": "sysadmin-doc"
   },
   {
