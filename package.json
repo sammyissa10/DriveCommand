@@ -14,8 +14,8 @@
     "postinstall": "cd packages/types && npm run build && cd ../validation && npm run build && cd ../api-client && npm run build"
   },
   "dependencies": {
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
   },
   "devDependencies": {
     "turbo": "^2.0.0",

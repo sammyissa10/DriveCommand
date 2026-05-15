@@ -64,6 +64,52 @@ describe('renderTemplate — real pipeline', () => {
   });
 
   // ---------------------------------------------------------------------------
+  // Test (quick-task-333): heading level=2 fixture renders <h2> via serverExtensions
+  // — regression guard for "Cannot access level on the server" RSC error
+  // ---------------------------------------------------------------------------
+  it('renders a heading level=2 + paragraph fixture to <h2> + <p> via serverExtensions (quick-333)', async () => {
+    const blockJson = {
+      type: 'doc',
+      content: [
+        {
+          type: 'heading',
+          attrs: { level: 2 },
+          content: [{ type: 'text', text: 'Load {{loadNumber}} assigned' }],
+        },
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Driver {{driverId}}, please review the new load.' },
+          ],
+        },
+      ],
+    };
+
+    const result = await renderTemplate(
+      blockJson,
+      { loadNumber: 'LD-9001', driverId: 'drv-123' },
+      'New load {{loadNumber}}',
+    );
+
+    // Heading level=2 must render as <h2> — this exercises the exact code path
+    // that crashed in production with "Cannot access level on the server".
+    expect(result.html).toMatch(/<h2[^>]*>[^<]*Load LD-9001 assigned[^<]*<\/h2>/);
+
+    // Paragraph rendered with substituted driverId
+    expect(result.html).toMatch(/<p[^>]*>[^<]*Driver drv-123[^<]*<\/p>/);
+
+    // Subject substitution
+    expect(result.subjectFinal).toBe('New load LD-9001');
+
+    // No unsubstituted tokens remain
+    expect(result.html).not.toContain('{{');
+
+    // Regression guard: never emit JSON-stringified doc shape
+    expect(result.html).not.toContain('"type":"doc"');
+    expect(result.html).not.toContain('"type":"heading"');
+  });
+
+  // ---------------------------------------------------------------------------
   // Test 2: Minimal paragraph-only doc renders without throwing
   // ---------------------------------------------------------------------------
   it('renders a minimal paragraph-only doc without throwing', async () => {
