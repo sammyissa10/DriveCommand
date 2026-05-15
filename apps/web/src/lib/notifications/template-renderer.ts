@@ -7,24 +7,11 @@
  * {{var}} tokens in paragraph text are not altered by the HTML parser.
  */
 
-import { generateHTML } from '@tiptap/html';
+import { generateHTML } from '@tiptap/html/server';
 import StarterKit from '@tiptap/starter-kit';
 import { render } from '@react-email/render';
 import React from 'react';
 import DynamicTemplateEmail from '@/emails/dynamic-template';
-
-// ---------------------------------------------------------------------------
-// Internal helpers
-// ---------------------------------------------------------------------------
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
 
 // ---------------------------------------------------------------------------
 // Public exports
@@ -69,13 +56,11 @@ export async function renderTemplate(
   subject: string,
 ): Promise<{ html: string; subjectFinal: string }> {
   // Step 1: Tiptap JSON -> raw HTML
-  let rawHtml: string;
-  try {
-    rawHtml = generateHTML(blockJson as Parameters<typeof generateHTML>[0], [StarterKit]);
-  } catch (err) {
-    console.error('[notifications] Tiptap generateHTML failed, using fallback', err);
-    rawHtml = `<p>${escapeHtml(JSON.stringify(blockJson))}</p>`;
-  }
+  // No try/catch here — if generateHTML throws, let it propagate.
+  // The dispatcher's outer try/catch writes a FAILED audit row, and the
+  // preview action surfaces the error to the iframe. Silently emitting
+  // JSON-stringified blockJson is what caused quick-331.
+  const rawHtml = generateHTML(blockJson as Parameters<typeof generateHTML>[0], [StarterKit]);
 
   // Step 2: Substitute variables in body HTML
   const bodyHtml = substituteVariables(rawHtml, payload);
