@@ -1,6 +1,6 @@
 # Raw Prisma Usage Audit
 
-**Generated:** 2026-05-15T05:14:40.922Z
+**Generated:** 2026-05-15T05:19:03.714Z
 **Scanned:** apps/web/src, packages/\*/src
 **Spec reference:** docs/specs/DatabaseSecurity_MultiTenant_Spec_v1.md §2.6
 
@@ -9,14 +9,12 @@
 | Classification | Count |
 |---|---|
 | INTENTIONAL_ALLOWED | 296 |
-| LEAK_RISK | 1 |
-| **Total** | **297** |
+| LEAK_RISK | 0 |
+| **Total** | **296** |
 
 ## LEAK_RISK (must fix — bypasses tenant-scoped client)
 
-| File | Line | Pattern | Code | Reason |
-|---|---|---|---|---|
-| apps/web/src/app/page.tsx | 14 | $queryRaw | `const bad = prisma.$queryRaw`SELECT * FROM loads`;` | Raw SQL bypasses RLS policies — tenant isolation not guaranteed |
+None — audit passes
 
 ## INTENTIONAL_ALLOWED (infrastructure / migrations / reporting with requireTenantContext)
 
