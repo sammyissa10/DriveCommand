@@ -83,8 +83,8 @@ export function TenantSendLogTab({ initialSendLog, initialStats }: TenantSendLog
 
   // Filter state
   const [triggerKey, setTriggerKey] = useState('');
-  const [status, setStatus] = useState<string>('');
-  const [channel, setChannel] = useState<string>('');
+  const [status, setStatus] = useState<string>('all');
+  const [channel, setChannel] = useState<string>('all');
 
   const pageSize = initialSendLog.pageSize;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -94,8 +94,8 @@ export function TenantSendLogTab({ initialSendLog, initialStats }: TenantSendLog
     try {
       const result = await listTenantSendLog({
         triggerKey: triggerKey || undefined,
-        status: (status || undefined) as NotificationSendStatus | undefined,
-        channel: (channel || undefined) as NotificationChannel | undefined,
+        status: (status && status !== 'all' ? status : undefined) as NotificationSendStatus | undefined,
+        channel: (channel && channel !== 'all' ? channel : undefined) as NotificationChannel | undefined,
         page: newPage,
         pageSize,
       });
@@ -148,7 +148,7 @@ export function TenantSendLogTab({ initialSendLog, initialStats }: TenantSendLog
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All statuses</SelectItem>
+              <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="SENT">SENT</SelectItem>
               <SelectItem value="FAILED">FAILED</SelectItem>
               <SelectItem value="PENDING">PENDING</SelectItem>
@@ -162,7 +162,7 @@ export function TenantSendLogTab({ initialSendLog, initialStats }: TenantSendLog
               <SelectValue placeholder="Channel" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All channels</SelectItem>
+              <SelectItem value="all">All channels</SelectItem>
               <SelectItem value="EMAIL">EMAIL</SelectItem>
               <SelectItem value="IN_APP">IN_APP</SelectItem>
             </SelectContent>

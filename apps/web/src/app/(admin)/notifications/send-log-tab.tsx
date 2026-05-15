@@ -78,7 +78,7 @@ export function SendLogTab({ initialStats, initialRows, initialTotal }: SendLogT
   // Filter state
   const [tenantId, setTenantId] = useState('');
   const [triggerKey, setTriggerKey] = useState('');
-  const [status, setStatus] = useState<string>('');
+  const [status, setStatus] = useState<string>('all');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [recipient, setRecipient] = useState('');
@@ -92,7 +92,7 @@ export function SendLogTab({ initialStats, initialRows, initialTotal }: SendLogT
       const result = await listNotificationSendLog({
         tenantId: tenantId || undefined,
         triggerKey: triggerKey || undefined,
-        status: (status || undefined) as NotificationSendStatus | undefined,
+        status: (status && status !== 'all' ? status : undefined) as NotificationSendStatus | undefined,
         from: from || undefined,
         to: to || undefined,
         recipient: recipient || undefined,
@@ -154,7 +154,7 @@ export function SendLogTab({ initialStats, initialRows, initialTotal }: SendLogT
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All statuses</SelectItem>
+              <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="SENT">SENT</SelectItem>
               <SelectItem value="FAILED">FAILED</SelectItem>
               <SelectItem value="PENDING">PENDING</SelectItem>
