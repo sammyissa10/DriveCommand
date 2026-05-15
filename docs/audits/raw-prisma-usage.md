@@ -1,6 +1,6 @@
 # Raw Prisma Usage Audit
 
-**Generated:** 2026-05-15T06:01:33.107Z
+**Generated:** 2026-05-15T06:06:45.343Z
 **Scanned:** apps/web/src, packages/\*/src
 **Spec reference:** docs/specs/DatabaseSecurity_MultiTenant_Spec_v1.md §2.6
 

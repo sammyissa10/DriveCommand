@@ -824,6 +824,11 @@ exports.Prisma.CarrierDriverScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   cdlNumber: 'cdlNumber',
+  cdlNumberCiphertext: 'cdlNumberCiphertext',
+  cdlNumberIv: 'cdlNumberIv',
+  cdlNumberTag: 'cdlNumberTag',
+  cdlNumberKeyId: 'cdlNumberKeyId',
+  cdlNumberLast4: 'cdlNumberLast4',
   cdlState: 'cdlState',
   cdlClass: 'cdlClass',
   cdlExpiry: 'cdlExpiry',
@@ -1665,6 +1670,19 @@ exports.Prisma.NotificationEmailConfigScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  action: 'action',
+  resourceType: 'resourceType',
+  resourceId: 'resourceId',
+  fieldName: 'fieldName',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2329,7 +2347,8 @@ exports.Prisma.ModelName = {
   NotificationSubscription: 'NotificationSubscription',
   UserNotificationPreference: 'UserNotificationPreference',
   NotificationSendLog: 'NotificationSendLog',
-  NotificationEmailConfig: 'NotificationEmailConfig'
+  NotificationEmailConfig: 'NotificationEmailConfig',
+  AuditLog: 'AuditLog'
 };
 
 /**

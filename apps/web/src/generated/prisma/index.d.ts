@@ -447,6 +447,13 @@ export type NotificationSendLog = $Result.DefaultSelection<Prisma.$NotificationS
  * Single-row global email config. Enforced by a partial unique index in the migration.
  */
 export type NotificationEmailConfig = $Result.DefaultSelection<Prisma.$NotificationEmailConfigPayload>
+/**
+ * Model AuditLog
+ * Append-only audit log for PII access and restricted operations.
+ * Tenant-scoped, FORCE RLS, REVOKE UPDATE/DELETE from app_user.
+ * Part of DatabaseSecurity_MultiTenant_Spec_v1.md Section 4.4 (quick-329).
+ */
+export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
 
 /**
  * Enums
@@ -2451,6 +2458,16 @@ export class PrismaClient<
     * ```
     */
   get notificationEmailConfig(): Prisma.NotificationEmailConfigDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditLogs
+    * const auditLogs = await prisma.auditLog.findMany()
+    * ```
+    */
+  get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -2970,7 +2987,8 @@ export namespace Prisma {
     NotificationSubscription: 'NotificationSubscription',
     UserNotificationPreference: 'UserNotificationPreference',
     NotificationSendLog: 'NotificationSendLog',
-    NotificationEmailConfig: 'NotificationEmailConfig'
+    NotificationEmailConfig: 'NotificationEmailConfig',
+    AuditLog: 'AuditLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2986,7 +3004,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -9354,6 +9372,80 @@ export namespace Prisma {
           }
         }
       }
+      AuditLog: {
+        payload: Prisma.$AuditLogPayload<ExtArgs>
+        fields: Prisma.AuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.AuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.AuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.AuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          update: {
+            args: Prisma.AuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuditLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.AuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditLog>
+          }
+          groupBy: {
+            args: Prisma.AuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -9548,6 +9640,7 @@ export namespace Prisma {
     userNotificationPreference?: UserNotificationPreferenceOmit
     notificationSendLog?: NotificationSendLogOmit
     notificationEmailConfig?: NotificationEmailConfigOmit
+    auditLog?: AuditLogOmit
   }
 
   /* Types for Logging */
@@ -9696,6 +9789,7 @@ export namespace Prisma {
     pushTokens: number
     routeDrivers: number
     stepInstances: number
+    auditLogs: number
     sysAdminInvoiceItems: number
     userNotificationPreferences: number
   }
@@ -9769,6 +9863,7 @@ export namespace Prisma {
     pushTokens?: boolean | TenantCountOutputTypeCountPushTokensArgs
     routeDrivers?: boolean | TenantCountOutputTypeCountRouteDriversArgs
     stepInstances?: boolean | TenantCountOutputTypeCountStepInstancesArgs
+    auditLogs?: boolean | TenantCountOutputTypeCountAuditLogsArgs
     sysAdminInvoiceItems?: boolean | TenantCountOutputTypeCountSysAdminInvoiceItemsArgs
     userNotificationPreferences?: boolean | TenantCountOutputTypeCountUserNotificationPreferencesArgs
   }
@@ -10263,6 +10358,13 @@ export namespace Prisma {
   /**
    * TenantCountOutputType without action
    */
+  export type TenantCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
   export type TenantCountOutputTypeCountSysAdminInvoiceItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SysAdminInvoiceItemWhereInput
   }
@@ -10310,6 +10412,7 @@ export namespace Prisma {
     inAppNotifications: number
     notificationSubscriptions: number
     notificationPreferences: number
+    auditLogs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10343,6 +10446,7 @@ export namespace Prisma {
     inAppNotifications?: boolean | UserCountOutputTypeCountInAppNotificationsArgs
     notificationSubscriptions?: boolean | UserCountOutputTypeCountNotificationSubscriptionsArgs
     notificationPreferences?: boolean | UserCountOutputTypeCountNotificationPreferencesArgs
+    auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   }
 
   // Custom InputTypes
@@ -10564,6 +10668,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountNotificationPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserNotificationPreferenceWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
   }
 
 
@@ -12505,6 +12616,7 @@ export namespace Prisma {
     pushTokens?: boolean | Tenant$pushTokensArgs<ExtArgs>
     routeDrivers?: boolean | Tenant$routeDriversArgs<ExtArgs>
     stepInstances?: boolean | Tenant$stepInstancesArgs<ExtArgs>
+    auditLogs?: boolean | Tenant$auditLogsArgs<ExtArgs>
     sysAdminInvoiceItems?: boolean | Tenant$sysAdminInvoiceItemsArgs<ExtArgs>
     userNotificationPreferences?: boolean | Tenant$userNotificationPreferencesArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
@@ -12640,6 +12752,7 @@ export namespace Prisma {
     pushTokens?: boolean | Tenant$pushTokensArgs<ExtArgs>
     routeDrivers?: boolean | Tenant$routeDriversArgs<ExtArgs>
     stepInstances?: boolean | Tenant$stepInstancesArgs<ExtArgs>
+    auditLogs?: boolean | Tenant$auditLogsArgs<ExtArgs>
     sysAdminInvoiceItems?: boolean | Tenant$sysAdminInvoiceItemsArgs<ExtArgs>
     userNotificationPreferences?: boolean | Tenant$userNotificationPreferencesArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
@@ -12721,6 +12834,7 @@ export namespace Prisma {
       pushTokens: Prisma.$PushTokenPayload<ExtArgs>[]
       routeDrivers: Prisma.$RouteDriverPayload<ExtArgs>[]
       stepInstances: Prisma.$StepInstancePayload<ExtArgs>[]
+      auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
       sysAdminInvoiceItems: Prisma.$SysAdminInvoiceItemPayload<ExtArgs>[]
       userNotificationPreferences: Prisma.$UserNotificationPreferencePayload<ExtArgs>[]
     }
@@ -13206,6 +13320,7 @@ export namespace Prisma {
     pushTokens<T extends Tenant$pushTokensArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$pushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     routeDrivers<T extends Tenant$routeDriversArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$routeDriversArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteDriverPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     stepInstances<T extends Tenant$stepInstancesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$stepInstancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    auditLogs<T extends Tenant$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sysAdminInvoiceItems<T extends Tenant$sysAdminInvoiceItemsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$sysAdminInvoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SysAdminInvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userNotificationPreferences<T extends Tenant$userNotificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$userNotificationPreferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserNotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -15335,6 +15450,30 @@ export namespace Prisma {
   }
 
   /**
+   * Tenant.auditLogs
+   */
+  export type Tenant$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    cursor?: AuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
    * Tenant.sysAdminInvoiceItems
    */
   export type Tenant$sysAdminInvoiceItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15673,6 +15812,7 @@ export namespace Prisma {
     inAppNotifications?: boolean | User$inAppNotificationsArgs<ExtArgs>
     notificationSubscriptions?: boolean | User$notificationSubscriptionsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -15766,6 +15906,7 @@ export namespace Prisma {
     inAppNotifications?: boolean | User$inAppNotificationsArgs<ExtArgs>
     notificationSubscriptions?: boolean | User$notificationSubscriptionsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15810,6 +15951,7 @@ export namespace Prisma {
       inAppNotifications: Prisma.$InAppNotificationPayload<ExtArgs>[]
       notificationSubscriptions: Prisma.$NotificationSubscriptionPayload<ExtArgs>[]
       notificationPreferences: Prisma.$UserNotificationPreferencePayload<ExtArgs>[]
+      auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16253,6 +16395,7 @@ export namespace Prisma {
     inAppNotifications<T extends User$inAppNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$inAppNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationSubscriptions<T extends User$notificationSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserNotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17434,6 +17577,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserNotificationPreferenceScalarFieldEnum | UserNotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * User.auditLogs
+   */
+  export type User$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    cursor?: AuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
   }
 
   /**
@@ -65633,6 +65800,11 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     cdlNumber: string | null
+    cdlNumberCiphertext: Bytes | null
+    cdlNumberIv: Bytes | null
+    cdlNumberTag: Bytes | null
+    cdlNumberKeyId: string | null
+    cdlNumberLast4: string | null
     cdlState: string | null
     cdlClass: string | null
     cdlExpiry: Date | null
@@ -65656,6 +65828,11 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     cdlNumber: string | null
+    cdlNumberCiphertext: Bytes | null
+    cdlNumberIv: Bytes | null
+    cdlNumberTag: Bytes | null
+    cdlNumberKeyId: string | null
+    cdlNumberLast4: string | null
     cdlState: string | null
     cdlClass: string | null
     cdlExpiry: Date | null
@@ -65679,6 +65856,11 @@ export namespace Prisma {
     email: number
     phone: number
     cdlNumber: number
+    cdlNumberCiphertext: number
+    cdlNumberIv: number
+    cdlNumberTag: number
+    cdlNumberKeyId: number
+    cdlNumberLast4: number
     cdlState: number
     cdlClass: number
     cdlExpiry: number
@@ -65712,6 +65894,11 @@ export namespace Prisma {
     email?: true
     phone?: true
     cdlNumber?: true
+    cdlNumberCiphertext?: true
+    cdlNumberIv?: true
+    cdlNumberTag?: true
+    cdlNumberKeyId?: true
+    cdlNumberLast4?: true
     cdlState?: true
     cdlClass?: true
     cdlExpiry?: true
@@ -65735,6 +65922,11 @@ export namespace Prisma {
     email?: true
     phone?: true
     cdlNumber?: true
+    cdlNumberCiphertext?: true
+    cdlNumberIv?: true
+    cdlNumberTag?: true
+    cdlNumberKeyId?: true
+    cdlNumberLast4?: true
     cdlState?: true
     cdlClass?: true
     cdlExpiry?: true
@@ -65758,6 +65950,11 @@ export namespace Prisma {
     email?: true
     phone?: true
     cdlNumber?: true
+    cdlNumberCiphertext?: true
+    cdlNumberIv?: true
+    cdlNumberTag?: true
+    cdlNumberKeyId?: true
+    cdlNumberLast4?: true
     cdlState?: true
     cdlClass?: true
     cdlExpiry?: true
@@ -65868,6 +66065,11 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     cdlNumber: string | null
+    cdlNumberCiphertext: Bytes | null
+    cdlNumberIv: Bytes | null
+    cdlNumberTag: Bytes | null
+    cdlNumberKeyId: string | null
+    cdlNumberLast4: string | null
     cdlState: string | null
     cdlClass: string | null
     cdlExpiry: Date | null
@@ -65910,6 +66112,11 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     cdlNumber?: boolean
+    cdlNumberCiphertext?: boolean
+    cdlNumberIv?: boolean
+    cdlNumberTag?: boolean
+    cdlNumberKeyId?: boolean
+    cdlNumberLast4?: boolean
     cdlState?: boolean
     cdlClass?: boolean
     cdlExpiry?: boolean
@@ -65949,6 +66156,11 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     cdlNumber?: boolean
+    cdlNumberCiphertext?: boolean
+    cdlNumberIv?: boolean
+    cdlNumberTag?: boolean
+    cdlNumberKeyId?: boolean
+    cdlNumberLast4?: boolean
     cdlState?: boolean
     cdlClass?: boolean
     cdlExpiry?: boolean
@@ -65975,6 +66187,11 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     cdlNumber?: boolean
+    cdlNumberCiphertext?: boolean
+    cdlNumberIv?: boolean
+    cdlNumberTag?: boolean
+    cdlNumberKeyId?: boolean
+    cdlNumberLast4?: boolean
     cdlState?: boolean
     cdlClass?: boolean
     cdlExpiry?: boolean
@@ -66001,6 +66218,11 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     cdlNumber?: boolean
+    cdlNumberCiphertext?: boolean
+    cdlNumberIv?: boolean
+    cdlNumberTag?: boolean
+    cdlNumberKeyId?: boolean
+    cdlNumberLast4?: boolean
     cdlState?: boolean
     cdlClass?: boolean
     cdlExpiry?: boolean
@@ -66015,7 +66237,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CarrierDriverOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "userId" | "firstName" | "lastName" | "email" | "phone" | "cdlNumber" | "cdlState" | "cdlClass" | "cdlExpiry" | "homeTerminalId" | "payModel" | "payRate" | "payPeriod" | "status" | "isSample" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierDriver"]>
+  export type CarrierDriverOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "userId" | "firstName" | "lastName" | "email" | "phone" | "cdlNumber" | "cdlNumberCiphertext" | "cdlNumberIv" | "cdlNumberTag" | "cdlNumberKeyId" | "cdlNumberLast4" | "cdlState" | "cdlClass" | "cdlExpiry" | "homeTerminalId" | "payModel" | "payRate" | "payPeriod" | "status" | "isSample" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierDriver"]>
   export type CarrierDriverInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     user?: boolean | CarrierDriver$userArgs<ExtArgs>
@@ -66073,6 +66295,11 @@ export namespace Prisma {
       email: string | null
       phone: string | null
       cdlNumber: string | null
+      cdlNumberCiphertext: Prisma.Bytes | null
+      cdlNumberIv: Prisma.Bytes | null
+      cdlNumberTag: Prisma.Bytes | null
+      cdlNumberKeyId: string | null
+      cdlNumberLast4: string | null
       cdlState: string | null
       cdlClass: string | null
       cdlExpiry: Date | null
@@ -66531,6 +66758,11 @@ export namespace Prisma {
     readonly email: FieldRef<"CarrierDriver", 'String'>
     readonly phone: FieldRef<"CarrierDriver", 'String'>
     readonly cdlNumber: FieldRef<"CarrierDriver", 'String'>
+    readonly cdlNumberCiphertext: FieldRef<"CarrierDriver", 'Bytes'>
+    readonly cdlNumberIv: FieldRef<"CarrierDriver", 'Bytes'>
+    readonly cdlNumberTag: FieldRef<"CarrierDriver", 'Bytes'>
+    readonly cdlNumberKeyId: FieldRef<"CarrierDriver", 'String'>
+    readonly cdlNumberLast4: FieldRef<"CarrierDriver", 'String'>
     readonly cdlState: FieldRef<"CarrierDriver", 'String'>
     readonly cdlClass: FieldRef<"CarrierDriver", 'String'>
     readonly cdlExpiry: FieldRef<"CarrierDriver", 'DateTime'>
@@ -124532,6 +124764,1142 @@ export namespace Prisma {
 
 
   /**
+   * Model AuditLog
+   */
+
+  export type AggregateAuditLog = {
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  export type AuditLogMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    action: string | null
+    resourceType: string | null
+    resourceId: string | null
+    fieldName: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    action: string | null
+    resourceType: string | null
+    resourceId: string | null
+    fieldName: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    userId: number
+    action: number
+    resourceType: number
+    resourceId: number
+    fieldName: number
+    ipAddress: number
+    userAgent: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuditLogMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    action?: true
+    resourceType?: true
+    resourceId?: true
+    fieldName?: true
+    ipAddress?: true
+    userAgent?: true
+    createdAt?: true
+  }
+
+  export type AuditLogMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    action?: true
+    resourceType?: true
+    resourceId?: true
+    fieldName?: true
+    ipAddress?: true
+    userAgent?: true
+    createdAt?: true
+  }
+
+  export type AuditLogCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    action?: true
+    resourceType?: true
+    resourceId?: true
+    fieldName?: true
+    ipAddress?: true
+    userAgent?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLog to aggregate.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuditLogs
+    **/
+    _count?: true | AuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type GetAuditLogAggregateType<T extends AuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditLog[P]>
+      : GetScalarType<T[P], AggregateAuditLog[P]>
+  }
+
+
+
+
+  export type AuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithAggregationInput | AuditLogOrderByWithAggregationInput[]
+    by: AuditLogScalarFieldEnum[] | AuditLogScalarFieldEnum
+    having?: AuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditLogCountAggregateInputType | true
+    _min?: AuditLogMinAggregateInputType
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type AuditLogGroupByOutputType = {
+    id: string
+    tenantId: string
+    userId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    createdAt: Date
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  type GetAuditLogGroupByPayload<T extends AuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    action?: boolean
+    resourceType?: boolean
+    resourceId?: boolean
+    fieldName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    action?: boolean
+    resourceType?: boolean
+    resourceId?: boolean
+    fieldName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    action?: boolean
+    resourceType?: boolean
+    resourceId?: boolean
+    fieldName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    action?: boolean
+    resourceType?: boolean
+    resourceId?: boolean
+    fieldName?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "userId" | "action" | "resourceType" | "resourceId" | "fieldName" | "ipAddress" | "userAgent" | "createdAt", ExtArgs["result"]["auditLog"]>
+  export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AuditLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AuditLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditLog"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      userId: string
+      action: string
+      resourceType: string
+      resourceId: string
+      fieldName: string | null
+      ipAddress: string | null
+      userAgent: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["auditLog"]>
+    composites: {}
+  }
+
+  type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = $Result.GetResult<Prisma.$AuditLogPayload, S>
+
+  type AuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuditLogCountAggregateInputType | true
+    }
+
+  export interface AuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLog'], meta: { name: 'AuditLog' } }
+    /**
+     * Find zero or one AuditLog that matches the filter.
+     * @param {AuditLogFindUniqueArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditLogFindUniqueArgs>(args: SelectSubset<T, AuditLogFindUniqueArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuditLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuditLogFindUniqueOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditLogFindFirstArgs>(args?: SelectSubset<T, AuditLogFindFirstArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany()
+     * 
+     * // Get first 10 AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuditLogFindManyArgs>(args?: SelectSubset<T, AuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuditLog.
+     * @param {AuditLogCreateArgs} args - Arguments to create a AuditLog.
+     * @example
+     * // Create one AuditLog
+     * const AuditLog = await prisma.auditLog.create({
+     *   data: {
+     *     // ... data to create a AuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuditLogCreateArgs>(args: SelectSubset<T, AuditLogCreateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuditLogs.
+     * @param {AuditLogCreateManyArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuditLogCreateManyArgs>(args?: SelectSubset<T, AuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuditLogs and returns the data saved in the database.
+     * @param {AuditLogCreateManyAndReturnArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuditLog.
+     * @param {AuditLogDeleteArgs} args - Arguments to delete one AuditLog.
+     * @example
+     * // Delete one AuditLog
+     * const AuditLog = await prisma.auditLog.delete({
+     *   where: {
+     *     // ... filter to delete one AuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuditLogDeleteArgs>(args: SelectSubset<T, AuditLogDeleteArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuditLog.
+     * @param {AuditLogUpdateArgs} args - Arguments to update one AuditLog.
+     * @example
+     * // Update one AuditLog
+     * const auditLog = await prisma.auditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuditLogUpdateArgs>(args: SelectSubset<T, AuditLogUpdateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuditLogs.
+     * @param {AuditLogDeleteManyArgs} args - Arguments to filter AuditLogs to delete.
+     * @example
+     * // Delete a few AuditLogs
+     * const { count } = await prisma.auditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuditLogDeleteManyArgs>(args?: SelectSubset<T, AuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuditLogUpdateManyArgs>(args: SelectSubset<T, AuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs and returns the data updated in the database.
+     * @param {AuditLogUpdateManyAndReturnArgs} args - Arguments to update many AuditLogs.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AuditLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AuditLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuditLog.
+     * @param {AuditLogUpsertArgs} args - Arguments to update or create a AuditLog.
+     * @example
+     * // Update or create a AuditLog
+     * const auditLog = await prisma.auditLog.upsert({
+     *   create: {
+     *     // ... data to create a AuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditLogUpsertArgs>(args: SelectSubset<T, AuditLogUpsertArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogCountArgs} args - Arguments to filter AuditLogs to count.
+     * @example
+     * // Count the number of AuditLogs
+     * const count = await prisma.auditLog.count({
+     *   where: {
+     *     // ... the filter for the AuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditLogCountArgs>(
+      args?: Subset<T, AuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditLogAggregateArgs>(args: Subset<T, AuditLogAggregateArgs>): Prisma.PrismaPromise<GetAuditLogAggregateType<T>>
+
+    /**
+     * Group by AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: AuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditLog model
+   */
+  readonly fields: AuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditLog model
+   */
+  interface AuditLogFieldRefs {
+    readonly id: FieldRef<"AuditLog", 'String'>
+    readonly tenantId: FieldRef<"AuditLog", 'String'>
+    readonly userId: FieldRef<"AuditLog", 'String'>
+    readonly action: FieldRef<"AuditLog", 'String'>
+    readonly resourceType: FieldRef<"AuditLog", 'String'>
+    readonly resourceId: FieldRef<"AuditLog", 'String'>
+    readonly fieldName: FieldRef<"AuditLog", 'String'>
+    readonly ipAddress: FieldRef<"AuditLog", 'String'>
+    readonly userAgent: FieldRef<"AuditLog", 'String'>
+    readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuditLog findUnique
+   */
+  export type AuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findUniqueOrThrow
+   */
+  export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findFirst
+   */
+  export type AuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findFirstOrThrow
+   */
+  export type AuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findMany
+   */
+  export type AuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogs to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog create
+   */
+  export type AuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuditLog.
+     */
+    data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * AuditLog createMany
+   */
+  export type AuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog createManyAndReturn
+   */
+  export type AuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuditLog update
+   */
+  export type AuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuditLog.
+     */
+    data: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which AuditLog to update.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog updateMany
+   */
+  export type AuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog updateManyAndReturn
+   */
+  export type AuditLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuditLog upsert
+   */
+  export type AuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuditLog to update in case it exists.
+     */
+    where: AuditLogWhereUniqueInput
+    /**
+     * In case the AuditLog found by the `where` argument doesn't exist, create a new AuditLog with this data.
+     */
+    create: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+    /**
+     * In case the AuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditLog delete
+   */
+  export type AuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter which AuditLog to delete.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog deleteMany
+   */
+  export type AuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogs to delete
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog without action
+   */
+  export type AuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -125369,6 +126737,11 @@ export namespace Prisma {
     email: 'email',
     phone: 'phone',
     cdlNumber: 'cdlNumber',
+    cdlNumberCiphertext: 'cdlNumberCiphertext',
+    cdlNumberIv: 'cdlNumberIv',
+    cdlNumberTag: 'cdlNumberTag',
+    cdlNumberKeyId: 'cdlNumberKeyId',
+    cdlNumberLast4: 'cdlNumberLast4',
     cdlState: 'cdlState',
     cdlClass: 'cdlClass',
     cdlExpiry: 'cdlExpiry',
@@ -126348,6 +127721,22 @@ export namespace Prisma {
   export type NotificationEmailConfigScalarFieldEnum = (typeof NotificationEmailConfigScalarFieldEnum)[keyof typeof NotificationEmailConfigScalarFieldEnum]
 
 
+  export const AuditLogScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    action: 'action',
+    resourceType: 'resourceType',
+    resourceId: 'resourceId',
+    fieldName: 'fieldName',
+    ipAddress: 'ipAddress',
+    userAgent: 'userAgent',
+    createdAt: 'createdAt'
+  };
+
+  export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -126955,6 +128344,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+  /**
    * Reference to a field of type 'MileageSource'
    */
   export type EnumMileageSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MileageSource'>
@@ -127538,6 +128941,7 @@ export namespace Prisma {
     pushTokens?: PushTokenListRelationFilter
     routeDrivers?: RouteDriverListRelationFilter
     stepInstances?: StepInstanceListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
     sysAdminInvoiceItems?: SysAdminInvoiceItemListRelationFilter
     userNotificationPreferences?: UserNotificationPreferenceListRelationFilter
   }
@@ -127630,6 +129034,7 @@ export namespace Prisma {
     pushTokens?: PushTokenOrderByRelationAggregateInput
     routeDrivers?: RouteDriverOrderByRelationAggregateInput
     stepInstances?: StepInstanceOrderByRelationAggregateInput
+    auditLogs?: AuditLogOrderByRelationAggregateInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemOrderByRelationAggregateInput
     userNotificationPreferences?: UserNotificationPreferenceOrderByRelationAggregateInput
   }
@@ -127725,6 +129130,7 @@ export namespace Prisma {
     pushTokens?: PushTokenListRelationFilter
     routeDrivers?: RouteDriverListRelationFilter
     stepInstances?: StepInstanceListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
     sysAdminInvoiceItems?: SysAdminInvoiceItemListRelationFilter
     userNotificationPreferences?: UserNotificationPreferenceListRelationFilter
   }, "id" | "slug">
@@ -127826,6 +129232,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationListRelationFilter
     notificationSubscriptions?: NotificationSubscriptionListRelationFilter
     notificationPreferences?: UserNotificationPreferenceListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -127876,6 +129283,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationOrderByRelationAggregateInput
     notificationSubscriptions?: NotificationSubscriptionOrderByRelationAggregateInput
     notificationPreferences?: UserNotificationPreferenceOrderByRelationAggregateInput
+    auditLogs?: AuditLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -127930,6 +129338,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationListRelationFilter
     notificationSubscriptions?: NotificationSubscriptionListRelationFilter
     notificationPreferences?: UserNotificationPreferenceListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }, "id" | "email_tenantId">
 
   export type UserOrderByWithAggregationInput = {
@@ -132197,6 +133606,11 @@ export namespace Prisma {
     email?: StringNullableFilter<"CarrierDriver"> | string | null
     phone?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlNumber?: StringNullableFilter<"CarrierDriver"> | string | null
+    cdlNumberCiphertext?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberIv?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberTag?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberKeyId?: StringNullableFilter<"CarrierDriver"> | string | null
+    cdlNumberLast4?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlState?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlClass?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlExpiry?: DateTimeNullableFilter<"CarrierDriver"> | Date | string | null
@@ -132235,6 +133649,11 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     cdlNumber?: SortOrderInput | SortOrder
+    cdlNumberCiphertext?: SortOrderInput | SortOrder
+    cdlNumberIv?: SortOrderInput | SortOrder
+    cdlNumberTag?: SortOrderInput | SortOrder
+    cdlNumberKeyId?: SortOrderInput | SortOrder
+    cdlNumberLast4?: SortOrderInput | SortOrder
     cdlState?: SortOrderInput | SortOrder
     cdlClass?: SortOrderInput | SortOrder
     cdlExpiry?: SortOrderInput | SortOrder
@@ -132276,6 +133695,11 @@ export namespace Prisma {
     email?: StringNullableFilter<"CarrierDriver"> | string | null
     phone?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlNumber?: StringNullableFilter<"CarrierDriver"> | string | null
+    cdlNumberCiphertext?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberIv?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberTag?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberKeyId?: StringNullableFilter<"CarrierDriver"> | string | null
+    cdlNumberLast4?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlState?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlClass?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlExpiry?: DateTimeNullableFilter<"CarrierDriver"> | Date | string | null
@@ -132314,6 +133738,11 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     cdlNumber?: SortOrderInput | SortOrder
+    cdlNumberCiphertext?: SortOrderInput | SortOrder
+    cdlNumberIv?: SortOrderInput | SortOrder
+    cdlNumberTag?: SortOrderInput | SortOrder
+    cdlNumberKeyId?: SortOrderInput | SortOrder
+    cdlNumberLast4?: SortOrderInput | SortOrder
     cdlState?: SortOrderInput | SortOrder
     cdlClass?: SortOrderInput | SortOrder
     cdlExpiry?: SortOrderInput | SortOrder
@@ -132345,6 +133774,11 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
     phone?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
     cdlNumber?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
+    cdlNumberCiphertext?: BytesNullableWithAggregatesFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberIv?: BytesNullableWithAggregatesFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberTag?: BytesNullableWithAggregatesFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberKeyId?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
+    cdlNumberLast4?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
     cdlState?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
     cdlClass?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
     cdlExpiry?: DateTimeNullableWithAggregatesFilter<"CarrierDriver"> | Date | string | null
@@ -137538,6 +138972,89 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"NotificationEmailConfig"> | Date | string
   }
 
+  export type AuditLogWhereInput = {
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    id?: UuidFilter<"AuditLog"> | string
+    tenantId?: UuidFilter<"AuditLog"> | string
+    userId?: UuidFilter<"AuditLog"> | string
+    action?: StringFilter<"AuditLog"> | string
+    resourceType?: StringFilter<"AuditLog"> | string
+    resourceId?: UuidFilter<"AuditLog"> | string
+    fieldName?: StringNullableFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type AuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resourceType?: SortOrder
+    resourceId?: SortOrder
+    fieldName?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    tenantId?: UuidFilter<"AuditLog"> | string
+    userId?: UuidFilter<"AuditLog"> | string
+    action?: StringFilter<"AuditLog"> | string
+    resourceType?: StringFilter<"AuditLog"> | string
+    resourceId?: UuidFilter<"AuditLog"> | string
+    fieldName?: StringNullableFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type AuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resourceType?: SortOrder
+    resourceId?: SortOrder
+    fieldName?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AuditLogCountOrderByAggregateInput
+    _max?: AuditLogMaxOrderByAggregateInput
+    _min?: AuditLogMinOrderByAggregateInput
+  }
+
+  export type AuditLogScalarWhereWithAggregatesInput = {
+    AND?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    OR?: AuditLogScalarWhereWithAggregatesInput[]
+    NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"AuditLog"> | string
+    tenantId?: UuidWithAggregatesFilter<"AuditLog"> | string
+    userId?: UuidWithAggregatesFilter<"AuditLog"> | string
+    action?: StringWithAggregatesFilter<"AuditLog"> | string
+    resourceType?: StringWithAggregatesFilter<"AuditLog"> | string
+    resourceId?: UuidWithAggregatesFilter<"AuditLog"> | string
+    fieldName?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -137626,6 +139143,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -137718,6 +139236,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -137810,6 +139329,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -137902,6 +139422,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -138010,6 +139531,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -138059,6 +139581,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -138108,6 +139631,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -138157,6 +139681,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -142906,6 +144431,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -142943,6 +144473,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -142976,6 +144511,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -143013,6 +144553,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -143048,6 +144593,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -143069,6 +144619,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -143091,6 +144646,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -148956,6 +150516,95 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AuditLogCreateInput = {
+    id?: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutAuditLogsInput
+    user: UserCreateNestedOneWithoutAuditLogsInput
+  }
+
+  export type AuditLogUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    userId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutAuditLogsNestedInput
+    user?: UserUpdateOneRequiredWithoutAuditLogsNestedInput
+  }
+
+  export type AuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogCreateManyInput = {
+    id?: string
+    tenantId: string
+    userId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -149480,6 +151129,12 @@ export namespace Prisma {
     none?: StepInstanceWhereInput
   }
 
+  export type AuditLogListRelationFilter = {
+    every?: AuditLogWhereInput
+    some?: AuditLogWhereInput
+    none?: AuditLogWhereInput
+  }
+
   export type SysAdminInvoiceItemListRelationFilter = {
     every?: SysAdminInvoiceItemWhereInput
     some?: SysAdminInvoiceItemWhereInput
@@ -149766,6 +151421,10 @@ export namespace Prisma {
   }
 
   export type StepInstanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -153248,6 +154907,13 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
+  export type BytesNullableFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
+  }
+
   export type CarrierFacilityNullableScalarRelationFilter = {
     is?: CarrierFacilityWhereInput | null
     isNot?: CarrierFacilityWhereInput | null
@@ -153262,6 +154928,11 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     cdlNumber?: SortOrder
+    cdlNumberCiphertext?: SortOrder
+    cdlNumberIv?: SortOrder
+    cdlNumberTag?: SortOrder
+    cdlNumberKeyId?: SortOrder
+    cdlNumberLast4?: SortOrder
     cdlState?: SortOrder
     cdlClass?: SortOrder
     cdlExpiry?: SortOrder
@@ -153289,6 +154960,11 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     cdlNumber?: SortOrder
+    cdlNumberCiphertext?: SortOrder
+    cdlNumberIv?: SortOrder
+    cdlNumberTag?: SortOrder
+    cdlNumberKeyId?: SortOrder
+    cdlNumberLast4?: SortOrder
     cdlState?: SortOrder
     cdlClass?: SortOrder
     cdlExpiry?: SortOrder
@@ -153312,6 +154988,11 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     cdlNumber?: SortOrder
+    cdlNumberCiphertext?: SortOrder
+    cdlNumberIv?: SortOrder
+    cdlNumberTag?: SortOrder
+    cdlNumberKeyId?: SortOrder
+    cdlNumberLast4?: SortOrder
     cdlState?: SortOrder
     cdlClass?: SortOrder
     cdlExpiry?: SortOrder
@@ -153328,6 +155009,16 @@ export namespace Prisma {
 
   export type CarrierDriverSumOrderByAggregateInput = {
     payRate?: SortOrder
+  }
+
+  export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type CarrierTruckCountOrderByAggregateInput = {
@@ -157002,6 +158693,45 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type AuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resourceType?: SortOrder
+    resourceId?: SortOrder
+    fieldName?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resourceType?: SortOrder
+    resourceId?: SortOrder
+    fieldName?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resourceType?: SortOrder
+    resourceId?: SortOrder
+    fieldName?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -157494,6 +159224,13 @@ export namespace Prisma {
     connectOrCreate?: StepInstanceCreateOrConnectWithoutTenantInput | StepInstanceCreateOrConnectWithoutTenantInput[]
     createMany?: StepInstanceCreateManyTenantInputEnvelope
     connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+  }
+
+  export type AuditLogCreateNestedManyWithoutTenantInput = {
+    create?: XOR<AuditLogCreateWithoutTenantInput, AuditLogUncheckedCreateWithoutTenantInput> | AuditLogCreateWithoutTenantInput[] | AuditLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutTenantInput | AuditLogCreateOrConnectWithoutTenantInput[]
+    createMany?: AuditLogCreateManyTenantInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type SysAdminInvoiceItemCreateNestedManyWithoutTenantInput = {
@@ -158002,6 +159739,13 @@ export namespace Prisma {
     connectOrCreate?: StepInstanceCreateOrConnectWithoutTenantInput | StepInstanceCreateOrConnectWithoutTenantInput[]
     createMany?: StepInstanceCreateManyTenantInputEnvelope
     connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+  }
+
+  export type AuditLogUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<AuditLogCreateWithoutTenantInput, AuditLogUncheckedCreateWithoutTenantInput> | AuditLogCreateWithoutTenantInput[] | AuditLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutTenantInput | AuditLogCreateOrConnectWithoutTenantInput[]
+    createMany?: AuditLogCreateManyTenantInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput = {
@@ -159040,6 +160784,20 @@ export namespace Prisma {
     deleteMany?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
   }
 
+  export type AuditLogUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<AuditLogCreateWithoutTenantInput, AuditLogUncheckedCreateWithoutTenantInput> | AuditLogCreateWithoutTenantInput[] | AuditLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutTenantInput | AuditLogCreateOrConnectWithoutTenantInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutTenantInput | AuditLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: AuditLogCreateManyTenantInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutTenantInput | AuditLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutTenantInput | AuditLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput = {
     create?: XOR<SysAdminInvoiceItemCreateWithoutTenantInput, SysAdminInvoiceItemUncheckedCreateWithoutTenantInput> | SysAdminInvoiceItemCreateWithoutTenantInput[] | SysAdminInvoiceItemUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: SysAdminInvoiceItemCreateOrConnectWithoutTenantInput | SysAdminInvoiceItemCreateOrConnectWithoutTenantInput[]
@@ -160050,6 +161808,20 @@ export namespace Prisma {
     deleteMany?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
   }
 
+  export type AuditLogUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<AuditLogCreateWithoutTenantInput, AuditLogUncheckedCreateWithoutTenantInput> | AuditLogCreateWithoutTenantInput[] | AuditLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutTenantInput | AuditLogCreateOrConnectWithoutTenantInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutTenantInput | AuditLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: AuditLogCreateManyTenantInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutTenantInput | AuditLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutTenantInput | AuditLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<SysAdminInvoiceItemCreateWithoutTenantInput, SysAdminInvoiceItemUncheckedCreateWithoutTenantInput> | SysAdminInvoiceItemCreateWithoutTenantInput[] | SysAdminInvoiceItemUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: SysAdminInvoiceItemCreateOrConnectWithoutTenantInput | SysAdminInvoiceItemCreateOrConnectWithoutTenantInput[]
@@ -160300,6 +162072,13 @@ export namespace Prisma {
     connect?: UserNotificationPreferenceWhereUniqueInput | UserNotificationPreferenceWhereUniqueInput[]
   }
 
+  export type AuditLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
   export type RouteUncheckedCreateNestedManyWithoutDriverInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -160514,6 +162293,13 @@ export namespace Prisma {
     connectOrCreate?: UserNotificationPreferenceCreateOrConnectWithoutUserInput | UserNotificationPreferenceCreateOrConnectWithoutUserInput[]
     createMany?: UserNotificationPreferenceCreateManyUserInputEnvelope
     connect?: UserNotificationPreferenceWhereUniqueInput | UserNotificationPreferenceWhereUniqueInput[]
+  }
+
+  export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -160958,6 +162744,20 @@ export namespace Prisma {
     deleteMany?: UserNotificationPreferenceScalarWhereInput | UserNotificationPreferenceScalarWhereInput[]
   }
 
+  export type AuditLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutUserInput | AuditLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type RouteUncheckedUpdateManyWithoutDriverNestedInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -161386,6 +163186,20 @@ export namespace Prisma {
     update?: UserNotificationPreferenceUpdateWithWhereUniqueWithoutUserInput | UserNotificationPreferenceUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserNotificationPreferenceUpdateManyWithWhereWithoutUserInput | UserNotificationPreferenceUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserNotificationPreferenceScalarWhereInput | UserNotificationPreferenceScalarWhereInput[]
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutUserInput | AuditLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTrucksInput = {
@@ -164858,6 +166672,10 @@ export namespace Prisma {
     connectOrCreate?: DriverDisputeCreateOrConnectWithoutDriverInput | DriverDisputeCreateOrConnectWithoutDriverInput[]
     createMany?: DriverDisputeCreateManyDriverInputEnvelope
     connect?: DriverDisputeWhereUniqueInput | DriverDisputeWhereUniqueInput[]
+  }
+
+  export type NullableBytesFieldUpdateOperationsInput = {
+    set?: Bytes | null
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierDriversNestedInput = {
@@ -168714,6 +170532,34 @@ export namespace Prisma {
     set?: $Enums.NotificationSendStatus
   }
 
+  export type TenantCreateNestedOneWithoutAuditLogsInput = {
+    create?: XOR<TenantCreateWithoutAuditLogsInput, TenantUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutAuditLogsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAuditLogsInput = {
+    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutAuditLogsNestedInput = {
+    create?: XOR<TenantCreateWithoutAuditLogsInput, TenantUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutAuditLogsInput
+    upsert?: TenantUpsertWithoutAuditLogsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutAuditLogsInput, TenantUpdateWithoutAuditLogsInput>, TenantUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutAuditLogsNestedInput = {
+    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
+    upsert?: UserUpsertWithoutAuditLogsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -169642,6 +171488,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedBytesNullableFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
+  }
+
+  export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumMileageSourceNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.MileageSource | EnumMileageSourceFieldRefInput<$PrismaModel> | null
     in?: $Enums.MileageSource[] | ListEnumMileageSourceFieldRefInput<$PrismaModel> | null
@@ -170343,6 +172206,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTenantInput = {
@@ -170391,6 +172255,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTenantInput = {
@@ -171884,6 +173749,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -171919,6 +173789,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -173668,6 +175543,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AuditLogCreateWithoutTenantInput = {
+    id?: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutAuditLogsInput
+  }
+
+  export type AuditLogUncheckedCreateWithoutTenantInput = {
+    id?: string
+    userId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogCreateOrConnectWithoutTenantInput = {
+    where: AuditLogWhereUniqueInput
+    create: XOR<AuditLogCreateWithoutTenantInput, AuditLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type AuditLogCreateManyTenantInputEnvelope = {
+    data: AuditLogCreateManyTenantInput | AuditLogCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SysAdminInvoiceItemCreateWithoutTenantInput = {
     id?: string
     chargeType?: string | null
@@ -174987,6 +176896,11 @@ export namespace Prisma {
     email?: StringNullableFilter<"CarrierDriver"> | string | null
     phone?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlNumber?: StringNullableFilter<"CarrierDriver"> | string | null
+    cdlNumberCiphertext?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberIv?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberTag?: BytesNullableFilter<"CarrierDriver"> | Bytes | null
+    cdlNumberKeyId?: StringNullableFilter<"CarrierDriver"> | string | null
+    cdlNumberLast4?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlState?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlClass?: StringNullableFilter<"CarrierDriver"> | string | null
     cdlExpiry?: DateTimeNullableFilter<"CarrierDriver"> | Date | string | null
@@ -176395,6 +178309,38 @@ export namespace Prisma {
     deletedBy?: UuidNullableFilter<"StepInstance"> | string | null
   }
 
+  export type AuditLogUpsertWithWhereUniqueWithoutTenantInput = {
+    where: AuditLogWhereUniqueInput
+    update: XOR<AuditLogUpdateWithoutTenantInput, AuditLogUncheckedUpdateWithoutTenantInput>
+    create: XOR<AuditLogCreateWithoutTenantInput, AuditLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type AuditLogUpdateWithWhereUniqueWithoutTenantInput = {
+    where: AuditLogWhereUniqueInput
+    data: XOR<AuditLogUpdateWithoutTenantInput, AuditLogUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type AuditLogUpdateManyWithWhereWithoutTenantInput = {
+    where: AuditLogScalarWhereInput
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type AuditLogScalarWhereInput = {
+    AND?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    OR?: AuditLogScalarWhereInput[]
+    NOT?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    id?: UuidFilter<"AuditLog"> | string
+    tenantId?: UuidFilter<"AuditLog"> | string
+    userId?: UuidFilter<"AuditLog"> | string
+    action?: StringFilter<"AuditLog"> | string
+    resourceType?: StringFilter<"AuditLog"> | string
+    resourceId?: UuidFilter<"AuditLog"> | string
+    fieldName?: StringNullableFilter<"AuditLog"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLog"> | string | null
+    userAgent?: StringNullableFilter<"AuditLog"> | string | null
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }
+
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutTenantInput = {
     where: SysAdminInvoiceItemWhereUniqueInput
     update: XOR<SysAdminInvoiceItemUpdateWithoutTenantInput, SysAdminInvoiceItemUncheckedUpdateWithoutTenantInput>
@@ -176552,6 +178498,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -176643,6 +178590,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -177893,6 +179841,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -177928,6 +179881,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -178353,6 +180311,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AuditLogCreateWithoutUserInput = {
+    id?: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutAuditLogsInput
+  }
+
+  export type AuditLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    tenantId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditLogCreateOrConnectWithoutUserInput = {
+    where: AuditLogWhereUniqueInput
+    create: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuditLogCreateManyUserInputEnvelope = {
+    data: AuditLogCreateManyUserInput | AuditLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutUsersInput = {
     update: XOR<TenantUpdateWithoutUsersInput, TenantUncheckedUpdateWithoutUsersInput>
     create: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
@@ -178451,6 +180443,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -178542,6 +180535,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -178916,6 +180910,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -178951,6 +180950,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -179130,6 +181134,22 @@ export namespace Prisma {
     data: XOR<UserNotificationPreferenceUpdateManyMutationInput, UserNotificationPreferenceUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type AuditLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: AuditLogWhereUniqueInput
+    update: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
+    create: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuditLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: AuditLogWhereUniqueInput
+    data: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuditLogUpdateManyWithWhereWithoutUserInput = {
+    where: AuditLogScalarWhereInput
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutUserInput>
+  }
+
   export type TenantCreateWithoutTrucksInput = {
     id?: string
     name: string
@@ -179217,6 +181237,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -179308,6 +181329,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -179363,6 +181385,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTrucksCreatedInput = {
@@ -179411,6 +181434,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTrucksCreatedInput = {
@@ -179464,6 +181488,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTrucksUpdatedInput = {
@@ -179512,6 +181537,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTrucksUpdatedInput = {
@@ -180047,6 +182073,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -180138,6 +182165,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -180199,6 +182227,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksCreatedInput = {
@@ -180247,6 +182276,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutTrucksUpdatedInput = {
@@ -180306,6 +182336,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksUpdatedInput = {
@@ -180354,6 +182385,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutTruckInput = {
@@ -180587,6 +182619,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -180678,6 +182711,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -180785,6 +182819,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -180876,6 +182911,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -180967,6 +183003,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -181058,6 +183095,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -181113,6 +183151,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignedRoutesInput = {
@@ -181161,6 +183200,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignedRoutesInput = {
@@ -181275,6 +183315,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRoutesCreatedInput = {
@@ -181323,6 +183364,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRoutesCreatedInput = {
@@ -181376,6 +183418,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRoutesUpdatedInput = {
@@ -181424,6 +183467,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRoutesUpdatedInput = {
@@ -181909,6 +183953,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -182000,6 +184045,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -182061,6 +184107,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedRoutesInput = {
@@ -182109,6 +184156,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckUpsertWithoutAssignedRoutesInput = {
@@ -182235,6 +184283,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesCreatedInput = {
@@ -182283,6 +184332,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutRoutesUpdatedInput = {
@@ -182342,6 +184392,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesUpdatedInput = {
@@ -182390,6 +184441,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithWhereUniqueWithoutRouteInput = {
@@ -182631,6 +184683,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRouteCoDriversInput = {
@@ -182679,6 +184732,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRouteCoDriversInput = {
@@ -182773,6 +184827,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepCreateNestedManyWithoutTenantInput
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -182864,6 +184919,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutTenantInput
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -183001,6 +185057,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRouteCoDriversInput = {
@@ -183049,6 +185106,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantUpsertWithoutRouteDriversInput = {
@@ -183149,6 +185207,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUpdateManyWithoutTenantNestedInput
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -183240,6 +185299,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutTenantNestedInput
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -183331,6 +185391,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -183422,6 +185483,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -183603,6 +185665,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverDocumentsInput = {
@@ -183651,6 +185714,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverDocumentsInput = {
@@ -183781,6 +185845,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
@@ -183829,6 +185894,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUploadedDocumentsInput = {
@@ -183934,6 +186000,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -184025,6 +186092,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -184224,6 +186292,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDocumentsInput = {
@@ -184272,6 +186341,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LoadUpsertWithoutDocumentsInput = {
@@ -184414,6 +186484,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
@@ -184462,6 +186533,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutMaintenanceEventsInput = {
@@ -184551,6 +186623,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -184642,6 +186715,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -184810,6 +186884,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -184901,6 +186976,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -185059,6 +187135,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -185150,6 +187227,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -185318,6 +187396,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -185409,6 +187488,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -185567,6 +187647,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -185658,6 +187739,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -185765,6 +187847,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -185856,6 +187939,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -185947,6 +188031,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -186038,6 +188123,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -186271,6 +188357,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -186362,6 +188449,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -186591,6 +188679,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -186682,6 +188771,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -186798,6 +188888,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSafetyEventsInput = {
@@ -186846,6 +188937,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSafetyEventsInput = {
@@ -187016,6 +189108,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -187107,6 +189200,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -187235,6 +189329,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSafetyEventsInput = {
@@ -187283,6 +189378,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RouteUpsertWithoutSafetyEventsInput = {
@@ -187443,6 +189539,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -187534,6 +189631,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -187702,6 +189800,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -187793,6 +189892,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -187951,6 +190051,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -188042,6 +190143,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -188175,6 +190277,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -188266,6 +190369,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -188373,6 +190477,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -188464,6 +190569,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -188603,6 +190709,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTagAssignmentsInput = {
@@ -188651,6 +190758,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTagAssignmentsInput = {
@@ -188756,6 +190864,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -188847,6 +190956,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -189004,6 +191114,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -189052,6 +191163,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutExpenseCategoriesInput = {
@@ -189141,6 +191253,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -189232,6 +191345,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -189399,6 +191513,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -189490,6 +191605,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -189613,6 +191729,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -189704,6 +191821,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -189901,6 +192019,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -189992,6 +192111,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -190185,6 +192305,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -190276,6 +192397,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -190409,6 +192531,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -190500,6 +192623,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -190653,6 +192777,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -190744,6 +192869,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -190909,6 +193035,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -191000,6 +193127,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -191091,6 +193219,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -191182,6 +193311,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -191354,6 +193484,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -191445,6 +193576,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -191607,6 +193739,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -191698,6 +193831,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -191919,6 +194053,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -192010,6 +194145,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -192133,6 +194269,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -192224,6 +194361,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -192384,6 +194522,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -192475,6 +194614,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -192625,6 +194765,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -192716,6 +194857,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -192771,6 +194913,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesCreatedInput = {
@@ -192819,6 +194962,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesCreatedInput = {
@@ -192872,6 +195016,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesUpdatedInput = {
@@ -192920,6 +195065,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesUpdatedInput = {
@@ -193134,6 +195280,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -193225,6 +195372,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -193286,6 +195434,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesCreatedInput = {
@@ -193334,6 +195483,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutInvoicesUpdatedInput = {
@@ -193393,6 +195543,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesUpdatedInput = {
@@ -193441,6 +195592,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LoadUpsertWithoutInvoicesInput = {
@@ -193692,6 +195844,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -193783,6 +195936,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -193959,6 +196113,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -194050,6 +196205,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -194141,6 +196297,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -194232,6 +196389,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -194381,6 +196539,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -194472,6 +196631,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -194623,6 +196783,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
 
@@ -194714,6 +196875,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
 
@@ -194870,6 +197032,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
 
@@ -194961,6 +197124,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
 
@@ -195051,6 +197215,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -195142,6 +197307,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -195197,6 +197363,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollRecordsInput = {
@@ -195245,6 +197412,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollRecordsInput = {
@@ -195298,6 +197466,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsCreatedInput = {
@@ -195346,6 +197515,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsCreatedInput = {
@@ -195399,6 +197569,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsUpdatedInput = {
@@ -195447,6 +197618,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsUpdatedInput = {
@@ -195552,6 +197724,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -195643,6 +197816,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -195704,6 +197878,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -195752,6 +197927,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutPayrollsCreatedInput = {
@@ -195811,6 +197987,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsCreatedInput = {
@@ -195859,6 +198036,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutPayrollsUpdatedInput = {
@@ -195918,6 +198096,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsUpdatedInput = {
@@ -195966,6 +198145,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutLoadsInput = {
@@ -196055,6 +198235,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -196146,6 +198327,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -196319,6 +198501,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverLoadsInput = {
@@ -196367,6 +198550,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverLoadsInput = {
@@ -196481,6 +198665,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoadsCreatedInput = {
@@ -196529,6 +198714,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoadsCreatedInput = {
@@ -196582,6 +198768,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoadsUpdatedInput = {
@@ -196630,6 +198817,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoadsUpdatedInput = {
@@ -197023,6 +199211,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -197114,6 +199303,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -197305,6 +199495,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverLoadsInput = {
@@ -197353,6 +199544,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckUpsertWithoutLoadsInput = {
@@ -197479,6 +199671,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsCreatedInput = {
@@ -197527,6 +199720,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutLoadsUpdatedInput = {
@@ -197586,6 +199780,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsUpdatedInput = {
@@ -197634,6 +199829,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutLoadInput = {
@@ -197893,6 +200089,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -197984,6 +200181,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -198091,6 +200289,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -198182,6 +200381,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -198338,6 +200538,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -198429,6 +200630,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -198848,6 +201050,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -198939,6 +201142,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -199145,6 +201349,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -199236,6 +201441,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -199356,6 +201562,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -199404,6 +201611,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -199509,6 +201717,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -199600,6 +201809,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -199732,6 +201942,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -199780,6 +201991,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierDispatchCreateWithoutMessagesInput = {
@@ -200108,6 +202320,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPushTokensInput = {
@@ -200156,6 +202369,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPushTokensInput = {
@@ -200250,6 +202464,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -200341,6 +202556,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -200407,6 +202623,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushTokensInput = {
@@ -200455,6 +202672,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantUpsertWithoutPushTokensInput = {
@@ -200555,6 +202773,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -200646,6 +202865,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -200737,6 +202957,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -200828,6 +203049,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -200883,6 +203105,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutHosEntriesInput = {
@@ -200931,6 +203154,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutHosEntriesInput = {
@@ -201036,6 +203260,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -201127,6 +203352,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -201188,6 +203414,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHosEntriesInput = {
@@ -201236,6 +203463,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDriverIncidentsInput = {
@@ -201325,6 +203553,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -201416,6 +203645,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -201471,6 +203701,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutIncidentsInput = {
@@ -201519,6 +203750,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutIncidentsInput = {
@@ -201624,6 +203856,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -201715,6 +203948,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -201776,6 +204010,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIncidentsInput = {
@@ -201824,6 +204059,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutCarrierClientsInput = {
@@ -201913,6 +204149,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -202004,6 +204241,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -202589,6 +204827,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -202680,6 +204919,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -202918,6 +205158,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -203009,6 +205250,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -203403,6 +205645,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -203494,6 +205737,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -203714,6 +205958,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -203805,6 +206050,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -203821,6 +206067,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -203857,6 +206108,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -204112,6 +206368,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -204203,6 +206460,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -204363,6 +206621,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -204454,6 +206713,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -204509,6 +206769,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCarrierDriverProfileInput = {
@@ -204557,6 +206818,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCarrierDriverProfileInput = {
@@ -205453,6 +207715,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -205544,6 +207807,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -205605,6 +207869,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCarrierDriverProfileInput = {
@@ -205653,6 +207918,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierFacilityUpsertWithoutCarrierDriversInput = {
@@ -205997,6 +208263,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -206088,6 +208355,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -206427,6 +208695,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -206518,6 +208787,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -206673,6 +208943,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -206764,6 +209035,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -206916,6 +209188,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -206952,6 +209229,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -207255,6 +209537,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -207346,6 +209629,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -207516,6 +209800,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -207552,6 +209841,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -208007,6 +210301,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -208098,6 +210393,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -208171,6 +210467,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -208207,6 +210508,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -208244,6 +210550,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -208280,6 +210591,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -208486,6 +210802,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDispatchedRunsInput = {
@@ -208534,6 +210851,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDispatchedRunsInput = {
@@ -209031,6 +211349,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -209122,6 +211441,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -209207,6 +211527,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209243,6 +211568,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209286,6 +211616,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209322,6 +211657,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209546,6 +211886,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDispatchedRunsInput = {
@@ -209594,6 +211935,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierStopUpsertWithWhereUniqueWithoutDispatchInput = {
@@ -209799,6 +212141,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -209890,6 +212233,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -210598,6 +212942,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -210689,6 +213034,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -211836,6 +214182,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUploadedCarrierDocsInput = {
@@ -211884,6 +214231,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUploadedCarrierDocsInput = {
@@ -211937,6 +214285,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerifiedCarrierDocsInput = {
@@ -211985,6 +214334,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerifiedCarrierDocsInput = {
@@ -212485,6 +214835,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedCarrierDocsInput = {
@@ -212533,6 +214884,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutVerifiedCarrierDocsInput = {
@@ -212592,6 +214944,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifiedCarrierDocsInput = {
@@ -212640,6 +214993,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierStopUpsertWithoutDocumentsInput = {
@@ -213167,6 +215521,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -213258,6 +215613,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -213419,6 +215775,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -213510,6 +215867,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -213617,6 +215975,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -213708,6 +216067,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -214024,6 +216384,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -214060,6 +216425,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -214185,6 +216555,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovedExpensesInput = {
@@ -214233,6 +216604,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovedExpensesInput = {
@@ -214338,6 +216710,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -214429,6 +216802,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -214775,6 +217149,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -214811,6 +217190,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -214948,6 +217332,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedExpensesInput = {
@@ -214996,6 +217381,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDriverPayRecordsInput = {
@@ -215085,6 +217471,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -215176,6 +217563,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -215192,6 +217580,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -215228,6 +217621,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -215531,6 +217929,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovedPayRecordsInput = {
@@ -215579,6 +217978,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovedPayRecordsInput = {
@@ -215684,6 +218084,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -215775,6 +218176,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -215797,6 +218199,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -215833,6 +218240,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -216160,6 +218572,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedPayRecordsInput = {
@@ -216208,6 +218621,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutInAppNotificationsInput = {
@@ -216297,6 +218711,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -216388,6 +218803,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -216443,6 +218859,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInAppNotificationsInput = {
@@ -216491,6 +218908,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInAppNotificationsInput = {
@@ -216596,6 +219014,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -216687,6 +219106,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -216748,6 +219168,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInAppNotificationsInput = {
@@ -216796,6 +219217,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutStepTemplatesInput = {
@@ -216885,6 +219307,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -216976,6 +219399,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -217191,6 +219615,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -217282,6 +219707,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -217405,6 +219831,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -217496,6 +219923,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -217737,6 +220165,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -217828,6 +220257,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -218039,6 +220469,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -218130,6 +220561,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -218321,6 +220753,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -218412,6 +220845,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -218503,6 +220937,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -218594,6 +221029,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -218830,6 +221266,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -218921,6 +221358,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -219167,6 +221605,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepCreateNestedManyWithoutTenantInput
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -219258,6 +221697,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutTenantInput
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -219457,6 +221897,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUpdateManyWithoutTenantNestedInput
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -219548,6 +221989,7 @@ export namespace Prisma {
     playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutTenantNestedInput
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -219639,6 +222081,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -219730,6 +222173,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -219882,6 +222326,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -219973,6 +222418,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -220152,6 +222598,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -220243,6 +222690,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -220393,6 +222841,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -220484,6 +222933,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -220575,6 +223025,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -220666,6 +223117,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -220773,6 +223225,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -220864,6 +223317,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -221091,6 +223545,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -221182,6 +223637,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -221367,6 +223823,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -221458,6 +223915,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -221639,6 +224097,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -221730,6 +224189,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -221837,6 +224297,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -221928,6 +224389,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -222019,6 +224481,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -222110,6 +224573,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -222253,6 +224717,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -222344,6 +224809,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -222490,6 +224956,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -222581,6 +225048,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -222733,6 +225201,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -222824,6 +225293,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -222915,6 +225385,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -223006,6 +225477,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -223113,6 +225585,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -223204,6 +225677,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -223295,6 +225769,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -223386,6 +225861,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -223493,6 +225969,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -223584,6 +226061,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -223675,6 +226153,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -223766,6 +226245,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -223873,6 +226353,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -223964,6 +226445,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -224055,6 +226537,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -224146,6 +226629,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -224162,6 +226646,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -224198,6 +226687,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -224408,6 +226902,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -224499,6 +226994,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -224521,6 +227017,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224557,6 +227058,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224685,6 +227191,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -224776,6 +227283,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -224883,6 +227391,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -224919,6 +227432,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -225269,6 +227787,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -225360,6 +227879,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -225479,6 +227999,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -225515,6 +228040,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -225785,6 +228315,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -225876,6 +228407,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -226368,6 +228900,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -226459,6 +228992,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -226847,6 +229381,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -226938,6 +229473,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -226954,6 +229490,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -226990,6 +229531,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -227027,6 +229573,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -227063,6 +229614,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -227357,6 +229913,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -227448,6 +230005,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -227470,6 +230028,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227506,6 +230069,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227549,6 +230117,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227585,6 +230158,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227833,6 +230411,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -227924,6 +230503,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -227940,6 +230520,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -227976,6 +230561,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -228104,6 +230694,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -228195,6 +230786,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -228217,6 +230809,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -228253,6 +230850,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -228365,6 +230967,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -228456,6 +231059,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -228472,6 +231076,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -228508,6 +231117,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -228776,6 +231390,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -228867,6 +231482,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -228889,6 +231505,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -228925,6 +231546,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -229069,6 +231695,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -229160,6 +231787,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -229407,6 +232035,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -229498,6 +232127,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -229741,6 +232371,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -229832,6 +232463,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -229848,6 +232480,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -229884,6 +232521,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -230075,6 +232717,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -230166,6 +232809,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -230188,6 +232832,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -230224,6 +232873,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -230405,6 +233059,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -230496,6 +233151,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -230603,6 +233259,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -230694,6 +233351,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -230785,6 +233443,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -230876,6 +233535,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -230983,6 +233643,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -231074,6 +233735,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -231165,6 +233827,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -231256,6 +233919,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -231363,6 +234027,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -231454,6 +234119,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -231545,6 +234211,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
   }
@@ -231636,6 +234303,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
   }
@@ -231691,6 +234359,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationSubscriptionsInput = {
@@ -231739,6 +234408,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationSubscriptionsInput = {
@@ -231844,6 +234514,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
   }
@@ -231935,6 +234606,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
@@ -231996,6 +234668,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationSubscriptionsInput = {
@@ -232044,6 +234717,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotificationPreferencesInput = {
@@ -232092,6 +234766,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -232140,6 +234815,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -232235,6 +234911,7 @@ export namespace Prisma {
     pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
   }
 
@@ -232326,6 +235003,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
     routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
     stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
   }
 
@@ -232391,6 +235069,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -232439,6 +235118,7 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantUpsertWithoutUserNotificationPreferencesInput = {
@@ -232540,6 +235220,7 @@ export namespace Prisma {
     pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
   }
 
@@ -232631,7 +235312,604 @@ export namespace Prisma {
     pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
     routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutAuditLogsInput = {
+    id?: string
+    name: string
+    slug: string
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fleetSizeBucket?: $Enums.FleetSizeBucket
+    status?: $Enums.TenantStatus
+    manualTrial?: boolean
+    emailConfirmedAt?: Date | string | null
+    sampleDataSeeded?: boolean
+    provisioningPhase?: $Enums.ProvisioningPhase
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
+    subscription?: SubscriptionCreateNestedOneWithoutTenantInput
+    activationProgress?: ActivationProgressCreateNestedOneWithoutTenantInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutTenantInput
+    automationRuns?: AutomationRunCreateNestedManyWithoutTenantInput
+    appEvents?: AppEventCreateNestedManyWithoutTenantInput
+    tenantMetrics?: TenantMetricsDailyCreateNestedManyWithoutTenantInput
+    tenantHealthScore?: TenantHealthScoreCreateNestedOneWithoutTenantInput
+    driverCompTemplates?: DriverCompensationTemplateCreateNestedManyWithoutTenantInput
+    loadDriverAssignments?: LoadDriverAssignmentCreateNestedManyWithoutTenantInput
+    loadPayComponents?: LoadPayComponentCreateNestedManyWithoutTenantInput
+    driverBonuses?: DriverBonusCreateNestedManyWithoutTenantInput
+    driverDeductions?: DriverDeductionCreateNestedManyWithoutTenantInput
+    driverSettlements?: DriverSettlementCreateNestedManyWithoutTenantInput
+    payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
+    driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
+    driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
+    notificationSettings?: TenantNotificationSettingsCreateNestedManyWithoutTenantInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutTenantInput
+    playbookSteps?: PlaybookStepCreateNestedManyWithoutTenantInput
+    pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
+    routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
+    userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutAuditLogsInput = {
+    id?: string
+    name: string
+    slug: string
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fleetSizeBucket?: $Enums.FleetSizeBucket
+    status?: $Enums.TenantStatus
+    manualTrial?: boolean
+    emailConfirmedAt?: Date | string | null
+    sampleDataSeeded?: boolean
+    provisioningPhase?: $Enums.ProvisioningPhase
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    activationProgress?: ActivationProgressUncheckedCreateNestedOneWithoutTenantInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutTenantInput
+    automationRuns?: AutomationRunUncheckedCreateNestedManyWithoutTenantInput
+    appEvents?: AppEventUncheckedCreateNestedManyWithoutTenantInput
+    tenantMetrics?: TenantMetricsDailyUncheckedCreateNestedManyWithoutTenantInput
+    tenantHealthScore?: TenantHealthScoreUncheckedCreateNestedOneWithoutTenantInput
+    driverCompTemplates?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutTenantInput
+    loadDriverAssignments?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    loadPayComponents?: LoadPayComponentUncheckedCreateNestedManyWithoutTenantInput
+    driverBonuses?: DriverBonusUncheckedCreateNestedManyWithoutTenantInput
+    driverDeductions?: DriverDeductionUncheckedCreateNestedManyWithoutTenantInput
+    driverSettlements?: DriverSettlementUncheckedCreateNestedManyWithoutTenantInput
+    payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
+    driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
+    driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
+    notificationSettings?: TenantNotificationSettingsUncheckedCreateNestedManyWithoutTenantInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+    playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutTenantInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
+    routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutAuditLogsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutAuditLogsInput, TenantUncheckedCreateWithoutAuditLogsInput>
+  }
+
+  export type UserCreateWithoutAuditLogsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAuditLogsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAuditLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+  }
+
+  export type TenantUpsertWithoutAuditLogsInput = {
+    update: XOR<TenantUpdateWithoutAuditLogsInput, TenantUncheckedUpdateWithoutAuditLogsInput>
+    create: XOR<TenantCreateWithoutAuditLogsInput, TenantUncheckedCreateWithoutAuditLogsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutAuditLogsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutAuditLogsInput, TenantUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type TenantUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+    manualTrial?: BoolFieldUpdateOperationsInput | boolean
+    emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sampleDataSeeded?: BoolFieldUpdateOperationsInput | boolean
+    provisioningPhase?: EnumProvisioningPhaseFieldUpdateOperationsInput | $Enums.ProvisioningPhase
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
+    subscription?: SubscriptionUpdateOneWithoutTenantNestedInput
+    activationProgress?: ActivationProgressUpdateOneWithoutTenantNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutTenantNestedInput
+    automationRuns?: AutomationRunUpdateManyWithoutTenantNestedInput
+    appEvents?: AppEventUpdateManyWithoutTenantNestedInput
+    tenantMetrics?: TenantMetricsDailyUpdateManyWithoutTenantNestedInput
+    tenantHealthScore?: TenantHealthScoreUpdateOneWithoutTenantNestedInput
+    driverCompTemplates?: DriverCompensationTemplateUpdateManyWithoutTenantNestedInput
+    loadDriverAssignments?: LoadDriverAssignmentUpdateManyWithoutTenantNestedInput
+    loadPayComponents?: LoadPayComponentUpdateManyWithoutTenantNestedInput
+    driverBonuses?: DriverBonusUpdateManyWithoutTenantNestedInput
+    driverDeductions?: DriverDeductionUpdateManyWithoutTenantNestedInput
+    driverSettlements?: DriverSettlementUpdateManyWithoutTenantNestedInput
+    payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
+    driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
+    driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
+    notificationSettings?: TenantNotificationSettingsUpdateManyWithoutTenantNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutTenantNestedInput
+    playbookSteps?: PlaybookStepUpdateManyWithoutTenantNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
+    routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
+    userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+    manualTrial?: BoolFieldUpdateOperationsInput | boolean
+    emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sampleDataSeeded?: BoolFieldUpdateOperationsInput | boolean
+    provisioningPhase?: EnumProvisioningPhaseFieldUpdateOperationsInput | $Enums.ProvisioningPhase
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    activationProgress?: ActivationProgressUncheckedUpdateOneWithoutTenantNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutTenantNestedInput
+    automationRuns?: AutomationRunUncheckedUpdateManyWithoutTenantNestedInput
+    appEvents?: AppEventUncheckedUpdateManyWithoutTenantNestedInput
+    tenantMetrics?: TenantMetricsDailyUncheckedUpdateManyWithoutTenantNestedInput
+    tenantHealthScore?: TenantHealthScoreUncheckedUpdateOneWithoutTenantNestedInput
+    driverCompTemplates?: DriverCompensationTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    loadDriverAssignments?: LoadDriverAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    loadPayComponents?: LoadPayComponentUncheckedUpdateManyWithoutTenantNestedInput
+    driverBonuses?: DriverBonusUncheckedUpdateManyWithoutTenantNestedInput
+    driverDeductions?: DriverDeductionUncheckedUpdateManyWithoutTenantNestedInput
+    driverSettlements?: DriverSettlementUncheckedUpdateManyWithoutTenantNestedInput
+    payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
+    driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
+    notificationSettings?: TenantNotificationSettingsUncheckedUpdateManyWithoutTenantNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+    playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutTenantNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
+    routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutAuditLogsInput = {
+    update: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type UserUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -233193,6 +236471,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -233812,6 +237095,18 @@ export namespace Prisma {
     deletedBy?: string | null
   }
 
+  export type AuditLogCreateManyTenantInput = {
+    id?: string
+    userId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+  }
+
   export type SysAdminInvoiceItemCreateManyTenantInput = {
     id?: string
     invoiceId: string
@@ -233888,6 +237183,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenantInput = {
@@ -233936,6 +237232,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTenantInput = {
@@ -235650,6 +238947,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -235685,6 +238987,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -235719,6 +239026,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237620,6 +240932,42 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type AuditLogUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAuditLogsNestedInput
+  }
+
+  export type AuditLogUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SysAdminInvoiceItemUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     chargeType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -238311,6 +241659,18 @@ export namespace Prisma {
     updatedBy?: string | null
     deletedAt?: Date | string | null
     deletedBy?: string | null
+  }
+
+  export type AuditLogCreateManyUserInput = {
+    id?: string
+    tenantId: string
+    action: string
+    resourceType: string
+    resourceId: string
+    fieldName?: string | null
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
   }
 
   export type RouteUpdateWithoutDriverInput = {
@@ -240242,6 +243602,42 @@ export namespace Prisma {
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AuditLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutAuditLogsNestedInput
+  }
+
+  export type AuditLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    resourceId?: StringFieldUpdateOperationsInput | string
+    fieldName?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RouteCreateManyTruckInput = {
@@ -243633,6 +247029,11 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     cdlNumber?: string | null
+    cdlNumberCiphertext?: Bytes | null
+    cdlNumberIv?: Bytes | null
+    cdlNumberTag?: Bytes | null
+    cdlNumberKeyId?: string | null
+    cdlNumberLast4?: string | null
     cdlState?: string | null
     cdlClass?: string | null
     cdlExpiry?: Date | string | null
@@ -243701,6 +247102,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -243737,6 +247143,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -243771,6 +247182,11 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     cdlNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    cdlNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cdlNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     cdlState?: NullableStringFieldUpdateOperationsInput | string | null
     cdlClass?: NullableStringFieldUpdateOperationsInput | string | null
     cdlExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

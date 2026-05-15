@@ -2,6 +2,9 @@ import { prisma } from '@/lib/db/prisma';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';
+import { encryptField, decryptField } from '@/lib/security/field-crypto';
+import { getCurrentKey } from '@/lib/security/key-registry';
+import { writeAuditLog } from '@/lib/security/audit-log';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,6 +43,49 @@ export interface CreateCarrierDriverResult {
 }
 
 // ---------------------------------------------------------------------------
+// PII encryption helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Builds the encrypted CDL shape for create/update dual-write.
+ * Returns an empty object if cdlNumber is null/undefined/empty.
+ *
+ * SINGLE point of encryption for cdl_number — do not duplicate this logic.
+ */
+function buildEncryptedCdl(cdlNumber: string | null | undefined): object {
+  if (!cdlNumber) return {};
+  const { keyId } = getCurrentKey();
+  const ef = encryptField(cdlNumber, keyId);
+  return {
+    cdlNumberCiphertext: ef.ciphertext,
+    cdlNumberIv: ef.iv,
+    cdlNumberTag: ef.tag,
+    cdlNumberKeyId: ef.keyId,
+    cdlNumberLast4: cdlNumber.slice(-4),
+  };
+}
+
+/**
+ * Strips sensitive fields from a CarrierDriver result before returning to callers.
+ *
+ * SINGLE choke point that prevents accidental plaintext/ciphertext exposure.
+ * All list and get operations MUST pass through this function.
+ *
+ * Returns only cdlNumberLast4; all other CDL fields are set to null.
+ */
+function redactCdlFields<T extends Record<string, unknown>>(driver: T): T {
+  return {
+    ...driver,
+    cdlNumber: null,
+    cdlNumberCiphertext: null,
+    cdlNumberIv: null,
+    cdlNumberTag: null,
+    cdlNumberKeyId: null,
+    // cdlNumberLast4 is kept — it is safe to expose
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------------
 
@@ -75,11 +121,12 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
     prisma.carrierDriver.count({ where }),
   ]);
 
-  return { items, total };
+  // Redact plaintext + ciphertext — return only last4
+  return { items: items.map(redactCdlFields), total };
 }
 
 export async function getCarrierDriver(orgId: string, id: string) {
-  return prisma.carrierDriver.findFirst({
+  const driver = await prisma.carrierDriver.findFirst({
     where: { id, orgId },
     include: {
       user: { select: { email: true } },
@@ -116,6 +163,11 @@ export async function getCarrierDriver(orgId: string, id: string) {
       },
     },
   });
+
+  if (!driver) return null;
+
+  // Redact plaintext + ciphertext — return only last4
+  return redactCdlFields(driver);
 }
 
 export async function createCarrierDriver(
@@ -149,6 +201,8 @@ export async function createCarrierDriver(
       ...(userId ? { userId } : {}),
       ...(cdlExpiry ? { cdlExpiry: new Date(cdlExpiry) } : {}),
       ...(payRate != null ? { payRate } : {}),
+      // Dual-write: plaintext stays in rest (cdlNumber), encrypted shape added here
+      ...buildEncryptedCdl(rest.cdlNumber),
     },
   });
 
@@ -415,7 +469,7 @@ export async function updateCarrierDriver(
   const existing = await prisma.carrierDriver.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const { cdlExpiry, payRate, userId, ...rest } = data;
+  const { cdlExpiry, payRate, userId, cdlNumber, ...rest } = data;
 
   // Verify userId belongs to this org when being set (FK ownership check)
   if (userId !== undefined && userId) {
@@ -437,6 +491,28 @@ export async function updateCarrierDriver(
     }
   }
 
+  // Build CDL encrypted shape when cdlNumber is explicitly in the update payload
+  let cdlUpdateData: object = {};
+  if (cdlNumber !== undefined) {
+    if (cdlNumber && cdlNumber.length > 0) {
+      // Non-empty CDL: dual-write plaintext + encrypted shape
+      cdlUpdateData = {
+        cdlNumber,
+        ...buildEncryptedCdl(cdlNumber),
+      };
+    } else {
+      // Null or empty CDL: clear both plaintext and encrypted shape
+      cdlUpdateData = {
+        cdlNumber: null,
+        cdlNumberCiphertext: null,
+        cdlNumberIv: null,
+        cdlNumberTag: null,
+        cdlNumberKeyId: null,
+        cdlNumberLast4: null,
+      };
+    }
+  }
+
   return prisma.carrierDriver.update({
     where: { id },
     data: {
@@ -444,6 +520,91 @@ export async function updateCarrierDriver(
       ...(cdlExpiry !== undefined ? { cdlExpiry: cdlExpiry ? new Date(cdlExpiry) : null } : {}),
       ...(payRate !== undefined ? { payRate } : {}),
       ...(userId !== undefined ? { userId: userId || null } : {}),
+      ...cdlUpdateData,
     },
   });
+}
+
+// ---------------------------------------------------------------------------
+// Decrypt CDL — RBAC-gated, audit-logged
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the full CDL number for a carrier driver.
+ *
+ * Requires OWNER or MANAGER role. Any other role returns 403.
+ * Writes a VIEW_PII or VIEW_PII_DENIED audit row on every call.
+ *
+ * Treats not-found as denied (VIEW_PII_DENIED) to avoid existence oracle
+ * on cross-tenant probes.
+ *
+ * This is the ONLY exported function that can return plaintext CDL.
+ */
+export async function decryptCarrierDriverCDL(args: {
+  orgId: string;
+  driverId: string;
+  requestingUserId: string;
+  requestingUserRole: string;
+  requestingIp?: string | null;
+  requestingUserAgent?: string | null;
+}): Promise<{ ok: true; cdlNumber: string | null } | { ok: false; status: 403 }> {
+  const {
+    orgId,
+    driverId,
+    requestingUserId,
+    requestingUserRole,
+    requestingIp,
+    requestingUserAgent,
+  } = args;
+
+  const auditBase = {
+    tenantId: orgId,
+    userId: requestingUserId,
+    resourceType: 'carrier_driver',
+    resourceId: driverId,
+    fieldName: 'cdl_number',
+    ip: requestingIp ?? null,
+    userAgent: requestingUserAgent ?? null,
+  };
+
+  // RBAC check
+  if (requestingUserRole !== 'OWNER' && requestingUserRole !== 'MANAGER') {
+    await writeAuditLog({ ...auditBase, action: 'VIEW_PII_DENIED' });
+    return { ok: false, status: 403 };
+  }
+
+  // Fetch driver with encrypted columns
+  const driver = await prisma.carrierDriver.findFirst({
+    where: { id: driverId, orgId },
+    select: {
+      cdlNumberCiphertext: true,
+      cdlNumberIv: true,
+      cdlNumberTag: true,
+      cdlNumberKeyId: true,
+    },
+  });
+
+  // Not found → treat as denied (avoid existence oracle)
+  if (!driver) {
+    await writeAuditLog({ ...auditBase, action: 'VIEW_PII_DENIED' });
+    return { ok: false, status: 403 };
+  }
+
+  // No ciphertext set — driver has no CDL number on file
+  if (!driver.cdlNumberCiphertext) {
+    await writeAuditLog({ ...auditBase, action: 'VIEW_PII' });
+    return { ok: true, cdlNumber: null };
+  }
+
+  // Decrypt — throws on auth-tag failure; do NOT swallow
+  // Buffer extends Uint8Array (runtime-compatible), cast required for Prisma's Bytes type
+  const plaintext = decryptField({
+    ciphertext: Buffer.from(driver.cdlNumberCiphertext),
+    iv: Buffer.from(driver.cdlNumberIv!),
+    tag: Buffer.from(driver.cdlNumberTag!),
+    keyId: driver.cdlNumberKeyId!,
+  });
+
+  await writeAuditLog({ ...auditBase, action: 'VIEW_PII' });
+  return { ok: true, cdlNumber: plaintext };
 }
