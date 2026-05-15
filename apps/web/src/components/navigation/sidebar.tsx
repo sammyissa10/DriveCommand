@@ -99,7 +99,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
           onClick={handleNavClick}
           className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-sidebar-accent transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3"
         >
-          <AppLogo size={32} variant="dark" />
+          <AppLogo size={32} variant="light" />
           <div className="grid text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
             <DriveCommandWordmark size="sm" />
             <span className="truncate text-xs text-sidebar-foreground/60">Fleet Management</span>

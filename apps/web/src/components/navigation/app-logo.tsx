@@ -5,40 +5,50 @@ interface DCChevronIconProps {
 }
 
 /**
- * DCChevronIcon — inline SVG mark for DriveCommand.
+ * DCChevronIcon — 3D isometric DriveCommand mark.
  *
- * Two letterforms: a bold D on the left (navy) and a bold C on the right (electric blue).
- * They face each other so the negative space between their curved edges forms a
- * right-pointing chevron. For the 'light' variant both letters are white (for dark
- * backgrounds). Scales cleanly via viewBox="0 0 32 32".
+ * A modern 3D chevron/arrow logo. The 'dark' variant uses navy (#050A44) for the
+ * main shape with silver (#B3B4BD) accent for depth. The 'light' variant is all
+ * light gray (#F5F5F7) for dark backgrounds. Scales cleanly via viewBox.
  */
 export function DCChevronIcon({
   size = 32,
   className,
   variant = "dark",
 }: DCChevronIconProps) {
-  const dColor = variant === "light" ? "#FFFFFF" : "#1E3A5F"
-  const cColor = variant === "light" ? "#FFFFFF" : "#2563EB"
+  // Color scheme based on variant
+  const mainColor = variant === "light" ? "#F5F5F7" : "#050A44"
+  const accentColor = variant === "light" ? "#F5F5F7" : "#B3B4BD"
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 500 500"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`shrink-0 ${className ?? ""}`}
       aria-label="DriveCommand"
     >
-      {/* Letter D — left side. Vertical left stroke + curved right edge. */}
+      {/* Main chevron body - navy/light */}
       <path
-        d="M4 5h7c4.97 0 8 3.13 8 8v6c0 4.87-3.03 8-8 8H4V5zm4 4v14h3c2.76 0 4-1.62 4-4v-6c0-2.38-1.24-4-4-4H8z"
-        fill={dColor}
+        d="M 289.529 264.844 L 263.365 250.409 L 246.365 240.409 L 224.365 228.409 L 216.365 223.409 L 215.365 316.409 L 220.365 318.409 L 244.365 331.409 L 295.077 357.314 L 295.619 447.296 L 218.366 408.409 L 193.366 394.409 L 169.366 380.409 L 142.366 365.409 L 138.366 362.409 L 138.366 182.409 L 161.366 169.409 L 176.366 160.409 L 205.366 143.409 L 214.366 138.409 L 218.366 139.409 L 237.366 149.409 L 260.366 162.409 L 289.232 178.335 L 289.887 265.041 L 289.529 264.844 Z"
+        fill={mainColor}
       />
-      {/* Letter C — right side. Open curved letterform facing left. */}
+      {/* Connector segment */}
       <path
-        d="M28 10.5c-1.1-.97-2.56-1.5-4-1.5-3.31 0-5 2.24-5 5v4c0 2.76 1.69 5 5 5 1.44 0 2.9-.53 4-1.5v4.5c-1.2.67-2.56 1-4 1-5.52 0-9-3.58-9-9v-4c0-5.42 3.48-9 9-9 1.44 0 2.8.33 4 1v4.5z"
-        fill={cColor}
+        d="M 292.365 266.409 L 289.887 265.041 L 289.232 178.335 L 289.366 178.409 L 293.911 180.682 L 296.33 181.872 L 297.433 267.407 L 292.365 266.409 Z"
+        fill={mainColor}
+      />
+      {/* 3D depth accent - bottom right */}
+      <path
+        d="M 297.365 354.409 L 297.365 274.247 L 371.4 241.665 L 372.335 413.906 L 298.363 446.186 L 297.365 354.409 Z"
+        fill={accentColor}
+      />
+      {/* 3D depth accent - top right */}
+      <path
+        d="M 296.314 175.569 L 296.314 95.407 L 370.349 62.825 L 371.284 235.066 L 297.312 267.346 L 296.314 175.569 Z"
+        fill={accentColor}
       />
     </svg>
   )
