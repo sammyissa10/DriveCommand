@@ -24,39 +24,16 @@ vi.mock('@/lib/email/resend-client', () => ({
 // Mock base prisma module — prevents import-time DB connection side effects
 vi.mock('@/lib/db/prisma', () => ({ prisma: {} }));
 
-// Mock template-renderer — prevents React/react-dom version mismatch in test env.
-// The renderer is tested independently; here we only need it to return a stable string.
-vi.mock('../template-renderer', () => ({
-  renderTemplate: vi.fn().mockImplementation(
-    async (blockJson: unknown, payload: Record<string, string>, subject: string) => {
-      // Perform real variable substitution so Test 5 can verify end-to-end substitution
-      const subst = (text: string) =>
-        text.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_: string, k: string) => payload[k] ?? '');
-      const subjectFinal = subst(subject);
-      // Build a minimal HTML by stringifying the block JSON text nodes
-      let bodyText = '';
-      try {
-        const doc = blockJson as { type: string; content?: unknown[] };
-        const walk = (nodes: unknown[]): string =>
-          nodes
-            .map((n: unknown) => {
-              const node = n as { type: string; text?: string; content?: unknown[] };
-              if (node.type === 'text') return subst(node.text ?? '');
-              if (node.content) return walk(node.content);
-              return '';
-            })
-            .join('');
-        bodyText = doc.content ? walk(doc.content) : '';
-      } catch {
-        bodyText = '';
-      }
-      const html = `<html><body>${bodyText}</body></html>`;
-      return { html, subjectFinal };
-    },
-  ),
-  substituteVariables: (text: string, payload: Record<string, string>) =>
-    text.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_: string, k: string) => payload[k] ?? ''),
-}));
+// quick-331: real renderer exercised — JSON.stringify fallback regression.
+// Previously this mock returned hardcoded HTML, masking the generateHTML server-env bug.
+// Now we wrap vi.importActual so the real Tiptap pipeline runs in all dispatcher tests.
+vi.mock('../template-renderer', async () => {
+  const actual = await vi.importActual<typeof import('../template-renderer')>('../template-renderer');
+  return {
+    renderTemplate: vi.fn(actual.renderTemplate),
+    substituteVariables: actual.substituteVariables,
+  };
+});
 
 // ---------------------------------------------------------------------------
 // Imports after mocks
