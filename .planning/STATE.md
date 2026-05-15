@@ -36470,6 +36470,7 @@ None blocking immediate progress.
 | 323 | P0 cross-tenant data leak and broken Send Log tab fix — listTenantUsers switched to createTenantClient(sessionTenantId) eliminating header/session divergence; listTenantSendLog + getTenantSendLogStats removed deprecated $transaction+$executeRaw bypass_rls pattern (P2028 deadlock risk per tenant-rls.ts comment), replaced with createTenantClient + Promise.all; tsc clean, build green | 2026-05-15 | fbbb53c | [323-p0-cross-tenant-data-leak-and-broken-sen](./quick/323-p0-cross-tenant-data-leak-and-broken-sen/) |
 | 324 | Fix Send Log Tab Crash - Radix Select Empty Value Violation in /settings/notifications and /admin/notifications Send Log tabs | 2026-05-15 | e095bb8 | [324-fix-send-log-tab-crash-radix-select-empt](./quick/324-fix-send-log-tab-crash-radix-select-empt/) |
 | 326 | DB security audit script - read-only tenant audit against DatabaseSecurity_MultiTenant_Spec_v1.md | 2026-05-15 | 1ce0a69 | [326-db-security-audit-script-read-only-tenan](./quick/326-db-security-audit-script-read-only-tenan/) |
+| 327 | DB security standardization - RLS, FORCE RLS, policies, and indexes for all 77 tenant-scoped tables | 2026-05-15 | d4a8a40 | [327-db-security-standardization-rls-force-rl](./quick/327-db-security-standardization-rls-force-rl/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
