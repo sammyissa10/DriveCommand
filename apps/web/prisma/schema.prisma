@@ -217,6 +217,9 @@ model Tenant {
   pushTokens                  PushToken[]
   routeDrivers                RouteDriver[]
   stepInstances               StepInstance[]
+
+  // quick-329 PII audit log reverse relation
+  auditLogs                   AuditLog[]
   sysAdminInvoiceItems        SysAdminInvoiceItem[]
   userNotificationPreferences UserNotificationPreference[]
 }
@@ -274,6 +277,9 @@ model User {
   // Notification System reverse relations
   notificationSubscriptions  NotificationSubscription[]
   notificationPreferences    UserNotificationPreference[]
+
+  // quick-329 PII audit log reverse relation
+  auditLogs                  AuditLog[]
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -1776,8 +1782,13 @@ model CarrierDriver {
   lastName       String    @map("last_name")
   email          String?
   phone          String?
-  cdlNumber      String?   @map("cdl_number")
-  cdlState       String?   @map("cdl_state")
+  cdlNumber           String?  @map("cdl_number")
+  cdlNumberCiphertext Bytes?   @map("cdl_number_ciphertext")
+  cdlNumberIv         Bytes?   @map("cdl_number_iv")
+  cdlNumberTag        Bytes?   @map("cdl_number_tag")
+  cdlNumberKeyId      String?  @map("cdl_number_key_id")
+  cdlNumberLast4      String?  @map("cdl_number_last4") @db.VarChar(4)
+  cdlState            String?  @map("cdl_state")
   cdlClass       String?   @map("cdl_class")
   cdlExpiry      DateTime? @map("cdl_expiry") @db.Date
   homeTerminalId String?   @map("home_terminal_id") @db.Uuid
@@ -3096,4 +3107,28 @@ model NotificationEmailConfig {
   replyTo      String?
   createdAt    DateTime @default(now()) @db.Timestamptz
   updatedAt    DateTime @updatedAt @db.Timestamptz
+}
+
+/// Append-only audit log for PII access and restricted operations.
+/// Tenant-scoped, FORCE RLS, REVOKE UPDATE/DELETE from app_user.
+/// Part of DatabaseSecurity_MultiTenant_Spec_v1.md Section 4.4 (quick-329).
+model AuditLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  action       String
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id") @db.Uuid
+  fieldName    String?  @map("field_name")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, userId, createdAt(sort: Desc)])
+  @@index([tenantId, resourceType, resourceId])
+  @@map("audit_log")
 }

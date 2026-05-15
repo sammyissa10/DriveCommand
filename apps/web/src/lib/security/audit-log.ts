@@ -1,19 +1,19 @@
 /**
  * Audit log writer — append-only, tenant-scoped.
  *
- * Writes audit events to the audit_log table.
+ * Writes audit events to the audit_log table via prisma.auditLog.create.
  * The audit_log table has FORCE RLS + REVOKE UPDATE/DELETE — it is append-only
- * by construction. Inserts bypass RLS for the system write path.
+ * by construction. Inserts use a bypass_rls transaction so this call succeeds
+ * regardless of the caller's tenant context.
  *
- * Part of DatabaseSecurity_MultiTenant_Spec_v1.md Section 4.4.
+ * Part of DatabaseSecurity_MultiTenant_Spec_v1.md Section 4.4 (quick-329).
  *
- * NOTE: Uses prisma.auditLog.create (Prisma client method) added in migration
- * 20260515_pii_encryption_pr1. The AuditLog model is defined in schema.prisma.
+ * NOTE: Uses the AuditLog Prisma model added in migration 20260515_pii_encryption_pr1.
+ * The raw-Prisma scanner classifies this file as INTENTIONAL_ALLOWED via the
+ * bypass_rls file-level check (set_config('app.bypass_rls', 'on', TRUE) is present).
  */
 
-import { prisma } from '@/lib/db/prisma';
-import { TX_OPTIONS } from '@/lib/db/prisma';
-import { Prisma } from '@/generated/prisma/client';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 
 export type AuditAction =
@@ -39,10 +39,10 @@ export interface WriteAuditLogParams {
 /**
  * Inserts an audit log row using a bypass_rls transaction.
  *
- * Uses bypass_rls so this call succeeds regardless of which tenant context the
- * caller is operating under. This is intentional: the audit system must write
- * even if the caller's tenant context differs from the row being audited
- * (e.g. during RBAC-denied access attempts).
+ * bypass_rls is used so this call succeeds regardless of which tenant context
+ * the caller is operating under. This is intentional: the audit system must
+ * write even during RBAC-denied access attempts where the calling context may
+ * differ from the row being audited.
  *
  * On failure: logs a non-PII error and rethrows — callers decide whether to
  * fail the request.
@@ -54,25 +54,18 @@ export async function writeAuditLog(params: WriteAuditLogParams): Promise<void> 
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-      // Use parameterized INSERT via Prisma.sql — never string concatenation.
-      await tx.$executeRaw(
-        Prisma.sql`
-          INSERT INTO audit_log (
-            tenant_id, user_id, action, resource_type, resource_id,
-            field_name, ip_address, user_agent, created_at
-          ) VALUES (
-            ${tenantId}::uuid,
-            ${userId}::uuid,
-            ${action},
-            ${resourceType},
-            ${resourceId}::uuid,
-            ${fieldName ?? null},
-            ${ip ?? null}::inet,
-            ${userAgent ?? null},
-            NOW()
-          )
-        `
-      );
+      await tx.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action,
+          resourceType,
+          resourceId,
+          fieldName: fieldName ?? null,
+          ipAddress: ip ?? null,
+          userAgent: userAgent ?? null,
+        },
+      });
     }, TX_OPTIONS);
   } catch (err) {
     logger.error('audit_log_insert_failed', err, { action, resourceType });

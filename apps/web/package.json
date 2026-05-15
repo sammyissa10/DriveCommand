@@ -18,7 +18,8 @@
     "seed:notifications": "tsx prisma/seeds/seed-notifications.ts",
     "generate:openapi": "npx tsx scripts/generate-openapi.ts",
     "audit:raw-prisma": "tsx scripts/audit/raw-prisma-usage.ts",
-    "check:docs": "tsx scripts/check-doc-drift.ts"
+    "check:docs": "tsx scripts/check-doc-drift.ts",
+    "backfill:carrier-driver-cdl": "tsx scripts/backfill/encrypt-carrier-driver-cdl.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.77.0",
