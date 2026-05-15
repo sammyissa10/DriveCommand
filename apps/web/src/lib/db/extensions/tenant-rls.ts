@@ -42,10 +42,10 @@ import { Prisma } from '../../../generated/prisma/client';
  */
 const EXEMPT_MODELS = new Set([
   'Tenant',
-  'RouteDriver',
-  'SysAdminInvoiceItem',
+  // RouteDriver — removed: now has tenantId (quick-327)
+  // SysAdminInvoiceItem — removed: now has tenantId (quick-327)
   'TicketMessage',
-  'PushToken',
+  // PushToken — removed: now has tenantId (quick-327)
   'CarrierClient',
   'CarrierContract',
   'CarrierFacility',
