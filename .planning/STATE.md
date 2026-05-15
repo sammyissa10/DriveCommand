@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-15 - Completed quick-332: react-dom confirmed present in apps/web/package.json, build passes locally — Vercel fix likely needs cache clear
-Last session: 2026-05-15T01:15:00Z
-Stopped at: Completed quick-332: react-dom already declared in apps/web/package.json at ^19.2.4, node_modules intact, tsc + build passed locally. If Vercel still fails, clear build cache in dashboard.
+Last activity: 2026-05-15 - Completed quick-333: isolated server-side Tiptap extensions to fix "Cannot access level on the server" Client Reference error in notifications template preview
+Last session: 2026-05-15T18:32:18Z
+Stopped at: Completed quick-333: created server-extensions.ts (no 'use client', no StarterKit barrel), updated template-renderer.ts to import from it, added heading level=2 regression test. tsc clean, build green, all tests pass.
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -65315,6 +65315,7 @@ None blocking immediate progress.
 | 330 | add /notifications to ADMIN_ALLOWED_PATHS in middleware.ts so sysadmins can reach the Notifications page | 2026-05-15 | 1258082 | [330-add-notifications-to-admin-allowed-paths](./quick/330-add-notifications-to-admin-allowed-paths/) |
 | 331 | fix broken Tiptap JSON-to-HTML renderer — switch to @tiptap/html/server subpath, fix react/react-dom version mismatch, add real-pipeline renderer tests | 2026-05-15 | 5f12e53 | [331-fix-broken-tiptap-json-to-html-renderer-](./quick/331-fix-broken-tiptap-json-to-html-renderer-/) |
 | 332 | add react-dom to apps/web/package.json to fix Vercel build Module not found error — confirmed already declared at ^19.2.4, local node_modules intact, tsc clean, build green | 2026-05-15 | 8b73a41 | [332-add-react-dom-to-apps-web-package-json-t](./quick/332-add-react-dom-to-apps-web-package-json-t/) |
+| 333 | fix notifications template preview "Cannot access level on the server" — isolated server-side Tiptap extensions (no StarterKit barrel), created server-extensions.ts, added heading level=2 regression test | 2026-05-15 | ac38686 | [333-fix-notifications-template-preview-serve](./quick/333-fix-notifications-template-preview-serve/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
