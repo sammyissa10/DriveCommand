@@ -185,22 +185,22 @@ ALTER TABLE contracts
 -- the same migration step after tenantId is populated; see Task 3.
 
 -- ── Group A indexes (CONCURRENTLY) ──────────────────────────────────────────
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_loads_org_id_created_at ON loads(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_loads_org_id_deleted_at ON loads(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dispatches_org_id_created_at ON dispatches(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dispatches_org_id_deleted_at ON dispatches(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_clients_org_id_created_at ON clients(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_clients_org_id_deleted_at ON clients(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_facilities_org_id_created_at ON facilities(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_facilities_org_id_deleted_at ON facilities(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_drivers_org_id_created_at ON carrier_drivers(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_drivers_org_id_deleted_at ON carrier_drivers(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_trucks_org_id_created_at ON carrier_trucks(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_trucks_org_id_deleted_at ON carrier_trucks(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_route_templates_org_id_created_at ON route_templates(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_route_templates_org_id_deleted_at ON route_templates(org_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_contracts_org_id_created_at ON contracts(org_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_contracts_org_id_deleted_at ON contracts(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_loads_org_id_created_at ON loads(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_loads_org_id_deleted_at ON loads(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_dispatches_org_id_created_at ON dispatches(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_dispatches_org_id_deleted_at ON dispatches(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_clients_org_id_created_at ON clients(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_clients_org_id_deleted_at ON clients(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_facilities_org_id_created_at ON facilities(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_facilities_org_id_deleted_at ON facilities(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_carrier_drivers_org_id_created_at ON carrier_drivers(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_carrier_drivers_org_id_deleted_at ON carrier_drivers(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_carrier_trucks_org_id_created_at ON carrier_trucks(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_carrier_trucks_org_id_deleted_at ON carrier_trucks(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_route_templates_org_id_created_at ON route_templates(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_route_templates_org_id_deleted_at ON route_templates(org_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_contracts_org_id_created_at ON contracts(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_contracts_org_id_deleted_at ON contracts(org_id, deleted_at);
 
 -- ============================================================================
 -- GROUP B — Driver Pay
@@ -224,8 +224,8 @@ ALTER TABLE driver_pay_records
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS deleted_by UUID;
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_pay_records_org_id ON driver_pay_records(org_id);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_pay_records_org_id_created_at ON driver_pay_records(org_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_driver_pay_records_org_id ON driver_pay_records(org_id);
+CREATE INDEX IF NOT EXISTS idx_driver_pay_records_org_id_created_at ON driver_pay_records(org_id, created_at DESC);
 
 -- ============================================================================
 -- GROUP C — Everything else tenant-scoped (alphabetical, only what audit flags)
@@ -249,7 +249,7 @@ ALTER TABLE carrier_compliance_alert_log
   ADD COLUMN IF NOT EXISTS updated_by UUID,
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS deleted_by UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_compliance_alert_log_org_id_created_at
+CREATE INDEX IF NOT EXISTS idx_carrier_compliance_alert_log_org_id_created_at
   ON carrier_compliance_alert_log(org_id, created_at DESC);
 
 -- ── carrier_document_types ──────────────────────────────────────────────────
@@ -270,7 +270,7 @@ ALTER TABLE carrier_document_types
   ADD COLUMN IF NOT EXISTS updated_by UUID,
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS deleted_by UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_document_types_org_id_created_at
+CREATE INDEX IF NOT EXISTS idx_carrier_document_types_org_id_created_at
   ON carrier_document_types(org_id, created_at DESC);
 
 -- ── carrier_expenses ────────────────────────────────────────────────────────
@@ -290,7 +290,7 @@ ALTER TABLE carrier_expenses
   ADD COLUMN IF NOT EXISTS updated_by UUID,
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS deleted_by UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_carrier_expenses_org_id_created_at
+CREATE INDEX IF NOT EXISTS idx_carrier_expenses_org_id_created_at
   ON carrier_expenses(org_id, created_at DESC);
 
 -- ── DispatchOverrideAudit (PascalCase, tenantId) ────────────────────────────
@@ -311,7 +311,7 @@ ALTER TABLE "DispatchOverrideAudit"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_DispatchOverrideAudit_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_DispatchOverrideAudit_tenantId_createdAt"
   ON "DispatchOverrideAudit"("tenantId", "createdAt" DESC);
 
 -- ── DriverHOSEntry (PascalCase, tenantId — FORCE only) ──────────────────────
@@ -322,7 +322,7 @@ ALTER TABLE "DriverHOSEntry"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_DriverHOSEntry_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_DriverHOSEntry_tenantId_createdAt"
   ON "DriverHOSEntry"("tenantId", "createdAt" DESC);
 
 -- ── DriverIncident (FORCE only) ─────────────────────────────────────────────
@@ -333,7 +333,7 @@ ALTER TABLE "DriverIncident"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_DriverIncident_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_DriverIncident_tenantId_createdAt"
   ON "DriverIncident"("tenantId", "createdAt" DESC);
 
 -- ── in_app_notifications ────────────────────────────────────────────────────
@@ -353,7 +353,7 @@ ALTER TABLE in_app_notifications
   ADD COLUMN IF NOT EXISTS updated_by UUID,
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS deleted_by UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_in_app_notifications_org_id ON in_app_notifications(org_id);
+CREATE INDEX IF NOT EXISTS idx_in_app_notifications_org_id ON in_app_notifications(org_id);
 
 -- ── NotificationSendLog ─────────────────────────────────────────────────────
 ALTER TABLE "NotificationSendLog" ENABLE ROW LEVEL SECURITY;
@@ -373,7 +373,7 @@ ALTER TABLE "NotificationSendLog"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_NotificationSendLog_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_NotificationSendLog_tenantId_createdAt"
   ON "NotificationSendLog"("tenantId", "createdAt" DESC);
 
 -- ── PlaybookTrigger ─────────────────────────────────────────────────────────
@@ -394,9 +394,9 @@ ALTER TABLE "PlaybookTrigger"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PlaybookTrigger_tenantId"
+CREATE INDEX IF NOT EXISTS "idx_PlaybookTrigger_tenantId"
   ON "PlaybookTrigger"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PlaybookTrigger_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_PlaybookTrigger_tenantId_createdAt"
   ON "PlaybookTrigger"("tenantId", "createdAt" DESC);
 
 -- ── SupportTicket (FORCE only) ──────────────────────────────────────────────
@@ -407,7 +407,7 @@ ALTER TABLE "SupportTicket"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_SupportTicket_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_SupportTicket_tenantId_createdAt"
   ON "SupportTicket"("tenantId", "createdAt" DESC);
 
 -- ── SysAdminInvoice ─────────────────────────────────────────────────────────
@@ -427,7 +427,7 @@ ALTER TABLE "SysAdminInvoice"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_SysAdminInvoice_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_SysAdminInvoice_tenantId_createdAt"
   ON "SysAdminInvoice"("tenantId", "createdAt" DESC);
 
 -- ── Tag (FORCE only) ────────────────────────────────────────────────────────
@@ -438,7 +438,7 @@ ALTER TABLE "Tag"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Tag_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_Tag_tenantId_createdAt"
   ON "Tag"("tenantId", "createdAt" DESC);
 
 -- ── TagAssignment (FORCE only) ──────────────────────────────────────────────
@@ -449,7 +449,7 @@ ALTER TABLE "TagAssignment"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_TagAssignment_tenantId_createdAt"
+CREATE INDEX IF NOT EXISTS "idx_TagAssignment_tenantId_createdAt"
   ON "TagAssignment"("tenantId", "createdAt" DESC);
 
 -- ── Audit columns for the remaining 62/72/65/77 tables flagged in audit ────
@@ -515,63 +515,63 @@ ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "createdBy" UUID, ADD COLUMN IF NOT 
 -- inline. The rest of the 81 audit-flagged index gaps are listed in the
 -- runbook as deferred — they are pure performance, not correctness.
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_ActivationProgress_tenantId_createdAt" ON "ActivationProgress"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_AppEvent_tenantId" ON "AppEvent"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_AutomationRule_tenantId_createdAt" ON "AutomationRule"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Customer_tenantId_createdAt" ON "Customer"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_CustomerInteraction_tenantId_createdAt" ON "CustomerInteraction"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_DocFeedback_tenantId_createdAt" ON "DocFeedback"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Document_tenantId_createdAt" ON "Document"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_bonuses_tenant_id_deleted_at ON driver_bonuses(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_bonuses_tenant_id_created_at ON driver_bonuses(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_compensation_templates_tenant_id_deleted_at ON driver_compensation_templates(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_compensation_templates_tenant_id_created_at ON driver_compensation_templates(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_deductions_tenant_id_deleted_at ON driver_deductions(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_deductions_tenant_id_created_at ON driver_deductions(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_disputes_tenant_id_deleted_at ON driver_disputes(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_disputes_tenant_id_created_at ON driver_disputes(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_settlements_tenant_id_deleted_at ON driver_settlements(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_driver_settlements_tenant_id_created_at ON driver_settlements(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_DriverInvitation_tenantId_createdAt" ON "DriverInvitation"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_DriverRouteJoin_tenantId_createdAt" ON "DriverRouteJoin"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_ExpenseCategory_tenantId_createdAt" ON "ExpenseCategory"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_ExpenseTemplate_tenantId_createdAt" ON "ExpenseTemplate"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_FuelRecord_tenantId_createdAt" ON "FuelRecord"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_GPSLocation_tenantId_createdAt" ON "GPSLocation"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Invoice_tenantId_createdAt" ON "Invoice"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Load_tenantId_createdAt" ON "Load"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_load_driver_assignments_tenant_id_deleted_at ON load_driver_assignments(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_load_driver_assignments_tenant_id_created_at ON load_driver_assignments(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_load_pay_components_tenant_id_deleted_at ON load_pay_components(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_load_pay_components_tenant_id_created_at ON load_pay_components(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_MaintenanceEvent_tenantId_createdAt" ON "MaintenanceEvent"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_NotificationLog_tenantId_createdAt" ON "NotificationLog"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_NotificationSubscription_tenantId_createdAt" ON "NotificationSubscription"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_pay_component_attachments_tenant_id_deleted_at ON pay_component_attachments(tenant_id, deleted_at);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_pay_component_attachments_tenant_id_created_at ON pay_component_attachments(tenant_id, created_at DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PayrollRecord_tenantId_createdAt" ON "PayrollRecord"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Playbook_tenantId" ON "Playbook"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Playbook_tenantId_deletedAt" ON "Playbook"("tenantId", "deletedAt");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Playbook_tenantId_createdAt" ON "Playbook"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PlaybookInstance_tenantId" ON "PlaybookInstance"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PlaybookNotification_tenantId" ON "PlaybookNotification"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PlaybookNotification_tenantId_createdAt" ON "PlaybookNotification"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Route_tenantId_createdAt" ON "Route"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RouteExpense_tenantId_deletedAt" ON "RouteExpense"("tenantId", "deletedAt");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RouteExpense_tenantId_createdAt" ON "RouteExpense"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RoutePayment_tenantId_deletedAt" ON "RoutePayment"("tenantId", "deletedAt");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RoutePayment_tenantId_createdAt" ON "RoutePayment"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RouteStop_tenantId_createdAt" ON "RouteStop"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_SafetyEvent_tenantId_createdAt" ON "SafetyEvent"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_ScheduledService_tenantId_createdAt" ON "ScheduledService"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_StepTemplate_tenantId" ON "StepTemplate"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_StepTemplate_tenantId_deletedAt" ON "StepTemplate"("tenantId", "deletedAt");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_StepTemplate_tenantId_createdAt" ON "StepTemplate"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Subscription_tenantId_createdAt" ON "Subscription"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_TenantIntegration_tenantId_createdAt" ON "TenantIntegration"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_TenantNotificationSettings_tenantId_createdAt" ON "TenantNotificationSettings"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_Truck_tenantId_createdAt" ON "Truck"("tenantId", "createdAt" DESC);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_User_tenantId_createdAt" ON "User"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_ActivationProgress_tenantId_createdAt" ON "ActivationProgress"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_AppEvent_tenantId" ON "AppEvent"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_AutomationRule_tenantId_createdAt" ON "AutomationRule"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Customer_tenantId_createdAt" ON "Customer"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_CustomerInteraction_tenantId_createdAt" ON "CustomerInteraction"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_DocFeedback_tenantId_createdAt" ON "DocFeedback"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Document_tenantId_createdAt" ON "Document"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS idx_driver_bonuses_tenant_id_deleted_at ON driver_bonuses(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_driver_bonuses_tenant_id_created_at ON driver_bonuses(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_driver_compensation_templates_tenant_id_deleted_at ON driver_compensation_templates(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_driver_compensation_templates_tenant_id_created_at ON driver_compensation_templates(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_driver_deductions_tenant_id_deleted_at ON driver_deductions(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_driver_deductions_tenant_id_created_at ON driver_deductions(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_driver_disputes_tenant_id_deleted_at ON driver_disputes(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_driver_disputes_tenant_id_created_at ON driver_disputes(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_driver_settlements_tenant_id_deleted_at ON driver_settlements(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_driver_settlements_tenant_id_created_at ON driver_settlements(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS "idx_DriverInvitation_tenantId_createdAt" ON "DriverInvitation"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_DriverRouteJoin_tenantId_createdAt" ON "DriverRouteJoin"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_ExpenseCategory_tenantId_createdAt" ON "ExpenseCategory"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_ExpenseTemplate_tenantId_createdAt" ON "ExpenseTemplate"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_FuelRecord_tenantId_createdAt" ON "FuelRecord"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_GPSLocation_tenantId_createdAt" ON "GPSLocation"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Invoice_tenantId_createdAt" ON "Invoice"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Load_tenantId_createdAt" ON "Load"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS idx_load_driver_assignments_tenant_id_deleted_at ON load_driver_assignments(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_load_driver_assignments_tenant_id_created_at ON load_driver_assignments(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_load_pay_components_tenant_id_deleted_at ON load_pay_components(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_load_pay_components_tenant_id_created_at ON load_pay_components(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS "idx_MaintenanceEvent_tenantId_createdAt" ON "MaintenanceEvent"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_NotificationLog_tenantId_createdAt" ON "NotificationLog"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_NotificationSubscription_tenantId_createdAt" ON "NotificationSubscription"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS idx_pay_component_attachments_tenant_id_deleted_at ON pay_component_attachments(tenant_id, deleted_at);
+CREATE INDEX IF NOT EXISTS idx_pay_component_attachments_tenant_id_created_at ON pay_component_attachments(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS "idx_PayrollRecord_tenantId_createdAt" ON "PayrollRecord"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Playbook_tenantId" ON "Playbook"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_Playbook_tenantId_deletedAt" ON "Playbook"("tenantId", "deletedAt");
+CREATE INDEX IF NOT EXISTS "idx_Playbook_tenantId_createdAt" ON "Playbook"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_PlaybookInstance_tenantId" ON "PlaybookInstance"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_PlaybookNotification_tenantId" ON "PlaybookNotification"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_PlaybookNotification_tenantId_createdAt" ON "PlaybookNotification"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Route_tenantId_createdAt" ON "Route"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_RouteExpense_tenantId_deletedAt" ON "RouteExpense"("tenantId", "deletedAt");
+CREATE INDEX IF NOT EXISTS "idx_RouteExpense_tenantId_createdAt" ON "RouteExpense"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_RoutePayment_tenantId_deletedAt" ON "RoutePayment"("tenantId", "deletedAt");
+CREATE INDEX IF NOT EXISTS "idx_RoutePayment_tenantId_createdAt" ON "RoutePayment"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_RouteStop_tenantId_createdAt" ON "RouteStop"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_SafetyEvent_tenantId_createdAt" ON "SafetyEvent"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_ScheduledService_tenantId_createdAt" ON "ScheduledService"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_StepTemplate_tenantId" ON "StepTemplate"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_StepTemplate_tenantId_deletedAt" ON "StepTemplate"("tenantId", "deletedAt");
+CREATE INDEX IF NOT EXISTS "idx_StepTemplate_tenantId_createdAt" ON "StepTemplate"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Subscription_tenantId_createdAt" ON "Subscription"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_TenantIntegration_tenantId_createdAt" ON "TenantIntegration"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_TenantNotificationSettings_tenantId_createdAt" ON "TenantNotificationSettings"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_Truck_tenantId_createdAt" ON "Truck"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_User_tenantId_createdAt" ON "User"("tenantId", "createdAt" DESC);
 
 -- ============================================================================
 -- TABLES MISSING tenant_id — add + backfill + NOT NULL + RLS
@@ -602,7 +602,7 @@ DROP POLICY IF EXISTS bypass_rls_policy ON "PlaybookStep";
 CREATE POLICY bypass_rls_policy ON "PlaybookStep"
   FOR ALL USING (current_setting('app.bypass_rls', TRUE) = 'on');
 GRANT SELECT, INSERT, UPDATE, DELETE ON "PlaybookStep" TO app_user;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PlaybookStep_tenantId" ON "PlaybookStep"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_PlaybookStep_tenantId" ON "PlaybookStep"("tenantId");
 
 -- ── PushToken ───────────────────────────────────────────────────────────────
 ALTER TABLE "PushToken" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
@@ -634,7 +634,7 @@ ALTER TABLE "PushToken"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_PushToken_tenantId" ON "PushToken"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_PushToken_tenantId" ON "PushToken"("tenantId");
 
 -- ── RouteDriver ─────────────────────────────────────────────────────────────
 ALTER TABLE "RouteDriver" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
@@ -667,8 +667,8 @@ ALTER TABLE "RouteDriver"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RouteDriver_tenantId" ON "RouteDriver"("tenantId");
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_RouteDriver_tenantId_createdAt" ON "RouteDriver"("tenantId", "createdAt" DESC);
+CREATE INDEX IF NOT EXISTS "idx_RouteDriver_tenantId" ON "RouteDriver"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_RouteDriver_tenantId_createdAt" ON "RouteDriver"("tenantId", "createdAt" DESC);
 
 -- ── StepInstance ────────────────────────────────────────────────────────────
 ALTER TABLE "StepInstance" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
@@ -695,7 +695,7 @@ DROP POLICY IF EXISTS bypass_rls_policy ON "StepInstance";
 CREATE POLICY bypass_rls_policy ON "StepInstance"
   FOR ALL USING (current_setting('app.bypass_rls', TRUE) = 'on');
 GRANT SELECT, INSERT, UPDATE, DELETE ON "StepInstance" TO app_user;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_StepInstance_tenantId" ON "StepInstance"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_StepInstance_tenantId" ON "StepInstance"("tenantId");
 
 -- ── SysAdminInvoiceItem ─────────────────────────────────────────────────────
 ALTER TABLE "SysAdminInvoiceItem" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
@@ -729,7 +729,7 @@ ALTER TABLE "SysAdminInvoiceItem"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_SysAdminInvoiceItem_tenantId" ON "SysAdminInvoiceItem"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_SysAdminInvoiceItem_tenantId" ON "SysAdminInvoiceItem"("tenantId");
 
 -- ── UserNotificationPreference ──────────────────────────────────────────────
 ALTER TABLE "UserNotificationPreference" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
@@ -761,4 +761,4 @@ ALTER TABLE "UserNotificationPreference"
   ADD COLUMN IF NOT EXISTS "updatedBy" UUID,
   ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMPTZ(6),
   ADD COLUMN IF NOT EXISTS "deletedBy" UUID;
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_UserNotificationPreference_tenantId" ON "UserNotificationPreference"("tenantId");
+CREATE INDEX IF NOT EXISTS "idx_UserNotificationPreference_tenantId" ON "UserNotificationPreference"("tenantId");
