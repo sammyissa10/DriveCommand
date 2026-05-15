@@ -1,6 +1,6 @@
 # Raw Prisma Usage Audit
 
-**Generated:** 2026-05-15T05:19:03.714Z
+**Generated:** 2026-05-15T05:57:21.100Z
 **Scanned:** apps/web/src, packages/\*/src
 **Spec reference:** docs/specs/DatabaseSecurity_MultiTenant_Spec_v1.md §2.6
 
@@ -8,9 +8,9 @@
 
 | Classification | Count |
 |---|---|
-| INTENTIONAL_ALLOWED | 296 |
+| INTENTIONAL_ALLOWED | 298 |
 | LEAK_RISK | 0 |
-| **Total** | **296** |
+| **Total** | **298** |
 
 ## LEAK_RISK (must fix — bypasses tenant-scoped client)
 
@@ -884,6 +884,13 @@ None — audit passes
 |---|---|---|
 | 30 | $executeRaw | `await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;` |
 | 93 | $executeRaw | `const updated = await tx.$executeRaw`` |
+
+### apps/web/src/lib/security/audit-log.ts
+
+| Line | Pattern | Code |
+|---|---|---|
+| 55 | $executeRaw | `await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;` |
+| 58 | $executeRaw | `await tx.$executeRaw(` |
 
 ### apps/web/src/server/api/routers/workflows/analytics.ts
 

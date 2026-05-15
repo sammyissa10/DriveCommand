@@ -113,3 +113,22 @@ After the standardization migration, any new feature code that calls `prisma.$qu
 Dropdown regression coverage: `apps/web/tests/isolation/dropdowns.test.ts` seeds 3 rows per tenant in Load, Truck, CarrierDriver, CarrierClient, CarrierFacility and asserts the tenant-scoped query returns exactly 3, all belonging to the calling tenant. Spec §6.3.
 
 **Dependency on FORCE RLS:** This gate intentionally excludes `prisma.<model>` method calls from the LEAK_RISK classification, because FORCE ROW LEVEL SECURITY at the database layer is the defense for those calls. If FORCE RLS is ever disabled on a tenant-scoped table (whether by an intentional migration or by accident), the scanner will not catch the resulting leak. Before disabling FORCE RLS on any table, revisit this scanner and the dropdown regression tests in `apps/web/tests/isolation/dropdowns.test.ts`. The regression tests are the second line of defense and must continue to pass.
+
+## PII encryption (quick-329)
+
+Field-level AES-256-GCM encryption was added for `carrier_drivers.cdl_number` in
+migration `20260515_pii_encryption_pr1`. A dual-write window is in place: both the
+plaintext column and 5 encrypted shape columns coexist until PR2 ships.
+
+Key docs:
+- `docs/runbooks/encryption-keys.md` — key generation, rotation procedure, emergency rotation
+- `docs/runbooks/pii-encryption.md` — what is encrypted, dual-write window, plaintext access rules
+- `docs/runbooks/pii-encryption-pr2.md` — PR2 plan: 7-day verification window, smoke tests, drop plaintext column, rollback steps
+
+The `audit_log` table was created by this migration: tenant-scoped, FORCE RLS,
+append-only (REVOKE UPDATE/DELETE from app_user). Every plaintext access via
+`decryptCarrierDriverCDL` writes a `VIEW_PII` or `VIEW_PII_DENIED` row.
+
+The backfill script (`npm run backfill:carrier-driver-cdl`) encrypted all existing rows
+with a non-null `cdl_number` inside a single transaction with decrypt-equals-plaintext
+verification.
