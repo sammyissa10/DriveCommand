@@ -5,6 +5,12 @@
  * Accepts multipart/form-data, uploads to R2 directly from the server,
  * then saves document metadata to the database.
  *
+ * Upload pipeline (quick-349):
+ * 1. Upload to quarantine prefix: tenant-{id}/_quarantine/{fileId}-{name}
+ * 2. Validate file type (magic bytes), dimensions, macro formats, SVG/HTML
+ * 3. On pass: copy to final key and delete quarantine
+ * 4. On fail: delete quarantine object, return error
+ *
  * This avoids the browser CORS restrictions that prevent direct-to-R2 PUT requests.
  */
 
@@ -14,17 +20,43 @@ import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { documentCreateSchema } from '@drivecommand/validation';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  GetObjectCommand,
+  CopyObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
-import { MAX_FILE_SIZE } from '@/lib/storage/validate';
+import {
+  MAX_FILE_SIZE,
+  validateFileType,
+  validateImageDimensions,
+  validatePdfPageCount,
+  validateNoMacroFormats,
+  validateNoSvgHtml,
+  sanitizeFilename,
+  ValidationError,
+} from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
 import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { apiError } from '@/lib/security/errors';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
+/** Delete a quarantine object — best-effort (logs but does not throw) */
+async function deleteQuarantineObject(s3Key: string): Promise<void> {
+  try {
+    await s3Client.send(new DeleteObjectCommand({ Bucket: getBucketName(), Key: s3Key }));
+  } catch (err) {
+    logger.warn('[upload] Failed to delete quarantine object', { s3Key, error: String(err) });
+  }
+}
+
 export async function POST(req: NextRequest) {
   let step = 'init';
+  let quarantineKey = '';
+
   try {
     step = 'require-role';
     await requireRole([UserRole.OWNER, UserRole.MANAGER]);
@@ -57,12 +89,12 @@ export async function POST(req: NextRequest) {
     }
 
     step = 's3-upload';
-    let s3Key = '';
+    let finalS3Key = '';
     let contentType = '';
     let sizeBytes = 0;
 
     if (file && file.size > 0) {
-      // Validate file
+      // Basic type + size checks
       if (!ALLOWED_TYPES.includes(file.type)) {
         return NextResponse.json(
           { error: 'File type not allowed. Please upload a PDF, JPEG, or PNG file.' },
@@ -77,29 +109,103 @@ export async function POST(req: NextRequest) {
       }
 
       const fileId = nanoid();
-      const sanitizedFileName = file.name.replace(/[/\\]/g, '-');
+      const sanitizedName = sanitizeFilename(file.name);
       const category = entityType === 'truck' ? 'trucks' : 'routes';
-      s3Key = `tenant-${tenantId}/${category}/${fileId}-${sanitizedFileName}`;
       contentType = file.type;
       sizeBytes = file.size;
 
       const fileBuffer = Buffer.from(await file.arrayBuffer());
 
+      // Step 1: Upload to quarantine prefix
+      step = 'upload-quarantine';
+      quarantineKey = `tenant-${tenantId}/_quarantine/${fileId}-${sanitizedName}`;
       await s3Client.send(
         new PutObjectCommand({
           Bucket: getBucketName(),
-          Key: s3Key,
+          Key: quarantineKey,
           Body: fileBuffer,
           ContentType: contentType,
           ContentLength: sizeBytes,
         })
       );
+
+      // Step 2: Validate using in-memory buffer (no GetObject needed — file is already in memory)
+      step = 'validate';
+
+      // 2a. MIME type magic bytes check
+      const typeResult = await validateFileType(fileBuffer.buffer as ArrayBuffer, contentType);
+      if (!typeResult.valid) {
+        await deleteQuarantineObject(quarantineKey);
+        return apiError(422, 'INVALID_FILE_TYPE', { message: typeResult.error });
+      }
+
+      // 2b. SVG/HTML rejection
+      try {
+        validateNoSvgHtml(sanitizedName);
+      } catch (err) {
+        await deleteQuarantineObject(quarantineKey);
+        if (err instanceof ValidationError) {
+          return apiError(422, err.code, { message: err.message });
+        }
+        throw err;
+      }
+
+      // 2c. Macro-enabled Office format rejection
+      try {
+        validateNoMacroFormats(sanitizedName, fileBuffer);
+      } catch (err) {
+        await deleteQuarantineObject(quarantineKey);
+        if (err instanceof ValidationError) {
+          return apiError(422, err.code, { message: err.message });
+        }
+        throw err;
+      }
+
+      // 2d. PDF page count check
+      if (contentType === 'application/pdf') {
+        try {
+          await validatePdfPageCount(fileBuffer);
+        } catch (err) {
+          await deleteQuarantineObject(quarantineKey);
+          if (err instanceof ValidationError) {
+            return apiError(422, err.code, { message: err.message });
+          }
+          throw err;
+        }
+      }
+
+      // 2e. Image dimension check (decompression bomb)
+      if (contentType.startsWith('image/')) {
+        try {
+          await validateImageDimensions(fileBuffer);
+        } catch (err) {
+          await deleteQuarantineObject(quarantineKey);
+          if (err instanceof ValidationError) {
+            return apiError(422, err.code, { message: err.message });
+          }
+          throw err;
+        }
+      }
+
+      // Step 3: Promote — copy quarantine → final key, then delete quarantine
+      step = 'promote';
+      finalS3Key = `tenant-${tenantId}/${category}/${fileId}-${sanitizedName}`;
+      await s3Client.send(
+        new CopyObjectCommand({
+          Bucket: getBucketName(),
+          CopySource: `${getBucketName()}/${quarantineKey}`,
+          Key: finalS3Key,
+          ContentType: contentType,
+        })
+      );
+      await deleteQuarantineObject(quarantineKey);
+      quarantineKey = ''; // Mark as promoted — no cleanup needed on error
     }
 
     step = 'save-db';
     const documentData: any = {
       fileName: documentName.trim(),
-      s3Key,
+      s3Key: finalS3Key,
       contentType,
       sizeBytes,
     };
@@ -129,6 +235,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    // Best-effort quarantine cleanup if an unexpected error occurs after upload
+    if (quarantineKey) {
+      await deleteQuarantineObject(quarantineKey);
+    }
     logger.error(`[upload] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
       { error: 'Internal server error' },

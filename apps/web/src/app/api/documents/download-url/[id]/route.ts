@@ -13,6 +13,7 @@ import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { requireRestrictedDocumentAccess } from '@/lib/security/restricted-document-access';
 import { logger } from '@/lib/logger';
 import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { structuredLog } from '@/lib/security/logger';
 
 export async function GET(
   req: NextRequest,
@@ -69,9 +70,14 @@ export async function GET(
       });
     }
 
-    // Non-restricted flow — unchanged
+    // Non-restricted flow — tenant mismatch returns 404 to prevent tenant enumeration
     if (!doc.s3Key.startsWith(`tenant-${tenantId}/`)) {
-      return NextResponse.json({ error: 'Invalid document: does not match tenant' }, { status: 403 });
+      const { id } = await params;
+      structuredLog('warn', 'tenant_mismatch_404', {
+        documentId: id,
+        requestedBy: 'download-url',
+      });
+      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
     }
 
     const downloadUrl = await generateDownloadUrl(doc.s3Key);

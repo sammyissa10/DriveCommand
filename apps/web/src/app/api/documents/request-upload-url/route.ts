@@ -11,7 +11,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { isRestrictedDocumentType, generateRestrictedUploadUrl } from '@/lib/storage/restricted';
-import { MAX_FILE_SIZE } from '@/lib/storage/validate';
+import { MAX_FILE_SIZE, sanitizeFilename } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
 import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
@@ -64,7 +64,8 @@ export async function POST(req: NextRequest) {
 
     step = 'generate-file-id';
     const fileId = nanoid();
-    const sanitizedFileName = (fileName as string).replace(/[/\\]/g, '-');
+    // Use sanitizeFilename (not just path separator replacement) for full hardening
+    const sanitizedFileName = sanitizeFilename(fileName as string);
 
     // Restricted document type branch — routes to dedicated /restricted/ prefix with shorter expiry
     if (isRestrictedDocumentType(documentType)) {
@@ -91,12 +92,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Non-restricted flow — unchanged (byte-identical to before this task)
+    // Non-restricted flow — quarantine prefix first, validated on upload completion
     step = 'generate-upload-url';
-    const category = entityType === 'truck' ? 'trucks' : 'routes';
+    // Files go to _quarantine/ prefix; after validation in /upload route they are promoted to final key.
+    // generateUploadUrl builds: tenant-{tenantId}/{category}/{fileId}-{fileName}
+    // Using '_quarantine' as category yields: tenant-{tenantId}/_quarantine/{fileId}-{sanitizedFileName}
     const { uploadUrl, s3Key } = await generateUploadUrl(
       tenantId,
-      category,
+      '_quarantine' as any,
       fileId,
       sanitizedFileName,
       contentType,
@@ -108,7 +111,7 @@ export async function POST(req: NextRequest) {
       uploadUrl,
       s3Key,
       fileId,
-      fileName,
+      fileName: sanitizedFileName,
       contentType,
       sizeBytes,
       entityType,

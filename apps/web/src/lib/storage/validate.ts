@@ -3,6 +3,13 @@
  *
  * Validates file type by reading the file's magic bytes signature,
  * preventing MIME type spoofing attacks.
+ *
+ * Extended by quick-349 with:
+ * - validateImageDimensions (decompression bomb protection via sharp)
+ * - validatePdfPageCount (PDF bomb protection via pdfjs-dist)
+ * - validateNoMacroFormats (macro-enabled Office file rejection)
+ * - validateNoSvgHtml (SVG/HTML upload rejection)
+ * - ValidationError class
  */
 
 // Allowed MIME types mapped to file extensions
@@ -103,3 +110,113 @@ export async function validateFileType(
     };
   }
 }
+
+// ─── Extended validators (quick-349) ───────────────────────────────────────
+
+/**
+ * Thrown when an extended upload validator rejects a file.
+ */
+export class ValidationError extends Error {
+  public readonly code: string;
+  constructor(message: string, code: string) {
+    super(message);
+    this.name = 'ValidationError';
+    this.code = code;
+  }
+}
+
+const MAX_IMAGE_DIM = 20_000;
+const MAX_IMAGE_AREA = 100_000_000;
+const MAX_PDF_PAGES = 1_000;
+
+/** Macro-enabled Office extensions — these are ZIP files with embedded VBA */
+const MACRO_EXTENSIONS = ['.docm', '.xlsm', '.pptm', '.dotm', '.xltm', '.potm'];
+
+/**
+ * Validate image dimensions to prevent decompression bomb attacks.
+ *
+ * Uses sharp's metadata() which reads only the image header (IHDR for PNG,
+ * SOF for JPEG) — it does NOT decode the full pixel buffer.
+ *
+ * Rejects images wider or taller than 20 000 px, or with area > 100 M pixels.
+ */
+export async function validateImageDimensions(buffer: Buffer): Promise<void> {
+  const sharp = (await import('sharp')).default;
+  const meta = await sharp(buffer, { failOn: 'none' }).metadata();
+  if (!meta.width || !meta.height) {
+    throw new ValidationError('Unable to read image dimensions', 'INVALID_IMAGE');
+  }
+  if (meta.width > MAX_IMAGE_DIM || meta.height > MAX_IMAGE_DIM) {
+    throw new ValidationError(
+      `Image dimensions ${meta.width}x${meta.height} exceed ${MAX_IMAGE_DIM}px limit`,
+      'IMAGE_TOO_LARGE'
+    );
+  }
+  if (meta.width * meta.height > MAX_IMAGE_AREA) {
+    throw new ValidationError(
+      `Image area ${meta.width * meta.height} pixels exceeds ${MAX_IMAGE_AREA} pixel limit (decompression bomb)`,
+      'IMAGE_TOO_LARGE'
+    );
+  }
+}
+
+/**
+ * Validate PDF page count to prevent PDF bomb attacks.
+ *
+ * Uses pdfjs-dist legacy build (Node-compatible) to count pages.
+ * Rejects PDFs with more than 1 000 pages.
+ */
+export async function validatePdfPageCount(buffer: Buffer): Promise<void> {
+  // Use dynamic import + legacy build path for ESM/Node compatibility
+  const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs' as string);
+  const loadingTask = (pdfjsLib as any).getDocument({
+    data: new Uint8Array(buffer),
+    disableWorker: true,
+    isEvalSupported: false,
+  });
+  const doc = await loadingTask.promise;
+  try {
+    if (doc.numPages > MAX_PDF_PAGES) {
+      throw new ValidationError(
+        `PDF has ${doc.numPages} pages, exceeding the ${MAX_PDF_PAGES} page limit`,
+        'PDF_TOO_LARGE'
+      );
+    }
+  } finally {
+    await doc.destroy();
+  }
+}
+
+/**
+ * Reject macro-enabled Office formats by extension.
+ *
+ * Macro-enabled formats (.docm, .xlsm, .pptm, .dotm, .xltm, .potm) can
+ * execute arbitrary code when opened. Block them regardless of content.
+ */
+export function validateNoMacroFormats(filename: string, _buffer: Buffer): void {
+  const lower = filename.toLowerCase();
+  for (const ext of MACRO_EXTENSIONS) {
+    if (lower.endsWith(ext)) {
+      throw new ValidationError(
+        `Macro-enabled format ${ext} is not allowed`,
+        'MACRO_FORMAT'
+      );
+    }
+  }
+}
+
+/**
+ * Reject SVG and HTML uploads.
+ *
+ * SVG can contain embedded scripts; HTML can be used for phishing pages.
+ * Both are rejected regardless of content.
+ */
+export function validateNoSvgHtml(filename: string): void {
+  const lower = filename.toLowerCase();
+  if (lower.endsWith('.svg') || lower.endsWith('.html') || lower.endsWith('.htm')) {
+    throw new ValidationError('SVG/HTML uploads are not allowed', 'UNSAFE_FORMAT');
+  }
+}
+
+/** Re-export for convenience — routes can import sanitizeFilename from here */
+export { sanitizeFilename } from '@/lib/security/sanitize';
