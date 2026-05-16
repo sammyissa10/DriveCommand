@@ -13,6 +13,8 @@ import TripsTab from './trips-tab';
 import KpiStrip from '@/components/tracking/KpiStrip';
 import FilterChips from '@/components/tracking/FilterChips';
 import ViewToggle from '@/components/tracking/ViewToggle';
+import { TruckRow } from '@/components/tracking/TruckRow';
+import { TruckRowExpanded } from '@/components/tracking/TruckRowExpanded';
 import { deriveKpis } from '@/lib/tracking/deriveKpis';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
 
@@ -58,6 +60,9 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   // New state for visual foundation
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatusKey>('all');
+
+  // State for expanded truck rows in list view
+  const [expandedTruckIds, setExpandedTruckIds] = useState<Set<string>>(new Set());
 
   // Derive KPIs and status counts from vehicles
   const kpis = useMemo(() => deriveKpis(vehicles, []), [vehicles]);
@@ -156,6 +161,18 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
     setHistoryPrefillTruckId(truckId);
     setHistoryPrefillDate(date);
     setActiveTab('history');
+  }, []);
+
+  const handleToggleExpand = useCallback((truckId: string) => {
+    setExpandedTruckIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(truckId)) {
+        next.delete(truckId);
+      } else {
+        next.add(truckId);
+      }
+      return next;
+    });
   }, []);
 
   return (
@@ -270,14 +287,26 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
                 transition={{ duration: 0.18 }}
                 className="absolute inset-0 overflow-y-auto bg-background"
               >
-                <VehicleSidebar
-                  vehicles={statusFilteredVehicles}
-                  onVehicleClick={handleVehicleClick}
-                  selectedVehicleId={selectedVehicleId}
-                />
-                {statusFilteredVehicles.length === 0 && (
+                {statusFilteredVehicles.length === 0 ? (
                   <div className="flex items-center justify-center h-64 text-muted-foreground">
                     No vehicles match the current filter
+                  </div>
+                ) : (
+                  <div className="divide-y">
+                    {statusFilteredVehicles.map((vehicle) => (
+                      <div key={vehicle.truckId}>
+                        <TruckRow
+                          vehicle={vehicle}
+                          isExpanded={expandedTruckIds.has(vehicle.truckId)}
+                          onToggleExpand={() => handleToggleExpand(vehicle.truckId)}
+                          onVehicleClick={handleVehicleClick}
+                        />
+                        <TruckRowExpanded
+                          vehicle={vehicle}
+                          isExpanded={expandedTruckIds.has(vehicle.truckId)}
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
               </motion.div>
