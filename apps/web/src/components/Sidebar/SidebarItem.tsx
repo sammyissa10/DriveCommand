@@ -43,8 +43,10 @@ export function SidebarItem({
       onClick={onNavigate}
       className={cn(
         "group flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
-        "hover:bg-sidebar-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1",
-        isActive && "bg-sidebar-accent",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1",
+        isActive
+          ? "bg-[hsl(var(--sidebar-bg-active))]"
+          : "hover:bg-[hsl(var(--sidebar-bg-hover))]",
         !isExpanded && "justify-center"
       )}
       style={{
