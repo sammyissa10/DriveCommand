@@ -1,3 +1,26 @@
+/**
+ * ============================================================================
+ * CONTRAST RULE — NEVER VIOLATE
+ * ============================================================================
+ *
+ * NEVER assign the same color family value to a foreground and its immediate
+ * background. Foreground tokens must always be a distinct tier from their
+ * surface token.
+ *
+ * CORRECT:
+ *   --sidebar-fg: 0 0% 98%;       (bright)
+ *   --sidebar-bg-active: 220 25% 14%;  (dark)
+ *
+ * WRONG:
+ *   --input-placeholder: 220 10% 55%;
+ *   --input-bg: 220 10% 55%;      <-- SAME TIER, INVISIBLE TEXT
+ *
+ * Run `pnpm contrast-check` before merging.
+ * Minimum ratios: 4.5:1 text, 3:1 icons, 7:1 active state text.
+ *
+ * ============================================================================
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,15 +68,54 @@
     --ring: 210 100% 40%;              /* b-500 #0066CC — focus rings */
 
     --radius: 0.625rem;
-    /* Sidebar — Premium dark navy */
-    --sidebar-background: 228 40% 8%;  /* Deep navy — matches logo navy */
-    --sidebar-foreground: 0 0% 95%;    /* Bright text */
-    --sidebar-primary: 210 100% 50%;   /* Vibrant brand blue */
+    /* Sidebar — Premium dark navy (sidebar is ALWAYS dark regardless of theme) */
+    --sidebar-background: 228 40% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 210 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 228 30% 15%;     /* Elevated hover */
+    --sidebar-accent: 228 30% 15%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 228 25% 18%;     /* Subtle borders */
-    --sidebar-ring: 210 100% 50%;      /* Vibrant focus ring */
+    --sidebar-border: 228 25% 18%;
+    --sidebar-ring: 210 100% 50%;
+
+    /* Sidebar text hierarchy — WCAG AA compliant (sidebar is always dark) */
+    --sidebar-fg: 0 0% 98%;                   /* Primary: active items, wordmark (~15:1) */
+    --sidebar-fg-muted: 220 12% 82%;          /* Secondary: inactive nav labels, icons (~9:1) */
+    --sidebar-fg-subtle: 220 10% 65%;         /* Tertiary: section headers (~5.5:1) */
+
+    /* Sidebar active state — elevated pill background with confident tonal step */
+    /* Active bg ~18% lightness vs sidebar bg ~8% = 10% step (passes squint test) */
+    --sidebar-bg-active: 220 28% 18%;         /* Clear elevation, unmistakable active state */
+    --sidebar-bg-hover: 228 20% 11%;          /* Subtle hover, ~50% of active intensity */
+    --sidebar-bg-active-border: 220 30% 26%;  /* 1px inner border on active pill (solid) */
+    --sidebar-active-accent: 217 91% 60%;     /* Electric blue left-edge indicator */
+
+    /* Sidebar input — distinct from sidebar bg */
+    --sidebar-input-bg: 220 28% 11%;          /* Slight tonal step from sidebar bg */
+    --sidebar-fg-tertiary: 220 10% 55%;       /* Placeholder text — distinct tier */
+
+    /* Sidebar solid gradient surface — premium depth from color, not transparency */
+    /* Widened stops for clearly perceptible top-to-bottom gradient (7% lightness step) */
+    --sidebar-gradient-from: 220 34% 12%;               /* Gradient start (top) — lighter navy */
+    --sidebar-gradient-to: 225 42% 5%;                  /* Gradient end (bottom) — deep navy */
+    --sidebar-border-color: 220 22% 14%;                /* Right edge 1px solid border */
+    --sidebar-highlight: 0 0% 100% / 0.03;              /* Inset highlight only (1px) */
+    --sidebar-shadow-edge: 220 22% 14%;                 /* Edge shadow color */
+    --sidebar-shadow-soft: 0 0 0 / 0.4;                 /* Soft outer shadow */
+
+    /* TopBar solid gradient surface */
+    --topbar-gradient-from: 220 30% 10%;                /* Top edge */
+    --topbar-gradient-to: 220 32% 8%;                   /* Bottom edge */
+
+    /* Page background — light mode: clean off-white that sits beside dark sidebar */
+    --page-bg: 220 18% 97%;                             /* Slightly cooler/grayer, clean backdrop */
+
+    /* Sidebar layout dimensions */
+    --sidebar-width-expanded: 240px;
+    --sidebar-width-collapsed: 56px;
+    --sidebar-width: 240px;                              /* Dynamic, updated by JS */
+    --topbar-height: 56px;                               /* Fixed topbar height */
+
     /* Charts — vibrant palette */
     --chart-1: 210 100% 50%;           /* Brand blue */
     --chart-2: 152 76% 42%;            /* Success green */
@@ -185,14 +247,47 @@
     /* Focus ring — electric blue */
     --ring: 199 100% 68%;
     /* Sidebar — Deeper dark mode */
-    --sidebar-background: 228 20% 6%;  /* Deepest dark */
+    --sidebar-background: 228 20% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 199 100% 68%;   /* Electric blue */
+    --sidebar-primary: 199 100% 68%;
     --sidebar-primary-foreground: 228 15% 10%;
-    --sidebar-accent: 228 15% 14%;     /* Subtle hover */
+    --sidebar-accent: 228 15% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 228 12% 20%;     /* Visible borders */
+    --sidebar-border: 228 12% 20%;
     --sidebar-ring: 199 100% 68%;
+
+    /* Sidebar text hierarchy — WCAG AA compliant */
+    --sidebar-fg: 0 0% 98%;                   /* Primary: active items (~15:1 on #0D1117) */
+    --sidebar-fg-muted: 220 12% 82%;          /* Secondary: inactive labels, icons (~9:1) */
+    --sidebar-fg-subtle: 220 10% 65%;         /* Tertiary: section headers (~5.5:1) */
+
+    /* Sidebar active state — elevated pill background with confident tonal step */
+    /* Active bg ~18% lightness vs sidebar bg ~6% = 12% step (passes squint test) */
+    --sidebar-bg-active: 220 28% 18%;         /* Clear elevation, unmistakable active state */
+    --sidebar-bg-hover: 228 15% 10%;          /* Subtle hover, less intense than active */
+    --sidebar-bg-active-border: 220 30% 26%;  /* 1px inner border on active pill (solid) */
+    --sidebar-active-accent: 217 91% 60%;     /* Electric blue left-edge indicator */
+
+    /* Sidebar input — distinct from sidebar bg */
+    --sidebar-input-bg: 220 28% 11%;          /* Slight tonal step from sidebar bg */
+    --sidebar-fg-tertiary: 220 10% 55%;       /* Placeholder text — distinct tier */
+
+    /* Sidebar solid gradient surface (dark mode — deeper, widened for perceptibility) */
+    /* 7% lightness step for clearly visible top-to-bottom gradient progression */
+    --sidebar-gradient-from: 220 34% 12%;               /* Gradient start (top) — lighter */
+    --sidebar-gradient-to: 225 42% 5%;                  /* Gradient end (bottom) — deepest navy */
+    --sidebar-border-color: 220 20% 16%;                /* Right edge border */
+    --sidebar-highlight: 0 0% 100% / 0.025;             /* Even subtler highlight in dark */
+    --sidebar-shadow-edge: 220 20% 12%;                 /* Edge shadow color */
+    --sidebar-shadow-soft: 0 0 0 / 0.5;                 /* Stronger shadow in dark */
+
+    /* TopBar solid gradient surface (dark mode) */
+    --topbar-gradient-from: 220 32% 8%;
+    --topbar-gradient-to: 220 34% 6%;
+
+    /* Page background (dark mode) */
+    --page-bg: 220 30% 4%;                              /* Deepest — sidebar floats above */
+
     /* Charts — vibrant on dark */
     --chart-1: 199 100% 68%;           /* Electric blue */
     --chart-2: 152 80% 50%;            /* Bright green */
@@ -352,3 +447,96 @@
 /* Hide scrollbar for scroll-snap carousels */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Sidebar input placeholder — distinct tier from input bg */
+.sidebar-input::placeholder {
+  color: hsl(var(--sidebar-fg-tertiary));
+  opacity: 1;
+}
+
+/* Sidebar solid gradient surface — premium depth from color/shadow, not transparency */
+.sidebar-solid {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--sidebar-gradient-from)) 0%,
+    hsl(var(--sidebar-gradient-to)) 100%
+  );
+  border-right: 1px solid hsl(var(--sidebar-border-color));
+  box-shadow:
+    1px 0 0 0 hsl(var(--sidebar-shadow-edge)),
+    4px 0 24px -8px hsl(var(--sidebar-shadow-soft)),
+    inset 1px 1px 0 0 hsl(var(--sidebar-highlight));
+}
+
+/* Sidebar peek overlay — lifted shadow for overlay effect */
+.sidebar-peek-overlay {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--sidebar-gradient-from)) 0%,
+    hsl(var(--sidebar-gradient-to)) 100%
+  );
+  border-right: 1px solid hsl(var(--sidebar-border-color));
+  box-shadow:
+    8px 0 32px -8px hsl(var(--sidebar-shadow-soft)),
+    1px 0 0 0 hsl(var(--sidebar-shadow-edge)),
+    inset 1px 1px 0 0 hsl(var(--sidebar-highlight));
+}
+
+/* TopBar solid gradient surface */
+.topbar-solid {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--topbar-gradient-from)) 0%,
+    hsl(var(--topbar-gradient-to)) 100%
+  );
+  border-bottom: 1px solid hsl(var(--sidebar-border-color));
+  box-shadow:
+    0 1px 0 0 hsl(var(--sidebar-shadow-edge)),
+    0 4px 24px -8px hsl(var(--sidebar-shadow-soft)),
+    inset 0 1px 0 0 hsl(var(--sidebar-highlight));
+}
+
+/* Page background for fixed sidebar layout */
+.page-bg-fixed {
+  background-color: hsl(var(--page-bg));
+}
+
+/* Dark topbar context — forces light-on-dark colors for icons/text in desktop topbar */
+.topbar-dark-context {
+  /* Override muted-foreground for this context to be readable on dark topbar */
+  --muted-foreground: var(--sidebar-fg-muted);
+  --foreground: var(--sidebar-fg);
+}
+.topbar-dark-context button:hover {
+  background-color: hsl(var(--sidebar-bg-hover));
+}
+
+/* Sidebar width transition for main content margin */
+.sidebar-margin-transition {
+  transition: margin-left 320ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Sidebar internal scroll styling */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--sidebar-border-color)) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--sidebar-border-color));
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-margin-transition {
+    transition: none !important;
+  }
+  .sidebar-peek-overlay {
+    transition: none !important;
+  }
+}

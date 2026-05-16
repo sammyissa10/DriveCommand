@@ -84,13 +84,17 @@ export function SidebarFlyout({
           sideOffset={8}
           align="start"
           className={cn(
-            "z-50 min-w-[200px] bg-popover text-popover-foreground p-2",
-            "shadow-[0_1px_2px_rgba(0,0,0,0.04),_0_8px_24px_rgba(0,0,0,0.08)]",
-            "border border-border/50",
+            "z-50 min-w-[200px] p-2",
+            "shadow-[0_4px_24px_-4px_rgba(0,0,0,0.3),_0_8px_32px_-8px_rgba(0,0,0,0.2)]",
             "animate-in fade-in-0 zoom-in-95 slide-in-from-left-2"
           )}
           style={{
             borderRadius: `${FLYOUT_BORDER_RADIUS}px`,
+            // Solid surface matching sidebar gradient
+            background: "linear-gradient(180deg, hsl(220 32% 10%) 0%, hsl(222 36% 8%) 100%)",
+            border: "1px solid hsl(220 22% 16%)",
+            // Layered shadow for depth + subtle inner highlight
+            boxShadow: "0 4px 24px -4px rgba(0,0,0,0.4), 0 8px 32px -8px rgba(0,0,0,0.3), inset 1px 1px 0 0 hsl(0 0% 100% / 0.03)",
           }}
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}

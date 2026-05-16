@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react"
 import type { Transition, Variants } from "framer-motion"
+import {
+  SIDEBAR_WIDTH_EXPANDED,
+  SIDEBAR_WIDTH_COLLAPSED,
+  SIDEBAR_ANIMATION_DURATION,
+  SIDEBAR_ANIMATION_EASING,
+} from "./sidebar.config"
 
 /**
- * Spring configuration for sidebar width transitions
- * Emil Kowalski-style spring physics
+ * Apple-style smooth curve for sidebar transitions
+ * 320ms with cubic-bezier(0.32, 0.72, 0, 1)
  */
-export const springConfig: Transition = {
-  type: "spring",
-  stiffness: 400,
-  damping: 35,
+export const smoothConfig: Transition = {
+  type: "tween",
+  duration: SIDEBAR_ANIMATION_DURATION / 1000,
+  ease: [0.32, 0.72, 0, 1],
 }
 
 /**
@@ -38,14 +44,14 @@ export const labelVariants: Variants = {
 
 /**
  * Framer Motion variants for sidebar width
- * Values in pixels (256px = 16rem, 48px = 3rem)
+ * 240px expanded, 56px collapsed (Apple-style dimensions)
  */
 export const sidebarVariants: Variants = {
   expanded: {
-    width: 256,
+    width: SIDEBAR_WIDTH_EXPANDED,
   },
   collapsed: {
-    width: 48,
+    width: SIDEBAR_WIDTH_COLLAPSED,
   },
 }
 
@@ -70,5 +76,5 @@ export function useMotionConfig(): Transition {
     return () => mediaQuery.removeEventListener("change", handler)
   }, [])
 
-  return prefersReducedMotion ? reducedMotionConfig : springConfig
+  return prefersReducedMotion ? reducedMotionConfig : smoothConfig
 }

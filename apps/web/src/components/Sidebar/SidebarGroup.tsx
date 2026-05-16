@@ -25,10 +25,13 @@ export function SidebarGroup({
   activePath,
   onNavigate,
 }: SidebarGroupProps) {
+  // Empty label = divider only, no section header (for standalone items like Messages)
+  const hasLabel = group.label && group.label.trim() !== ""
+
   return (
     <div className="mb-4">
       <AnimatePresence mode="wait">
-        {isExpanded && (
+        {isExpanded && hasLabel && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -40,6 +43,17 @@ export function SidebarGroup({
               {group.label}
             </h3>
           </motion.div>
+        )}
+        {/* Empty label = divider line instead of section header */}
+        {!hasLabel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="mb-2 mx-2 border-t border-[hsl(var(--sidebar-border-color))]"
+            aria-hidden="true"
+          />
         )}
       </AnimatePresence>
 

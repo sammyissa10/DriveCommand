@@ -1,185 +1,36 @@
-import Link from 'next/link';
-import { getAllFeatures } from '@/lib/docs/get-features';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  BookOpen,
-  Sparkles,
-  Clock,
-  Rocket,
-  Truck,
-  Users,
-  ListChecks,
-  DollarSign,
-  Shield,
-  Brain,
-  MessageSquare,
-  Settings,
-  LifeBuoy,
-} from 'lucide-react';
-import ia from '../../../../../../docs-content/_ia.json';
+import { HelpHeader } from "@/components/help/HelpHeader"
+import { HelpSearchInline } from "@/components/help/HelpSearchInline"
+import { HelpCategoryGrid } from "@/components/help/HelpCategoryGrid"
+import { ContactSupportCard } from "@/components/help/ContactSupportCard"
 
-// Icon mapping for hub icons
-const iconMap: Record<string, React.ReactNode> = {
-  Rocket: <Rocket className="h-5 w-5" />,
-  Truck: <Truck className="h-5 w-5" />,
-  Users: <Users className="h-5 w-5" />,
-  ListChecks: <ListChecks className="h-5 w-5" />,
-  DollarSign: <DollarSign className="h-5 w-5" />,
-  Shield: <Shield className="h-5 w-5" />,
-  Brain: <Brain className="h-5 w-5" />,
-  MessageSquare: <MessageSquare className="h-5 w-5" />,
-  Settings: <Settings className="h-5 w-5" />,
-  LifeBuoy: <LifeBuoy className="h-5 w-5" />,
-  BookOpen: <BookOpen className="h-5 w-5" />,
-};
-
-export default function HelpHomePage() {
-  const allFeatures = getAllFeatures();
-
+/**
+ * Help Center Home Page
+ *
+ * Design principles:
+ * - Warm, human copy ("How can we help?" not "Knowledge Base")
+ * - Calm, spacious layout with centered content
+ * - 5+ entry points to Help: sidebar, topbar icon, account menu, "?" shortcut, global search
+ *
+ * Layout:
+ * 1. Header with title and subtitle
+ * 2. Inline search (visual stub, TODO: wire to real search)
+ * 3. Category grid (2x3 on desktop)
+ * 4. Contact Support card
+ */
+export default function HelpPage() {
   return (
-    <div className="space-y-8">
-      {/* Getting Started Section */}
-      <section>
-        <div className="flex items-center gap-2 mb-4">
-          <Rocket className="h-5 w-5" />
-          <div>
-            <h2 className="text-lg font-semibold">Getting Started</h2>
-            <p className="text-sm text-muted-foreground">
-              New to DriveCommand? Start here to set up your operation.
-            </p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link href="/help/getting-started">
-            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
-              <CardHeader className="p-4">
-                <CardTitle className="text-base">Complete Setup Guide</CardTitle>
-                <CardDescription className="text-sm">
-                  Step-by-step walkthrough from adding trucks to generating your first invoice
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-          <div className="grid grid-cols-2 gap-4">
-            <Link href="/help/trucks">
-              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
-                <CardHeader className="p-3">
-                  <CardTitle className="text-sm">Add a Truck</CardTitle>
-                  <CardDescription className="text-xs">Set up your fleet</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-            <Link href="/help/drivers">
-              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
-                <CardHeader className="p-3">
-                  <CardTitle className="text-sm">Invite a Driver</CardTitle>
-                  <CardDescription className="text-xs">Build your team</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-            <Link href="/help/loads">
-              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
-                <CardHeader className="p-3">
-                  <CardTitle className="text-sm">Create a Load</CardTitle>
-                  <CardDescription className="text-xs">Start dispatching</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-            <Link href="/help/invoices">
-              <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
-                <CardHeader className="p-3">
-                  <CardTitle className="text-sm">Generate Invoice</CardTitle>
-                  <CardDescription className="text-xs">Get paid faster</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          </div>
-        </div>
-      </section>
+    <div>
+      {/* Header: "How can we help?" */}
+      <HelpHeader />
 
-      {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Link href="/help/whats-new">
-          <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-            <CardHeader className="flex flex-row items-center gap-3 p-4">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <div>
-                <CardTitle className="text-base">What&apos;s New</CardTitle>
-                <CardDescription className="text-xs">Latest features and updates</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link href="/support">
-          <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-            <CardHeader className="flex flex-row items-center gap-3 p-4">
-              <BookOpen className="h-5 w-5 text-primary" />
-              <div>
-                <CardTitle className="text-base">Support</CardTitle>
-                <CardDescription className="text-xs">Contact our team</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Card className="opacity-60">
-          <CardHeader className="flex flex-row items-center gap-3 p-4">
-            <Clock className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <CardTitle className="text-base">Video Tutorials</CardTitle>
-              <CardDescription className="text-xs">Coming soon</CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
-      </div>
+      {/* Inline search (visual stub) */}
+      <HelpSearchInline />
 
-      {/* Hubs from _ia.json */}
-      {ia.clientHubs.map((hub: any) => {
-        // Skip Getting Started hub if it has no features
-        if (hub.features.length === 0) return null;
+      {/* Category grid */}
+      <HelpCategoryGrid />
 
-        // Get features for this hub
-        const hubFeatures = allFeatures.filter(
-          (f) => hub.features.includes(f.slug) && f.requiresClientDoc
-        );
-
-        if (hubFeatures.length === 0) return null;
-
-        const icon = iconMap[hub.icon] || <BookOpen className="h-5 w-5" />;
-
-        return (
-          <section key={hub.id}>
-            <div className="flex items-center gap-2 mb-4">
-              {icon}
-              <div>
-                <h2 className="text-lg font-semibold">{hub.name}</h2>
-                <p className="text-sm text-muted-foreground">{hub.description}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {hubFeatures.map((feature) => (
-                <Link key={feature.slug} href={`/help/${feature.slug}`}>
-                  <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer">
-                    <CardHeader className="p-4">
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-base">{feature.name}</CardTitle>
-                        {feature.planTier !== 'free' && feature.planTier !== 'starter' && (
-                          <Badge variant="secondary" className="text-xs shrink-0">
-                            {feature.planTier}
-                          </Badge>
-                        )}
-                      </div>
-                      <CardDescription className="text-sm line-clamp-2">
-                        {feature.shortDescription}
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </section>
-        );
-      })}
+      {/* Contact Support CTA */}
+      <ContactSupportCard />
     </div>
-  );
+  )
 }

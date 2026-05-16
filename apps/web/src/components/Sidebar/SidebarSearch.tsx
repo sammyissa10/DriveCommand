@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Search } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { labelVariants } from "./motion"
@@ -11,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { assertContrast } from "@/lib/devAssertions"
 
 interface SidebarSearchProps {
   isExpanded: boolean
@@ -27,6 +29,16 @@ export function SidebarSearch({
   isExpanded,
   onExpandClick,
 }: SidebarSearchProps) {
+  // Dev-only contrast assertion
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development" && isExpanded) {
+      // Check input text contrast against input bg
+      assertContrast("0 0% 98%", "220 28% 11%", "SidebarSearch input text")
+      // Check placeholder contrast against input bg
+      assertContrast("220 10% 55%", "220 28% 11%", "SidebarSearch placeholder")
+    }
+  }, [isExpanded])
+
   if (!isExpanded) {
     return (
       <div className="px-2 mb-4">
@@ -79,11 +91,18 @@ export function SidebarSearch({
             type="search"
             placeholder="Search..."
             className={cn(
-              "pl-8 h-9 text-[13px] bg-sidebar-accent/50 border-sidebar-border",
-              "focus-visible:ring-sidebar-ring placeholder:text-[hsl(var(--sidebar-fg-subtle))]"
+              "pl-8 h-9 text-[13px] sidebar-input",
+              "focus-visible:ring-sidebar-ring"
             )}
             style={{
               borderRadius: `${ITEM_BORDER_RADIUS}px`,
+              // Solid input: elevated from sidebar gradient
+              backgroundColor: "hsl(220 30% 11%)",
+              border: "1px solid hsl(220 22% 18%)",
+              // Typed text uses sidebar fg
+              color: "hsl(var(--sidebar-fg))",
+              // Caret visible
+              caretColor: "hsl(var(--sidebar-fg))",
             }}
           />
         </div>
