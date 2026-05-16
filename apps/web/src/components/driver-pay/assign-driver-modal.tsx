@@ -118,57 +118,61 @@ export function AssignDriverModal({
     setIsSubmitting(true);
     setError(null);
 
-    const result = await createAssignment(loadId, {
-      driverId: selectedDriverId,
-      driverRole: selectedRole,
-    });
-
-    setIsSubmitting(false);
-
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-
-    if (result.data) {
-      const driverName = selectedDriver
-        ? `${selectedDriver.firstName} ${selectedDriver.lastName}`
-        : 'Driver';
-      toast.success(`${driverName} assigned to this load.`);
-
-      // Build a partial SerializedAssignment for optimistic update
-      const partial: SerializedAssignment = {
-        id: result.data.id,
-        tenantId: '',
-        loadId,
+    try {
+      const result = await createAssignment(loadId, {
         driverId: selectedDriverId,
         driverRole: selectedRole,
-        templateId: null,
-        payType: '',
-        baseRate: '0',
-        rateUnit: '',
-        currency: 'USD',
-        loadedMilesOnly: false,
-        fuelSurchargeRate: null,
-        perDiemEnabled: false,
-        perDiemRate: null,
-        estimatedMiles: null,
-        actualMiles: null,
-        mileageSource: null,
-        overrideReason: null,
-        payStatus: 'DRAFT',
-        createdAt: new Date().toISOString(),
-        deletedAt: null,
-        driver: {
-          id: selectedDriverId,
-          firstName: selectedDriver?.firstName ?? '',
-          lastName: selectedDriver?.lastName ?? '',
-        },
-        template: null,
-      };
+      });
 
-      onAssigned(partial);
-      handleClose();
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      if (result.data) {
+        const driverName = selectedDriver
+          ? `${selectedDriver.firstName} ${selectedDriver.lastName}`
+          : 'Driver';
+        toast.success(`${driverName} assigned to this load.`);
+
+        // Build a partial SerializedAssignment for optimistic update
+        const partial: SerializedAssignment = {
+          id: result.data.id,
+          tenantId: '',
+          loadId,
+          driverId: selectedDriverId,
+          driverRole: selectedRole,
+          templateId: null,
+          payType: '',
+          baseRate: '0',
+          rateUnit: '',
+          currency: 'USD',
+          loadedMilesOnly: false,
+          fuelSurchargeRate: null,
+          perDiemEnabled: false,
+          perDiemRate: null,
+          estimatedMiles: null,
+          actualMiles: null,
+          mileageSource: null,
+          overrideReason: null,
+          payStatus: 'DRAFT',
+          createdAt: new Date().toISOString(),
+          deletedAt: null,
+          driver: {
+            id: selectedDriverId,
+            firstName: selectedDriver?.firstName ?? '',
+            lastName: selectedDriver?.lastName ?? '',
+          },
+          template: null,
+        };
+
+        onAssigned(partial);
+        handleClose();
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
