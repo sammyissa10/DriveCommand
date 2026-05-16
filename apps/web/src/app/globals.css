@@ -4,39 +4,66 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    /* ========================================
+       CSS Variable Bridge: Map shadcn vars to brand tokens
+       Phase 2: Component Migration — Vibrant Colors
+       ======================================== */
+
+    /* Core semantic mappings — clean, bright light mode */
+    --background: 240 20% 97%;         /* n-050 Bone #F5F5F7 — clean off-white with subtle cool tint */
+    --foreground: 240 10% 12%;         /* n-900 Ink #1D1D1F — rich dark text */
+    --card: 0 0% 100%;                 /* n-000 White — crisp card surfaces */
+    --card-foreground: 240 10% 12%;   /* n-900 Ink — card text */
+    --popover: 0 0% 100%;             /* n-000 White — popover surfaces */
+    --popover-foreground: 240 10% 12%; /* n-900 Ink — popover text */
+
+    /* Brand blue as primary — vibrant, saturated */
+    --primary: 210 100% 40%;           /* b-500 #0066CC — vibrant brand blue */
+    --primary-foreground: 0 0% 100%;   /* n-000 White — text on primary */
+
+    /* Secondary using mist — subtle but not dull */
+    --secondary: 240 14% 93%;          /* n-100 Mist #E8E8ED — clean hover bg */
+    --secondary-foreground: 240 10% 12%; /* n-900 Ink */
+
+    /* Muted — refined subtle backgrounds */
+    --muted: 240 14% 93%;              /* n-100 Mist — muted bg */
+    --muted-foreground: 240 5% 45%;    /* n-500 Graphite — secondary text */
+
+    /* Accent — clean hover states */
+    --accent: 210 40% 96%;             /* b-050 tint — subtle blue hover */
+    --accent-foreground: 240 10% 12%;  /* n-900 Ink — text on accent */
+
+    /* Destructive using critical red — bold and clear */
+    --destructive: 350 90% 46%;        /* critical #C8102E */
+    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+
+    /* Borders and inputs — subtle but visible */
+    --border: 240 12% 85%;             /* n-200 Fog #D2D2D7 — clean borders */
+    --input: 240 12% 85%;              /* n-200 Fog — input borders */
+
+    /* Focus ring — vibrant brand blue */
+    --ring: 210 100% 40%;              /* b-500 #0066CC — focus rings */
+
     --radius: 0.625rem;
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 221 83% 53%;
-    --chart-1: 221 83% 53%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Sidebar — Premium dark navy */
+    --sidebar-background: 228 40% 8%;  /* Deep navy — matches logo navy */
+    --sidebar-foreground: 0 0% 95%;    /* Bright text */
+    --sidebar-primary: 210 100% 50%;   /* Vibrant brand blue */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 30% 15%;     /* Elevated hover */
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 228 25% 18%;     /* Subtle borders */
+    --sidebar-ring: 210 100% 50%;      /* Vibrant focus ring */
+    /* Sidebar text hierarchy — WCAG AA compliant */
+    --sidebar-fg: 240 10% 12%;              /* Primary: active items, important labels (~7:1) */
+    --sidebar-fg-muted: 240 8% 35%;         /* Secondary: inactive nav labels, icons (~5:1) */
+    --sidebar-fg-subtle: 240 6% 45%;        /* Tertiary: section headers, placeholders (~4.5:1) */
+    /* Charts — vibrant palette */
+    --chart-1: 210 100% 50%;           /* Brand blue */
+    --chart-2: 152 76% 42%;            /* Success green */
+    --chart-3: 38 100% 54%;            /* Warm amber */
+    --chart-4: 280 70% 58%;            /* Purple */
+    --chart-5: 350 90% 55%;            /* Vibrant red */
 
     /* Semantic status colors — light mode */
     --status-success: 142 71% 45%;
@@ -64,41 +91,122 @@
     --transition-fast: 150ms;
     --transition-base: 200ms;
     --transition-slow: 300ms;
+
+    /* ========================================
+       DriveCommand Brand Tokens (Phase 1)
+       From: .claude/skills/brandkit/BRAND_GUIDE.md
+       ======================================== */
+
+    /* Neutrals — 11-step scale for structure and text */
+    --color-n-000: #FFFFFF;  /* White, elevated surfaces */
+    --color-n-050: #F5F5F7;  /* Bone — default page surface */
+    --color-n-100: #E8E8ED;  /* Mist — dividers, hover bg */
+    --color-n-200: #D2D2D7;  /* Fog — borders, disabled */
+    --color-n-300: #AEAEB2;  /* Quiet — placeholder text */
+    --color-n-400: #86868B;  /* Silver — tertiary text, icons */
+    --color-n-500: #6E6E73;  /* Graphite — secondary text */
+    --color-n-600: #48484A;  /* Iron — dark tertiary */
+    --color-n-700: #363638;  /* Coal — elevated dark */
+    --color-n-800: #2C2C2E;  /* Slate — dark body */
+    --color-n-900: #1D1D1F;  /* Ink — primary text, dark surface */
+
+    /* Brand Blue — 9-step scale for accent and signal */
+    --color-b-050: #E5F0FB;  /* Tint — selected row bg */
+    --color-b-100: #C9E0F4;  /* Wash — info bg */
+    --color-b-200: #8FBEEA;  /* Sky — illustrations */
+    --color-b-300: #5AC8FA;  /* Air — dark mode links */
+    --color-b-400: #2D8FE0;  /* Hover state */
+    --color-b-500: #0066CC;  /* Brand — CTAs, links, focus rings */
+    --color-b-600: #003C82;  /* Deep — pressed, dark CTA */
+    --color-b-700: #002654;  /* Trench */
+    --color-b-800: #001A3D;  /* Abyss */
+
+    /* Semantic Colors — always paired with icon + label */
+    --color-success: #006B40;  /* On time, delivered, POD */
+    --color-warning: #9A4A00;  /* At-risk, trending late */
+    --color-critical: #C8102E; /* Past window, escalation */
+    --color-info: #0066CC;     /* In-transit, active lane */
+
+    /* Shadows — soft, low opacity */
+    --shadow-1: 0 1px 2px rgb(29 29 31 / 0.04);
+    --shadow-2: 0 4px 8px -2px rgb(29 29 31 / 0.06);
+    --shadow-3: 0 12px 24px -6px rgb(29 29 31 / 0.08);
+
+    /* Radii */
+    --radius-sm: 6px;   /* buttons, pills, inputs */
+    --radius-md: 10px;  /* cards, modals */
+    --radius-lg: 14px;  /* hero panels */
+
+    /* Hero Surface Colors — blue-tinted darks for marketing/auth pages */
+    --color-ink-navy: #0A0E1A;      /* Page canvas — deep blue-black */
+    --color-surface-navy: #0B1120;  /* Card surface — rich navy */
+
+    /* Motion Durations */
+    --duration-instant: 80ms;
+    --duration-fast: 150ms;
+    --duration-base: 200ms;
+    --duration-slow: 300ms;
+    --duration-deliberate: 500ms;
   }
 
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 20% 98%;
-    --card: 224 71% 4%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 224 64% 33%;
-    --sidebar-background: 224 71% 4%;
-    --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 217 91% 60%;
-    --chart-1: 217 91% 60%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* ========================================
+       CSS Variable Bridge: Dark mode — Rich & Premium
+       ======================================== */
+
+    /* Core semantic mappings — deep, rich dark surfaces */
+    --background: 228 15% 10%;         /* Deep navy-black — premium dark surface */
+    --foreground: 0 0% 98%;            /* Near-white text — high contrast */
+    --card: 228 12% 14%;               /* Elevated dark card — subtle lift */
+    --card-foreground: 0 0% 98%;       /* Bright text on cards */
+    --popover: 228 12% 14%;            /* Match card elevation */
+    --popover-foreground: 0 0% 98%;    /* Bright text */
+
+    /* Brand blue — electric and vibrant on dark */
+    --primary: 199 100% 68%;           /* b-300 #5AC8FA — electric blue */
+    --primary-foreground: 228 15% 10%; /* Dark text on bright primary */
+
+    /* Secondary — subtle elevation */
+    --secondary: 228 10% 20%;          /* Elevated dark — visible hover */
+    --secondary-foreground: 0 0% 98%; /* Bright text */
+
+    /* Muted — refined dark backgrounds */
+    --muted: 228 10% 18%;              /* Subtle elevation */
+    --muted-foreground: 220 10% 65%;   /* Balanced secondary text */
+
+    /* Accent — subtle blue-tinted hover */
+    --accent: 210 30% 18%;             /* Blue-tinted dark hover */
+    --accent-foreground: 0 0% 98%;     /* Bright text */
+
+    /* Destructive — bright and clear on dark */
+    --destructive: 0 85% 60%;          /* #FF453A — bright red */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders — visible but subtle */
+    --border: 228 10% 25%;             /* Clear dark borders */
+    --input: 228 10% 25%;              /* Input borders */
+
+    /* Focus ring — electric blue */
+    --ring: 199 100% 68%;
+    /* Sidebar — Deeper dark mode */
+    --sidebar-background: 228 20% 6%;  /* Deepest dark */
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 199 100% 68%;   /* Electric blue */
+    --sidebar-primary-foreground: 228 15% 10%;
+    --sidebar-accent: 228 15% 14%;     /* Subtle hover */
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 228 12% 20%;     /* Visible borders */
+    --sidebar-ring: 199 100% 68%;
+    /* Sidebar text hierarchy — WCAG AA compliant */
+    --sidebar-fg: 0 0% 98%;                 /* Primary: active items (~15:1 on #0D1117) */
+    --sidebar-fg-muted: 220 10% 75%;        /* Secondary: inactive labels, icons (~7:1) */
+    --sidebar-fg-subtle: 220 8% 60%;        /* Tertiary: section headers, placeholders (~4.5:1) */
+    /* Charts — vibrant on dark */
+    --chart-1: 199 100% 68%;           /* Electric blue */
+    --chart-2: 152 80% 50%;            /* Bright green */
+    --chart-3: 38 100% 58%;            /* Bright amber */
+    --chart-4: 280 75% 65%;            /* Bright purple */
+    --chart-5: 0 85% 60%;              /* Bright red */
 
     /* Semantic status colors — dark mode */
     --status-success: 142 70% 45%;
@@ -121,6 +229,45 @@
     --glass-bg: 222 47% 11% / 0.6;
     --glass-border: 210 40% 98% / 0.1;
     --glass-shadow: 0 0% 0% / 0.3;
+
+    /* ========================================
+       DriveCommand Brand Tokens — Dark Mode
+       ======================================== */
+
+    /* Neutrals — inverted for dark mode */
+    --color-n-000: #1D1D1F;  /* Dark surface (was white) */
+    --color-n-050: #2C2C2E;  /* Elevated surface */
+    --color-n-100: #363638;  /* Card background */
+    --color-n-200: #48484A;  /* Borders */
+    --color-n-300: #6E6E73;  /* Disabled text */
+    --color-n-400: #86868B;  /* Tertiary text */
+    --color-n-500: #AEAEB2;  /* Secondary text */
+    --color-n-600: #D2D2D7;  /* Body text */
+    --color-n-700: #E8E8ED;  /* Primary text */
+    --color-n-800: #F5F5F7;  /* Headings */
+    --color-n-900: #FFFFFF;  /* High contrast text */
+
+    /* Brand Blue — adjusted for dark backgrounds */
+    --color-b-050: #001A3D;  /* Selected row bg (dark) */
+    --color-b-100: #002654;  /* Info bg (dark) */
+    --color-b-200: #003C82;  /* Illustrations (dark) */
+    --color-b-300: #0066CC;  /* Links (dark) */
+    --color-b-400: #2D8FE0;  /* Hover state */
+    --color-b-500: #5AC8FA;  /* Brand accent (dark) */
+    --color-b-600: #8FBEEA;  /* Bright accent */
+    --color-b-700: #C9E0F4;  /* Very bright */
+    --color-b-800: #E5F0FB;  /* Near white */
+
+    /* Semantic Colors — dark mode with better contrast */
+    --color-success: #34C759;  /* Brighter green for dark bg */
+    --color-warning: #FF9F0A;  /* Brighter amber for dark bg */
+    --color-critical: #FF453A; /* Brighter red for dark bg */
+    --color-info: #5AC8FA;     /* Brighter blue for dark bg */
+
+    /* Shadows — darker for dark mode */
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.2);
+    --shadow-2: 0 4px 8px -2px rgb(0 0 0 / 0.3);
+    --shadow-3: 0 12px 24px -6px rgb(0 0 0 / 0.4);
   }
 }
 
@@ -128,7 +275,10 @@
   * {
     @apply border-border;
   }
-  html {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -178,6 +328,14 @@
   }
   .animate-marquee {
     animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
