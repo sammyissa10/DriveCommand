@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
+import { getDisplayName } from "@/lib/auth/display-name";
 import { LogOut, ChevronsUpDown } from "lucide-react";
 
 function getInitials(firstName?: string, lastName?: string, email?: string): string {
@@ -50,9 +51,7 @@ export function UserMenu({ dropdownDirection = "down", compactOnMobile = false }
   }
 
   const initials = getInitials(user?.firstName, user?.lastName, user?.email);
-  const displayName = user?.firstName
-    ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
-    : user?.email ?? "User";
+  const displayName = getDisplayName(user);
 
   return (
     <div className="relative">
