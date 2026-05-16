@@ -11,6 +11,7 @@ import {
   loadDriverAssignmentUpdateSchema,
 } from '@drivecommand/validation';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
+import { waitUntil } from '@vercel/functions';
 
 const Decimal = Prisma.Decimal;
 
@@ -235,35 +236,38 @@ export async function createAssignment(
   });
 
   // Fire-and-forget — Phase 41 wire-up (quick-325)
-  void (async () => {
-    try {
-      const [load, driver] = await Promise.all([
-        prisma.load.findUnique({
-          where: { id: loadId },
-          select: { loadNumber: true, origin: true, destination: true },
-        }),
-        prisma.carrierDriver.findUnique({
-          where: { id: cd.id },
-          select: { firstName: true, lastName: true },
-        }),
-      ]);
-      if (!load || !driver) return;
-      dispatchNotification('load.assigned', {
-        tenantId,
-        payload: {
-          loadId,
-          loadNumber: load.loadNumber,
-          driverId: cd.id,
-          driverName: `${driver.firstName} ${driver.lastName}`,
-          originCity: load.origin,
-          destCity: load.destination,
-        },
-        relatedEntity: { type: 'Load', id: loadId },
-      }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err));
-    } catch (err) {
-      console.error('[notifications] createAssignment notif prep failed', err);
-    }
-  })();
+  // Wrapped in waitUntil so Vercel keeps the lambda alive past the action return (quick-336)
+  waitUntil(
+    (async () => {
+      try {
+        const [load, driver] = await Promise.all([
+          prisma.load.findUnique({
+            where: { id: loadId },
+            select: { loadNumber: true, origin: true, destination: true },
+          }),
+          prisma.carrierDriver.findUnique({
+            where: { id: cd.id },
+            select: { firstName: true, lastName: true },
+          }),
+        ]);
+        if (!load || !driver) return;
+        await dispatchNotification('load.assigned', {
+          tenantId,
+          payload: {
+            loadId,
+            loadNumber: load.loadNumber,
+            driverId: cd.id,
+            driverName: `${driver.firstName} ${driver.lastName}`,
+            originCity: load.origin,
+            destCity: load.destination,
+          },
+          relatedEntity: { type: 'Load', id: loadId },
+        }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err));
+      } catch (err) {
+        console.error('[notifications] createAssignment notif prep failed', err);
+      }
+    })(),
+  );
 
   revalidatePath(`/carrier/loads/${loadId}`);
   return { data: { id: created.id } };
