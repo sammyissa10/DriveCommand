@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick-336: wrapped all 9 Server Action dispatchNotification IIFEs with waitUntil from @vercel/functions; installs @vercel/functions^3.6.0; 3 waitUntil calls in loads.ts + 1 in load-driver-assignments.ts; tsc clean, build green, 19 notification tests pass
+Last activity: 2026-05-16 - Completed quick task 337: fix silent dispatch failure - move Prisma prefetch outside waitUntil wrap to avoid AsyncLocalStorage context loss in 3 dispatch sites (createAssignment, dispatchLoad, updateLoadStatus)
 Last session: 2026-05-15T18:32:18Z
 Stopped at: Completed quick-333: created server-extensions.ts (no 'use client', no StarterKit barrel), updated template-renderer.ts to import from it, added heading level=2 regression test. tsc clean, build green, all tests pass.
 
@@ -65319,6 +65319,7 @@ None blocking immediate progress.
 | 334 | add serverExternalPackages for Tiptap to next.config.ts — bypasses RSC bundler Client Reference promotion; server action returns 403 (not 500) confirming Tiptap loads clean in production | 2026-05-15 | 100d5cd | [334-add-serverexternalpackages-for-tiptap-to](./quick/334-add-serverexternalpackages-for-tiptap-to/) |
 | 335 | fix notification preview RSC failure — moved Tiptap rendering to browser at save time; server reads cachedHtml string; deleted server-extensions.ts; removed 16 serverExternalPackages entries; backfilled 36 template rows; preview now renders via client-side iframe srcDoc | 2026-05-15 | 58ff1a1 | [335-fix-notification-preview-rsc-failure-mov](./quick/335-fix-notification-preview-rsc-failure-mov/) |
 | 336 | fix silent notification dispatch failure — wrap all 9 Server Action dispatchNotification fire-and-forget IIFEs with waitUntil from @vercel/functions so lambdas survive past Server Action return; installs @vercel/functions^3.6.0; 3 waitUntil calls in loads.ts (8 sites) + 1 in load-driver-assignments.ts; tsc clean, build green, 19 notification tests pass | 2026-05-16 | f4a2265 | [336-wrap-all-server-action-dispatchnotificat](./quick/336-wrap-all-server-action-dispatchnotificat/) |
+| 337 | fix silent dispatch failure - move Prisma prefetch outside waitUntil wrap to avoid AsyncLocalStorage context loss in 3 dispatch sites (createAssignment, dispatchLoad, updateLoadStatus) | 2026-05-16 | 56918cb | [337-fix-silent-dispatch-failure-move-prisma-](./quick/337-fix-silent-dispatch-failure-move-prisma-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
