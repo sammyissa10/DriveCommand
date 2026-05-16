@@ -56737,6 +56737,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-327]: CREATE INDEX CONCURRENTLY replaced with CREATE INDEX — Prisma migrate deploy wraps SQL in transaction block; CONCURRENTLY requires autocommit mode
 - [Phase quick-328]: Scanner skips prisma.<model> pattern — DB-level FORCE RLS from quick-327 protects model calls; only / bypass RLS
 - [Phase quick-331]: Use @tiptap/html/server (explicit Node-runtime subpath) instead of bare @tiptap/html to avoid browser bundle loading server-side
+- [Phase quick-338]: Synchronous await is the only reliable pattern for dispatchNotification in Vercel Server Actions — waitUntil background pattern silently drops promises in Next.js 15 App Router runtime
 
 ### Pending Todos
 
