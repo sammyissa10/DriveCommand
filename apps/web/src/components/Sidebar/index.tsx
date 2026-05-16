@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserRole } from "@/lib/auth/roles"
-import { PermissionGuard } from "@/lib/auth/guards"
 import type { UserPermissions } from "@/lib/auth/permissions"
 import Link from "next/link"
 import { useSidebarState } from "./useSidebarState"
@@ -12,40 +11,39 @@ import { useMotionConfig, sidebarVariants } from "./motion"
 import { SidebarGroup } from "./SidebarGroup"
 import { SidebarFooter } from "./SidebarFooter"
 import { SidebarSearch } from "./SidebarSearch"
+import { SidebarSettingsNav } from "./SidebarSettingsNav"
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import type { NavGroup } from "./sidebar.config"
 import {
+  SIDEBAR_WIDTH_EXPANDED,
+  SIDEBAR_WIDTH_COLLAPSED,
+  PEEK_ENTER_DELAY,
+  PEEK_EXIT_DELAY,
+} from "./sidebar.config"
+import {
   LayoutDashboard,
   MapPin,
-  Shield,
   Truck,
-  Tag,
   Package,
-  FileSearch,
-  FileSpreadsheet,
-  Settings,
-  LifeBuoy,
-  CreditCard,
   Users2,
   FileText,
-  CalendarDays,
   Boxes,
-  BarChart3,
   MessageSquare,
+  TrendingUp,
+  UserCircle,
+  Route,
+  Building2,
   ListChecks,
-  HelpCircle,
-  Bell,
 } from "lucide-react"
 import { DispatchBadge } from "@/components/navigation/dispatch-badge"
 import { MessagesBadge } from "@/components/navigation/messages-badge"
-import { PendingPayBadge } from "@/components/navigation/pending-pay-badge"
-import { useEffect } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 
 interface AnimatedSidebarProps {
-  supportBadge?: React.ReactNode
+  /** @deprecated Support badge removed — footer now has Settings + Help */
 }
 
 /**
@@ -61,87 +59,224 @@ function managerHasPermission(
 }
 
 /**
- * AnimatedSidebar - Main sidebar component with Framer Motion spring animations
- * - Spring physics width animation (stiffness 400, damping 35)
- * - Staggered label fade+slide (~20ms per item)
- * - Flyout submenus when collapsed
- * - Footer with support card and toggle
- * - Search input (icon-only when collapsed)
- * - localStorage + cookie persistence
- * - Full keyboard navigation (arrows, Enter, Esc, Ctrl+B)
- * - prefers-reduced-motion respected
+ * AnimatedSidebar - Main sidebar component with fixed positioning
+ *
+ * CRITICAL DESIGN DECISIONS:
+ * - Sidebar is ALWAYS position: fixed (never scrolls with page)
+ * - Solid gradient surface (NO backdrop-filter, NO transparency)
+ * - Peek renders as SEPARATE overlay element (doesn't mutate collapsed rail)
+ * - Main content uses margin-left to offset for sidebar width
  */
-export function AnimatedSidebar({ supportBadge }: AnimatedSidebarProps) {
+export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
   const { isExpanded, toggle, setExpanded, isHydrated } = useSidebarState()
   const motionConfig = useMotionConfig()
 
+  // Hover-peek state (visual only, not persisted)
+  const [isPeeking, setIsPeeking] = useState(false)
+  const peekEnterTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const peekExitTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const sidebarRef = useRef<HTMLElement>(null)
+
+  // Detect touch device (hover-peek disabled)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+
+  // Detect reduced motion preference
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
   const userRole = user?.role as UserRole | undefined
   const isOwnerOrManager =
     userRole === UserRole.OWNER || userRole === UserRole.MANAGER
-  const isOwner = userRole === UserRole.OWNER
   const isManager = userRole === UserRole.MANAGER
   const perms = user?.permissions as UserPermissions | undefined
 
-  // For managers: check if they have ANY permission in a group (to show parent item)
-  const hasAnyFleetPerm =
-    !isManager ||
-    managerHasPermission(perms, "carrierDrivers") ||
-    managerHasPermission(perms, "carrierTrucks") ||
-    managerHasPermission(perms, "facilities")
+  // Check if we're on a settings page (drill-down nav pattern)
+  const isSettingsView = pathname.startsWith("/settings")
 
-  const hasAnyReportsPerm =
-    !isManager ||
-    managerHasPermission(perms, "revenueReport") ||
-    managerHasPermission(perms, "driverPayReport") ||
-    managerHasPermission(perms, "arAgingReport") ||
-    managerHasPermission(perms, "performanceReport")
+  // Note: hasAnyFleetPerm removed — Fleet items now in OPERATIONS section
 
-  // Keyboard navigation: Ctrl/Cmd+B to toggle sidebar
+  // Detect touch device and reduced motion on mount
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0)
+
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    setPrefersReducedMotion(motionQuery.matches)
+    const motionHandler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    motionQuery.addEventListener("change", motionHandler)
+    return () => motionQuery.removeEventListener("change", motionHandler)
+  }, [])
+
+  // Update CSS variable when sidebar state changes
+  useEffect(() => {
+    if (!isHydrated) return
+
+    const width = isExpanded ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED
+    document.documentElement.style.setProperty("--sidebar-width", `${width}px`)
+  }, [isExpanded, isHydrated])
+
+  // Keyboard navigation: Ctrl/Cmd+B or Cmd+\ to toggle sidebar, Esc to close peek
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "b" && (event.metaKey || event.ctrlKey)) {
+      // Cmd+B or Cmd+\ to toggle sidebar
+      const isToggleShortcut =
+        (event.key === "b" && (event.metaKey || event.ctrlKey)) ||
+        (event.key === "\\" && event.metaKey)
+      if (isToggleShortcut) {
         event.preventDefault()
         toggle()
+      }
+      // Esc closes peek immediately
+      if (event.key === "Escape" && isPeeking) {
+        setIsPeeking(false)
+        clearTimers()
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [toggle])
+  }, [toggle, isPeeking])
+
+  // Clear peek timers helper
+  const clearTimers = useCallback(() => {
+    if (peekEnterTimerRef.current) {
+      clearTimeout(peekEnterTimerRef.current)
+      peekEnterTimerRef.current = null
+    }
+    if (peekExitTimerRef.current) {
+      clearTimeout(peekExitTimerRef.current)
+      peekExitTimerRef.current = null
+    }
+  }, [])
+
+  // Hover-peek handlers for the COLLAPSED RAIL only
+  const handleRailMouseEnter = useCallback(() => {
+    if (isExpanded || isTouchDevice) return
+
+    // Clear any pending exit timer
+    if (peekExitTimerRef.current) {
+      clearTimeout(peekExitTimerRef.current)
+      peekExitTimerRef.current = null
+    }
+
+    // Start enter timer (or instant if reduced motion)
+    const delay = prefersReducedMotion ? 0 : PEEK_ENTER_DELAY
+    peekEnterTimerRef.current = setTimeout(() => {
+      setIsPeeking(true)
+    }, delay)
+  }, [isExpanded, isTouchDevice, prefersReducedMotion])
+
+  const handleRailMouseLeave = useCallback(() => {
+    if (isExpanded || isTouchDevice) return
+
+    // Clear any pending enter timer
+    if (peekEnterTimerRef.current) {
+      clearTimeout(peekEnterTimerRef.current)
+      peekEnterTimerRef.current = null
+    }
+
+    // Start exit timer (or instant if reduced motion)
+    const delay = prefersReducedMotion ? 0 : PEEK_EXIT_DELAY
+    peekExitTimerRef.current = setTimeout(() => {
+      setIsPeeking(false)
+    }, delay)
+  }, [isExpanded, isTouchDevice, prefersReducedMotion])
+
+  // Peek overlay mouse handlers (keep open while hovering overlay)
+  const handlePeekMouseEnter = useCallback(() => {
+    // Clear any pending exit timer when entering peek overlay
+    if (peekExitTimerRef.current) {
+      clearTimeout(peekExitTimerRef.current)
+      peekExitTimerRef.current = null
+    }
+  }, [])
+
+  const handlePeekMouseLeave = useCallback(() => {
+    if (isTouchDevice) return
+
+    // Start exit timer when leaving peek overlay
+    const delay = prefersReducedMotion ? 0 : PEEK_EXIT_DELAY
+    peekExitTimerRef.current = setTimeout(() => {
+      setIsPeeking(false)
+    }, delay)
+  }, [isTouchDevice, prefersReducedMotion])
+
+  // Focus handler for accessibility (triggers peek)
+  const handleFocus = useCallback(() => {
+    if (isExpanded || isTouchDevice) return
+    clearTimers()
+    setIsPeeking(true)
+  }, [isExpanded, isTouchDevice, clearTimers])
+
+  const handleBlur = useCallback((e: React.FocusEvent) => {
+    if (isExpanded || isTouchDevice) return
+    // Only close if focus is leaving the sidebar entirely
+    if (!sidebarRef.current?.contains(e.relatedTarget as Node)) {
+      const delay = prefersReducedMotion ? 0 : PEEK_EXIT_DELAY
+      peekExitTimerRef.current = setTimeout(() => {
+        setIsPeeking(false)
+      }, delay)
+    }
+  }, [isExpanded, isTouchDevice, prefersReducedMotion])
+
+  // Clean up timers on unmount
+  useEffect(() => {
+    return () => clearTimers()
+  }, [clearTimers])
 
   // Build navigation groups based on user role and permissions
   const navGroups: NavGroup[] = []
 
-  // Intelligence group - OWNER/MANAGER only, gated by liveMap permission
-  if (isOwnerOrManager && managerHasPermission(perms, "liveMap")) {
-    navGroups.push({
-      label: "Intelligence",
-      items: [
-        {
-          label: "Live Map",
-          href: "/live-map",
-          icon: MapPin,
-        },
-      ],
-    })
-  }
-
-  // Carrier Ops - OWNER/MANAGER only
+  // ============================================================================
+  // INTELLIGENCE — "What's happening right now?" (situational awareness)
+  // Max 3 items: Live Map, Dashboard, Financials
+  // ============================================================================
   if (isOwnerOrManager) {
-    const carrierOpsItems = []
+    const intelligenceItems = []
+
+    if (managerHasPermission(perms, "liveMap")) {
+      intelligenceItems.push({
+        label: "Live Map",
+        href: "/live-map",
+        icon: MapPin,
+      })
+    }
 
     if (managerHasPermission(perms, "carrierDashboard")) {
-      carrierOpsItems.push({
+      intelligenceItems.push({
         label: "Carrier Dashboard",
         href: "/carrier/dashboard",
         icon: LayoutDashboard,
       })
     }
 
+    // Financials — hub for revenue/performance visibility
+    if (managerHasPermission(perms, "revenueReport") || managerHasPermission(perms, "performanceReport")) {
+      intelligenceItems.push({
+        label: "Financials",
+        href: "/carrier/financials",
+        icon: TrendingUp,
+      })
+    }
+
+    if (intelligenceItems.length > 0) {
+      navGroups.push({
+        label: "Intelligence",
+        items: intelligenceItems,
+      })
+    }
+  }
+
+  // ============================================================================
+  // OPERATIONS — "The workflow — things that happen"
+  // Client → Contract → Route → Load → Dispatch (carrier workflow order)
+  // MAX 5 ITEMS — force discussion before adding more
+  // ============================================================================
+  if (isOwnerOrManager) {
+    const operationsItems = []
+
     if (managerHasPermission(perms, "clients")) {
-      carrierOpsItems.push({
+      operationsItems.push({
         label: "Clients",
         href: "/carrier/clients",
         icon: Users2,
@@ -149,23 +284,32 @@ export function AnimatedSidebar({ supportBadge }: AnimatedSidebarProps) {
     }
 
     if (managerHasPermission(perms, "contracts")) {
-      carrierOpsItems.push({
+      operationsItems.push({
         label: "Contracts",
         href: "/carrier/contracts",
         icon: FileText,
       })
     }
 
-    if (managerHasPermission(perms, "templates")) {
-      carrierOpsItems.push({
-        label: "Templates",
-        href: "/carrier/templates",
-        icon: CalendarDays,
+    // Routes — route blueprints for recurring trips (e.g., Wisconsin route, NW Indiana route)
+    // Renamed from "Templates" which was confusing (Rate Sheets are at /carrier/templates)
+    // Permission: currently ungated (TODO: add 'routes' permission key if needed)
+    operationsItems.push({
+      label: "Routes",
+      href: "/routes",
+      icon: Route,
+    })
+
+    if (managerHasPermission(perms, "carrierLoads")) {
+      operationsItems.push({
+        label: "Loads",
+        href: "/carrier/loads",
+        icon: Package,
       })
     }
 
     if (managerHasPermission(perms, "dispatches")) {
-      carrierOpsItems.push({
+      operationsItems.push({
         label: "Dispatches",
         href: "/carrier/dispatches",
         icon: Truck,
@@ -173,316 +317,229 @@ export function AnimatedSidebar({ supportBadge }: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "carrierLoads")) {
-      carrierOpsItems.push({
-        label: "Carrier Loads",
-        href: "/carrier/loads",
-        icon: Package,
+    if (operationsItems.length > 0) {
+      navGroups.push({
+        label: "Operations",
+        items: operationsItems,
       })
     }
+  }
+
+  // ============================================================================
+  // RESOURCES — "The things being managed"
+  // Drivers, Fleet, Facilities, Checklists
+  // MAX 5 ITEMS — force discussion before adding more
+  // ============================================================================
+  if (isOwnerOrManager) {
+    const resourcesItems = []
 
     if (managerHasPermission(perms, "carrierDrivers")) {
-      carrierOpsItems.push({
-        label: "Messages",
-        href: "/carrier/messages",
-        icon: MessageSquare,
-        badge: <MessagesBadge />,
+      resourcesItems.push({
+        label: "Drivers",
+        href: "/carrier/fleet/drivers",
+        icon: UserCircle,
       })
     }
 
-    // Fleet sub-group
-    if (hasAnyFleetPerm) {
-      const fleetChildren = []
-
-      if (managerHasPermission(perms, "carrierDrivers")) {
-        fleetChildren.push({
-          label: "Carrier Drivers",
-          href: "/carrier/fleet/drivers",
-          icon: Users2,
-        })
-      }
-
-      if (managerHasPermission(perms, "carrierTrucks")) {
-        fleetChildren.push({
-          label: "Carrier Trucks",
-          href: "/carrier/fleet/trucks",
-          icon: Truck,
-        })
-      }
-
-      if (managerHasPermission(perms, "facilities")) {
-        fleetChildren.push({
-          label: "Facilities",
-          href: "/carrier/facilities",
-          icon: MapPin,
-        })
-      }
-
-      carrierOpsItems.push({
+    if (managerHasPermission(perms, "carrierTrucks")) {
+      resourcesItems.push({
         label: "Fleet",
-        href: "/carrier/fleet",
+        href: "/carrier/fleet/trucks",
         icon: Boxes,
-        children: fleetChildren,
       })
     }
 
-    // Driver Pay sub-group - OWNER always; MANAGER with driverPayReport permission
-    if (isOwner || (isManager && managerHasPermission(perms, "driverPayReport"))) {
-      carrierOpsItems.push({
-        label: "Driver Pay",
-        href: "/carrier/driver-pay",
-        icon: CreditCard,
-        children: [
-          {
-            label: "Pending Pay",
-            href: "/carrier/driver-pay/pending",
-            icon: CreditCard,
-            badge: <PendingPayBadge />,
-          },
-          {
-            label: "Settlements",
-            href: "/carrier/driver-pay/settlements",
-            icon: CreditCard,
-          },
-          {
-            label: "Reports",
-            href: "/carrier/driver-pay/reports",
-            icon: BarChart3,
-          },
-        ],
+    // Facilities — operational memory of every facility (pickup, delivery, or stop)
+    // Carrier owners need to see who they've worked with, where, how often, and any operational notes
+    if (managerHasPermission(perms, "facilities")) {
+      resourcesItems.push({
+        label: "Facilities",
+        href: "/carrier/facilities",
+        icon: Building2,
       })
     }
 
-    // Reports sub-group
-    if (hasAnyReportsPerm) {
-      const reportsChildren = []
+    // Checklists — triage view of all checklists across the fleet
+    // Daily compliance (pre-trip, post-trip), vehicle compliance (maintenance), driver compliance (licenses)
+    // Permission: currently ungated (TODO: add 'checklists' permission key if needed)
+    resourcesItems.push({
+      label: "Checklists",
+      href: "/checklists",
+      icon: ListChecks,
+    })
 
-      if (managerHasPermission(perms, "revenueReport")) {
-        reportsChildren.push({
-          label: "Revenue",
-          href: "/carrier/reports/revenue",
-          icon: BarChart3,
-        })
-      }
-
-      if (managerHasPermission(perms, "arAgingReport")) {
-        reportsChildren.push({
-          label: "AR Aging",
-          href: "/carrier/reports/aging",
-          icon: BarChart3,
-        })
-      }
-
-      if (managerHasPermission(perms, "performanceReport")) {
-        reportsChildren.push({
-          label: "Performance",
-          href: "/carrier/reports/performance",
-          icon: BarChart3,
-        })
-      }
-
-      carrierOpsItems.push({
-        label: "Reports",
-        href: "/carrier/reports",
-        icon: BarChart3,
-        children: reportsChildren,
-      })
-    }
-
-    if (carrierOpsItems.length > 0) {
+    if (resourcesItems.length > 0) {
       navGroups.push({
-        label: "Carrier Ops",
-        items: carrierOpsItems,
+        label: "Resources",
+        items: resourcesItems,
       })
     }
   }
 
-  // Workflows - OWNER/MANAGER only
-  if (isOwnerOrManager) {
+  // ============================================================================
+  // MESSAGES — Standalone item (no section header, floats between RESOURCES and footer)
+  // Former COMMUNICATIONS section had only one item — section header removed per IA fix
+  // ============================================================================
+  if (isOwnerOrManager && managerHasPermission(perms, "carrierDrivers")) {
     navGroups.push({
-      label: "Workflows",
+      label: "", // Empty label = no section header, just a divider
       items: [
         {
-          label: "Checklists & Workflows",
-          href: "/checklists",
-          icon: ListChecks,
+          label: "Messages",
+          href: "/carrier/messages",
+          icon: MessageSquare,
+          badge: <MessagesBadge />,
         },
       ],
     })
   }
-
-  // Business - AI Documents gated by aiDocuments permission
-  if (isOwnerOrManager && managerHasPermission(perms, "aiDocuments")) {
-    navGroups.push({
-      label: "Business",
-      items: [
-        {
-          label: "AI Documents",
-          href: "/ai-documents",
-          icon: FileSearch,
-        },
-      ],
-    })
-  }
-
-  // Settings - OWNER and MANAGER
-  if (isOwnerOrManager) {
-    const settingsItems = []
-
-    // Team Permissions - OWNER only
-    if (isOwner) {
-      settingsItems.push({
-        label: "Team Permissions",
-        href: "/settings/team-permissions",
-        icon: Shield,
-      })
-    }
-
-    // Subscription - OWNER only
-    if (isOwner) {
-      settingsItems.push({
-        label: "Subscription",
-        href: "/subscription",
-        icon: CreditCard,
-      })
-    }
-
-    // Always accessible to OWNER/MANAGER
-    settingsItems.push({
-      label: "Notifications",
-      href: "/settings/notifications",
-      icon: Bell,
-    })
-
-    settingsItems.push({
-      label: "Expense Categories",
-      href: "/settings/expense-categories",
-      icon: Tag,
-    })
-
-    settingsItems.push({
-      label: "Expense Templates",
-      href: "/settings/expense-templates",
-      icon: FileSpreadsheet,
-    })
-
-    settingsItems.push({
-      label: "Integrations",
-      href: "/settings/integrations",
-      icon: Settings,
-    })
-
-    navGroups.push({
-      label: "Settings",
-      items: settingsItems,
-    })
-  }
-
-  // Account - OWNER/MANAGER
-  if (isOwnerOrManager) {
-    navGroups.push({
-      label: "Account",
-      items: [
-        {
-          label: "My Notifications",
-          href: "/settings/my-notifications",
-          icon: Bell,
-        },
-      ],
-    })
-  }
-
-  // Support - all roles
-  navGroups.push({
-    label: "Support",
-    items: [
-      {
-        label: "My Tickets",
-        href: "/support",
-        icon: LifeBuoy,
-        badge: isOwner ? supportBadge : undefined,
-      },
-      {
-        label: "Help Center",
-        href: "/help",
-        icon: HelpCircle,
-      },
-    ],
-  })
 
   // Don't render until hydrated to avoid SSR mismatch
   if (!isHydrated) {
     return (
       <aside
-        className="fixed left-0 top-0 z-40 h-screen border-r border-sidebar-border bg-sidebar hidden lg:block"
-        style={{ width: "256px" }}
+        className="h-screen sidebar-solid hidden lg:block fixed left-0 top-0 z-40"
+        style={{ width: `${SIDEBAR_WIDTH_EXPANDED}px` }}
       />
     )
   }
 
+  // Shared sidebar content renderer for MAIN navigation
+  const renderMainNavContent = (expanded: boolean, onNav?: () => void) => (
+    <>
+      {/* Header with logo */}
+      <div className="border-b border-[hsl(var(--sidebar-border-color))] px-2 py-3 shrink-0">
+        <Link
+          href="/carrier/dashboard"
+          className={cn(
+            "flex items-center rounded-lg px-2 py-3 hover:bg-[hsl(var(--sidebar-bg-hover))] transition-colors",
+            !expanded && "justify-center px-0"
+          )}
+          style={{ gap: expanded ? "10px" : "0" }}
+        >
+          {/* Icon stays constant 28px in both states — wordmark scales beside it */}
+          <AppLogo size={28} variant="light" />
+          <AnimatePresence mode="wait">
+            {expanded && (
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
+                className="flex items-center"
+              >
+                <DriveCommandWordmark size="md" className="text-[hsl(var(--sidebar-fg))]" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Link>
+      </div>
+
+      {/* Search */}
+      <div className="shrink-0">
+        <SidebarSearch
+          isExpanded={expanded}
+          onExpandClick={() => setExpanded(true)}
+        />
+      </div>
+
+      {/* Main navigation - scrollable area */}
+      <ScrollArea className="flex-1 px-2 sidebar-scroll">
+        {navGroups.map((group) => (
+          <SidebarGroup
+            key={group.label}
+            group={group}
+            isExpanded={expanded}
+            activePath={pathname}
+            onNavigate={() => {
+              // Close peek on navigation
+              if (isPeeking) setIsPeeking(false)
+              onNav?.()
+            }}
+          />
+        ))}
+      </ScrollArea>
+
+      {/* Footer - pinned to bottom (Settings, Help, Collapse toggle) */}
+      <div className="shrink-0">
+        <SidebarFooter
+          isExpanded={expanded}
+          actualSidebarExpanded={isExpanded}
+          onToggle={toggle}
+        />
+      </div>
+    </>
+  )
+
+  // Sidebar content renderer for SETTINGS navigation (drill-down view)
+  const renderSettingsNavContent = (expanded: boolean, onNav?: () => void) => (
+    <SidebarSettingsNav
+      isExpanded={expanded}
+      actualSidebarExpanded={isExpanded}
+      onToggle={toggle}
+      onNavigate={() => {
+        if (isPeeking) setIsPeeking(false)
+        onNav?.()
+      }}
+      prefersReducedMotion={prefersReducedMotion}
+    />
+  )
+
+  // Choose which content to render based on current view
+  const renderSidebarContent = (expanded: boolean, onNav?: () => void) =>
+    isSettingsView
+      ? renderSettingsNavContent(expanded, onNav)
+      : renderMainNavContent(expanded, onNav)
+
   return (
     <TooltipProvider delayDuration={0}>
+      {/*
+        MAIN SIDEBAR - Always fixed position, never scrolls with page
+        When expanded: full width (240px)
+        When collapsed: rail width (56px)
+      */}
       <motion.aside
+        ref={sidebarRef}
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen border-r border-sidebar-border bg-sidebar hidden lg:flex flex-col"
+          "fixed left-0 top-0 h-screen sidebar-solid hidden lg:flex flex-col z-40"
         )}
         variants={sidebarVariants}
         animate={isExpanded ? "expanded" : "collapsed"}
         transition={motionConfig}
         data-state={isExpanded ? "expanded" : "collapsed"}
+        onMouseEnter={!isExpanded ? handleRailMouseEnter : undefined}
+        onMouseLeave={!isExpanded ? handleRailMouseLeave : undefined}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       >
-        {/* Header with logo */}
-        <div className="border-b border-sidebar-border px-2 py-3">
-          <Link
-            href="/carrier/dashboard"
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-sidebar-accent transition-colors",
-              !isExpanded && "justify-center px-0"
-            )}
-          >
-            <AppLogo size={32} variant="light" />
-            <AnimatePresence mode="wait">
-              {isExpanded && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
-                  transition={{ duration: 0.15 }}
-                  className="flex items-center"
-                >
-                  <DriveCommandWordmark size="sm" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Link>
-        </div>
-
-        {/* Search */}
-        <SidebarSearch
-          isExpanded={isExpanded}
-          onExpandClick={() => setExpanded(true)}
-        />
-
-        {/* Main navigation */}
-        <ScrollArea className="flex-1 px-2">
-          {navGroups.map((group) => (
-            <SidebarGroup
-              key={group.label}
-              group={group}
-              isExpanded={isExpanded}
-              activePath={pathname}
-              onNavigate={() => {}}
-            />
-          ))}
-        </ScrollArea>
-
-        {/* Footer */}
-        <SidebarFooter
-          isExpanded={isExpanded}
-          onToggle={toggle}
-          supportBadge={supportBadge}
-        />
+        {renderSidebarContent(isExpanded)}
       </motion.aside>
+
+      {/*
+        PEEK OVERLAY - Separate element that appears ON TOP of everything
+        Only renders when collapsed AND peeking
+        Does NOT affect the main sidebar or main content positioning
+      */}
+      <AnimatePresence>
+        {!isExpanded && isPeeking && (
+          <motion.div
+            className="fixed left-0 top-0 h-screen sidebar-peek-overlay hidden lg:flex flex-col z-50"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.2,
+              ease: [0.32, 0.72, 0, 1],
+            }}
+            style={{ width: SIDEBAR_WIDTH_EXPANDED }}
+            onMouseEnter={handlePeekMouseEnter}
+            onMouseLeave={handlePeekMouseLeave}
+            data-peek="true"
+          >
+            {renderSidebarContent(true, () => setIsPeeking(false))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </TooltipProvider>
   )
 }
