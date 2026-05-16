@@ -45,19 +45,24 @@
     --ring: 210 100% 40%;              /* b-500 #0066CC — focus rings */
 
     --radius: 0.625rem;
-    /* Sidebar — Premium dark navy */
-    --sidebar-background: 228 40% 8%;  /* Deep navy — matches logo navy */
-    --sidebar-foreground: 0 0% 95%;    /* Bright text */
-    --sidebar-primary: 210 100% 50%;   /* Vibrant brand blue */
+    /* Sidebar — Premium dark navy (sidebar is ALWAYS dark regardless of theme) */
+    --sidebar-background: 228 40% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 210 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 228 30% 15%;     /* Elevated hover */
+    --sidebar-accent: 228 30% 15%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 228 25% 18%;     /* Subtle borders */
-    --sidebar-ring: 210 100% 50%;      /* Vibrant focus ring */
-    /* Sidebar text hierarchy — WCAG AA compliant */
-    --sidebar-fg: 240 10% 12%;              /* Primary: active items, important labels (~7:1) */
-    --sidebar-fg-muted: 240 8% 35%;         /* Secondary: inactive nav labels, icons (~5:1) */
-    --sidebar-fg-subtle: 240 6% 45%;        /* Tertiary: section headers, placeholders (~4.5:1) */
+    --sidebar-border: 228 25% 18%;
+    --sidebar-ring: 210 100% 50%;
+
+    /* Sidebar text hierarchy — WCAG AA compliant (sidebar is always dark) */
+    --sidebar-fg: 0 0% 98%;                   /* Primary: active items, wordmark (~15:1) */
+    --sidebar-fg-muted: 220 12% 82%;          /* Secondary: inactive nav labels, icons (~9:1) */
+    --sidebar-fg-subtle: 220 10% 65%;         /* Tertiary: section headers (~5.5:1) */
+
+    /* Sidebar active state — elevated pill background */
+    --sidebar-bg-active: 228 25% 14%;         /* Visible tint, ~8-10% lighter than sidebar-bg */
+    --sidebar-bg-hover: 228 20% 11%;          /* Subtle hover, ~50% of active intensity */
     /* Charts — vibrant palette */
     --chart-1: 210 100% 50%;           /* Brand blue */
     --chart-2: 152 76% 42%;            /* Success green */
@@ -189,18 +194,23 @@
     /* Focus ring — electric blue */
     --ring: 199 100% 68%;
     /* Sidebar — Deeper dark mode */
-    --sidebar-background: 228 20% 6%;  /* Deepest dark */
+    --sidebar-background: 228 20% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 199 100% 68%;   /* Electric blue */
+    --sidebar-primary: 199 100% 68%;
     --sidebar-primary-foreground: 228 15% 10%;
-    --sidebar-accent: 228 15% 14%;     /* Subtle hover */
+    --sidebar-accent: 228 15% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 228 12% 20%;     /* Visible borders */
+    --sidebar-border: 228 12% 20%;
     --sidebar-ring: 199 100% 68%;
+
     /* Sidebar text hierarchy — WCAG AA compliant */
-    --sidebar-fg: 0 0% 98%;                 /* Primary: active items (~15:1 on #0D1117) */
-    --sidebar-fg-muted: 220 10% 75%;        /* Secondary: inactive labels, icons (~7:1) */
-    --sidebar-fg-subtle: 220 8% 60%;        /* Tertiary: section headers, placeholders (~4.5:1) */
+    --sidebar-fg: 0 0% 98%;                   /* Primary: active items (~15:1 on #0D1117) */
+    --sidebar-fg-muted: 220 12% 82%;          /* Secondary: inactive labels, icons (~9:1) */
+    --sidebar-fg-subtle: 220 10% 65%;         /* Tertiary: section headers (~5.5:1) */
+
+    /* Sidebar active state — elevated pill background */
+    --sidebar-bg-active: 228 20% 14%;         /* Clear elevation, deliberate pill */
+    --sidebar-bg-hover: 228 15% 10%;          /* Subtle hover, less intense than active */
     /* Charts — vibrant on dark */
     --chart-1: 199 100% 68%;           /* Electric blue */
     --chart-2: 152 80% 50%;            /* Bright green */
