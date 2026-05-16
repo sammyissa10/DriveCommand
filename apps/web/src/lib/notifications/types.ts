@@ -57,7 +57,7 @@ export type NotificationPayload = {
   'user.role_changed': { userId: string; firstName: string; oldRole: string; newRole: string };
 
   'load.created': { loadId: string; loadNumber: string; originCity: string; destCity: string };
-  'load.assigned': { loadId: string; loadNumber: string; driverId: string; driverName: string; originCity: string; destCity: string };
+  'load.assigned': { loadId: string; loadNumber: string; driverId: string; driverEmail: string; driverName: string; originCity: string; destCity: string };
   'load.dispatched': { loadId: string; loadNumber: string; driverName: string };
   'load.picked_up': { loadId: string; loadNumber: string; driverName: string; pickupTime: string };
   'load.in_transit': { loadId: string; loadNumber: string; driverName: string };
