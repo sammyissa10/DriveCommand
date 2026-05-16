@@ -4,7 +4,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: '1mb',
     },
   },
   async headers() {
