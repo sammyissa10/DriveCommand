@@ -330,11 +330,21 @@ model DriverInvitation {
   email                 String
   firstName             String
   lastName              String
-  licenseNumber         String?
-  middleName            String?
-  fullName              String?
-  dateOfBirth           DateTime?        @db.Date
-  phoneNumber           String?
+  licenseNumber              String?
+  licenseNumberCiphertext    Bytes?
+  licenseNumberIv            Bytes?
+  licenseNumberTag           Bytes?
+  licenseNumberKeyId         String?
+  licenseNumberLast4         String?      @db.VarChar(8)
+  middleName                 String?
+  fullName                   String?
+  dateOfBirth                DateTime?    @db.Date
+  dateOfBirthCiphertext      Bytes?
+  dateOfBirthIv              Bytes?
+  dateOfBirthTag             Bytes?
+  dateOfBirthKeyId           String?
+  dateOfBirthLast4           String?      @db.VarChar(8)
+  phoneNumber                String?
   address               String?
   licenseExpirationDate DateTime?        @db.Date
   role                  UserRole         @default(DRIVER)
