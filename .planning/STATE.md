@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 348: Hardened document upload/download for restricted PII docs (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD, VOIDED_CHECK, W9, W4, I9) — restricted S3 prefix, 15-min download URLs, RBAC guard with audit_log trail, DocumentType enum extended, Document.isRestricted column, confirm dialog in driver UI
-Last session: 2026-05-16T14:10:00Z
-Stopped at: Completed quick-348: restricted document upload/download hardening — 2 migrations applied, restricted.ts storage helpers, requireRestrictedDocumentAccess RBAC guard, audit-log.ts extended with DOWNLOAD_DOCUMENT_DENIED, API routes wired, driver UI updated, Vitest security suite (557 lines). tsc clean.
+Last activity: 2026-05-16 - Completed quick task 349: Input and upload abuse hardening (Section 4A) — 6 new security utilities, quarantine upload pipeline, SSRF-safe fetch, extended rate limiters, 43-test Vitest suite, hourly cleanup cron, 403-to-404 tenant mismatch fix, bodySizeLimit 10mb to 1mb
+Last session: 2026-05-16T19:53:00Z
+Stopped at: Completed quick-349: Section 4A hardening — sanitize/errors/logger/request-limits/safe-fetch/security rate-limit utilities created; validate.ts extended with validateImageDimensions/validatePdfPageCount/validateNoMacroFormats/validateNoSvgHtml; upload routes wired to quarantine-then-promote; cleanup-quarantine cron + vercel.json; 43 Vitest tests pass; tsc + build clean.
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -56740,6 +56740,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-338]: Synchronous await is the only reliable pattern for dispatchNotification in Vercel Server Actions — waitUntil background pattern silently drops promises in Next.js 15 App Router runtime
 - [Phase quick-345]: CarrierLoad tenant FK is orgId not tenantId — all profitability queries use orgId in where
 - [Phase quick-345]: CSV export for large datasets uses pageSize:100_000 for now; Phase 11 should add cursor-based streaming
+- [Phase quick-349]: Quarantine prefix uses _quarantine/ within tenant namespace (not separate bucket) — avoids CORS/copy complexity
+- [Phase quick-349]: bodySizeLimit reduced from 10mb to 1mb globally; upload routes explicitly use 100mb via withRequestLimits
 
 ### Pending Todos
 
