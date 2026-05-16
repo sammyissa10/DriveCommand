@@ -36,7 +36,7 @@ export function SidebarGroup({
             transition={{ duration: 0.15 }}
             className="mb-2 px-2"
           >
-            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(var(--sidebar-fg-subtle))]">
               {group.label}
             </h3>
           </motion.div>
@@ -65,9 +65,9 @@ export function SidebarGroup({
             // Expanded with children: render parent item + inline submenu
             return (
               <div key={item.href} className="space-y-1">
-                <div className="flex items-center gap-3 p-2 rounded-lg text-sidebar-foreground">
+                <div className="flex items-center gap-3 p-2 rounded-lg">
                   <item.icon
-                    className="shrink-0"
+                    className="shrink-0 text-[hsl(var(--sidebar-fg-muted))]"
                     size={16}
                     strokeWidth={1.75}
                     aria-hidden="true"
@@ -76,7 +76,7 @@ export function SidebarGroup({
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.02, duration: 0.15 }}
-                    className="text-[13px] font-normal"
+                    className="text-[13px] font-normal text-[hsl(var(--sidebar-fg-muted))]"
                   >
                     {item.label}
                   </motion.span>

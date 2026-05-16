@@ -44,7 +44,7 @@ export function SidebarSearch({
               aria-label="Expand to search"
             >
               <Search
-                className="shrink-0"
+                className="shrink-0 text-[hsl(var(--sidebar-fg-muted))]"
                 size={16}
                 strokeWidth={1.75}
                 aria-hidden="true"
@@ -70,7 +70,7 @@ export function SidebarSearch({
       >
         <div className="relative">
           <Search
-            className="absolute left-2 top-1/2 -translate-y-1/2 shrink-0 text-sidebar-foreground/60"
+            className="absolute left-2 top-1/2 -translate-y-1/2 shrink-0 text-[hsl(var(--sidebar-fg-muted))]"
             size={16}
             strokeWidth={1.75}
             aria-hidden="true"
@@ -80,7 +80,7 @@ export function SidebarSearch({
             placeholder="Search..."
             className={cn(
               "pl-8 h-9 text-[13px] bg-sidebar-accent/50 border-sidebar-border",
-              "focus-visible:ring-sidebar-ring placeholder:text-sidebar-foreground/40"
+              "focus-visible:ring-sidebar-ring placeholder:text-[hsl(var(--sidebar-fg-subtle))]"
             )}
             style={{
               borderRadius: `${ITEM_BORDER_RADIUS}px`,

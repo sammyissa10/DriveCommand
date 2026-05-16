@@ -42,7 +42,7 @@ export function SidebarItem({
       href={item.href}
       onClick={onNavigate}
       className={cn(
-        "flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
+        "group flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
         "hover:bg-sidebar-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1",
         isActive && "bg-sidebar-accent",
         !isExpanded && "justify-center"
@@ -52,7 +52,12 @@ export function SidebarItem({
       }}
     >
       <Icon
-        className="shrink-0"
+        className={cn(
+          "shrink-0 transition-colors duration-150",
+          isActive
+            ? "text-[hsl(var(--sidebar-fg))]"
+            : "text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))]"
+        )}
         size={16}
         strokeWidth={1.75}
         aria-hidden="true"
@@ -68,8 +73,10 @@ export function SidebarItem({
             duration: 0.15,
           }}
           className={cn(
-            "text-[13px] truncate",
-            isActive ? "font-medium" : "font-normal"
+            "text-[13px] truncate transition-colors duration-150",
+            isActive
+              ? "font-medium text-[hsl(var(--sidebar-fg))]"
+              : "font-normal text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))]"
           )}
         >
           {item.label}

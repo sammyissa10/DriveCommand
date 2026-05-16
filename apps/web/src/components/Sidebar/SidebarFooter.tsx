@@ -34,7 +34,7 @@ export function SidebarFooter({
     <Link
       href="/support"
       className={cn(
-        "flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
+        "group flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
         "hover:bg-sidebar-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1",
         !isExpanded && "justify-center"
       )}
@@ -43,7 +43,7 @@ export function SidebarFooter({
       }}
     >
       <LifeBuoy
-        className="shrink-0"
+        className="shrink-0 text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))] transition-colors duration-150"
         size={16}
         strokeWidth={1.75}
         aria-hidden="true"
@@ -55,7 +55,7 @@ export function SidebarFooter({
           animate="visible"
           exit="hidden"
           transition={{ duration: 0.15 }}
-          className="text-[13px] font-normal"
+          className="text-[13px] font-normal text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))] transition-colors duration-150"
         >
           Support
         </motion.span>
@@ -93,7 +93,7 @@ export function SidebarFooter({
       <button
         onClick={onToggle}
         className={cn(
-          "flex items-center gap-3 p-2 rounded-lg transition-colors duration-150 w-full",
+          "group flex items-center gap-3 p-2 rounded-lg transition-colors duration-150 w-full",
           "hover:bg-sidebar-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1",
           !isExpanded && "justify-center"
         )}
@@ -104,14 +104,14 @@ export function SidebarFooter({
       >
         {isExpanded ? (
           <ChevronLeft
-            className="shrink-0"
+            className="shrink-0 text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))] transition-colors duration-150"
             size={16}
             strokeWidth={1.75}
             aria-hidden="true"
           />
         ) : (
           <ChevronRight
-            className="shrink-0"
+            className="shrink-0 text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))] transition-colors duration-150"
             size={16}
             strokeWidth={1.75}
             aria-hidden="true"
@@ -125,7 +125,7 @@ export function SidebarFooter({
               animate="visible"
               exit="hidden"
               transition={{ duration: 0.15 }}
-              className="text-[13px] font-normal"
+              className="text-[13px] font-normal text-[hsl(var(--sidebar-fg-muted))] group-hover:text-[hsl(var(--sidebar-fg))] transition-colors duration-150"
             >
               Collapse
             </motion.span>

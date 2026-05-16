@@ -451,7 +451,7 @@ export function AnimatedSidebar({ supportBadge }: AnimatedSidebarProps) {
                   className="grid text-left text-sm leading-tight"
                 >
                   <DriveCommandWordmark size="sm" />
-                  <span className="truncate text-xs text-sidebar-foreground/60">
+                  <span className="truncate text-xs text-[hsl(var(--sidebar-fg-subtle))]">
                     Fleet Management
                   </span>
                 </motion.div>

@@ -49,7 +49,7 @@ export function SidebarFlyout({
       }}
     >
       <Icon
-        className="shrink-0"
+        className="shrink-0 text-[hsl(var(--sidebar-fg-muted))]"
         size={16}
         strokeWidth={1.75}
         aria-hidden="true"
@@ -101,7 +101,7 @@ export function SidebarFlyout({
           }}
         >
           <div className="space-y-1">
-            <div className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+            <div className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[hsl(var(--sidebar-fg-subtle))]">
               {item.label}
             </div>
             {item.children?.map((child) => (
@@ -114,7 +114,7 @@ export function SidebarFlyout({
                 }}
                 className={cn(
                   "flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
-                  "hover:bg-sidebar-accent/80 text-[13px] font-normal"
+                  "hover:bg-sidebar-accent/80 text-[13px] font-normal text-[hsl(var(--sidebar-fg-muted))]"
                 )}
                 style={{
                   borderRadius: `${ITEM_BORDER_RADIUS}px`,
