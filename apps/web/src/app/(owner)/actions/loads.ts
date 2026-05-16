@@ -18,7 +18,6 @@ import {
 } from '@/lib/route-stops/sync-route-stops';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
-import { waitUntil } from '@vercel/functions';
 
 const Decimal = Prisma.Decimal;
 
@@ -217,20 +216,19 @@ export async function createLoad(prevState: ActionState | null, formData: FormDa
     return { error: msg || 'Failed to create load. Please try again.' };
   }
 
-  // Fire-and-forget — never block redirect (Phase 41 wire-up, quick-325)
-  // Wrapped in waitUntil so Vercel keeps the lambda alive past the redirect (quick-336)
-  waitUntil(
-    dispatchNotification('load.created', {
-      tenantId: createdTenantId!,
-      payload: {
-        loadId: createdId!,
-        loadNumber: createdLoadNumber!,
-        originCity: createdOrigin!,
-        destCity: createdDestination!,
-      },
-      relatedEntity: { type: 'Load', id: createdId! },
-    }).catch((err) => console.error('[notifications] load.created dispatch failed', err)),
-  );
+  // Synchronous await — quick-336 + quick-337 background dispatch both failed in production
+  // (zero NotificationSendLog rows). Await before revalidatePath/redirect so the lambda doesn't
+  // exit before delivery completes (quick-338). Adds ~1-2s but guarantees the notification fires.
+  await dispatchNotification('load.created', {
+    tenantId: createdTenantId!,
+    payload: {
+      loadId: createdId!,
+      loadNumber: createdLoadNumber!,
+      originCity: createdOrigin!,
+      destCity: createdDestination!,
+    },
+    relatedEntity: { type: 'Load', id: createdId! },
+  }).catch((err) => console.error('[notifications] load.created dispatch failed', err));
 
   revalidatePath('/loads');
   redirect(`/loads/${createdId!}`);
@@ -434,8 +432,7 @@ export async function dispatchLoad(id: string, prevState: ActionState | null, fo
     const tId = await requireTenantId();
     sendNotificationAndLogInteraction(prisma, tId, id, 'DISPATCHED');
 
-    // Prefetch BEFORE waitUntil while request scope is still alive.
-    // This avoids AsyncLocalStorage context loss inside the background promise (quick-337).
+    // Prefetch load/driver data needed for notification payload.
     const [dispatchDriver] = await Promise.all([
       prisma.user.findUnique({
         where: { id: result.data.driverId },
@@ -451,36 +448,33 @@ export async function dispatchLoad(id: string, prevState: ActionState | null, fo
         ? `${dispatchDriver.firstName} ${dispatchDriver.lastName}`
         : 'Driver';
 
-      // Fire-and-forget INTERNAL notifications (Phase 41 wire-up, quick-325). Independent of the
-      // customer.* trigger fired by sendNotificationAndLogInteraction above.
-      // Wrapped in waitUntil so Vercel keeps the lambda alive past the redirect (quick-336).
-      // ONLY dispatchNotification runs inside waitUntil — all request-scoped reads done above (quick-337).
-      waitUntil(
-        Promise.all([
-          dispatchNotification('load.assigned', {
-            tenantId: tId,
-            payload: {
-              loadId: id,
-              loadNumber: load.loadNumber,
-              driverId: result.data.driverId,
-              driverName,
-              originCity: load.origin,
-              destCity: load.destination,
-            },
-            relatedEntity: { type: 'Load', id },
-          }).catch((err) => console.error('[notifications] load.assigned dispatch failed', err)),
+      // Synchronous await — quick-336 + quick-337 background dispatch both failed in production
+      // (zero NotificationSendLog rows). Await before return so the lambda doesn't exit before
+      // delivery (quick-338). Promise.all runs both dispatches in parallel; ~1-2s total.
+      await Promise.all([
+        dispatchNotification('load.assigned', {
+          tenantId: tId,
+          payload: {
+            loadId: id,
+            loadNumber: load.loadNumber,
+            driverId: result.data.driverId,
+            driverName,
+            originCity: load.origin,
+            destCity: load.destination,
+          },
+          relatedEntity: { type: 'Load', id },
+        }).catch((err) => console.error('[notifications] load.assigned dispatch failed', err)),
 
-          dispatchNotification('load.dispatched', {
-            tenantId: tId,
-            payload: {
-              loadId: id,
-              loadNumber: load.loadNumber,
-              driverName,
-            },
-            relatedEntity: { type: 'Load', id },
-          }).catch((err) => console.error('[notifications] load.dispatched dispatch failed', err)),
-        ]),
-      );
+        dispatchNotification('load.dispatched', {
+          tenantId: tId,
+          payload: {
+            loadId: id,
+            loadNumber: load.loadNumber,
+            driverName,
+          },
+          relatedEntity: { type: 'Load', id },
+        }).catch((err) => console.error('[notifications] load.dispatched dispatch failed', err)),
+      ]);
     }
 
     // Push notification to assigned driver — best-effort
@@ -621,8 +615,7 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       sendNotificationAndLogInteraction(prisma, tenantId, id, newStatus);
     }
 
-    // Prefetch BEFORE waitUntil while request scope is still alive.
-    // This avoids AsyncLocalStorage context loss inside the background promise (quick-337).
+    // Prefetch load/driver data needed for notification payload.
     const [loadDetail, invoiceDetail] = await Promise.all([
       prisma.load.findUnique({
         where: { id },
@@ -654,10 +647,9 @@ export async function updateLoadStatus(id: string, newStatus: string) {
         timeStyle: 'short',
       });
 
-      // Fire-and-forget INTERNAL notifications (Phase 41 wire-up, quick-325). Distinct from the
-      // customer.* trigger fired above — both can fire for the same status change.
-      // Wrapped in waitUntil so Vercel keeps the lambda alive past the action return (quick-336).
-      // ONLY dispatchNotification runs inside waitUntil — all request-scoped reads done above (quick-337).
+      // Synchronous await — quick-336 + quick-337 background dispatch both failed in production
+      // (zero NotificationSendLog rows). Await before return so the lambda doesn't exit before
+      // delivery (quick-338). notifPromise is the resolved status-switch promise built below.
       const notifPromise = (() => {
         switch (newStatus) {
           case 'PICKED_UP':
@@ -718,7 +710,7 @@ export async function updateLoadStatus(id: string, newStatus: string) {
         }
       })();
 
-      waitUntil(notifPromise);
+      await notifPromise;
     }
 
     // Update CRM customer performance stats when a load is invoiced

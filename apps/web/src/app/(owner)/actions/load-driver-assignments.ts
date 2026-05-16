@@ -11,7 +11,6 @@ import {
   loadDriverAssignmentUpdateSchema,
 } from '@drivecommand/validation';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
-import { waitUntil } from '@vercel/functions';
 
 const Decimal = Prisma.Decimal;
 
@@ -235,8 +234,7 @@ export async function createAssignment(
     },
   });
 
-  // Prefetch BEFORE waitUntil while request scope is still alive.
-  // This avoids AsyncLocalStorage context loss inside the background promise (quick-337).
+  // Prefetch load/driver data needed for notification payload.
   const [load, driver] = await Promise.all([
     prisma.load.findUnique({
       where: { id: loadId },
@@ -252,22 +250,22 @@ export async function createAssignment(
   });
 
   if (load && driver) {
-    // Wrapped in waitUntil so Vercel keeps the lambda alive past the action return (quick-336).
-    // ONLY dispatchNotification runs inside waitUntil — all request-scoped reads done above (quick-337).
-    waitUntil(
-      dispatchNotification('load.assigned', {
-        tenantId,
-        payload: {
-          loadId,
-          loadNumber: load.loadNumber,
-          driverId: cd.id,
-          driverName: `${driver.firstName} ${driver.lastName}`,
-          originCity: load.origin,
-          destCity: load.destination,
-        },
-        relatedEntity: { type: 'Load', id: loadId },
-      }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err)),
-    );
+    // Synchronous await — quick-336 (waitUntil wrap) and quick-337 (prefetch outside waitUntil) both
+    // failed in production with zero NotificationSendLog rows. The Vercel + Next.js Server Action
+    // runtime silently drops background promises here. Accept the ~1-2s extra latency for guaranteed
+    // delivery (quick-338).
+    await dispatchNotification('load.assigned', {
+      tenantId,
+      payload: {
+        loadId,
+        loadNumber: load.loadNumber,
+        driverId: cd.id,
+        driverName: `${driver.firstName} ${driver.lastName}`,
+        originCity: load.origin,
+        destCity: load.destination,
+      },
+      relatedEntity: { type: 'Load', id: loadId },
+    }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err));
   }
 
   revalidatePath(`/carrier/loads/${loadId}`);
