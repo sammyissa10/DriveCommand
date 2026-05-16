@@ -1,0 +1,131 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import * as Popover from "@radix-ui/react-popover"
+import { FLYOUT_BORDER_RADIUS, ITEM_BORDER_RADIUS } from "./sidebar.config"
+import type { NavItem } from "./sidebar.config"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+
+interface SidebarFlyoutProps {
+  item: NavItem
+  isActive: boolean
+  index: number
+  onNavigate: () => void
+}
+
+/**
+ * SidebarFlyout - Radix Popover flyout for collapsed submenu hover
+ * - Trigger: parent item icon (hover trigger)
+ * - Content: positioned right with 8px offset
+ * - Border radius: 12px
+ * - Shadow: multi-layer soft shadow
+ * - Arrow keys navigate within flyout
+ * - Close on click or Escape
+ */
+export function SidebarFlyout({
+  item,
+  isActive,
+  index,
+  onNavigate,
+}: SidebarFlyoutProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const Icon = item.icon
+
+  const trigger = (
+    <div
+      className={cn(
+        "flex items-center justify-center p-2 rounded-lg transition-colors duration-150",
+        "hover:bg-sidebar-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1",
+        isActive && "bg-sidebar-accent"
+      )}
+      style={{
+        borderRadius: `${ITEM_BORDER_RADIUS}px`,
+      }}
+    >
+      <Icon
+        className="shrink-0"
+        size={16}
+        strokeWidth={1.75}
+        aria-hidden="true"
+      />
+    </div>
+  )
+
+  return (
+    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Popover.Trigger asChild>
+            <button
+              className="w-full"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}
+              onFocus={() => setIsOpen(true)}
+              onBlur={() => setIsOpen(false)}
+            >
+              {trigger}
+            </button>
+          </Popover.Trigger>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>
+          {item.label}
+        </TooltipContent>
+      </Tooltip>
+
+      <Popover.Portal>
+        <Popover.Content
+          side="right"
+          sideOffset={8}
+          align="start"
+          className={cn(
+            "z-50 min-w-[200px] bg-popover text-popover-foreground p-2",
+            "shadow-[0_1px_2px_rgba(0,0,0,0.04),_0_8px_24px_rgba(0,0,0,0.08)]",
+            "border border-border/50",
+            "animate-in fade-in-0 zoom-in-95 slide-in-from-left-2"
+          )}
+          style={{
+            borderRadius: `${FLYOUT_BORDER_RADIUS}px`,
+          }}
+          onMouseEnter={() => setIsOpen(true)}
+          onMouseLeave={() => setIsOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setIsOpen(false)
+            }
+          }}
+        >
+          <div className="space-y-1">
+            <div className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+              {item.label}
+            </div>
+            {item.children?.map((child) => (
+              <Link
+                key={child.href}
+                href={child.href}
+                onClick={() => {
+                  setIsOpen(false)
+                  onNavigate()
+                }}
+                className={cn(
+                  "flex items-center gap-3 p-2 rounded-lg transition-colors duration-150",
+                  "hover:bg-sidebar-accent/80 text-[13px] font-normal"
+                )}
+                style={{
+                  borderRadius: `${ITEM_BORDER_RADIUS}px`,
+                }}
+              >
+                {child.label}
+              </Link>
+            ))}
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  )
+}
