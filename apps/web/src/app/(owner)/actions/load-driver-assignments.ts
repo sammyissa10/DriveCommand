@@ -235,39 +235,40 @@ export async function createAssignment(
     },
   });
 
-  // Fire-and-forget — Phase 41 wire-up (quick-325)
-  // Wrapped in waitUntil so Vercel keeps the lambda alive past the action return (quick-336)
-  waitUntil(
-    (async () => {
-      try {
-        const [load, driver] = await Promise.all([
-          prisma.load.findUnique({
-            where: { id: loadId },
-            select: { loadNumber: true, origin: true, destination: true },
-          }),
-          prisma.carrierDriver.findUnique({
-            where: { id: cd.id },
-            select: { firstName: true, lastName: true },
-          }),
-        ]);
-        if (!load || !driver) return;
-        await dispatchNotification('load.assigned', {
-          tenantId,
-          payload: {
-            loadId,
-            loadNumber: load.loadNumber,
-            driverId: cd.id,
-            driverName: `${driver.firstName} ${driver.lastName}`,
-            originCity: load.origin,
-            destCity: load.destination,
-          },
-          relatedEntity: { type: 'Load', id: loadId },
-        }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err));
-      } catch (err) {
-        console.error('[notifications] createAssignment notif prep failed', err);
-      }
-    })(),
-  );
+  // Prefetch BEFORE waitUntil while request scope is still alive.
+  // This avoids AsyncLocalStorage context loss inside the background promise (quick-337).
+  const [load, driver] = await Promise.all([
+    prisma.load.findUnique({
+      where: { id: loadId },
+      select: { loadNumber: true, origin: true, destination: true },
+    }),
+    prisma.carrierDriver.findUnique({
+      where: { id: cd.id },
+      select: { firstName: true, lastName: true },
+    }),
+  ]).catch((err) => {
+    console.error('[notifications] createAssignment prefetch failed', err);
+    return [null, null] as const;
+  });
+
+  if (load && driver) {
+    // Wrapped in waitUntil so Vercel keeps the lambda alive past the action return (quick-336).
+    // ONLY dispatchNotification runs inside waitUntil — all request-scoped reads done above (quick-337).
+    waitUntil(
+      dispatchNotification('load.assigned', {
+        tenantId,
+        payload: {
+          loadId,
+          loadNumber: load.loadNumber,
+          driverId: cd.id,
+          driverName: `${driver.firstName} ${driver.lastName}`,
+          originCity: load.origin,
+          destCity: load.destination,
+        },
+        relatedEntity: { type: 'Load', id: loadId },
+      }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err)),
+    );
+  }
 
   revalidatePath(`/carrier/loads/${loadId}`);
   return { data: { id: created.id } };
