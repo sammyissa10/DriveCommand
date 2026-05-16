@@ -250,6 +250,7 @@ export async function createAssignment(
   });
 
   if (load && driver) {
+    console.log(`[notif-trace] caller:before-dispatch trigger=load.assigned load=${loadId} driver=${cd.id}`);
     // Synchronous await — quick-336 (waitUntil wrap) and quick-337 (prefetch outside waitUntil) both
     // failed in production with zero NotificationSendLog rows. The Vercel + Next.js Server Action
     // runtime silently drops background promises here. Accept the ~1-2s extra latency for guaranteed
@@ -266,6 +267,7 @@ export async function createAssignment(
       },
       relatedEntity: { type: 'Load', id: loadId },
     }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err));
+    console.log(`[notif-trace] caller:after-dispatch trigger=load.assigned`);
   }
 
   revalidatePath(`/carrier/loads/${loadId}`);

@@ -57,6 +57,7 @@ export async function dispatchNotification<K extends TriggerKey>(
   let sent = 0;
   let skipped = 0;
   let failed = 0;
+  console.log(`[notif-trace] dispatchNotification:start trigger=${triggerKey} tenant=${options.tenantId} hasPayload=${options.payload != null} hasRelatedEntity=${options.relatedEntity != null}`);
 
   try {
     // -----------------------------------------------------------------------
@@ -65,6 +66,7 @@ export async function dispatchNotification<K extends TriggerKey>(
     const template = await db.notificationTemplate.findUnique({
       where: { triggerKey },
     });
+    console.log(`[notif-trace] template:fetched found=${template != null} isActive=${template?.isActive ?? 'n/a'}`);
 
     if (!template || !template.isActive) {
       audits.push({
@@ -78,6 +80,7 @@ export async function dispatchNotification<K extends TriggerKey>(
         errorMessage: !template ? 'Template not found' : 'Template globally disabled',
       });
       skipped++;
+      console.log(`[notif-trace] dispatchNotification:exit reason=${!template ? 'skip:template_missing' : 'skip:template_inactive'} trigger=${triggerKey}`);
       return { sent, skipped, failed };
     }
 
@@ -87,6 +90,7 @@ export async function dispatchNotification<K extends TriggerKey>(
     const tenantSettings = await db.tenantNotificationSettings.findUnique({
       where: { tenantId_triggerKey: { tenantId: options.tenantId, triggerKey } },
     });
+    console.log(`[notif-trace] settings:fetched found=${tenantSettings != null} isActive=${tenantSettings?.isActive ?? 'n/a'}`);
 
     // TenantNotificationSettings.isActive === false means this tenant disabled the trigger.
     // (Note: field is `isActive` in schema — NOT `isEnabled`.)
@@ -102,6 +106,7 @@ export async function dispatchNotification<K extends TriggerKey>(
         errorMessage: 'Tenant disabled this trigger',
       });
       skipped++;
+      console.log(`[notif-trace] dispatchNotification:exit reason=skip:settings_inactive trigger=${triggerKey}`);
       return { sent, skipped, failed };
     }
 
@@ -116,12 +121,17 @@ export async function dispatchNotification<K extends TriggerKey>(
       defaultRules,
       options.payload as Record<string, string>,
     );
+    console.log(`[notif-trace] recipients:resolved count=${recipients.length}`);
+    if (recipients.length === 0) {
+      console.log(`[notif-trace] recipients:none trigger=${triggerKey} reason=skip:no_recipients`);
+    }
 
     // -----------------------------------------------------------------------
     // Steps 4-5: Pick content + render once (shared by all recipients)
     // -----------------------------------------------------------------------
     const cachedHtml = tenantSettings?.customHtmlCache ?? template.defaultHtmlCache;
     const subjectTemplate = (tenantSettings?.customSubject ?? template.defaultSubject) as string;
+    console.log(`[notif-trace] content:picked source=${tenantSettings?.customHtmlCache != null ? 'custom' : 'default'}`);
 
     if (!cachedHtml) {
       audits.push({
@@ -138,17 +148,21 @@ export async function dispatchNotification<K extends TriggerKey>(
       return { sent, skipped, failed };
     }
 
+    console.log(`[notif-trace] render:start`);
     const { html, subjectFinal } = await renderTemplate(
       cachedHtml,
       options.payload as Record<string, string>,
       subjectTemplate,
     );
+    console.log(`[notif-trace] render:done html_length=${html.length}`);
 
     // -----------------------------------------------------------------------
     // Steps 6-9: Per-recipient fan-out (isolated error boundary per recipient)
     // -----------------------------------------------------------------------
     for (const r of recipients) {
+      const _preSent = sent, _preSkipped = skipped, _preFailed = failed;
       try {
+        console.log(`[notif-trace] recipient:start userId=${r.userId ?? 'null'} hasEmail=${r.emailEnabled} hasInApp=${r.userId !== null && r.inAppEnabled}`);
         // -------------------------------------------------------------------
         // Step 6a: EMAIL channel
         // -------------------------------------------------------------------
@@ -306,6 +320,7 @@ export async function dispatchNotification<K extends TriggerKey>(
           });
           skipped++;
         }
+        console.log(`[notif-trace] recipient:done userId=${r.userId ?? 'null'} sent=${sent - _preSent} skipped=${skipped - _preSkipped} failed=${failed - _preFailed}`);
       } catch (perRecipientErr) {
         // Step 8: Catch-all per recipient — one failure never kills the loop
         console.error(
@@ -320,11 +335,15 @@ export async function dispatchNotification<K extends TriggerKey>(
   } catch (outerErr) {
     // Outer catch — handles template fetch, recipient resolution, or render failures
     console.error('[notifications] dispatch failed before fan-out', outerErr);
+    console.error(`[notif-trace] dispatchNotification:catastrophic message=${(outerErr as Error)?.message ?? 'unknown'} stack=${((outerErr as Error)?.stack ?? '').slice(0, 500)}`);
     failed++;
   } finally {
     // Step 10: Persist all audit rows — always runs, even on outer error
+    console.log(`[notif-trace] audit:writing entries=${audits.length}`);
     await writeAuditLog(db, audits);
+    console.log(`[notif-trace] audit:done`);
   }
 
+  console.log(`[notif-trace] dispatchNotification:done trigger=${triggerKey} sent=${sent} skipped=${skipped} failed=${failed}`);
   return { sent, skipped, failed };
 }
