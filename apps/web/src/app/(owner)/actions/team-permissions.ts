@@ -11,7 +11,7 @@ import {
   getPermissions,
 } from '@/lib/auth/permissions';
 import { revalidatePath } from 'next/cache';
-import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { sendManagerInvitation } from '@/lib/email/send-manager-invitation';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -175,7 +175,7 @@ export async function inviteTeamMember(data: {
   const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
   try {
-    await sendDriverInvitation(email, {
+    await sendManagerInvitation(email, {
       tenantId,
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
