@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 347: Field-level AES-256-GCM encryption for restricted PII columns (PR A dual-write window) — last4(), optional keyId, startup validation, 10 encrypted columns on DriverInvitation (licenseNumber + dateOfBirth), dual-write in inviteDriver + mobile invite, batched backfill script
-Last session: 2026-05-15T22:43:00Z
-Stopped at: Completed quick-343: dropped lda_unique_load_driver constraint, created partial unique index (deleted_at IS NULL), updated Prisma schema, wrapped handleAssign in try/catch/finally. tsc clean, build green.
+Last activity: 2026-05-16 - Completed quick task 348: Hardened document upload/download for restricted PII docs (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD, VOIDED_CHECK, W9, W4, I9) — restricted S3 prefix, 15-min download URLs, RBAC guard with audit_log trail, DocumentType enum extended, Document.isRestricted column, confirm dialog in driver UI
+Last session: 2026-05-16T14:10:00Z
+Stopped at: Completed quick-348: restricted document upload/download hardening — 2 migrations applied, restricted.ts storage helpers, requireRestrictedDocumentAccess RBAC guard, audit-log.ts extended with DOWNLOAD_DOCUMENT_DENIED, API routes wired, driver UI updated, Vitest security suite (557 lines). tsc clean.
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
