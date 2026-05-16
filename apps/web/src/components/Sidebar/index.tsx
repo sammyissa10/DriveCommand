@@ -448,12 +448,9 @@ export function AnimatedSidebar({ supportBadge }: AnimatedSidebarProps) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="grid text-left text-sm leading-tight"
+                  className="flex items-center"
                 >
                   <DriveCommandWordmark size="sm" />
-                  <span className="truncate text-xs text-[hsl(var(--sidebar-fg-subtle))]">
-                    Fleet Management
-                  </span>
                 </motion.div>
               )}
             </AnimatePresence>
