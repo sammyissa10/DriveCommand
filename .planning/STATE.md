@@ -56738,6 +56738,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-328]: Scanner skips prisma.<model> pattern — DB-level FORCE RLS from quick-327 protects model calls; only / bypass RLS
 - [Phase quick-331]: Use @tiptap/html/server (explicit Node-runtime subpath) instead of bare @tiptap/html to avoid browser bundle loading server-side
 - [Phase quick-338]: Synchronous await is the only reliable pattern for dispatchNotification in Vercel Server Actions — waitUntil background pattern silently drops promises in Next.js 15 App Router runtime
+- [Phase quick-345]: CarrierLoad tenant FK is orgId not tenantId — all profitability queries use orgId in where
+- [Phase quick-345]: CSV export for large datasets uses pageSize:100_000 for now; Phase 11 should add cursor-based streaming
 
 ### Pending Todos
 
