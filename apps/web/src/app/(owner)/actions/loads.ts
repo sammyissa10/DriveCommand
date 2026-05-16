@@ -18,6 +18,7 @@ import {
 } from '@/lib/route-stops/sync-route-stops';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
+import { waitUntil } from '@vercel/functions';
 
 const Decimal = Prisma.Decimal;
 
@@ -217,16 +218,19 @@ export async function createLoad(prevState: ActionState | null, formData: FormDa
   }
 
   // Fire-and-forget — never block redirect (Phase 41 wire-up, quick-325)
-  dispatchNotification('load.created', {
-    tenantId: createdTenantId!,
-    payload: {
-      loadId: createdId!,
-      loadNumber: createdLoadNumber!,
-      originCity: createdOrigin!,
-      destCity: createdDestination!,
-    },
-    relatedEntity: { type: 'Load', id: createdId! },
-  }).catch((err) => console.error('[notifications] load.created dispatch failed', err));
+  // Wrapped in waitUntil so Vercel keeps the lambda alive past the redirect (quick-336)
+  waitUntil(
+    dispatchNotification('load.created', {
+      tenantId: createdTenantId!,
+      payload: {
+        loadId: createdId!,
+        loadNumber: createdLoadNumber!,
+        originCity: createdOrigin!,
+        destCity: createdDestination!,
+      },
+      relatedEntity: { type: 'Load', id: createdId! },
+    }).catch((err) => console.error('[notifications] load.created dispatch failed', err)),
+  );
 
   revalidatePath('/loads');
   redirect(`/loads/${createdId!}`);
@@ -432,42 +436,45 @@ export async function dispatchLoad(id: string, prevState: ActionState | null, fo
 
     // Fire-and-forget INTERNAL notifications (Phase 41 wire-up, quick-325). Independent of the
     // customer.* trigger fired by sendNotificationAndLogInteraction above.
-    void (async () => {
-      try {
-        const driver = await prisma.user.findUnique({
-          where: { id: result.data.driverId },
-          select: { firstName: true, lastName: true },
-        });
-        const driverName = driver ? `${driver.firstName} ${driver.lastName}` : 'Driver';
+    // Wrapped in waitUntil so Vercel keeps the lambda alive past the redirect (quick-336)
+    waitUntil(
+      (async () => {
+        try {
+          const driver = await prisma.user.findUnique({
+            where: { id: result.data.driverId },
+            select: { firstName: true, lastName: true },
+          });
+          const driverName = driver ? `${driver.firstName} ${driver.lastName}` : 'Driver';
 
-        // Notify the assigned driver
-        dispatchNotification('load.assigned', {
-          tenantId: tId,
-          payload: {
-            loadId: id,
-            loadNumber: load.loadNumber,
-            driverId: result.data.driverId,
-            driverName,
-            originCity: load.origin,
-            destCity: load.destination,
-          },
-          relatedEntity: { type: 'Load', id },
-        }).catch((err) => console.error('[notifications] load.assigned dispatch failed', err));
+          // Notify the assigned driver
+          await dispatchNotification('load.assigned', {
+            tenantId: tId,
+            payload: {
+              loadId: id,
+              loadNumber: load.loadNumber,
+              driverId: result.data.driverId,
+              driverName,
+              originCity: load.origin,
+              destCity: load.destination,
+            },
+            relatedEntity: { type: 'Load', id },
+          }).catch((err) => console.error('[notifications] load.assigned dispatch failed', err));
 
-        // Notify the owner of dispatch
-        dispatchNotification('load.dispatched', {
-          tenantId: tId,
-          payload: {
-            loadId: id,
-            loadNumber: load.loadNumber,
-            driverName,
-          },
-          relatedEntity: { type: 'Load', id },
-        }).catch((err) => console.error('[notifications] load.dispatched dispatch failed', err));
-      } catch (err) {
-        console.error('[notifications] dispatchLoad notif prep failed', err);
-      }
-    })();
+          // Notify the owner of dispatch
+          await dispatchNotification('load.dispatched', {
+            tenantId: tId,
+            payload: {
+              loadId: id,
+              loadNumber: load.loadNumber,
+              driverName,
+            },
+            relatedEntity: { type: 'Load', id },
+          }).catch((err) => console.error('[notifications] load.dispatched dispatch failed', err));
+        } catch (err) {
+          console.error('[notifications] dispatchLoad notif prep failed', err);
+        }
+      })(),
+    );
 
     // Push notification to assigned driver — best-effort
     void sendPushToUser(result.data.driverId, {
@@ -609,95 +616,98 @@ export async function updateLoadStatus(id: string, newStatus: string) {
 
     // Fire-and-forget INTERNAL notifications (Phase 41 wire-up, quick-325). Distinct from the
     // customer.* trigger fired above — both can fire for the same status change.
-    void (async () => {
-      try {
-        const loadDetail = await prisma.load.findUnique({
-          where: { id },
-          select: {
-            loadNumber: true,
-            driver: { select: { firstName: true, lastName: true } },
-          },
-        });
-        if (!loadDetail) return;
-        const driverName = loadDetail.driver
-          ? `${loadDetail.driver.firstName} ${loadDetail.driver.lastName}`
-          : 'Unassigned';
-        const nowFormatted = new Date().toLocaleString('en-US', {
-          dateStyle: 'short',
-          timeStyle: 'short',
-        });
+    // Wrapped in waitUntil so Vercel keeps the lambda alive past the action return (quick-336)
+    waitUntil(
+      (async () => {
+        try {
+          const loadDetail = await prisma.load.findUnique({
+            where: { id },
+            select: {
+              loadNumber: true,
+              driver: { select: { firstName: true, lastName: true } },
+            },
+          });
+          if (!loadDetail) return;
+          const driverName = loadDetail.driver
+            ? `${loadDetail.driver.firstName} ${loadDetail.driver.lastName}`
+            : 'Unassigned';
+          const nowFormatted = new Date().toLocaleString('en-US', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          });
 
-        switch (newStatus) {
-          case 'PICKED_UP':
-            dispatchNotification('load.picked_up', {
-              tenantId,
-              payload: {
-                loadId: id,
-                loadNumber: loadDetail.loadNumber,
-                driverName,
-                pickupTime: nowFormatted,
-              },
-              relatedEntity: { type: 'Load', id },
-            }).catch((err) => console.error('[notifications] load.picked_up dispatch failed', err));
-            break;
-          case 'IN_TRANSIT':
-            dispatchNotification('load.in_transit', {
-              tenantId,
-              payload: {
-                loadId: id,
-                loadNumber: loadDetail.loadNumber,
-                driverName,
-              },
-              relatedEntity: { type: 'Load', id },
-            }).catch((err) => console.error('[notifications] load.in_transit dispatch failed', err));
-            break;
-          case 'DELIVERED':
-            dispatchNotification('load.delivered', {
-              tenantId,
-              payload: {
-                loadId: id,
-                loadNumber: loadDetail.loadNumber,
-                driverName,
-                deliveryTime: nowFormatted,
-              },
-              relatedEntity: { type: 'Load', id },
-            }).catch((err) => console.error('[notifications] load.delivered dispatch failed', err));
-            break;
-          case 'INVOICED': {
-            // Pull invoice info — there must be at least one because of the guard above
-            const invoice = await prisma.invoice.findFirst({
-              where: { loadId: id, status: { not: 'CANCELLED' } },
-              select: { invoiceNumber: true, totalAmount: true },
-              orderBy: { createdAt: 'desc' },
-            });
-            dispatchNotification('load.invoiced', {
-              tenantId,
-              payload: {
-                loadId: id,
-                loadNumber: loadDetail.loadNumber,
-                invoiceNumber: invoice?.invoiceNumber ?? 'N/A',
-                amount: invoice ? `$${Number(invoice.totalAmount).toFixed(2)}` : 'N/A',
-              },
-              relatedEntity: { type: 'Load', id },
-            }).catch((err) => console.error('[notifications] load.invoiced dispatch failed', err));
-            break;
+          switch (newStatus) {
+            case 'PICKED_UP':
+              await dispatchNotification('load.picked_up', {
+                tenantId,
+                payload: {
+                  loadId: id,
+                  loadNumber: loadDetail.loadNumber,
+                  driverName,
+                  pickupTime: nowFormatted,
+                },
+                relatedEntity: { type: 'Load', id },
+              }).catch((err) => console.error('[notifications] load.picked_up dispatch failed', err));
+              break;
+            case 'IN_TRANSIT':
+              await dispatchNotification('load.in_transit', {
+                tenantId,
+                payload: {
+                  loadId: id,
+                  loadNumber: loadDetail.loadNumber,
+                  driverName,
+                },
+                relatedEntity: { type: 'Load', id },
+              }).catch((err) => console.error('[notifications] load.in_transit dispatch failed', err));
+              break;
+            case 'DELIVERED':
+              await dispatchNotification('load.delivered', {
+                tenantId,
+                payload: {
+                  loadId: id,
+                  loadNumber: loadDetail.loadNumber,
+                  driverName,
+                  deliveryTime: nowFormatted,
+                },
+                relatedEntity: { type: 'Load', id },
+              }).catch((err) => console.error('[notifications] load.delivered dispatch failed', err));
+              break;
+            case 'INVOICED': {
+              // Pull invoice info — there must be at least one because of the guard above
+              const invoice = await prisma.invoice.findFirst({
+                where: { loadId: id, status: { not: 'CANCELLED' } },
+                select: { invoiceNumber: true, totalAmount: true },
+                orderBy: { createdAt: 'desc' },
+              });
+              await dispatchNotification('load.invoiced', {
+                tenantId,
+                payload: {
+                  loadId: id,
+                  loadNumber: loadDetail.loadNumber,
+                  invoiceNumber: invoice?.invoiceNumber ?? 'N/A',
+                  amount: invoice ? `$${Number(invoice.totalAmount).toFixed(2)}` : 'N/A',
+                },
+                relatedEntity: { type: 'Load', id },
+              }).catch((err) => console.error('[notifications] load.invoiced dispatch failed', err));
+              break;
+            }
+            case 'CANCELLED':
+              await dispatchNotification('load.cancelled', {
+                tenantId,
+                payload: {
+                  loadId: id,
+                  loadNumber: loadDetail.loadNumber,
+                  reason: 'Cancelled by dispatcher', // No reason field in the API today; placeholder string
+                },
+                relatedEntity: { type: 'Load', id },
+              }).catch((err) => console.error('[notifications] load.cancelled dispatch failed', err));
+              break;
           }
-          case 'CANCELLED':
-            dispatchNotification('load.cancelled', {
-              tenantId,
-              payload: {
-                loadId: id,
-                loadNumber: loadDetail.loadNumber,
-                reason: 'Cancelled by dispatcher', // No reason field in the API today; placeholder string
-              },
-              relatedEntity: { type: 'Load', id },
-            }).catch((err) => console.error('[notifications] load.cancelled dispatch failed', err));
-            break;
+        } catch (err) {
+          console.error('[notifications] updateLoadStatus notif prep failed', err);
         }
-      } catch (err) {
-        console.error('[notifications] updateLoadStatus notif prep failed', err);
-      }
-    })();
+      })(),
+    );
 
     // Update CRM customer performance stats when a load is invoiced
     if (newStatus === 'INVOICED' && load.customerId) {
