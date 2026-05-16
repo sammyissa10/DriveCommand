@@ -1,8 +1,6 @@
 "use client"
 
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/navigation/sidebar"
-import { Separator } from "@/components/ui/separator"
+import { AnimatedSidebar } from "@/components/Sidebar"
 import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
 import { UserMenu } from "@/components/navigation/user-menu"
 import { NotificationBell } from "@/components/navigation/notification-bell"
@@ -16,14 +14,12 @@ interface OwnerShellProps {
 
 export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellProps) {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <AppSidebar supportBadge={supportBadge} />
-      <SidebarInset>
+    <>
+      <AnimatedSidebar supportBadge={supportBadge} />
+      <div className="lg:pl-[256px]">
         <header className="relative z-[1001] flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-4 lg:px-6">
           {/* DC logo — visible on all screen sizes */}
           <AppLogo size={28} variant="dark" />
-          <SidebarTrigger className="-ml-1 hidden lg:flex" />
-          <Separator orientation="vertical" className="mr-2 h-4 hidden lg:block" />
           {tenantName && (
             <span className="text-sm font-semibold text-foreground truncate hidden lg:block">{tenantName}</span>
           )}
@@ -36,8 +32,8 @@ export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellPro
         <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
           {children}
         </main>
-      </SidebarInset>
+      </div>
       <OwnerBottomNav />
-    </SidebarProvider>
+    </>
   )
 }
