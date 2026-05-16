@@ -4,6 +4,7 @@ import { Prisma } from '@/generated/prisma';
 import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { prisma as defaultPrisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { snapshotActiveTemplate, computeIsOverride } from '@/lib/driver-pay/snapshot';
 import {
@@ -236,11 +237,11 @@ export async function createAssignment(
 
   // Prefetch load/driver data needed for notification payload.
   const [load, driver] = await Promise.all([
-    prisma.load.findUnique({
+    defaultPrisma.load.findUnique({
       where: { id: loadId },
       select: { loadNumber: true, origin: true, destination: true },
     }),
-    prisma.carrierDriver.findUnique({
+    defaultPrisma.carrierDriver.findUnique({
       where: { id: cd.id },
       select: { firstName: true, lastName: true },
     }),
@@ -249,6 +250,7 @@ export async function createAssignment(
     return [null, null] as const;
   });
 
+  console.log(`[notif-trace] caller:prefetch-result load=${load != null} driver=${driver != null} loadId=${loadId} driverId=${cd.id}`);
   if (load && driver) {
     console.log(`[notif-trace] caller:before-dispatch trigger=load.assigned load=${loadId} driver=${cd.id}`);
     // Synchronous await — quick-336 (waitUntil wrap) and quick-337 (prefetch outside waitUntil) both
