@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 350: Display user name (not email) in web header — getDisplayName helper with 5-step fallback chain, user-menu wired, email demoted to muted secondary text
+Last activity: 2026-05-16 - Completed quick task 351: Audit team invitation email flow to scope a role-aware copy fix
 Last session: 2026-05-16T19:53:00Z
 Stopped at: Completed quick-349: Section 4A hardening — sanitize/errors/logger/request-limits/safe-fetch/security rate-limit utilities created; validate.ts extended with validateImageDimensions/validatePdfPageCount/validateNoMacroFormats/validateNoSvgHtml; upload routes wired to quarantine-then-promote; cleanup-quarantine cron + vercel.json; 43 Vitest tests pass; tsc + build clean.
 
@@ -65338,6 +65338,7 @@ None blocking immediate progress.
 | 347 | Field-level AES-256-GCM encryption for restricted PII columns (DriverInvitation.licenseNumber + dateOfBirth) — dual-write window, backfill script, startup key validation | 2026-05-16 | 3e4845f | [347-field-level-aes-256-gcm-encryption-for-r](./quick/347-field-level-aes-256-gcm-encryption-for-r/) |
 | 348 | Harden document upload/download for restricted PII docs (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD, VOIDED_CHECK, W9, W4, I9) — restricted S3 prefix, 15-min download URLs, RBAC guard with audit_log trail, DocumentType enum extended, Document.isRestricted column, confirm dialog in driver UI, Vitest security suite | 2026-05-16 | 963ef77 | [348-harden-document-upload-system-for-restri](./quick/348-harden-document-upload-system-for-restri/) |
 | 350 | Display user name (not email) in web header — getDisplayName helper (5-step fallback: first+last → first → full_name → email local-part → full email), user-menu wired, email demoted to muted secondary text | 2026-05-16 | 5147b58 | [350-display-user-name-not-email-in-web-heade](./quick/350-display-user-name-not-email-in-web-heade/) |
+| 351 | Audit team invitation email flow to scope a role-aware copy fix | 2026-05-16 | 28809bb | [351-audit-team-invitation-email-flow-to-scop](./quick/351-audit-team-invitation-email-flow-to-scop/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
