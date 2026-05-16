@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 340: use defaultPrisma for notification prefetch to bypass RLS row filtering in createAssignment
-Last session: 2026-05-16T03:08:17Z
-Stopped at: Completed quick-339: instrumented dispatcher.ts with 16 [notif-trace] log statements and load-driver-assignments.ts with 2 caller traces. tsc clean, build green, all notification tests pass. Ready for vercel --prod + production observation.
+Last activity: 2026-05-15 - Completed quick task 341: fix createAssignment load prefetch to use carrierLoad + stops/facility join — dispatchNotification now fires with load=true in production
+Last session: 2026-05-15T22:43:00Z
+Stopped at: Completed quick-341: replaced defaultPrisma.load.findUnique (wrong legacy model) with defaultPrisma.carrierLoad.findUnique + stops/facility include. tsc clean, 26/26 vitest pass, build green.
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
