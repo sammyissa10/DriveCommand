@@ -69,6 +69,7 @@
     "@turf/helpers": "^7.3.4",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
+    "@vercel/functions": "^3.6.0",
     "archiver": "^8.0.0",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
