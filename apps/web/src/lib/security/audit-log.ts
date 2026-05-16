@@ -20,10 +20,23 @@ export type AuditAction =
   | 'VIEW_PII'
   | 'VIEW_PII_DENIED'
   | 'DOWNLOAD_DOCUMENT'
+  | 'DOWNLOAD_DOCUMENT_DENIED'
   | 'UPDATE_RESTRICTED'
   | 'DELETE_RESTRICTED'
   | 'EXPORT'
   | 'RATE_LIMIT_HIT';
+
+/** All valid audit actions — mirrors the audit_log.action CHECK constraint. */
+export const AUDIT_ACTIONS: readonly AuditAction[] = [
+  'VIEW_PII',
+  'VIEW_PII_DENIED',
+  'DOWNLOAD_DOCUMENT',
+  'DOWNLOAD_DOCUMENT_DENIED',
+  'UPDATE_RESTRICTED',
+  'DELETE_RESTRICTED',
+  'EXPORT',
+  'RATE_LIMIT_HIT',
+] as const;
 
 export interface WriteAuditLogParams {
   tenantId: string;
