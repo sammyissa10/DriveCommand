@@ -1,6 +1,6 @@
 import type { NotificationCategory } from '@/generated/prisma';
 
-// Union of all 36 trigger keys (must match exactly the seed data)
+// Union of all 37 trigger keys (must match exactly the seed data)
 export type TriggerKey =
   // User (4)
   | 'user.welcome'
@@ -23,6 +23,8 @@ export type TriggerKey =
   | 'driver.hos_violation'
   | 'driver.license_expiring'
   | 'driver.incident_reported'
+  // Manager (1)
+  | 'manager.invited'
   // Truck (3)
   | 'truck.maintenance_due'
   | 'truck.document_expiring'
@@ -71,6 +73,8 @@ export type NotificationPayload = {
   'driver.hos_violation': { driverId: string; driverName: string; violationType: string; timestamp: string };
   'driver.license_expiring': { driverId: string; driverName: string; licenseType: string; expiresAt: string; daysUntilExpiry: string };
   'driver.incident_reported': { driverId: string; driverName: string; incidentType: string; severity: string; reportUrl: string };
+
+  'manager.invited': { managerEmail: string; firstName: string; tenantName: string; inviteUrl: string };
 
   'truck.maintenance_due': { truckId: string; unitNumber: string; maintenanceType: string; dueAt: string };
   'truck.document_expiring': { truckId: string; unitNumber: string; documentType: string; expiresAt: string };
