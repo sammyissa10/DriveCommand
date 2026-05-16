@@ -5,6 +5,7 @@
 
 import { DocumentType } from '@/generated/prisma';
 import { TenantRepository } from './base.repository';
+import { isRestrictedDocumentType } from '@/lib/storage/restricted';
 
 export interface DocumentCreateInput {
   tenantId: string;
@@ -18,6 +19,8 @@ export interface DocumentCreateInput {
   sizeBytes: number;
   uploadedBy: string;
   documentType?: DocumentType;
+  /** When omitted, derived automatically from documentType. */
+  isRestricted?: boolean;
   expiryDate?: Date;
   notes?: string;
   description?: string;
@@ -83,11 +86,16 @@ export class DocumentRepository extends TenantRepository {
   }
 
   /**
-   * Create a new document record
+   * Create a new document record.
+   *
+   * `isRestricted` is derived automatically from `documentType` when not
+   * explicitly provided — ensuring the column stays in sync with the type
+   * regardless of which upload path called the repository.
    */
   async create(data: DocumentCreateInput) {
+    const isRestricted = data.isRestricted ?? isRestrictedDocumentType(data.documentType);
     return this.db.document.create({
-      data,
+      data: { ...data, isRestricted },
     });
   }
 

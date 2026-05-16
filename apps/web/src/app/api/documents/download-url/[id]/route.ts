@@ -5,11 +5,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/supabase';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { generateDownloadUrl } from '@/lib/storage/presigned';
+import { requireRestrictedDocumentAccess } from '@/lib/security/restricted-document-access';
 import { logger } from '@/lib/logger';
 import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
@@ -40,6 +41,35 @@ export async function GET(
       );
     }
 
+    // Restricted document branch — RBAC + audit + 15-min presigned URL
+    if (doc.isRestricted) {
+      const session = await getSession();
+      if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+
+      const result = await requireRestrictedDocumentAccess({
+        documentId: doc.id,
+        userId: session.userId,
+        userRole: session.role as UserRole,
+        tenantId,
+        ipAddress: req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? null,
+        userAgent: req.headers.get('user-agent') ?? null,
+      });
+
+      if (!result.ok) {
+        return NextResponse.json({ error: result.error }, { status: result.status });
+      }
+
+      return NextResponse.json({
+        downloadUrl: result.downloadUrl,
+        fileName: result.fileName,
+        isRestricted: true,
+        expiresInSeconds: result.expiresInSeconds,
+      });
+    }
+
+    // Non-restricted flow — unchanged
     if (!doc.s3Key.startsWith(`tenant-${tenantId}/`)) {
       return NextResponse.json({ error: 'Invalid document: does not match tenant' }, { status: 403 });
     }
