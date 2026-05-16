@@ -10,6 +10,12 @@
  * Download flow:
  * 1. Client requests download URL with document ID
  * 2. Server validates ownership and generates presigned GET URL (1-hour expiry)
+ *
+ * NOTE: For restricted document types (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD,
+ * VOIDED_CHECK, W9, W4, I9) use `./restricted.ts` instead — it enforces the
+ * `/restricted/` storage prefix, shorter 15-minute download expiry, and must be
+ * used together with `@/lib/security/restricted-document-access` for RBAC + audit.
+ * Non-restricted document flow through this file is unchanged.
  */
 
 import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
