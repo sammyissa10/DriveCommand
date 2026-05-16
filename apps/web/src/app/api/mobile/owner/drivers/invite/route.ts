@@ -5,6 +5,8 @@ import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';
+import { encryptField, last4 } from '@/lib/security/field-crypto';
+import { getCurrentKeyId } from '@/lib/security/key-registry';
 
 /**
  * POST /api/mobile/owner/drivers/invite
@@ -83,6 +85,22 @@ export async function POST(req: NextRequest) {
       });
     }, TX_OPTIONS);
 
+    // Build encrypted shapes for PII fields (dual-write — plaintext kept for PR B removal)
+    const keyId = getCurrentKeyId();
+    const trimmedLicense = licenseNumber?.trim() || null;
+    const licenseEncrypted = trimmedLicense
+      ? (() => {
+          const ef = encryptField(trimmedLicense, keyId);
+          return {
+            licenseNumberCiphertext: ef.ciphertext,
+            licenseNumberIv: ef.iv,
+            licenseNumberTag: ef.tag,
+            licenseNumberKeyId: ef.keyId,
+            licenseNumberLast4: last4(trimmedLicense),
+          };
+        })()
+      : {};
+
     // Create invitation record
     const invitation = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -93,7 +111,8 @@ export async function POST(req: NextRequest) {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           fullName: `${firstName.trim()} ${lastName.trim()}`,
-          licenseNumber: licenseNumber?.trim() || null,
+          licenseNumber: trimmedLicense,
+          ...licenseEncrypted,
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           status: 'PENDING',
         },

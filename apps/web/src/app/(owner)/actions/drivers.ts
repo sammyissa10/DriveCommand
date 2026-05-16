@@ -17,6 +17,8 @@ import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { encryptField, last4 } from '@/lib/security/field-crypto';
+import { getCurrentKeyId } from '@/lib/security/key-registry';
 
 /**
  * Invite a new driver.
@@ -87,6 +89,36 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
       },
     });
 
+    // Build encrypted shapes for PII fields (dual-write — plaintext kept for PR B removal)
+    const keyId = getCurrentKeyId();
+
+    const licenseEncrypted = licenseNumber
+      ? (() => {
+          const ef = encryptField(licenseNumber, keyId);
+          return {
+            licenseNumberCiphertext: ef.ciphertext,
+            licenseNumberIv: ef.iv,
+            licenseNumberTag: ef.tag,
+            licenseNumberKeyId: ef.keyId,
+            licenseNumberLast4: last4(licenseNumber),
+          };
+        })()
+      : {};
+
+    const dobDate = dateOfBirth ? new Date(dateOfBirth) : null;
+    const dobEncrypted = dateOfBirth
+      ? (() => {
+          const ef = encryptField(dateOfBirth, keyId);
+          return {
+            dateOfBirthCiphertext: ef.ciphertext,
+            dateOfBirthIv: ef.iv,
+            dateOfBirthTag: ef.tag,
+            dateOfBirthKeyId: ef.keyId,
+            dateOfBirthLast4: last4(new Date(dateOfBirth).getFullYear().toString()),
+          };
+        })()
+      : {};
+
     // Create DriverInvitation record in the database
     const invitation = await prisma.driverInvitation.create({
       data: {
@@ -95,9 +127,11 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
         firstName,
         lastName,
         licenseNumber: licenseNumber || null,
+        ...licenseEncrypted,
         middleName: middleName || null,
         fullName,
-        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+        dateOfBirth: dobDate,
+        ...dobEncrypted,
         phoneNumber: phoneNumber || null,
         address: address || null,
         licenseExpirationDate: licenseExpirationDate ? new Date(licenseExpirationDate) : null,
