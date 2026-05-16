@@ -544,7 +544,15 @@ export const DocumentType: {
   DRIVER_LICENSE: 'DRIVER_LICENSE',
   DRIVER_APPLICATION: 'DRIVER_APPLICATION',
   GENERAL: 'GENERAL',
-  RATE_CONFIRMATION: 'RATE_CONFIRMATION'
+  RATE_CONFIRMATION: 'RATE_CONFIRMATION',
+  SSN_CARD: 'SSN_CARD',
+  PASSPORT: 'PASSPORT',
+  CDL_SCAN: 'CDL_SCAN',
+  MEDICAL_CARD: 'MEDICAL_CARD',
+  VOIDED_CHECK: 'VOIDED_CHECK',
+  W9: 'W9',
+  W4: 'W4',
+  I9: 'I9'
 };
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
@@ -19200,9 +19208,19 @@ export namespace Prisma {
     firstName: string | null
     lastName: string | null
     licenseNumber: string | null
+    licenseNumberCiphertext: Bytes | null
+    licenseNumberIv: Bytes | null
+    licenseNumberTag: Bytes | null
+    licenseNumberKeyId: string | null
+    licenseNumberLast4: string | null
     middleName: string | null
     fullName: string | null
     dateOfBirth: Date | null
+    dateOfBirthCiphertext: Bytes | null
+    dateOfBirthIv: Bytes | null
+    dateOfBirthTag: Bytes | null
+    dateOfBirthKeyId: string | null
+    dateOfBirthLast4: string | null
     phoneNumber: string | null
     address: string | null
     licenseExpirationDate: Date | null
@@ -19222,9 +19240,19 @@ export namespace Prisma {
     firstName: string | null
     lastName: string | null
     licenseNumber: string | null
+    licenseNumberCiphertext: Bytes | null
+    licenseNumberIv: Bytes | null
+    licenseNumberTag: Bytes | null
+    licenseNumberKeyId: string | null
+    licenseNumberLast4: string | null
     middleName: string | null
     fullName: string | null
     dateOfBirth: Date | null
+    dateOfBirthCiphertext: Bytes | null
+    dateOfBirthIv: Bytes | null
+    dateOfBirthTag: Bytes | null
+    dateOfBirthKeyId: string | null
+    dateOfBirthLast4: string | null
     phoneNumber: string | null
     address: string | null
     licenseExpirationDate: Date | null
@@ -19244,9 +19272,19 @@ export namespace Prisma {
     firstName: number
     lastName: number
     licenseNumber: number
+    licenseNumberCiphertext: number
+    licenseNumberIv: number
+    licenseNumberTag: number
+    licenseNumberKeyId: number
+    licenseNumberLast4: number
     middleName: number
     fullName: number
     dateOfBirth: number
+    dateOfBirthCiphertext: number
+    dateOfBirthIv: number
+    dateOfBirthTag: number
+    dateOfBirthKeyId: number
+    dateOfBirthLast4: number
     phoneNumber: number
     address: number
     licenseExpirationDate: number
@@ -19269,9 +19307,19 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     licenseNumber?: true
+    licenseNumberCiphertext?: true
+    licenseNumberIv?: true
+    licenseNumberTag?: true
+    licenseNumberKeyId?: true
+    licenseNumberLast4?: true
     middleName?: true
     fullName?: true
     dateOfBirth?: true
+    dateOfBirthCiphertext?: true
+    dateOfBirthIv?: true
+    dateOfBirthTag?: true
+    dateOfBirthKeyId?: true
+    dateOfBirthLast4?: true
     phoneNumber?: true
     address?: true
     licenseExpirationDate?: true
@@ -19291,9 +19339,19 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     licenseNumber?: true
+    licenseNumberCiphertext?: true
+    licenseNumberIv?: true
+    licenseNumberTag?: true
+    licenseNumberKeyId?: true
+    licenseNumberLast4?: true
     middleName?: true
     fullName?: true
     dateOfBirth?: true
+    dateOfBirthCiphertext?: true
+    dateOfBirthIv?: true
+    dateOfBirthTag?: true
+    dateOfBirthKeyId?: true
+    dateOfBirthLast4?: true
     phoneNumber?: true
     address?: true
     licenseExpirationDate?: true
@@ -19313,9 +19371,19 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     licenseNumber?: true
+    licenseNumberCiphertext?: true
+    licenseNumberIv?: true
+    licenseNumberTag?: true
+    licenseNumberKeyId?: true
+    licenseNumberLast4?: true
     middleName?: true
     fullName?: true
     dateOfBirth?: true
+    dateOfBirthCiphertext?: true
+    dateOfBirthIv?: true
+    dateOfBirthTag?: true
+    dateOfBirthKeyId?: true
+    dateOfBirthLast4?: true
     phoneNumber?: true
     address?: true
     licenseExpirationDate?: true
@@ -19409,9 +19477,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber: string | null
+    licenseNumberCiphertext: Bytes | null
+    licenseNumberIv: Bytes | null
+    licenseNumberTag: Bytes | null
+    licenseNumberKeyId: string | null
+    licenseNumberLast4: string | null
     middleName: string | null
     fullName: string | null
     dateOfBirth: Date | null
+    dateOfBirthCiphertext: Bytes | null
+    dateOfBirthIv: Bytes | null
+    dateOfBirthTag: Bytes | null
+    dateOfBirthKeyId: string | null
+    dateOfBirthLast4: string | null
     phoneNumber: string | null
     address: string | null
     licenseExpirationDate: Date | null
@@ -19449,9 +19527,19 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     licenseNumber?: boolean
+    licenseNumberCiphertext?: boolean
+    licenseNumberIv?: boolean
+    licenseNumberTag?: boolean
+    licenseNumberKeyId?: boolean
+    licenseNumberLast4?: boolean
     middleName?: boolean
     fullName?: boolean
     dateOfBirth?: boolean
+    dateOfBirthCiphertext?: boolean
+    dateOfBirthIv?: boolean
+    dateOfBirthTag?: boolean
+    dateOfBirthKeyId?: boolean
+    dateOfBirthLast4?: boolean
     phoneNumber?: boolean
     address?: boolean
     licenseExpirationDate?: boolean
@@ -19473,9 +19561,19 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     licenseNumber?: boolean
+    licenseNumberCiphertext?: boolean
+    licenseNumberIv?: boolean
+    licenseNumberTag?: boolean
+    licenseNumberKeyId?: boolean
+    licenseNumberLast4?: boolean
     middleName?: boolean
     fullName?: boolean
     dateOfBirth?: boolean
+    dateOfBirthCiphertext?: boolean
+    dateOfBirthIv?: boolean
+    dateOfBirthTag?: boolean
+    dateOfBirthKeyId?: boolean
+    dateOfBirthLast4?: boolean
     phoneNumber?: boolean
     address?: boolean
     licenseExpirationDate?: boolean
@@ -19497,9 +19595,19 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     licenseNumber?: boolean
+    licenseNumberCiphertext?: boolean
+    licenseNumberIv?: boolean
+    licenseNumberTag?: boolean
+    licenseNumberKeyId?: boolean
+    licenseNumberLast4?: boolean
     middleName?: boolean
     fullName?: boolean
     dateOfBirth?: boolean
+    dateOfBirthCiphertext?: boolean
+    dateOfBirthIv?: boolean
+    dateOfBirthTag?: boolean
+    dateOfBirthKeyId?: boolean
+    dateOfBirthLast4?: boolean
     phoneNumber?: boolean
     address?: boolean
     licenseExpirationDate?: boolean
@@ -19521,9 +19629,19 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     licenseNumber?: boolean
+    licenseNumberCiphertext?: boolean
+    licenseNumberIv?: boolean
+    licenseNumberTag?: boolean
+    licenseNumberKeyId?: boolean
+    licenseNumberLast4?: boolean
     middleName?: boolean
     fullName?: boolean
     dateOfBirth?: boolean
+    dateOfBirthCiphertext?: boolean
+    dateOfBirthIv?: boolean
+    dateOfBirthTag?: boolean
+    dateOfBirthKeyId?: boolean
+    dateOfBirthLast4?: boolean
     phoneNumber?: boolean
     address?: boolean
     licenseExpirationDate?: boolean
@@ -19537,7 +19655,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type DriverInvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "email" | "firstName" | "lastName" | "licenseNumber" | "middleName" | "fullName" | "dateOfBirth" | "phoneNumber" | "address" | "licenseExpirationDate" | "role" | "permissions" | "expiresAt" | "status" | "acceptedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["driverInvitation"]>
+  export type DriverInvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "email" | "firstName" | "lastName" | "licenseNumber" | "licenseNumberCiphertext" | "licenseNumberIv" | "licenseNumberTag" | "licenseNumberKeyId" | "licenseNumberLast4" | "middleName" | "fullName" | "dateOfBirth" | "dateOfBirthCiphertext" | "dateOfBirthIv" | "dateOfBirthTag" | "dateOfBirthKeyId" | "dateOfBirthLast4" | "phoneNumber" | "address" | "licenseExpirationDate" | "role" | "permissions" | "expiresAt" | "status" | "acceptedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["driverInvitation"]>
   export type DriverInvitationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }
@@ -19560,9 +19678,19 @@ export namespace Prisma {
       firstName: string
       lastName: string
       licenseNumber: string | null
+      licenseNumberCiphertext: Prisma.Bytes | null
+      licenseNumberIv: Prisma.Bytes | null
+      licenseNumberTag: Prisma.Bytes | null
+      licenseNumberKeyId: string | null
+      licenseNumberLast4: string | null
       middleName: string | null
       fullName: string | null
       dateOfBirth: Date | null
+      dateOfBirthCiphertext: Prisma.Bytes | null
+      dateOfBirthIv: Prisma.Bytes | null
+      dateOfBirthTag: Prisma.Bytes | null
+      dateOfBirthKeyId: string | null
+      dateOfBirthLast4: string | null
       phoneNumber: string | null
       address: string | null
       licenseExpirationDate: Date | null
@@ -20004,9 +20132,19 @@ export namespace Prisma {
     readonly firstName: FieldRef<"DriverInvitation", 'String'>
     readonly lastName: FieldRef<"DriverInvitation", 'String'>
     readonly licenseNumber: FieldRef<"DriverInvitation", 'String'>
+    readonly licenseNumberCiphertext: FieldRef<"DriverInvitation", 'Bytes'>
+    readonly licenseNumberIv: FieldRef<"DriverInvitation", 'Bytes'>
+    readonly licenseNumberTag: FieldRef<"DriverInvitation", 'Bytes'>
+    readonly licenseNumberKeyId: FieldRef<"DriverInvitation", 'String'>
+    readonly licenseNumberLast4: FieldRef<"DriverInvitation", 'String'>
     readonly middleName: FieldRef<"DriverInvitation", 'String'>
     readonly fullName: FieldRef<"DriverInvitation", 'String'>
     readonly dateOfBirth: FieldRef<"DriverInvitation", 'DateTime'>
+    readonly dateOfBirthCiphertext: FieldRef<"DriverInvitation", 'Bytes'>
+    readonly dateOfBirthIv: FieldRef<"DriverInvitation", 'Bytes'>
+    readonly dateOfBirthTag: FieldRef<"DriverInvitation", 'Bytes'>
+    readonly dateOfBirthKeyId: FieldRef<"DriverInvitation", 'String'>
+    readonly dateOfBirthLast4: FieldRef<"DriverInvitation", 'String'>
     readonly phoneNumber: FieldRef<"DriverInvitation", 'String'>
     readonly address: FieldRef<"DriverInvitation", 'String'>
     readonly licenseExpirationDate: FieldRef<"DriverInvitation", 'DateTime'>
@@ -23227,6 +23365,7 @@ export namespace Prisma {
     sizeBytes: number | null
     uploadedBy: string | null
     documentType: $Enums.DocumentType | null
+    isRestricted: boolean | null
     expiryDate: Date | null
     notes: string | null
     description: string | null
@@ -23248,6 +23387,7 @@ export namespace Prisma {
     sizeBytes: number | null
     uploadedBy: string | null
     documentType: $Enums.DocumentType | null
+    isRestricted: boolean | null
     expiryDate: Date | null
     notes: string | null
     description: string | null
@@ -23269,6 +23409,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: number
     documentType: number
+    isRestricted: number
     expiryDate: number
     notes: number
     description: number
@@ -23300,6 +23441,7 @@ export namespace Prisma {
     sizeBytes?: true
     uploadedBy?: true
     documentType?: true
+    isRestricted?: true
     expiryDate?: true
     notes?: true
     description?: true
@@ -23321,6 +23463,7 @@ export namespace Prisma {
     sizeBytes?: true
     uploadedBy?: true
     documentType?: true
+    isRestricted?: true
     expiryDate?: true
     notes?: true
     description?: true
@@ -23342,6 +23485,7 @@ export namespace Prisma {
     sizeBytes?: true
     uploadedBy?: true
     documentType?: true
+    isRestricted?: true
     expiryDate?: true
     notes?: true
     description?: true
@@ -23450,6 +23594,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType: $Enums.DocumentType | null
+    isRestricted: boolean
     expiryDate: Date | null
     notes: string | null
     description: string | null
@@ -23490,6 +23635,7 @@ export namespace Prisma {
     sizeBytes?: boolean
     uploadedBy?: boolean
     documentType?: boolean
+    isRestricted?: boolean
     expiryDate?: boolean
     notes?: boolean
     description?: boolean
@@ -23517,6 +23663,7 @@ export namespace Prisma {
     sizeBytes?: boolean
     uploadedBy?: boolean
     documentType?: boolean
+    isRestricted?: boolean
     expiryDate?: boolean
     notes?: boolean
     description?: boolean
@@ -23544,6 +23691,7 @@ export namespace Prisma {
     sizeBytes?: boolean
     uploadedBy?: boolean
     documentType?: boolean
+    isRestricted?: boolean
     expiryDate?: boolean
     notes?: boolean
     description?: boolean
@@ -23571,6 +23719,7 @@ export namespace Prisma {
     sizeBytes?: boolean
     uploadedBy?: boolean
     documentType?: boolean
+    isRestricted?: boolean
     expiryDate?: boolean
     notes?: boolean
     description?: boolean
@@ -23579,7 +23728,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type DocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "truckId" | "routeId" | "driverId" | "loadId" | "fileName" | "s3Key" | "contentType" | "sizeBytes" | "uploadedBy" | "documentType" | "expiryDate" | "notes" | "description" | "externalUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["document"]>
+  export type DocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "truckId" | "routeId" | "driverId" | "loadId" | "fileName" | "s3Key" | "contentType" | "sizeBytes" | "uploadedBy" | "documentType" | "isRestricted" | "expiryDate" | "notes" | "description" | "externalUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["document"]>
   export type DocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     truck?: boolean | Document$truckArgs<ExtArgs>
@@ -23628,6 +23777,7 @@ export namespace Prisma {
       sizeBytes: number
       uploadedBy: string
       documentType: $Enums.DocumentType | null
+      isRestricted: boolean
       expiryDate: Date | null
       notes: string | null
       description: string | null
@@ -24075,6 +24225,7 @@ export namespace Prisma {
     readonly sizeBytes: FieldRef<"Document", 'Int'>
     readonly uploadedBy: FieldRef<"Document", 'String'>
     readonly documentType: FieldRef<"Document", 'DocumentType'>
+    readonly isRestricted: FieldRef<"Document", 'Boolean'>
     readonly expiryDate: FieldRef<"Document", 'DateTime'>
     readonly notes: FieldRef<"Document", 'String'>
     readonly description: FieldRef<"Document", 'String'>
@@ -125986,9 +126137,19 @@ export namespace Prisma {
     firstName: 'firstName',
     lastName: 'lastName',
     licenseNumber: 'licenseNumber',
+    licenseNumberCiphertext: 'licenseNumberCiphertext',
+    licenseNumberIv: 'licenseNumberIv',
+    licenseNumberTag: 'licenseNumberTag',
+    licenseNumberKeyId: 'licenseNumberKeyId',
+    licenseNumberLast4: 'licenseNumberLast4',
     middleName: 'middleName',
     fullName: 'fullName',
     dateOfBirth: 'dateOfBirth',
+    dateOfBirthCiphertext: 'dateOfBirthCiphertext',
+    dateOfBirthIv: 'dateOfBirthIv',
+    dateOfBirthTag: 'dateOfBirthTag',
+    dateOfBirthKeyId: 'dateOfBirthKeyId',
+    dateOfBirthLast4: 'dateOfBirthLast4',
     phoneNumber: 'phoneNumber',
     address: 'address',
     licenseExpirationDate: 'licenseExpirationDate',
@@ -126061,6 +126222,7 @@ export namespace Prisma {
     sizeBytes: 'sizeBytes',
     uploadedBy: 'uploadedBy',
     documentType: 'documentType',
+    isRestricted: 'isRestricted',
     expiryDate: 'expiryDate',
     notes: 'notes',
     description: 'description',
@@ -127924,6 +128086,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+  /**
    * Reference to a field of type 'InvitationStatus'
    */
   export type EnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvitationStatus'>
@@ -128340,20 +128516,6 @@ export namespace Prisma {
    * Reference to a field of type 'IncidentSeverity[]'
    */
   export type ListEnumIncidentSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentSeverity[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes'
-   */
-  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes[]'
-   */
-  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -129544,9 +129706,19 @@ export namespace Prisma {
     firstName?: StringFilter<"DriverInvitation"> | string
     lastName?: StringFilter<"DriverInvitation"> | string
     licenseNumber?: StringNullableFilter<"DriverInvitation"> | string | null
+    licenseNumberCiphertext?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberIv?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberTag?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberKeyId?: StringNullableFilter<"DriverInvitation"> | string | null
+    licenseNumberLast4?: StringNullableFilter<"DriverInvitation"> | string | null
     middleName?: StringNullableFilter<"DriverInvitation"> | string | null
     fullName?: StringNullableFilter<"DriverInvitation"> | string | null
     dateOfBirth?: DateTimeNullableFilter<"DriverInvitation"> | Date | string | null
+    dateOfBirthCiphertext?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthIv?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthTag?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthKeyId?: StringNullableFilter<"DriverInvitation"> | string | null
+    dateOfBirthLast4?: StringNullableFilter<"DriverInvitation"> | string | null
     phoneNumber?: StringNullableFilter<"DriverInvitation"> | string | null
     address?: StringNullableFilter<"DriverInvitation"> | string | null
     licenseExpirationDate?: DateTimeNullableFilter<"DriverInvitation"> | Date | string | null
@@ -129568,9 +129740,19 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     licenseNumber?: SortOrderInput | SortOrder
+    licenseNumberCiphertext?: SortOrderInput | SortOrder
+    licenseNumberIv?: SortOrderInput | SortOrder
+    licenseNumberTag?: SortOrderInput | SortOrder
+    licenseNumberKeyId?: SortOrderInput | SortOrder
+    licenseNumberLast4?: SortOrderInput | SortOrder
     middleName?: SortOrderInput | SortOrder
     fullName?: SortOrderInput | SortOrder
     dateOfBirth?: SortOrderInput | SortOrder
+    dateOfBirthCiphertext?: SortOrderInput | SortOrder
+    dateOfBirthIv?: SortOrderInput | SortOrder
+    dateOfBirthTag?: SortOrderInput | SortOrder
+    dateOfBirthKeyId?: SortOrderInput | SortOrder
+    dateOfBirthLast4?: SortOrderInput | SortOrder
     phoneNumber?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     licenseExpirationDate?: SortOrderInput | SortOrder
@@ -129595,9 +129777,19 @@ export namespace Prisma {
     firstName?: StringFilter<"DriverInvitation"> | string
     lastName?: StringFilter<"DriverInvitation"> | string
     licenseNumber?: StringNullableFilter<"DriverInvitation"> | string | null
+    licenseNumberCiphertext?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberIv?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberTag?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberKeyId?: StringNullableFilter<"DriverInvitation"> | string | null
+    licenseNumberLast4?: StringNullableFilter<"DriverInvitation"> | string | null
     middleName?: StringNullableFilter<"DriverInvitation"> | string | null
     fullName?: StringNullableFilter<"DriverInvitation"> | string | null
     dateOfBirth?: DateTimeNullableFilter<"DriverInvitation"> | Date | string | null
+    dateOfBirthCiphertext?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthIv?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthTag?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthKeyId?: StringNullableFilter<"DriverInvitation"> | string | null
+    dateOfBirthLast4?: StringNullableFilter<"DriverInvitation"> | string | null
     phoneNumber?: StringNullableFilter<"DriverInvitation"> | string | null
     address?: StringNullableFilter<"DriverInvitation"> | string | null
     licenseExpirationDate?: DateTimeNullableFilter<"DriverInvitation"> | Date | string | null
@@ -129619,9 +129811,19 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     licenseNumber?: SortOrderInput | SortOrder
+    licenseNumberCiphertext?: SortOrderInput | SortOrder
+    licenseNumberIv?: SortOrderInput | SortOrder
+    licenseNumberTag?: SortOrderInput | SortOrder
+    licenseNumberKeyId?: SortOrderInput | SortOrder
+    licenseNumberLast4?: SortOrderInput | SortOrder
     middleName?: SortOrderInput | SortOrder
     fullName?: SortOrderInput | SortOrder
     dateOfBirth?: SortOrderInput | SortOrder
+    dateOfBirthCiphertext?: SortOrderInput | SortOrder
+    dateOfBirthIv?: SortOrderInput | SortOrder
+    dateOfBirthTag?: SortOrderInput | SortOrder
+    dateOfBirthKeyId?: SortOrderInput | SortOrder
+    dateOfBirthLast4?: SortOrderInput | SortOrder
     phoneNumber?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     licenseExpirationDate?: SortOrderInput | SortOrder
@@ -129648,9 +129850,19 @@ export namespace Prisma {
     firstName?: StringWithAggregatesFilter<"DriverInvitation"> | string
     lastName?: StringWithAggregatesFilter<"DriverInvitation"> | string
     licenseNumber?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
+    licenseNumberCiphertext?: BytesNullableWithAggregatesFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberIv?: BytesNullableWithAggregatesFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberTag?: BytesNullableWithAggregatesFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberKeyId?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
+    licenseNumberLast4?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
     middleName?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
     fullName?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
     dateOfBirth?: DateTimeNullableWithAggregatesFilter<"DriverInvitation"> | Date | string | null
+    dateOfBirthCiphertext?: BytesNullableWithAggregatesFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthIv?: BytesNullableWithAggregatesFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthTag?: BytesNullableWithAggregatesFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthKeyId?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
+    dateOfBirthLast4?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
     phoneNumber?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
     address?: StringNullableWithAggregatesFilter<"DriverInvitation"> | string | null
     licenseExpirationDate?: DateTimeNullableWithAggregatesFilter<"DriverInvitation"> | Date | string | null
@@ -129940,6 +130152,7 @@ export namespace Prisma {
     sizeBytes?: IntFilter<"Document"> | number
     uploadedBy?: UuidFilter<"Document"> | string
     documentType?: EnumDocumentTypeNullableFilter<"Document"> | $Enums.DocumentType | null
+    isRestricted?: BoolFilter<"Document"> | boolean
     expiryDate?: DateTimeNullableFilter<"Document"> | Date | string | null
     notes?: StringNullableFilter<"Document"> | string | null
     description?: StringNullableFilter<"Document"> | string | null
@@ -129967,6 +130180,7 @@ export namespace Prisma {
     sizeBytes?: SortOrder
     uploadedBy?: SortOrder
     documentType?: SortOrderInput | SortOrder
+    isRestricted?: SortOrder
     expiryDate?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
@@ -129997,6 +130211,7 @@ export namespace Prisma {
     sizeBytes?: IntFilter<"Document"> | number
     uploadedBy?: UuidFilter<"Document"> | string
     documentType?: EnumDocumentTypeNullableFilter<"Document"> | $Enums.DocumentType | null
+    isRestricted?: BoolFilter<"Document"> | boolean
     expiryDate?: DateTimeNullableFilter<"Document"> | Date | string | null
     notes?: StringNullableFilter<"Document"> | string | null
     description?: StringNullableFilter<"Document"> | string | null
@@ -130024,6 +130239,7 @@ export namespace Prisma {
     sizeBytes?: SortOrder
     uploadedBy?: SortOrder
     documentType?: SortOrderInput | SortOrder
+    isRestricted?: SortOrder
     expiryDate?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
@@ -130053,6 +130269,7 @@ export namespace Prisma {
     sizeBytes?: IntWithAggregatesFilter<"Document"> | number
     uploadedBy?: UuidWithAggregatesFilter<"Document"> | string
     documentType?: EnumDocumentTypeNullableWithAggregatesFilter<"Document"> | $Enums.DocumentType | null
+    isRestricted?: BoolWithAggregatesFilter<"Document"> | boolean
     expiryDate?: DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
     notes?: StringNullableWithAggregatesFilter<"Document"> | string | null
     description?: StringNullableWithAggregatesFilter<"Document"> | string | null
@@ -139915,9 +140132,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber?: string | null
+    licenseNumberCiphertext?: Bytes | null
+    licenseNumberIv?: Bytes | null
+    licenseNumberTag?: Bytes | null
+    licenseNumberKeyId?: string | null
+    licenseNumberLast4?: string | null
     middleName?: string | null
     fullName?: string | null
     dateOfBirth?: Date | string | null
+    dateOfBirthCiphertext?: Bytes | null
+    dateOfBirthIv?: Bytes | null
+    dateOfBirthTag?: Bytes | null
+    dateOfBirthKeyId?: string | null
+    dateOfBirthLast4?: string | null
     phoneNumber?: string | null
     address?: string | null
     licenseExpirationDate?: Date | string | null
@@ -139939,9 +140166,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber?: string | null
+    licenseNumberCiphertext?: Bytes | null
+    licenseNumberIv?: Bytes | null
+    licenseNumberTag?: Bytes | null
+    licenseNumberKeyId?: string | null
+    licenseNumberLast4?: string | null
     middleName?: string | null
     fullName?: string | null
     dateOfBirth?: Date | string | null
+    dateOfBirthCiphertext?: Bytes | null
+    dateOfBirthIv?: Bytes | null
+    dateOfBirthTag?: Bytes | null
+    dateOfBirthKeyId?: string | null
+    dateOfBirthLast4?: string | null
     phoneNumber?: string | null
     address?: string | null
     licenseExpirationDate?: Date | string | null
@@ -139961,9 +140198,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -139985,9 +140232,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -140008,9 +140265,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber?: string | null
+    licenseNumberCiphertext?: Bytes | null
+    licenseNumberIv?: Bytes | null
+    licenseNumberTag?: Bytes | null
+    licenseNumberKeyId?: string | null
+    licenseNumberLast4?: string | null
     middleName?: string | null
     fullName?: string | null
     dateOfBirth?: Date | string | null
+    dateOfBirthCiphertext?: Bytes | null
+    dateOfBirthIv?: Bytes | null
+    dateOfBirthTag?: Bytes | null
+    dateOfBirthKeyId?: string | null
+    dateOfBirthLast4?: string | null
     phoneNumber?: string | null
     address?: string | null
     licenseExpirationDate?: Date | string | null
@@ -140030,9 +140297,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -140053,9 +140330,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -140359,6 +140646,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -140386,6 +140674,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -140401,6 +140690,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -140428,6 +140718,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -140449,6 +140740,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -140464,6 +140756,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -140485,6 +140778,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -151908,6 +152202,13 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type BytesNullableFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
+  }
+
   export type EnumInvitationStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.InvitationStatus | EnumInvitationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.InvitationStatus[] | ListEnumInvitationStatusFieldRefInput<$PrismaModel>
@@ -151922,9 +152223,19 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     licenseNumber?: SortOrder
+    licenseNumberCiphertext?: SortOrder
+    licenseNumberIv?: SortOrder
+    licenseNumberTag?: SortOrder
+    licenseNumberKeyId?: SortOrder
+    licenseNumberLast4?: SortOrder
     middleName?: SortOrder
     fullName?: SortOrder
     dateOfBirth?: SortOrder
+    dateOfBirthCiphertext?: SortOrder
+    dateOfBirthIv?: SortOrder
+    dateOfBirthTag?: SortOrder
+    dateOfBirthKeyId?: SortOrder
+    dateOfBirthLast4?: SortOrder
     phoneNumber?: SortOrder
     address?: SortOrder
     licenseExpirationDate?: SortOrder
@@ -151945,9 +152256,19 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     licenseNumber?: SortOrder
+    licenseNumberCiphertext?: SortOrder
+    licenseNumberIv?: SortOrder
+    licenseNumberTag?: SortOrder
+    licenseNumberKeyId?: SortOrder
+    licenseNumberLast4?: SortOrder
     middleName?: SortOrder
     fullName?: SortOrder
     dateOfBirth?: SortOrder
+    dateOfBirthCiphertext?: SortOrder
+    dateOfBirthIv?: SortOrder
+    dateOfBirthTag?: SortOrder
+    dateOfBirthKeyId?: SortOrder
+    dateOfBirthLast4?: SortOrder
     phoneNumber?: SortOrder
     address?: SortOrder
     licenseExpirationDate?: SortOrder
@@ -151967,9 +152288,19 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     licenseNumber?: SortOrder
+    licenseNumberCiphertext?: SortOrder
+    licenseNumberIv?: SortOrder
+    licenseNumberTag?: SortOrder
+    licenseNumberKeyId?: SortOrder
+    licenseNumberLast4?: SortOrder
     middleName?: SortOrder
     fullName?: SortOrder
     dateOfBirth?: SortOrder
+    dateOfBirthCiphertext?: SortOrder
+    dateOfBirthIv?: SortOrder
+    dateOfBirthTag?: SortOrder
+    dateOfBirthKeyId?: SortOrder
+    dateOfBirthLast4?: SortOrder
     phoneNumber?: SortOrder
     address?: SortOrder
     licenseExpirationDate?: SortOrder
@@ -151980,6 +152311,16 @@ export namespace Prisma {
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type EnumInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -152243,6 +152584,7 @@ export namespace Prisma {
     sizeBytes?: SortOrder
     uploadedBy?: SortOrder
     documentType?: SortOrder
+    isRestricted?: SortOrder
     expiryDate?: SortOrder
     notes?: SortOrder
     description?: SortOrder
@@ -152268,6 +152610,7 @@ export namespace Prisma {
     sizeBytes?: SortOrder
     uploadedBy?: SortOrder
     documentType?: SortOrder
+    isRestricted?: SortOrder
     expiryDate?: SortOrder
     notes?: SortOrder
     description?: SortOrder
@@ -152289,6 +152632,7 @@ export namespace Prisma {
     sizeBytes?: SortOrder
     uploadedBy?: SortOrder
     documentType?: SortOrder
+    isRestricted?: SortOrder
     expiryDate?: SortOrder
     notes?: SortOrder
     description?: SortOrder
@@ -154906,13 +155250,6 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
-  export type BytesNullableFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
-  }
-
   export type CarrierFacilityNullableScalarRelationFilter = {
     is?: CarrierFacilityWhereInput | null
     isNot?: CarrierFacilityWhereInput | null
@@ -155008,16 +155345,6 @@ export namespace Prisma {
 
   export type CarrierDriverSumOrderByAggregateInput = {
     payRate?: SortOrder
-  }
-
-  export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBytesNullableFilter<$PrismaModel>
-    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type CarrierTruckCountOrderByAggregateInput = {
@@ -163634,6 +163961,10 @@ export namespace Prisma {
     connect?: TenantWhereUniqueInput
   }
 
+  export type NullableBytesFieldUpdateOperationsInput = {
+    set?: Bytes | null
+  }
+
   export type EnumInvitationStatusFieldUpdateOperationsInput = {
     set?: $Enums.InvitationStatus
   }
@@ -166666,10 +166997,6 @@ export namespace Prisma {
     connectOrCreate?: DriverDisputeCreateOrConnectWithoutDriverInput | DriverDisputeCreateOrConnectWithoutDriverInput[]
     createMany?: DriverDisputeCreateManyDriverInputEnvelope
     connect?: DriverDisputeWhereUniqueInput | DriverDisputeWhereUniqueInput[]
-  }
-
-  export type NullableBytesFieldUpdateOperationsInput = {
-    set?: Bytes | null
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierDriversNestedInput = {
@@ -170896,11 +171223,28 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type NestedBytesNullableFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
+  }
+
   export type NestedEnumInvitationStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.InvitationStatus | EnumInvitationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.InvitationStatus[] | ListEnumInvitationStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.InvitationStatus[] | ListEnumInvitationStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumInvitationStatusFilter<$PrismaModel> | $Enums.InvitationStatus
+  }
+
+  export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -171480,23 +171824,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedBytesNullableFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
-  }
-
-  export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBytesNullableFilter<$PrismaModel>
-    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumMileageSourceNullableFilter<$PrismaModel = never> = {
@@ -172334,9 +172661,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber?: string | null
+    licenseNumberCiphertext?: Bytes | null
+    licenseNumberIv?: Bytes | null
+    licenseNumberTag?: Bytes | null
+    licenseNumberKeyId?: string | null
+    licenseNumberLast4?: string | null
     middleName?: string | null
     fullName?: string | null
     dateOfBirth?: Date | string | null
+    dateOfBirthCiphertext?: Bytes | null
+    dateOfBirthIv?: Bytes | null
+    dateOfBirthTag?: Bytes | null
+    dateOfBirthKeyId?: string | null
+    dateOfBirthLast4?: string | null
     phoneNumber?: string | null
     address?: string | null
     licenseExpirationDate?: Date | string | null
@@ -172356,9 +172693,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber?: string | null
+    licenseNumberCiphertext?: Bytes | null
+    licenseNumberIv?: Bytes | null
+    licenseNumberTag?: Bytes | null
+    licenseNumberKeyId?: string | null
+    licenseNumberLast4?: string | null
     middleName?: string | null
     fullName?: string | null
     dateOfBirth?: Date | string | null
+    dateOfBirthCiphertext?: Bytes | null
+    dateOfBirthIv?: Bytes | null
+    dateOfBirthTag?: Bytes | null
+    dateOfBirthKeyId?: string | null
+    dateOfBirthLast4?: string | null
     phoneNumber?: string | null
     address?: string | null
     licenseExpirationDate?: Date | string | null
@@ -172459,6 +172806,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -172484,6 +172832,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -175753,9 +176102,19 @@ export namespace Prisma {
     firstName?: StringFilter<"DriverInvitation"> | string
     lastName?: StringFilter<"DriverInvitation"> | string
     licenseNumber?: StringNullableFilter<"DriverInvitation"> | string | null
+    licenseNumberCiphertext?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberIv?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberTag?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    licenseNumberKeyId?: StringNullableFilter<"DriverInvitation"> | string | null
+    licenseNumberLast4?: StringNullableFilter<"DriverInvitation"> | string | null
     middleName?: StringNullableFilter<"DriverInvitation"> | string | null
     fullName?: StringNullableFilter<"DriverInvitation"> | string | null
     dateOfBirth?: DateTimeNullableFilter<"DriverInvitation"> | Date | string | null
+    dateOfBirthCiphertext?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthIv?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthTag?: BytesNullableFilter<"DriverInvitation"> | Bytes | null
+    dateOfBirthKeyId?: StringNullableFilter<"DriverInvitation"> | string | null
+    dateOfBirthLast4?: StringNullableFilter<"DriverInvitation"> | string | null
     phoneNumber?: StringNullableFilter<"DriverInvitation"> | string | null
     address?: StringNullableFilter<"DriverInvitation"> | string | null
     licenseExpirationDate?: DateTimeNullableFilter<"DriverInvitation"> | Date | string | null
@@ -175843,6 +176202,7 @@ export namespace Prisma {
     sizeBytes?: IntFilter<"Document"> | number
     uploadedBy?: UuidFilter<"Document"> | string
     documentType?: EnumDocumentTypeNullableFilter<"Document"> | $Enums.DocumentType | null
+    isRestricted?: BoolFilter<"Document"> | boolean
     expiryDate?: DateTimeNullableFilter<"Document"> | Date | string | null
     notes?: StringNullableFilter<"Document"> | string | null
     description?: StringNullableFilter<"Document"> | string | null
@@ -178671,6 +179031,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -178696,6 +179057,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -178721,6 +179083,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -178746,6 +179109,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -181616,6 +181980,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -181641,6 +182006,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -183476,6 +183842,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -183501,6 +183868,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -198894,6 +199262,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -198919,6 +199288,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -235948,9 +236318,19 @@ export namespace Prisma {
     firstName: string
     lastName: string
     licenseNumber?: string | null
+    licenseNumberCiphertext?: Bytes | null
+    licenseNumberIv?: Bytes | null
+    licenseNumberTag?: Bytes | null
+    licenseNumberKeyId?: string | null
+    licenseNumberLast4?: string | null
     middleName?: string | null
     fullName?: string | null
     dateOfBirth?: Date | string | null
+    dateOfBirthCiphertext?: Bytes | null
+    dateOfBirthIv?: Bytes | null
+    dateOfBirthTag?: Bytes | null
+    dateOfBirthKeyId?: string | null
+    dateOfBirthLast4?: string | null
     phoneNumber?: string | null
     address?: string | null
     licenseExpirationDate?: Date | string | null
@@ -235998,6 +236378,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -237327,9 +237708,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237349,9 +237740,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237371,9 +237772,19 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    licenseNumberKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumberLast4?: NullableStringFieldUpdateOperationsInput | string | null
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
     dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateOfBirthCiphertext?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthIv?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthTag?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    dateOfBirthKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirthLast4?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     licenseExpirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237476,6 +237887,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -237501,6 +237913,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -237521,6 +237934,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241086,6 +241500,7 @@ export namespace Prisma {
     contentType: string
     sizeBytes: number
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -241106,6 +241521,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -241756,6 +242172,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241781,6 +242198,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241801,6 +242219,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241816,6 +242235,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241841,6 +242261,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241861,6 +242282,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -243668,6 +244090,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -243882,6 +244305,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -243907,6 +244331,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -243927,6 +244352,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -244304,6 +244730,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -244444,6 +244871,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -244469,6 +244897,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -244489,6 +244918,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -245356,6 +245786,7 @@ export namespace Prisma {
     sizeBytes: number
     uploadedBy: string
     documentType?: $Enums.DocumentType | null
+    isRestricted?: boolean
     expiryDate?: Date | string | null
     notes?: string | null
     description?: string | null
@@ -245480,6 +245911,7 @@ export namespace Prisma {
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -245505,6 +245937,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -245525,6 +245958,7 @@ export namespace Prisma {
     sizeBytes?: IntFieldUpdateOperationsInput | number
     uploadedBy?: StringFieldUpdateOperationsInput | string
     documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    isRestricted?: BoolFieldUpdateOperationsInput | boolean
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null

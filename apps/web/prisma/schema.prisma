@@ -73,6 +73,15 @@ enum DocumentType {
   DRIVER_APPLICATION
   GENERAL
   RATE_CONFIRMATION
+  // Restricted PII document types (quick-348) — land under tenant-{id}/restricted/ prefix
+  SSN_CARD
+  PASSPORT
+  CDL_SCAN
+  MEDICAL_CARD
+  VOIDED_CHECK
+  W9
+  W4
+  I9
 }
 
 enum IntegrationProvider {
@@ -445,6 +454,7 @@ model Document {
   sizeBytes    Int
   uploadedBy   String        @db.Uuid
   documentType DocumentType?
+  isRestricted Boolean       @default(false) @map("is_restricted")
   expiryDate   DateTime?     @db.Timestamptz
   notes        String?
   description  String?       @db.Text
@@ -467,6 +477,7 @@ model Document {
   @@index([expiryDate])
   @@index([uploadedBy])
   @@index([tenantId, driverId])
+  @@index([tenantId, isRestricted], name: "document_tenant_restricted_idx")
 }
 
 model MaintenanceEvent {
