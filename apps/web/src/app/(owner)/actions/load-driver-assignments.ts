@@ -291,7 +291,7 @@ export async function createAssignment(
       payload: {
         loadId,
         loadNumber,
-        driverId: cd.id,
+        driverId: cd.userId ?? '', // User id for recipient resolver; cd.id is the CarrierDriver row id
         driverName: `${driver.firstName} ${driver.lastName}`,
         originCity,
         destCity,
