@@ -236,10 +236,27 @@ export async function createAssignment(
   });
 
   // Prefetch load/driver data needed for notification payload.
+  //
+  // IMPORTANT (quick-341): `LoadDriverAssignment.loadId` is a FK to `CarrierLoad`,
+  // which is `@@map("loads")` in the schema. The legacy `Load` model is a
+  // DIFFERENT table — querying it with this id always returned null (quick-340
+  // [notif-trace] showed load=false in prod). Use `carrierLoad` and pull
+  // origin/destination cities via the stops -> facility relation. `referenceNumber`
+  // is the user-facing load identifier (replaces the non-existent `loadNumber`).
   const [load, driver] = await Promise.all([
-    defaultPrisma.load.findUnique({
+    defaultPrisma.carrierLoad.findUnique({
       where: { id: loadId },
-      select: { loadNumber: true, origin: true, destination: true },
+      select: {
+        referenceNumber: true,
+        stops: {
+          select: {
+            stopType: true,
+            sequenceOrder: true,
+            facility: { select: { city: true } },
+          },
+          orderBy: { sequenceOrder: 'asc' },
+        },
+      },
     }),
     defaultPrisma.carrierDriver.findUnique({
       where: { id: cd.id },
@@ -252,6 +269,18 @@ export async function createAssignment(
 
   console.log(`[notif-trace] caller:prefetch-result load=${load != null} driver=${driver != null} loadId=${loadId} driverId=${cd.id}`);
   if (load && driver) {
+    // Derive origin/destination cities from stops. `stopType` is a free-form string
+    // in the schema; we accept the conventional 'pickup' / 'delivery' values
+    // (case-insensitive) and fall back to '' when no matching stop exists yet
+    // (e.g. load was created without a dispatch). The notification template renders
+    // safely with empty strings.
+    const pickupStop = load.stops.find((s) => s.stopType?.toLowerCase() === 'pickup');
+    const deliveryStops = load.stops.filter((s) => s.stopType?.toLowerCase() === 'delivery');
+    const deliveryStop = deliveryStops.length > 0 ? deliveryStops[deliveryStops.length - 1] : undefined;
+    const originCity = pickupStop?.facility?.city ?? '';
+    const destCity = deliveryStop?.facility?.city ?? '';
+    const loadNumber = load.referenceNumber ?? '';
+
     console.log(`[notif-trace] caller:before-dispatch trigger=load.assigned load=${loadId} driver=${cd.id}`);
     // Synchronous await — quick-336 (waitUntil wrap) and quick-337 (prefetch outside waitUntil) both
     // failed in production with zero NotificationSendLog rows. The Vercel + Next.js Server Action
@@ -261,11 +290,11 @@ export async function createAssignment(
       tenantId,
       payload: {
         loadId,
-        loadNumber: load.loadNumber,
+        loadNumber,
         driverId: cd.id,
         driverName: `${driver.firstName} ${driver.lastName}`,
-        originCity: load.origin,
-        destCity: load.destination,
+        originCity,
+        destCity,
       },
       relatedEntity: { type: 'Load', id: loadId },
     }).catch((err) => console.error('[notifications] load.assigned (createAssignment) dispatch failed', err));
