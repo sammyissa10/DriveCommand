@@ -137388,7 +137388,6 @@ export namespace Prisma {
 
   export type LoadDriverAssignmentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    loadId_driverId?: LoadDriverAssignmentLoadIdDriverIdCompoundUniqueInput
     AND?: LoadDriverAssignmentWhereInput | LoadDriverAssignmentWhereInput[]
     OR?: LoadDriverAssignmentWhereInput[]
     NOT?: LoadDriverAssignmentWhereInput | LoadDriverAssignmentWhereInput[]
@@ -137430,7 +137429,7 @@ export namespace Prisma {
     settlement?: XOR<DriverSettlementNullableScalarRelationFilter, DriverSettlementWhereInput> | null
     payComponents?: LoadPayComponentListRelationFilter
     attachments?: PayComponentAttachmentListRelationFilter
-  }, "id" | "loadId_driverId">
+  }, "id">
 
   export type LoadDriverAssignmentOrderByWithAggregationInput = {
     id?: SortOrder
@@ -157502,11 +157501,6 @@ export namespace Prisma {
   export type DriverSettlementNullableScalarRelationFilter = {
     is?: DriverSettlementWhereInput | null
     isNot?: DriverSettlementWhereInput | null
-  }
-
-  export type LoadDriverAssignmentLoadIdDriverIdCompoundUniqueInput = {
-    loadId: string
-    driverId: string
   }
 
   export type LoadDriverAssignmentCountOrderByAggregateInput = {

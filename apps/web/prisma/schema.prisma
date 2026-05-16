@@ -2706,7 +2706,8 @@ model LoadDriverAssignment {
   payComponents LoadPayComponent[]
   attachments   PayComponentAttachment[]
 
-  @@unique([loadId, driverId])
+  // Uniqueness enforced by partial unique index in DB (only live rows);
+  // see migration apply-partial-unique-load-driver.sql
   @@index([tenantId])
   @@index([loadId])
   @@index([driverId])
