@@ -103,4 +103,28 @@ export const userTemplates: NotificationTemplateSeed[] = [
     isActive: true,
     inAppEnabled: true,
   },
+  {
+    triggerKey: 'manager.invited',
+    category: NotificationCategory.USER,
+    displayName: 'Manager Invited',
+    description: 'Sent to a newly invited team member (manager) with their accept-invitation link.',
+    defaultSubject: "You've been invited to join {{tenantName}} on DriveCommand",
+    defaultBlockJson: buildDefaultTemplate({
+      headerText: 'Team member invitation',
+      paragraphTextWithVars:
+        'Hi {{firstName}}, you have been invited to join {{tenantName}} as a team member on DriveCommand. Click below to accept your invitation and set up your account.',
+      ctaLabel: 'Accept Invitation',
+      ctaUrl: '{{inviteUrl}}',
+      footerNote: 'If you did not expect this invitation, you can ignore this email.',
+    }),
+    availableVariables: [
+      { name: 'managerEmail', description: 'Email address the invite was sent to', sampleValue: 'manager@example.com' },
+      { name: 'firstName', description: "The invitee's first name", sampleValue: 'Sammy' },
+      { name: 'tenantName', description: 'Name of the company on DriveCommand', sampleValue: 'Acme Trucking' },
+      { name: 'inviteUrl', description: 'URL to accept the invitation', sampleValue: 'https://app.drivecommand.com/accept-invitation?token=abc123' },
+    ],
+    defaultRecipients: [{ type: 'external_email', payloadKey: 'managerEmail' }],
+    isActive: true,
+    inAppEnabled: false,
+  },
 ];
