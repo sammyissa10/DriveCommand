@@ -260,7 +260,7 @@ export async function createAssignment(
     }),
     defaultPrisma.carrierDriver.findUnique({
       where: { id: cd.id },
-      select: { firstName: true, lastName: true },
+      select: { firstName: true, lastName: true, email: true },
     }),
   ]).catch((err) => {
     console.error('[notifications] createAssignment prefetch failed', err);
@@ -292,6 +292,7 @@ export async function createAssignment(
         loadId,
         loadNumber,
         driverId: cd.userId ?? '', // User id for recipient resolver; cd.id is the CarrierDriver row id
+        driverEmail: driver.email ?? '', // quick-344: external_email rule for CarrierDrivers without a linked User
         driverName: `${driver.firstName} ${driver.lastName}`,
         originCity,
         destCity,

@@ -436,7 +436,7 @@ export async function dispatchLoad(id: string, prevState: ActionState | null, fo
     const [dispatchDriver] = await Promise.all([
       prisma.user.findUnique({
         where: { id: result.data.driverId },
-        select: { firstName: true, lastName: true },
+        select: { firstName: true, lastName: true, email: true },
       }),
     ]).catch((err) => {
       console.error('[notifications] dispatchLoad notif prep failed', err);
@@ -458,6 +458,7 @@ export async function dispatchLoad(id: string, prevState: ActionState | null, fo
             loadId: id,
             loadNumber: load.loadNumber,
             driverId: result.data.driverId,
+            driverEmail: dispatchDriver?.email ?? '',
             driverName,
             originCity: load.origin,
             destCity: load.destination,

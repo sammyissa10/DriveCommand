@@ -314,6 +314,7 @@ describe('dispatchNotification', () => {
         loadId: 'load_1',
         loadNumber: 'L-001',
         driverId: 'user_alex',
+        driverEmail: 'alex@test.com',
         driverName: 'Alex',
         originCity: 'Chicago',
         destCity: 'Dallas',
