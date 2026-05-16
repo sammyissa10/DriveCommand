@@ -1,0 +1,14 @@
+*.bomb
+*.tmp
+*.svg
+*.docm
+*.xlsm
+*.pptm
+*.dotm
+*.xltm
+*.potm
+*.html
+*.htm
+large-*.png
+large-*.pdf
+large-*.json
