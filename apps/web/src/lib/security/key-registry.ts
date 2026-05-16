@@ -29,7 +29,7 @@ export function getCurrentKeyId(): string {
  * Parsed from VALID_KMS_KEY_IDS (comma-separated).
  * Falls back to [CURRENT_KMS_KEY_ID] if VALID_KMS_KEY_IDS is unset.
  */
-function getValidKeyIds(): Set<string> {
+export function getValidKeyIds(): Set<string> {
   const raw = process.env.VALID_KMS_KEY_IDS;
   if (raw) {
     return new Set(
@@ -76,4 +76,35 @@ export function getCurrentKey(): { keyId: string; key: Buffer } {
   const keyId = getCurrentKeyId();
   const key = getKeyById(keyId);
   return { keyId, key };
+}
+
+/**
+ * Validates that the KMS key configuration is complete and correct.
+ * Call explicitly at app startup to fail fast on misconfigured deploys.
+ *
+ * Checks:
+ *   1. CURRENT_KMS_KEY_ID is set
+ *   2. CURRENT_KMS_KEY_ID is in VALID_KMS_KEY_IDS
+ *   3. KMS_KEY_<id> is set and is exactly 64 hex characters
+ */
+export function validateKeyConfig(): void {
+  const keyId = process.env.CURRENT_KMS_KEY_ID;
+  if (!keyId) throw new Error('CURRENT_KMS_KEY_ID env var is not set');
+
+  const validIds = getValidKeyIds();
+  if (!validIds.has(keyId)) {
+    throw new Error(`CURRENT_KMS_KEY_ID "${keyId}" is not in VALID_KMS_KEY_IDS`);
+  }
+
+  const hex = process.env[`KMS_KEY_${keyId}`];
+  if (!hex) throw new Error(`KMS_KEY_${keyId} env var is not set`);
+  if (!/^[0-9a-fA-F]{64}$/.test(hex)) {
+    throw new Error(`KMS_KEY_${keyId} must be exactly 64 hex characters (32 bytes)`);
+  }
+}
+
+// Validate KMS key configuration on startup in non-test environments.
+// Throws if CURRENT_KMS_KEY_ID is set but invalid — catches misconfigured deploys early.
+if (process.env.NODE_ENV !== 'test' && process.env.CURRENT_KMS_KEY_ID) {
+  validateKeyConfig();
 }

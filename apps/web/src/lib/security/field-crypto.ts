@@ -1,3 +1,5 @@
+// TODO: migrate keys to Supabase Vault or hosted secrets manager; env vars are a known interim solution.
+
 /**
  * Field-level AES-256-GCM encryption wrapper.
  *
@@ -11,7 +13,7 @@
  */
 
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
-import { getKeyById } from './key-registry';
+import { getKeyById, getCurrentKeyId } from './key-registry';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_BYTES = 12;
@@ -26,12 +28,14 @@ export interface EncryptedField {
 
 /**
  * Encrypts a plaintext string under the given keyId.
+ * If keyId is omitted, uses CURRENT_KMS_KEY_ID (the active write key).
  * Returns the encrypted shape with a fresh random IV per call.
  */
-export function encryptField(plaintext: string, keyId: string): EncryptedField {
+export function encryptField(plaintext: string, keyId?: string): EncryptedField {
+  const resolvedKeyId = keyId ?? getCurrentKeyId();
   let key: Buffer;
   try {
-    key = getKeyById(keyId);
+    key = getKeyById(resolvedKeyId);
   } catch (err) {
     throw new Error(`encryption failed: ${(err as Error).message}`);
   }
@@ -55,7 +59,21 @@ export function encryptField(plaintext: string, keyId: string): EncryptedField {
     throw new Error('encryption failed: unexpected auth tag length');
   }
 
-  return { ciphertext, iv, tag, keyId };
+  return { ciphertext, iv, tag, keyId: resolvedKeyId };
+}
+
+/**
+ * Returns the last 4 characters of a string for display purposes (e.g. "6789" for SSN, year for DOB).
+ * Returns '****' if the input is empty or shorter than 4 characters.
+ *
+ * Usage:
+ *   last4('123-45-6789')               → '6789'
+ *   last4(dob.getFullYear().toString()) → '1990'
+ *   last4('')                           → '****'
+ */
+export function last4(plaintext: string): string {
+  if (!plaintext || plaintext.length < 4) return '****';
+  return plaintext.slice(-4);
 }
 
 /**
