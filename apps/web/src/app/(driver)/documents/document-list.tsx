@@ -4,7 +4,17 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileText, ExternalLink, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { FileText, ExternalLink, AlertTriangle, CheckCircle, Clock, Lock } from 'lucide-react';
 import { formatDistanceToNow, isPast, isWithinInterval, addDays } from 'date-fns';
 
 interface Document {
@@ -16,6 +26,10 @@ interface Document {
   createdAt: Date;
   contentType: string;
   sizeBytes: number;
+  /** true when documentType is one of the restricted PII types (SSN_CARD, PASSPORT, etc.) */
+  isRestricted: boolean;
+  /** driverId of the document owner — used for RBAC on restricted docs */
+  driverId: string | null;
 }
 
 interface DocumentListProps {
@@ -79,8 +93,9 @@ function formatFileSize(bytes: number): string {
 
 export function DocumentList({ documents }: DocumentListProps) {
   const [viewingId, setViewingId] = useState<string | null>(null);
+  const [restrictedDialogDoc, setRestrictedDialogDoc] = useState<Document | null>(null);
 
-  const handleView = async (doc: Document) => {
+  const fetchAndOpenDocument = async (doc: Document) => {
     setViewingId(doc.id);
     try {
       // Fetch presigned URL from API
@@ -95,6 +110,15 @@ export function DocumentList({ documents }: DocumentListProps) {
       alert('Failed to open document. Please try again.');
     } finally {
       setViewingId(null);
+    }
+  };
+
+  const handleView = (doc: Document) => {
+    if (doc.isRestricted) {
+      // Show access log confirmation dialog before fetching restricted document URL
+      setRestrictedDialogDoc(doc);
+    } else {
+      void fetchAndOpenDocument(doc);
     }
   };
 
@@ -128,10 +152,44 @@ export function DocumentList({ documents }: DocumentListProps) {
   );
 
   return (
+    <>
+      {/* Restricted document access log confirmation dialog */}
+      <AlertDialog
+        open={!!restrictedDialogDoc}
+        onOpenChange={(open) => {
+          if (!open) setRestrictedDialogDoc(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>This download will be recorded in the access log.</AlertDialogTitle>
+            <AlertDialogDescription>
+              A timestamped record of who accessed this document will be created. Continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (restrictedDialogDoc) {
+                  void fetchAndOpenDocument(restrictedDialogDoc);
+                  setRestrictedDialogDoc(null);
+                }
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     <div className="space-y-6">
       {Object.entries(groupedDocs).map(([type, docs]) => (
         <div key={type}>
-          <h3 className="text-sm font-semibold text-foreground mb-3">
+          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            {docs[0]?.isRestricted && (
+              <Lock className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
+            )}
             {formatDocumentType(type)}
           </h3>
           <div className="space-y-3">
@@ -146,11 +204,20 @@ export function DocumentList({ documents }: DocumentListProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
                           <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="text-sm font-medium text-foreground truncate">
+                          <span
+                            className="text-sm font-medium text-foreground truncate"
+                            aria-label={doc.isRestricted ? `${doc.fileName} — Restricted document` : doc.fileName}
+                          >
                             {doc.fileName}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
+                          {doc.isRestricted && (
+                            <Badge variant="destructive" className="flex items-center gap-1">
+                              <Lock className="h-3 w-3" aria-hidden="true" />
+                              Restricted
+                            </Badge>
+                          )}
                           <Badge
                             variant={
                               status.variant === 'warning'
@@ -186,6 +253,11 @@ export function DocumentList({ documents }: DocumentListProps) {
                         onClick={() => handleView(doc)}
                         disabled={isViewing}
                         className="shrink-0"
+                        aria-label={
+                          doc.isRestricted
+                            ? `View Restricted document ${doc.fileName}`
+                            : `View ${doc.fileName}`
+                        }
                       >
                         {isViewing ? (
                           'Opening...'
@@ -205,5 +277,6 @@ export function DocumentList({ documents }: DocumentListProps) {
         </div>
       ))}
     </div>
+    </>
   );
 }

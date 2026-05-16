@@ -33,6 +33,8 @@ export default async function DriverDocumentsPage() {
       createdAt: true,
       contentType: true,
       sizeBytes: true,
+      isRestricted: true,
+      driverId: true,
     },
   });
 

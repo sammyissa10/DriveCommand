@@ -1,3 +1,6 @@
+// TODO(quick-348-followup): Mirror Lock icon + Restricted badge + confirm dialog
+// from apps/web/src/app/(driver)/documents/document-list.tsx for restricted DocumentTypes.
+// Server-side RBAC + 15-min presigned URL enforcement is already active regardless of client UI.
 import React, { useState } from 'react'
 import {
   ActionSheetIOS,
