@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 346: Driver Pay Phase 11 — Payroll Export verified complete (55/55 tests; 4 exporters; tenant isolation test added)
+Last activity: 2026-05-16 - Completed quick task 347: Field-level AES-256-GCM encryption for restricted PII columns (PR A dual-write window) — last4(), optional keyId, startup validation, 10 encrypted columns on DriverInvitation (licenseNumber + dateOfBirth), dual-write in inviteDriver + mobile invite, batched backfill script
 Last session: 2026-05-15T22:43:00Z
 Stopped at: Completed quick-343: dropped lda_unique_load_driver constraint, created partial unique index (deleted_at IS NULL), updated Prisma schema, wrapped handleAssign in try/catch/finally. tsc clean, build green.
 
@@ -59642,6 +59642,7 @@ None blocking immediate progress.
 - Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
 - Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 - Quick-290 (2026-05-09): Build MDX Component Library and Rendering Pipeline — RSC-native MDX pipeline with 14 blocks (Callout/StepFlow/Screenshot/FeatureCard + sysadmin CodeBlock/ApiTable/RlsPolicyBox/PrismaModelRef), next-mdx-remote v5, Zod frontmatter validation, registry cross-check — 3 tasks, 26 files, [290-build-mdx-component-library-and-renderin](./quick/290-build-mdx-component-library-and-renderin/)
+- Quick-347 (2026-05-16): Field-level AES-256-GCM encryption for restricted PII columns (PR A dual-write window) — last4(), optional keyId, startup validation, 10 encrypted columns on DriverInvitation (licenseNumber + dateOfBirth), dual-write in inviteDriver + mobile invite, batched backfill script — 3 tasks, 7 files
 | Phase quick-309 P01 | 3m | 2 tasks | 2 files |
 
 ## Accumulated Context
