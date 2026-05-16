@@ -113,6 +113,9 @@ const config: Config = {
   				critical: 'var(--color-critical)',
   				info: 'var(--color-info)',
   			},
+  			// Hero Surface Colors (auth/marketing pages)
+  			'ink-navy': 'var(--color-ink-navy)',
+  			'surface-navy': 'var(--color-surface-navy)',
   		},
   		// DriveCommand Brand Shadows
   		boxShadow: {

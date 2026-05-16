@@ -133,6 +133,10 @@
     --radius-md: 10px;  /* cards, modals */
     --radius-lg: 14px;  /* hero panels */
 
+    /* Hero Surface Colors — blue-tinted darks for marketing/auth pages */
+    --color-ink-navy: #0A0E1A;      /* Page canvas — deep blue-black */
+    --color-surface-navy: #0B1120;  /* Card surface — rich navy */
+
     /* Motion Durations */
     --duration-instant: 80ms;
     --duration-fast: 150ms;
@@ -263,7 +267,10 @@
   * {
     @apply border-border;
   }
-  html {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
   }
   body {
     @apply bg-background text-foreground antialiased;

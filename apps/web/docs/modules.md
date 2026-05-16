@@ -98,7 +98,7 @@ Upload and AI-read rate confirmations, invoices, and load tenders. Uses Claude c
 
 ### 10. Profit Predictor — `/profit-predictor`
 
-AI-powered profitability analysis for potential loads. Owner inputs a load (origin, destination, rate, weight) and receives an AI assessment: Accept (≥15% margin), Caution (0–14.9%), or Reject (<0%). Uses historical lane performance and the tenant's `profitMarginThreshold` setting.
+AI-powered profitability analysis for potential loads. Owner inputs a load (origin, destination, rate, weight) and receives an AI assessment: Accept (≥15% margin), Caution (0–14.9%), or Reject (negative margin). Uses historical lane performance and the tenant's `profitMarginThreshold` setting.
 
 **Key files:**
 - `src/app/(owner)/profit-predictor/`
