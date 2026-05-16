@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 354: Rebuild visual foundation of /tracking/live — business KPIs, desaturated map tiles, filter chips, Map/List toggle
-Last session: 2026-05-16T19:53:00Z
-Stopped at: Completed quick-349: Section 4A hardening — sanitize/errors/logger/request-limits/safe-fetch/security rate-limit utilities created; validate.ts extended with validateImageDimensions/validatePdfPageCount/validateNoMacroFormats/validateNoSvgHtml; upload routes wired to quarantine-then-promote; cleanup-quarantine cron + vercel.json; 43 Vitest tests pass; tsc + build clean.
+Last activity: 2026-05-17 - Recovered quick-331/332/333 sidebar redesign commits + Vercel-style Settings nav
+Last session: 2026-05-17T00:00:00Z
+Stopped at: Cherry-picked 18 sidebar commits (quick-331 redesign, quick-332 contrast fix, quick-333 active states, Settings drill-down nav)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -65318,6 +65318,7 @@ None blocking immediate progress.
 | 327 | DB security standardization - RLS, FORCE RLS, policies, and indexes for all 77 tenant-scoped tables | 2026-05-15 | d4a8a40 | [327-db-security-standardization-rls-force-rl](./quick/327-db-security-standardization-rls-force-rl/) |
 | 328 | Lock in cross-tenant leak fix — raw-Prisma scanner + CI gate + 5 dropdown isolation regression tests (spec §6.3) | 2026-05-15 | 626b2f7 | [328-lock-in-cross-tenant-leak-fix-raw-prisma](./quick/328-lock-in-cross-tenant-leak-fix-raw-prisma/) |
 | 329 | Field-level AES-256-GCM encryption for carrier_drivers.cdl_number — crypto wrapper, key registry, audit_log table (RLS+append-only), dual-write, RBAC-gated decrypt, 1-row backfill verified (PR1 of 2) | 2026-05-15 | 1ce74f6 | [329-add-field-level-aes-256-gcm-encryption-i](./quick/329-add-field-level-aes-256-gcm-encryption-i/) |
+<<<<<<< HEAD
 | 330 | add /notifications to ADMIN_ALLOWED_PATHS in middleware.ts so sysadmins can reach the Notifications page | 2026-05-15 | 1258082 | [330-add-notifications-to-admin-allowed-paths](./quick/330-add-notifications-to-admin-allowed-paths/) |
 | 331 | fix broken Tiptap JSON-to-HTML renderer — switch to @tiptap/html/server subpath, fix react/react-dom version mismatch, add real-pipeline renderer tests | 2026-05-15 | 5f12e53 | [331-fix-broken-tiptap-json-to-html-renderer-](./quick/331-fix-broken-tiptap-json-to-html-renderer-/) |
 | 332 | add react-dom to apps/web/package.json to fix Vercel build Module not found error — confirmed already declared at ^19.2.4, local node_modules intact, tsc clean, build green | 2026-05-15 | 8b73a41 | [332-add-react-dom-to-apps-web-package-json-t](./quick/332-add-react-dom-to-apps-web-package-json-t/) |
@@ -65337,6 +65338,10 @@ None blocking immediate progress.
 | 346 | Driver Pay Phase 11 — Payroll Export: verified quick-310 implementation complete (4 exporters: Generic CSV / QuickBooks / ADP / Gusto; streaming POST /api/reports/payroll-export; Export Payroll UI button + modal; 51 golden/RBAC/audit/eligibility tests); added missing tenant isolation test (4 new tests) → 55/55 total; TypeScript clean | 2026-05-16 | — | [346-build-phase-11-driver-pay-payroll-export](./quick/346-build-phase-11-driver-pay-payroll-export/) |
 | 347 | Field-level AES-256-GCM encryption for restricted PII columns (DriverInvitation.licenseNumber + dateOfBirth) — dual-write window, backfill script, startup key validation | 2026-05-16 | 3e4845f | [347-field-level-aes-256-gcm-encryption-for-r](./quick/347-field-level-aes-256-gcm-encryption-for-r/) |
 | 348 | Harden document upload/download for restricted PII docs (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD, VOIDED_CHECK, W9, W4, I9) — restricted S3 prefix, 15-min download URLs, RBAC guard with audit_log trail, DocumentType enum extended, Document.isRestricted column, confirm dialog in driver UI, Vitest security suite | 2026-05-16 | 963ef77 | [348-harden-document-upload-system-for-restri](./quick/348-harden-document-upload-system-for-restri/) |
+=======
+| 330 | Add DriveCommand wordmark to mobile sign-in and apply minimal UX cleanup | 2026-05-16 | 301d7d9 | [330-add-drivecommand-wordmark-to-mobile-sign](./quick/330-add-drivecommand-wordmark-to-mobile-sign/) |
+| 331 | Redesign Left Sidebar Navigation with Collapsible Full-Height Bar | 2026-05-16 | 6a1d86a | [331-redesign-left-sidebar-navigation-with-co](./quick/331-redesign-left-sidebar-navigation-with-co/) |
+>>>>>>> 8762a538 (docs(quick-331): Redesign Left Sidebar Navigation with Collapsible Full-Height Bar)
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
