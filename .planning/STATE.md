@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-16 - Completed quick task 344: fix load.assigned notification routing — external_email fallback for CarrierDriver rows with user_id IS NULL
+Last activity: 2026-05-16 - Completed quick task 345: Driver Pay Phase 10 — read-only reporting dashboard (8 tabs, 7 aggregation helpers, streaming CSV, 58 tests)
 Last session: 2026-05-15T22:43:00Z
 Stopped at: Completed quick-343: dropped lda_unique_load_driver constraint, created partial unique index (deleted_at IS NULL), updated Prisma schema, wrapped handleAssign in try/catch/finally. tsc clean, build green.
 
@@ -65330,6 +65330,7 @@ None blocking immediate progress.
 | 342 | Fix load.assigned notification recipient routing — payload passed cd.id (CarrierDriver row id) where recipient resolver expects a User id; changed to cd.userId so resolver User.findFirst lookup succeeds and driver receives the notification | 2026-05-16 | a09a588 | [342-fix-load-assigned-notification-pass-user](./quick/342-fix-load-assigned-notification-pass-user/) |
 | 343 | Fix load_driver_assignments unique constraint — replaced full @@unique([loadId, driverId]) with partial unique index (WHERE deleted_at IS NULL) so soft-deleted rows don't block reassignment; wrapped handleAssign in try/catch/finally to prevent frozen Assign Driver button on P2002 | 2026-05-16 | 3cedfe4 | [343-make-load-driver-assignments-unique-cons](./quick/343-make-load-driver-assignments-unique-cons/) |
 | 344 | Fix load.assigned notification routing for unlinked drivers — added external_email recipient rule to NotificationTemplate.defaultRecipients for load.assigned; plumbed driverEmail field through createAssignment and dispatchLoad payloads so drivers with user_id IS NULL receive email at CarrierDriver.email | 2026-05-16 | 8de4f53 | [344-fix-load-assigned-notification-routing-t](./quick/344-fix-load-assigned-notification-routing-t/) |
+| 345 | Driver Pay Phase 10 — read-only reporting dashboard: 7 aggregation helpers + streamCsvResponse utility; 7 new API routes (JSON + streaming CSV, RBAC enforced); 8-tab reports page + 11 UI components (BigNumberHero, CsvExportButton, ReportTabNav, ReportTableSkeleton, 7 *Report tabs); 4 Vitest test files (58 tests: aggregation, CSV streaming, tenant isolation, RBAC) | 2026-05-16 | 8968280 | [345-build-phase-10-of-the-driver-pay-module-](./quick/345-build-phase-10-of-the-driver-pay-module-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
