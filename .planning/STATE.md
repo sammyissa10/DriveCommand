@@ -65339,6 +65339,8 @@ None blocking immediate progress.
 | 348 | Harden document upload/download for restricted PII docs (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD, VOIDED_CHECK, W9, W4, I9) — restricted S3 prefix, 15-min download URLs, RBAC guard with audit_log trail, DocumentType enum extended, Document.isRestricted column, confirm dialog in driver UI, Vitest security suite | 2026-05-16 | 963ef77 | [348-harden-document-upload-system-for-restri](./quick/348-harden-document-upload-system-for-restri/) |
 | 350 | Display user name (not email) in web header — getDisplayName helper (5-step fallback: first+last → first → full_name → email local-part → full email), user-menu wired, email demoted to muted secondary text | 2026-05-16 | 5147b58 | [350-display-user-name-not-email-in-web-heade](./quick/350-display-user-name-not-email-in-web-heade/) |
 | 351 | Audit team invitation email flow to scope a role-aware copy fix | 2026-05-16 | 28809bb | [351-audit-team-invitation-email-flow-to-scop](./quick/351-audit-team-invitation-email-flow-to-scop/) |
+| 352 | Add manager.invited notification trigger — dedicated trigger/template for team-member invites, decoupled from driver.invited | 2026-05-16 | 3e02af1 | [352-add-manager-invited-notification-trigger](./quick/352-add-manager-invited-notification-trigger/) |
+| 353 | Backfill manager.invited HTML cache and chain backfill into seed:notifications script | 2026-05-17 | 432ce14 | [353-backfill-manager-invited-html-cache-and-](./quick/353-backfill-manager-invited-html-cache-and-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
