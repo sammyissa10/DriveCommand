@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-17 - Completed quick task 361: Fix broken app shell layout — revert floating sidebar and apply single rounded corner to content panel
+Last activity: 2026-05-17 - Completed quick task 362: Fix topbar color mismatch and make content card overlay the chrome correctly
 Last session: 2026-05-17T00:00:00Z
 Stopped at: Cherry-picked 18 sidebar commits (quick-331 redesign, quick-332 contrast fix, quick-333 active states, Settings drill-down nav)
 
@@ -65504,3 +65504,5 @@ Resume file: None
 Next action: Phase 41 (Tenant-Configurable Notification System) is fully complete. All 5 plans shipped.
 | 359 | Restructure app shell into floating rounded sidebar and content panels | 2026-05-17 | 341f2ed6 | [359-restructure-app-shell-into-floating-roun](./quick/359-restructure-app-shell-into-floating-roun/) |
 | 360 | Revert map tile configuration to pre-UX-refactor working state | 2026-05-17 | 4279477f | [360-revert-map-tile-configuration-to-pre-ux-](./quick/360-revert-map-tile-configuration-to-pre-ux-/) |
+| 361 | Fix broken app shell layout — revert floating sidebar and apply single rounded corner to content panel | 2026-05-17 | 2d6f0605 | [361-fix-broken-app-shell-layout-revert-float](./quick/361-fix-broken-app-shell-layout-revert-float/) |
+| 362 | Fix topbar color mismatch and make content card overlay the chrome correctly | 2026-05-17 | 6c58566e | [362-fix-topbar-color-mismatch-and-make-conte](./quick/362-fix-topbar-color-mismatch-and-make-conte/) |
