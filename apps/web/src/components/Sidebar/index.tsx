@@ -63,8 +63,7 @@ function managerHasPermission(
  *
  * CRITICAL DESIGN DECISIONS:
  * - Sidebar is ALWAYS position: fixed (never scrolls with page)
- * - Positioned with 12px offset (left-3 top-3) for floating panel aesthetic
- * - Rounded corners (rounded-2xl) with overflow-hidden
+ * - Flush to viewport edges: left-0 top-0 h-screen (no offset, no rounded corners)
  * - Solid gradient surface (NO backdrop-filter, NO transparency)
  * - Peek renders as SEPARATE overlay element (doesn't mutate collapsed rail)
  * - Main content uses margin-left to offset for sidebar width
@@ -400,7 +399,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   if (!isHydrated) {
     return (
       <aside
-        className="h-screen sidebar-solid hidden lg:block fixed left-0 top-0 z-40"
+        className="h-screen sidebar-solid hidden lg:block fixed left-0 top-0 z-40 overflow-hidden"
         style={{ width: `${SIDEBAR_WIDTH_EXPANDED}px` }}
       />
     )
@@ -496,14 +495,14 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   return (
     <TooltipProvider delayDuration={0}>
       {/*
-        MAIN SIDEBAR - Always fixed position, never scrolls with page
+        MAIN SIDEBAR - Flush to viewport edges (no floating, no rounded corners)
         When expanded: full width (240px)
         When collapsed: rail width (56px)
       */}
       <motion.aside
         ref={sidebarRef}
         className={cn(
-          "fixed left-3 top-3 h-[calc(100vh-24px)] sidebar-solid hidden lg:flex flex-col z-40 rounded-2xl overflow-hidden"
+          "fixed left-0 top-0 h-screen sidebar-solid hidden lg:flex flex-col z-40 overflow-hidden"
         )}
         variants={sidebarVariants}
         animate={isExpanded ? "expanded" : "collapsed"}
@@ -525,7 +524,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       <AnimatePresence>
         {!isExpanded && isPeeking && (
           <motion.div
-            className="fixed left-3 top-3 h-[calc(100vh-24px)] sidebar-peek-overlay hidden lg:flex flex-col z-50 rounded-2xl overflow-hidden"
+            className="fixed left-0 top-0 h-screen sidebar-peek-overlay hidden lg:flex flex-col z-50 overflow-hidden"
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -8 }}

@@ -18,10 +18,10 @@ interface OwnerShellProps {
  * OwnerShell - Main layout for owner/manager portal
  *
  * CRITICAL LAYOUT DECISIONS:
- * - Desktop: Floating panel layout with dark shell background (p-3 padding)
- * - Sidebar: position: fixed within flex container (rounded-2xl floating panel)
- * - TopBar: Inside white content panel (no longer dark chrome)
- * - Main content: White panel containing topbar + scrollable content
+ * - Desktop: Sidebar flush to viewport edges (left/top/bottom)
+ * - Sidebar: position: fixed, no rounded corners, no margins
+ * - TopBar: Flush to viewport top, light background (bg-card)
+ * - Main content: White panel with ONLY rounded-tl-2xl (top-left corner meets sidebar)
  * - Scrolling happens INSIDE the content panel, not the outer window
  *
  * Features:
@@ -37,8 +37,8 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
       {/* Command Palette - renders as dialog overlay */}
       <CommandPalette />
 
-      {/* Desktop: Floating panel layout with dark shell background */}
-      <div className="hidden lg:block h-screen shell-bg p-3 flex gap-3">
+      {/* Desktop: Flush sidebar + single rounded corner on content */}
+      <div className="hidden lg:flex h-screen">
         {/* Sidebar container - reserves space in flex layout */}
         <div
           className="shrink-0 sidebar-margin-transition"
@@ -47,10 +47,10 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
           <AnimatedSidebar />
         </div>
 
-        {/* Main content panel - contains topbar + content */}
-        <div className="flex-1 flex flex-col bg-card rounded-2xl overflow-hidden shadow-lg">
-          {/* TopBar - now inside white panel */}
-          <header className="flex h-14 shrink-0 items-center gap-4 px-6 border-b border-border">
+        {/* Right column: topbar + content panel */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* TopBar - flush to viewport top, light background */}
+          <header className="flex h-14 shrink-0 items-center gap-4 px-6 bg-card border-b border-border">
             {/* Tenant name - now uses card foreground colors */}
             <span
               className="text-[15px] font-medium text-foreground truncate overflow-hidden text-ellipsis shrink-0"
@@ -73,8 +73,8 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
             </div>
           </header>
 
-          {/* Scrollable content area */}
-          <main className="flex-1 overflow-auto p-6">
+          {/* Scrollable content area - rounded only at top-left where it meets sidebar */}
+          <main className="flex-1 overflow-auto p-6 bg-card rounded-tl-2xl">
             {children}
           </main>
         </div>
