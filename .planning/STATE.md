@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-17 - Completed quick task 355: Surface TKT-0015 Prompt 2 decision flags from quick-354 audit Section 5
+Last activity: 2026-05-17 - Completed quick task 356: TKT-0015 Prompt 2a — Pre-flight schema cleanup (resolve drift and upgrade bare-UUID audit fields to proper FKs)
 Last session: 2026-05-17T00:18:00Z
 Stopped at: Completed quick-353: backfilled manager.invited defaultHtmlCache (372 chars); chained backfill into seed:notifications npm script; tsc clean.
 
@@ -65343,6 +65343,7 @@ None blocking immediate progress.
 | 353 | Backfill manager.invited HTML cache and chain backfill into seed:notifications script | 2026-05-17 | 432ce14 | [353-backfill-manager-invited-html-cache-and-](./quick/353-backfill-manager-invited-html-cache-and-/) |
 | 354 | Audit audit-column coverage and detail-page inventory for TKT-0015 | 2026-05-17 | 80da55b | [354-audit-audit-column-coverage-and-detail-p](./quick/354-audit-audit-column-coverage-and-detail-p/) |
 | 355 | Surface TKT-0015 Prompt 2 decision flags from quick-354 audit Section 5 | 2026-05-17 | 1974712 | [355-surface-tkt-0015-prompt-2-decision-flags](./quick/355-surface-tkt-0015-prompt-2-decision-flags/) |
+| 356 | TKT-0015 Prompt 2a — Pre-flight schema cleanup (resolve drift and upgrade bare-UUID audit fields to proper FKs) | 2026-05-17 | 2edd775 | [356-tkt-0015-prompt-2a-pre-flight-schema-cle](./quick/356-tkt-0015-prompt-2a-pre-flight-schema-cle/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
