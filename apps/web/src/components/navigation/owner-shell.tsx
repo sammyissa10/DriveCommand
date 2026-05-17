@@ -37,8 +37,8 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
       {/* Command Palette - renders as dialog overlay */}
       <CommandPalette />
 
-      {/* Desktop: Flush sidebar + single rounded corner on content */}
-      <div className="hidden lg:flex h-screen">
+      {/* Desktop: Dark frame with floating white content card */}
+      <div className="hidden lg:flex h-screen shell-bg">
         {/* Sidebar container - reserves space in flex layout */}
         <div
           className="shrink-0 sidebar-margin-transition"
@@ -49,11 +49,11 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
 
         {/* Right column: topbar + content panel */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* TopBar - flush to viewport top, light background */}
-          <header className="flex h-14 shrink-0 items-center gap-4 px-6 bg-card border-b border-border">
-            {/* Tenant name - now uses card foreground colors */}
+          {/* TopBar - dark background matching sidebar (inherits from shell) */}
+          <header className="flex h-14 shrink-0 items-center gap-4 px-6 topbar-dark-context">
+            {/* Tenant name - light text on dark background */}
             <span
-              className="text-[15px] font-medium text-foreground truncate overflow-hidden text-ellipsis shrink-0"
+              className="text-[15px] font-medium text-white truncate overflow-hidden text-ellipsis shrink-0"
               style={{ maxWidth: "200px" }}
             >
               {tenantName || "Workspace"}
@@ -73,8 +73,8 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
             </div>
           </header>
 
-          {/* Scrollable content area - rounded only at top-left where it meets sidebar */}
-          <main className="flex-1 overflow-auto p-6 bg-card rounded-tl-2xl">
+          {/* Scrollable content area - white card with all corners rounded, inset from dark frame */}
+          <main className="flex-1 overflow-y-auto p-6 bg-white rounded-2xl m-3">
             {children}
           </main>
         </div>
