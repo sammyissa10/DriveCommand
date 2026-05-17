@@ -58,7 +58,7 @@ function serializeSettlement(s: {
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   driver?: {
     firstName: string;
     lastName: string;

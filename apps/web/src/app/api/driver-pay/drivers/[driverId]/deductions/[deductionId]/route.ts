@@ -41,7 +41,7 @@ function serializeDeduction(d: {
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   deletedAt: Date | null;
 }) {
   return {

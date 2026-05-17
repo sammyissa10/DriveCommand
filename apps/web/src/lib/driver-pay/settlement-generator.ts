@@ -64,7 +64,7 @@ export interface GenerateResult {
     notes: string | null;
     createdAt: Date;
     updatedAt: Date;
-    createdBy: string;
+    createdBy: string | null;
   };
   assignmentCount: number;
   bonusCount: number;

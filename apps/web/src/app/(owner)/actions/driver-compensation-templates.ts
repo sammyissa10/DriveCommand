@@ -45,7 +45,7 @@ export type SerializedTemplate = {
   notes: string | null;
   createdAt: string;
   updatedAt: string;
-  createdBy: string;
+  createdBy: string | null;
   deletedAt: string | null;
 };
 
@@ -72,7 +72,7 @@ function serializeTemplate(t: {
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   deletedAt: Date | null;
 }): SerializedTemplate {
   return {

@@ -33,7 +33,7 @@ function serializeComponent(c: {
   enteredBy: string;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   deletedAt: Date | null;
 }) {
   return {
