@@ -292,8 +292,7 @@ None required. The schema changes only add optional nullable fields (`String?`),
 
 ## Commit SHA
 
-feat(quick-365): TKT-0015 Prompt 2b Wave 2 — fleet domain audit FKs (11 tables)
-*(SHA appended after commit)*
+`e0fee9f8` — feat(quick-365): TKT-0015 Prompt 2b Wave 2 — fleet domain audit FKs (11 tables)
 
 ---
 
