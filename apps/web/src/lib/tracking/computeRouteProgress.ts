@@ -2,6 +2,7 @@ export interface RouteStopInput {
   id: string;
   status: 'COMPLETED' | 'IN_PROGRESS' | 'PENDING' | 'SKIPPED';
   position: number;
+  hasException?: boolean;
 }
 
 export interface RouteProgressResult {
@@ -9,6 +10,7 @@ export interface RouteProgressResult {
   completedStops: number;
   totalStops: number;
   currentStopIndex: number; // -1 if no current stop
+  exceptionCount: number;
 }
 
 /**
@@ -18,6 +20,7 @@ export interface RouteProgressResult {
  * - truckPosition is percentage of completed stops (0-1)
  * - If a stop is IN_PROGRESS, truck is at that stop's position
  * - currentStopIndex is -1 if all completed or none started
+ * - exceptionCount tracks total stops with exceptions
  */
 export function computeRouteProgress(stops: RouteStopInput[]): RouteProgressResult {
   const totalStops = stops.length;
@@ -28,6 +31,7 @@ export function computeRouteProgress(stops: RouteStopInput[]): RouteProgressResu
       completedStops: 0,
       totalStops: 0,
       currentStopIndex: -1,
+      exceptionCount: 0,
     };
   }
 
@@ -36,6 +40,9 @@ export function computeRouteProgress(stops: RouteStopInput[]): RouteProgressResu
 
   // Count completed stops
   const completedStops = stops.filter((s) => s.status === 'COMPLETED').length;
+
+  // Count exceptions
+  const exceptionCount = stops.filter((s) => s.hasException === true).length;
 
   // Calculate truck position
   let truckPosition: number;
@@ -59,5 +66,6 @@ export function computeRouteProgress(stops: RouteStopInput[]): RouteProgressResu
     completedStops,
     totalStops,
     currentStopIndex,
+    exceptionCount,
   };
 }
