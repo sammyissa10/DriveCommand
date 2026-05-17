@@ -170,7 +170,7 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
               <button
                 key={notification.id}
                 onClick={() => handleNotificationClick(notification)}
-                className="w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/50 last:border-0"
+                className="w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors duration-150 border-b border-border/50 last:border-0"
               >
                 {/* Unread indicator stripe */}
                 <div
@@ -187,13 +187,13 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
                   <NotificationIcon type={notification.type} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium leading-tight ${notification.read ? 'text-muted-foreground' : 'text-foreground'}`}>
+                  <p className={`text-sm leading-tight ${notification.read ? 'font-normal text-gray-700 dark:text-gray-300' : 'font-semibold text-gray-900 dark:text-gray-100'}`}>
                     {notification.title}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">
                     {notification.message}
                   </p>
-                  <p className="text-xs text-muted-foreground/70 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                     {relativeTime(notification.createdAt)}
                   </p>
                 </div>
