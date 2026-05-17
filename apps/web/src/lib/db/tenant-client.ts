@@ -18,7 +18,8 @@ import { withAuditColumns } from './extensions/audit-columns';
  * neither extension changes the API surface (both are query-layer interceptors).
  *
  * Backwards compatible: userId is optional (defaults to no injection).
- * Prompt 3 will wire the actual session userId at the call site.
+ * Wired by `getTenantPrisma()` in lib/context/tenant-context.ts — it forwards `session?.userId ?? null`
+ * from the React-cached getSession() so writes get audit columns automatically.
  */
 export function createTenantClient(tenantId: string, userId?: string | null): PrismaClient {
   return prisma

@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import { PrismaClient } from '../../generated/prisma/client';
+import { getSession } from '@/lib/auth/supabase';
 import { prisma, TX_OPTIONS } from '../db/prisma';
 import { createTenantClient } from '../db/tenant-client';
 
@@ -29,11 +30,15 @@ export async function requireTenantId(): Promise<string> {
  * This client automatically applies RLS filtering to all queries.
  * Returns a fully typed PrismaClient (see tenant-client.ts for type safety rationale).
  *
+ * Forwards the current session's userId to the audit-columns extension so createdById/updatedById
+ * are auto-populated on writes. Pass-through is null for unauthenticated/system contexts.
+ *
  * Use this in API routes and server actions to ensure queries are scoped to the current tenant.
  */
 export async function getTenantPrisma(): Promise<PrismaClient> {
   const tenantId = await requireTenantId();
-  return createTenantClient(tenantId);
+  const session = await getSession();
+  return createTenantClient(tenantId, session?.userId ?? null);
 }
 
 /**
