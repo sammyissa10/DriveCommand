@@ -8,14 +8,13 @@ import { AppLogo } from "@/components/navigation/app-logo"
 
 interface OwnerShellProps {
   children: React.ReactNode;
-  supportBadge?: React.ReactNode;
   tenantName?: string | null;
 }
 
-export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellProps) {
+export function OwnerShell({ children, tenantName }: OwnerShellProps) {
   return (
     <>
-      <AnimatedSidebar supportBadge={supportBadge} />
+      <AnimatedSidebar />
       <div className="lg:pl-[256px]">
         <header className="relative z-[1001] flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-4 lg:px-6">
           {/* DC logo — visible on all screen sizes */}
