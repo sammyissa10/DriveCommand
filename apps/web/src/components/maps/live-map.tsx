@@ -17,7 +17,6 @@ import {
   DEFAULT_ZOOM,
 } from '@/lib/maps/map-utils';
 import { RouteSegment, HistoryPoint } from './history-tab';
-import { getMapTileConfig, MAP_CSS_FILTER } from '@/components/tracking/MapStyleConfig';
 
 interface LiveMapProps {
   initialVehicles: VehicleLocation[];
@@ -154,18 +153,12 @@ export default function LiveMap({
 
   const showHistory = !!historySegments && historySegments.length > 0;
 
-  // Get map tile configuration (MapTiler → Stadia → OSM fallback)
-  const tileConfig = getMapTileConfig();
-
   return (
     <>
       <style jsx global>{`
         .vehicle-marker-icon {
           background: none !important;
           border: none !important;
-        }
-        .desaturated-tiles {
-          filter: ${MAP_CSS_FILTER};
         }
       `}</style>
 
@@ -176,10 +169,8 @@ export default function LiveMap({
         className="z-0"
       >
         <TileLayer
-          attribution={tileConfig.attribution}
-          url={tileConfig.url}
-          maxZoom={tileConfig.maxZoom}
-          className={tileConfig.useCssFilter ? 'desaturated-tiles' : ''}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         {!showHistory && <FitBoundsOnMount vehicles={vehicles} />}
