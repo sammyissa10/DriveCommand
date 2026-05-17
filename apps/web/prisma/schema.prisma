@@ -290,6 +290,25 @@ model User {
   // quick-329 PII audit log reverse relation
   auditLogs                  AuditLog[]
 
+  // TKT-0015 Prompt 2a — audit FK reverse relations (Flag 4: Driver Pay)
+  driverCompensationTemplatesCreatedBy DriverCompensationTemplate[] @relation(name: "DriverCompensationTemplateCreatedBy")
+  loadDriverAssignmentsCreatedBy       LoadDriverAssignment[]        @relation(name: "LoadDriverAssignmentCreatedBy")
+  loadPayComponentsCreatedBy           LoadPayComponent[]            @relation(name: "LoadPayComponentCreatedBy")
+  driverBonusesCreatedBy               DriverBonus[]                 @relation(name: "DriverBonusCreatedBy")
+  driverDeductionsCreatedBy            DriverDeduction[]             @relation(name: "DriverDeductionCreatedBy")
+  driverSettlementsCreatedBy           DriverSettlement[]            @relation(name: "DriverSettlementCreatedBy")
+  driverDisputesCreatedBy              DriverDispute[]               @relation(name: "DriverDisputeCreatedBy")
+  payComponentAttachmentsCreatedBy     PayComponentAttachment[]      @relation(name: "PayComponentAttachmentCreatedBy")
+
+  // TKT-0015 Prompt 2a — audit FK reverse relations (Flag 8: bare UUID columns)
+  playbookStepsCreatedBy               PlaybookStep[]                @relation(name: "PlaybookStepCreatedBy")
+  stepInstancesCreatedBy               StepInstance[]                @relation(name: "StepInstanceCreatedBy")
+  routeDriversCreatedBy                RouteDriver[]                 @relation(name: "RouteDriverCreatedBy")
+  pushTokensCreatedBy                  PushToken[]                   @relation(name: "PushTokenCreatedBy")
+  userNotificationPreferencesCreatedBy UserNotificationPreference[]  @relation(name: "UserNotificationPreferenceCreatedBy")
+  sysAdminInvoiceItemsCreatedBy        SysAdminInvoiceItem[]         @relation(name: "SysAdminInvoiceItemCreatedBy")
+  sysAdminInvoiceItemsUpdatedBy        SysAdminInvoiceItem[]         @relation(name: "SysAdminInvoiceItemUpdatedBy")
+
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
@@ -430,9 +449,10 @@ model RouteDriver {
   deletedAt DateTime? @db.Timestamptz
   deletedBy String?   @db.Uuid
 
-  route  Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  driver User   @relation(name: "RouteCoDrivers", fields: [driverId], references: [id])
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  driver  User   @relation(name: "RouteCoDrivers", fields: [driverId], references: [id])
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  creator User?  @relation(name: "RouteDriverCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@unique([routeId, driverId])
   @@index([routeId])
@@ -976,8 +996,8 @@ model SysAdminInvoiceItem {
   unitPrice   Decimal   @db.Decimal(10, 2)
   amount      Decimal   @db.Decimal(12, 2)
   tenantId    String    @db.Uuid
-  createdAt   DateTime  @default(now()) @db.Timestamptz
-  updatedAt   DateTime  @updatedAt @db.Timestamptz
+  createdAt   DateTime? @default(now()) @db.Timestamptz
+  updatedAt   DateTime? @updatedAt @db.Timestamptz
   createdBy   String?   @db.Uuid
   updatedBy   String?   @db.Uuid
   deletedAt   DateTime? @db.Timestamptz
@@ -985,6 +1005,8 @@ model SysAdminInvoiceItem {
 
   invoice SysAdminInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   tenant  Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  creator User?           @relation(name: "SysAdminInvoiceItemCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater User?           @relation(name: "SysAdminInvoiceItemUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
   @@index([tenantId])
@@ -1307,8 +1329,9 @@ model PushToken {
   deletedAt DateTime? @db.Timestamptz
   deletedBy String?   @db.Uuid
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  creator User?  @relation(name: "PushTokenCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@unique([userId, platform]) // one token per user per platform
   @@index([userId])
@@ -2340,6 +2363,7 @@ model PlaybookStep {
   playbook     Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
   stepTemplate StepTemplate @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
   tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  creator      User?        @relation(name: "PlaybookStepCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@unique([playbookId, sequence])
   @@index([playbookId])
@@ -2402,6 +2426,7 @@ model StepInstance {
   playbookInstance PlaybookInstance @relation(fields: [playbookInstanceId], references: [id], onDelete: Cascade)
   stepTemplate     StepTemplate?    @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
   tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  creator          User?            @relation(name: "StepInstanceCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([playbookInstanceId])
   @@index([assignedUserId, status])
@@ -2671,12 +2696,13 @@ model DriverCompensationTemplate {
   // Standard tenant columns
   createdAt              DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy              String         @map("created_by") @db.Uuid
+  createdBy              String?        @map("created_by") @db.Uuid
   deletedAt              DateTime?      @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver      CarrierDriver        @relation(fields: [driverId], references: [id], onDelete: Restrict)
   assignments LoadDriverAssignment[]
+  creator     User?                @relation(name: "DriverCompensationTemplateCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -2716,7 +2742,7 @@ model LoadDriverAssignment {
   // Standard tenant columns
   createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy              String                 @map("created_by") @db.Uuid
+  createdBy              String?                @map("created_by") @db.Uuid
   deletedAt              DateTime?              @map("deleted_at") @db.Timestamptz(6)
 
   tenant        Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -2726,6 +2752,7 @@ model LoadDriverAssignment {
   settlement    DriverSettlement?           @relation(fields: [settlementId], references: [id], onDelete: Restrict)
   payComponents LoadPayComponent[]
   attachments   PayComponentAttachment[]
+  creator       User?                       @relation(name: "LoadDriverAssignmentCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   // Uniqueness enforced by partial unique index in DB (only live rows);
   // see migration apply-partial-unique-load-driver.sql
@@ -2761,7 +2788,7 @@ model LoadPayComponent {
   // Standard tenant columns
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy           String               @map("created_by") @db.Uuid
+  createdBy           String?              @map("created_by") @db.Uuid
   deletedAt           DateTime?            @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -2771,6 +2798,7 @@ model LoadPayComponent {
   corrections LoadPayComponent[]   @relation("ComponentCorrection")
   attachments PayComponentAttachment[]
   disputes    DriverDispute[]
+  creator     User?                @relation(name: "LoadPayComponentCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([assignmentId])
@@ -2801,7 +2829,7 @@ model DriverBonus {
   // Standard tenant columns
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy         String    @map("created_by") @db.Uuid
+  createdBy         String?   @map("created_by") @db.Uuid
   deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -2810,6 +2838,7 @@ model DriverBonus {
   settlement     DriverSettlement? @relation(fields: [settlementId], references: [id], onDelete: Restrict)
   parentBonus    DriverBonus?   @relation("BonusInstallment", fields: [parentBonusId], references: [id], onDelete: Restrict)
   childBonuses   DriverBonus[]  @relation("BonusInstallment")
+  creator        User?          @relation(name: "DriverBonusCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -2836,11 +2865,12 @@ model DriverDeduction {
   // Standard tenant columns
   createdAt           DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy           String            @map("created_by") @db.Uuid
+  createdBy           String?           @map("created_by") @db.Uuid
   deletedAt           DateTime?         @map("deleted_at") @db.Timestamptz(6)
 
-  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  driver CarrierDriver @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  tenant  Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  driver  CarrierDriver @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  creator User?         @relation(name: "DriverDeductionCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -2874,13 +2904,14 @@ model DriverSettlement {
   // Standard tenant columns
   createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy           String                @map("created_by") @db.Uuid
+  createdBy           String?               @map("created_by") @db.Uuid
   deletedAt           DateTime?             @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver      CarrierDriver          @relation(fields: [driverId], references: [id], onDelete: Restrict)
   assignments LoadDriverAssignment[]
   bonuses     DriverBonus[]
+  creator     User?                  @relation(name: "DriverSettlementCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -2903,12 +2934,13 @@ model PayComponentAttachment {
   // Standard tenant columns
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy   String    @map("created_by") @db.Uuid
+  createdBy   String?   @map("created_by") @db.Uuid
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   component  LoadPayComponent     @relation(fields: [componentId], references: [id], onDelete: Restrict)
   assignment LoadDriverAssignment @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+  creator    User?                @relation(name: "PayComponentAttachmentCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([componentId])
@@ -2932,12 +2964,13 @@ model DriverDispute {
   // Standard tenant columns
   createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy          String               @map("created_by") @db.Uuid
+  createdBy          String?              @map("created_by") @db.Uuid
   deletedAt          DateTime?            @map("deleted_at") @db.Timestamptz(6)
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver            CarrierDriver     @relation(fields: [driverId], references: [id], onDelete: Restrict)
   linkedCorrection  LoadPayComponent? @relation(fields: [linkedCorrectionId], references: [id], onDelete: Restrict)
+  creator           User?             @relation(name: "DriverDisputeCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -3087,8 +3120,9 @@ model UserNotificationPreference {
   deletedAt    DateTime? @db.Timestamptz
   deletedBy    String?   @db.Uuid
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  creator User?  @relation(name: "UserNotificationPreferenceCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@unique([userId, triggerKey])
   @@index([userId])
