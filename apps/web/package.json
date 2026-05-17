@@ -15,7 +15,7 @@
     "test:e2e:ui": "playwright test --ui",
     "seed": "tsx prisma/seed.ts",
     "seed:fleet": "tsx prisma/seeds/seed-fleet-intelligence.ts",
-    "seed:notifications": "tsx prisma/seeds/seed-notifications.ts",
+    "seed:notifications": "tsx --env-file=.env.local prisma/seeds/seed-notifications.ts && tsx --env-file=.env.local scripts/backfill-notification-html-cache.ts",
     "generate:openapi": "npx tsx scripts/generate-openapi.ts",
     "audit:raw-prisma": "tsx scripts/audit/raw-prisma-usage.ts",
     "check:docs": "tsx scripts/check-doc-drift.ts",
