@@ -30,9 +30,11 @@ export const metadata: Metadata = {
   description: 'Logistics fleet management platform',
   manifest: '/site.webmanifest',
   icons: {
+    // SVG favicon with dark mode support (primary)
     icon: [
-      { url: '/favicon.png', type: 'image/png' },
-      { url: '/logo-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/brand/favicon-dark.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: '/brand/favicon-light.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
     ],
     apple: { url: '/logo-192.png', sizes: '192x192', type: 'image/png' },
   },

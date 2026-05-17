@@ -36,7 +36,7 @@ import { validateOrigin } from '@/lib/security/csrf';
  *   /track — Public shipment tracking page (token-gated, not session-gated)
  *
  * Static assets:
- *   /_next/static, /_next/image, /favicon.ico, /favicon.png, /site.webmanifest
+ *   /_next/static, /_next/image, /favicon.svg, /site.webmanifest
  *
  * NOTE: /api/geocoding/autocomplete is NOT listed here — it requires authentication
  * (session or mobile Bearer token) enforced at the route handler level.
@@ -62,8 +62,7 @@ const PUBLIC_PATHS = [
   '/api/email-confirm',
   '/_next/static',
   '/_next/image',
-  '/favicon.ico',
-  '/favicon.png',
+  '/favicon.svg',
   '/site.webmanifest',
 ];
 
@@ -212,9 +211,8 @@ export const config = {
      * Match all request paths except:
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public static assets (images, fonts, etc.)
+     * - public static assets (images, fonts, favicons, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot)$).*)',
+    '/((?!_next/static|_next/image|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot)$).*)',
   ],
 };
