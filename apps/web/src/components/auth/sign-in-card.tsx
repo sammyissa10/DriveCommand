@@ -155,6 +155,14 @@ export function SignInCard() {
         transition: { duration: 0.4, ease: ease.out, delay: 0.55 },
       };
 
+  const signupVariants = prefersReducedMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 12 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.4, ease: ease.out, delay: 0.6 },
+      };
+
   return (
     <motion.div
       {...cardVariants}
@@ -356,6 +364,19 @@ export function SignInCard() {
             >
               Forgot password?
             </Link>
+          </motion.div>
+
+          {/* Sign up link */}
+          <motion.div {...signupVariants}>
+            <p className="text-small text-n-400 text-center mt-4">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/sign-up"
+                className="text-b-300 hover:text-b-400 transition-colors duration-instant font-medium"
+              >
+                Create one
+              </Link>
+            </p>
           </motion.div>
         </form>
         </div>
