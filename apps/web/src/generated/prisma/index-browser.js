@@ -374,6 +374,8 @@ exports.Prisma.TagScalarFieldEnum = {
   tenantId: 'tenantId',
   name: 'name',
   color: 'color',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -392,6 +394,8 @@ exports.Prisma.ExpenseCategoryScalarFieldEnum = {
   tenantId: 'tenantId',
   name: 'name',
   isSystemDefault: 'isSystemDefault',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

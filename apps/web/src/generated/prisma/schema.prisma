@@ -309,6 +309,12 @@ model User {
   sysAdminInvoiceItemsCreatedBy        SysAdminInvoiceItem[]        @relation(name: "SysAdminInvoiceItemCreatedBy")
   sysAdminInvoiceItemsUpdatedBy        SysAdminInvoiceItem[]        @relation(name: "SysAdminInvoiceItemUpdatedBy")
 
+  // TKT-0015 Prompt 2b — Wave 1 reverse relations (Tag + ExpenseCategory)
+  tagsCreated              Tag[]             @relation(name: "TagCreatedBy")
+  tagsUpdated              Tag[]             @relation(name: "TagUpdatedBy")
+  expenseCategoriesCreated ExpenseCategory[] @relation(name: "ExpenseCategoryCreatedBy")
+  expenseCategoriesUpdated ExpenseCategory[] @relation(name: "ExpenseCategoryUpdatedBy")
+
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
@@ -656,14 +662,18 @@ model FuelRecord {
 }
 
 model Tag {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @db.Uuid
-  name      String
-  color     String   @default("#3b82f6")
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @updatedAt @db.Timestamptz
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @db.Uuid
+  name        String
+  color       String   @default("#3b82f6")
+  createdById String?  @db.Uuid
+  updatedById String?  @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  updatedAt   DateTime @updatedAt @db.Timestamptz
 
   tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  createdBy   User?           @relation(name: "TagCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy   User?           @relation(name: "TagUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   assignments TagAssignment[]
 
   @@unique([tenantId, name])
@@ -696,10 +706,14 @@ model ExpenseCategory {
   tenantId        String   @db.Uuid
   name            String
   isSystemDefault Boolean  @default(false)
+  createdById     String?  @db.Uuid
+  updatedById     String?  @db.Uuid
   createdAt       DateTime @default(now()) @db.Timestamptz
   updatedAt       DateTime @updatedAt @db.Timestamptz
 
   tenant        Tenant                @relation(fields: [tenantId], references: [id])
+  createdBy     User?                 @relation(name: "ExpenseCategoryCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy     User?                 @relation(name: "ExpenseCategoryUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   expenses      RouteExpense[]
   templateItems ExpenseTemplateItem[]
 

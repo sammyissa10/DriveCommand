@@ -10436,6 +10436,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy: number
     sysAdminInvoiceItemsCreatedBy: number
     sysAdminInvoiceItemsUpdatedBy: number
+    tagsCreated: number
+    tagsUpdated: number
+    expenseCategoriesCreated: number
+    expenseCategoriesUpdated: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10485,6 +10489,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: boolean | UserCountOutputTypeCountUserNotificationPreferencesCreatedByArgs
     sysAdminInvoiceItemsCreatedBy?: boolean | UserCountOutputTypeCountSysAdminInvoiceItemsCreatedByArgs
     sysAdminInvoiceItemsUpdatedBy?: boolean | UserCountOutputTypeCountSysAdminInvoiceItemsUpdatedByArgs
+    tagsCreated?: boolean | UserCountOutputTypeCountTagsCreatedArgs
+    tagsUpdated?: boolean | UserCountOutputTypeCountTagsUpdatedArgs
+    expenseCategoriesCreated?: boolean | UserCountOutputTypeCountExpenseCategoriesCreatedArgs
+    expenseCategoriesUpdated?: boolean | UserCountOutputTypeCountExpenseCategoriesUpdatedArgs
   }
 
   // Custom InputTypes
@@ -10818,6 +10826,34 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSysAdminInvoiceItemsUpdatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SysAdminInvoiceItemWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTagsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTagsUpdatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExpenseCategoriesCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExpenseCategoryWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExpenseCategoriesUpdatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExpenseCategoryWhereInput
   }
 
 
@@ -15971,6 +16007,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: boolean | User$userNotificationPreferencesCreatedByArgs<ExtArgs>
     sysAdminInvoiceItemsCreatedBy?: boolean | User$sysAdminInvoiceItemsCreatedByArgs<ExtArgs>
     sysAdminInvoiceItemsUpdatedBy?: boolean | User$sysAdminInvoiceItemsUpdatedByArgs<ExtArgs>
+    tagsCreated?: boolean | User$tagsCreatedArgs<ExtArgs>
+    tagsUpdated?: boolean | User$tagsUpdatedArgs<ExtArgs>
+    expenseCategoriesCreated?: boolean | User$expenseCategoriesCreatedArgs<ExtArgs>
+    expenseCategoriesUpdated?: boolean | User$expenseCategoriesUpdatedArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -16080,6 +16120,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: boolean | User$userNotificationPreferencesCreatedByArgs<ExtArgs>
     sysAdminInvoiceItemsCreatedBy?: boolean | User$sysAdminInvoiceItemsCreatedByArgs<ExtArgs>
     sysAdminInvoiceItemsUpdatedBy?: boolean | User$sysAdminInvoiceItemsUpdatedByArgs<ExtArgs>
+    tagsCreated?: boolean | User$tagsCreatedArgs<ExtArgs>
+    tagsUpdated?: boolean | User$tagsUpdatedArgs<ExtArgs>
+    expenseCategoriesCreated?: boolean | User$expenseCategoriesCreatedArgs<ExtArgs>
+    expenseCategoriesUpdated?: boolean | User$expenseCategoriesUpdatedArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16140,6 +16184,10 @@ export namespace Prisma {
       userNotificationPreferencesCreatedBy: Prisma.$UserNotificationPreferencePayload<ExtArgs>[]
       sysAdminInvoiceItemsCreatedBy: Prisma.$SysAdminInvoiceItemPayload<ExtArgs>[]
       sysAdminInvoiceItemsUpdatedBy: Prisma.$SysAdminInvoiceItemPayload<ExtArgs>[]
+      tagsCreated: Prisma.$TagPayload<ExtArgs>[]
+      tagsUpdated: Prisma.$TagPayload<ExtArgs>[]
+      expenseCategoriesCreated: Prisma.$ExpenseCategoryPayload<ExtArgs>[]
+      expenseCategoriesUpdated: Prisma.$ExpenseCategoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16599,6 +16647,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy<T extends User$userNotificationPreferencesCreatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$userNotificationPreferencesCreatedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserNotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sysAdminInvoiceItemsCreatedBy<T extends User$sysAdminInvoiceItemsCreatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$sysAdminInvoiceItemsCreatedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SysAdminInvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sysAdminInvoiceItemsUpdatedBy<T extends User$sysAdminInvoiceItemsUpdatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$sysAdminInvoiceItemsUpdatedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SysAdminInvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tagsCreated<T extends User$tagsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$tagsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tagsUpdated<T extends User$tagsUpdatedArgs<ExtArgs> = {}>(args?: Subset<T, User$tagsUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    expenseCategoriesCreated<T extends User$expenseCategoriesCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$expenseCategoriesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    expenseCategoriesUpdated<T extends User$expenseCategoriesUpdatedArgs<ExtArgs> = {}>(args?: Subset<T, User$expenseCategoriesUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18164,6 +18216,102 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SysAdminInvoiceItemScalarFieldEnum | SysAdminInvoiceItemScalarFieldEnum[]
+  }
+
+  /**
+   * User.tagsCreated
+   */
+  export type User$tagsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * User.tagsUpdated
+   */
+  export type User$tagsUpdatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * User.expenseCategoriesCreated
+   */
+  export type User$expenseCategoriesCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpenseCategory
+     */
+    select?: ExpenseCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpenseCategory
+     */
+    omit?: ExpenseCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpenseCategoryInclude<ExtArgs> | null
+    where?: ExpenseCategoryWhereInput
+    orderBy?: ExpenseCategoryOrderByWithRelationInput | ExpenseCategoryOrderByWithRelationInput[]
+    cursor?: ExpenseCategoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExpenseCategoryScalarFieldEnum | ExpenseCategoryScalarFieldEnum[]
+  }
+
+  /**
+   * User.expenseCategoriesUpdated
+   */
+  export type User$expenseCategoriesUpdatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpenseCategory
+     */
+    select?: ExpenseCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpenseCategory
+     */
+    omit?: ExpenseCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpenseCategoryInclude<ExtArgs> | null
+    where?: ExpenseCategoryWhereInput
+    orderBy?: ExpenseCategoryOrderByWithRelationInput | ExpenseCategoryOrderByWithRelationInput[]
+    cursor?: ExpenseCategoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExpenseCategoryScalarFieldEnum | ExpenseCategoryScalarFieldEnum[]
   }
 
   /**
@@ -32786,6 +32934,8 @@ export namespace Prisma {
     tenantId: string | null
     name: string | null
     color: string | null
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -32795,6 +32945,8 @@ export namespace Prisma {
     tenantId: string | null
     name: string | null
     color: string | null
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -32804,6 +32956,8 @@ export namespace Prisma {
     tenantId: number
     name: number
     color: number
+    createdById: number
+    updatedById: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -32815,6 +32969,8 @@ export namespace Prisma {
     tenantId?: true
     name?: true
     color?: true
+    createdById?: true
+    updatedById?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -32824,6 +32980,8 @@ export namespace Prisma {
     tenantId?: true
     name?: true
     color?: true
+    createdById?: true
+    updatedById?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -32833,6 +32991,8 @@ export namespace Prisma {
     tenantId?: true
     name?: true
     color?: true
+    createdById?: true
+    updatedById?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -32915,6 +33075,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     color: string
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date
     updatedAt: Date
     _count: TagCountAggregateOutputType | null
@@ -32941,9 +33103,13 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     color?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | Tag$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Tag$updatedByArgs<ExtArgs>
     assignments?: boolean | Tag$assignmentsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
@@ -32953,9 +33119,13 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     color?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | Tag$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Tag$updatedByArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
   export type TagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -32963,9 +33133,13 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     color?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | Tag$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Tag$updatedByArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
   export type TagSelectScalar = {
@@ -32973,27 +33147,37 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     color?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "color" | "createdAt" | "updatedAt", ExtArgs["result"]["tag"]>
+  export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "color" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | Tag$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Tag$updatedByArgs<ExtArgs>
     assignments?: boolean | Tag$assignmentsArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | Tag$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Tag$updatedByArgs<ExtArgs>
   }
   export type TagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | Tag$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Tag$updatedByArgs<ExtArgs>
   }
 
   export type $TagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Tag"
     objects: {
       tenant: Prisma.$TenantPayload<ExtArgs>
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      updatedBy: Prisma.$UserPayload<ExtArgs> | null
       assignments: Prisma.$TagAssignmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -33001,6 +33185,8 @@ export namespace Prisma {
       tenantId: string
       name: string
       color: string
+      createdById: string | null
+      updatedById: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["tag"]>
@@ -33398,6 +33584,8 @@ export namespace Prisma {
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    createdBy<T extends Tag$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Tag$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    updatedBy<T extends Tag$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Tag$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assignments<T extends Tag$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -33432,6 +33620,8 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"Tag", 'String'>
     readonly name: FieldRef<"Tag", 'String'>
     readonly color: FieldRef<"Tag", 'String'>
+    readonly createdById: FieldRef<"Tag", 'String'>
+    readonly updatedById: FieldRef<"Tag", 'String'>
     readonly createdAt: FieldRef<"Tag", 'DateTime'>
     readonly updatedAt: FieldRef<"Tag", 'DateTime'>
   }
@@ -33832,6 +34022,44 @@ export namespace Prisma {
      * Limit how many Tags to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Tag.createdBy
+   */
+  export type Tag$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Tag.updatedBy
+   */
+  export type Tag$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -35030,6 +35258,8 @@ export namespace Prisma {
     tenantId: string | null
     name: string | null
     isSystemDefault: boolean | null
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -35039,6 +35269,8 @@ export namespace Prisma {
     tenantId: string | null
     name: string | null
     isSystemDefault: boolean | null
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -35048,6 +35280,8 @@ export namespace Prisma {
     tenantId: number
     name: number
     isSystemDefault: number
+    createdById: number
+    updatedById: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -35059,6 +35293,8 @@ export namespace Prisma {
     tenantId?: true
     name?: true
     isSystemDefault?: true
+    createdById?: true
+    updatedById?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -35068,6 +35304,8 @@ export namespace Prisma {
     tenantId?: true
     name?: true
     isSystemDefault?: true
+    createdById?: true
+    updatedById?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -35077,6 +35315,8 @@ export namespace Prisma {
     tenantId?: true
     name?: true
     isSystemDefault?: true
+    createdById?: true
+    updatedById?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -35159,6 +35399,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     isSystemDefault: boolean
+    createdById: string | null
+    updatedById: string | null
     createdAt: Date
     updatedAt: Date
     _count: ExpenseCategoryCountAggregateOutputType | null
@@ -35185,9 +35427,13 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     isSystemDefault?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | ExpenseCategory$createdByArgs<ExtArgs>
+    updatedBy?: boolean | ExpenseCategory$updatedByArgs<ExtArgs>
     expenses?: boolean | ExpenseCategory$expensesArgs<ExtArgs>
     templateItems?: boolean | ExpenseCategory$templateItemsArgs<ExtArgs>
     _count?: boolean | ExpenseCategoryCountOutputTypeDefaultArgs<ExtArgs>
@@ -35198,9 +35444,13 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     isSystemDefault?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | ExpenseCategory$createdByArgs<ExtArgs>
+    updatedBy?: boolean | ExpenseCategory$updatedByArgs<ExtArgs>
   }, ExtArgs["result"]["expenseCategory"]>
 
   export type ExpenseCategorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -35208,9 +35458,13 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     isSystemDefault?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | ExpenseCategory$createdByArgs<ExtArgs>
+    updatedBy?: boolean | ExpenseCategory$updatedByArgs<ExtArgs>
   }, ExtArgs["result"]["expenseCategory"]>
 
   export type ExpenseCategorySelectScalar = {
@@ -35218,28 +35472,38 @@ export namespace Prisma {
     tenantId?: boolean
     name?: boolean
     isSystemDefault?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ExpenseCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "isSystemDefault" | "createdAt" | "updatedAt", ExtArgs["result"]["expenseCategory"]>
+  export type ExpenseCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "isSystemDefault" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["expenseCategory"]>
   export type ExpenseCategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | ExpenseCategory$createdByArgs<ExtArgs>
+    updatedBy?: boolean | ExpenseCategory$updatedByArgs<ExtArgs>
     expenses?: boolean | ExpenseCategory$expensesArgs<ExtArgs>
     templateItems?: boolean | ExpenseCategory$templateItemsArgs<ExtArgs>
     _count?: boolean | ExpenseCategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ExpenseCategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | ExpenseCategory$createdByArgs<ExtArgs>
+    updatedBy?: boolean | ExpenseCategory$updatedByArgs<ExtArgs>
   }
   export type ExpenseCategoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    createdBy?: boolean | ExpenseCategory$createdByArgs<ExtArgs>
+    updatedBy?: boolean | ExpenseCategory$updatedByArgs<ExtArgs>
   }
 
   export type $ExpenseCategoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ExpenseCategory"
     objects: {
       tenant: Prisma.$TenantPayload<ExtArgs>
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      updatedBy: Prisma.$UserPayload<ExtArgs> | null
       expenses: Prisma.$RouteExpensePayload<ExtArgs>[]
       templateItems: Prisma.$ExpenseTemplateItemPayload<ExtArgs>[]
     }
@@ -35248,6 +35512,8 @@ export namespace Prisma {
       tenantId: string
       name: string
       isSystemDefault: boolean
+      createdById: string | null
+      updatedById: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["expenseCategory"]>
@@ -35645,6 +35911,8 @@ export namespace Prisma {
   export interface Prisma__ExpenseCategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    createdBy<T extends ExpenseCategory$createdByArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseCategory$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    updatedBy<T extends ExpenseCategory$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseCategory$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     expenses<T extends ExpenseCategory$expensesArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseCategory$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     templateItems<T extends ExpenseCategory$templateItemsArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseCategory$templateItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseTemplateItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -35680,6 +35948,8 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"ExpenseCategory", 'String'>
     readonly name: FieldRef<"ExpenseCategory", 'String'>
     readonly isSystemDefault: FieldRef<"ExpenseCategory", 'Boolean'>
+    readonly createdById: FieldRef<"ExpenseCategory", 'String'>
+    readonly updatedById: FieldRef<"ExpenseCategory", 'String'>
     readonly createdAt: FieldRef<"ExpenseCategory", 'DateTime'>
     readonly updatedAt: FieldRef<"ExpenseCategory", 'DateTime'>
   }
@@ -36080,6 +36350,44 @@ export namespace Prisma {
      * Limit how many ExpenseCategories to delete.
      */
     limit?: number
+  }
+
+  /**
+   * ExpenseCategory.createdBy
+   */
+  export type ExpenseCategory$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * ExpenseCategory.updatedBy
+   */
+  export type ExpenseCategory$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -127317,6 +127625,8 @@ export namespace Prisma {
     tenantId: 'tenantId',
     name: 'name',
     color: 'color',
+    createdById: 'createdById',
+    updatedById: 'updatedById',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -127341,6 +127651,8 @@ export namespace Prisma {
     tenantId: 'tenantId',
     name: 'name',
     isSystemDefault: 'isSystemDefault',
+    createdById: 'createdById',
+    updatedById: 'updatedById',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -130370,6 +130682,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceListRelationFilter
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemListRelationFilter
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemListRelationFilter
+    tagsCreated?: TagListRelationFilter
+    tagsUpdated?: TagListRelationFilter
+    expenseCategoriesCreated?: ExpenseCategoryListRelationFilter
+    expenseCategoriesUpdated?: ExpenseCategoryListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -130436,6 +130752,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceOrderByRelationAggregateInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemOrderByRelationAggregateInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemOrderByRelationAggregateInput
+    tagsCreated?: TagOrderByRelationAggregateInput
+    tagsUpdated?: TagOrderByRelationAggregateInput
+    expenseCategoriesCreated?: ExpenseCategoryOrderByRelationAggregateInput
+    expenseCategoriesUpdated?: ExpenseCategoryOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -130506,6 +130826,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceListRelationFilter
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemListRelationFilter
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemListRelationFilter
+    tagsCreated?: TagListRelationFilter
+    tagsUpdated?: TagListRelationFilter
+    expenseCategoriesCreated?: ExpenseCategoryListRelationFilter
+    expenseCategoriesUpdated?: ExpenseCategoryListRelationFilter
   }, "id" | "email_tenantId">
 
   export type UserOrderByWithAggregationInput = {
@@ -131920,9 +132244,13 @@ export namespace Prisma {
     tenantId?: UuidFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
     color?: StringFilter<"Tag"> | string
+    createdById?: UuidNullableFilter<"Tag"> | string | null
+    updatedById?: UuidNullableFilter<"Tag"> | string | null
     createdAt?: DateTimeFilter<"Tag"> | Date | string
     updatedAt?: DateTimeFilter<"Tag"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     assignments?: TagAssignmentListRelationFilter
   }
 
@@ -131931,9 +132259,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     color?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
+    updatedBy?: UserOrderByWithRelationInput
     assignments?: TagAssignmentOrderByRelationAggregateInput
   }
 
@@ -131946,9 +132278,13 @@ export namespace Prisma {
     tenantId?: UuidFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
     color?: StringFilter<"Tag"> | string
+    createdById?: UuidNullableFilter<"Tag"> | string | null
+    updatedById?: UuidNullableFilter<"Tag"> | string | null
     createdAt?: DateTimeFilter<"Tag"> | Date | string
     updatedAt?: DateTimeFilter<"Tag"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     assignments?: TagAssignmentListRelationFilter
   }, "id" | "tenantId_name">
 
@@ -131957,6 +132293,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     color?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TagCountOrderByAggregateInput
@@ -131972,6 +132310,8 @@ export namespace Prisma {
     tenantId?: UuidWithAggregatesFilter<"Tag"> | string
     name?: StringWithAggregatesFilter<"Tag"> | string
     color?: StringWithAggregatesFilter<"Tag"> | string
+    createdById?: UuidNullableWithAggregatesFilter<"Tag"> | string | null
+    updatedById?: UuidNullableWithAggregatesFilter<"Tag"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Tag"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tag"> | Date | string
   }
@@ -132055,9 +132395,13 @@ export namespace Prisma {
     tenantId?: UuidFilter<"ExpenseCategory"> | string
     name?: StringFilter<"ExpenseCategory"> | string
     isSystemDefault?: BoolFilter<"ExpenseCategory"> | boolean
+    createdById?: UuidNullableFilter<"ExpenseCategory"> | string | null
+    updatedById?: UuidNullableFilter<"ExpenseCategory"> | string | null
     createdAt?: DateTimeFilter<"ExpenseCategory"> | Date | string
     updatedAt?: DateTimeFilter<"ExpenseCategory"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     expenses?: RouteExpenseListRelationFilter
     templateItems?: ExpenseTemplateItemListRelationFilter
   }
@@ -132067,9 +132411,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     isSystemDefault?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
+    updatedBy?: UserOrderByWithRelationInput
     expenses?: RouteExpenseOrderByRelationAggregateInput
     templateItems?: ExpenseTemplateItemOrderByRelationAggregateInput
   }
@@ -132083,9 +132431,13 @@ export namespace Prisma {
     tenantId?: UuidFilter<"ExpenseCategory"> | string
     name?: StringFilter<"ExpenseCategory"> | string
     isSystemDefault?: BoolFilter<"ExpenseCategory"> | boolean
+    createdById?: UuidNullableFilter<"ExpenseCategory"> | string | null
+    updatedById?: UuidNullableFilter<"ExpenseCategory"> | string | null
     createdAt?: DateTimeFilter<"ExpenseCategory"> | Date | string
     updatedAt?: DateTimeFilter<"ExpenseCategory"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     expenses?: RouteExpenseListRelationFilter
     templateItems?: ExpenseTemplateItemListRelationFilter
   }, "id" | "tenantId_name">
@@ -132095,6 +132447,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     isSystemDefault?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ExpenseCategoryCountOrderByAggregateInput
@@ -132110,6 +132464,8 @@ export namespace Prisma {
     tenantId?: UuidWithAggregatesFilter<"ExpenseCategory"> | string
     name?: StringWithAggregatesFilter<"ExpenseCategory"> | string
     isSystemDefault?: BoolWithAggregatesFilter<"ExpenseCategory"> | boolean
+    createdById?: UuidNullableWithAggregatesFilter<"ExpenseCategory"> | string | null
+    updatedById?: UuidNullableWithAggregatesFilter<"ExpenseCategory"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ExpenseCategory"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ExpenseCategory"> | Date | string
   }
@@ -140813,6 +141169,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -140878,6 +141238,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUpdateInput = {
@@ -140943,6 +141307,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -141008,6 +141376,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -142589,6 +142961,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutTagsInput
+    createdBy?: UserCreateNestedOneWithoutTagsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutTagsUpdatedInput
     assignments?: TagAssignmentCreateNestedManyWithoutTagInput
   }
 
@@ -142597,6 +142971,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     color?: string
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignments?: TagAssignmentUncheckedCreateNestedManyWithoutTagInput
@@ -142609,6 +142985,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutTagsNestedInput
+    createdBy?: UserUpdateOneWithoutTagsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutTagsUpdatedNestedInput
     assignments?: TagAssignmentUpdateManyWithoutTagNestedInput
   }
 
@@ -142617,6 +142995,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: TagAssignmentUncheckedUpdateManyWithoutTagNestedInput
@@ -142627,6 +143007,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     color?: string
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -142644,6 +143026,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -142714,6 +143098,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutExpenseCategoriesInput
+    createdBy?: UserCreateNestedOneWithoutExpenseCategoriesCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutExpenseCategoriesUpdatedInput
     expenses?: RouteExpenseCreateNestedManyWithoutCategoryInput
     templateItems?: ExpenseTemplateItemCreateNestedManyWithoutCategoryInput
   }
@@ -142723,6 +143109,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     isSystemDefault?: boolean
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     expenses?: RouteExpenseUncheckedCreateNestedManyWithoutCategoryInput
@@ -142736,6 +143124,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutExpenseCategoriesNestedInput
+    createdBy?: UserUpdateOneWithoutExpenseCategoriesCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutExpenseCategoriesUpdatedNestedInput
     expenses?: RouteExpenseUpdateManyWithoutCategoryNestedInput
     templateItems?: ExpenseTemplateItemUpdateManyWithoutCategoryNestedInput
   }
@@ -142745,6 +143135,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: RouteExpenseUncheckedUpdateManyWithoutCategoryNestedInput
@@ -142756,6 +143148,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     isSystemDefault?: boolean
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -142773,6 +143167,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -154240,6 +154636,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     color?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -154249,6 +154647,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     color?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -154258,6 +154658,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     color?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -154314,6 +154716,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     isSystemDefault?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -154323,6 +154727,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     isSystemDefault?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -154332,6 +154738,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     name?: SortOrder
     isSystemDefault?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -163600,6 +164008,34 @@ export namespace Prisma {
     connect?: SysAdminInvoiceItemWhereUniqueInput | SysAdminInvoiceItemWhereUniqueInput[]
   }
 
+  export type TagCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<TagCreateWithoutCreatedByInput, TagUncheckedCreateWithoutCreatedByInput> | TagCreateWithoutCreatedByInput[] | TagUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCreatedByInput | TagCreateOrConnectWithoutCreatedByInput[]
+    createMany?: TagCreateManyCreatedByInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type TagCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<TagCreateWithoutUpdatedByInput, TagUncheckedCreateWithoutUpdatedByInput> | TagCreateWithoutUpdatedByInput[] | TagUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutUpdatedByInput | TagCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: TagCreateManyUpdatedByInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type ExpenseCategoryCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutCreatedByInput, ExpenseCategoryUncheckedCreateWithoutCreatedByInput> | ExpenseCategoryCreateWithoutCreatedByInput[] | ExpenseCategoryUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutCreatedByInput | ExpenseCategoryCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ExpenseCategoryCreateManyCreatedByInputEnvelope
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+  }
+
+  export type ExpenseCategoryCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutUpdatedByInput, ExpenseCategoryUncheckedCreateWithoutUpdatedByInput> | ExpenseCategoryCreateWithoutUpdatedByInput[] | ExpenseCategoryUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutUpdatedByInput | ExpenseCategoryCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: ExpenseCategoryCreateManyUpdatedByInputEnvelope
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+  }
+
   export type RouteUncheckedCreateNestedManyWithoutDriverInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -163926,6 +164362,34 @@ export namespace Prisma {
     connectOrCreate?: SysAdminInvoiceItemCreateOrConnectWithoutUpdaterInput | SysAdminInvoiceItemCreateOrConnectWithoutUpdaterInput[]
     createMany?: SysAdminInvoiceItemCreateManyUpdaterInputEnvelope
     connect?: SysAdminInvoiceItemWhereUniqueInput | SysAdminInvoiceItemWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<TagCreateWithoutCreatedByInput, TagUncheckedCreateWithoutCreatedByInput> | TagCreateWithoutCreatedByInput[] | TagUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCreatedByInput | TagCreateOrConnectWithoutCreatedByInput[]
+    createMany?: TagCreateManyCreatedByInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<TagCreateWithoutUpdatedByInput, TagUncheckedCreateWithoutUpdatedByInput> | TagCreateWithoutUpdatedByInput[] | TagUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutUpdatedByInput | TagCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: TagCreateManyUpdatedByInputEnvelope
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutCreatedByInput, ExpenseCategoryUncheckedCreateWithoutCreatedByInput> | ExpenseCategoryCreateWithoutCreatedByInput[] | ExpenseCategoryUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutCreatedByInput | ExpenseCategoryCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ExpenseCategoryCreateManyCreatedByInputEnvelope
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+  }
+
+  export type ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutUpdatedByInput, ExpenseCategoryUncheckedCreateWithoutUpdatedByInput> | ExpenseCategoryCreateWithoutUpdatedByInput[] | ExpenseCategoryUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutUpdatedByInput | ExpenseCategoryCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: ExpenseCategoryCreateManyUpdatedByInputEnvelope
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -164594,6 +165058,62 @@ export namespace Prisma {
     deleteMany?: SysAdminInvoiceItemScalarWhereInput | SysAdminInvoiceItemScalarWhereInput[]
   }
 
+  export type TagUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<TagCreateWithoutCreatedByInput, TagUncheckedCreateWithoutCreatedByInput> | TagCreateWithoutCreatedByInput[] | TagUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCreatedByInput | TagCreateOrConnectWithoutCreatedByInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutCreatedByInput | TagUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: TagCreateManyCreatedByInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutCreatedByInput | TagUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutCreatedByInput | TagUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type TagUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<TagCreateWithoutUpdatedByInput, TagUncheckedCreateWithoutUpdatedByInput> | TagCreateWithoutUpdatedByInput[] | TagUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutUpdatedByInput | TagCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutUpdatedByInput | TagUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: TagCreateManyUpdatedByInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutUpdatedByInput | TagUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutUpdatedByInput | TagUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type ExpenseCategoryUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutCreatedByInput, ExpenseCategoryUncheckedCreateWithoutCreatedByInput> | ExpenseCategoryCreateWithoutCreatedByInput[] | ExpenseCategoryUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutCreatedByInput | ExpenseCategoryCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ExpenseCategoryUpsertWithWhereUniqueWithoutCreatedByInput | ExpenseCategoryUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ExpenseCategoryCreateManyCreatedByInputEnvelope
+    set?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    disconnect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    delete?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    update?: ExpenseCategoryUpdateWithWhereUniqueWithoutCreatedByInput | ExpenseCategoryUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ExpenseCategoryUpdateManyWithWhereWithoutCreatedByInput | ExpenseCategoryUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ExpenseCategoryScalarWhereInput | ExpenseCategoryScalarWhereInput[]
+  }
+
+  export type ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutUpdatedByInput, ExpenseCategoryUncheckedCreateWithoutUpdatedByInput> | ExpenseCategoryCreateWithoutUpdatedByInput[] | ExpenseCategoryUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutUpdatedByInput | ExpenseCategoryCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: ExpenseCategoryUpsertWithWhereUniqueWithoutUpdatedByInput | ExpenseCategoryUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: ExpenseCategoryCreateManyUpdatedByInputEnvelope
+    set?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    disconnect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    delete?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    update?: ExpenseCategoryUpdateWithWhereUniqueWithoutUpdatedByInput | ExpenseCategoryUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: ExpenseCategoryUpdateManyWithWhereWithoutUpdatedByInput | ExpenseCategoryUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: ExpenseCategoryScalarWhereInput | ExpenseCategoryScalarWhereInput[]
+  }
+
   export type RouteUncheckedUpdateManyWithoutDriverNestedInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -165246,6 +165766,62 @@ export namespace Prisma {
     update?: SysAdminInvoiceItemUpdateWithWhereUniqueWithoutUpdaterInput | SysAdminInvoiceItemUpdateWithWhereUniqueWithoutUpdaterInput[]
     updateMany?: SysAdminInvoiceItemUpdateManyWithWhereWithoutUpdaterInput | SysAdminInvoiceItemUpdateManyWithWhereWithoutUpdaterInput[]
     deleteMany?: SysAdminInvoiceItemScalarWhereInput | SysAdminInvoiceItemScalarWhereInput[]
+  }
+
+  export type TagUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<TagCreateWithoutCreatedByInput, TagUncheckedCreateWithoutCreatedByInput> | TagCreateWithoutCreatedByInput[] | TagUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutCreatedByInput | TagCreateOrConnectWithoutCreatedByInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutCreatedByInput | TagUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: TagCreateManyCreatedByInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutCreatedByInput | TagUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutCreatedByInput | TagUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type TagUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<TagCreateWithoutUpdatedByInput, TagUncheckedCreateWithoutUpdatedByInput> | TagCreateWithoutUpdatedByInput[] | TagUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutUpdatedByInput | TagCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutUpdatedByInput | TagUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: TagCreateManyUpdatedByInputEnvelope
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutUpdatedByInput | TagUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutUpdatedByInput | TagUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutCreatedByInput, ExpenseCategoryUncheckedCreateWithoutCreatedByInput> | ExpenseCategoryCreateWithoutCreatedByInput[] | ExpenseCategoryUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutCreatedByInput | ExpenseCategoryCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ExpenseCategoryUpsertWithWhereUniqueWithoutCreatedByInput | ExpenseCategoryUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ExpenseCategoryCreateManyCreatedByInputEnvelope
+    set?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    disconnect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    delete?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    update?: ExpenseCategoryUpdateWithWhereUniqueWithoutCreatedByInput | ExpenseCategoryUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ExpenseCategoryUpdateManyWithWhereWithoutCreatedByInput | ExpenseCategoryUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ExpenseCategoryScalarWhereInput | ExpenseCategoryScalarWhereInput[]
+  }
+
+  export type ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<ExpenseCategoryCreateWithoutUpdatedByInput, ExpenseCategoryUncheckedCreateWithoutUpdatedByInput> | ExpenseCategoryCreateWithoutUpdatedByInput[] | ExpenseCategoryUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ExpenseCategoryCreateOrConnectWithoutUpdatedByInput | ExpenseCategoryCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: ExpenseCategoryUpsertWithWhereUniqueWithoutUpdatedByInput | ExpenseCategoryUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: ExpenseCategoryCreateManyUpdatedByInputEnvelope
+    set?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    disconnect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    delete?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    connect?: ExpenseCategoryWhereUniqueInput | ExpenseCategoryWhereUniqueInput[]
+    update?: ExpenseCategoryUpdateWithWhereUniqueWithoutUpdatedByInput | ExpenseCategoryUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: ExpenseCategoryUpdateManyWithWhereWithoutUpdatedByInput | ExpenseCategoryUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: ExpenseCategoryScalarWhereInput | ExpenseCategoryScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTrucksInput = {
@@ -166520,6 +167096,18 @@ export namespace Prisma {
     connect?: TenantWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutTagsCreatedInput = {
+    create?: XOR<UserCreateWithoutTagsCreatedInput, UserUncheckedCreateWithoutTagsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTagsCreatedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutTagsUpdatedInput = {
+    create?: XOR<UserCreateWithoutTagsUpdatedInput, UserUncheckedCreateWithoutTagsUpdatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTagsUpdatedInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type TagAssignmentCreateNestedManyWithoutTagInput = {
     create?: XOR<TagAssignmentCreateWithoutTagInput, TagAssignmentUncheckedCreateWithoutTagInput> | TagAssignmentCreateWithoutTagInput[] | TagAssignmentUncheckedCreateWithoutTagInput[]
     connectOrCreate?: TagAssignmentCreateOrConnectWithoutTagInput | TagAssignmentCreateOrConnectWithoutTagInput[]
@@ -166540,6 +167128,26 @@ export namespace Prisma {
     upsert?: TenantUpsertWithoutTagsInput
     connect?: TenantWhereUniqueInput
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutTagsInput, TenantUpdateWithoutTagsInput>, TenantUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type UserUpdateOneWithoutTagsCreatedNestedInput = {
+    create?: XOR<UserCreateWithoutTagsCreatedInput, UserUncheckedCreateWithoutTagsCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTagsCreatedInput
+    upsert?: UserUpsertWithoutTagsCreatedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTagsCreatedInput, UserUpdateWithoutTagsCreatedInput>, UserUncheckedUpdateWithoutTagsCreatedInput>
+  }
+
+  export type UserUpdateOneWithoutTagsUpdatedNestedInput = {
+    create?: XOR<UserCreateWithoutTagsUpdatedInput, UserUncheckedCreateWithoutTagsUpdatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTagsUpdatedInput
+    upsert?: UserUpsertWithoutTagsUpdatedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTagsUpdatedInput, UserUpdateWithoutTagsUpdatedInput>, UserUncheckedUpdateWithoutTagsUpdatedInput>
   }
 
   export type TagAssignmentUpdateManyWithoutTagNestedInput = {
@@ -166636,6 +167244,18 @@ export namespace Prisma {
     connect?: TenantWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutExpenseCategoriesCreatedInput = {
+    create?: XOR<UserCreateWithoutExpenseCategoriesCreatedInput, UserUncheckedCreateWithoutExpenseCategoriesCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExpenseCategoriesCreatedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutExpenseCategoriesUpdatedInput = {
+    create?: XOR<UserCreateWithoutExpenseCategoriesUpdatedInput, UserUncheckedCreateWithoutExpenseCategoriesUpdatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExpenseCategoriesUpdatedInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type RouteExpenseCreateNestedManyWithoutCategoryInput = {
     create?: XOR<RouteExpenseCreateWithoutCategoryInput, RouteExpenseUncheckedCreateWithoutCategoryInput> | RouteExpenseCreateWithoutCategoryInput[] | RouteExpenseUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: RouteExpenseCreateOrConnectWithoutCategoryInput | RouteExpenseCreateOrConnectWithoutCategoryInput[]
@@ -166670,6 +167290,26 @@ export namespace Prisma {
     upsert?: TenantUpsertWithoutExpenseCategoriesInput
     connect?: TenantWhereUniqueInput
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutExpenseCategoriesInput, TenantUpdateWithoutExpenseCategoriesInput>, TenantUncheckedUpdateWithoutExpenseCategoriesInput>
+  }
+
+  export type UserUpdateOneWithoutExpenseCategoriesCreatedNestedInput = {
+    create?: XOR<UserCreateWithoutExpenseCategoriesCreatedInput, UserUncheckedCreateWithoutExpenseCategoriesCreatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExpenseCategoriesCreatedInput
+    upsert?: UserUpsertWithoutExpenseCategoriesCreatedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExpenseCategoriesCreatedInput, UserUpdateWithoutExpenseCategoriesCreatedInput>, UserUncheckedUpdateWithoutExpenseCategoriesCreatedInput>
+  }
+
+  export type UserUpdateOneWithoutExpenseCategoriesUpdatedNestedInput = {
+    create?: XOR<UserCreateWithoutExpenseCategoriesUpdatedInput, UserUncheckedCreateWithoutExpenseCategoriesUpdatedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExpenseCategoriesUpdatedInput
+    upsert?: UserUpsertWithoutExpenseCategoriesUpdatedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExpenseCategoriesUpdatedInput, UserUpdateWithoutExpenseCategoriesUpdatedInput>, UserUncheckedUpdateWithoutExpenseCategoriesUpdatedInput>
   }
 
   export type RouteExpenseUpdateManyWithoutCategoryNestedInput = {
@@ -174508,6 +175148,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutTenantInput = {
@@ -174572,6 +175216,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutTenantInput = {
@@ -175100,6 +175748,8 @@ export namespace Prisma {
     color?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutTagsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutTagsUpdatedInput
     assignments?: TagAssignmentCreateNestedManyWithoutTagInput
   }
 
@@ -175107,6 +175757,8 @@ export namespace Prisma {
     id?: string
     name: string
     color?: string
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignments?: TagAssignmentUncheckedCreateNestedManyWithoutTagInput
@@ -175154,6 +175806,8 @@ export namespace Prisma {
     isSystemDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutExpenseCategoriesCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutExpenseCategoriesUpdatedInput
     expenses?: RouteExpenseCreateNestedManyWithoutCategoryInput
     templateItems?: ExpenseTemplateItemCreateNestedManyWithoutCategoryInput
   }
@@ -175162,6 +175816,8 @@ export namespace Prisma {
     id?: string
     name: string
     isSystemDefault?: boolean
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     expenses?: RouteExpenseUncheckedCreateNestedManyWithoutCategoryInput
@@ -178444,6 +179100,8 @@ export namespace Prisma {
     tenantId?: UuidFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
     color?: StringFilter<"Tag"> | string
+    createdById?: UuidNullableFilter<"Tag"> | string | null
+    updatedById?: UuidNullableFilter<"Tag"> | string | null
     createdAt?: DateTimeFilter<"Tag"> | Date | string
     updatedAt?: DateTimeFilter<"Tag"> | Date | string
   }
@@ -178500,6 +179158,8 @@ export namespace Prisma {
     tenantId?: UuidFilter<"ExpenseCategory"> | string
     name?: StringFilter<"ExpenseCategory"> | string
     isSystemDefault?: BoolFilter<"ExpenseCategory"> | boolean
+    createdById?: UuidNullableFilter<"ExpenseCategory"> | string | null
+    updatedById?: UuidNullableFilter<"ExpenseCategory"> | string | null
     createdAt?: DateTimeFilter<"ExpenseCategory"> | Date | string
     updatedAt?: DateTimeFilter<"ExpenseCategory"> | Date | string
   }
@@ -183468,6 +184128,138 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TagCreateWithoutCreatedByInput = {
+    id?: string
+    name: string
+    color?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutTagsInput
+    updatedBy?: UserCreateNestedOneWithoutTagsUpdatedInput
+    assignments?: TagAssignmentCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    color?: string
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignments?: TagAssignmentUncheckedCreateNestedManyWithoutTagInput
+  }
+
+  export type TagCreateOrConnectWithoutCreatedByInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutCreatedByInput, TagUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type TagCreateManyCreatedByInputEnvelope = {
+    data: TagCreateManyCreatedByInput | TagCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TagCreateWithoutUpdatedByInput = {
+    id?: string
+    name: string
+    color?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutTagsInput
+    createdBy?: UserCreateNestedOneWithoutTagsCreatedInput
+    assignments?: TagAssignmentCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUncheckedCreateWithoutUpdatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    color?: string
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignments?: TagAssignmentUncheckedCreateNestedManyWithoutTagInput
+  }
+
+  export type TagCreateOrConnectWithoutUpdatedByInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutUpdatedByInput, TagUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type TagCreateManyUpdatedByInputEnvelope = {
+    data: TagCreateManyUpdatedByInput | TagCreateManyUpdatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExpenseCategoryCreateWithoutCreatedByInput = {
+    id?: string
+    name: string
+    isSystemDefault?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutExpenseCategoriesInput
+    updatedBy?: UserCreateNestedOneWithoutExpenseCategoriesUpdatedInput
+    expenses?: RouteExpenseCreateNestedManyWithoutCategoryInput
+    templateItems?: ExpenseTemplateItemCreateNestedManyWithoutCategoryInput
+  }
+
+  export type ExpenseCategoryUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    isSystemDefault?: boolean
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expenses?: RouteExpenseUncheckedCreateNestedManyWithoutCategoryInput
+    templateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type ExpenseCategoryCreateOrConnectWithoutCreatedByInput = {
+    where: ExpenseCategoryWhereUniqueInput
+    create: XOR<ExpenseCategoryCreateWithoutCreatedByInput, ExpenseCategoryUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ExpenseCategoryCreateManyCreatedByInputEnvelope = {
+    data: ExpenseCategoryCreateManyCreatedByInput | ExpenseCategoryCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExpenseCategoryCreateWithoutUpdatedByInput = {
+    id?: string
+    name: string
+    isSystemDefault?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutExpenseCategoriesInput
+    createdBy?: UserCreateNestedOneWithoutExpenseCategoriesCreatedInput
+    expenses?: RouteExpenseCreateNestedManyWithoutCategoryInput
+    templateItems?: ExpenseTemplateItemCreateNestedManyWithoutCategoryInput
+  }
+
+  export type ExpenseCategoryUncheckedCreateWithoutUpdatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    isSystemDefault?: boolean
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expenses?: RouteExpenseUncheckedCreateNestedManyWithoutCategoryInput
+    templateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type ExpenseCategoryCreateOrConnectWithoutUpdatedByInput = {
+    where: ExpenseCategoryWhereUniqueInput
+    create: XOR<ExpenseCategoryCreateWithoutUpdatedByInput, ExpenseCategoryUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type ExpenseCategoryCreateManyUpdatedByInputEnvelope = {
+    data: ExpenseCategoryCreateManyUpdatedByInput | ExpenseCategoryCreateManyUpdatedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutUsersInput = {
     update: XOR<TenantUpdateWithoutUsersInput, TenantUncheckedUpdateWithoutUsersInput>
     create: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
@@ -184513,6 +185305,70 @@ export namespace Prisma {
     data: XOR<SysAdminInvoiceItemUpdateManyMutationInput, SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterInput>
   }
 
+  export type TagUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutCreatedByInput, TagUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<TagCreateWithoutCreatedByInput, TagUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutCreatedByInput, TagUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutCreatedByInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutUpdatedByInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutUpdatedByInput, TagUncheckedUpdateWithoutUpdatedByInput>
+    create: XOR<TagCreateWithoutUpdatedByInput, TagUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutUpdatedByInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutUpdatedByInput, TagUncheckedUpdateWithoutUpdatedByInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutUpdatedByInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutUpdatedByInput>
+  }
+
+  export type ExpenseCategoryUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: ExpenseCategoryWhereUniqueInput
+    update: XOR<ExpenseCategoryUpdateWithoutCreatedByInput, ExpenseCategoryUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<ExpenseCategoryCreateWithoutCreatedByInput, ExpenseCategoryUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ExpenseCategoryUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: ExpenseCategoryWhereUniqueInput
+    data: XOR<ExpenseCategoryUpdateWithoutCreatedByInput, ExpenseCategoryUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type ExpenseCategoryUpdateManyWithWhereWithoutCreatedByInput = {
+    where: ExpenseCategoryScalarWhereInput
+    data: XOR<ExpenseCategoryUpdateManyMutationInput, ExpenseCategoryUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type ExpenseCategoryUpsertWithWhereUniqueWithoutUpdatedByInput = {
+    where: ExpenseCategoryWhereUniqueInput
+    update: XOR<ExpenseCategoryUpdateWithoutUpdatedByInput, ExpenseCategoryUncheckedUpdateWithoutUpdatedByInput>
+    create: XOR<ExpenseCategoryCreateWithoutUpdatedByInput, ExpenseCategoryUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type ExpenseCategoryUpdateWithWhereUniqueWithoutUpdatedByInput = {
+    where: ExpenseCategoryWhereUniqueInput
+    data: XOR<ExpenseCategoryUpdateWithoutUpdatedByInput, ExpenseCategoryUncheckedUpdateWithoutUpdatedByInput>
+  }
+
+  export type ExpenseCategoryUpdateManyWithWhereWithoutUpdatedByInput = {
+    where: ExpenseCategoryScalarWhereInput
+    data: XOR<ExpenseCategoryUpdateManyMutationInput, ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByInput>
+  }
+
   export type TenantCreateWithoutTrucksInput = {
     id?: string
     name: string
@@ -184764,6 +185620,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutTrucksCreatedInput = {
@@ -184828,6 +185688,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutTrucksCreatedInput = {
@@ -184897,6 +185761,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutTrucksUpdatedInput = {
@@ -184961,6 +185829,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutTrucksUpdatedInput = {
@@ -185668,6 +186540,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksCreatedInput = {
@@ -185732,6 +186608,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutTrucksUpdatedInput = {
@@ -185807,6 +186687,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksUpdatedInput = {
@@ -185871,6 +186755,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutTruckInput = {
@@ -186652,6 +187540,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutAssignedRoutesInput = {
@@ -186716,6 +187608,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutAssignedRoutesInput = {
@@ -186846,6 +187742,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutRoutesCreatedInput = {
@@ -186910,6 +187810,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutRoutesCreatedInput = {
@@ -186979,6 +187883,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutRoutesUpdatedInput = {
@@ -187043,6 +187951,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutRoutesUpdatedInput = {
@@ -187700,6 +188612,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedRoutesInput = {
@@ -187764,6 +188680,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TruckUpsertWithoutAssignedRoutesInput = {
@@ -187906,6 +188826,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesCreatedInput = {
@@ -187970,6 +188894,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutRoutesUpdatedInput = {
@@ -188045,6 +188973,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesUpdatedInput = {
@@ -188109,6 +189041,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type DocumentUpsertWithWhereUniqueWithoutRouteInput = {
@@ -188366,6 +189302,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutRouteCoDriversInput = {
@@ -188430,6 +189370,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutRouteCoDriversInput = {
@@ -188688,6 +189632,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutRouteDriversCreatedByInput = {
@@ -188752,6 +189700,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutRouteDriversCreatedByInput = {
@@ -188903,6 +189855,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRouteCoDriversInput = {
@@ -188967,6 +189923,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantUpsertWithoutRouteDriversInput = {
@@ -189237,6 +190197,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRouteDriversCreatedByInput = {
@@ -189301,6 +190265,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDocumentsInput = {
@@ -189680,6 +190648,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverDocumentsInput = {
@@ -189744,6 +190716,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverDocumentsInput = {
@@ -189890,6 +190866,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
@@ -189954,6 +190934,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutUploadedDocumentsInput = {
@@ -190367,6 +191351,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDocumentsInput = {
@@ -190431,6 +191419,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type LoadUpsertWithoutDocumentsInput = {
@@ -190589,6 +191581,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
@@ -190653,6 +191649,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutMaintenanceEventsInput = {
@@ -193023,6 +194023,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutSafetyEventsInput = {
@@ -193087,6 +194091,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutSafetyEventsInput = {
@@ -193494,6 +194502,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSafetyEventsInput = {
@@ -193558,6 +194570,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type RouteUpsertWithoutSafetyEventsInput = {
@@ -194332,6 +195348,288 @@ export namespace Prisma {
     create: XOR<TenantCreateWithoutTagsInput, TenantUncheckedCreateWithoutTagsInput>
   }
 
+  export type UserCreateWithoutTagsCreatedInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutTagsCreatedInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverUncheckedCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutTagsCreatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTagsCreatedInput, UserUncheckedCreateWithoutTagsCreatedInput>
+  }
+
+  export type UserCreateWithoutTagsUpdatedInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutTagsUpdatedInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverUncheckedCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutTagsUpdatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTagsUpdatedInput, UserUncheckedCreateWithoutTagsUpdatedInput>
+  }
+
   export type TagAssignmentCreateWithoutTagInput = {
     id?: string
     createdAt?: Date | string
@@ -194553,6 +195851,300 @@ export namespace Prisma {
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
   }
 
+  export type UserUpsertWithoutTagsCreatedInput = {
+    update: XOR<UserUpdateWithoutTagsCreatedInput, UserUncheckedUpdateWithoutTagsCreatedInput>
+    create: XOR<UserCreateWithoutTagsCreatedInput, UserUncheckedCreateWithoutTagsCreatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTagsCreatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTagsCreatedInput, UserUncheckedUpdateWithoutTagsCreatedInput>
+  }
+
+  export type UserUpdateWithoutTagsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTagsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUncheckedUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUpsertWithoutTagsUpdatedInput = {
+    update: XOR<UserUpdateWithoutTagsUpdatedInput, UserUncheckedUpdateWithoutTagsUpdatedInput>
+    create: XOR<UserCreateWithoutTagsUpdatedInput, UserUncheckedCreateWithoutTagsUpdatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTagsUpdatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTagsUpdatedInput, UserUncheckedUpdateWithoutTagsUpdatedInput>
+  }
+
+  export type UserUpdateWithoutTagsUpdatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTagsUpdatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUncheckedUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
+  }
+
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
     where: TagAssignmentWhereUniqueInput
     update: XOR<TagAssignmentUpdateWithoutTagInput, TagAssignmentUncheckedUpdateWithoutTagInput>
@@ -194765,6 +196357,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutTagsInput
+    createdBy?: UserCreateNestedOneWithoutTagsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutTagsUpdatedInput
   }
 
   export type TagUncheckedCreateWithoutAssignmentsInput = {
@@ -194772,6 +196366,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     color?: string
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -194904,6 +196500,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutTagAssignmentsInput = {
@@ -194968,6 +196568,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutTagAssignmentsInput = {
@@ -195188,6 +196792,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutTagsNestedInput
+    createdBy?: UserUpdateOneWithoutTagsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutTagsUpdatedNestedInput
   }
 
   export type TagUncheckedUpdateWithoutAssignmentsInput = {
@@ -195195,6 +196801,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -195339,6 +196947,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -195403,6 +197015,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutExpenseCategoriesInput = {
@@ -195592,6 +197208,288 @@ export namespace Prisma {
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
     where: TenantWhereUniqueInput
     create: XOR<TenantCreateWithoutExpenseCategoriesInput, TenantUncheckedCreateWithoutExpenseCategoriesInput>
+  }
+
+  export type UserCreateWithoutExpenseCategoriesCreatedInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutExpenseCategoriesCreatedInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverUncheckedCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutExpenseCategoriesCreatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExpenseCategoriesCreatedInput, UserUncheckedCreateWithoutExpenseCategoriesCreatedInput>
+  }
+
+  export type UserCreateWithoutExpenseCategoriesUpdatedInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutExpenseCategoriesUpdatedInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverUncheckedCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutExpenseCategoriesUpdatedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExpenseCategoriesUpdatedInput, UserUncheckedCreateWithoutExpenseCategoriesUpdatedInput>
   }
 
   export type RouteExpenseCreateWithoutCategoryInput = {
@@ -195847,6 +197745,300 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
     userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutExpenseCategoriesCreatedInput = {
+    update: XOR<UserUpdateWithoutExpenseCategoriesCreatedInput, UserUncheckedUpdateWithoutExpenseCategoriesCreatedInput>
+    create: XOR<UserCreateWithoutExpenseCategoriesCreatedInput, UserUncheckedCreateWithoutExpenseCategoriesCreatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExpenseCategoriesCreatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExpenseCategoriesCreatedInput, UserUncheckedUpdateWithoutExpenseCategoriesCreatedInput>
+  }
+
+  export type UserUpdateWithoutExpenseCategoriesCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExpenseCategoriesCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUncheckedUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type UserUpsertWithoutExpenseCategoriesUpdatedInput = {
+    update: XOR<UserUpdateWithoutExpenseCategoriesUpdatedInput, UserUncheckedUpdateWithoutExpenseCategoriesUpdatedInput>
+    create: XOR<UserCreateWithoutExpenseCategoriesUpdatedInput, UserUncheckedCreateWithoutExpenseCategoriesUpdatedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExpenseCategoriesUpdatedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExpenseCategoriesUpdatedInput, UserUncheckedUpdateWithoutExpenseCategoriesUpdatedInput>
+  }
+
+  export type UserUpdateWithoutExpenseCategoriesUpdatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExpenseCategoriesUpdatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUncheckedUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -196142,6 +198334,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutExpenseCategoriesInput
+    createdBy?: UserCreateNestedOneWithoutExpenseCategoriesCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutExpenseCategoriesUpdatedInput
     templateItems?: ExpenseTemplateItemCreateNestedManyWithoutCategoryInput
   }
 
@@ -196150,6 +198344,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     isSystemDefault?: boolean
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     templateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutCategoryInput
@@ -196444,6 +198640,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutExpenseCategoriesNestedInput
+    createdBy?: UserUpdateOneWithoutExpenseCategoriesCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutExpenseCategoriesUpdatedNestedInput
     templateItems?: ExpenseTemplateItemUpdateManyWithoutCategoryNestedInput
   }
 
@@ -196452,6 +198650,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     templateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutCategoryNestedInput
@@ -196911,6 +199111,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutExpenseCategoriesInput
+    createdBy?: UserCreateNestedOneWithoutExpenseCategoriesCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutExpenseCategoriesUpdatedInput
     expenses?: RouteExpenseCreateNestedManyWithoutCategoryInput
   }
 
@@ -196919,6 +199121,8 @@ export namespace Prisma {
     tenantId: string
     name: string
     isSystemDefault?: boolean
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     expenses?: RouteExpenseUncheckedCreateNestedManyWithoutCategoryInput
@@ -197163,6 +199367,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutExpenseCategoriesNestedInput
+    createdBy?: UserUpdateOneWithoutExpenseCategoriesCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutExpenseCategoriesUpdatedNestedInput
     expenses?: RouteExpenseUpdateManyWithoutCategoryNestedInput
   }
 
@@ -197171,6 +199377,8 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: RouteExpenseUncheckedUpdateManyWithoutCategoryNestedInput
@@ -199168,6 +201376,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesCreatedInput = {
@@ -199232,6 +201444,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesCreatedInput = {
@@ -199301,6 +201517,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesUpdatedInput = {
@@ -199365,6 +201585,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesUpdatedInput = {
@@ -199749,6 +201973,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesCreatedInput = {
@@ -199813,6 +202041,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutInvoicesUpdatedInput = {
@@ -199888,6 +202120,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesUpdatedInput = {
@@ -199952,6 +202188,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type LoadUpsertWithoutInvoicesInput = {
@@ -201305,6 +203545,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutSysAdminInvoiceItemsCreatedByInput = {
@@ -201369,6 +203613,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutSysAdminInvoiceItemsCreatedByInput = {
@@ -201438,6 +203686,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutSysAdminInvoiceItemsUpdatedByInput = {
@@ -201502,6 +203754,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutSysAdminInvoiceItemsUpdatedByInput = {
@@ -201826,6 +204082,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSysAdminInvoiceItemsCreatedByInput = {
@@ -201890,6 +204150,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutSysAdminInvoiceItemsUpdatedByInput = {
@@ -201965,6 +204229,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSysAdminInvoiceItemsUpdatedByInput = {
@@ -202029,6 +204297,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutPayrollRecordsInput = {
@@ -202282,6 +204554,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPayrollRecordsInput = {
@@ -202346,6 +204622,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPayrollRecordsInput = {
@@ -202415,6 +204695,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsCreatedInput = {
@@ -202479,6 +204763,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsCreatedInput = {
@@ -202548,6 +204836,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsUpdatedInput = {
@@ -202612,6 +204904,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsUpdatedInput = {
@@ -202887,6 +205183,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -202951,6 +205251,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutPayrollsCreatedInput = {
@@ -203026,6 +205330,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsCreatedInput = {
@@ -203090,6 +205398,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutPayrollsUpdatedInput = {
@@ -203165,6 +205477,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsUpdatedInput = {
@@ -203229,6 +205545,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutLoadsInput = {
@@ -203600,6 +205920,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverLoadsInput = {
@@ -203664,6 +205988,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverLoadsInput = {
@@ -203794,6 +206122,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutLoadsCreatedInput = {
@@ -203858,6 +206190,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutLoadsCreatedInput = {
@@ -203927,6 +206263,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutLoadsUpdatedInput = {
@@ -203991,6 +206331,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutLoadsUpdatedInput = {
@@ -204686,6 +207030,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverLoadsInput = {
@@ -204750,6 +207098,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TruckUpsertWithoutLoadsInput = {
@@ -204892,6 +207244,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsCreatedInput = {
@@ -204956,6 +207312,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutLoadsUpdatedInput = {
@@ -205031,6 +207391,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsUpdatedInput = {
@@ -205095,6 +207459,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutLoadInput = {
@@ -206843,6 +209211,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -206907,6 +209279,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -207253,6 +209629,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -207317,6 +209697,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type CarrierDispatchCreateWithoutMessagesInput = {
@@ -207661,6 +210045,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPushTokensInput = {
@@ -207725,6 +210113,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPushTokensInput = {
@@ -207983,6 +210375,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPushTokensCreatedByInput = {
@@ -208047,6 +210443,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPushTokensCreatedByInput = {
@@ -208127,6 +210527,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushTokensInput = {
@@ -208191,6 +210595,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantUpsertWithoutPushTokensInput = {
@@ -208461,6 +210869,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushTokensCreatedByInput = {
@@ -208525,6 +210937,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverHOSEntriesInput = {
@@ -208778,6 +211194,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutHosEntriesInput = {
@@ -208842,6 +211262,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutHosEntriesInput = {
@@ -209117,6 +211541,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHosEntriesInput = {
@@ -209181,6 +211609,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverIncidentsInput = {
@@ -209434,6 +211866,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutIncidentsInput = {
@@ -209498,6 +211934,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutIncidentsInput = {
@@ -209773,6 +212213,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIncidentsInput = {
@@ -209837,6 +212281,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutCarrierClientsInput = {
@@ -212562,6 +215010,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutCarrierDriverProfileInput = {
@@ -212626,6 +215078,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutCarrierDriverProfileInput = {
@@ -213692,6 +216148,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCarrierDriverProfileInput = {
@@ -213756,6 +216216,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type CarrierFacilityUpsertWithoutCarrierDriversInput = {
@@ -216655,6 +219119,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDispatchedRunsInput = {
@@ -216719,6 +219187,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDispatchedRunsInput = {
@@ -217769,6 +220241,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDispatchedRunsInput = {
@@ -217833,6 +220309,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type CarrierStopUpsertWithWhereUniqueWithoutDispatchInput = {
@@ -220095,6 +222575,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutUploadedCarrierDocsInput = {
@@ -220159,6 +222643,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutUploadedCarrierDocsInput = {
@@ -220228,6 +222716,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutVerifiedCarrierDocsInput = {
@@ -220292,6 +222784,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutVerifiedCarrierDocsInput = {
@@ -220808,6 +223304,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedCarrierDocsInput = {
@@ -220872,6 +223372,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUpsertWithoutVerifiedCarrierDocsInput = {
@@ -220947,6 +223451,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifiedCarrierDocsInput = {
@@ -221011,6 +223519,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type CarrierStopUpsertWithoutDocumentsInput = {
@@ -222588,6 +225100,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutApprovedExpensesInput = {
@@ -222652,6 +225168,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutApprovedExpensesInput = {
@@ -223395,6 +225915,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedExpensesInput = {
@@ -223459,6 +225983,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverPayRecordsInput = {
@@ -224022,6 +226550,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutApprovedPayRecordsInput = {
@@ -224086,6 +226618,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutApprovedPayRecordsInput = {
@@ -224695,6 +227231,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedPayRecordsInput = {
@@ -224759,6 +227299,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutInAppNotificationsInput = {
@@ -225012,6 +227556,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutInAppNotificationsInput = {
@@ -225076,6 +227624,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutInAppNotificationsInput = {
@@ -225351,6 +227903,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInAppNotificationsInput = {
@@ -225415,6 +227971,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutStepTemplatesInput = {
@@ -226830,6 +229390,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPlaybookStepsCreatedByInput = {
@@ -226894,6 +229458,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPlaybookStepsCreatedByInput = {
@@ -227253,6 +229821,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPlaybookStepsCreatedByInput = {
@@ -227317,6 +229889,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutPlaybookInstancesInput = {
@@ -228238,6 +230814,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutStepInstancesCreatedByInput = {
@@ -228302,6 +230882,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutStepInstancesCreatedByInput = {
@@ -228669,6 +231253,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStepInstancesCreatedByInput = {
@@ -228733,6 +231321,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutPlaybookNotificationsInput = {
@@ -233607,6 +236199,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverCompensationTemplatesCreatedByInput = {
@@ -233671,6 +236267,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverCompensationTemplatesCreatedByInput = {
@@ -234051,6 +236651,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverCompensationTemplatesCreatedByInput = {
@@ -234115,6 +236719,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutLoadDriverAssignmentsInput = {
@@ -234764,6 +237372,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutLoadDriverAssignmentsCreatedByInput = {
@@ -234828,6 +237440,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutLoadDriverAssignmentsCreatedByInput = {
@@ -235447,6 +238063,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadDriverAssignmentsCreatedByInput = {
@@ -235511,6 +238131,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutLoadPayComponentsInput = {
@@ -236149,6 +238773,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutLoadPayComponentsCreatedByInput = {
@@ -236213,6 +238841,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutLoadPayComponentsCreatedByInput = {
@@ -236785,6 +239417,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadPayComponentsCreatedByInput = {
@@ -236849,6 +239485,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverBonusesInput = {
@@ -237434,6 +240074,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverBonusesCreatedByInput = {
@@ -237498,6 +240142,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverBonusesCreatedByInput = {
@@ -238087,6 +240735,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverBonusesCreatedByInput = {
@@ -238151,6 +240803,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverDeductionsInput = {
@@ -238487,6 +241143,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverDeductionsCreatedByInput = {
@@ -238551,6 +241211,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverDeductionsCreatedByInput = {
@@ -238915,6 +241579,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDeductionsCreatedByInput = {
@@ -238979,6 +241647,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverSettlementsInput = {
@@ -239455,6 +242127,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverSettlementsCreatedByInput = {
@@ -239519,6 +242195,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverSettlementsCreatedByInput = {
@@ -239915,6 +242595,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverSettlementsCreatedByInput = {
@@ -239979,6 +242663,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutPayComponentAttachmentsInput = {
@@ -240372,6 +243060,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutPayComponentAttachmentsCreatedByInput = {
@@ -240436,6 +243128,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutPayComponentAttachmentsCreatedByInput = {
@@ -240863,6 +243559,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayComponentAttachmentsCreatedByInput = {
@@ -240927,6 +243627,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverDisputesInput = {
@@ -241326,6 +244030,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutDriverDisputesCreatedByInput = {
@@ -241390,6 +244098,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutDriverDisputesCreatedByInput = {
@@ -241823,6 +244535,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDisputesCreatedByInput = {
@@ -241887,6 +244603,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutDriverPayAuditLogsInput = {
@@ -243292,6 +246012,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutNotificationSubscriptionsInput = {
@@ -243356,6 +246080,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutNotificationSubscriptionsInput = {
@@ -243631,6 +246359,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationSubscriptionsInput = {
@@ -243695,6 +246427,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserCreateWithoutNotificationPreferencesInput = {
@@ -243759,6 +246495,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -243823,6 +246563,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -244081,6 +246825,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutUserNotificationPreferencesCreatedByInput = {
@@ -244145,6 +246893,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutUserNotificationPreferencesCreatedByInput = {
@@ -244225,6 +246977,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -244289,6 +247045,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantUpsertWithoutUserNotificationPreferencesInput = {
@@ -244559,6 +247319,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserNotificationPreferencesCreatedByInput = {
@@ -244623,6 +247387,10 @@ export namespace Prisma {
     pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type TenantCreateWithoutAuditLogsInput = {
@@ -244876,6 +247644,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -244940,6 +247712,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -245215,6 +247991,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -245279,6 +248059,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -245490,6 +248274,8 @@ export namespace Prisma {
     id?: string
     name: string
     color?: string
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -245506,6 +248292,8 @@ export namespace Prisma {
     id?: string
     name: string
     isSystemDefault?: boolean
+    createdById?: string | null
+    updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -246579,6 +249367,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenantInput = {
@@ -246643,6 +249435,10 @@ export namespace Prisma {
     userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
     sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTenantInput = {
@@ -247266,6 +250062,8 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutTagsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutTagsUpdatedNestedInput
     assignments?: TagAssignmentUpdateManyWithoutTagNestedInput
   }
 
@@ -247273,6 +250071,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: TagAssignmentUncheckedUpdateManyWithoutTagNestedInput
@@ -247282,6 +250082,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -247316,6 +250118,8 @@ export namespace Prisma {
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutExpenseCategoriesCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutExpenseCategoriesUpdatedNestedInput
     expenses?: RouteExpenseUpdateManyWithoutCategoryNestedInput
     templateItems?: ExpenseTemplateItemUpdateManyWithoutCategoryNestedInput
   }
@@ -247324,6 +250128,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: RouteExpenseUncheckedUpdateManyWithoutCategoryNestedInput
@@ -247334,6 +250140,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -251419,6 +254227,46 @@ export namespace Prisma {
     deletedBy?: string | null
   }
 
+  export type TagCreateManyCreatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    color?: string
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TagCreateManyUpdatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    color?: string
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExpenseCategoryCreateManyCreatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    isSystemDefault?: boolean
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExpenseCategoryCreateManyUpdatedByInput = {
+    id?: string
+    tenantId: string
+    name: string
+    isSystemDefault?: boolean
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type RouteUpdateWithoutDriverInput = {
     id?: StringFieldUpdateOperationsInput | string
     origin?: StringFieldUpdateOperationsInput | string
@@ -254311,6 +257159,138 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TagUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutTagsNestedInput
+    updatedBy?: UserUpdateOneWithoutTagsUpdatedNestedInput
+    assignments?: TagAssignmentUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignments?: TagAssignmentUncheckedUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TagUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutTagsNestedInput
+    createdBy?: UserUpdateOneWithoutTagsCreatedNestedInput
+    assignments?: TagAssignmentUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignments?: TagAssignmentUncheckedUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateManyWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExpenseCategoryUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutExpenseCategoriesNestedInput
+    updatedBy?: UserUpdateOneWithoutExpenseCategoriesUpdatedNestedInput
+    expenses?: RouteExpenseUpdateManyWithoutCategoryNestedInput
+    templateItems?: ExpenseTemplateItemUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type ExpenseCategoryUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expenses?: RouteExpenseUncheckedUpdateManyWithoutCategoryNestedInput
+    templateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type ExpenseCategoryUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExpenseCategoryUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutExpenseCategoriesNestedInput
+    createdBy?: UserUpdateOneWithoutExpenseCategoriesCreatedNestedInput
+    expenses?: RouteExpenseUpdateManyWithoutCategoryNestedInput
+    templateItems?: ExpenseTemplateItemUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type ExpenseCategoryUncheckedUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expenses?: RouteExpenseUncheckedUpdateManyWithoutCategoryNestedInput
+    templateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isSystemDefault?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RouteCreateManyTruckInput = {
