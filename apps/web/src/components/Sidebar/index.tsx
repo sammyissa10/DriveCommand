@@ -63,6 +63,8 @@ function managerHasPermission(
  *
  * CRITICAL DESIGN DECISIONS:
  * - Sidebar is ALWAYS position: fixed (never scrolls with page)
+ * - Positioned with 12px offset (left-3 top-3) for floating panel aesthetic
+ * - Rounded corners (rounded-2xl) with overflow-hidden
  * - Solid gradient surface (NO backdrop-filter, NO transparency)
  * - Peek renders as SEPARATE overlay element (doesn't mutate collapsed rail)
  * - Main content uses margin-left to offset for sidebar width
@@ -501,7 +503,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       <motion.aside
         ref={sidebarRef}
         className={cn(
-          "fixed left-0 top-0 h-screen sidebar-solid hidden lg:flex flex-col z-40"
+          "fixed left-3 top-3 h-[calc(100vh-24px)] sidebar-solid hidden lg:flex flex-col z-40 rounded-2xl overflow-hidden"
         )}
         variants={sidebarVariants}
         animate={isExpanded ? "expanded" : "collapsed"}
@@ -523,7 +525,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       <AnimatePresence>
         {!isExpanded && isPeeking && (
           <motion.div
-            className="fixed left-0 top-0 h-screen sidebar-peek-overlay hidden lg:flex flex-col z-50"
+            className="fixed left-3 top-3 h-[calc(100vh-24px)] sidebar-peek-overlay hidden lg:flex flex-col z-50 rounded-2xl overflow-hidden"
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -8 }}
