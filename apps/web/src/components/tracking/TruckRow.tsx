@@ -3,9 +3,12 @@
 import { Truck, ChevronDown, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VehicleLocation } from '@/lib/maps/map-utils';
-import { StatusPill } from './StatusPill';
+import { StatusPill, StatusType } from './StatusPill';
+import { ExceptionFlag } from './ExceptionFlag';
 import { RouteTimeline, RouteStopData } from './RouteTimeline';
 
+// Type augmentation: VehicleDispatch needs stops: RouteStopData[], hasException: boolean, exceptionType?: string
+// See: apps/web/src/lib/maps/map-utils.ts
 interface TruckRowProps {
   vehicle: VehicleLocation;
   isExpanded: boolean;
@@ -13,17 +16,18 @@ interface TruckRowProps {
   onVehicleClick: (vehicle: VehicleLocation) => void;
 }
 
-type StatusType = 'on-time' | 'delayed' | 'early' | 'at-risk' | 'no-route';
-
 function deriveStatus(vehicle: VehicleLocation): StatusType {
   // No dispatch = no route
   if (!vehicle.dispatch) {
     return 'no-route';
   }
 
+  // Check for exception state - exceptions make on-time status become at-risk
+  const hasException = (vehicle.dispatch as any).hasException === true;
+
   // Has dispatch, check vehicle status
   if (vehicle.status === 'moving') {
-    return 'on-time'; // green
+    return hasException ? 'at-risk' : 'on-time'; // exception overrides on-time
   }
 
   if (vehicle.status === 'idle') {
@@ -59,13 +63,13 @@ function formatRelativeTime(timestamp: Date | null): string {
   return `${diffDays}d ago`;
 }
 
-// Status-based truck icon colors
+// Status-based truck icon colors (using semantic tokens)
 const TRUCK_ICON_COLORS: Record<StatusType, string> = {
-  'on-time': 'text-green-500',
-  'delayed': 'text-red-500',
-  'early': 'text-blue-500',
-  'at-risk': 'text-amber-500',
-  'no-route': 'text-gray-400',
+  'on-time': 'text-status-success',
+  'delayed': 'text-status-danger',
+  'early': 'text-status-info',
+  'at-risk': 'text-status-warning',
+  'no-route': 'text-n-400',
 };
 
 export function TruckRow({
@@ -77,8 +81,21 @@ export function TruckRow({
   const status = deriveStatus(vehicle);
   const driverInitials = vehicle.driver ? getDriverInitials(vehicle.driver.name) : '?';
 
-  // Mock route stops (API doesn't return full stops yet)
-  const mockStops: RouteStopData[] = [];
+  // TODO: Backend API doesn't populate dispatch.stops yet
+  // When wired, map dispatch.stops to RouteStopData[]
+  const routeStops: RouteStopData[] = (vehicle.dispatch as any)?.stops?.map((s: any) => ({
+    id: s.id,
+    type: s.type.toLowerCase() as RouteStopData['type'],
+    status: s.status,
+    address: s.address,
+    scheduledAt: s.scheduledAt,
+    arrivedAt: s.arrivedAt,
+    hasException: s.hasException ?? false,
+  })) ?? [];
+
+  // Extract exception info from dispatch
+  const hasException = (vehicle.dispatch as any)?.hasException === true;
+  const exceptionType = (vehicle.dispatch as any)?.exceptionType ?? 'other';
 
   const handleRowClick = () => {
     onVehicleClick(vehicle);
@@ -138,14 +155,19 @@ export function TruckRow({
 
         {/* Middle zone (flex-1, min-w-[480px]) */}
         <div className="flex-1 min-w-[480px] overflow-hidden">
-          <RouteTimeline stops={mockStops} />
+          <RouteTimeline stops={routeStops} />
         </div>
 
         {/* Right zone (w-60) */}
         <div className="w-60 shrink-0 flex items-center justify-end gap-4">
-          {/* Status pill + ETA delta */}
+          {/* Status pill + exception flag + ETA delta */}
           <div className="flex flex-col items-end gap-1">
-            <StatusPill status={status} />
+            <div className="flex items-center gap-1.5">
+              <StatusPill status={status} />
+              {hasException && (
+                <ExceptionFlag type={exceptionType} />
+              )}
+            </div>
             {/* ETA delta placeholder */}
             <span className="text-xs text-muted-foreground">On Time</span>
           </div>
