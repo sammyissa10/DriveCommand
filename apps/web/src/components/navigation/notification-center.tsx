@@ -48,22 +48,23 @@ function relativeTime(date: Date | string): string {
 }
 
 function NotificationIcon({ type }: { type: InAppNotificationType }) {
-  const cls = 'h-4 w-4 flex-shrink-0';
+  // Match Quick Create icon styling: muted gray, consistent size
+  const cls = 'h-4 w-4 shrink-0 text-[hsl(220_10%_60%)]';
   switch (type) {
     case 'dispatch_assigned':
-      return <Truck className={`${cls} text-blue-500`} />;
+      return <Truck className={cls} strokeWidth={1.75} />;
     case 'load_delivered':
-      return <Package className={`${cls} text-green-500`} />;
+      return <Package className={cls} strokeWidth={1.75} />;
     case 'pay_record_ready':
-      return <DollarSign className={`${cls} text-emerald-500`} />;
+      return <DollarSign className={cls} strokeWidth={1.75} />;
     case 'invoice_generated':
-      return <FileText className={`${cls} text-purple-500`} />;
+      return <FileText className={cls} strokeWidth={1.75} />;
     case 'compliance_alert':
-      return <AlertTriangle className={`${cls} text-amber-500`} />;
+      return <AlertTriangle className={cls} strokeWidth={1.75} />;
     case 'needs_assignment':
-      return <UserPlus className={`${cls} text-orange-500`} />;
+      return <UserPlus className={cls} strokeWidth={1.75} />;
     default:
-      return <Bell className={`${cls} text-muted-foreground`} />;
+      return <Bell className={cls} strokeWidth={1.75} />;
   }
 }
 
@@ -143,13 +144,15 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
   }
 
   return (
-    <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[480px] overflow-y-auto bg-popover border rounded-lg shadow-lg z-[1001] flex flex-col">
-      {/* Sticky header */}
-      <div className="sticky top-0 bg-popover border-b px-4 py-3 flex items-center justify-between z-10">
-        <span className="font-semibold text-sm text-foreground">Notifications</span>
+    <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[480px] overflow-y-auto bg-[hsl(220_32%_11%)] border border-[hsl(220_25%_18%)] rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15),_0_24px_48px_-12px_rgba(0,0,0,0.4)] z-[1001] flex flex-col">
+      {/* Sticky header - Quick Create section label style */}
+      <div className="sticky top-0 bg-[hsl(220_32%_11%)] px-3 py-2 flex items-center justify-between z-10 border-b border-[hsl(220_25%_18%)]">
+        <span className="text-[11px] font-medium uppercase tracking-wider text-[hsl(220_10%_50%)]">
+          Notifications
+        </span>
         <button
           onClick={handleMarkAllRead}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="text-[11px] text-[hsl(220_10%_50%)] hover:text-[hsl(0_0%_98%)] transition-colors"
         >
           Mark all read
         </button>
@@ -158,10 +161,10 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
       {/* Notification list */}
       <div className="flex-1">
         {loading ? (
-          <div className="px-4 py-8 text-center text-sm text-muted-foreground">Loading...</div>
+          <div className="px-3 py-8 text-center text-sm text-[hsl(220_10%_50%)]">Loading...</div>
         ) : notifications.length === 0 ? (
-          <div className="px-4 py-12 flex flex-col items-center gap-2 text-muted-foreground">
-            <Bell className="h-8 w-8 opacity-30" />
+          <div className="px-3 py-12 flex flex-col items-center gap-2 text-[hsl(220_10%_50%)]">
+            <Bell className="h-8 w-8 opacity-30" strokeWidth={1.75} />
             <span className="text-sm">No notifications</span>
           </div>
         ) : (
@@ -170,39 +173,38 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
               <button
                 key={notification.id}
                 onClick={() => handleNotificationClick(notification)}
-                className="w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors duration-150 border-b border-border/50 last:border-0"
+                className="relative w-full text-left flex items-start gap-3 px-3 py-2.5 mx-1 rounded-lg cursor-pointer hover:bg-[hsl(220_28%_18%)] transition-none"
               >
-                {/* Unread indicator stripe */}
+                {/* Unread indicator - blue left border accent */}
                 <div
-                  className={`absolute left-0 top-0 h-full w-0.5 ${
-                    notification.read ? 'bg-transparent' : 'bg-primary'
-                  }`}
-                />
-                <div
-                  className={`self-stretch w-0.5 flex-shrink-0 rounded-full ${
-                    notification.read ? 'bg-transparent' : 'bg-primary'
+                  className={`absolute left-0 top-1 bottom-1 w-0.5 rounded-full ${
+                    notification.read ? 'bg-transparent' : 'bg-blue-500'
                   }`}
                 />
                 <div className="mt-0.5">
                   <NotificationIcon type={notification.type} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm leading-tight ${notification.read ? 'font-normal text-gray-700 dark:text-gray-300' : 'font-semibold text-gray-900 dark:text-gray-100'}`}>
-                    {notification.title}
-                  </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className={`text-sm leading-tight text-[hsl(0_0%_92%)] ${notification.read ? 'font-normal' : 'font-medium'}`}>
+                      {notification.title}
+                    </p>
+                    <span className="text-[11px] text-[hsl(220_10%_50%)] font-mono shrink-0">
+                      {relativeTime(notification.createdAt)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[hsl(220_10%_60%)] mt-0.5 line-clamp-2 leading-relaxed">
                     {notification.message}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {relativeTime(notification.createdAt)}
                   </p>
                 </div>
               </button>
             ))}
 
             {notifications.length >= 20 && (
-              <div className="px-4 py-3 text-center text-xs text-muted-foreground border-t">
-                View all notifications
+              <div className="px-3 py-2.5 text-center border-t border-[hsl(220_25%_18%)]">
+                <span className="text-[11px] text-[hsl(220_10%_50%)] hover:text-[hsl(0_0%_98%)] cursor-pointer transition-colors">
+                  View all notifications
+                </span>
               </div>
             )}
           </>
