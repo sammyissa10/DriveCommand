@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-17 - Recovered quick-331/332/333 sidebar redesign commits + Vercel-style Settings nav
+Last activity: 2026-05-17 - Completed quick task 359: Restructure app shell into floating rounded panels
 Last session: 2026-05-17T00:00:00Z
 Stopped at: Cherry-picked 18 sidebar commits (quick-331 redesign, quick-332 contrast fix, quick-333 active states, Settings drill-down nav)
 
@@ -65502,3 +65502,4 @@ Last session: 2026-05-14T20:30:01Z
 Stopped at: Completed quick-319: Phase 41 Plan 05 — Migrate Existing Senders and Wire Scheduled Notifications. 8 send* senders wrapped with dispatchNotification + legacy fallback. send-reminders cron migrated. 3 digest cron routes + vercel.json updated (12 cron entries). SysAdmin health tile. docs/notifications.md created.
 Resume file: None
 Next action: Phase 41 (Tenant-Configurable Notification System) is fully complete. All 5 plans shipped.
+| 359 | Restructure app shell into floating rounded sidebar and content panels | 2026-05-17 | 341f2ed6 | [359-restructure-app-shell-into-floating-roun](./quick/359-restructure-app-shell-into-floating-roun/) |
