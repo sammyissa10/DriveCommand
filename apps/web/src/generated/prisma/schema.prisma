@@ -338,6 +338,35 @@ model User {
   documentsUpdated         Document[]        @relation(name: "DocumentUpdatedBy")
   fleetMessagesCreated     FleetMessage[]    @relation(name: "FleetMessageCreatedBy")
 
+  // TKT-0015 Prompt 2b — Wave 3 reverse relations (finance/CRM/compliance)
+  customersCreated            Customer[]            @relation(name: "CustomerCreatedBy")
+  customersUpdated            Customer[]            @relation(name: "CustomerUpdatedBy")
+  customerInteractionsCreated CustomerInteraction[] @relation(name: "CustomerInteractionCreatedBy")
+  customerInteractionsUpdated CustomerInteraction[] @relation(name: "CustomerInteractionUpdatedBy")
+  fuelRecordsCreated          FuelRecord[]          @relation(name: "FuelRecordCreatedBy")
+  maintenanceEventsCreated    MaintenanceEvent[]    @relation(name: "MaintenanceEventCreatedBy")
+  maintenanceEventsUpdated    MaintenanceEvent[]    @relation(name: "MaintenanceEventUpdatedBy")
+  scheduledServicesCreated    ScheduledService[]    @relation(name: "ScheduledServiceCreatedBy")
+  scheduledServicesUpdated    ScheduledService[]    @relation(name: "ScheduledServiceUpdatedBy")
+  invoiceItemsCreated         InvoiceItem[]         @relation(name: "InvoiceItemCreatedBy")
+  invoiceItemsUpdated         InvoiceItem[]         @relation(name: "InvoiceItemUpdatedBy")
+  sysAdminInvoicesCreated     SysAdminInvoice[]     @relation(name: "SysAdminInvoiceCreatedBy")
+  sysAdminInvoicesUpdated     SysAdminInvoice[]     @relation(name: "SysAdminInvoiceUpdatedBy")
+  routeExpensesCreated        RouteExpense[]        @relation(name: "RouteExpenseCreatedBy")
+  routeExpensesUpdated        RouteExpense[]        @relation(name: "RouteExpenseUpdatedBy")
+  routePaymentsCreated        RoutePayment[]        @relation(name: "RoutePaymentCreatedBy")
+  routePaymentsUpdated        RoutePayment[]        @relation(name: "RoutePaymentUpdatedBy")
+  routeStopsCreated           RouteStop[]           @relation(name: "RouteStopCreatedBy")
+  routeStopsUpdated           RouteStop[]           @relation(name: "RouteStopUpdatedBy")
+  expenseTemplatesCreated     ExpenseTemplate[]     @relation(name: "ExpenseTemplateCreatedBy")
+  expenseTemplatesUpdated     ExpenseTemplate[]     @relation(name: "ExpenseTemplateUpdatedBy")
+  tenantIntegrationsCreated   TenantIntegration[]   @relation(name: "TenantIntegrationCreatedBy")
+  tenantIntegrationsUpdated   TenantIntegration[]   @relation(name: "TenantIntegrationUpdatedBy")
+  driverHOSEntriesCreated     DriverHOSEntry[]      @relation(name: "DriverHOSEntryCreatedBy")
+  driverHOSEntriesUpdated     DriverHOSEntry[]      @relation(name: "DriverHOSEntryUpdatedBy")
+  driverIncidentsCreated      DriverIncident[]      @relation(name: "DriverIncidentCreatedBy")
+  driverIncidentsUpdated      DriverIncident[]      @relation(name: "DriverIncidentUpdatedBy")
+
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
@@ -543,11 +572,15 @@ model MaintenanceEvent {
   cost              Decimal? @db.Decimal(10, 2)
   provider          String?
   notes             String?
+  createdById       String?  @db.Uuid
+  updatedById       String?  @db.Uuid
   createdAt         DateTime @default(now()) @db.Timestamptz
   updatedAt         DateTime @updatedAt @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  truck  Truck  @relation(fields: [truckId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  truck     Truck  @relation(fields: [truckId], references: [id])
+  createdBy User?  @relation(name: "MaintenanceEventCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "MaintenanceEventUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([truckId])
@@ -566,11 +599,15 @@ model ScheduledService {
   notes            String?
   isCompleted      Boolean   @default(false)
   completedAt      DateTime? @db.Timestamptz
+  createdById      String?   @db.Uuid
+  updatedById      String?   @db.Uuid
   createdAt        DateTime  @default(now()) @db.Timestamptz
   updatedAt        DateTime  @updatedAt @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  truck  Truck  @relation(fields: [truckId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  truck     Truck  @relation(fields: [truckId], references: [id])
+  createdBy User?  @relation(name: "ScheduledServiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "ScheduledServiceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([truckId])
@@ -676,10 +713,12 @@ model FuelRecord {
   timestamp   DateTime @db.Timestamptz
   isEstimated Boolean  @default(false)
   notes       String?
+  createdById String?  @db.Uuid
   createdAt   DateTime @default(now()) @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  truck  Truck  @relation(fields: [truckId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  truck     Truck  @relation(fields: [truckId], references: [id])
+  createdBy User?  @relation(name: "FuelRecordCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([truckId])
@@ -757,12 +796,16 @@ model RouteExpense {
   description String
   notes       String?
   deletedAt   DateTime? @db.Timestamptz
+  createdById String?   @db.Uuid
+  updatedById String?   @db.Uuid
   createdAt   DateTime  @default(now()) @db.Timestamptz
   updatedAt   DateTime  @updatedAt @db.Timestamptz
 
-  tenant   Tenant          @relation(fields: [tenantId], references: [id])
-  route    Route           @relation(fields: [routeId], references: [id])
-  category ExpenseCategory @relation(fields: [categoryId], references: [id])
+  tenant    Tenant          @relation(fields: [tenantId], references: [id])
+  route     Route           @relation(fields: [routeId], references: [id])
+  category  ExpenseCategory @relation(fields: [categoryId], references: [id])
+  createdBy User?           @relation(name: "RouteExpenseCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?           @relation(name: "RouteExpenseUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([routeId])
@@ -771,14 +814,18 @@ model RouteExpense {
 }
 
 model ExpenseTemplate {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @db.Uuid
-  name      String
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @updatedAt @db.Timestamptz
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @db.Uuid
+  name        String
+  createdById String?  @db.Uuid
+  updatedById String?  @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  updatedAt   DateTime @updatedAt @db.Timestamptz
 
-  tenant Tenant                @relation(fields: [tenantId], references: [id])
-  items  ExpenseTemplateItem[]
+  tenant    Tenant                @relation(fields: [tenantId], references: [id])
+  items     ExpenseTemplateItem[]
+  createdBy User?                 @relation(name: "ExpenseTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?                 @relation(name: "ExpenseTemplateUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -802,19 +849,23 @@ model ExpenseTemplateItem {
 }
 
 model RoutePayment {
-  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String        @db.Uuid
-  routeId   String        @db.Uuid
-  amount    Decimal       @db.Decimal(10, 2)
-  status    PaymentStatus @default(PENDING)
-  paidAt    DateTime?     @db.Timestamptz
-  notes     String?
-  deletedAt DateTime?     @db.Timestamptz
-  createdAt DateTime      @default(now()) @db.Timestamptz
-  updatedAt DateTime      @updatedAt @db.Timestamptz
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String        @db.Uuid
+  routeId     String        @db.Uuid
+  amount      Decimal       @db.Decimal(10, 2)
+  status      PaymentStatus @default(PENDING)
+  paidAt      DateTime?     @db.Timestamptz
+  notes       String?
+  deletedAt   DateTime?     @db.Timestamptz
+  createdById String?       @db.Uuid
+  updatedById String?       @db.Uuid
+  createdAt   DateTime      @default(now()) @db.Timestamptz
+  updatedAt   DateTime      @updatedAt @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  route  Route  @relation(fields: [routeId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  route     Route  @relation(fields: [routeId], references: [id])
+  createdBy User?  @relation(name: "RoutePaymentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "RoutePaymentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([routeId])
@@ -864,6 +915,8 @@ model Customer {
   totalLoads         Int              @default(0)
   totalRevenue       Decimal          @default(0) @db.Decimal(12, 2)
   lastLoadDate       DateTime?        @db.Timestamptz
+  createdById        String?          @db.Uuid
+  updatedById        String?          @db.Uuid
   createdAt          DateTime         @default(now()) @db.Timestamptz
   updatedAt          DateTime         @updatedAt @db.Timestamptz
   isSample           Boolean          @default(false)
@@ -871,6 +924,8 @@ model Customer {
   tenant       Tenant                @relation(fields: [tenantId], references: [id])
   interactions CustomerInteraction[]
   loads        Load[]
+  createdBy    User?                 @relation(name: "CustomerCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy    User?                 @relation(name: "CustomerUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, companyName])
   @@index([tenantId])
@@ -887,10 +942,14 @@ model CustomerInteraction {
   description String?
   isAutomated Boolean         @default(false)
   createdBy   String?         @db.Uuid
+  createdById String?         @db.Uuid
+  updatedById String?         @db.Uuid
   createdAt   DateTime        @default(now()) @db.Timestamptz
 
-  tenant   Tenant   @relation(fields: [tenantId], references: [id])
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdByUser User?    @relation(name: "CustomerInteractionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedByUser User?    @relation(name: "CustomerInteractionUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([customerId])
@@ -991,9 +1050,15 @@ model InvoiceItem {
   quantity    Decimal         @db.Decimal(10, 2)
   unitPrice   Decimal         @db.Decimal(10, 2)
   amount      Decimal         @db.Decimal(12, 2)
+  createdById String?         @db.Uuid
+  updatedById String?         @db.Uuid
+  createdAt   DateTime        @default(now()) @db.Timestamptz
+  updatedAt   DateTime        @updatedAt @db.Timestamptz
 
-  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  createdBy User?   @relation(name: "InvoiceItemCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?   @relation(name: "InvoiceItemUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
   @@index([tenantId])
@@ -1016,11 +1081,15 @@ model SysAdminInvoice {
   notes              String?
   paidAt             DateTime?             @db.Timestamptz
   archivedAt         DateTime?             @db.Timestamptz
+  createdById        String?               @db.Uuid
+  updatedById        String?               @db.Uuid
   createdAt          DateTime              @default(now()) @db.Timestamptz
   updatedAt          DateTime              @updatedAt @db.Timestamptz
 
-  tenant Tenant                @relation(fields: [tenantId], references: [id])
-  items  SysAdminInvoiceItem[]
+  tenant    Tenant                @relation(fields: [tenantId], references: [id])
+  items     SysAdminInvoiceItem[]
+  createdBy User?                 @relation(name: "SysAdminInvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?                 @relation(name: "SysAdminInvoiceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([status])
@@ -1169,16 +1238,20 @@ model Load {
 // ─── Integration Models ──────────────────────────────────────
 
 model TenantIntegration {
-  id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String              @db.Uuid
-  provider   IntegrationProvider
-  category   IntegrationCategory
-  enabled    Boolean             @default(false)
-  configJson Json? // JSONB: future API keys, webhook URLs, etc.
-  createdAt  DateTime            @default(now()) @db.Timestamptz
-  updatedAt  DateTime            @updatedAt @db.Timestamptz
+  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String              @db.Uuid
+  provider    IntegrationProvider
+  category    IntegrationCategory
+  enabled     Boolean             @default(false)
+  configJson  Json? // JSONB: future API keys, webhook URLs, etc.
+  createdById String?             @db.Uuid
+  updatedById String?             @db.Uuid
+  createdAt   DateTime            @default(now()) @db.Timestamptz
+  updatedAt   DateTime            @updatedAt @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  createdBy User?  @relation(name: "TenantIntegrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "TenantIntegrationUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, provider])
   @@index([tenantId])
@@ -1273,6 +1346,8 @@ model RouteStop {
   poNumber     String? // Customer PO number
   status       RouteStopStatus @default(PENDING)
   geofenceHit  Boolean         @default(false)
+  createdById  String?         @db.Uuid
+  updatedById  String?         @db.Uuid
   createdAt    DateTime        @default(now()) @db.Timestamptz
   updatedAt    DateTime        @updatedAt @db.Timestamptz
 
@@ -1281,6 +1356,8 @@ model RouteStop {
   load             Load?  @relation(name: "RouteStopLoad", fields: [loadId], references: [id])
   pickupForLoads   Load[] @relation(name: "LoadPickupStop")
   deliveryForLoads Load[] @relation(name: "LoadDeliveryStop")
+  createdBy        User?  @relation(name: "RouteStopCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy        User?  @relation(name: "RouteStopUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([routeId])
   @@index([tenantId])
@@ -1699,18 +1776,22 @@ enum DisputeStatus {
 }
 
 model DriverHOSEntry {
-  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String        @db.Uuid
-  driverId  String        @db.Uuid
-  status    HOSDutyStatus
-  startTime DateTime      @db.Timestamptz
-  endTime   DateTime?     @db.Timestamptz
-  notes     String?
-  createdAt DateTime      @default(now()) @db.Timestamptz
-  updatedAt DateTime      @updatedAt @db.Timestamptz
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String        @db.Uuid
+  driverId    String        @db.Uuid
+  status      HOSDutyStatus
+  startTime   DateTime      @db.Timestamptz
+  endTime     DateTime?     @db.Timestamptz
+  notes       String?
+  createdById String?       @db.Uuid
+  updatedById String?       @db.Uuid
+  createdAt   DateTime      @default(now()) @db.Timestamptz
+  updatedAt   DateTime      @updatedAt @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  driver User   @relation(name: "DriverHOSEntries", fields: [driverId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  driver    User   @relation(name: "DriverHOSEntries", fields: [driverId], references: [id])
+  createdBy User?  @relation(name: "DriverHOSEntryCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "DriverHOSEntryUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -1730,11 +1811,15 @@ model DriverIncident {
   photoS3Key  String?
   reportedAt  DateTime         @db.Timestamptz
   notes       String?
+  createdById String?          @db.Uuid
+  updatedById String?          @db.Uuid
   createdAt   DateTime         @default(now()) @db.Timestamptz
   updatedAt   DateTime         @updatedAt @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  driver User   @relation(name: "DriverIncidents", fields: [driverId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  driver    User   @relation(name: "DriverIncidents", fields: [driverId], references: [id])
+  createdBy User?  @relation(name: "DriverIncidentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "DriverIncidentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])

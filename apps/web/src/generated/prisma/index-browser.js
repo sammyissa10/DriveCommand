@@ -281,6 +281,8 @@ exports.Prisma.MaintenanceEventScalarFieldEnum = {
   cost: 'cost',
   provider: 'provider',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -297,6 +299,8 @@ exports.Prisma.ScheduledServiceScalarFieldEnum = {
   notes: 'notes',
   isCompleted: 'isCompleted',
   completedAt: 'completedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -368,6 +372,7 @@ exports.Prisma.FuelRecordScalarFieldEnum = {
   timestamp: 'timestamp',
   isEstimated: 'isEstimated',
   notes: 'notes',
+  createdById: 'createdById',
   createdAt: 'createdAt'
 };
 
@@ -411,6 +416,8 @@ exports.Prisma.RouteExpenseScalarFieldEnum = {
   description: 'description',
   notes: 'notes',
   deletedAt: 'deletedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -419,6 +426,8 @@ exports.Prisma.ExpenseTemplateScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   name: 'name',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -441,6 +450,8 @@ exports.Prisma.RoutePaymentScalarFieldEnum = {
   paidAt: 'paidAt',
   notes: 'notes',
   deletedAt: 'deletedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -463,6 +474,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
   totalLoads: 'totalLoads',
   totalRevenue: 'totalRevenue',
   lastLoadDate: 'lastLoadDate',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isSample: 'isSample'
@@ -477,6 +490,8 @@ exports.Prisma.CustomerInteractionScalarFieldEnum = {
   description: 'description',
   isAutomated: 'isAutomated',
   createdBy: 'createdBy',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt'
 };
 
@@ -518,7 +533,11 @@ exports.Prisma.InvoiceItemScalarFieldEnum = {
   unitType: 'unitType',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
-  amount: 'amount'
+  amount: 'amount',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SysAdminInvoiceScalarFieldEnum = {
@@ -536,6 +555,8 @@ exports.Prisma.SysAdminInvoiceScalarFieldEnum = {
   notes: 'notes',
   paidAt: 'paidAt',
   archivedAt: 'archivedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -620,6 +641,8 @@ exports.Prisma.TenantIntegrationScalarFieldEnum = {
   category: 'category',
   enabled: 'enabled',
   configJson: 'configJson',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -674,6 +697,8 @@ exports.Prisma.RouteStopScalarFieldEnum = {
   poNumber: 'poNumber',
   status: 'status',
   geofenceHit: 'geofenceHit',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -734,6 +759,8 @@ exports.Prisma.DriverHOSEntryScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -750,6 +777,8 @@ exports.Prisma.DriverIncidentScalarFieldEnum = {
   photoS3Key: 'photoS3Key',
   reportedAt: 'reportedAt',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

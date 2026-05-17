@@ -41,6 +41,7 @@ import { Prisma } from '../../../generated/prisma/client';
 // (no updatedById injection ever — immutable/append-only records).
 const CREATE_ONLY_AUDIT_MODELS = new Set([
   'FleetMessage',
+  'FuelRecord', // append-only fuel logs — no updatedById column exists
 ]);
 
 // Models that do NOT have createdById / updatedById fields.
@@ -59,7 +60,6 @@ const EXEMPT_AUDIT_MODELS = new Set([
   'GPSLocation',
   'GpsReport',
   'SafetyEvent',
-  'FuelRecord',
   'ActivationProgress',
   'TenantHealthScore',
   'TenantMetricsDaily',
