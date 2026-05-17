@@ -501,6 +501,15 @@
   background-color: hsl(var(--page-bg));
 }
 
+/* Shell background for floating panel layout — matches sidebar dark chrome */
+.shell-bg {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--sidebar-gradient-from)) 0%,
+    hsl(var(--sidebar-gradient-to)) 100%
+  );
+}
+
 /* Dark topbar context — forces light-on-dark colors for icons/text in desktop topbar */
 .topbar-dark-context {
   /* Override muted-foreground for this context to be readable on dark topbar */
