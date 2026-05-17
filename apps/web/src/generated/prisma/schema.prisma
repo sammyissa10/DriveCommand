@@ -315,6 +315,29 @@ model User {
   expenseCategoriesCreated ExpenseCategory[] @relation(name: "ExpenseCategoryCreatedBy")
   expenseCategoriesUpdated ExpenseCategory[] @relation(name: "ExpenseCategoryUpdatedBy")
 
+  // TKT-0015 Prompt 2b — Wave 2 reverse relations (fleet domain)
+  carrierClientsCreated    CarrierClient[]   @relation(name: "CarrierClientCreatedBy")
+  carrierClientsUpdated    CarrierClient[]   @relation(name: "CarrierClientUpdatedBy")
+  carrierContractsCreated  CarrierContract[] @relation(name: "CarrierContractCreatedBy")
+  carrierContractsUpdated  CarrierContract[] @relation(name: "CarrierContractUpdatedBy")
+  carrierFacilitiesCreated CarrierFacility[] @relation(name: "CarrierFacilityCreatedBy")
+  carrierFacilitiesUpdated CarrierFacility[] @relation(name: "CarrierFacilityUpdatedBy")
+  carrierDriversCreated    CarrierDriver[]   @relation(name: "CarrierDriverCreatedBy")
+  carrierDriversUpdated    CarrierDriver[]   @relation(name: "CarrierDriverUpdatedBy")
+  carrierTrucksCreated     CarrierTruck[]    @relation(name: "CarrierTruckCreatedBy")
+  carrierTrucksUpdated     CarrierTruck[]    @relation(name: "CarrierTruckUpdatedBy")
+  carrierDispatchesCreated CarrierDispatch[] @relation(name: "CarrierDispatchCreatedBy")
+  carrierDispatchesUpdated CarrierDispatch[] @relation(name: "CarrierDispatchUpdatedBy")
+  carrierLoadsCreated      CarrierLoad[]     @relation(name: "CarrierLoadCreatedBy")
+  carrierLoadsUpdated      CarrierLoad[]     @relation(name: "CarrierLoadUpdatedBy")
+  carrierStopsCreated      CarrierStop[]     @relation(name: "CarrierStopCreatedBy")
+  carrierStopsUpdated      CarrierStop[]     @relation(name: "CarrierStopUpdatedBy")
+  carrierExpensesCreated   CarrierExpense[]  @relation(name: "CarrierExpenseCreatedBy")
+  carrierExpensesUpdated   CarrierExpense[]  @relation(name: "CarrierExpenseUpdatedBy")
+  documentsCreated         Document[]        @relation(name: "DocumentCreatedBy")
+  documentsUpdated         Document[]        @relation(name: "DocumentUpdatedBy")
+  fleetMessagesCreated     FleetMessage[]    @relation(name: "FleetMessageCreatedBy")
+
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
@@ -485,15 +508,19 @@ model Document {
   notes        String?
   description  String?       @db.Text
   externalUrl  String?
+  createdById  String?       @db.Uuid // NEW (Wave 2)
+  updatedById  String?       @db.Uuid // NEW (Wave 2)
   createdAt    DateTime      @default(now()) @db.Timestamptz
   updatedAt    DateTime      @updatedAt @db.Timestamptz
 
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-  truck    Truck? @relation(fields: [truckId], references: [id])
-  route    Route? @relation(fields: [routeId], references: [id])
-  driver   User?  @relation(name: "DriverDocuments", fields: [driverId], references: [id])
-  load     Load?  @relation(fields: [loadId], references: [id])
-  uploader User   @relation(fields: [uploadedBy], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  truck     Truck? @relation(fields: [truckId], references: [id])
+  route     Route? @relation(fields: [routeId], references: [id])
+  driver    User?  @relation(name: "DriverDocuments", fields: [driverId], references: [id])
+  load      Load?  @relation(fields: [loadId], references: [id])
+  uploader  User   @relation(fields: [uploadedBy], references: [id]) // PRESERVE
+  createdBy User?  @relation(name: "DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy User?  @relation(name: "DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
 
   @@index([tenantId])
   @@index([truckId])
@@ -1309,13 +1336,15 @@ model FleetMessage {
   recipientId String?   @db.Uuid
   isBroadcast Boolean   @default(false)
   readAt      DateTime? @db.Timestamptz
+  createdById String?   @db.Uuid // NEW (Wave 2 — createdById ONLY, no updatedById)
   createdAt   DateTime  @default(now()) @db.Timestamptz
 
   stopId   String? @map("stop_id") @db.Uuid
   audioUrl String? @map("audio_url")
 
-  dispatch CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
-  stop     CarrierStop?     @relation(fields: [stopId], references: [id], onDelete: SetNull)
+  dispatch  CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
+  stop      CarrierStop?     @relation(fields: [stopId], references: [id], onDelete: SetNull)
+  createdBy User?            @relation(name: "FleetMessageCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
 
   @@index([tenantId])
   @@index([routeId])
@@ -1744,10 +1773,14 @@ model CarrierClient {
   paymentTerms   Int      @default(30) @map("payment_terms")
   creditLimit    Decimal? @map("credit_limit") @db.Decimal(12, 2)
   notes          String?
+  createdById    String?  @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById    String?  @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant            @relation(fields: [orgId], references: [id])
+  createdBy        User?             @relation(name: "CarrierClientCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy        User?             @relation(name: "CarrierClientUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   contracts        CarrierContract[]
   routeTemplates   RouteTemplate[]
   stops            CarrierStop[]
@@ -1784,10 +1817,14 @@ model CarrierContract {
   notes                  String?
   // Driver Pay additions (Phase 1)
   defaultFreeTimeMinutes Int?      @map("default_free_time_minutes")
+  createdById            String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById            String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt              DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant         Tenant            @relation(fields: [orgId], references: [id])
+  createdBy      User?             @relation(name: "CarrierContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy      User?             @relation(name: "CarrierContractUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   client         CarrierClient     @relation(fields: [clientId], references: [id])
   routeTemplates RouteTemplate[]
   carrierLoads   CarrierLoad[]
@@ -1819,10 +1856,14 @@ model CarrierFacility {
   appointmentRequired Boolean  @default(false) @map("appointment_required")
   contacts            Json     @default("[]")
   notes               String?
+  createdById         String?  @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById         String?  @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant             Tenant              @relation(fields: [orgId], references: [id])
+  createdBy          User?               @relation(name: "CarrierFacilityCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy          User?               @relation(name: "CarrierFacilityUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   carrierDrivers     CarrierDriver[]
   routeTemplateStops RouteTemplateStop[]
   stops              CarrierStop[]
@@ -1856,10 +1897,14 @@ model CarrierDriver {
   status              String    @default("active")
   isSample            Boolean   @default(false) @map("is_sample")
   notes               String?
+  createdById         String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById         String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant                Tenant            @relation(fields: [orgId], references: [id])
+  createdBy             User?             @relation(name: "CarrierDriverCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy             User?             @relation(name: "CarrierDriverUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   user                  User?             @relation(name: "CarrierDriverUser", fields: [userId], references: [id])
   homeTerminal          CarrierFacility?  @relation(fields: [homeTerminalId], references: [id])
   primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryDriver")
@@ -1905,10 +1950,14 @@ model CarrierTruck {
   status               String    @default("active")
   isSample             Boolean   @default(false) @map("is_sample")
   notes                String?
+  createdById          String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById          String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant                Tenant            @relation(fields: [orgId], references: [id])
+  createdBy             User?             @relation(name: "CarrierTruckCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy             User?             @relation(name: "CarrierTruckUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryTruck")
   trailerDispatches     CarrierDispatch[] @relation(name: "TrailerTruck")
   defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultTruck")
@@ -2003,10 +2052,14 @@ model CarrierDispatch {
   actualMiles        Decimal?  @map("actual_miles") @db.Decimal(10, 2)
   hosCycle           String    @default("us_70") @map("hos_cycle")
   notes              String?
+  createdById        String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById        String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant            @relation(fields: [orgId], references: [id])
+  createdBy        User?             @relation(name: "CarrierDispatchCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy        User?             @relation(name: "CarrierDispatchUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   routeTemplate    RouteTemplate?    @relation(fields: [routeTemplateId], references: [id])
   primaryDriver    CarrierDriver     @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
   coDriver         CarrierDriver?    @relation(name: "CoDriver", fields: [coDriverId], references: [id])
@@ -2063,10 +2116,14 @@ model CarrierLoad {
   totalMiles           Decimal?       @map("total_miles") @db.Decimal(10, 2)
   loadedMiles          Decimal?       @map("loaded_miles") @db.Decimal(10, 2)
   mileageSource        MileageSource? @map("mileage_source")
+  createdById          String?        @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById          String?        @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant            @relation(fields: [orgId], references: [id])
+  createdBy        User?             @relation(name: "CarrierLoadCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy        User?             @relation(name: "CarrierLoadUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   dispatch         CarrierDispatch?  @relation(fields: [dispatchId], references: [id])
   contract         CarrierContract?  @relation(fields: [contractId], references: [id])
   client           CarrierClient     @relation(fields: [clientId], references: [id])
@@ -2116,10 +2173,14 @@ model CarrierStop {
   // Driver Pay additions (Phase 1)
   freeTimeMinutes      Int       @default(120) @map("free_time_minutes")
   workState            String?   @map("work_state") @db.VarChar(2)
+  createdById          String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById          String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   dispatch  CarrierDispatch   @relation(fields: [dispatchId], references: [id])
+  createdBy User?             @relation(name: "CarrierStopCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy User?             @relation(name: "CarrierStopUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   load      CarrierLoad?      @relation(fields: [loadId], references: [id])
   facility  CarrierFacility   @relation(fields: [facilityId], references: [id])
   client    CarrierClient?    @relation(fields: [clientId], references: [id])
@@ -2212,9 +2273,13 @@ model CarrierExpense {
   reimbursable      Boolean   @default(true)
   notes             String?
   orgId             String    @map("org_id") @db.Uuid
+  createdById       String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById       String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   tenant          Tenant           @relation(fields: [orgId], references: [id])
+  createdBy       User?            @relation(name: "CarrierExpenseCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy       User?            @relation(name: "CarrierExpenseUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   dispatch        CarrierDispatch? @relation(fields: [dispatchId], references: [id])
   load            CarrierLoad?     @relation(fields: [loadId], references: [id])
   stop            CarrierStop?     @relation(fields: [stopId], references: [id])

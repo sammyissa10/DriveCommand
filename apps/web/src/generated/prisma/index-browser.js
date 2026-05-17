@@ -265,6 +265,8 @@ exports.Prisma.DocumentScalarFieldEnum = {
   notes: 'notes',
   description: 'description',
   externalUrl: 'externalUrl',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -704,6 +706,7 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   recipientId: 'recipientId',
   isBroadcast: 'isBroadcast',
   readAt: 'readAt',
+  createdById: 'createdById',
   createdAt: 'createdAt',
   stopId: 'stopId',
   audioUrl: 'audioUrl'
@@ -776,6 +779,8 @@ exports.Prisma.CarrierClientScalarFieldEnum = {
   paymentTerms: 'paymentTerms',
   creditLimit: 'creditLimit',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -802,6 +807,8 @@ exports.Prisma.CarrierContractScalarFieldEnum = {
   status: 'status',
   notes: 'notes',
   defaultFreeTimeMinutes: 'defaultFreeTimeMinutes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -826,6 +833,8 @@ exports.Prisma.CarrierFacilityScalarFieldEnum = {
   appointmentRequired: 'appointmentRequired',
   contacts: 'contacts',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -854,6 +863,8 @@ exports.Prisma.CarrierDriverScalarFieldEnum = {
   status: 'status',
   isSample: 'isSample',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -881,6 +892,8 @@ exports.Prisma.CarrierTruckScalarFieldEnum = {
   status: 'status',
   isSample: 'isSample',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -947,6 +960,8 @@ exports.Prisma.CarrierDispatchScalarFieldEnum = {
   actualMiles: 'actualMiles',
   hosCycle: 'hosCycle',
   notes: 'notes',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -985,6 +1000,8 @@ exports.Prisma.CarrierLoadScalarFieldEnum = {
   totalMiles: 'totalMiles',
   loadedMiles: 'loadedMiles',
   mileageSource: 'mileageSource',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1017,6 +1034,8 @@ exports.Prisma.CarrierStopScalarFieldEnum = {
   notes: 'notes',
   freeTimeMinutes: 'freeTimeMinutes',
   workState: 'workState',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1071,6 +1090,8 @@ exports.Prisma.CarrierExpenseScalarFieldEnum = {
   reimbursable: 'reimbursable',
   notes: 'notes',
   orgId: 'orgId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   createdAt: 'createdAt'
 };
 
