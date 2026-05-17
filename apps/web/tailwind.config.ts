@@ -79,17 +79,84 @@ const config: Config = {
   					foreground: 'hsl(var(--status-purple-foreground))',
   					bg: 'hsl(var(--status-purple-bg))'
   				}
-  			}
+  			},
+  			// DriveCommand Brand Neutrals (11-step scale)
+  			n: {
+  				'000': 'var(--color-n-000)',
+  				'050': 'var(--color-n-050)',
+  				'100': 'var(--color-n-100)',
+  				'200': 'var(--color-n-200)',
+  				'300': 'var(--color-n-300)',
+  				'400': 'var(--color-n-400)',
+  				'500': 'var(--color-n-500)',
+  				'600': 'var(--color-n-600)',
+  				'700': 'var(--color-n-700)',
+  				'800': 'var(--color-n-800)',
+  				'900': 'var(--color-n-900)',
+  			},
+  			// DriveCommand Brand Blue (9-step scale)
+  			b: {
+  				'050': 'var(--color-b-050)',
+  				'100': 'var(--color-b-100)',
+  				'200': 'var(--color-b-200)',
+  				'300': 'var(--color-b-300)',
+  				'400': 'var(--color-b-400)',
+  				'500': 'var(--color-b-500)',
+  				'600': 'var(--color-b-600)',
+  				'700': 'var(--color-b-700)',
+  				'800': 'var(--color-b-800)',
+  			},
+  			// DriveCommand Semantic Colors
+  			brand: {
+  				success: 'var(--color-success)',
+  				warning: 'var(--color-warning)',
+  				critical: 'var(--color-critical)',
+  				info: 'var(--color-info)',
+  			},
+  			// Hero Surface Colors (auth/marketing pages)
+  			'ink-navy': 'var(--color-ink-navy)',
+  			'surface-navy': 'var(--color-surface-navy)',
+  		},
+  		// DriveCommand Brand Shadows
+  		boxShadow: {
+  			'1': 'var(--shadow-1)',
+  			'2': 'var(--shadow-2)',
+  			'3': 'var(--shadow-3)',
   		},
   		transitionDuration: {
   			fast: 'var(--transition-fast)',
   			base: 'var(--transition-base)',
-  			slow: 'var(--transition-slow)'
+  			slow: 'var(--transition-slow)',
+  			// Brand motion tokens
+  			instant: 'var(--duration-instant)',
+  			deliberate: 'var(--duration-deliberate)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			sm: 'calc(var(--radius) - 4px)',
+  			// Brand radii
+  			'brand-sm': 'var(--radius-sm)',
+  			'brand-md': 'var(--radius-md)',
+  			'brand-lg': 'var(--radius-lg)',
+  		},
+  		// DriveCommand Typography Scale
+  		fontSize: {
+  			'display': ['96px', { lineHeight: '92px', fontWeight: '600' }],
+  			'headline': ['64px', { lineHeight: '64px', fontWeight: '600' }],
+  			'h1': ['32px', { lineHeight: '40px', fontWeight: '600' }],
+  			'h2': ['24px', { lineHeight: '32px', fontWeight: '600' }],
+  			'h3': ['18px', { lineHeight: '28px', fontWeight: '600' }],
+  			'body': ['16px', { lineHeight: '26px', fontWeight: '400' }],
+  			'small': ['13px', { lineHeight: '20px', fontWeight: '400' }],
+  			'label': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+  			'data': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+  		},
+  		// DriveCommand Font Families
+  		fontFamily: {
+  			display: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+  			sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+  			mono: ['var(--font-jetbrains-mono)', 'monospace'],
   		},
   		keyframes: {
   			'accordion-down': {

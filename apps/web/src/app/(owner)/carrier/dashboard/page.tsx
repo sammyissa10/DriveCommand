@@ -4,6 +4,7 @@ import { Send, Package, UserPlus } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { AlertBar } from '@/components/carrier/dashboard/AlertBar';
 import { KPIStrip } from '@/components/carrier/dashboard/KPIStrip';
+import { ChecklistStatusWidget } from '@/components/carrier/dashboard/ChecklistStatusWidget';
 import { TodayDispatches } from '@/components/carrier/dashboard/TodayDispatches';
 import { DriverStatusStrip } from '@/components/carrier/dashboard/DriverStatusStrip';
 import { RecentActivity } from '@/components/carrier/dashboard/RecentActivity';
@@ -54,13 +55,16 @@ export default async function CarrierDashboardPage() {
       {/* Row 1: KPI Cards */}
       <KPIStrip />
 
-      {/* Row 2: Alert Strip */}
+      {/* Row 2: Compliance & Checklists triage */}
+      <ChecklistStatusWidget />
+
+      {/* Row 3: Alert Strip */}
       <AlertBar />
 
-      {/* Row 3: Driver Status Strip */}
+      {/* Row 4: Driver Status Strip */}
       <DriverStatusStrip />
 
-      {/* Row 4: Two-column layout */}
+      {/* Row 5: Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 min-w-0">
         {/* Left 60% — Today's Dispatches + Recent Activity */}
         <div className="lg:col-span-3 space-y-6 min-w-0">

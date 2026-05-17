@@ -37,13 +37,16 @@ export async function FeatureCard({ slug }: FeatureCardProps) {
         <p className="text-sm text-muted-foreground">
           {feature.shortDescription}
         </p>
-        <Link
-          href={feature.route}
-          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium"
-        >
-          Go to feature
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+        {/* Skip link for dynamic routes (e.g., /track/[token]) - they require runtime params */}
+        {!feature.route.includes('[') && (
+          <Link
+            href={feature.route}
+            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium"
+          >
+            Go to feature
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        )}
       </CardContent>
     </Card>
   );

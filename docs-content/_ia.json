@@ -22,6 +22,7 @@
         "routes",
         "carrier-stops",
         "carrier-templates",
+        "route-templates",
         "driver-dashboard",
         "driver-my-load",
         "driver-my-route"

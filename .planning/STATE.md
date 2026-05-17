@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-17 - Completed quick task 357: Fix TypeScript breakages from Quick Task 356 — createdBy/updatedBy now nullable per TKT-0015 QT 357
-Last session: 2026-05-17T00:18:00Z
-Stopped at: Completed quick-353: backfilled manager.invited defaultHtmlCache (372 chars); chained backfill into seed:notifications npm script; tsc clean.
+Last activity: 2026-05-17 - Recovered quick-331/332/333 sidebar redesign commits + Vercel-style Settings nav
+Last session: 2026-05-17T00:00:00Z
+Stopped at: Cherry-picked 18 sidebar commits (quick-331 redesign, quick-332 contrast fix, quick-333 active states, Settings drill-down nav)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -65318,6 +65318,7 @@ None blocking immediate progress.
 | 327 | DB security standardization - RLS, FORCE RLS, policies, and indexes for all 77 tenant-scoped tables | 2026-05-15 | d4a8a40 | [327-db-security-standardization-rls-force-rl](./quick/327-db-security-standardization-rls-force-rl/) |
 | 328 | Lock in cross-tenant leak fix — raw-Prisma scanner + CI gate + 5 dropdown isolation regression tests (spec §6.3) | 2026-05-15 | 626b2f7 | [328-lock-in-cross-tenant-leak-fix-raw-prisma](./quick/328-lock-in-cross-tenant-leak-fix-raw-prisma/) |
 | 329 | Field-level AES-256-GCM encryption for carrier_drivers.cdl_number — crypto wrapper, key registry, audit_log table (RLS+append-only), dual-write, RBAC-gated decrypt, 1-row backfill verified (PR1 of 2) | 2026-05-15 | 1ce74f6 | [329-add-field-level-aes-256-gcm-encryption-i](./quick/329-add-field-level-aes-256-gcm-encryption-i/) |
+<<<<<<< HEAD
 | 330 | add /notifications to ADMIN_ALLOWED_PATHS in middleware.ts so sysadmins can reach the Notifications page | 2026-05-15 | 1258082 | [330-add-notifications-to-admin-allowed-paths](./quick/330-add-notifications-to-admin-allowed-paths/) |
 | 331 | fix broken Tiptap JSON-to-HTML renderer — switch to @tiptap/html/server subpath, fix react/react-dom version mismatch, add real-pipeline renderer tests | 2026-05-15 | 5f12e53 | [331-fix-broken-tiptap-json-to-html-renderer-](./quick/331-fix-broken-tiptap-json-to-html-renderer-/) |
 | 332 | add react-dom to apps/web/package.json to fix Vercel build Module not found error — confirmed already declared at ^19.2.4, local node_modules intact, tsc clean, build green | 2026-05-15 | 8b73a41 | [332-add-react-dom-to-apps-web-package-json-t](./quick/332-add-react-dom-to-apps-web-package-json-t/) |
@@ -65337,14 +65338,10 @@ None blocking immediate progress.
 | 346 | Driver Pay Phase 11 — Payroll Export: verified quick-310 implementation complete (4 exporters: Generic CSV / QuickBooks / ADP / Gusto; streaming POST /api/reports/payroll-export; Export Payroll UI button + modal; 51 golden/RBAC/audit/eligibility tests); added missing tenant isolation test (4 new tests) → 55/55 total; TypeScript clean | 2026-05-16 | — | [346-build-phase-11-driver-pay-payroll-export](./quick/346-build-phase-11-driver-pay-payroll-export/) |
 | 347 | Field-level AES-256-GCM encryption for restricted PII columns (DriverInvitation.licenseNumber + dateOfBirth) — dual-write window, backfill script, startup key validation | 2026-05-16 | 3e4845f | [347-field-level-aes-256-gcm-encryption-for-r](./quick/347-field-level-aes-256-gcm-encryption-for-r/) |
 | 348 | Harden document upload/download for restricted PII docs (SSN_CARD, PASSPORT, CDL_SCAN, MEDICAL_CARD, VOIDED_CHECK, W9, W4, I9) — restricted S3 prefix, 15-min download URLs, RBAC guard with audit_log trail, DocumentType enum extended, Document.isRestricted column, confirm dialog in driver UI, Vitest security suite | 2026-05-16 | 963ef77 | [348-harden-document-upload-system-for-restri](./quick/348-harden-document-upload-system-for-restri/) |
-| 350 | Display user name (not email) in web header — getDisplayName helper (5-step fallback: first+last → first → full_name → email local-part → full email), user-menu wired, email demoted to muted secondary text | 2026-05-16 | 5147b58 | [350-display-user-name-not-email-in-web-heade](./quick/350-display-user-name-not-email-in-web-heade/) |
-| 351 | Audit team invitation email flow to scope a role-aware copy fix | 2026-05-16 | 28809bb | [351-audit-team-invitation-email-flow-to-scop](./quick/351-audit-team-invitation-email-flow-to-scop/) |
-| 352 | Add manager.invited notification trigger — dedicated trigger/template for team-member invites, decoupled from driver.invited | 2026-05-16 | 3e02af1 | [352-add-manager-invited-notification-trigger](./quick/352-add-manager-invited-notification-trigger/) |
-| 353 | Backfill manager.invited HTML cache and chain backfill into seed:notifications script | 2026-05-17 | 432ce14 | [353-backfill-manager-invited-html-cache-and-](./quick/353-backfill-manager-invited-html-cache-and-/) |
-| 354 | Audit audit-column coverage and detail-page inventory for TKT-0015 | 2026-05-17 | 80da55b | [354-audit-audit-column-coverage-and-detail-p](./quick/354-audit-audit-column-coverage-and-detail-p/) |
-| 355 | Surface TKT-0015 Prompt 2 decision flags from quick-354 audit Section 5 | 2026-05-17 | 1974712 | [355-surface-tkt-0015-prompt-2-decision-flags](./quick/355-surface-tkt-0015-prompt-2-decision-flags/) |
-| 356 | TKT-0015 Prompt 2a — Pre-flight schema cleanup (resolve drift and upgrade bare-UUID audit fields to proper FKs) | 2026-05-17 | 2edd775 | [356-tkt-0015-prompt-2a-pre-flight-schema-cle](./quick/356-tkt-0015-prompt-2a-pre-flight-schema-cle/) |
-| 357 | Fix TypeScript breakages from Quick Task 356 — createdBy/updatedBy now nullable per TKT-0015 QT 357 | 2026-05-17 | cc590b36 | [357-fix-typescript-breakages-from-quick-task](./quick/357-fix-typescript-breakages-from-quick-task/) |
+=======
+| 330 | Add DriveCommand wordmark to mobile sign-in and apply minimal UX cleanup | 2026-05-16 | 301d7d9 | [330-add-drivecommand-wordmark-to-mobile-sign](./quick/330-add-drivecommand-wordmark-to-mobile-sign/) |
+| 331 | Redesign Left Sidebar Navigation with Collapsible Full-Height Bar | 2026-05-16 | 6a1d86a | [331-redesign-left-sidebar-navigation-with-co](./quick/331-redesign-left-sidebar-navigation-with-co/) |
+>>>>>>> 8762a538 (docs(quick-331): Redesign Left Sidebar Navigation with Collapsible Full-Height Bar)
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected

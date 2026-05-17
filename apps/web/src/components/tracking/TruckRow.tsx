@@ -1,0 +1,179 @@
+'use client';
+
+import { Truck, ChevronDown, MoreVertical } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { VehicleLocation } from '@/lib/maps/map-utils';
+import { StatusPill } from './StatusPill';
+import { RouteTimeline, RouteStopData } from './RouteTimeline';
+
+interface TruckRowProps {
+  vehicle: VehicleLocation;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  onVehicleClick: (vehicle: VehicleLocation) => void;
+}
+
+type StatusType = 'on-time' | 'delayed' | 'early' | 'at-risk' | 'no-route';
+
+function deriveStatus(vehicle: VehicleLocation): StatusType {
+  // No dispatch = no route
+  if (!vehicle.dispatch) {
+    return 'no-route';
+  }
+
+  // Has dispatch, check vehicle status
+  if (vehicle.status === 'moving') {
+    return 'on-time'; // green
+  }
+
+  if (vehicle.status === 'idle') {
+    return 'at-risk'; // amber
+  }
+
+  if (vehicle.status === 'offline') {
+    return 'delayed'; // red
+  }
+
+  // Fallback
+  return 'no-route';
+}
+
+function getDriverInitials(name: string): string {
+  const parts = name.trim().split(' ');
+  if (parts.length === 1) {
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function formatRelativeTime(timestamp: Date | null): string {
+  if (!timestamp) return 'Never';
+  const diffMs = Date.now() - timestamp.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return `${diffSec}s ago`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} min ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} hr ago`;
+  const diffDays = Math.floor(diffHr / 24);
+  return `${diffDays}d ago`;
+}
+
+// Status-based truck icon colors
+const TRUCK_ICON_COLORS: Record<StatusType, string> = {
+  'on-time': 'text-green-500',
+  'delayed': 'text-red-500',
+  'early': 'text-blue-500',
+  'at-risk': 'text-amber-500',
+  'no-route': 'text-gray-400',
+};
+
+export function TruckRow({
+  vehicle,
+  isExpanded,
+  onToggleExpand,
+  onVehicleClick,
+}: TruckRowProps) {
+  const status = deriveStatus(vehicle);
+  const driverInitials = vehicle.driver ? getDriverInitials(vehicle.driver.name) : '?';
+
+  // Mock route stops (API doesn't return full stops yet)
+  const mockStops: RouteStopData[] = [];
+
+  const handleRowClick = () => {
+    onVehicleClick(vehicle);
+  };
+
+  const handleExpandClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleExpand();
+  };
+
+  const handleKebabClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: open context menu
+  };
+
+  return (
+    <button
+      className="w-full h-24 border-b hover:bg-muted/50 transition-colors text-left"
+      onClick={handleRowClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleRowClick();
+        }
+      }}
+    >
+      <div className="h-full flex items-center px-4 gap-4">
+        {/* Left zone (w-56) */}
+        <div className="w-56 shrink-0 flex items-center gap-3">
+          {/* Truck icon */}
+          <Truck className={cn('w-6 h-6', TRUCK_ICON_COLORS[status])} />
+
+          {/* Unit + driver */}
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-sm truncate">
+              {vehicle.truck.licensePlate}
+            </div>
+
+            {/* Driver avatar + name */}
+            <div className="flex items-center gap-2 mt-1">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-xs font-medium text-primary">
+                  {driverInitials}
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground truncate">
+                {vehicle.driver ? vehicle.driver.name : 'Unassigned'}
+              </span>
+            </div>
+
+            {/* Last location timestamp */}
+            <div className="text-xs text-muted-foreground mt-1">
+              {formatRelativeTime(vehicle.timestamp)}
+            </div>
+          </div>
+        </div>
+
+        {/* Middle zone (flex-1, min-w-[480px]) */}
+        <div className="flex-1 min-w-[480px] overflow-hidden">
+          <RouteTimeline stops={mockStops} />
+        </div>
+
+        {/* Right zone (w-60) */}
+        <div className="w-60 shrink-0 flex items-center justify-end gap-4">
+          {/* Status pill + ETA delta */}
+          <div className="flex flex-col items-end gap-1">
+            <StatusPill status={status} />
+            {/* ETA delta placeholder */}
+            <span className="text-xs text-muted-foreground">On Time</span>
+          </div>
+
+          {/* Expand chevron */}
+          <button
+            onClick={handleExpandClick}
+            className="p-2 hover:bg-muted rounded transition-colors"
+            aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
+          >
+            <ChevronDown
+              className={cn(
+                'w-5 h-5 text-muted-foreground transition-transform',
+                isExpanded && 'rotate-180'
+              )}
+            />
+          </button>
+
+          {/* Kebab menu */}
+          <button
+            onClick={handleKebabClick}
+            className="p-2 hover:bg-muted rounded transition-colors"
+            aria-label="More options"
+          >
+            <MoreVertical className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </div>
+      </div>
+    </button>
+  );
+}

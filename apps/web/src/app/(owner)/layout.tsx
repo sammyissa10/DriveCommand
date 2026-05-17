@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 import { getSession, getRole } from "@/lib/auth/supabase";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
-import { SupportBadge } from "@/components/navigation/support-badge";
 import { prisma } from "@/lib/db/prisma";
 import { TRPCReactProvider } from "@/trpc/Provider";
 
@@ -49,7 +47,7 @@ export default async function OwnerLayout({
 
   return (
     <TRPCReactProvider>
-      <OwnerShell tenantName={tenantName} supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
+      <OwnerShell tenantName={tenantName}>
         {children}
       </OwnerShell>
     </TRPCReactProvider>

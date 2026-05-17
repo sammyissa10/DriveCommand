@@ -1,60 +1,18 @@
-import { HelpSearch } from '@/components/help/HelpSearch';
-import { HelpSidebar, HelpSidebarMobile, type HubWithFeatures } from '@/components/help/HelpSidebar';
-import { getAllFeatures } from '@/lib/docs/get-features';
-import ia from '../../../../../../docs-content/_ia.json';
-
-// Build hub data with features
-function getHubsWithFeatures(): HubWithFeatures[] {
-  const allFeatures = getAllFeatures();
-
-  return ia.clientHubs
-    .map((hub) => {
-      const hubFeatures = allFeatures.filter(
-        (f) =>
-          hub.features.includes(f.slug) &&
-          f.requiresClientDoc &&
-          (f.portal === 'owner' || f.portal === 'shared' || f.portal === 'driver')
-      );
-
-      return {
-        id: hub.id,
-        name: hub.name,
-        description: hub.description,
-        icon: hub.icon,
-        features: hubFeatures,
-      };
-    })
-    .filter((hub) => hub.features.length > 0);
-}
-
+/**
+ * Help Center Layout
+ *
+ * This layout wraps help pages with consistent padding and max-width.
+ * The main app shell (Sidebar + TopBar) is provided by the parent (owner) layout.
+ *
+ * Design principles:
+ * - Centered content with max-width 880px
+ * - 48px top padding for a calm, spacious feel
+ * - Help should feel like a quiet harbor, not a busy page
+ */
 export default function HelpLayout({ children }: { children: React.ReactNode }) {
-  const hubs = getHubsWithFeatures();
-
   return (
-    <div className="flex min-h-screen">
-      {/* Left sidebar - desktop only */}
-      <HelpSidebar hubs={hubs} />
-
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className="flex items-center gap-4 px-4 py-3 lg:px-6">
-            <HelpSidebarMobile hubs={hubs} />
-            <div className="flex-1">
-              <h1 className="text-lg font-semibold tracking-tight text-foreground lg:hidden">
-                Help Center
-              </h1>
-            </div>
-            <div className="w-full max-w-xs lg:max-w-sm">
-              <HelpSearch />
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
-      </div>
+    <div className="w-full max-w-[880px] mx-auto pt-12">
+      {children}
     </div>
-  );
+  )
 }

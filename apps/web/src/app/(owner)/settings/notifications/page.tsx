@@ -12,7 +12,18 @@ import {
   listActiveTemplatesForTenant,
 } from '@/app/(owner)/actions/tenant-notification-settings';
 import { TenantNotificationsTabs } from './tenant-notifications-tabs';
+import { SettingsHeader } from "@/components/settings/SettingsHeader"
+import { SETTINGS_PAGE_META } from "@/components/settings/settings.config"
 
+const meta = SETTINGS_PAGE_META.notifications
+
+/**
+ * Notifications Settings Page
+ *
+ * Configure notification preferences, templates, and subscribers.
+ * This page uses the existing TenantNotificationsTabs component which handles
+ * the full notification management UI.
+ */
 export default async function NotificationsSettingsPage() {
   try {
     await requireRole([UserRole.OWNER, UserRole.MANAGER]);
@@ -30,14 +41,8 @@ export default async function NotificationsSettingsPage() {
   ]);
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Customize notification templates, manage subscribers, and view delivery logs for your
-          team.
-        </p>
-      </div>
+    <div>
+      <SettingsHeader title={meta.title} subtitle={meta.subtitle} />
 
       <TenantNotificationsTabs
         initialSettings={settings}

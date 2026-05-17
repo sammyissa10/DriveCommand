@@ -1,15 +1,28 @@
-import { Inter, Poppins } from 'next/font/google';
+import { Inter, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { Toaster } from 'sonner';
 import { SupportTicketModal } from '@/components/support/support-ticket-modal';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
-const poppins = Poppins({
+// Brand typography from BRAND_GUIDE.md
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['600', '800'],
-  variable: '--font-poppins',
+  variable: '--font-dm-sans',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -36,8 +49,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} ${poppins.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className={inter.className}>
         <AuthProvider>
           {children}
           <SupportTicketModal />

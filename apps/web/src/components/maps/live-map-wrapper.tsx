@@ -1,15 +1,22 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X, List } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { VehicleLocation } from '@/lib/maps/map-utils';
 import { logger } from '@/lib/logger';
 import LiveMapTabs from './live-map-tabs';
 import VehicleSidebar from './vehicle-sidebar';
-import VehicleFilterBar from './vehicle-filter-bar';
 import HistoryTab, { HistoryPoint, RouteSegment } from './history-tab';
 import TripsTab from './trips-tab';
+import KpiStrip from '@/components/tracking/KpiStrip';
+import FilterChips from '@/components/tracking/FilterChips';
+import ViewToggle from '@/components/tracking/ViewToggle';
+import { TruckRow } from '@/components/tracking/TruckRow';
+import { TruckRowExpanded } from '@/components/tracking/TruckRowExpanded';
+import { deriveKpis } from '@/lib/tracking/deriveKpis';
+import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
 
 // Dynamic import of LiveMap with ssr: false (required for Leaflet)
 const LiveMapDynamic = dynamic(
@@ -37,7 +44,6 @@ const POLL_INTERVAL_MS = 15_000;
 
 export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps) {
   const [vehicles, setVehicles] = useState<VehicleLocation[]>(initialVehicles);
-  const [filteredVehicles, setFilteredVehicles] = useState<VehicleLocation[]>(initialVehicles);
   const [activeTab, setActiveTab] = useState<TabId>('live');
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [flyToTarget, setFlyToTarget] = useState<{ lat: number; lng: number } | null>(null);
@@ -50,6 +56,23 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   // Pre-fill state for History tab when navigated from Trips tab
   const [historyPrefillTruckId, setHistoryPrefillTruckId] = useState<string | undefined>(undefined);
   const [historyPrefillDate, setHistoryPrefillDate] = useState<string | undefined>(undefined);
+
+  // New state for visual foundation
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatusKey>('all');
+
+  // State for expanded truck rows in list view
+  const [expandedTruckIds, setExpandedTruckIds] = useState<Set<string>>(new Set());
+
+  // Derive KPIs and status counts from vehicles
+  const kpis = useMemo(() => deriveKpis(vehicles, []), [vehicles]);
+  const statusCounts = useMemo(() => deriveStatusCounts(vehicles), [vehicles]);
+
+  // Filter vehicles by status
+  const statusFilteredVehicles = useMemo(() => {
+    if (activeStatusFilter === 'all') return vehicles;
+    return vehicles.filter((v) => v.status === activeStatusFilter);
+  }, [vehicles, activeStatusFilter]);
 
   const activeTabRef = useRef(activeTab);
   useEffect(() => {
@@ -65,7 +88,7 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   }));
 
   // Vehicles to show as map markers: exclude no-location
-  const vehiclesForMap = filteredVehicles.filter(
+  const vehiclesForMap = statusFilteredVehicles.filter(
     (v) => v.status !== 'no-location' && v.latitude !== null && v.longitude !== null
   );
 
@@ -140,10 +163,39 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
     setActiveTab('history');
   }, []);
 
+  const handleToggleExpand = useCallback((truckId: string) => {
+    setExpandedTruckIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(truckId)) {
+        next.delete(truckId);
+      } else {
+        next.add(truckId);
+      }
+      return next;
+    });
+  }, []);
+
   return (
-    <div className="h-full flex relative">
-      {/* Mobile vehicle list toggle — positioned above bottom nav */}
-      <button
+    <div className="h-full flex flex-col relative">
+      {/* KPI Strip + Filter Bar — Live tab only */}
+      {activeTab === 'live' && (
+        <div className="shrink-0 p-4 space-y-4 border-b bg-background">
+          <KpiStrip kpis={kpis} />
+          <div className="flex items-center justify-between gap-4">
+            <FilterChips
+              statusCounts={statusCounts}
+              activeStatus={activeStatusFilter}
+              onStatusChange={setActiveStatusFilter}
+            />
+            <ViewToggle view={viewMode} onViewChange={setViewMode} />
+          </div>
+        </div>
+      )}
+
+      {/* Main content area */}
+      <div className="flex-1 flex relative min-h-0">
+        {/* Mobile vehicle list toggle — positioned above bottom nav */}
+        <button
         className="lg:hidden fixed bottom-24 left-4 z-40 bg-background border border-border rounded-full p-3 shadow-lg hover:bg-muted transition-colors"
         onClick={() => setSidebarOpen((p) => !p)}
         aria-label={sidebarOpen ? 'Close vehicle list' : 'Open vehicle list'}
@@ -181,10 +233,7 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
             {/* Tab content — scrollable */}
             <div className="flex-1 overflow-y-auto">
               {activeTab === 'live' && (
-                <>
-                  <VehicleFilterBar vehicles={vehicles} onFilteredChange={setFilteredVehicles} />
-                  <VehicleSidebar vehicles={filteredVehicles} onVehicleClick={handleVehicleClick} selectedVehicleId={selectedVehicleId} />
-                </>
+                <VehicleSidebar vehicles={statusFilteredVehicles} onVehicleClick={handleVehicleClick} selectedVehicleId={selectedVehicleId} />
               )}
               {activeTab === 'history' && (
                 <HistoryTab orgTrucks={orgTrucks} onHistoryPoints={setHistoryPoints} onHistorySegments={setHistorySegments} initialTruckId={historyPrefillTruckId} initialDate={historyPrefillDate} />
@@ -204,17 +253,11 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
 
         {/* Tab content */}
         {activeTab === 'live' && (
-          <>
-            <VehicleFilterBar
-              vehicles={vehicles}
-              onFilteredChange={setFilteredVehicles}
-            />
-            <VehicleSidebar
-              vehicles={filteredVehicles}
-              onVehicleClick={handleVehicleClick}
-              selectedVehicleId={selectedVehicleId}
-            />
-          </>
+          <VehicleSidebar
+            vehicles={statusFilteredVehicles}
+            onVehicleClick={handleVehicleClick}
+            selectedVehicleId={selectedVehicleId}
+          />
         )}
 
         {activeTab === 'history' && (
@@ -232,27 +275,73 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
         )}
       </div>
 
-      {/* Right panel — map fills remaining width */}
-      <div className="flex-1 min-w-0 relative">
-        <LiveMapDynamic
-          initialVehicles={vehiclesForMap}
-          flyToTarget={flyToTarget}
-          historySegments={activeTab === 'history' ? historySegments : null}
-          historyPoints={activeTab === 'history' ? historyPoints : null}
-          onVehicleClick={(truckId) => setSelectedVehicleId(truckId)}
-        />
-        {activeTab === 'live' && (
-          <div className="absolute bottom-1 right-2 flex items-center gap-1.5 bg-background/80 px-1.5 rounded z-10">
-            <p className="text-xs text-muted-foreground">Last updated {secondsAgo}s ago</p>
-            <button
-              onClick={fetchVehicles}
-              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-              aria-label="Refresh vehicles"
-            >
-              Refresh
-            </button>
-          </div>
-        )}
+      {/* Right panel — map or list view with cross-fade */}
+        <div className="flex-1 min-w-0 relative">
+          <AnimatePresence mode="wait">
+            {activeTab === 'live' && viewMode === 'list' ? (
+              <motion.div
+                key="list-view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="absolute inset-0 overflow-y-auto bg-background"
+              >
+                {statusFilteredVehicles.length === 0 ? (
+                  <div className="flex items-center justify-center h-64 text-muted-foreground">
+                    No vehicles match the current filter
+                  </div>
+                ) : (
+                  <div className="divide-y">
+                    {statusFilteredVehicles.map((vehicle) => (
+                      <div key={vehicle.truckId}>
+                        <TruckRow
+                          vehicle={vehicle}
+                          isExpanded={expandedTruckIds.has(vehicle.truckId)}
+                          onToggleExpand={() => handleToggleExpand(vehicle.truckId)}
+                          onVehicleClick={handleVehicleClick}
+                        />
+                        <TruckRowExpanded
+                          vehicle={vehicle}
+                          isExpanded={expandedTruckIds.has(vehicle.truckId)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="map-view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="absolute inset-0"
+              >
+                <LiveMapDynamic
+                  initialVehicles={vehiclesForMap}
+                  flyToTarget={flyToTarget}
+                  historySegments={activeTab === 'history' ? historySegments : null}
+                  historyPoints={activeTab === 'history' ? historyPoints : null}
+                  onVehicleClick={(truckId) => setSelectedVehicleId(truckId)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {activeTab === 'live' && viewMode === 'map' && (
+            <div className="absolute bottom-1 right-2 flex items-center gap-1.5 bg-background/80 px-1.5 rounded z-10">
+              <p className="text-xs text-muted-foreground">Last updated {secondsAgo}s ago</p>
+              <button
+                onClick={fetchVehicles}
+                className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                aria-label="Refresh vehicles"
+              >
+                Refresh
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
