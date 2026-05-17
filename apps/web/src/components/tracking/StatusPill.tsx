@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-type StatusType = 'on-time' | 'delayed' | 'early' | 'at-risk' | 'no-route';
+export type StatusType = 'on-time' | 'delayed' | 'early' | 'at-risk' | 'no-route';
 
 interface StatusPillProps {
   status: StatusType;
@@ -9,13 +9,33 @@ interface StatusPillProps {
 
 const STATUS_CONFIG: Record<
   StatusType,
-  { bg: string; label: string }
+  { bg: string; text: string; label: string }
 > = {
-  'on-time': { bg: 'bg-green-500', label: 'On Time' },
-  'delayed': { bg: 'bg-red-500', label: 'Delayed' },
-  'early': { bg: 'bg-blue-500', label: 'Early' },
-  'at-risk': { bg: 'bg-amber-500', label: 'At Risk' },
-  'no-route': { bg: 'bg-gray-400', label: 'No Route' },
+  'on-time': {
+    bg: 'bg-status-success',
+    text: 'text-status-success-foreground',
+    label: 'On Time',
+  },
+  'delayed': {
+    bg: 'bg-status-danger',
+    text: 'text-status-danger-foreground',
+    label: 'Delayed',
+  },
+  'early': {
+    bg: 'bg-status-info',
+    text: 'text-status-info-foreground',
+    label: 'Early',
+  },
+  'at-risk': {
+    bg: 'bg-status-warning',
+    text: 'text-status-warning-foreground',
+    label: 'At Risk',
+  },
+  'no-route': {
+    bg: 'bg-muted',
+    text: 'text-muted-foreground',
+    label: 'No Route',
+  },
 };
 
 export function StatusPill({ status, className }: StatusPillProps) {
@@ -23,9 +43,12 @@ export function StatusPill({ status, className }: StatusPillProps) {
 
   return (
     <span
+      role="status"
+      aria-label={`Status: ${config.label}`}
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white',
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
         config.bg,
+        config.text,
         className
       )}
     >
