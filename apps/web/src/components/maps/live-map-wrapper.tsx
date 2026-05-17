@@ -17,6 +17,7 @@ import { TruckRow } from '@/components/tracking/TruckRow';
 import { TruckRowExpanded } from '@/components/tracking/TruckRowExpanded';
 import { deriveKpis } from '@/lib/tracking/deriveKpis';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
+import { MapErrorBoundary } from './map-error-boundary';
 
 // Dynamic import of LiveMap with ssr: false (required for Leaflet)
 const LiveMapDynamic = dynamic(
@@ -319,13 +320,15 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
                 transition={{ duration: 0.18 }}
                 className="absolute inset-0"
               >
-                <LiveMapDynamic
-                  initialVehicles={vehiclesForMap}
-                  flyToTarget={flyToTarget}
-                  historySegments={activeTab === 'history' ? historySegments : null}
-                  historyPoints={activeTab === 'history' ? historyPoints : null}
-                  onVehicleClick={(truckId) => setSelectedVehicleId(truckId)}
-                />
+                <MapErrorBoundary>
+                  <LiveMapDynamic
+                    initialVehicles={vehiclesForMap}
+                    flyToTarget={flyToTarget}
+                    historySegments={activeTab === 'history' ? historySegments : null}
+                    historyPoints={activeTab === 'history' ? historyPoints : null}
+                    onVehicleClick={(truckId) => setSelectedVehicleId(truckId)}
+                  />
+                </MapErrorBoundary>
               </motion.div>
             )}
           </AnimatePresence>
