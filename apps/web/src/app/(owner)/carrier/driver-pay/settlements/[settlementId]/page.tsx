@@ -9,6 +9,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { SettlementDetailView } from '../_components/SettlementDetailView';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { computeFourWeekAverage, detectSettlementAnomaly } from '@/lib/driver-pay/settlement-anomaly';
 import type { PrismaClient } from '@/generated/prisma';
 
@@ -45,6 +46,8 @@ export default async function SettlementDetailPage({
         },
       },
       bonuses: { where: { deletedAt: null } },
+      creator: { select: { firstName: true, lastName: true, email: true } },
+      updater: { select: { firstName: true, lastName: true, email: true } },
     },
   });
 
@@ -200,6 +203,14 @@ export default async function SettlementDetailPage({
         bonuses={bonusesData}
         deductions={deductionsView}
         anomaly={anomalyData}
+      />
+      <AuditTrailFooter
+        createdAt={settlement.createdAt}
+        createdByName={settlement.creator ? `${settlement.creator.firstName ?? ''} ${settlement.creator.lastName ?? ''}`.trim() || null : null}
+        createdByEmail={settlement.creator?.email ?? null}
+        updatedAt={settlement.updatedAt}
+        updatedByName={settlement.updater ? `${settlement.updater.firstName ?? ''} ${settlement.updater.lastName ?? ''}`.trim() || null : null}
+        updatedByEmail={settlement.updater?.email ?? null}
       />
     </div>
   );

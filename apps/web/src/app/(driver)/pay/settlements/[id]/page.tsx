@@ -3,6 +3,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { DriverSettlementDetailView } from './_components/DriverSettlementDetailView';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import type { PrismaClient } from '@/generated/prisma';
 
 export default async function Page({
@@ -34,6 +35,8 @@ export default async function Page({
         },
       },
       bonuses: { where: { deletedAt: null, visibleToDriver: true } },
+      creator: { select: { firstName: true, lastName: true, email: true } },
+      updater: { select: { firstName: true, lastName: true, email: true } },
     },
   });
 
@@ -82,5 +85,17 @@ export default async function Page({
     })),
   };
 
-  return <DriverSettlementDetailView settlement={serialized} />;
+  return (
+    <>
+      <DriverSettlementDetailView settlement={serialized} />
+      <AuditTrailFooter
+        createdAt={settlement.createdAt}
+        createdByName={settlement.creator ? `${settlement.creator.firstName ?? ''} ${settlement.creator.lastName ?? ''}`.trim() || null : null}
+        createdByEmail={settlement.creator?.email ?? null}
+        updatedAt={settlement.updatedAt}
+        updatedByName={settlement.updater ? `${settlement.updater.firstName ?? ''} ${settlement.updater.lastName ?? ''}`.trim() || null : null}
+        updatedByEmail={settlement.updater?.email ?? null}
+      />
+    </>
+  );
 }
