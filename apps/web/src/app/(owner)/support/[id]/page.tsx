@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Paperclip } from 'lucide-react';
 import { OwnerReplyForm } from './owner-reply-form';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
 interface TicketDetailPageProps {
   params: Promise<{ id: string }>;
@@ -99,6 +101,16 @@ export default async function TicketDetailPage({ params }: TicketDetailPageProps
 
   const isClosed = ticket.status === 'CLOSED' || ticket.status === 'RESOLVED';
   const attachmentUrl = ticket.attachmentKey ? await generateDownloadUrl(ticket.attachmentKey) : null;
+
+  // Fetch audit user data separately (getTicketById does not include these relations)
+  const prisma = await getTenantPrisma();
+  const ticketAudit = await prisma.supportTicket.findUnique({
+    where: { id },
+    select: {
+      createdBy: { select: { firstName: true, lastName: true, email: true } },
+      updatedBy: { select: { firstName: true, lastName: true, email: true } },
+    },
+  }).catch(() => null);
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -235,6 +247,15 @@ export default async function TicketDetailPage({ params }: TicketDetailPageProps
           )}
         </CardContent>
       </Card>
+
+      <AuditTrailFooter
+        createdAt={ticket.createdAt}
+        createdByName={ticketAudit?.createdBy ? `${ticketAudit.createdBy.firstName ?? ''} ${ticketAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+        createdByEmail={ticketAudit?.createdBy?.email ?? null}
+        updatedAt={ticket.updatedAt}
+        updatedByName={ticketAudit?.updatedBy ? `${ticketAudit.updatedBy.firstName ?? ''} ${ticketAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+        updatedByEmail={ticketAudit?.updatedBy?.email ?? null}
+      />
     </div>
   );
 }

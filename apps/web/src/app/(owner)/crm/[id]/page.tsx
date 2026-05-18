@@ -6,6 +6,7 @@ import { deleteCustomer } from '@/app/(owner)/actions/customers';
 import { InteractionTimeline } from '@/components/crm/interaction-timeline';
 import { AddInteractionForm } from '@/components/crm/add-interaction-form';
 import { DeleteCustomerButton } from '@/components/crm/delete-customer-button';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
@@ -44,6 +45,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             orderBy: { createdAt: 'desc' },
             take: 50,
           },
+          createdBy: { select: { firstName: true, lastName: true, email: true } },
+          updatedBy: { select: { firstName: true, lastName: true, email: true } },
         },
       }),
       prisma.load.aggregate({
@@ -243,6 +246,15 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           </div>
         )}
       </div>
+
+      <AuditTrailFooter
+        createdAt={customer.createdAt}
+        createdByName={customer.createdBy ? `${customer.createdBy.firstName ?? ''} ${customer.createdBy.lastName ?? ''}`.trim() || null : null}
+        createdByEmail={customer.createdBy?.email ?? null}
+        updatedAt={customer.updatedAt}
+        updatedByName={customer.updatedBy ? `${customer.updatedBy.firstName ?? ''} ${customer.updatedBy.lastName ?? ''}`.trim() || null : null}
+        updatedByEmail={customer.updatedBy?.email ?? null}
+      />
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { getClient } from '@/lib/carrier/clients';
 import { ClientDetail } from './ClientDetail';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { prisma } from '@/lib/db/prisma';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,7 +17,18 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
   const { id } = await params;
   const { edit } = await searchParams;
 
-  const client = await getClient(session.tenantId, id);
+  const [client, clientAudit] = await Promise.all([
+    getClient(session.tenantId, id),
+    prisma.carrierClient.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
   if (!client) notFound();
 
   const serialized = {
@@ -45,5 +58,19 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
     outstandingAR: client.outstandingAR,
   };
 
-  return <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} />;
+  return (
+    <>
+      <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} />
+      {clientAudit && (
+        <AuditTrailFooter
+          createdAt={clientAudit.createdAt}
+          createdByName={clientAudit.createdBy ? `${clientAudit.createdBy.firstName ?? ''} ${clientAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={clientAudit.createdBy?.email ?? null}
+          updatedAt={clientAudit.updatedAt}
+          updatedByName={clientAudit.updatedBy ? `${clientAudit.updatedBy.firstName ?? ''} ${clientAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={clientAudit.updatedBy?.email ?? null}
+        />
+      )}
+    </>
+  );
 }

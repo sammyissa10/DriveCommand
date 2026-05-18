@@ -2,6 +2,8 @@ import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { getContract, getContractLoadsSummary } from '@/lib/carrier/contracts';
 import { ContractDetail } from './ContractDetail';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { prisma } from '@/lib/db/prisma';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -13,9 +15,18 @@ export default async function ContractDetailPage({ params }: Props) {
 
   const { id } = await params;
 
-  const [contract, loadsSummary] = await Promise.all([
+  const [contract, loadsSummary, contractAudit] = await Promise.all([
     getContract(session.tenantId, id),
     getContractLoadsSummary(session.tenantId, id),
+    prisma.carrierContract.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
   ]);
 
   if (!contract) notFound();
@@ -56,5 +67,19 @@ export default async function ContractDetailPage({ params }: Props) {
       }
     : null;
 
-  return <ContractDetail contract={serialized} loadsSummary={summary} />;
+  return (
+    <>
+      <ContractDetail contract={serialized} loadsSummary={summary} />
+      {contractAudit && (
+        <AuditTrailFooter
+          createdAt={contractAudit.createdAt}
+          createdByName={contractAudit.createdBy ? `${contractAudit.createdBy.firstName ?? ''} ${contractAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={contractAudit.createdBy?.email ?? null}
+          updatedAt={contractAudit.updatedAt}
+          updatedByName={contractAudit.updatedBy ? `${contractAudit.updatedBy.firstName ?? ''} ${contractAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={contractAudit.updatedBy?.email ?? null}
+        />
+      )}
+    </>
+  );
 }

@@ -5,6 +5,8 @@ import { getSession } from '@/lib/auth/supabase';
 import { getFacility } from '@/lib/carrier/facilities';
 import { FacilityForm } from '@/components/carrier/facilities/FacilityForm';
 import { DeleteFacilityButton } from './DeleteFacilityButton';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { prisma } from '@/lib/db/prisma';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,7 +17,18 @@ export default async function FacilityDetailPage({ params }: Props) {
   if (!session) redirect('/login');
 
   const { id } = await params;
-  const facility = await getFacility(session.tenantId, id);
+  const [facility, facilityAudit] = await Promise.all([
+    getFacility(session.tenantId, id),
+    prisma.carrierFacility.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
 
   if (!facility) notFound();
 
@@ -68,6 +81,17 @@ export default async function FacilityDetailPage({ params }: Props) {
           }}
         />
       </div>
+
+      {facilityAudit && (
+        <AuditTrailFooter
+          createdAt={facilityAudit.createdAt}
+          createdByName={facilityAudit.createdBy ? `${facilityAudit.createdBy.firstName ?? ''} ${facilityAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={facilityAudit.createdBy?.email ?? null}
+          updatedAt={facilityAudit.updatedAt}
+          updatedByName={facilityAudit.updatedBy ? `${facilityAudit.updatedBy.firstName ?? ''} ${facilityAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={facilityAudit.updatedBy?.email ?? null}
+        />
+      )}
     </div>
   );
 }
