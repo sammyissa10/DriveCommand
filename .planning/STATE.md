@@ -56742,6 +56742,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-345]: CSV export for large datasets uses pageSize:100_000 for now; Phase 11 should add cursor-based streaming
 - [Phase quick-349]: Quarantine prefix uses _quarantine/ within tenant namespace (not separate bucket) — avoids CORS/copy complexity
 - [Phase quick-349]: bodySizeLimit reduced from 10mb to 1mb globally; upload routes explicitly use 100mb via withRequestLimits
+- [Phase quick]: AuditTrailFooter integrated into 21 tenant-scoped detail pages; hybrid pages render footer in server shell; StepInstance uses creator relation with null updatedBy; AutomationRule shows timestamps only (no audit FKs)
 
 ### Pending Todos
 
