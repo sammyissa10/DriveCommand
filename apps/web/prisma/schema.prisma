@@ -367,6 +367,31 @@ model User {
   driverIncidentsCreated          DriverIncident[]         @relation(name: "DriverIncidentCreatedBy")
   driverIncidentsUpdated          DriverIncident[]         @relation(name: "DriverIncidentUpdatedBy")
 
+  // TKT-0015 Prompt 2b — Wave 4 reverse relations (driver pay + workflow + templates)
+  driverInvitationsCreated            DriverInvitation[]           @relation(name: "DriverInvitationCreatedBy")
+  driverInvitationsUpdated            DriverInvitation[]           @relation(name: "DriverInvitationUpdatedBy")
+  supportTicketsCreated               SupportTicket[]              @relation(name: "SupportTicketCreatedBy")
+  supportTicketsUpdated               SupportTicket[]              @relation(name: "SupportTicketUpdatedBy")
+  playbooksCreated                    Playbook[]                   @relation(name: "PlaybookCreatedBy")
+  playbooksUpdated                    Playbook[]                   @relation(name: "PlaybookUpdatedBy")
+  playbookInstancesCreated            PlaybookInstance[]           @relation(name: "PlaybookInstanceCreatedBy")
+  playbookInstancesUpdated            PlaybookInstance[]           @relation(name: "PlaybookInstanceUpdatedBy")
+  playbookTriggersCreated             PlaybookTrigger[]            @relation(name: "PlaybookTriggerCreatedBy")
+  playbookTriggersUpdated             PlaybookTrigger[]            @relation(name: "PlaybookTriggerUpdatedBy")
+  stepTemplatesCreated                StepTemplate[]               @relation(name: "StepTemplateCreatedBy")
+  stepTemplatesUpdated                StepTemplate[]               @relation(name: "StepTemplateUpdatedBy")
+  routeTemplatesCreated               RouteTemplate[]              @relation(name: "RouteTemplateCreatedBy")
+  routeTemplatesUpdated               RouteTemplate[]              @relation(name: "RouteTemplateUpdatedBy")
+  routeTemplateStopsCreated           RouteTemplateStop[]          @relation(name: "RouteTemplateStopCreatedBy")
+  driverCompensationTemplatesUpdated  DriverCompensationTemplate[] @relation(name: "DriverCompensationTemplateUpdatedBy")
+  loadDriverAssignmentsUpdated        LoadDriverAssignment[]       @relation(name: "LoadDriverAssignmentUpdatedBy")
+  loadPayComponentsUpdated            LoadPayComponent[]           @relation(name: "LoadPayComponentUpdatedBy")
+  payComponentAttachmentsUpdated      PayComponentAttachment[]     @relation(name: "PayComponentAttachmentUpdatedBy")
+  driverBonusesUpdated                DriverBonus[]                @relation(name: "DriverBonusUpdatedBy")
+  driverDeductionsUpdated             DriverDeduction[]            @relation(name: "DriverDeductionUpdatedBy")
+  driverSettlementsUpdated            DriverSettlement[]           @relation(name: "DriverSettlementUpdatedBy")
+  driverDisputesUpdated               DriverDispute[]              @relation(name: "DriverDisputeUpdatedBy")
+
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
@@ -441,8 +466,12 @@ model DriverInvitation {
   userId                String?          @db.Uuid
   createdAt             DateTime         @default(now()) @db.Timestamptz
   updatedAt             DateTime         @updatedAt @db.Timestamptz
+  createdById           String?          @db.Uuid
+  updatedById           String?          @db.Uuid
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  createdBy User?  @relation(name: "DriverInvitationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?  @relation(name: "DriverInvitationUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([email])
@@ -1305,6 +1334,11 @@ model SupportTicket {
   resolvedAt    DateTime?             @db.Timestamptz
   createdAt     DateTime              @default(now()) @db.Timestamptz
   updatedAt     DateTime              @updatedAt @db.Timestamptz
+  createdById   String?               @db.Uuid
+  updatedById   String?               @db.Uuid
+
+  createdBy User? @relation(name: "SupportTicketCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User? @relation(name: "SupportTicketUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([submittedBy])
@@ -2076,6 +2110,8 @@ model RouteTemplate {
   notes                  String?
   createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  createdById            String?  @map("created_by_id") @db.Uuid
+  updatedById            String?  @map("updated_by_id") @db.Uuid
 
   tenant        Tenant              @relation(fields: [orgId], references: [id])
   client        CarrierClient       @relation(fields: [clientId], references: [id])
@@ -2084,6 +2120,8 @@ model RouteTemplate {
   defaultTruck  CarrierTruck?       @relation(name: "DefaultTruck", fields: [defaultTruckId], references: [id])
   stops         RouteTemplateStop[]
   dispatches    CarrierDispatch[]
+  createdBy     User?               @relation(name: "RouteTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy     User?               @relation(name: "RouteTemplateUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([clientId])
   @@index([contractId])
@@ -2108,9 +2146,11 @@ model RouteTemplateStop {
   podRequired              Boolean  @default(true) @map("pod_required")
   specialInstructions      String?  @map("special_instructions")
   createdAt                DateTime @default(now()) @map("created_at") @db.Timestamptz
+  createdById              String?  @map("created_by_id") @db.Uuid
 
   routeTemplate RouteTemplate   @relation(fields: [routeTemplateId], references: [id], onDelete: Cascade)
   facility      CarrierFacility @relation(fields: [facilityId], references: [id])
+  createdBy     User?           @relation(name: "RouteTemplateStopCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@unique([routeTemplateId, sequenceOrder])
   @@index([routeTemplateId])
@@ -2472,10 +2512,14 @@ model StepTemplate {
   deletedAt     DateTime?    @db.Timestamptz
   createdAt     DateTime     @default(now()) @db.Timestamptz
   updatedAt     DateTime     @updatedAt @db.Timestamptz
+  createdById   String?      @db.Uuid
+  updatedById   String?      @db.Uuid
 
   tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   playbookSteps PlaybookStep[]
   stepInstances StepInstance[]
+  createdBy     User?          @relation(name: "StepTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy     User?          @relation(name: "StepTemplateUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId, isActive])
   @@index([tenantId, stepType])
@@ -2493,11 +2537,15 @@ model Playbook {
   deletedAt     DateTime?          @db.Timestamptz
   createdAt     DateTime           @default(now()) @db.Timestamptz
   updatedAt     DateTime           @updatedAt @db.Timestamptz
+  createdById   String?            @db.Uuid
+  updatedById   String?            @db.Uuid
 
   tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   steps     PlaybookStep[]
   instances PlaybookInstance[]
   triggers  PlaybookTrigger[]
+  createdBy User?              @relation(name: "PlaybookCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User?              @relation(name: "PlaybookUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId, isActive])
   @@index([tenantId, entityType])
@@ -2552,11 +2600,15 @@ model PlaybookInstance {
   triggeredEvent    TriggerEvent? // Set when triggeredBy='trigger', e.g. ON_DRIVER_CREATE
   createdAt         DateTime           @default(now()) @db.Timestamptz
   updatedAt         DateTime           @updatedAt @db.Timestamptz
+  createdById       String?            @db.Uuid
+  updatedById       String?            @db.Uuid
 
   tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   playbook      Playbook               @relation(fields: [playbookId], references: [id], onDelete: Restrict)
   stepInstances StepInstance[]
   notifications PlaybookNotification[]
+  createdBy     User?                  @relation(name: "PlaybookInstanceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy     User?                  @relation(name: "PlaybookInstanceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId, entityType, entityId])
   @@index([tenantId, status])
@@ -2632,6 +2684,11 @@ model PlaybookTrigger {
   isActive        Boolean      @default(true)
   createdAt       DateTime     @default(now()) @db.Timestamptz
   updatedAt       DateTime     @updatedAt @db.Timestamptz
+  createdById     String?      @db.Uuid
+  updatedById     String?      @db.Uuid
+
+  createdBy User? @relation(name: "PlaybookTriggerCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User? @relation(name: "PlaybookTriggerUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId, triggerEvent])
   @@index([playbookId])
@@ -2861,12 +2918,14 @@ model DriverCompensationTemplate {
   createdAt              DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy              String?        @map("created_by") @db.Uuid
+  updatedBy              String?        @map("updated_by") @db.Uuid
   deletedAt              DateTime?      @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver      CarrierDriver        @relation(fields: [driverId], references: [id], onDelete: Restrict)
   assignments LoadDriverAssignment[]
   creator     User?                @relation(name: "DriverCompensationTemplateCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater     User?                @relation(name: "DriverCompensationTemplateUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -2907,6 +2966,7 @@ model LoadDriverAssignment {
   createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy              String?                @map("created_by") @db.Uuid
+  updatedBy              String?                @map("updated_by") @db.Uuid
   deletedAt              DateTime?              @map("deleted_at") @db.Timestamptz(6)
 
   tenant        Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -2917,6 +2977,7 @@ model LoadDriverAssignment {
   payComponents LoadPayComponent[]
   attachments   PayComponentAttachment[]
   creator       User?                       @relation(name: "LoadDriverAssignmentCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater       User?                       @relation(name: "LoadDriverAssignmentUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   // Uniqueness enforced by partial unique index in DB (only live rows);
   // see migration apply-partial-unique-load-driver.sql
@@ -2953,6 +3014,7 @@ model LoadPayComponent {
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy           String?              @map("created_by") @db.Uuid
+  updatedBy           String?              @map("updated_by") @db.Uuid
   deletedAt           DateTime?            @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -2963,6 +3025,7 @@ model LoadPayComponent {
   attachments PayComponentAttachment[]
   disputes    DriverDispute[]
   creator     User?                @relation(name: "LoadPayComponentCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater     User?                @relation(name: "LoadPayComponentUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([assignmentId])
@@ -2994,6 +3057,7 @@ model DriverBonus {
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy         String?   @map("created_by") @db.Uuid
+  updatedBy         String?   @map("updated_by") @db.Uuid
   deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -3003,6 +3067,7 @@ model DriverBonus {
   parentBonus    DriverBonus?   @relation("BonusInstallment", fields: [parentBonusId], references: [id], onDelete: Restrict)
   childBonuses   DriverBonus[]  @relation("BonusInstallment")
   creator        User?          @relation(name: "DriverBonusCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater        User?          @relation(name: "DriverBonusUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -3030,11 +3095,13 @@ model DriverDeduction {
   createdAt           DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy           String?           @map("created_by") @db.Uuid
+  updatedBy           String?           @map("updated_by") @db.Uuid
   deletedAt           DateTime?         @map("deleted_at") @db.Timestamptz(6)
 
   tenant  Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver  CarrierDriver @relation(fields: [driverId], references: [id], onDelete: Restrict)
   creator User?         @relation(name: "DriverDeductionCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater User?         @relation(name: "DriverDeductionUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -3069,6 +3136,7 @@ model DriverSettlement {
   createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy           String?               @map("created_by") @db.Uuid
+  updatedBy           String?               @map("updated_by") @db.Uuid
   deletedAt           DateTime?             @map("deleted_at") @db.Timestamptz(6)
 
   tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -3076,6 +3144,7 @@ model DriverSettlement {
   assignments LoadDriverAssignment[]
   bonuses     DriverBonus[]
   creator     User?                  @relation(name: "DriverSettlementCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater     User?                  @relation(name: "DriverSettlementUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])
@@ -3099,12 +3168,14 @@ model PayComponentAttachment {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy   String?   @map("created_by") @db.Uuid
+  updatedBy   String?   @map("updated_by") @db.Uuid
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   component  LoadPayComponent     @relation(fields: [componentId], references: [id], onDelete: Restrict)
   assignment LoadDriverAssignment @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
   creator    User?                @relation(name: "PayComponentAttachmentCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater    User?                @relation(name: "PayComponentAttachmentUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([componentId])
@@ -3129,12 +3200,14 @@ model DriverDispute {
   createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy          String?              @map("created_by") @db.Uuid
+  updatedBy          String?              @map("updated_by") @db.Uuid
   deletedAt          DateTime?            @map("deleted_at") @db.Timestamptz(6)
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   driver            CarrierDriver     @relation(fields: [driverId], references: [id], onDelete: Restrict)
   linkedCorrection  LoadPayComponent? @relation(fields: [linkedCorrectionId], references: [id], onDelete: Restrict)
   creator           User?             @relation(name: "DriverDisputeCreatedBy", fields: [createdBy], references: [id], onDelete: SetNull)
+  updater           User?             @relation(name: "DriverDisputeUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([driverId])

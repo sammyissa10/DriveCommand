@@ -207,7 +207,9 @@ exports.Prisma.DriverInvitationScalarFieldEnum = {
   acceptedAt: 'acceptedAt',
   userId: 'userId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.RouteScalarFieldEnum = {
@@ -665,7 +667,9 @@ exports.Prisma.SupportTicketScalarFieldEnum = {
   resolution: 'resolution',
   resolvedAt: 'resolvedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.TicketMessageScalarFieldEnum = {
@@ -949,7 +953,9 @@ exports.Prisma.RouteTemplateScalarFieldEnum = {
   active: 'active',
   notes: 'notes',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.RouteTemplateStopScalarFieldEnum = {
@@ -967,7 +973,8 @@ exports.Prisma.RouteTemplateStopScalarFieldEnum = {
   bolRequired: 'bolRequired',
   podRequired: 'podRequired',
   specialInstructions: 'specialInstructions',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  createdById: 'createdById'
 };
 
 exports.Prisma.CarrierDispatchScalarFieldEnum = {
@@ -1189,7 +1196,9 @@ exports.Prisma.StepTemplateScalarFieldEnum = {
   isActive: 'isActive',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.PlaybookScalarFieldEnum = {
@@ -1203,7 +1212,9 @@ exports.Prisma.PlaybookScalarFieldEnum = {
   isActive: 'isActive',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.PlaybookStepScalarFieldEnum = {
@@ -1244,7 +1255,9 @@ exports.Prisma.PlaybookInstanceScalarFieldEnum = {
   triggeredBy: 'triggeredBy',
   triggeredEvent: 'triggeredEvent',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.StepInstanceScalarFieldEnum = {
@@ -1294,7 +1307,9 @@ exports.Prisma.PlaybookTriggerScalarFieldEnum = {
   recurringConfig: 'recurringConfig',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
 };
 
 exports.Prisma.DispatchOverrideAuditScalarFieldEnum = {
@@ -1460,6 +1475,7 @@ exports.Prisma.DriverCompensationTemplateScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1495,6 +1511,7 @@ exports.Prisma.LoadDriverAssignmentScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1522,6 +1539,7 @@ exports.Prisma.LoadPayComponentScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1546,6 +1564,7 @@ exports.Prisma.DriverBonusScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1567,6 +1586,7 @@ exports.Prisma.DriverDeductionScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1591,6 +1611,7 @@ exports.Prisma.DriverSettlementScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1607,6 +1628,7 @@ exports.Prisma.PayComponentAttachmentScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 
@@ -1626,6 +1648,7 @@ exports.Prisma.DriverDisputeScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   deletedAt: 'deletedAt'
 };
 

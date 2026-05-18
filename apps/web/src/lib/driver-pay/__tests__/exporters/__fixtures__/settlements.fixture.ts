@@ -56,6 +56,7 @@ export const w2Settlement: SettlementWithLines = {
     createdAt: new Date('2026-04-08T10:00:00Z'),
     updatedAt: new Date('2026-04-08T12:00:00Z'),
     createdBy: 'cccccccc-0000-0000-0000-000000000001',
+    updatedBy: null,
     deletedAt: null,
     driver: {
       id: 'bbbbbbbb-0000-0000-0000-000000000001',
@@ -90,6 +91,7 @@ export const w2Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
     {
@@ -116,6 +118,7 @@ export const w2Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
     {
@@ -142,6 +145,7 @@ export const w2Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
   ],
@@ -167,6 +171,7 @@ export const w2Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
     {
@@ -190,6 +195,7 @@ export const w2Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
   ],
@@ -237,6 +243,7 @@ export const c1099Settlement: SettlementWithLines = {
     createdAt: new Date('2026-04-08T10:00:00Z'),
     updatedAt: new Date('2026-04-08T12:00:00Z'),
     createdBy: 'cccccccc-0000-0000-0000-000000000001',
+    updatedBy: null,
     deletedAt: null,
     driver: {
       id: 'dddddddd-0000-0000-0000-000000000002',
@@ -272,6 +279,7 @@ export const c1099Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
     {
@@ -298,6 +306,7 @@ export const c1099Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
   ],
@@ -323,6 +332,7 @@ export const c1099Settlement: SettlementWithLines = {
       createdAt: new Date('2026-04-08T10:00:00Z'),
       updatedAt: new Date('2026-04-08T10:00:00Z'),
       createdBy: 'cccccccc-0000-0000-0000-000000000001',
+      updatedBy: null,
       deletedAt: null,
     },
   ],

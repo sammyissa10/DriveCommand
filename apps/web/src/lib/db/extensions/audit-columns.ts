@@ -42,6 +42,7 @@ import { Prisma } from '../../../generated/prisma/client';
 const CREATE_ONLY_AUDIT_MODELS = new Set([
   'FleetMessage',
   'FuelRecord', // append-only fuel logs — no updatedById column exists
+  'RouteTemplateStop', // template stops have no updatedAt column — create-only
 ]);
 
 // Models that do NOT have createdById / updatedById fields.
@@ -66,6 +67,20 @@ const EXEMPT_AUDIT_MODELS = new Set([
   'Subscription',
   'TagAssignment',
   'DriverRouteJoin',
+  // Driver Pay models use createdBy/updatedBy (not createdById/updatedById).
+  // They predate the rollout and use explicit writes in their API routes.
+  'DriverCompensationTemplate',
+  'LoadDriverAssignment',
+  'LoadPayComponent',
+  'PayComponentAttachment',
+  'DriverBonus',
+  'DriverDeduction',
+  'DriverSettlement',
+  'DriverDispute',
+  // Workflow models with pre-existing createdBy/updatedBy fields (from quick-327).
+  // They also use explicit writes and do not carry createdById/updatedById.
+  'PlaybookStep',
+  'StepInstance',
 ]);
 
 export function withAuditColumns(userId: string | null) {
