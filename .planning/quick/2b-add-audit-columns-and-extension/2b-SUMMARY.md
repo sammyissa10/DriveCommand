@@ -52,23 +52,23 @@ Models that carry both audit FK columns and participate in full auto-injection v
 | DriverInvitation | DriverInvitation | createdById, updatedById | Wave 4 |
 | PlaybookTrigger | PlaybookTrigger | createdById, updatedById | Wave 4 |
 | RouteTemplate | route_templates | createdById→created_by_id, updatedById→updated_by_id | Wave 4 |
+| PlaybookStep | PlaybookStep | createdBy→created_by, updatedBy→updated_by | Prompt 3 / quick-366 |
+| StepInstance | StepInstance | createdBy→created_by, updatedBy→updated_by | Prompt 3 / quick-366 |
 
-### PARTIAL — Driver Pay domain (naming-inconsistency workaround — EXEMPT pending Prompt 3)
+### FULL — Driver Pay domain (resolved in Prompt 3 — quick-366)
 
-These 8 models use `createdBy`/`updatedBy` Prisma field names (mapping to `created_by`/`updated_by` DB columns) — the **older** naming convention that predates the `createdById`/`updatedById` standard adopted across the rest of the schema. Because `withAuditColumns` only injects fields named `createdById`/`updatedById`, these models cannot participate in auto-injection and sit in `EXEMPT_AUDIT_MODELS` as a **workaround**. EXEMPT is not a fix — it prevents a runtime field-not-found error but leaves auto-injection permanently disabled until Prompt 3 resolves the naming gap.
-
-**Wave 4 added `updated_by` columns to all 8 models.** Those columns will remain NULL for every write until Prompt 3 either (a) extends `withAuditColumns` to handle both naming conventions and removes these models from EXEMPT, or (b) renames the Prisma fields to the current standard. The `createdBy` column was wired explicitly in Prompt 2a routes; `updatedBy` has no explicit wiring yet.
+These 8 models use `createdBy`/`updatedBy` Prisma field names (mapping to `created_by`/`updated_by` DB columns) — the older naming convention that predates the `createdById`/`updatedById` standard. As of quick-366 (Prompt 3, commit `fe5d1e6b`), `withAuditColumns` detects each model's naming convention via a precomputed DMMF registry and injects into whichever convention exists. All 8 Driver Pay models now receive automatic `createdBy` and `updatedBy` injection on every write through the tenant client — no explicit wiring in API routes required for the update side.
 
 | Model | Table | Columns | Status |
 |---|---|---|---|
-| DriverCompensationTemplate | driver_compensation_templates | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| LoadDriverAssignment | load_driver_assignments | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| LoadPayComponent | load_pay_components | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| PayComponentAttachment | pay_component_attachments | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| DriverBonus | driver_bonuses | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| DriverDeduction | driver_deductions | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| DriverSettlement | driver_settlements | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
-| DriverDispute | driver_disputes | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| DriverCompensationTemplate | driver_compensation_templates | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| LoadDriverAssignment | load_driver_assignments | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| LoadPayComponent | load_pay_components | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| PayComponentAttachment | pay_component_attachments | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| DriverBonus | driver_bonuses | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| DriverDeduction | driver_deductions | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| DriverSettlement | driver_settlements | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
+| DriverDispute | driver_disputes | createdBy, updatedBy | FULL auto-injection (Prompt 3) |
 
 ### CREATE_ONLY (createdById only — no updatedById because no updatedAt column)
 
@@ -101,8 +101,7 @@ These 8 models use `createdBy`/`updatedBy` Prisma field names (mapping to `creat
 | Subscription | Managed by Stripe/system. No meaningful user actor. |
 | TagAssignment | Junction table. Low ROI; deferred. |
 | DriverRouteJoin | Junction table. Low ROI; deferred. |
-| PlaybookStep | Naming inconsistency: uses `createdBy`/`updatedBy` (quick-327 convention), not `createdById`/`updatedById`. Same root cause as Driver Pay. Columns exist; injection disabled. Explicit writes only until Prompt 3. |
-| StepInstance | Naming inconsistency: uses `createdBy`/`updatedBy` (quick-327 convention), not `createdById`/`updatedById`. Same root cause as Driver Pay. Columns exist; injection disabled. Explicit writes only until Prompt 3. |
+<!-- PlaybookStep and StepInstance were here before Prompt 3. Removed — both now FULL. See "Workflow models" in FULL table below. -->
 
 ### Out of Scope / Not in Prisma
 
@@ -152,7 +151,7 @@ All migrations applied via Supabase MCP `apply_migration`. Idempotent SQL (IF NO
 - All other models → injects `createdById` + `updatedById` on create; `updatedById` on update/updateMany; both create branches on upsert; update branch on upsert update
 - Caller-supplied values in `args.data` are always preserved (only injects when field is `undefined`)
 
-**Sets (final state after Wave 4):**
+**Sets (final state after Wave 4 + Prompt 3 / quick-366):**
 
 ```typescript
 CREATE_ONLY_AUDIT_MODELS = {
@@ -162,26 +161,25 @@ CREATE_ONLY_AUDIT_MODELS = {
 }
 
 EXEMPT_AUDIT_MODELS = {
-  // System / append-only
+  // System / append-only / audit-log / junction tables — no meaningful user actor.
+  // No naming-workaround models remain here after Prompt 3 (quick-366).
   'Tenant', 'TicketMessage', 'AuditLog', 'DriverPayAuditLog',
   'DispatchOverrideAudit', 'NotificationLog', 'NotificationSendLog',
   'AutomationRun', 'AppEvent', 'PlaybookNotification',
   'GPSLocation', 'GpsReport', 'SafetyEvent',
   'ActivationProgress', 'TenantHealthScore', 'TenantMetricsDaily',
   'Subscription', 'TagAssignment', 'DriverRouteJoin',
-  // Driver Pay (use createdBy/updatedBy, not createdById/updatedById — explicit writes)
-  'DriverCompensationTemplate', 'LoadDriverAssignment', 'LoadPayComponent',
-  'PayComponentAttachment', 'DriverBonus', 'DriverDeduction',
-  'DriverSettlement', 'DriverDispute',
-  // Workflow models with pre-existing createdBy/updatedBy (quick-327 — explicit writes)
-  'PlaybookStep', 'StepInstance',
+  // Total: 19 entries
 }
 ```
 
-**Injection field names:**
-- Standard models (camelCase and snake_case carrier ops): `createdById` / `updatedById`
-  - For snake_case models with `@map("created_by_id")`, the Prisma field name is still `createdById`; the DB column mapping is transparent to the extension
-- Driver Pay / quick-327 models: `createdBy` / `updatedBy` — these models are in EXEMPT, so injection does NOT run on them; their API routes set the fields explicitly
+**Injection field names — dual-convention (Prompt 3):**
+- The extension detects each model's naming convention via a precomputed DMMF registry
+  built once at `withAuditColumns` factory invocation (O(1) per-query lookup thereafter)
+- Standard models (37): `createdById` / `updatedById`
+  - For snake_case models with `@map("created_by_id")`, the Prisma field name is still `createdById`
+- Driver Pay + PlaybookStep + StepInstance (10): `createdBy` / `updatedBy`
+- All 47 tenant-scoped models with an audit actor now have automatic injection
 
 ---
 
@@ -234,11 +232,17 @@ The Wave 4 widening was isolated to test fixtures because the new `updatedBy` fi
 
 ---
 
-## 7. Outstanding Follow-Ups for Prompts 3 and 4
+## 7. Follow-Ups for Prompts 3 and 4
 
-### IMPORTANT — Naming-Inconsistency Workaround: 10 Models Excluded from Auto-Injection
+### RESOLVED in quick-366 (Prompt 3) — Naming-Inconsistency Workaround Closed
 
-Ten models use the older `createdBy`/`updatedBy` Prisma field convention instead of the current `createdById`/`updatedById` standard. `withAuditColumns` only injects `createdById`/`updatedById`, so these models are in `EXEMPT_AUDIT_MODELS` as a workaround — **not** because they are system-generated or lack an audit actor. Their EXEMPT status is a naming-mismatch workaround that must be resolved in Prompt 3.
+**RESOLUTION (commit `fe5d1e6b`, 2026-05-18):** The extension now detects each model's audit field naming convention at instantiation time via `Prisma.dmmf.datamodel.models` and injects into whichever convention the model defines (`createdById`/`updatedById` OR `createdBy`/`updatedBy`). The 10 naming-affected models have been removed from `EXEMPT_AUDIT_MODELS` as of commit `fe5d1e6b`. All 47 tenant-scoped models with an audit actor now receive automatic injection.
+
+---
+
+### (Historical reference — resolved) Naming-Inconsistency Workaround: 10 Models Previously Excluded
+
+Ten models use the older `createdBy`/`updatedBy` Prisma field convention instead of the current `createdById`/`updatedById` standard. `withAuditColumns` previously only injected `createdById`/`updatedById`, so these models were in `EXEMPT_AUDIT_MODELS` as a workaround. **This is now resolved — see RESOLUTION above.**
 
 **Affected models (10 total):**
 
@@ -272,18 +276,19 @@ Option A is lower-risk (no schema rename migration, no call-site sweep). Option 
 
 ---
 
-### Prompt 3 — Auto-capture middleware integration
+### Completed in Prompt 3 (quick-366, 2026-05-18)
 
-The `withAuditColumns` extension is wired but the columns are not yet populated in production writes because:
-1. Many API routes do not call `getTenantPrisma()` — they use `prisma` directly or via custom clients
-2. Server actions use `getTenantPrisma()` but older ones predate QT-359 and may need review
-3. Driver Pay API routes correctly use `getTenantPrisma()` but their models are EXEMPT — they need explicit `updatedBy: session.userId` wiring in their PUT/PATCH handlers
+- **Naming-inconsistency workaround resolved** — `withAuditColumns` now detects both `createdBy`/`updatedBy` and `createdById`/`updatedById` per model via a precomputed DMMF registry. Commit `fe5d1e6b`.
+- **10 models removed from EXEMPT** — 8 Driver Pay models + PlaybookStep + StepInstance. All classified FULL. Commit `fe5d1e6b`.
+- **DriverBonus audit auto-capture tests added** — 3 test cases covering create-injection, update-injection (createdBy unchanged), and explicit-value passthrough. Commit `8aca96d8`.
+- **`updated_by` columns on all 8 Driver Pay models** are now auto-populated on every write through the tenant client — no more NULL on updates.
 
-**Prompt 3 tasks:**
-- Audit all API routes that write to FULL-injection models — confirm they use `getTenantPrisma()` not raw `prisma`
-- Resolve the naming-inconsistency workaround for the 10 EXEMPT models (see section above) — choose Option A or B and implement
-- Until the naming fix lands: `updated_by` columns on all 8 Driver Pay models will be NULL in production
-- Verify `createdById`/`updatedById` are being populated for newly created records in production (spot check via DB query post-deploy)
+### Prompt 3 — Auto-capture middleware integration (remaining)
+
+The `withAuditColumns` extension is wired for all 47 models. Remaining follow-up items:
+1. Many API routes may not call `getTenantPrisma()` — they may use `prisma` directly. Audit to confirm.
+2. Older server actions predate QT-359 and may need review.
+3. Verify `createdById`/`updatedById` + `createdBy`/`updatedBy` are being populated for newly created records in production (spot check via DB query post-deploy)
 
 ### Prompt 4 — Detail page display
 
@@ -297,15 +302,18 @@ The 29 detail pages inventoried in QT-354 Section 3 need UI updates to display `
 
 ---
 
-## Self-Check: PASSED (with known outstanding gap)
+## Self-Check: PASSED
 
 - All 4 waves shipped with green verification gates
-- 37 tenant-scoped models covered (FULL auto-injection or CREATE_ONLY or PARTIAL-explicit)
-- 21 models in EXEMPT (system/append-only or naming-inconsistency workaround)
-  - 10 of 21 EXEMPT models (8 Driver Pay + PlaybookStep + StepInstance) are EXEMPT due to naming inconsistency, NOT because they lack a user actor — this is unresolved until Prompt 3
-  - Wave 4 added `updated_by` columns to all 8 Driver Pay models; those columns are currently NULL and will remain so until Prompt 3 resolves the naming gap
-- withAuditColumns extension correctly handles all 3 categories within its scope (createdById/updatedById convention only)
+- **47 tenant-scoped models with a user actor now have automatic injection** (FULL or CREATE_ONLY)
+  - 37 models via `createdById`/`updatedById` convention (Waves 1–4)
+  - 10 models via `createdBy`/`updatedBy` convention (Prompt 3 / quick-366)
+  - 3 models CREATE_ONLY (FleetMessage, FuelRecord, RouteTemplateStop)
+- **19 models in EXEMPT** (system-generated / audit-log tables / junction tables — no meaningful user actor)
+  - Naming-inconsistency workaround resolved in quick-366: all 47 models now have automatic injection
+- withAuditColumns extension now handles both naming conventions via precomputed DMMF registry (O(1) per-query lookup)
 - getTenantPrisma fix (QT-359) ensures authenticated userId is forwarded
 - 4 migration files, all idempotent, all ON DELETE SET NULL
 - TypeScript: no new errors introduced; Wave 4 widenings isolated to test fixtures
-- GitHub: master branch up to date (1b261af2)
+- Prompt 3 commits: `fe5d1e6b` (extension), `8aca96d8` (tests)
+- GitHub: master branch up to date
