@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { logger } from '@/lib/logger';
 import { format } from 'date-fns';
 import { TaskCompletionClient } from './task-completion-client';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,8 +87,22 @@ export default async function DriverTaskDetailPage({ params }: Props) {
   if (!session) notFound();
 
   let task: Awaited<ReturnType<typeof fetchTask>> = null;
+  let stepAudit: { creator: { firstName: string | null; lastName: string | null; email: string } | null; createdAt: Date; updatedAt: Date } | null = null;
   try {
-    task = await fetchTask(id, session.userId, session.tenantId);
+    [task, stepAudit] = await Promise.all([
+      fetchTask(id, session.userId, session.tenantId),
+      prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.stepInstance.findFirst({
+          where: { id },
+          select: {
+            creator: { select: { firstName: true, lastName: true, email: true } },
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+      }, TX_OPTIONS).catch(() => null),
+    ]);
   } catch (err) {
     logger.error('[DriverTaskDetailPage] Failed to fetch task:', err);
   }
@@ -164,6 +179,17 @@ export default async function DriverTaskDetailPage({ params }: Props) {
         status={task.status}
         defaultConfig={snap.defaultConfig ?? {}}
       />
+
+      {stepAudit && (
+        <AuditTrailFooter
+          createdAt={stepAudit.createdAt}
+          createdByName={stepAudit.creator ? `${stepAudit.creator.firstName ?? ''} ${stepAudit.creator.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={stepAudit.creator?.email ?? null}
+          updatedAt={stepAudit.updatedAt}
+          updatedByName={null}
+          updatedByEmail={null}
+        />
+      )}
     </div>
   );
 }

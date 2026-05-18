@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { getSysAdminInvoiceById } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InvoiceActions } from './invoice-actions';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { prisma } from '@/lib/db/prisma';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -29,7 +31,18 @@ export default async function InvoiceDetailPage({
 }) {
   const { id } = await params;
 
-  const invoice = await getSysAdminInvoiceById(id);
+  const [invoice, invoiceAudit] = await Promise.all([
+    getSysAdminInvoiceById(id),
+    prisma.sysAdminInvoice.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
 
   if (!invoice) {
     return (
@@ -183,6 +196,17 @@ export default async function InvoiceDetailPage({
 
       {/* Actions */}
       <InvoiceActions invoice={{ id: invoice.id, status: invoice.status }} />
+
+      {invoiceAudit && (
+        <AuditTrailFooter
+          createdAt={invoiceAudit.createdAt}
+          createdByName={invoiceAudit.createdBy ? `${invoiceAudit.createdBy.firstName ?? ''} ${invoiceAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={invoiceAudit.createdBy?.email ?? null}
+          updatedAt={invoiceAudit.updatedAt}
+          updatedByName={invoiceAudit.updatedBy ? `${invoiceAudit.updatedBy.firstName ?? ''} ${invoiceAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={invoiceAudit.updatedBy?.email ?? null}
+        />
+      )}
     </div>
   );
 }

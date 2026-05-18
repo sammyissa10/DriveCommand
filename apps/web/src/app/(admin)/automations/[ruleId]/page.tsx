@@ -5,6 +5,7 @@ import { getRuleWithRuns } from '@/app/(admin)/actions/automations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RuleDetailClient } from './rule-detail-client';
 import { logger } from '@/lib/logger';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 export default async function RuleDetailPage({ params }: { params: Promise<{ ruleId: string }> }) {
   const { ruleId } = await params;
@@ -135,6 +136,16 @@ export default async function RuleDetailPage({ params }: { params: Promise<{ rul
           )}
         </CardContent>
       </Card>
+
+      {/* AutomationRule has no audit FK columns — show timestamps only */}
+      <AuditTrailFooter
+        createdAt={rule.createdAt}
+        createdByName={null}
+        createdByEmail={null}
+        updatedAt={rule.updatedAt}
+        updatedByName={null}
+        updatedByEmail={null}
+      />
     </div>
   );
 }
