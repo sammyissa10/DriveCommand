@@ -10,6 +10,7 @@ import { DispatchLoadsPanel } from '@/components/carrier/dispatches/DispatchLoad
 import { DispatchExpensesPanel } from '@/components/carrier/dispatches/DispatchExpensesPanel';
 import { DispatchPayRecordsPanel } from '@/components/carrier/dispatches/DispatchPayRecordsPanel';
 import { DispatchMessages } from '@/components/carrier/dispatches/DispatchMessages';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -23,7 +24,18 @@ export default async function DispatchDetailPage({ params }: Props) {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
-  const dispatch = await getDispatch(orgId, id);
+  const [dispatch, dispatchAudit] = await Promise.all([
+    getDispatch(orgId, id),
+    prisma.carrierDispatch.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
   if (!dispatch) notFound();
 
   // Fetch route template details for recurring badge
@@ -304,6 +316,17 @@ export default async function DispatchDetailPage({ params }: Props) {
         dispatchId={dispatch.id}
         driverUserId={primaryDriverUserId}
       />
+
+      {dispatchAudit && (
+        <AuditTrailFooter
+          createdAt={dispatchAudit.createdAt}
+          createdByName={dispatchAudit.createdBy ? `${dispatchAudit.createdBy.firstName ?? ''} ${dispatchAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={dispatchAudit.createdBy?.email ?? null}
+          updatedAt={dispatchAudit.updatedAt}
+          updatedByName={dispatchAudit.updatedBy ? `${dispatchAudit.updatedBy.firstName ?? ''} ${dispatchAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={dispatchAudit.updatedBy?.email ?? null}
+        />
+      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BonusesTab } from '@/components/driver-pay/bonuses/bonuses-tab';
 import { DeductionsTab } from '@/components/driver-pay/deductions/deductions-tab';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -73,11 +74,22 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
 
   // Fetch peer drivers for the REFERRAL picker (same tenant)
   const prisma = await getTenantPrisma();
-  const tenantDriversRaw = await prisma.carrierDriver.findMany({
-    where: { id: { not: id } },
-    select: { id: true, firstName: true, lastName: true },
-    orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-  });
+  const [tenantDriversRaw, driverAudit] = await Promise.all([
+    prisma.carrierDriver.findMany({
+      where: { id: { not: id } },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+    }),
+    prisma.carrierDriver.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
   const tenantDrivers = tenantDriversRaw.map((d) => ({
     id: d.id,
     name: `${d.firstName} ${d.lastName}`,
@@ -337,6 +349,17 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
             </table>
           </div>
         </div>
+      )}
+
+      {driverAudit && (
+        <AuditTrailFooter
+          createdAt={driverAudit.createdAt}
+          createdByName={driverAudit.createdBy ? `${driverAudit.createdBy.firstName ?? ''} ${driverAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={driverAudit.createdBy?.email ?? null}
+          updatedAt={driverAudit.updatedAt}
+          updatedByName={driverAudit.updatedBy ? `${driverAudit.updatedBy.firstName ?? ''} ${driverAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={driverAudit.updatedBy?.email ?? null}
+        />
       )}
     </div>
   );

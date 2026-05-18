@@ -9,6 +9,7 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { StopDocumentsSection } from '@/components/carrier/stops/StopDocumentsSection';
 import { StopDetailMessages } from '@/components/carrier/stops/StopDetailMessages';
 import { StopDetailTimestampEditor } from '@/components/carrier/stops/StopDetailTimestampEditor';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -68,7 +69,18 @@ export default async function StopDetailPage({ params }: Props) {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
-  const stop = await getStop(orgId, id);
+  const [stop, stopAudit] = await Promise.all([
+    getStop(orgId, id),
+    prisma.carrierStop.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
   if (!stop) notFound();
 
   // Fetch dispatch details with primary driver userId
@@ -309,6 +321,17 @@ export default async function StopDetailPage({ params }: Props) {
 
       {/* Messages section */}
       <StopDetailMessages stopId={id} driverUserId={driverUserId} />
+
+      {stopAudit && (
+        <AuditTrailFooter
+          createdAt={stopAudit.createdAt}
+          createdByName={stopAudit.createdBy ? `${stopAudit.createdBy.firstName ?? ''} ${stopAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={stopAudit.createdBy?.email ?? null}
+          updatedAt={stopAudit.updatedAt}
+          updatedByName={stopAudit.updatedBy ? `${stopAudit.updatedBy.firstName ?? ''} ${stopAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={stopAudit.updatedBy?.email ?? null}
+        />
+      )}
     </div>
   );
 }

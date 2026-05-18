@@ -8,6 +8,7 @@ import type { LoadData } from '@/components/carrier/loads/LoadForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
 import { LoadDetailActions } from '@/components/carrier/loads/LoadDetailActions';
 import { DriverAssignmentSection } from '@/components/driver-pay/assignment-section';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -22,7 +23,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   const { id } = await params;
 
-  const [load, clients, rawDrivers, rawTrucks] = await Promise.all([
+  const [load, clients, rawDrivers, rawTrucks, loadAudit] = await Promise.all([
     getLoad(orgId, id),
     prisma.carrierClient.findMany({
       where: { orgId },
@@ -39,6 +40,15 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
       select: { id: true, unitNumber: true, make: true, model: true },
       orderBy: { unitNumber: 'asc' },
     }),
+    prisma.carrierLoad.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
   ]);
 
   if (!load) notFound();
@@ -215,6 +225,17 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
           stopType: s.stop_type,
         }))}
       />
+
+      {loadAudit && (
+        <AuditTrailFooter
+          createdAt={loadAudit.createdAt}
+          createdByName={loadAudit.createdBy ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={loadAudit.createdBy?.email ?? null}
+          updatedAt={loadAudit.updatedAt}
+          updatedByName={loadAudit.updatedBy ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={loadAudit.updatedBy?.email ?? null}
+        />
+      )}
     </div>
   );
 }

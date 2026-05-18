@@ -7,6 +7,8 @@ import { RouteTemplateForm, type RouteTemplateFormData } from '@/components/carr
 import { DispatchPreview } from '@/components/carrier/templates/DispatchPreview';
 import { TemplateStatusToggle } from './TemplateStatusToggle';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { prisma } from '@/lib/db/prisma';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -17,7 +19,18 @@ export default async function EditRouteTemplatePage({ params }: Props) {
   if (!session) redirect('/login');
 
   const { id } = await params;
-  const template = await getRouteTemplate(session.tenantId, id);
+  const [template, templateAudit] = await Promise.all([
+    getRouteTemplate(session.tenantId, id),
+    prisma.routeTemplate.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
 
   if (!template) notFound();
 
@@ -90,6 +103,17 @@ export default async function EditRouteTemplatePage({ params }: Props) {
       <div className="rounded-lg border border-border bg-card p-6">
         <DispatchPreview templateId={id} />
       </div>
+
+      {templateAudit && (
+        <AuditTrailFooter
+          createdAt={templateAudit.createdAt}
+          createdByName={templateAudit.createdBy ? `${templateAudit.createdBy.firstName ?? ''} ${templateAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={templateAudit.createdBy?.email ?? null}
+          updatedAt={templateAudit.updatedAt}
+          updatedByName={templateAudit.updatedBy ? `${templateAudit.updatedBy.firstName ?? ''} ${templateAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={templateAudit.updatedBy?.email ?? null}
+        />
+      )}
     </div>
   );
 }

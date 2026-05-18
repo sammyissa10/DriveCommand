@@ -5,6 +5,8 @@ import { getSession } from '@/lib/auth/supabase';
 import { getCarrierTruck } from '@/lib/carrier/fleet-trucks';
 import { CarrierTruckForm } from '@/components/carrier/fleet/CarrierTruckForm';
 import { Badge } from '@/components/ui/badge';
+import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { prisma } from '@/lib/db/prisma';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -71,7 +73,18 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
   const { id } = await params;
   const orgId = session.tenantId;
 
-  const truck = await getCarrierTruck(orgId, id);
+  const [truck, truckAudit] = await Promise.all([
+    getCarrierTruck(orgId, id),
+    prisma.carrierTruck.findUnique({
+      where: { id },
+      select: {
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }).catch(() => null),
+  ]);
   if (!truck) notFound();
 
   const regDays = daysUntil(truck.registrationExpiry);
@@ -304,6 +317,17 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
             </table>
           </div>
         </div>
+      )}
+
+      {truckAudit && (
+        <AuditTrailFooter
+          createdAt={truckAudit.createdAt}
+          createdByName={truckAudit.createdBy ? `${truckAudit.createdBy.firstName ?? ''} ${truckAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+          createdByEmail={truckAudit.createdBy?.email ?? null}
+          updatedAt={truckAudit.updatedAt}
+          updatedByName={truckAudit.updatedBy ? `${truckAudit.updatedBy.firstName ?? ''} ${truckAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+          updatedByEmail={truckAudit.updatedBy?.email ?? null}
+        />
       )}
     </div>
   );
