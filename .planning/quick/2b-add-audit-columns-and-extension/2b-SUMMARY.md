@@ -53,20 +53,22 @@ Models that carry both audit FK columns and participate in full auto-injection v
 | PlaybookTrigger | PlaybookTrigger | createdById, updatedById | Wave 4 |
 | RouteTemplate | route_templates | createdById→created_by_id, updatedById→updated_by_id | Wave 4 |
 
-### FULL — Driver Pay domain (createdBy/updatedBy naming, explicit writes only)
+### PARTIAL — Driver Pay domain (naming-inconsistency workaround — EXEMPT pending Prompt 3)
 
-These models use `createdBy`/`updatedBy` Prisma field names (mapping to `created_by`/`updated_by` DB columns) rather than `createdById`/`updatedById`. They are in `EXEMPT_AUDIT_MODELS` — the extension does not inject; API routes set these explicitly.
+These 8 models use `createdBy`/`updatedBy` Prisma field names (mapping to `created_by`/`updated_by` DB columns) — the **older** naming convention that predates the `createdById`/`updatedById` standard adopted across the rest of the schema. Because `withAuditColumns` only injects fields named `createdById`/`updatedById`, these models cannot participate in auto-injection and sit in `EXEMPT_AUDIT_MODELS` as a **workaround**. EXEMPT is not a fix — it prevents a runtime field-not-found error but leaves auto-injection permanently disabled until Prompt 3 resolves the naming gap.
+
+**Wave 4 added `updated_by` columns to all 8 models.** Those columns will remain NULL for every write until Prompt 3 either (a) extends `withAuditColumns` to handle both naming conventions and removes these models from EXEMPT, or (b) renames the Prisma fields to the current standard. The `createdBy` column was wired explicitly in Prompt 2a routes; `updatedBy` has no explicit wiring yet.
 
 | Model | Table | Columns | Status |
 |---|---|---|---|
-| DriverCompensationTemplate | driver_compensation_templates | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| LoadDriverAssignment | load_driver_assignments | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| LoadPayComponent | load_pay_components | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| PayComponentAttachment | pay_component_attachments | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| DriverBonus | driver_bonuses | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| DriverDeduction | driver_deductions | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| DriverSettlement | driver_settlements | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
-| DriverDispute | driver_disputes | createdBy (Prompt 2a), updatedBy (Wave 4) | FULL — explicit writes |
+| DriverCompensationTemplate | driver_compensation_templates | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| LoadDriverAssignment | load_driver_assignments | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| LoadPayComponent | load_pay_components | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| PayComponentAttachment | pay_component_attachments | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| DriverBonus | driver_bonuses | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| DriverDeduction | driver_deductions | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| DriverSettlement | driver_settlements | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
+| DriverDispute | driver_disputes | createdBy (Prompt 2a), updatedBy (Wave 4) | createdBy: explicit in API; updatedBy: NULL until Prompt 3 |
 
 ### CREATE_ONLY (createdById only — no updatedById because no updatedAt column)
 
@@ -99,8 +101,8 @@ These models use `createdBy`/`updatedBy` Prisma field names (mapping to `created
 | Subscription | Managed by Stripe/system. No meaningful user actor. |
 | TagAssignment | Junction table. Low ROI; deferred. |
 | DriverRouteJoin | Junction table. Low ROI; deferred. |
-| PlaybookStep | Pre-existing createdBy/updatedBy (quick-327). Explicit writes. |
-| StepInstance | Pre-existing createdBy/updatedBy (quick-327). Explicit writes. |
+| PlaybookStep | Naming inconsistency: uses `createdBy`/`updatedBy` (quick-327 convention), not `createdById`/`updatedById`. Same root cause as Driver Pay. Columns exist; injection disabled. Explicit writes only until Prompt 3. |
+| StepInstance | Naming inconsistency: uses `createdBy`/`updatedBy` (quick-327 convention), not `createdById`/`updatedById`. Same root cause as Driver Pay. Columns exist; injection disabled. Explicit writes only until Prompt 3. |
 
 ### Out of Scope / Not in Prisma
 
@@ -234,6 +236,42 @@ The Wave 4 widening was isolated to test fixtures because the new `updatedBy` fi
 
 ## 7. Outstanding Follow-Ups for Prompts 3 and 4
 
+### IMPORTANT — Naming-Inconsistency Workaround: 10 Models Excluded from Auto-Injection
+
+Ten models use the older `createdBy`/`updatedBy` Prisma field convention instead of the current `createdById`/`updatedById` standard. `withAuditColumns` only injects `createdById`/`updatedById`, so these models are in `EXEMPT_AUDIT_MODELS` as a workaround — **not** because they are system-generated or lack an audit actor. Their EXEMPT status is a naming-mismatch workaround that must be resolved in Prompt 3.
+
+**Affected models (10 total):**
+
+| Model | Origin of naming | DB columns added | Current state |
+|---|---|---|---|
+| DriverCompensationTemplate | Prompt 2a (older convention) | created_by (2a), updated_by (Wave 4) | created_by: some explicit wiring; updated_by: NULL everywhere |
+| LoadDriverAssignment | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| LoadPayComponent | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| PayComponentAttachment | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| DriverBonus | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| DriverDeduction | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| DriverSettlement | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| DriverDispute | Prompt 2a | created_by (2a), updated_by (Wave 4) | same |
+| PlaybookStep | quick-327 (older convention) | created_by, updated_by (pre-existing) | explicit wiring required in all write paths |
+| StepInstance | quick-327 (older convention) | created_by, updated_by (pre-existing) | explicit wiring required in all write paths |
+
+**The NULL problem:** Wave 4 added `updated_by` columns to all 8 Driver Pay models. Those columns will remain NULL for every write because: (1) the extension skips them (EXEMPT), and (2) no API route sets `updatedBy` explicitly yet.
+
+**Recommended fix for Prompt 3 (option A — extend the extension):**
+1. Extend `withAuditColumns` to detect both field naming conventions — check for `createdBy`/`updatedBy` in addition to `createdById`/`updatedById`, injecting whichever is present on the model.
+2. Remove the 10 models from `EXEMPT_AUDIT_MODELS` (they all have a real user actor).
+3. Remove any now-redundant explicit `createdBy`/`updatedBy` assignments in API routes.
+
+**Alternative fix for Prompt 3 (option B — rename the fields):**
+1. Rename the Prisma field names on all 10 models from `createdBy → createdById` and `updatedBy → updatedById`.
+2. Add `@map("created_by")` / `@map("updated_by")` if the underlying DB column names must be preserved, or generate a new migration to rename the DB columns too.
+3. Remove the 10 models from `EXEMPT_AUDIT_MODELS`.
+4. Fix call sites that reference the old field names.
+
+Option A is lower-risk (no schema rename migration, no call-site sweep). Option B achieves full convention consistency.
+
+---
+
 ### Prompt 3 — Auto-capture middleware integration
 
 The `withAuditColumns` extension is wired but the columns are not yet populated in production writes because:
@@ -243,8 +281,8 @@ The `withAuditColumns` extension is wired but the columns are not yet populated 
 
 **Prompt 3 tasks:**
 - Audit all API routes that write to FULL-injection models — confirm they use `getTenantPrisma()` not raw `prisma`
-- Wire `updatedBy: session.userId` explicitly in Driver Pay update paths (8 models × N update routes)
-- Wire `createdBy`/`updatedBy` for `PlaybookStep`/`StepInstance` EXEMPT models in their write paths
+- Resolve the naming-inconsistency workaround for the 10 EXEMPT models (see section above) — choose Option A or B and implement
+- Until the naming fix lands: `updated_by` columns on all 8 Driver Pay models will be NULL in production
 - Verify `createdById`/`updatedById` are being populated for newly created records in production (spot check via DB query post-deploy)
 
 ### Prompt 4 — Detail page display
@@ -259,12 +297,14 @@ The 29 detail pages inventoried in QT-354 Section 3 need UI updates to display `
 
 ---
 
-## Self-Check: PASSED
+## Self-Check: PASSED (with known outstanding gap)
 
 - All 4 waves shipped with green verification gates
-- 37 tenant-scoped models covered (FULL or CREATE_ONLY or FULL-explicit)
-- 21 models in EXEMPT (system/append-only/pre-existing convention)
-- withAuditColumns extension correctly handles all 3 categories
+- 37 tenant-scoped models covered (FULL auto-injection or CREATE_ONLY or PARTIAL-explicit)
+- 21 models in EXEMPT (system/append-only or naming-inconsistency workaround)
+  - 10 of 21 EXEMPT models (8 Driver Pay + PlaybookStep + StepInstance) are EXEMPT due to naming inconsistency, NOT because they lack a user actor — this is unresolved until Prompt 3
+  - Wave 4 added `updated_by` columns to all 8 Driver Pay models; those columns are currently NULL and will remain so until Prompt 3 resolves the naming gap
+- withAuditColumns extension correctly handles all 3 categories within its scope (createdById/updatedById convention only)
 - getTenantPrisma fix (QT-359) ensures authenticated userId is forwarded
 - 4 migration files, all idempotent, all ON DELETE SET NULL
 - TypeScript: no new errors introduced; Wave 4 widenings isolated to test fixtures
