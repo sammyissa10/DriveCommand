@@ -18,6 +18,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
+import { withAuditColumns } from '@/lib/db/extensions/audit-columns';
 
 const hasDatabase = !!process.env.DATABASE_URL;
 const describeWithDb = hasDatabase ? describe : describe.skip;
@@ -512,4 +513,197 @@ describeWithDb('Driver Pay — Tenant Isolation', () => {
     expect(rows.every((r: any) => r.tenantId === tenantAId)).toBe(true);
     expect(rows.some((r: any) => r.entityId === assignmentBId)).toBe(false);
   });
+});
+
+// ── Driver Pay — Audit Auto-Capture (Prompt 3) ───────────────────────────────
+//
+// Verifies that withAuditColumns correctly detects the `createdBy`/`updatedBy`
+// naming convention (older Driver Pay convention) via the DMMF registry and
+// auto-injects audit fields on DriverBonus writes when composed with withTenantRLS.
+//
+// Tests:
+//   a. Create — createdBy and updatedBy auto-populated (not passed in args.data)
+//   b. Update — updatedBy changes to new userId; createdBy remains unchanged
+//   c. Explicit override — caller-supplied createdBy in args.data is preserved
+//
+// Requires a real PostgreSQL database. Automatically skipped when DATABASE_URL is not set.
+
+describeWithDb('Driver Pay — Audit Auto-Capture (Prompt 3)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let prisma: any;
+
+  let tenantId: string;
+  let driverId: string;
+  const testUserId = '00000000-1111-2222-3333-444444444401';
+  const secondUserId = '00000000-1111-2222-3333-444444444402';
+  const explicitUserId = '00000000-1111-2222-3333-444444444403';
+  const marker = `dp-audit-${Date.now()}`;
+
+  // IDs of rows created in individual tests — cleaned up in afterAll.
+  const createdBonusIds: string[] = [];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function bypass<T>(fn: (tx: any) => Promise<T>): Promise<T> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await prisma.$transaction(async (tx: any) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return fn(tx);
+    });
+    return result as T;
+  }
+
+  beforeAll(async () => {
+    const { PrismaClient } = await import('../../../generated/prisma/client');
+    const { PrismaPg } = await import('@prisma/adapter-pg');
+    const { Pool } = await import('pg');
+
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 3 });
+    const adapter = new PrismaPg(pool);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    prisma = new (PrismaClient as any)({ adapter });
+
+    // Create a tenant for this suite.
+    const tenantRow = await bypass<{ id: string }>((tx) =>
+      tx.tenant.create({ data: { name: `${marker}-T`, timezone: 'UTC', slug: `${marker}-t` } })
+    );
+    tenantId = tenantRow.id;
+
+    // Create a carrier driver (Driver Pay models use CarrierDriver FK, not User FK).
+    const driverRow = await bypass<{ id: string }>((tx) =>
+      tx.carrierDriver.create({
+        data: { orgId: tenantId, firstName: 'Audit', lastName: 'Test', payModel: 'per_mile', payRate: '0.50' },
+      })
+    );
+    driverId = driverRow.id;
+  }, 60000);
+
+  afterAll(async () => {
+    if (!prisma) return;
+
+    // Clean up any bonuses created during this suite.
+    if (createdBonusIds.length) {
+      await bypass((tx) =>
+        tx.driverBonus.deleteMany({ where: { id: { in: createdBonusIds } } })
+      );
+    }
+
+    // Clean up tenant fixtures (cascade removes carrierDriver via orgId).
+    await bypass((tx) =>
+      tx.carrierDriver.deleteMany({ where: { orgId: tenantId } })
+    );
+    await bypass((tx) =>
+      tx.tenant.deleteMany({ where: { name: { startsWith: marker } } })
+    );
+
+    await prisma.$disconnect();
+  }, 60000);
+
+  it(
+    'a. create — createdBy and updatedBy auto-populated from userId when not in args.data',
+    { timeout: 60000 },
+    async () => {
+      // Compose RLS + audit extensions for tenantId + testUserId.
+      const auditClient = prisma
+        .$extends(withTenantRLS(tenantId))
+        .$extends(withAuditColumns(testUserId));
+
+      // Create a DriverBonus WITHOUT passing createdBy or updatedBy.
+      const created = await auditClient.driverBonus.create({
+        data: {
+          tenantId,
+          driverId,
+          bonusType: 'SAFETY',
+          amount: 50,
+          description: `${marker}-a`,
+          triggerDate: new Date('2026-01-01'),
+          isTaxable: true,
+          // createdBy and updatedBy intentionally omitted — extension should inject.
+        },
+      });
+      createdBonusIds.push(created.id);
+
+      // Read back via bypass to get raw DB values.
+      const row = await bypass<{ createdBy: string | null; updatedBy: string | null }>((tx) =>
+        tx.driverBonus.findUniqueOrThrow({ where: { id: created.id } })
+      );
+
+      expect(row.createdBy).toBe(testUserId);
+      expect(row.updatedBy).toBe(testUserId);
+    }
+  );
+
+  it(
+    'b. update — updatedBy changes to new userId; createdBy remains unchanged',
+    { timeout: 60000 },
+    async () => {
+      // Create via testUserId first.
+      const auditClientFirst = prisma
+        .$extends(withTenantRLS(tenantId))
+        .$extends(withAuditColumns(testUserId));
+
+      const created = await auditClientFirst.driverBonus.create({
+        data: {
+          tenantId,
+          driverId,
+          bonusType: 'RETENTION',
+          amount: 75,
+          description: `${marker}-b`,
+          triggerDate: new Date('2026-02-01'),
+          isTaxable: false,
+        },
+      });
+      createdBonusIds.push(created.id);
+
+      // Update via secondUserId — updatedBy should change; createdBy must stay.
+      const auditClientSecond = prisma
+        .$extends(withTenantRLS(tenantId))
+        .$extends(withAuditColumns(secondUserId));
+
+      await auditClientSecond.driverBonus.update({
+        where: { id: created.id },
+        data: { notes: 'Updated by second user' },
+        // updatedBy intentionally omitted — extension should inject secondUserId.
+      });
+
+      // Read back via bypass.
+      const row = await bypass<{ createdBy: string | null; updatedBy: string | null }>((tx) =>
+        tx.driverBonus.findUniqueOrThrow({ where: { id: created.id } })
+      );
+
+      expect(row.updatedBy).toBe(secondUserId);
+      expect(row.createdBy).toBe(testUserId); // Must be unchanged.
+    }
+  );
+
+  it(
+    'c. explicit override — caller-supplied createdBy in args.data is preserved',
+    { timeout: 60000 },
+    async () => {
+      // Pass createdBy explicitly — extension must NOT overwrite it.
+      const auditClient = prisma
+        .$extends(withTenantRLS(tenantId))
+        .$extends(withAuditColumns(testUserId));
+
+      const created = await auditClient.driverBonus.create({
+        data: {
+          tenantId,
+          driverId,
+          bonusType: 'PERFORMANCE',
+          amount: 100,
+          description: `${marker}-c`,
+          triggerDate: new Date('2026-03-01'),
+          isTaxable: true,
+          createdBy: explicitUserId, // Explicit caller-supplied value.
+        },
+      });
+      createdBonusIds.push(created.id);
+
+      const row = await bypass<{ createdBy: string | null }>((tx) =>
+        tx.driverBonus.findUniqueOrThrow({ where: { id: created.id } })
+      );
+
+      // The explicit value must win over the extension-injected testUserId.
+      expect(row.createdBy).toBe(explicitUserId);
+    }
+  );
 });
