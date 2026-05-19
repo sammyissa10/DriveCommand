@@ -1771,6 +1771,20 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.GridPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  gridId: 'gridId',
+  columnOrder: 'columnOrder',
+  columnWidths: 'columnWidths',
+  hiddenColumns: 'hiddenColumns',
+  frozenColumns: 'frozenColumns',
+  density: 'density',
+  pageSize: 'pageSize',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2444,7 +2458,8 @@ exports.Prisma.ModelName = {
   UserNotificationPreference: 'UserNotificationPreference',
   NotificationSendLog: 'NotificationSendLog',
   NotificationEmailConfig: 'NotificationEmailConfig',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  GridPreference: 'GridPreference'
 };
 
 /**

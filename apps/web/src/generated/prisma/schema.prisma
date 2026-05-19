@@ -3425,3 +3425,23 @@ model AuditLog {
   @@index([tenantId, resourceType, resourceId])
   @@map("audit_log")
 }
+
+/// User grid preferences for DataGrid columns, ordering, visibility, and density.
+/// Not tenant-scoped — preferences are personal per user across all tenants they belong to.
+model GridPreference {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String   @db.Uuid
+  gridId        String   @db.VarChar(100)
+  columnOrder   String[] @default([])
+  columnWidths  Json     @default("{}")
+  hiddenColumns String[] @default([])
+  frozenColumns String[] @default([])
+  density       String   @default("normal")
+  pageSize      Int      @default(25)
+  createdAt     DateTime @default(now()) @db.Timestamptz
+  updatedAt     DateTime @updatedAt @db.Timestamptz
+
+  @@unique([userId, gridId])
+  @@index([userId])
+  @@map("grid_preference")
+}

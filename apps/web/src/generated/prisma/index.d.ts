@@ -454,6 +454,12 @@ export type NotificationEmailConfig = $Result.DefaultSelection<Prisma.$Notificat
  * Part of DatabaseSecurity_MultiTenant_Spec_v1.md Section 4.4 (quick-329).
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model GridPreference
+ * User grid preferences for DataGrid columns, ordering, visibility, and density.
+ * Not tenant-scoped — preferences are personal per user across all tenants they belong to.
+ */
+export type GridPreference = $Result.DefaultSelection<Prisma.$GridPreferencePayload>
 
 /**
  * Enums
@@ -2476,6 +2482,16 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.gridPreference`: Exposes CRUD operations for the **GridPreference** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GridPreferences
+    * const gridPreferences = await prisma.gridPreference.findMany()
+    * ```
+    */
+  get gridPreference(): Prisma.GridPreferenceDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -2996,7 +3012,8 @@ export namespace Prisma {
     UserNotificationPreference: 'UserNotificationPreference',
     NotificationSendLog: 'NotificationSendLog',
     NotificationEmailConfig: 'NotificationEmailConfig',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    GridPreference: 'GridPreference'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -3012,7 +3029,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog" | "gridPreference"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -9454,6 +9471,80 @@ export namespace Prisma {
           }
         }
       }
+      GridPreference: {
+        payload: Prisma.$GridPreferencePayload<ExtArgs>
+        fields: Prisma.GridPreferenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GridPreferenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GridPreferenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>
+          }
+          findFirst: {
+            args: Prisma.GridPreferenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GridPreferenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>
+          }
+          findMany: {
+            args: Prisma.GridPreferenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>[]
+          }
+          create: {
+            args: Prisma.GridPreferenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>
+          }
+          createMany: {
+            args: Prisma.GridPreferenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GridPreferenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>[]
+          }
+          delete: {
+            args: Prisma.GridPreferenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>
+          }
+          update: {
+            args: Prisma.GridPreferenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>
+          }
+          deleteMany: {
+            args: Prisma.GridPreferenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GridPreferenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GridPreferenceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>[]
+          }
+          upsert: {
+            args: Prisma.GridPreferenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridPreferencePayload>
+          }
+          aggregate: {
+            args: Prisma.GridPreferenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGridPreference>
+          }
+          groupBy: {
+            args: Prisma.GridPreferenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GridPreferenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GridPreferenceCountArgs<ExtArgs>
+            result: $Utils.Optional<GridPreferenceCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -9649,6 +9740,7 @@ export namespace Prisma {
     notificationSendLog?: NotificationSendLogOmit
     notificationEmailConfig?: NotificationEmailConfigOmit
     auditLog?: AuditLogOmit
+    gridPreference?: GridPreferenceOmit
   }
 
   /* Types for Logging */
@@ -132867,6 +132959,1102 @@ export namespace Prisma {
 
 
   /**
+   * Model GridPreference
+   */
+
+  export type AggregateGridPreference = {
+    _count: GridPreferenceCountAggregateOutputType | null
+    _avg: GridPreferenceAvgAggregateOutputType | null
+    _sum: GridPreferenceSumAggregateOutputType | null
+    _min: GridPreferenceMinAggregateOutputType | null
+    _max: GridPreferenceMaxAggregateOutputType | null
+  }
+
+  export type GridPreferenceAvgAggregateOutputType = {
+    pageSize: number | null
+  }
+
+  export type GridPreferenceSumAggregateOutputType = {
+    pageSize: number | null
+  }
+
+  export type GridPreferenceMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    gridId: string | null
+    density: string | null
+    pageSize: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GridPreferenceMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    gridId: string | null
+    density: string | null
+    pageSize: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GridPreferenceCountAggregateOutputType = {
+    id: number
+    userId: number
+    gridId: number
+    columnOrder: number
+    columnWidths: number
+    hiddenColumns: number
+    frozenColumns: number
+    density: number
+    pageSize: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GridPreferenceAvgAggregateInputType = {
+    pageSize?: true
+  }
+
+  export type GridPreferenceSumAggregateInputType = {
+    pageSize?: true
+  }
+
+  export type GridPreferenceMinAggregateInputType = {
+    id?: true
+    userId?: true
+    gridId?: true
+    density?: true
+    pageSize?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GridPreferenceMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    gridId?: true
+    density?: true
+    pageSize?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GridPreferenceCountAggregateInputType = {
+    id?: true
+    userId?: true
+    gridId?: true
+    columnOrder?: true
+    columnWidths?: true
+    hiddenColumns?: true
+    frozenColumns?: true
+    density?: true
+    pageSize?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GridPreferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GridPreference to aggregate.
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridPreferences to fetch.
+     */
+    orderBy?: GridPreferenceOrderByWithRelationInput | GridPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GridPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GridPreferences
+    **/
+    _count?: true | GridPreferenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GridPreferenceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GridPreferenceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GridPreferenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GridPreferenceMaxAggregateInputType
+  }
+
+  export type GetGridPreferenceAggregateType<T extends GridPreferenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateGridPreference]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGridPreference[P]>
+      : GetScalarType<T[P], AggregateGridPreference[P]>
+  }
+
+
+
+
+  export type GridPreferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GridPreferenceWhereInput
+    orderBy?: GridPreferenceOrderByWithAggregationInput | GridPreferenceOrderByWithAggregationInput[]
+    by: GridPreferenceScalarFieldEnum[] | GridPreferenceScalarFieldEnum
+    having?: GridPreferenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GridPreferenceCountAggregateInputType | true
+    _avg?: GridPreferenceAvgAggregateInputType
+    _sum?: GridPreferenceSumAggregateInputType
+    _min?: GridPreferenceMinAggregateInputType
+    _max?: GridPreferenceMaxAggregateInputType
+  }
+
+  export type GridPreferenceGroupByOutputType = {
+    id: string
+    userId: string
+    gridId: string
+    columnOrder: string[]
+    columnWidths: JsonValue
+    hiddenColumns: string[]
+    frozenColumns: string[]
+    density: string
+    pageSize: number
+    createdAt: Date
+    updatedAt: Date
+    _count: GridPreferenceCountAggregateOutputType | null
+    _avg: GridPreferenceAvgAggregateOutputType | null
+    _sum: GridPreferenceSumAggregateOutputType | null
+    _min: GridPreferenceMinAggregateOutputType | null
+    _max: GridPreferenceMaxAggregateOutputType | null
+  }
+
+  type GetGridPreferenceGroupByPayload<T extends GridPreferenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GridPreferenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GridPreferenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GridPreferenceGroupByOutputType[P]>
+            : GetScalarType<T[P], GridPreferenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GridPreferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    gridId?: boolean
+    columnOrder?: boolean
+    columnWidths?: boolean
+    hiddenColumns?: boolean
+    frozenColumns?: boolean
+    density?: boolean
+    pageSize?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["gridPreference"]>
+
+  export type GridPreferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    gridId?: boolean
+    columnOrder?: boolean
+    columnWidths?: boolean
+    hiddenColumns?: boolean
+    frozenColumns?: boolean
+    density?: boolean
+    pageSize?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["gridPreference"]>
+
+  export type GridPreferenceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    gridId?: boolean
+    columnOrder?: boolean
+    columnWidths?: boolean
+    hiddenColumns?: boolean
+    frozenColumns?: boolean
+    density?: boolean
+    pageSize?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["gridPreference"]>
+
+  export type GridPreferenceSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    gridId?: boolean
+    columnOrder?: boolean
+    columnWidths?: boolean
+    hiddenColumns?: boolean
+    frozenColumns?: boolean
+    density?: boolean
+    pageSize?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GridPreferenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "gridId" | "columnOrder" | "columnWidths" | "hiddenColumns" | "frozenColumns" | "density" | "pageSize" | "createdAt" | "updatedAt", ExtArgs["result"]["gridPreference"]>
+
+  export type $GridPreferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GridPreference"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      gridId: string
+      columnOrder: string[]
+      columnWidths: Prisma.JsonValue
+      hiddenColumns: string[]
+      frozenColumns: string[]
+      density: string
+      pageSize: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["gridPreference"]>
+    composites: {}
+  }
+
+  type GridPreferenceGetPayload<S extends boolean | null | undefined | GridPreferenceDefaultArgs> = $Result.GetResult<Prisma.$GridPreferencePayload, S>
+
+  type GridPreferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GridPreferenceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GridPreferenceCountAggregateInputType | true
+    }
+
+  export interface GridPreferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GridPreference'], meta: { name: 'GridPreference' } }
+    /**
+     * Find zero or one GridPreference that matches the filter.
+     * @param {GridPreferenceFindUniqueArgs} args - Arguments to find a GridPreference
+     * @example
+     * // Get one GridPreference
+     * const gridPreference = await prisma.gridPreference.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GridPreferenceFindUniqueArgs>(args: SelectSubset<T, GridPreferenceFindUniqueArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GridPreference that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GridPreferenceFindUniqueOrThrowArgs} args - Arguments to find a GridPreference
+     * @example
+     * // Get one GridPreference
+     * const gridPreference = await prisma.gridPreference.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GridPreferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, GridPreferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GridPreference that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceFindFirstArgs} args - Arguments to find a GridPreference
+     * @example
+     * // Get one GridPreference
+     * const gridPreference = await prisma.gridPreference.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GridPreferenceFindFirstArgs>(args?: SelectSubset<T, GridPreferenceFindFirstArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GridPreference that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceFindFirstOrThrowArgs} args - Arguments to find a GridPreference
+     * @example
+     * // Get one GridPreference
+     * const gridPreference = await prisma.gridPreference.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GridPreferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, GridPreferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GridPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GridPreferences
+     * const gridPreferences = await prisma.gridPreference.findMany()
+     * 
+     * // Get first 10 GridPreferences
+     * const gridPreferences = await prisma.gridPreference.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const gridPreferenceWithIdOnly = await prisma.gridPreference.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GridPreferenceFindManyArgs>(args?: SelectSubset<T, GridPreferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GridPreference.
+     * @param {GridPreferenceCreateArgs} args - Arguments to create a GridPreference.
+     * @example
+     * // Create one GridPreference
+     * const GridPreference = await prisma.gridPreference.create({
+     *   data: {
+     *     // ... data to create a GridPreference
+     *   }
+     * })
+     * 
+     */
+    create<T extends GridPreferenceCreateArgs>(args: SelectSubset<T, GridPreferenceCreateArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GridPreferences.
+     * @param {GridPreferenceCreateManyArgs} args - Arguments to create many GridPreferences.
+     * @example
+     * // Create many GridPreferences
+     * const gridPreference = await prisma.gridPreference.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GridPreferenceCreateManyArgs>(args?: SelectSubset<T, GridPreferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GridPreferences and returns the data saved in the database.
+     * @param {GridPreferenceCreateManyAndReturnArgs} args - Arguments to create many GridPreferences.
+     * @example
+     * // Create many GridPreferences
+     * const gridPreference = await prisma.gridPreference.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GridPreferences and only return the `id`
+     * const gridPreferenceWithIdOnly = await prisma.gridPreference.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GridPreferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, GridPreferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GridPreference.
+     * @param {GridPreferenceDeleteArgs} args - Arguments to delete one GridPreference.
+     * @example
+     * // Delete one GridPreference
+     * const GridPreference = await prisma.gridPreference.delete({
+     *   where: {
+     *     // ... filter to delete one GridPreference
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GridPreferenceDeleteArgs>(args: SelectSubset<T, GridPreferenceDeleteArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GridPreference.
+     * @param {GridPreferenceUpdateArgs} args - Arguments to update one GridPreference.
+     * @example
+     * // Update one GridPreference
+     * const gridPreference = await prisma.gridPreference.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GridPreferenceUpdateArgs>(args: SelectSubset<T, GridPreferenceUpdateArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GridPreferences.
+     * @param {GridPreferenceDeleteManyArgs} args - Arguments to filter GridPreferences to delete.
+     * @example
+     * // Delete a few GridPreferences
+     * const { count } = await prisma.gridPreference.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GridPreferenceDeleteManyArgs>(args?: SelectSubset<T, GridPreferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GridPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GridPreferences
+     * const gridPreference = await prisma.gridPreference.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GridPreferenceUpdateManyArgs>(args: SelectSubset<T, GridPreferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GridPreferences and returns the data updated in the database.
+     * @param {GridPreferenceUpdateManyAndReturnArgs} args - Arguments to update many GridPreferences.
+     * @example
+     * // Update many GridPreferences
+     * const gridPreference = await prisma.gridPreference.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GridPreferences and only return the `id`
+     * const gridPreferenceWithIdOnly = await prisma.gridPreference.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GridPreferenceUpdateManyAndReturnArgs>(args: SelectSubset<T, GridPreferenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GridPreference.
+     * @param {GridPreferenceUpsertArgs} args - Arguments to update or create a GridPreference.
+     * @example
+     * // Update or create a GridPreference
+     * const gridPreference = await prisma.gridPreference.upsert({
+     *   create: {
+     *     // ... data to create a GridPreference
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GridPreference we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GridPreferenceUpsertArgs>(args: SelectSubset<T, GridPreferenceUpsertArgs<ExtArgs>>): Prisma__GridPreferenceClient<$Result.GetResult<Prisma.$GridPreferencePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GridPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceCountArgs} args - Arguments to filter GridPreferences to count.
+     * @example
+     * // Count the number of GridPreferences
+     * const count = await prisma.gridPreference.count({
+     *   where: {
+     *     // ... the filter for the GridPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends GridPreferenceCountArgs>(
+      args?: Subset<T, GridPreferenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GridPreferenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GridPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GridPreferenceAggregateArgs>(args: Subset<T, GridPreferenceAggregateArgs>): Prisma.PrismaPromise<GetGridPreferenceAggregateType<T>>
+
+    /**
+     * Group by GridPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridPreferenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GridPreferenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GridPreferenceGroupByArgs['orderBy'] }
+        : { orderBy?: GridPreferenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GridPreferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGridPreferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GridPreference model
+   */
+  readonly fields: GridPreferenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GridPreference.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GridPreferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GridPreference model
+   */
+  interface GridPreferenceFieldRefs {
+    readonly id: FieldRef<"GridPreference", 'String'>
+    readonly userId: FieldRef<"GridPreference", 'String'>
+    readonly gridId: FieldRef<"GridPreference", 'String'>
+    readonly columnOrder: FieldRef<"GridPreference", 'String[]'>
+    readonly columnWidths: FieldRef<"GridPreference", 'Json'>
+    readonly hiddenColumns: FieldRef<"GridPreference", 'String[]'>
+    readonly frozenColumns: FieldRef<"GridPreference", 'String[]'>
+    readonly density: FieldRef<"GridPreference", 'String'>
+    readonly pageSize: FieldRef<"GridPreference", 'Int'>
+    readonly createdAt: FieldRef<"GridPreference", 'DateTime'>
+    readonly updatedAt: FieldRef<"GridPreference", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GridPreference findUnique
+   */
+  export type GridPreferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * Filter, which GridPreference to fetch.
+     */
+    where: GridPreferenceWhereUniqueInput
+  }
+
+  /**
+   * GridPreference findUniqueOrThrow
+   */
+  export type GridPreferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * Filter, which GridPreference to fetch.
+     */
+    where: GridPreferenceWhereUniqueInput
+  }
+
+  /**
+   * GridPreference findFirst
+   */
+  export type GridPreferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * Filter, which GridPreference to fetch.
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridPreferences to fetch.
+     */
+    orderBy?: GridPreferenceOrderByWithRelationInput | GridPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GridPreferences.
+     */
+    cursor?: GridPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GridPreferences.
+     */
+    distinct?: GridPreferenceScalarFieldEnum | GridPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * GridPreference findFirstOrThrow
+   */
+  export type GridPreferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * Filter, which GridPreference to fetch.
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridPreferences to fetch.
+     */
+    orderBy?: GridPreferenceOrderByWithRelationInput | GridPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GridPreferences.
+     */
+    cursor?: GridPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GridPreferences.
+     */
+    distinct?: GridPreferenceScalarFieldEnum | GridPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * GridPreference findMany
+   */
+  export type GridPreferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * Filter, which GridPreferences to fetch.
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridPreferences to fetch.
+     */
+    orderBy?: GridPreferenceOrderByWithRelationInput | GridPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GridPreferences.
+     */
+    cursor?: GridPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GridPreferences.
+     */
+    distinct?: GridPreferenceScalarFieldEnum | GridPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * GridPreference create
+   */
+  export type GridPreferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * The data needed to create a GridPreference.
+     */
+    data: XOR<GridPreferenceCreateInput, GridPreferenceUncheckedCreateInput>
+  }
+
+  /**
+   * GridPreference createMany
+   */
+  export type GridPreferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GridPreferences.
+     */
+    data: GridPreferenceCreateManyInput | GridPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GridPreference createManyAndReturn
+   */
+  export type GridPreferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * The data used to create many GridPreferences.
+     */
+    data: GridPreferenceCreateManyInput | GridPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GridPreference update
+   */
+  export type GridPreferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * The data needed to update a GridPreference.
+     */
+    data: XOR<GridPreferenceUpdateInput, GridPreferenceUncheckedUpdateInput>
+    /**
+     * Choose, which GridPreference to update.
+     */
+    where: GridPreferenceWhereUniqueInput
+  }
+
+  /**
+   * GridPreference updateMany
+   */
+  export type GridPreferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GridPreferences.
+     */
+    data: XOR<GridPreferenceUpdateManyMutationInput, GridPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which GridPreferences to update
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * Limit how many GridPreferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GridPreference updateManyAndReturn
+   */
+  export type GridPreferenceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * The data used to update GridPreferences.
+     */
+    data: XOR<GridPreferenceUpdateManyMutationInput, GridPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which GridPreferences to update
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * Limit how many GridPreferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GridPreference upsert
+   */
+  export type GridPreferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * The filter to search for the GridPreference to update in case it exists.
+     */
+    where: GridPreferenceWhereUniqueInput
+    /**
+     * In case the GridPreference found by the `where` argument doesn't exist, create a new GridPreference with this data.
+     */
+    create: XOR<GridPreferenceCreateInput, GridPreferenceUncheckedCreateInput>
+    /**
+     * In case the GridPreference was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GridPreferenceUpdateInput, GridPreferenceUncheckedUpdateInput>
+  }
+
+  /**
+   * GridPreference delete
+   */
+  export type GridPreferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+    /**
+     * Filter which GridPreference to delete.
+     */
+    where: GridPreferenceWhereUniqueInput
+  }
+
+  /**
+   * GridPreference deleteMany
+   */
+  export type GridPreferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GridPreferences to delete
+     */
+    where?: GridPreferenceWhereInput
+    /**
+     * Limit how many GridPreferences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GridPreference without action
+   */
+  export type GridPreferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridPreference
+     */
+    select?: GridPreferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridPreference
+     */
+    omit?: GridPreferenceOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -134790,6 +135978,23 @@ export namespace Prisma {
   };
 
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const GridPreferenceScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    gridId: 'gridId',
+    columnOrder: 'columnOrder',
+    columnWidths: 'columnWidths',
+    hiddenColumns: 'hiddenColumns',
+    frozenColumns: 'frozenColumns',
+    density: 'density',
+    pageSize: 'pageSize',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GridPreferenceScalarFieldEnum = (typeof GridPreferenceScalarFieldEnum)[keyof typeof GridPreferenceScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -147087,6 +148292,91 @@ export namespace Prisma {
     ipAddress?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     userAgent?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
+  export type GridPreferenceWhereInput = {
+    AND?: GridPreferenceWhereInput | GridPreferenceWhereInput[]
+    OR?: GridPreferenceWhereInput[]
+    NOT?: GridPreferenceWhereInput | GridPreferenceWhereInput[]
+    id?: UuidFilter<"GridPreference"> | string
+    userId?: UuidFilter<"GridPreference"> | string
+    gridId?: StringFilter<"GridPreference"> | string
+    columnOrder?: StringNullableListFilter<"GridPreference">
+    columnWidths?: JsonFilter<"GridPreference">
+    hiddenColumns?: StringNullableListFilter<"GridPreference">
+    frozenColumns?: StringNullableListFilter<"GridPreference">
+    density?: StringFilter<"GridPreference"> | string
+    pageSize?: IntFilter<"GridPreference"> | number
+    createdAt?: DateTimeFilter<"GridPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"GridPreference"> | Date | string
+  }
+
+  export type GridPreferenceOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gridId?: SortOrder
+    columnOrder?: SortOrder
+    columnWidths?: SortOrder
+    hiddenColumns?: SortOrder
+    frozenColumns?: SortOrder
+    density?: SortOrder
+    pageSize?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridPreferenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_gridId?: GridPreferenceUserIdGridIdCompoundUniqueInput
+    AND?: GridPreferenceWhereInput | GridPreferenceWhereInput[]
+    OR?: GridPreferenceWhereInput[]
+    NOT?: GridPreferenceWhereInput | GridPreferenceWhereInput[]
+    userId?: UuidFilter<"GridPreference"> | string
+    gridId?: StringFilter<"GridPreference"> | string
+    columnOrder?: StringNullableListFilter<"GridPreference">
+    columnWidths?: JsonFilter<"GridPreference">
+    hiddenColumns?: StringNullableListFilter<"GridPreference">
+    frozenColumns?: StringNullableListFilter<"GridPreference">
+    density?: StringFilter<"GridPreference"> | string
+    pageSize?: IntFilter<"GridPreference"> | number
+    createdAt?: DateTimeFilter<"GridPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"GridPreference"> | Date | string
+  }, "id" | "userId_gridId">
+
+  export type GridPreferenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gridId?: SortOrder
+    columnOrder?: SortOrder
+    columnWidths?: SortOrder
+    hiddenColumns?: SortOrder
+    frozenColumns?: SortOrder
+    density?: SortOrder
+    pageSize?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GridPreferenceCountOrderByAggregateInput
+    _avg?: GridPreferenceAvgOrderByAggregateInput
+    _max?: GridPreferenceMaxOrderByAggregateInput
+    _min?: GridPreferenceMinOrderByAggregateInput
+    _sum?: GridPreferenceSumOrderByAggregateInput
+  }
+
+  export type GridPreferenceScalarWhereWithAggregatesInput = {
+    AND?: GridPreferenceScalarWhereWithAggregatesInput | GridPreferenceScalarWhereWithAggregatesInput[]
+    OR?: GridPreferenceScalarWhereWithAggregatesInput[]
+    NOT?: GridPreferenceScalarWhereWithAggregatesInput | GridPreferenceScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"GridPreference"> | string
+    userId?: UuidWithAggregatesFilter<"GridPreference"> | string
+    gridId?: StringWithAggregatesFilter<"GridPreference"> | string
+    columnOrder?: StringNullableListFilter<"GridPreference">
+    columnWidths?: JsonWithAggregatesFilter<"GridPreference">
+    hiddenColumns?: StringNullableListFilter<"GridPreference">
+    frozenColumns?: StringNullableListFilter<"GridPreference">
+    density?: StringWithAggregatesFilter<"GridPreference"> | string
+    pageSize?: IntWithAggregatesFilter<"GridPreference"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"GridPreference"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"GridPreference"> | Date | string
   }
 
   export type TenantCreateInput = {
@@ -159525,6 +160815,104 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type GridPreferenceCreateInput = {
+    id?: string
+    userId: string
+    gridId: string
+    columnOrder?: GridPreferenceCreatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceCreatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceCreatefrozenColumnsInput | string[]
+    density?: string
+    pageSize?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridPreferenceUncheckedCreateInput = {
+    id?: string
+    userId: string
+    gridId: string
+    columnOrder?: GridPreferenceCreatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceCreatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceCreatefrozenColumnsInput | string[]
+    density?: string
+    pageSize?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridPreferenceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    columnOrder?: GridPreferenceUpdatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceUpdatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceUpdatefrozenColumnsInput | string[]
+    density?: StringFieldUpdateOperationsInput | string
+    pageSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridPreferenceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    columnOrder?: GridPreferenceUpdatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceUpdatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceUpdatefrozenColumnsInput | string[]
+    density?: StringFieldUpdateOperationsInput | string
+    pageSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridPreferenceCreateManyInput = {
+    id?: string
+    userId: string
+    gridId: string
+    columnOrder?: GridPreferenceCreatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceCreatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceCreatefrozenColumnsInput | string[]
+    density?: string
+    pageSize?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridPreferenceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    columnOrder?: GridPreferenceUpdatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceUpdatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceUpdatefrozenColumnsInput | string[]
+    density?: StringFieldUpdateOperationsInput | string
+    pageSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridPreferenceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    columnOrder?: GridPreferenceUpdatecolumnOrderInput | string[]
+    columnWidths?: JsonNullValueInput | InputJsonValue
+    hiddenColumns?: GridPreferenceUpdatehiddenColumnsInput | string[]
+    frozenColumns?: GridPreferenceUpdatefrozenColumnsInput | string[]
+    density?: StringFieldUpdateOperationsInput | string
+    pageSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -167919,6 +169307,61 @@ export namespace Prisma {
     ipAddress?: SortOrder
     userAgent?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type GridPreferenceUserIdGridIdCompoundUniqueInput = {
+    userId: string
+    gridId: string
+  }
+
+  export type GridPreferenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gridId?: SortOrder
+    columnOrder?: SortOrder
+    columnWidths?: SortOrder
+    hiddenColumns?: SortOrder
+    frozenColumns?: SortOrder
+    density?: SortOrder
+    pageSize?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridPreferenceAvgOrderByAggregateInput = {
+    pageSize?: SortOrder
+  }
+
+  export type GridPreferenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gridId?: SortOrder
+    density?: SortOrder
+    pageSize?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridPreferenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    gridId?: SortOrder
+    density?: SortOrder
+    pageSize?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridPreferenceSumOrderByAggregateInput = {
+    pageSize?: SortOrder
   }
 
   export type UserCreateNestedManyWithoutTenantInput = {
@@ -184967,6 +186410,33 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutAuditLogsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type GridPreferenceCreatecolumnOrderInput = {
+    set: string[]
+  }
+
+  export type GridPreferenceCreatehiddenColumnsInput = {
+    set: string[]
+  }
+
+  export type GridPreferenceCreatefrozenColumnsInput = {
+    set: string[]
+  }
+
+  export type GridPreferenceUpdatecolumnOrderInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GridPreferenceUpdatehiddenColumnsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GridPreferenceUpdatefrozenColumnsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
