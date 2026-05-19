@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -96,7 +97,8 @@ export async function getFacility(orgId: string, id: string) {
 }
 
 export async function createFacility(orgId: string, data: FacilityCreateInput) {
-  return prisma.carrierFacility.create({
+  const tenantPrisma = await getTenantPrisma();
+  return tenantPrisma.carrierFacility.create({
     data: {
       ...data,
       orgId,
@@ -105,18 +107,20 @@ export async function createFacility(orgId: string, data: FacilityCreateInput) {
 }
 
 export async function updateFacility(orgId: string, id: string, data: FacilityUpdateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierFacility.findFirst({
     where: { id, orgId, NOT: { facilityType: { startsWith: 'inactive_' } } },
   });
   if (!existing) return null;
 
-  return prisma.carrierFacility.update({
+  return tenantPrisma.carrierFacility.update({
     where: { id },
     data,
   });
 }
 
 export async function softDeleteFacility(orgId: string, id: string) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierFacility.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
@@ -127,7 +131,7 @@ export async function softDeleteFacility(orgId: string, id: string) {
 
   logger.info('softDeleteFacility: marking facility inactive via facilityType prefix', { id, orgId, newType });
 
-  return prisma.carrierFacility.update({
+  return tenantPrisma.carrierFacility.update({
     where: { id },
     data: { facilityType: newType },
   });

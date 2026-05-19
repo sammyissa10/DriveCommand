@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // Helper: convert Prisma Decimal | null to string | null
@@ -111,6 +112,7 @@ export async function createContract(
   clientId: string,
   data: ContractCreateInput
 ) {
+  const tenantPrisma = await getTenantPrisma();
   const year = new Date().getFullYear();
 
   const {
@@ -137,7 +139,7 @@ export async function createContract(
     const contractNumber = `CN-${year}-${seq}`;
 
     try {
-      return await prisma.carrierContract.create({
+      return await tenantPrisma.carrierContract.create({
         data: {
           ...rest,
           orgId,
@@ -177,6 +179,7 @@ export async function createContract(
 }
 
 export async function updateContract(orgId: string, id: string, data: ContractUpdateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierContract.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
@@ -192,7 +195,7 @@ export async function updateContract(orgId: string, id: string, data: ContractUp
     ...rest
   } = data;
 
-  const updated = await prisma.carrierContract.update({
+  const updated = await tenantPrisma.carrierContract.update({
     where: { id },
     data: {
       ...rest,
@@ -218,10 +221,11 @@ export async function updateContract(orgId: string, id: string, data: ContractUp
 }
 
 export async function softDeleteContract(orgId: string, id: string) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierContract.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const updated = await prisma.carrierContract.update({
+  const updated = await tenantPrisma.carrierContract.update({
     where: { id },
     data: { status: 'cancelled' },
   });

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import type { GridFilter } from '@/components/data-grid/core/types';
 import type { Prisma } from '@/generated/prisma';
@@ -211,8 +212,9 @@ export async function getClient(orgId: string, id: string) {
 }
 
 export async function createClient(orgId: string, data: ClientCreateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const { creditLimit, ...rest } = data;
-  return prisma.carrierClient.create({
+  return tenantPrisma.carrierClient.create({
     data: {
       ...rest,
       orgId,
@@ -224,11 +226,12 @@ export async function createClient(orgId: string, data: ClientCreateInput) {
 }
 
 export async function updateClient(orgId: string, id: string, data: ClientUpdateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierClient.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const { creditLimit, ...rest } = data;
-  return prisma.carrierClient.update({
+  return tenantPrisma.carrierClient.update({
     where: { id },
     data: {
       ...rest,
@@ -240,10 +243,11 @@ export async function updateClient(orgId: string, id: string, data: ClientUpdate
 }
 
 export async function softDeleteClient(orgId: string, id: string) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierClient.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  return prisma.carrierClient.update({
+  return tenantPrisma.carrierClient.update({
     where: { id },
     data: { status: 'inactive' },
   });

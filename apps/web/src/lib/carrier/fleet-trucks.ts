@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -154,12 +155,13 @@ export async function getCarrierTruck(orgId: string, id: string) {
 }
 
 export async function createCarrierTruck(orgId: string, data: CarrierTruckCreateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const { registrationExpiry, licenseExpiry, insuranceExpiry, displayName, ...rest } = data;
 
   const vehicleId = await generateVehicleId();
   const resolvedDisplayName = displayName || data.unitNumber;
 
-  return prisma.carrierTruck.create({
+  return tenantPrisma.carrierTruck.create({
     data: {
       ...rest,
       orgId,
@@ -177,12 +179,13 @@ export async function updateCarrierTruck(
   id: string,
   data: CarrierTruckUpdateInput
 ) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierTruck.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const { registrationExpiry, licenseExpiry, insuranceExpiry, ...rest } = data;
 
-  return prisma.carrierTruck.update({
+  return tenantPrisma.carrierTruck.update({
     where: { id },
     data: {
       ...rest,

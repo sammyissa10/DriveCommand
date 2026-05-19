@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // Helper: convert Prisma Decimal | null to string | null
@@ -140,7 +141,8 @@ export async function createStop(orgId: string, data: StopCreateInput) {
     },
   };
 
-  const stop = await prisma.carrierStop.create({
+  const tenantPrisma = await getTenantPrisma();
+  const stop = await tenantPrisma.carrierStop.create({
     data: {
       dispatchId: data.dispatchId,
       loadId: data.loadId ?? null,
@@ -168,12 +170,13 @@ export async function createStop(orgId: string, data: StopCreateInput) {
 }
 
 export async function updateStop(orgId: string, id: string, data: StopUpdateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierStop.findFirst({
     where: { id, dispatch: { orgId } },
   });
   if (!existing) return null;
 
-  return prisma.carrierStop.update({
+  return tenantPrisma.carrierStop.update({
     where: { id },
     data: {
       contactName: data.contactName,
