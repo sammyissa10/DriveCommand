@@ -1,7 +1,24 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { Image as ImageIcon, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import type { CarrierTruckData } from './CarrierTruckForm';
+import { TruckPhotoUploadModal } from './TruckPhotoUploadModal';
+
+// ---------------------------------------------------------------------------
+// Local extended type (CarrierTruckForm is not modified)
+// ---------------------------------------------------------------------------
+
+type TruckWithPhoto = CarrierTruckData & { photoS3Key?: string | null };
+
+// ---------------------------------------------------------------------------
+// Lookup tables
+// ---------------------------------------------------------------------------
 
 const TRUCK_TYPE_LABELS: Record<string, string> = {
   semi: 'Semi',
@@ -19,6 +36,10 @@ const STATUS_CLASSES: Record<string, string> = {
   maintenance: 'border-amber-500 text-amber-600 dark:text-amber-400',
   out_of_service: 'border-red-500 text-red-600 dark:text-red-400',
 };
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function daysUntil(date: Date | string | null): number | null {
   if (!date) return null;
@@ -70,15 +91,125 @@ function ComplianceDate({ date }: { date: Date | string | null }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// TruckPhotoSection
+// ---------------------------------------------------------------------------
+
+function TruckPhotoSection({ truck }: { truck: TruckWithPhoto }) {
+  const router = useRouter();
+  const photoS3Key = truck.photoS3Key ?? null;
+
+  const [viewUrl, setViewUrl] = useState<string | null>(null);
+  const [viewUrlError, setViewUrlError] = useState(false);
+
+  useEffect(() => {
+    if (!photoS3Key) {
+      setViewUrl(null);
+      setViewUrlError(false);
+      return;
+    }
+    setViewUrl(null);
+    setViewUrlError(false);
+
+    fetch(`/api/v1/carrier/fleet/trucks/${truck.id}/photo-view-url`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to load photo URL');
+        const data = await res.json() as { viewUrl: string };
+        setViewUrl(data.viewUrl);
+      })
+      .catch(() => {
+        setViewUrlError(true);
+      });
+  }, [truck.id, photoS3Key]);
+
+  async function handleRemove() {
+    try {
+      const res = await fetch(`/api/v1/carrier/fleet/trucks/${truck.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoS3Key: null }),
+      });
+      if (!res.ok) throw new Error('Failed to remove photo');
+      toast.success('Photo removed');
+      router.refresh();
+    } catch {
+      toast.error('Failed to remove photo');
+    }
+  }
+
+  // Photo present + URL loaded
+  if (photoS3Key && viewUrl) {
+    return (
+      <div className="space-y-3">
+        <Image
+          src={viewUrl}
+          alt="Truck photo"
+          width={400}
+          height={192}
+          className="h-48 w-full max-w-md rounded-md border border-border object-cover"
+          unoptimized
+        />
+        <div className="flex items-center gap-2">
+          <TruckPhotoUploadModal
+            truckId={truck.id}
+            hasExistingPhoto
+            onSuccess={() => router.refresh()}
+          />
+          <Button variant="outline" size="sm" type="button" onClick={() => void handleRemove()}>
+            <Trash2 className="h-4 w-4 mr-1.5" />
+            Remove Photo
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Photo present but URL loading (skeleton)
+  if (photoS3Key && !viewUrl && !viewUrlError) {
+    return (
+      <div className="h-48 w-full max-w-md rounded-md bg-muted animate-pulse" />
+    );
+  }
+
+  // No photo (or failed to load)
+  return (
+    <div className="space-y-3">
+      <div className="h-48 w-full max-w-md rounded-md border border-dashed border-border bg-muted/30 flex flex-col items-center justify-center text-muted-foreground">
+        <ImageIcon className="h-8 w-8 mb-2" />
+        <p className="text-sm">No photo uploaded</p>
+      </div>
+      <TruckPhotoUploadModal
+        truckId={truck.id}
+        hasExistingPhoto={false}
+        onSuccess={() => router.refresh()}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
+
 interface CarrierTruckDetailsViewProps {
   truck: CarrierTruckData;
 }
 
 export function CarrierTruckDetailsView({ truck }: CarrierTruckDetailsViewProps) {
+  const truckWithPhoto = truck as TruckWithPhoto;
+
   return (
     <div className="space-y-6">
-      {/* Identity */}
+      {/* Photo */}
       <div className="space-y-3">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Photo
+        </h3>
+        <TruckPhotoSection truck={truckWithPhoto} />
+      </div>
+
+      {/* Identity */}
+      <div className="space-y-3 pt-4 border-t border-border">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           Identity
         </h3>

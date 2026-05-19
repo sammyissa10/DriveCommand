@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CarrierTruckDetailsView } from './CarrierTruckDetailsView';
@@ -9,11 +9,14 @@ import { CarrierTruckForm, type CarrierTruckData } from './CarrierTruckForm';
 
 interface CarrierTruckDetailClientProps {
   truck: CarrierTruckData;
+  photoS3Key?: string | null;
 }
 
-export function CarrierTruckDetailClient({ truck }: CarrierTruckDetailClientProps) {
+export function CarrierTruckDetailClient({ truck, photoS3Key }: CarrierTruckDetailClientProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const searchParams = useSearchParams();
+  const initialMode = searchParams.get('mode') === 'edit' ? 'edit' : 'view';
+  const [mode, setMode] = useState<'view' | 'edit'>(initialMode);
 
   function handleSuccess() {
     router.refresh();
@@ -23,6 +26,9 @@ export function CarrierTruckDetailClient({ truck }: CarrierTruckDetailClientProp
   function handleCancel() {
     setMode('view');
   }
+
+  // Merge photoS3Key into the truck object for the view component
+  const truckWithPhoto = { ...truck, photoS3Key: photoS3Key ?? null };
 
   return (
     <div className="rounded-lg border border-border bg-card p-6 space-y-4">
@@ -42,7 +48,7 @@ export function CarrierTruckDetailClient({ truck }: CarrierTruckDetailClientProp
       </div>
 
       {mode === 'view' ? (
-        <CarrierTruckDetailsView truck={truck} />
+        <CarrierTruckDetailsView truck={truckWithPhoto} />
       ) : (
         <CarrierTruckForm truck={truck} onSuccess={handleSuccess} onCancel={handleCancel} />
       )}

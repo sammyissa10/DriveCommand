@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
@@ -83,29 +84,32 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
       </div>
 
       {/* View/Edit card */}
-      <CarrierTruckDetailClient
-        truck={{
-          id: truck.id,
-          vehicleId: truck.vehicleId,
-          displayName: truck.displayName,
-          unitNumber: truck.unitNumber,
-          vin: truck.vin,
-          year: truck.year,
-          make: truck.make,
-          model: truck.model,
-          truckType: truck.truckType,
-          grossWeightLbs: truck.grossWeightLbs,
-          payloadCapacityLbs: truck.payloadCapacityLbs,
-          currentOdometerMiles: truck.currentOdometerMiles,
-          licensePlate: truck.licensePlate,
-          licenseState: truck.licenseState,
-          registrationExpiry: truck.registrationExpiry,
-          licenseExpiry: truck.licenseExpiry,
-          insuranceExpiry: truck.insuranceExpiry,
-          status: truck.status,
-          notes: truck.notes,
-        }}
-      />
+      <Suspense fallback={<div className="rounded-lg border border-border bg-card p-6 h-48 animate-pulse" />}>
+        <CarrierTruckDetailClient
+          truck={{
+            id: truck.id,
+            vehicleId: truck.vehicleId,
+            displayName: truck.displayName,
+            unitNumber: truck.unitNumber,
+            vin: truck.vin,
+            year: truck.year,
+            make: truck.make,
+            model: truck.model,
+            truckType: truck.truckType,
+            grossWeightLbs: truck.grossWeightLbs,
+            payloadCapacityLbs: truck.payloadCapacityLbs,
+            currentOdometerMiles: truck.currentOdometerMiles,
+            licensePlate: truck.licensePlate,
+            licenseState: truck.licenseState,
+            registrationExpiry: truck.registrationExpiry,
+            licenseExpiry: truck.licenseExpiry,
+            insuranceExpiry: truck.insuranceExpiry,
+            status: truck.status,
+            notes: truck.notes,
+          }}
+          photoS3Key={truck.photoS3Key}
+        />
+      </Suspense>
 
       {/* Dispatch history */}
       {dispatches.length > 0 && (
