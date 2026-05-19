@@ -1,5 +1,7 @@
 import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
+import type { PrismaClient } from '@/generated/prisma/client';
 import { logger } from '@/lib/logger';
 import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
 import { sendInvoiceGeneratedNotification, sendClientDeliveredNotification, sendClientInvoiceReadyNotification } from '@/lib/carrier/notifications';
@@ -152,6 +154,8 @@ export async function getLoad(orgId: string, id: string) {
 }
 
 export async function createLoad(orgId: string, data: LoadCreateInput) {
+  const tenantPrisma = await getTenantPrisma();
+
   if (!data.clientId) {
     throw new Error('client_id is required — every load must be attributed to a client.');
   }
@@ -194,7 +198,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
     referenceNumber = `LD-${year}-${String(lastSeq + 1).padStart(5, '0')}`;
   }
 
-  const load = await prisma.carrierLoad.create({
+  const load = await tenantPrisma.carrierLoad.create({
     data: {
       orgId,
       clientId: data.clientId,
@@ -228,10 +232,10 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
   // Otherwise store as JSON so they survive until a dispatch is attached.
   if (data.stops && data.stops.length > 0) {
     if (load.dispatchId) {
-      await persistStops(orgId, load.id, load.dispatchId, data.stops);
+      await persistStops(tenantPrisma, orgId, load.id, load.dispatchId, data.stops);
     } else {
       // No dispatch yet — store stops as JSON for later persistence when dispatch is assigned
-      await prisma.carrierLoad.update({
+      await tenantPrisma.carrierLoad.update({
         where: { id: load.id },
         data: { pendingStopsJson: JSON.stringify(data.stops) },
       });
@@ -256,6 +260,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
 // ---------------------------------------------------------------------------
 
 async function persistStops(
+  tenantPrisma: PrismaClient,
   orgId: string,
   loadId: string,
   dispatchId: string,
@@ -301,7 +306,7 @@ async function persistStops(
     .filter((s) => !incomingIdSet.has(s.id) && s.status === 'pending')
     .map((s) => s.id);
 
-  await prisma.$transaction(async (tx) => {
+  await tenantPrisma.$transaction(async (tx) => {
     // Delete removed pending stops
     if (toDelete.length > 0) {
       await tx.carrierStop.deleteMany({ where: { id: { in: toDelete } } });
@@ -362,10 +367,11 @@ async function persistStops(
 }
 
 export async function updateLoad(orgId: string, id: string, data: LoadUpdateInput) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierLoad.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const updated = await prisma.carrierLoad.update({
+  const updated = await tenantPrisma.carrierLoad.update({
     where: { id },
     data: {
       ...(data.clientId !== undefined ? { clientId: data.clientId } : {}),
@@ -416,7 +422,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
   if (data.dispatchId !== undefined && data.dispatchId !== existing.dispatchId) {
     if (data.dispatchId !== null) {
       // Attaching to a dispatch: move all pending stops for this load to the new dispatch
-      await prisma.carrierStop.updateMany({
+      await tenantPrisma.carrierStop.updateMany({
         where: {
           loadId: id,
           status: 'pending',
@@ -439,9 +445,9 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
       if (loadWithPending?.pendingStopsJson) {
         const pendingStops: StopInput[] = JSON.parse(loadWithPending.pendingStopsJson);
         if (pendingStops.length > 0) {
-          await persistStops(orgId, id, data.dispatchId, pendingStops);
+          await persistStops(tenantPrisma, orgId, id, data.dispatchId, pendingStops);
           // Clear the pending JSON now that stops are persisted as CarrierStop records
-          await prisma.carrierLoad.update({
+          await tenantPrisma.carrierLoad.update({
             where: { id },
             data: { pendingStopsJson: null },
           });
@@ -477,17 +483,17 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     const effectiveDispatchId =
       data.dispatchId !== undefined ? data.dispatchId : existing.dispatchId;
     if (effectiveDispatchId) {
-      await persistStops(orgId, id, effectiveDispatchId, data.stops);
+      await persistStops(tenantPrisma, orgId, id, effectiveDispatchId, data.stops);
       // Clear pending JSON since stops are now persisted as CarrierStop records
       if (existing.pendingStopsJson) {
-        await prisma.carrierLoad.update({
+        await tenantPrisma.carrierLoad.update({
           where: { id },
           data: { pendingStopsJson: null },
         });
       }
     } else {
       // No dispatch — store/update pending stops JSON
-      await prisma.carrierLoad.update({
+      await tenantPrisma.carrierLoad.update({
         where: { id },
         data: { pendingStopsJson: data.stops.length > 0 ? JSON.stringify(data.stops) : null },
       });
@@ -560,14 +566,14 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
           dispatchMiles,
           contractForRevenue
         );
-        const fresh = await prisma.carrierLoad.update({
+        const fresh = await tenantPrisma.carrierLoad.update({
           where: { id },
           data: { totalRevenue: result.totalRevenue, fuelSurcharge: result.fuelSurcharge },
         });
         // Write plannedMiles back to the dispatch so pay record recalculation
         // can resolve miles without needing the load form context.
         if (loadForCalc.dispatchId && !loadForCalc.dispatch?.plannedMiles) {
-          await prisma.carrierDispatch.update({
+          await tenantPrisma.carrierDispatch.update({
             where: { id: loadForCalc.dispatchId },
             data: { plannedMiles: data.plannedMiles },
           });

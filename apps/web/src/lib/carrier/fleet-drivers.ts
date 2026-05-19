@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';
@@ -174,6 +175,7 @@ export async function createCarrierDriver(
   orgId: string,
   data: CarrierDriverCreateInput
 ): Promise<CreateCarrierDriverResult> {
+  const tenantPrisma = await getTenantPrisma();
   const { userId, cdlExpiry, payRate, ...rest } = data;
 
   // If userId is provided, check for existing link
@@ -194,7 +196,7 @@ export async function createCarrierDriver(
     }
   }
 
-  const driver = await prisma.carrierDriver.create({
+  const driver = await tenantPrisma.carrierDriver.create({
     data: {
       ...rest,
       orgId,
@@ -216,7 +218,7 @@ export async function createCarrierDriver(
         },
       });
       if (existingUser) {
-        await prisma.carrierDriver.update({
+        await tenantPrisma.carrierDriver.update({
           where: { id: driver.id },
           data: { userId: existingUser.id },
         });
@@ -231,13 +233,13 @@ export async function createCarrierDriver(
   if (data.email) {
     try {
       // Cancel any existing PENDING invitations for the same email + org
-      await prisma.driverInvitation.updateMany({
+      await tenantPrisma.driverInvitation.updateMany({
         where: { email: data.email, tenantId: orgId, status: 'PENDING' },
         data: { status: 'CANCELLED' },
       });
 
       // Create a DriverInvitation record
-      const invitation = await prisma.driverInvitation.create({
+      const invitation = await tenantPrisma.driverInvitation.create({
         data: {
           tenantId: orgId,
           email: data.email,
@@ -388,16 +390,18 @@ export async function resendCarrierDriverInvitation(
     };
   }
 
+  const tenantPrisma = await getTenantPrisma();
+
   // Cancel any existing PENDING or EXPIRED invitations
   if (latestInvitation && ['PENDING', 'EXPIRED'].includes(latestInvitation.status)) {
-    await prisma.driverInvitation.updateMany({
+    await tenantPrisma.driverInvitation.updateMany({
       where: { email: driver.email, tenantId: orgId, status: { in: ['PENDING', 'EXPIRED'] } },
       data: { status: 'CANCELLED' },
     });
   }
 
   // Create a new invitation record
-  const invitation = await prisma.driverInvitation.create({
+  const invitation = await tenantPrisma.driverInvitation.create({
     data: {
       tenantId: orgId,
       email: driver.email,
@@ -466,6 +470,7 @@ export async function updateCarrierDriver(
   id: string,
   data: CarrierDriverUpdateInput
 ) {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierDriver.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
@@ -513,7 +518,7 @@ export async function updateCarrierDriver(
     }
   }
 
-  return prisma.carrierDriver.update({
+  return tenantPrisma.carrierDriver.update({
     where: { id },
     data: {
       ...rest,

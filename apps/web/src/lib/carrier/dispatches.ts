@@ -1,5 +1,6 @@
 import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
@@ -163,6 +164,8 @@ export async function getDispatch(orgId: string, id: string) {
 }
 
 export async function createDispatch(orgId: string, data: DispatchCreateInput) {
+  const tenantPrisma = await getTenantPrisma();
+
   // Verify primary driver belongs to this org
   const driver = await prisma.carrierDriver.findFirst({
     where: { id: data.primaryDriverId, orgId },
@@ -252,7 +255,7 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
     }
   }
 
-  const dispatch = await prisma.carrierDispatch.create({
+  const dispatch = await tenantPrisma.carrierDispatch.create({
     data: {
       orgId,
       primaryDriverId: data.primaryDriverId,
@@ -278,7 +281,7 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
 
   // Write dispatch override audit row (Phase 45 enforcement)
   if (data.overrideReason && data.overrideForEntityId && data.overrideForEntityType && data.currentUserId) {
-    await prisma.dispatchOverrideAudit.create({
+    await tenantPrisma.dispatchOverrideAudit.create({
       data: {
         tenantId: orgId,
         dispatchId: dispatch.id,
@@ -323,7 +326,7 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
         },
       });
 
-      await prisma.carrierStop.create({
+      await tenantPrisma.carrierStop.create({
         data: {
           dispatchId: dispatch.id,
           sequenceOrder: ts.sequenceOrder,
@@ -374,6 +377,7 @@ export async function updateDispatch(
   id: string,
   data: DispatchUpdateInput
 ): Promise<{ error: string } | Record<string, unknown> | null> {
+  const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierDispatch.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
@@ -433,7 +437,7 @@ export async function updateDispatch(
     }
   }
 
-  const updated = await prisma.carrierDispatch.update({
+  const updated = await tenantPrisma.carrierDispatch.update({
     where: { id },
     data: {
       ...updateData,
@@ -489,7 +493,7 @@ export async function updateDispatch(
         },
       });
 
-      await prisma.carrierStop.create({
+      await tenantPrisma.carrierStop.create({
         data: {
           dispatchId: id,
           sequenceOrder: ts.sequenceOrder,
@@ -537,6 +541,7 @@ export async function transitionDispatchStatus(
   | { id: string; status: string; notes?: string | null }
   | null
 > {
+  const tenantPrisma = await getTenantPrisma();
   const dispatch = await prisma.carrierDispatch.findFirst({ where: { id, orgId } });
   if (!dispatch) return null;
 
@@ -557,7 +562,7 @@ export async function transitionDispatchStatus(
   }
 
   if (currentStatus === 'planned' && newStatus === 'in_progress') {
-    const updated = await prisma.carrierDispatch.update({
+    const updated = await tenantPrisma.carrierDispatch.update({
       where: { id },
       data: {
         status: 'in_progress',
@@ -633,7 +638,7 @@ export async function transitionDispatchStatus(
       return { error: 'All stops must be completed or skipped' };
     }
 
-    const updated = await prisma.carrierDispatch.update({
+    const updated = await tenantPrisma.carrierDispatch.update({
       where: { id },
       data: {
         status: 'completed',
@@ -719,7 +724,7 @@ export async function transitionDispatchStatus(
           const driverId = dispatch.primaryDriverId;
           const truckId = dispatch.truckId;
 
-          const nextDispatch = await prisma.carrierDispatch.create({
+          const nextDispatch = await tenantPrisma.carrierDispatch.create({
             data: {
               orgId,
               routeTemplateId: template.id,
@@ -755,7 +760,7 @@ export async function transitionDispatchStatus(
               },
             });
 
-            await prisma.carrierStop.create({
+            await tenantPrisma.carrierStop.create({
               data: {
                 dispatchId: nextDispatch.id,
                 sequenceOrder: ts.sequenceOrder,
@@ -823,12 +828,12 @@ export async function transitionDispatchStatus(
 
   if (currentStatus === 'planned' && newStatus === 'cancelled') {
     // Cancel all pending loads attached to this dispatch
-    await prisma.carrierLoad.updateMany({
+    await tenantPrisma.carrierLoad.updateMany({
       where: { dispatchId: id, orgId, status: 'pending' },
       data: { status: 'cancelled' },
     });
 
-    const updated = await prisma.carrierDispatch.update({
+    const updated = await tenantPrisma.carrierDispatch.update({
       where: { id },
       data: {
         status: 'cancelled',
@@ -845,7 +850,7 @@ export async function transitionDispatchStatus(
       ? `[TONU] ${existingNotes} ${notes}`.trim()
       : `[TONU] ${existingNotes}`.trim();
 
-    const updated = await prisma.carrierDispatch.update({
+    const updated = await tenantPrisma.carrierDispatch.update({
       where: { id },
       data: {
         status: 'tonu',
