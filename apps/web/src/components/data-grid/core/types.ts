@@ -53,8 +53,12 @@ export interface DataGridColumnMeta {
   filterOptions?: Array<{ value: string; label: string }>;
   /** Whether this column is editable inline */
   editable?: boolean;
+  /** Type of inline editor ('text' | 'select' | 'date') */
+  editType?: 'text' | 'select' | 'date';
   /** Whether this column should be included in CSV export */
   exportable?: boolean;
+  /** Custom export value formatter */
+  exportValue?: <TData>(row: TData) => string;
   /** Minimum column width in pixels */
   minWidth?: number;
   /** Maximum column width in pixels */
@@ -77,21 +81,45 @@ export type ExtendedColumnDef<TData> = ColumnDef<TData, unknown> & {
 // ---------------------------------------------------------------------------
 
 /**
- * Filter operator types.
+ * Text filter operators.
  */
-export type FilterOperator =
-  | 'equals'
-  | 'notEquals'
+export type TextFilterOperator =
   | 'contains'
+  | 'equals'
   | 'startsWith'
   | 'endsWith'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte'
-  | 'between'
   | 'isEmpty'
   | 'isNotEmpty';
+
+/**
+ * Select filter operators.
+ */
+export type SelectFilterOperator = 'anyOf' | 'noneOf' | 'isEmpty';
+
+/**
+ * Number filter operators.
+ */
+export type NumberFilterOperator = 'eq' | 'neq' | 'gt' | 'lt' | 'between' | 'isEmpty';
+
+/**
+ * Date filter operators.
+ */
+export type DateFilterOperator =
+  | 'is'
+  | 'before'
+  | 'after'
+  | 'between'
+  | 'inLastNDays'
+  | 'isEmpty';
+
+/**
+ * All filter operator types combined.
+ */
+export type FilterOperator =
+  | TextFilterOperator
+  | SelectFilterOperator
+  | NumberFilterOperator
+  | DateFilterOperator;
 
 /**
  * Single filter definition.
@@ -121,6 +149,20 @@ export interface GridState {
   filters: GridFilter[];
   search: string;
   selection: Set<string>;
+}
+
+/**
+ * Serializable grid view state for saved views.
+ */
+export interface GridViewState {
+  filters: GridFilter[];
+  sort: SortState | null;
+  columnOrder: string[];
+  columnWidths: Record<string, number>;
+  hiddenColumns: string[];
+  frozenColumns: string[];
+  density: DensityMode;
+  pageSize: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -235,6 +277,15 @@ export interface DataGridProps<TData> {
   onSelectionChange?: (selectedIds: Set<string>) => void;
   /** Callback when row is double-clicked */
   onRowDoubleClick?: (row: TData) => void;
+  /** Callback when cell is edited inline (returns Promise for async save) */
+  onCellEdit?: (
+    rowId: string,
+    columnId: string,
+    newValue: unknown,
+    oldValue: unknown
+  ) => Promise<void>;
+  /** Whether to refresh data after successful cell edit (default: true) */
+  refreshAfterEdit?: boolean;
   /** Additional CSS class for the container */
   className?: string;
   /** Custom header renderer */
@@ -294,6 +345,15 @@ export interface DataGridContextValue<TData> {
   density: DensityMode;
   /** Grid ID */
   gridId: string;
+  /** Callback for inline cell editing */
+  onCellEdit?: (
+    rowId: string,
+    columnId: string,
+    newValue: unknown,
+    oldValue: unknown
+  ) => Promise<void>;
+  /** Refresh function to re-fetch data */
+  refresh: () => void;
 }
 
 // ---------------------------------------------------------------------------

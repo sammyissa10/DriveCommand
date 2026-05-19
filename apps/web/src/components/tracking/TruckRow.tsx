@@ -50,9 +50,10 @@ function getDriverInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function formatRelativeTime(timestamp: Date | null): string {
+function formatRelativeTime(timestamp: Date | string | null): string {
   if (!timestamp) return 'Never';
-  const diffMs = Date.now() - timestamp.getTime();
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  const diffMs = Date.now() - date.getTime();
   const diffSec = Math.floor(diffMs / 1000);
   if (diffSec < 60) return `${diffSec}s ago`;
   const diffMin = Math.floor(diffSec / 60);

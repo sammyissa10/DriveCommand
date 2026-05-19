@@ -76,6 +76,7 @@ function DataGridInner<TData>(
     renderEmpty,
     renderLoading,
     children,
+    onCellEdit,
   } = props;
 
   const {
@@ -119,6 +120,8 @@ function DataGridInner<TData>(
     },
     density: preferences.preferences.density as DensityMode,
     gridId,
+    onCellEdit: onCellEdit,
+    refresh,
   };
 
   // Determine what to render

@@ -290,6 +290,9 @@ model User {
   // quick-329 PII audit log reverse relation
   auditLogs                  AuditLog[]
 
+  // DataGrid saved views
+  gridViews                  GridView[]
+
   // TKT-0015 Prompt 2a — audit FK reverse relations (Flag 4: Driver Pay)
   driverCompensationTemplatesCreatedBy DriverCompensationTemplate[] @relation(name: "DriverCompensationTemplateCreatedBy")
   loadDriverAssignmentsCreatedBy       LoadDriverAssignment[]        @relation(name: "LoadDriverAssignmentCreatedBy")
@@ -3444,4 +3447,24 @@ model GridPreference {
   @@unique([userId, gridId])
   @@index([userId])
   @@map("grid_preference")
+}
+
+/// Saved grid views capturing complete grid state (filters, sort, columns, density).
+/// Personal to user — not tenant-scoped.
+model GridView {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gridId        String   @db.VarChar(100)
+  userId        String   @db.Uuid
+  name          String   @db.VarChar(100)
+  isDefault     Boolean  @default(false)
+  schemaVersion Int      @default(1)
+  state         Json
+  createdAt     DateTime @default(now()) @db.Timestamptz
+  updatedAt     DateTime @updatedAt @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gridId, userId, name])
+  @@index([gridId, userId])
+  @@map("grid_view")
 }

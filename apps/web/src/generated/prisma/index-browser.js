@@ -1785,6 +1785,18 @@ exports.Prisma.GridPreferenceScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.GridViewScalarFieldEnum = {
+  id: 'id',
+  gridId: 'gridId',
+  userId: 'userId',
+  name: 'name',
+  isDefault: 'isDefault',
+  schemaVersion: 'schemaVersion',
+  state: 'state',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2459,7 +2471,8 @@ exports.Prisma.ModelName = {
   NotificationSendLog: 'NotificationSendLog',
   NotificationEmailConfig: 'NotificationEmailConfig',
   AuditLog: 'AuditLog',
-  GridPreference: 'GridPreference'
+  GridPreference: 'GridPreference',
+  GridView: 'GridView'
 };
 
 /**

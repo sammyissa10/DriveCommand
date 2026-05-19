@@ -460,6 +460,12 @@ export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
  * Not tenant-scoped — preferences are personal per user across all tenants they belong to.
  */
 export type GridPreference = $Result.DefaultSelection<Prisma.$GridPreferencePayload>
+/**
+ * Model GridView
+ * Saved grid views capturing complete grid state (filters, sort, columns, density).
+ * Personal to user — not tenant-scoped.
+ */
+export type GridView = $Result.DefaultSelection<Prisma.$GridViewPayload>
 
 /**
  * Enums
@@ -2492,6 +2498,16 @@ export class PrismaClient<
     * ```
     */
   get gridPreference(): Prisma.GridPreferenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.gridView`: Exposes CRUD operations for the **GridView** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GridViews
+    * const gridViews = await prisma.gridView.findMany()
+    * ```
+    */
+  get gridView(): Prisma.GridViewDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -3013,7 +3029,8 @@ export namespace Prisma {
     NotificationSendLog: 'NotificationSendLog',
     NotificationEmailConfig: 'NotificationEmailConfig',
     AuditLog: 'AuditLog',
-    GridPreference: 'GridPreference'
+    GridPreference: 'GridPreference',
+    GridView: 'GridView'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -3029,7 +3046,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog" | "gridPreference"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog" | "gridPreference" | "gridView"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -9545,6 +9562,80 @@ export namespace Prisma {
           }
         }
       }
+      GridView: {
+        payload: Prisma.$GridViewPayload<ExtArgs>
+        fields: Prisma.GridViewFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GridViewFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GridViewFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>
+          }
+          findFirst: {
+            args: Prisma.GridViewFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GridViewFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>
+          }
+          findMany: {
+            args: Prisma.GridViewFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>[]
+          }
+          create: {
+            args: Prisma.GridViewCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>
+          }
+          createMany: {
+            args: Prisma.GridViewCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GridViewCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>[]
+          }
+          delete: {
+            args: Prisma.GridViewDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>
+          }
+          update: {
+            args: Prisma.GridViewUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>
+          }
+          deleteMany: {
+            args: Prisma.GridViewDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GridViewUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GridViewUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>[]
+          }
+          upsert: {
+            args: Prisma.GridViewUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GridViewPayload>
+          }
+          aggregate: {
+            args: Prisma.GridViewAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGridView>
+          }
+          groupBy: {
+            args: Prisma.GridViewGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GridViewGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GridViewCountArgs<ExtArgs>
+            result: $Utils.Optional<GridViewCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -9741,6 +9832,7 @@ export namespace Prisma {
     notificationEmailConfig?: NotificationEmailConfigOmit
     auditLog?: AuditLogOmit
     gridPreference?: GridPreferenceOmit
+    gridView?: GridViewOmit
   }
 
   /* Types for Logging */
@@ -10513,6 +10605,7 @@ export namespace Prisma {
     notificationSubscriptions: number
     notificationPreferences: number
     auditLogs: number
+    gridViews: number
     driverCompensationTemplatesCreatedBy: number
     loadDriverAssignmentsCreatedBy: number
     loadPayComponentsCreatedBy: number
@@ -10637,6 +10730,7 @@ export namespace Prisma {
     notificationSubscriptions?: boolean | UserCountOutputTypeCountNotificationSubscriptionsArgs
     notificationPreferences?: boolean | UserCountOutputTypeCountNotificationPreferencesArgs
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+    gridViews?: boolean | UserCountOutputTypeCountGridViewsArgs
     driverCompensationTemplatesCreatedBy?: boolean | UserCountOutputTypeCountDriverCompensationTemplatesCreatedByArgs
     loadDriverAssignmentsCreatedBy?: boolean | UserCountOutputTypeCountLoadDriverAssignmentsCreatedByArgs
     loadPayComponentsCreatedBy?: boolean | UserCountOutputTypeCountLoadPayComponentsCreatedByArgs
@@ -10955,6 +11049,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGridViewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GridViewWhereInput
   }
 
   /**
@@ -16723,6 +16824,7 @@ export namespace Prisma {
     notificationSubscriptions?: boolean | User$notificationSubscriptionsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    gridViews?: boolean | User$gridViewsArgs<ExtArgs>
     driverCompensationTemplatesCreatedBy?: boolean | User$driverCompensationTemplatesCreatedByArgs<ExtArgs>
     loadDriverAssignmentsCreatedBy?: boolean | User$loadDriverAssignmentsCreatedByArgs<ExtArgs>
     loadPayComponentsCreatedBy?: boolean | User$loadPayComponentsCreatedByArgs<ExtArgs>
@@ -16907,6 +17009,7 @@ export namespace Prisma {
     notificationSubscriptions?: boolean | User$notificationSubscriptionsArgs<ExtArgs>
     notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    gridViews?: boolean | User$gridViewsArgs<ExtArgs>
     driverCompensationTemplatesCreatedBy?: boolean | User$driverCompensationTemplatesCreatedByArgs<ExtArgs>
     loadDriverAssignmentsCreatedBy?: boolean | User$loadDriverAssignmentsCreatedByArgs<ExtArgs>
     loadPayComponentsCreatedBy?: boolean | User$loadPayComponentsCreatedByArgs<ExtArgs>
@@ -17042,6 +17145,7 @@ export namespace Prisma {
       notificationSubscriptions: Prisma.$NotificationSubscriptionPayload<ExtArgs>[]
       notificationPreferences: Prisma.$UserNotificationPreferencePayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+      gridViews: Prisma.$GridViewPayload<ExtArgs>[]
       driverCompensationTemplatesCreatedBy: Prisma.$DriverCompensationTemplatePayload<ExtArgs>[]
       loadDriverAssignmentsCreatedBy: Prisma.$LoadDriverAssignmentPayload<ExtArgs>[]
       loadPayComponentsCreatedBy: Prisma.$LoadPayComponentPayload<ExtArgs>[]
@@ -17576,6 +17680,7 @@ export namespace Prisma {
     notificationSubscriptions<T extends User$notificationSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserNotificationPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    gridViews<T extends User$gridViewsArgs<ExtArgs> = {}>(args?: Subset<T, User$gridViewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverCompensationTemplatesCreatedBy<T extends User$driverCompensationTemplatesCreatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$driverCompensationTemplatesCreatedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverCompensationTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     loadDriverAssignmentsCreatedBy<T extends User$loadDriverAssignmentsCreatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$loadDriverAssignmentsCreatedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoadDriverAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     loadPayComponentsCreatedBy<T extends User$loadPayComponentsCreatedByArgs<ExtArgs> = {}>(args?: Subset<T, User$loadPayComponentsCreatedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoadPayComponentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -18871,6 +18976,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.gridViews
+   */
+  export type User$gridViewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    where?: GridViewWhereInput
+    orderBy?: GridViewOrderByWithRelationInput | GridViewOrderByWithRelationInput[]
+    cursor?: GridViewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GridViewScalarFieldEnum | GridViewScalarFieldEnum[]
   }
 
   /**
@@ -134055,6 +134184,1151 @@ export namespace Prisma {
 
 
   /**
+   * Model GridView
+   */
+
+  export type AggregateGridView = {
+    _count: GridViewCountAggregateOutputType | null
+    _avg: GridViewAvgAggregateOutputType | null
+    _sum: GridViewSumAggregateOutputType | null
+    _min: GridViewMinAggregateOutputType | null
+    _max: GridViewMaxAggregateOutputType | null
+  }
+
+  export type GridViewAvgAggregateOutputType = {
+    schemaVersion: number | null
+  }
+
+  export type GridViewSumAggregateOutputType = {
+    schemaVersion: number | null
+  }
+
+  export type GridViewMinAggregateOutputType = {
+    id: string | null
+    gridId: string | null
+    userId: string | null
+    name: string | null
+    isDefault: boolean | null
+    schemaVersion: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GridViewMaxAggregateOutputType = {
+    id: string | null
+    gridId: string | null
+    userId: string | null
+    name: string | null
+    isDefault: boolean | null
+    schemaVersion: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GridViewCountAggregateOutputType = {
+    id: number
+    gridId: number
+    userId: number
+    name: number
+    isDefault: number
+    schemaVersion: number
+    state: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GridViewAvgAggregateInputType = {
+    schemaVersion?: true
+  }
+
+  export type GridViewSumAggregateInputType = {
+    schemaVersion?: true
+  }
+
+  export type GridViewMinAggregateInputType = {
+    id?: true
+    gridId?: true
+    userId?: true
+    name?: true
+    isDefault?: true
+    schemaVersion?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GridViewMaxAggregateInputType = {
+    id?: true
+    gridId?: true
+    userId?: true
+    name?: true
+    isDefault?: true
+    schemaVersion?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GridViewCountAggregateInputType = {
+    id?: true
+    gridId?: true
+    userId?: true
+    name?: true
+    isDefault?: true
+    schemaVersion?: true
+    state?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GridViewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GridView to aggregate.
+     */
+    where?: GridViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridViews to fetch.
+     */
+    orderBy?: GridViewOrderByWithRelationInput | GridViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GridViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GridViews
+    **/
+    _count?: true | GridViewCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GridViewAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GridViewSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GridViewMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GridViewMaxAggregateInputType
+  }
+
+  export type GetGridViewAggregateType<T extends GridViewAggregateArgs> = {
+        [P in keyof T & keyof AggregateGridView]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGridView[P]>
+      : GetScalarType<T[P], AggregateGridView[P]>
+  }
+
+
+
+
+  export type GridViewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GridViewWhereInput
+    orderBy?: GridViewOrderByWithAggregationInput | GridViewOrderByWithAggregationInput[]
+    by: GridViewScalarFieldEnum[] | GridViewScalarFieldEnum
+    having?: GridViewScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GridViewCountAggregateInputType | true
+    _avg?: GridViewAvgAggregateInputType
+    _sum?: GridViewSumAggregateInputType
+    _min?: GridViewMinAggregateInputType
+    _max?: GridViewMaxAggregateInputType
+  }
+
+  export type GridViewGroupByOutputType = {
+    id: string
+    gridId: string
+    userId: string
+    name: string
+    isDefault: boolean
+    schemaVersion: number
+    state: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: GridViewCountAggregateOutputType | null
+    _avg: GridViewAvgAggregateOutputType | null
+    _sum: GridViewSumAggregateOutputType | null
+    _min: GridViewMinAggregateOutputType | null
+    _max: GridViewMaxAggregateOutputType | null
+  }
+
+  type GetGridViewGroupByPayload<T extends GridViewGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GridViewGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GridViewGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GridViewGroupByOutputType[P]>
+            : GetScalarType<T[P], GridViewGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GridViewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    gridId?: boolean
+    userId?: boolean
+    name?: boolean
+    isDefault?: boolean
+    schemaVersion?: boolean
+    state?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["gridView"]>
+
+  export type GridViewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    gridId?: boolean
+    userId?: boolean
+    name?: boolean
+    isDefault?: boolean
+    schemaVersion?: boolean
+    state?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["gridView"]>
+
+  export type GridViewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    gridId?: boolean
+    userId?: boolean
+    name?: boolean
+    isDefault?: boolean
+    schemaVersion?: boolean
+    state?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["gridView"]>
+
+  export type GridViewSelectScalar = {
+    id?: boolean
+    gridId?: boolean
+    userId?: boolean
+    name?: boolean
+    isDefault?: boolean
+    schemaVersion?: boolean
+    state?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GridViewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "gridId" | "userId" | "name" | "isDefault" | "schemaVersion" | "state" | "createdAt" | "updatedAt", ExtArgs["result"]["gridView"]>
+  export type GridViewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GridViewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GridViewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $GridViewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GridView"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      gridId: string
+      userId: string
+      name: string
+      isDefault: boolean
+      schemaVersion: number
+      state: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["gridView"]>
+    composites: {}
+  }
+
+  type GridViewGetPayload<S extends boolean | null | undefined | GridViewDefaultArgs> = $Result.GetResult<Prisma.$GridViewPayload, S>
+
+  type GridViewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GridViewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GridViewCountAggregateInputType | true
+    }
+
+  export interface GridViewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GridView'], meta: { name: 'GridView' } }
+    /**
+     * Find zero or one GridView that matches the filter.
+     * @param {GridViewFindUniqueArgs} args - Arguments to find a GridView
+     * @example
+     * // Get one GridView
+     * const gridView = await prisma.gridView.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GridViewFindUniqueArgs>(args: SelectSubset<T, GridViewFindUniqueArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GridView that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GridViewFindUniqueOrThrowArgs} args - Arguments to find a GridView
+     * @example
+     * // Get one GridView
+     * const gridView = await prisma.gridView.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GridViewFindUniqueOrThrowArgs>(args: SelectSubset<T, GridViewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GridView that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewFindFirstArgs} args - Arguments to find a GridView
+     * @example
+     * // Get one GridView
+     * const gridView = await prisma.gridView.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GridViewFindFirstArgs>(args?: SelectSubset<T, GridViewFindFirstArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GridView that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewFindFirstOrThrowArgs} args - Arguments to find a GridView
+     * @example
+     * // Get one GridView
+     * const gridView = await prisma.gridView.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GridViewFindFirstOrThrowArgs>(args?: SelectSubset<T, GridViewFindFirstOrThrowArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GridViews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GridViews
+     * const gridViews = await prisma.gridView.findMany()
+     * 
+     * // Get first 10 GridViews
+     * const gridViews = await prisma.gridView.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const gridViewWithIdOnly = await prisma.gridView.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GridViewFindManyArgs>(args?: SelectSubset<T, GridViewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GridView.
+     * @param {GridViewCreateArgs} args - Arguments to create a GridView.
+     * @example
+     * // Create one GridView
+     * const GridView = await prisma.gridView.create({
+     *   data: {
+     *     // ... data to create a GridView
+     *   }
+     * })
+     * 
+     */
+    create<T extends GridViewCreateArgs>(args: SelectSubset<T, GridViewCreateArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GridViews.
+     * @param {GridViewCreateManyArgs} args - Arguments to create many GridViews.
+     * @example
+     * // Create many GridViews
+     * const gridView = await prisma.gridView.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GridViewCreateManyArgs>(args?: SelectSubset<T, GridViewCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GridViews and returns the data saved in the database.
+     * @param {GridViewCreateManyAndReturnArgs} args - Arguments to create many GridViews.
+     * @example
+     * // Create many GridViews
+     * const gridView = await prisma.gridView.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GridViews and only return the `id`
+     * const gridViewWithIdOnly = await prisma.gridView.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GridViewCreateManyAndReturnArgs>(args?: SelectSubset<T, GridViewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GridView.
+     * @param {GridViewDeleteArgs} args - Arguments to delete one GridView.
+     * @example
+     * // Delete one GridView
+     * const GridView = await prisma.gridView.delete({
+     *   where: {
+     *     // ... filter to delete one GridView
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GridViewDeleteArgs>(args: SelectSubset<T, GridViewDeleteArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GridView.
+     * @param {GridViewUpdateArgs} args - Arguments to update one GridView.
+     * @example
+     * // Update one GridView
+     * const gridView = await prisma.gridView.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GridViewUpdateArgs>(args: SelectSubset<T, GridViewUpdateArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GridViews.
+     * @param {GridViewDeleteManyArgs} args - Arguments to filter GridViews to delete.
+     * @example
+     * // Delete a few GridViews
+     * const { count } = await prisma.gridView.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GridViewDeleteManyArgs>(args?: SelectSubset<T, GridViewDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GridViews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GridViews
+     * const gridView = await prisma.gridView.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GridViewUpdateManyArgs>(args: SelectSubset<T, GridViewUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GridViews and returns the data updated in the database.
+     * @param {GridViewUpdateManyAndReturnArgs} args - Arguments to update many GridViews.
+     * @example
+     * // Update many GridViews
+     * const gridView = await prisma.gridView.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GridViews and only return the `id`
+     * const gridViewWithIdOnly = await prisma.gridView.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GridViewUpdateManyAndReturnArgs>(args: SelectSubset<T, GridViewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GridView.
+     * @param {GridViewUpsertArgs} args - Arguments to update or create a GridView.
+     * @example
+     * // Update or create a GridView
+     * const gridView = await prisma.gridView.upsert({
+     *   create: {
+     *     // ... data to create a GridView
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GridView we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GridViewUpsertArgs>(args: SelectSubset<T, GridViewUpsertArgs<ExtArgs>>): Prisma__GridViewClient<$Result.GetResult<Prisma.$GridViewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GridViews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewCountArgs} args - Arguments to filter GridViews to count.
+     * @example
+     * // Count the number of GridViews
+     * const count = await prisma.gridView.count({
+     *   where: {
+     *     // ... the filter for the GridViews we want to count
+     *   }
+     * })
+    **/
+    count<T extends GridViewCountArgs>(
+      args?: Subset<T, GridViewCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GridViewCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GridView.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GridViewAggregateArgs>(args: Subset<T, GridViewAggregateArgs>): Prisma.PrismaPromise<GetGridViewAggregateType<T>>
+
+    /**
+     * Group by GridView.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GridViewGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GridViewGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GridViewGroupByArgs['orderBy'] }
+        : { orderBy?: GridViewGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GridViewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGridViewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GridView model
+   */
+  readonly fields: GridViewFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GridView.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GridViewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GridView model
+   */
+  interface GridViewFieldRefs {
+    readonly id: FieldRef<"GridView", 'String'>
+    readonly gridId: FieldRef<"GridView", 'String'>
+    readonly userId: FieldRef<"GridView", 'String'>
+    readonly name: FieldRef<"GridView", 'String'>
+    readonly isDefault: FieldRef<"GridView", 'Boolean'>
+    readonly schemaVersion: FieldRef<"GridView", 'Int'>
+    readonly state: FieldRef<"GridView", 'Json'>
+    readonly createdAt: FieldRef<"GridView", 'DateTime'>
+    readonly updatedAt: FieldRef<"GridView", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GridView findUnique
+   */
+  export type GridViewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * Filter, which GridView to fetch.
+     */
+    where: GridViewWhereUniqueInput
+  }
+
+  /**
+   * GridView findUniqueOrThrow
+   */
+  export type GridViewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * Filter, which GridView to fetch.
+     */
+    where: GridViewWhereUniqueInput
+  }
+
+  /**
+   * GridView findFirst
+   */
+  export type GridViewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * Filter, which GridView to fetch.
+     */
+    where?: GridViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridViews to fetch.
+     */
+    orderBy?: GridViewOrderByWithRelationInput | GridViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GridViews.
+     */
+    cursor?: GridViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GridViews.
+     */
+    distinct?: GridViewScalarFieldEnum | GridViewScalarFieldEnum[]
+  }
+
+  /**
+   * GridView findFirstOrThrow
+   */
+  export type GridViewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * Filter, which GridView to fetch.
+     */
+    where?: GridViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridViews to fetch.
+     */
+    orderBy?: GridViewOrderByWithRelationInput | GridViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GridViews.
+     */
+    cursor?: GridViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GridViews.
+     */
+    distinct?: GridViewScalarFieldEnum | GridViewScalarFieldEnum[]
+  }
+
+  /**
+   * GridView findMany
+   */
+  export type GridViewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * Filter, which GridViews to fetch.
+     */
+    where?: GridViewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GridViews to fetch.
+     */
+    orderBy?: GridViewOrderByWithRelationInput | GridViewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GridViews.
+     */
+    cursor?: GridViewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GridViews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GridViews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GridViews.
+     */
+    distinct?: GridViewScalarFieldEnum | GridViewScalarFieldEnum[]
+  }
+
+  /**
+   * GridView create
+   */
+  export type GridViewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GridView.
+     */
+    data: XOR<GridViewCreateInput, GridViewUncheckedCreateInput>
+  }
+
+  /**
+   * GridView createMany
+   */
+  export type GridViewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GridViews.
+     */
+    data: GridViewCreateManyInput | GridViewCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GridView createManyAndReturn
+   */
+  export type GridViewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * The data used to create many GridViews.
+     */
+    data: GridViewCreateManyInput | GridViewCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GridView update
+   */
+  export type GridViewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GridView.
+     */
+    data: XOR<GridViewUpdateInput, GridViewUncheckedUpdateInput>
+    /**
+     * Choose, which GridView to update.
+     */
+    where: GridViewWhereUniqueInput
+  }
+
+  /**
+   * GridView updateMany
+   */
+  export type GridViewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GridViews.
+     */
+    data: XOR<GridViewUpdateManyMutationInput, GridViewUncheckedUpdateManyInput>
+    /**
+     * Filter which GridViews to update
+     */
+    where?: GridViewWhereInput
+    /**
+     * Limit how many GridViews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GridView updateManyAndReturn
+   */
+  export type GridViewUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * The data used to update GridViews.
+     */
+    data: XOR<GridViewUpdateManyMutationInput, GridViewUncheckedUpdateManyInput>
+    /**
+     * Filter which GridViews to update
+     */
+    where?: GridViewWhereInput
+    /**
+     * Limit how many GridViews to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GridView upsert
+   */
+  export type GridViewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GridView to update in case it exists.
+     */
+    where: GridViewWhereUniqueInput
+    /**
+     * In case the GridView found by the `where` argument doesn't exist, create a new GridView with this data.
+     */
+    create: XOR<GridViewCreateInput, GridViewUncheckedCreateInput>
+    /**
+     * In case the GridView was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GridViewUpdateInput, GridViewUncheckedUpdateInput>
+  }
+
+  /**
+   * GridView delete
+   */
+  export type GridViewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+    /**
+     * Filter which GridView to delete.
+     */
+    where: GridViewWhereUniqueInput
+  }
+
+  /**
+   * GridView deleteMany
+   */
+  export type GridViewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GridViews to delete
+     */
+    where?: GridViewWhereInput
+    /**
+     * Limit how many GridViews to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GridView without action
+   */
+  export type GridViewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GridView
+     */
+    select?: GridViewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GridView
+     */
+    omit?: GridViewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GridViewInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -135997,6 +137271,21 @@ export namespace Prisma {
   export type GridPreferenceScalarFieldEnum = (typeof GridPreferenceScalarFieldEnum)[keyof typeof GridPreferenceScalarFieldEnum]
 
 
+  export const GridViewScalarFieldEnum: {
+    id: 'id',
+    gridId: 'gridId',
+    userId: 'userId',
+    name: 'name',
+    isDefault: 'isDefault',
+    schemaVersion: 'schemaVersion',
+    state: 'state',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GridViewScalarFieldEnum = (typeof GridViewScalarFieldEnum)[keyof typeof GridViewScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -137493,6 +138782,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionListRelationFilter
     notificationPreferences?: UserNotificationPreferenceListRelationFilter
     auditLogs?: AuditLogListRelationFilter
+    gridViews?: GridViewListRelationFilter
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateListRelationFilter
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentListRelationFilter
     loadPayComponentsCreatedBy?: LoadPayComponentListRelationFilter
@@ -137634,6 +138924,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionOrderByRelationAggregateInput
     notificationPreferences?: UserNotificationPreferenceOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
+    gridViews?: GridViewOrderByRelationAggregateInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateOrderByRelationAggregateInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentOrderByRelationAggregateInput
     loadPayComponentsCreatedBy?: LoadPayComponentOrderByRelationAggregateInput
@@ -137779,6 +139070,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionListRelationFilter
     notificationPreferences?: UserNotificationPreferenceListRelationFilter
     auditLogs?: AuditLogListRelationFilter
+    gridViews?: GridViewListRelationFilter
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateListRelationFilter
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentListRelationFilter
     loadPayComponentsCreatedBy?: LoadPayComponentListRelationFilter
@@ -148379,6 +149671,84 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"GridPreference"> | Date | string
   }
 
+  export type GridViewWhereInput = {
+    AND?: GridViewWhereInput | GridViewWhereInput[]
+    OR?: GridViewWhereInput[]
+    NOT?: GridViewWhereInput | GridViewWhereInput[]
+    id?: UuidFilter<"GridView"> | string
+    gridId?: StringFilter<"GridView"> | string
+    userId?: UuidFilter<"GridView"> | string
+    name?: StringFilter<"GridView"> | string
+    isDefault?: BoolFilter<"GridView"> | boolean
+    schemaVersion?: IntFilter<"GridView"> | number
+    state?: JsonFilter<"GridView">
+    createdAt?: DateTimeFilter<"GridView"> | Date | string
+    updatedAt?: DateTimeFilter<"GridView"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type GridViewOrderByWithRelationInput = {
+    id?: SortOrder
+    gridId?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isDefault?: SortOrder
+    schemaVersion?: SortOrder
+    state?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type GridViewWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    gridId_userId_name?: GridViewGridIdUserIdNameCompoundUniqueInput
+    AND?: GridViewWhereInput | GridViewWhereInput[]
+    OR?: GridViewWhereInput[]
+    NOT?: GridViewWhereInput | GridViewWhereInput[]
+    gridId?: StringFilter<"GridView"> | string
+    userId?: UuidFilter<"GridView"> | string
+    name?: StringFilter<"GridView"> | string
+    isDefault?: BoolFilter<"GridView"> | boolean
+    schemaVersion?: IntFilter<"GridView"> | number
+    state?: JsonFilter<"GridView">
+    createdAt?: DateTimeFilter<"GridView"> | Date | string
+    updatedAt?: DateTimeFilter<"GridView"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "gridId_userId_name">
+
+  export type GridViewOrderByWithAggregationInput = {
+    id?: SortOrder
+    gridId?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isDefault?: SortOrder
+    schemaVersion?: SortOrder
+    state?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GridViewCountOrderByAggregateInput
+    _avg?: GridViewAvgOrderByAggregateInput
+    _max?: GridViewMaxOrderByAggregateInput
+    _min?: GridViewMinOrderByAggregateInput
+    _sum?: GridViewSumOrderByAggregateInput
+  }
+
+  export type GridViewScalarWhereWithAggregatesInput = {
+    AND?: GridViewScalarWhereWithAggregatesInput | GridViewScalarWhereWithAggregatesInput[]
+    OR?: GridViewScalarWhereWithAggregatesInput[]
+    NOT?: GridViewScalarWhereWithAggregatesInput | GridViewScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"GridView"> | string
+    gridId?: StringWithAggregatesFilter<"GridView"> | string
+    userId?: UuidWithAggregatesFilter<"GridView"> | string
+    name?: StringWithAggregatesFilter<"GridView"> | string
+    isDefault?: BoolWithAggregatesFilter<"GridView"> | boolean
+    schemaVersion?: IntWithAggregatesFilter<"GridView"> | number
+    state?: JsonWithAggregatesFilter<"GridView">
+    createdAt?: DateTimeWithAggregatesFilter<"GridView"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"GridView"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -148856,6 +150226,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -148996,6 +150367,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -149136,6 +150508,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -149276,6 +150649,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -160913,6 +162287,89 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type GridViewCreateInput = {
+    id?: string
+    gridId: string
+    name: string
+    isDefault?: boolean
+    schemaVersion?: number
+    state: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutGridViewsInput
+  }
+
+  export type GridViewUncheckedCreateInput = {
+    id?: string
+    gridId: string
+    userId: string
+    name: string
+    isDefault?: boolean
+    schemaVersion?: number
+    state: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridViewUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGridViewsNestedInput
+  }
+
+  export type GridViewUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridViewCreateManyInput = {
+    id?: string
+    gridId: string
+    userId: string
+    name: string
+    isDefault?: boolean
+    schemaVersion?: number
+    state: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridViewUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridViewUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -161988,6 +163445,12 @@ export namespace Prisma {
     none?: CarrierDocumentWhereInput
   }
 
+  export type GridViewListRelationFilter = {
+    every?: GridViewWhereInput
+    some?: GridViewWhereInput
+    none?: GridViewWhereInput
+  }
+
   export type CarrierStopListRelationFilter = {
     every?: CarrierStopWhereInput
     some?: CarrierStopWhereInput
@@ -162013,6 +163476,10 @@ export namespace Prisma {
   }
 
   export type CarrierDocumentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GridViewOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -169364,6 +170831,54 @@ export namespace Prisma {
     pageSize?: SortOrder
   }
 
+  export type GridViewGridIdUserIdNameCompoundUniqueInput = {
+    gridId: string
+    userId: string
+    name: string
+  }
+
+  export type GridViewCountOrderByAggregateInput = {
+    id?: SortOrder
+    gridId?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isDefault?: SortOrder
+    schemaVersion?: SortOrder
+    state?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridViewAvgOrderByAggregateInput = {
+    schemaVersion?: SortOrder
+  }
+
+  export type GridViewMaxOrderByAggregateInput = {
+    id?: SortOrder
+    gridId?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isDefault?: SortOrder
+    schemaVersion?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridViewMinOrderByAggregateInput = {
+    id?: SortOrder
+    gridId?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isDefault?: SortOrder
+    schemaVersion?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GridViewSumOrderByAggregateInput = {
+    schemaVersion?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -172711,6 +174226,13 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type GridViewCreateNestedManyWithoutUserInput = {
+    create?: XOR<GridViewCreateWithoutUserInput, GridViewUncheckedCreateWithoutUserInput> | GridViewCreateWithoutUserInput[] | GridViewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GridViewCreateOrConnectWithoutUserInput | GridViewCreateOrConnectWithoutUserInput[]
+    createMany?: GridViewCreateManyUserInputEnvelope
+    connect?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+  }
+
   export type DriverCompensationTemplateCreateNestedManyWithoutCreatorInput = {
     create?: XOR<DriverCompensationTemplateCreateWithoutCreatorInput, DriverCompensationTemplateUncheckedCreateWithoutCreatorInput> | DriverCompensationTemplateCreateWithoutCreatorInput[] | DriverCompensationTemplateUncheckedCreateWithoutCreatorInput[]
     connectOrCreate?: DriverCompensationTemplateCreateOrConnectWithoutCreatorInput | DriverCompensationTemplateCreateOrConnectWithoutCreatorInput[]
@@ -173562,6 +175084,13 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
     createMany?: AuditLogCreateManyUserInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type GridViewUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<GridViewCreateWithoutUserInput, GridViewUncheckedCreateWithoutUserInput> | GridViewCreateWithoutUserInput[] | GridViewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GridViewCreateOrConnectWithoutUserInput | GridViewCreateOrConnectWithoutUserInput[]
+    createMany?: GridViewCreateManyUserInputEnvelope
+    connect?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
   }
 
   export type DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput = {
@@ -174648,6 +176177,20 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type GridViewUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GridViewCreateWithoutUserInput, GridViewUncheckedCreateWithoutUserInput> | GridViewCreateWithoutUserInput[] | GridViewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GridViewCreateOrConnectWithoutUserInput | GridViewCreateOrConnectWithoutUserInput[]
+    upsert?: GridViewUpsertWithWhereUniqueWithoutUserInput | GridViewUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GridViewCreateManyUserInputEnvelope
+    set?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    disconnect?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    delete?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    connect?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    update?: GridViewUpdateWithWhereUniqueWithoutUserInput | GridViewUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GridViewUpdateManyWithWhereWithoutUserInput | GridViewUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GridViewScalarWhereInput | GridViewScalarWhereInput[]
   }
 
   export type DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput = {
@@ -176352,6 +177895,20 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type GridViewUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GridViewCreateWithoutUserInput, GridViewUncheckedCreateWithoutUserInput> | GridViewCreateWithoutUserInput[] | GridViewUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GridViewCreateOrConnectWithoutUserInput | GridViewCreateOrConnectWithoutUserInput[]
+    upsert?: GridViewUpsertWithWhereUniqueWithoutUserInput | GridViewUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GridViewCreateManyUserInputEnvelope
+    set?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    disconnect?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    delete?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    connect?: GridViewWhereUniqueInput | GridViewWhereUniqueInput[]
+    update?: GridViewUpdateWithWhereUniqueWithoutUserInput | GridViewUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GridViewUpdateManyWithWhereWithoutUserInput | GridViewUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GridViewScalarWhereInput | GridViewScalarWhereInput[]
   }
 
   export type DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput = {
@@ -186439,6 +187996,20 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type UserCreateNestedOneWithoutGridViewsInput = {
+    create?: XOR<UserCreateWithoutGridViewsInput, UserUncheckedCreateWithoutGridViewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGridViewsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutGridViewsNestedInput = {
+    create?: XOR<UserCreateWithoutGridViewsInput, UserUncheckedCreateWithoutGridViewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGridViewsInput
+    upsert?: UserUpsertWithoutGridViewsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGridViewsInput, UserUpdateWithoutGridViewsInput>, UserUncheckedUpdateWithoutGridViewsInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -188086,6 +189657,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -188225,6 +189797,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -196682,6 +198255,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type GridViewCreateWithoutUserInput = {
+    id?: string
+    gridId: string
+    name: string
+    isDefault?: boolean
+    schemaVersion?: number
+    state: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridViewUncheckedCreateWithoutUserInput = {
+    id?: string
+    gridId: string
+    name: string
+    isDefault?: boolean
+    schemaVersion?: number
+    state: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GridViewCreateOrConnectWithoutUserInput = {
+    where: GridViewWhereUniqueInput
+    create: XOR<GridViewCreateWithoutUserInput, GridViewUncheckedCreateWithoutUserInput>
+  }
+
+  export type GridViewCreateManyUserInputEnvelope = {
+    data: GridViewCreateManyUserInput | GridViewCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type DriverCompensationTemplateCreateWithoutCreatorInput = {
     id?: string
     employmentType: $Enums.EmploymentType
@@ -202397,6 +204002,37 @@ export namespace Prisma {
     data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type GridViewUpsertWithWhereUniqueWithoutUserInput = {
+    where: GridViewWhereUniqueInput
+    update: XOR<GridViewUpdateWithoutUserInput, GridViewUncheckedUpdateWithoutUserInput>
+    create: XOR<GridViewCreateWithoutUserInput, GridViewUncheckedCreateWithoutUserInput>
+  }
+
+  export type GridViewUpdateWithWhereUniqueWithoutUserInput = {
+    where: GridViewWhereUniqueInput
+    data: XOR<GridViewUpdateWithoutUserInput, GridViewUncheckedUpdateWithoutUserInput>
+  }
+
+  export type GridViewUpdateManyWithWhereWithoutUserInput = {
+    where: GridViewScalarWhereInput
+    data: XOR<GridViewUpdateManyMutationInput, GridViewUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type GridViewScalarWhereInput = {
+    AND?: GridViewScalarWhereInput | GridViewScalarWhereInput[]
+    OR?: GridViewScalarWhereInput[]
+    NOT?: GridViewScalarWhereInput | GridViewScalarWhereInput[]
+    id?: UuidFilter<"GridView"> | string
+    gridId?: StringFilter<"GridView"> | string
+    userId?: UuidFilter<"GridView"> | string
+    name?: StringFilter<"GridView"> | string
+    isDefault?: BoolFilter<"GridView"> | boolean
+    schemaVersion?: IntFilter<"GridView"> | number
+    state?: JsonFilter<"GridView">
+    createdAt?: DateTimeFilter<"GridView"> | Date | string
+    updatedAt?: DateTimeFilter<"GridView"> | Date | string
+  }
+
   export type DriverCompensationTemplateUpsertWithWhereUniqueWithoutCreatorInput = {
     where: DriverCompensationTemplateWhereUniqueInput
     update: XOR<DriverCompensationTemplateUpdateWithoutCreatorInput, DriverCompensationTemplateUncheckedUpdateWithoutCreatorInput>
@@ -204179,6 +205815,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -204318,6 +205955,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -204462,6 +206100,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -204601,6 +206240,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -205397,6 +207037,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -205536,6 +207177,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -205686,6 +207328,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -205825,6 +207468,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -206298,6 +207942,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -206437,6 +208082,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -206581,6 +208227,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -206720,6 +208367,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -207070,6 +208718,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -207209,6 +208858,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -207359,6 +209009,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -207498,6 +209149,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -207825,6 +209477,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -207964,6 +209617,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -208169,6 +209823,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -208308,6 +209963,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -208452,6 +210108,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -208591,6 +210248,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -209339,6 +210997,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -209478,6 +211137,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -209695,6 +211355,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -209834,6 +211495,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -209984,6 +211646,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -210123,6 +211786,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -210455,6 +212119,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -210594,6 +212259,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -210928,6 +212594,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -211067,6 +212734,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -211292,6 +212960,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -211431,6 +213100,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -211777,6 +213447,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -211916,6 +213587,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -212369,6 +214041,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -212508,6 +214181,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -212729,6 +214403,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -212868,6 +214543,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -213013,6 +214689,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -213152,6 +214829,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -213296,6 +214974,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -213435,6 +215114,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -213922,6 +215602,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -214061,6 +215742,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -214294,6 +215976,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -214433,6 +216116,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -214584,6 +216268,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -214723,6 +216408,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -214873,6 +216559,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -215012,6 +216699,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -215401,6 +217089,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -215540,6 +217229,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -215684,6 +217374,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -215823,6 +217514,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -216240,6 +217932,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -216379,6 +218072,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -216529,6 +218223,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -216668,6 +218363,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -217057,6 +218753,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -217196,6 +218893,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -217340,6 +219038,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -217479,6 +219178,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -217896,6 +219596,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -218035,6 +219736,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -218185,6 +219887,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -218324,6 +220027,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -219752,6 +221456,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -219891,6 +221596,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -220373,6 +222079,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -220512,6 +222219,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -220973,6 +222681,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -221112,6 +222821,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -221529,6 +223239,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -221668,6 +223379,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -221996,6 +223708,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -222135,6 +223848,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -222279,6 +223993,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -222418,6 +224133,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -222794,6 +224510,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -222933,6 +224650,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -223083,6 +224801,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -223222,6 +224941,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -223653,6 +225373,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -223792,6 +225513,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -224242,6 +225964,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -224381,6 +226104,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -224710,6 +226434,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -224849,6 +226574,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -224993,6 +226719,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -225132,6 +226859,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -225546,6 +227274,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -225685,6 +227414,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -225835,6 +227565,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -225974,6 +227705,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -226428,6 +228160,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -226567,6 +228300,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -226711,6 +228445,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -226850,6 +228585,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -227306,6 +229042,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -227445,6 +229182,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -227595,6 +229333,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -227734,6 +229473,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -228088,6 +229828,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -228227,6 +229968,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -228371,6 +230113,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -228510,6 +230253,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -228876,6 +230620,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -229015,6 +230760,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -229165,6 +230911,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -229304,6 +231051,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -230201,6 +231949,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -230340,6 +232089,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -230484,6 +232234,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -230623,6 +232374,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -231044,6 +232796,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -231183,6 +232936,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -231333,6 +233087,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -231472,6 +233227,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -231918,6 +233674,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -232057,6 +233814,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -232201,6 +233959,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -232340,6 +234099,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -232722,6 +234482,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -232861,6 +234622,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -233011,6 +234773,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -233150,6 +234913,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -233535,6 +235299,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -233674,6 +235439,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -233818,6 +235584,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -233957,6 +235724,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -234370,6 +236138,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -234509,6 +236278,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -234659,6 +236429,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -234798,6 +236569,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -235125,6 +236897,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -235264,6 +237037,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -235408,6 +237182,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -235547,6 +237322,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -236014,6 +237790,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -236153,6 +237930,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -236303,6 +238081,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -236442,6 +238221,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -236933,6 +238713,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -237072,6 +238853,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -237216,6 +238998,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -237355,6 +239138,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -237774,6 +239558,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -237913,6 +239698,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -238063,6 +239849,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -238202,6 +239989,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -238572,6 +240360,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -238711,6 +240500,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -238855,6 +240645,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -238994,6 +240785,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -239360,6 +241152,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -239499,6 +241292,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -239649,6 +241443,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -239788,6 +241583,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -240163,6 +241959,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -240302,6 +242099,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -240446,6 +242244,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -240585,6 +242384,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -240988,6 +242788,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -241127,6 +242928,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -241277,6 +243079,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -241416,6 +243219,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -241743,6 +243547,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -241882,6 +243687,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -242026,6 +243832,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -242165,6 +243972,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -242309,6 +244117,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -242448,6 +244257,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -242798,6 +244608,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -242937,6 +244748,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -243087,6 +244899,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -243226,6 +245039,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -243376,6 +245190,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -243515,6 +245330,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -243965,6 +245781,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -244104,6 +245921,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -244309,6 +246127,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -244448,6 +246267,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -244592,6 +246412,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -244731,6 +246552,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -245521,6 +247343,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -245660,6 +247483,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -245877,6 +247701,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -246016,6 +247841,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -246166,6 +247992,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -246305,6 +248132,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -246812,6 +248640,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -246951,6 +248780,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -247095,6 +248925,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -247234,6 +249065,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -247584,6 +249416,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -247723,6 +249556,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -247873,6 +249707,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -248012,6 +249847,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -248151,6 +249987,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -248290,6 +250127,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -248434,6 +250272,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -248573,6 +250412,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -248728,6 +250568,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -248867,6 +250708,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -249017,6 +250859,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -249156,6 +250999,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -249790,6 +251634,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -249929,6 +251774,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -250073,6 +251919,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -250212,6 +252059,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -250748,6 +252596,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -250887,6 +252736,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -251037,6 +252887,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -251176,6 +253027,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -251568,6 +253420,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -251707,6 +253560,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -252128,6 +253982,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -252267,6 +254122,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -252549,6 +254405,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -252688,6 +254545,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -252997,6 +254855,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -253136,6 +254995,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -253274,6 +255134,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -253413,6 +255274,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -253747,6 +255609,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -253886,6 +255749,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -254040,6 +255904,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -254179,6 +256044,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -254525,6 +256391,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -254664,6 +256531,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -254991,6 +256859,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -255130,6 +256999,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -255275,6 +257145,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -255414,6 +257285,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -255558,6 +257430,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -255697,6 +257570,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -256046,6 +257920,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -256185,6 +258060,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -256336,6 +258212,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -256475,6 +258352,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -256625,6 +258503,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -256764,6 +258643,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -257091,6 +258971,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -257230,6 +259111,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -257375,6 +259257,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -257514,6 +259397,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -257658,6 +259542,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -257797,6 +259682,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -258146,6 +260032,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -258285,6 +260172,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -258436,6 +260324,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -258575,6 +260464,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -258725,6 +260615,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -258864,6 +260755,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -259192,6 +261084,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -259331,6 +261224,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -259475,6 +261369,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -259614,6 +261509,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -260462,6 +262358,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -260601,6 +262498,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -260751,6 +262649,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -260890,6 +262789,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -261330,6 +263230,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -261469,6 +263370,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -261613,6 +263515,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -261752,6 +263655,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -262401,6 +264305,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -262540,6 +264445,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -262690,6 +264596,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -262829,6 +264736,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -263290,6 +265198,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -263429,6 +265338,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -263573,6 +265483,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -263712,6 +265623,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -264282,6 +266194,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -264421,6 +266334,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -264571,6 +266485,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -264710,6 +266625,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -265086,6 +267002,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -265225,6 +267142,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -265369,6 +267287,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -265508,6 +267427,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -265651,6 +267571,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -265790,6 +267711,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -266966,6 +268888,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -267105,6 +269028,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -267255,6 +269179,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -267394,6 +269319,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -267543,6 +269469,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -267682,6 +269609,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -268270,6 +270198,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -268409,6 +270338,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -268553,6 +270483,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -268692,6 +270623,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -269286,6 +271218,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -269425,6 +271358,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -269575,6 +271509,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -269714,6 +271649,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -270522,6 +272458,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -270661,6 +272598,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -270805,6 +272743,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -270944,6 +272883,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -271650,6 +273590,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -271789,6 +273730,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -271939,6 +273881,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -272078,6 +274021,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -272339,6 +274283,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -272478,6 +274423,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -272767,6 +274713,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -272906,6 +274853,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -273234,6 +275182,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -273373,6 +275322,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -273517,6 +275467,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -273656,6 +275607,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -274172,6 +276124,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -274311,6 +276264,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -275068,6 +277022,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -275207,6 +277162,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -275357,6 +277313,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -275496,6 +277453,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -276048,6 +278006,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -276187,6 +278146,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -276612,6 +278572,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -276751,6 +278712,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -276895,6 +278857,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -277034,6 +278997,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -278009,6 +279973,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -278148,6 +280113,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -278298,6 +280264,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -278437,6 +280404,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -278964,6 +280932,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -279103,6 +281072,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -279247,6 +281217,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -279386,6 +281357,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -279999,6 +281971,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -280138,6 +282111,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -280288,6 +282262,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -280427,6 +282402,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -280866,6 +282842,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -281005,6 +282982,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -281149,6 +283127,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -281288,6 +283267,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -281903,6 +283883,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -282042,6 +284023,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -282192,6 +284174,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -282331,6 +284314,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -283572,6 +285556,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -283711,6 +285696,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -283855,6 +285841,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -283994,6 +285981,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -284589,6 +286577,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -284728,6 +286717,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -285079,6 +287069,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -285218,6 +287209,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -285368,6 +287360,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -285507,6 +287500,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -286144,6 +288138,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -286283,6 +288278,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -286937,6 +288933,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -287076,6 +289073,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -287776,6 +289774,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -287915,6 +289914,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -288243,6 +290243,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -288382,6 +290383,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -288732,6 +290734,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -288871,6 +290874,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -289308,6 +291312,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -289447,6 +291452,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -289591,6 +291597,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -289730,6 +291737,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -290112,6 +292120,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -290251,6 +292260,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -290401,6 +292411,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -290540,6 +292551,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -291010,6 +293022,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -291149,6 +293162,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -291293,6 +293307,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -291432,6 +293447,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -291830,6 +293846,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -291969,6 +293986,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -292119,6 +294137,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -292258,6 +294277,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -292666,6 +294686,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -292805,6 +294826,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -293247,6 +295269,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -293386,6 +295409,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -293847,6 +295871,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -293986,6 +296011,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -294130,6 +296156,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -294269,6 +296296,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -294698,6 +296726,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -294837,6 +296866,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -294987,6 +297017,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -295126,6 +297157,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -295542,6 +297574,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -295681,6 +297714,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -296131,6 +298165,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -296270,6 +298305,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -297127,6 +299163,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -297266,6 +299303,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -297410,6 +299448,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -297549,6 +299588,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -297946,6 +299986,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -298085,6 +300126,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -298235,6 +300277,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -298374,6 +300417,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -302385,6 +304429,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
     driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
@@ -302524,6 +304569,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
     driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
@@ -302668,6 +304714,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -302807,6 +304854,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -303266,6 +305314,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
     driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
@@ -303405,6 +305454,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
     driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
@@ -303555,6 +305605,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -303694,6 +305745,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -304434,6 +306486,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
     driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
@@ -304573,6 +306626,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
     driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
@@ -304717,6 +306771,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -304856,6 +306911,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -305562,6 +307618,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
     driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
@@ -305701,6 +307758,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
     driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
@@ -305851,6 +307909,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -305990,6 +308049,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -306717,6 +308777,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
@@ -306856,6 +308917,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
@@ -307000,6 +309062,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -307139,6 +309202,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -307794,6 +309858,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
@@ -307933,6 +309998,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
@@ -308083,6 +310149,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -308222,6 +310289,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -308896,6 +310964,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -309035,6 +311104,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -309179,6 +311249,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -309318,6 +311389,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -309994,6 +312066,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -310133,6 +312206,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -310283,6 +312357,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -310422,6 +312497,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -310837,6 +312913,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -310976,6 +313053,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -311120,6 +313198,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -311259,6 +313338,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -311702,6 +313782,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -311841,6 +313922,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -311991,6 +314073,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -312130,6 +314213,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -312689,6 +314773,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -312828,6 +314913,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -312972,6 +315058,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -313111,6 +315198,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -313586,6 +315674,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -313725,6 +315814,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -313875,6 +315965,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -314014,6 +316105,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -314486,6 +316578,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -314625,6 +316718,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -314769,6 +316863,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -314908,6 +317003,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -315414,6 +317510,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -315553,6 +317650,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -315703,6 +317801,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -315842,6 +317941,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -316322,6 +318422,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -316461,6 +318562,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -316605,6 +318707,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -316744,6 +318847,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -317258,6 +319362,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -317397,6 +319502,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -317547,6 +319653,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -317686,6 +319793,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -319165,6 +321273,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -319304,6 +321413,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -319654,6 +321764,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -319793,6 +321904,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -319932,6 +322044,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -320071,6 +322184,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -320405,6 +322519,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -320544,6 +322659,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -320698,6 +322814,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -320837,6 +322954,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -321183,6 +323301,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -321322,6 +323441,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -321649,6 +323769,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    gridViews?: GridViewCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
@@ -321788,6 +323909,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
     notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    gridViews?: GridViewUncheckedCreateNestedManyWithoutUserInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
@@ -322138,6 +324260,7 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -322277,6 +324400,583 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUncheckedUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUncheckedUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUncheckedUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierClientsCreated?: CarrierClientUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierClientsUpdated?: CarrierClientUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierContractsCreated?: CarrierContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierContractsUpdated?: CarrierContractUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierFacilitiesCreated?: CarrierFacilityUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierFacilitiesUpdated?: CarrierFacilityUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierDriversCreated?: CarrierDriverUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierDriversUpdated?: CarrierDriverUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierTrucksCreated?: CarrierTruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierTrucksUpdated?: CarrierTruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierDispatchesCreated?: CarrierDispatchUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierDispatchesUpdated?: CarrierDispatchUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierLoadsCreated?: CarrierLoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierLoadsUpdated?: CarrierLoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierStopsCreated?: CarrierStopUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierStopsUpdated?: CarrierStopUncheckedUpdateManyWithoutUpdatedByNestedInput
+    carrierExpensesCreated?: CarrierExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+    carrierExpensesUpdated?: CarrierExpenseUncheckedUpdateManyWithoutUpdatedByNestedInput
+    documentsCreated?: DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+    documentsUpdated?: DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
+    fleetMessagesCreated?: FleetMessageUncheckedUpdateManyWithoutCreatedByNestedInput
+    customersCreated?: CustomerUncheckedUpdateManyWithoutCreatedByNestedInput
+    customersUpdated?: CustomerUncheckedUpdateManyWithoutUpdatedByNestedInput
+    customerInteractionsCreated?: CustomerInteractionUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    customerInteractionsUpdated?: CustomerInteractionUncheckedUpdateManyWithoutUpdatedByUserNestedInput
+    fuelRecordsCreated?: FuelRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    maintenanceEventsCreated?: MaintenanceEventUncheckedUpdateManyWithoutCreatedByNestedInput
+    maintenanceEventsUpdated?: MaintenanceEventUncheckedUpdateManyWithoutUpdatedByNestedInput
+    scheduledServicesCreated?: ScheduledServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    scheduledServicesUpdated?: ScheduledServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoiceItemsCreated?: InvoiceItemUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoiceItemsUpdated?: InvoiceItemUncheckedUpdateManyWithoutUpdatedByNestedInput
+    sysAdminInvoicesCreated?: SysAdminInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    sysAdminInvoicesUpdated?: SysAdminInvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routeExpensesCreated?: RouteExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+    routeExpensesUpdated?: RouteExpenseUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routePaymentsCreated?: RoutePaymentUncheckedUpdateManyWithoutCreatedByNestedInput
+    routePaymentsUpdated?: RoutePaymentUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routeStopsCreated?: RouteStopUncheckedUpdateManyWithoutCreatedByNestedInput
+    routeStopsUpdated?: RouteStopUncheckedUpdateManyWithoutUpdatedByNestedInput
+    expenseTemplatesCreated?: ExpenseTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    expenseTemplatesUpdated?: ExpenseTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+    tenantIntegrationsCreated?: TenantIntegrationUncheckedUpdateManyWithoutCreatedByNestedInput
+    tenantIntegrationsUpdated?: TenantIntegrationUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverHOSEntriesCreated?: DriverHOSEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+    driverHOSEntriesUpdated?: DriverHOSEntryUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverIncidentsCreated?: DriverIncidentUncheckedUpdateManyWithoutCreatedByNestedInput
+    driverIncidentsUpdated?: DriverIncidentUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverInvitationsCreated?: DriverInvitationUncheckedUpdateManyWithoutCreatedByNestedInput
+    driverInvitationsUpdated?: DriverInvitationUncheckedUpdateManyWithoutUpdatedByNestedInput
+    supportTicketsCreated?: SupportTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+    supportTicketsUpdated?: SupportTicketUncheckedUpdateManyWithoutUpdatedByNestedInput
+    playbooksCreated?: PlaybookUncheckedUpdateManyWithoutCreatedByNestedInput
+    playbooksUpdated?: PlaybookUncheckedUpdateManyWithoutUpdatedByNestedInput
+    playbookInstancesCreated?: PlaybookInstanceUncheckedUpdateManyWithoutCreatedByNestedInput
+    playbookInstancesUpdated?: PlaybookInstanceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    playbookTriggersCreated?: PlaybookTriggerUncheckedUpdateManyWithoutCreatedByNestedInput
+    playbookTriggersUpdated?: PlaybookTriggerUncheckedUpdateManyWithoutUpdatedByNestedInput
+    stepTemplatesCreated?: StepTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    stepTemplatesUpdated?: StepTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routeTemplatesCreated?: RouteTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    routeTemplatesUpdated?: RouteTemplateUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routeTemplateStopsCreated?: RouteTemplateStopUncheckedUpdateManyWithoutCreatedByNestedInput
+    driverCompensationTemplatesUpdated?: DriverCompensationTemplateUncheckedUpdateManyWithoutUpdaterNestedInput
+    loadDriverAssignmentsUpdated?: LoadDriverAssignmentUncheckedUpdateManyWithoutUpdaterNestedInput
+    loadPayComponentsUpdated?: LoadPayComponentUncheckedUpdateManyWithoutUpdaterNestedInput
+    payComponentAttachmentsUpdated?: PayComponentAttachmentUncheckedUpdateManyWithoutUpdaterNestedInput
+    driverBonusesUpdated?: DriverBonusUncheckedUpdateManyWithoutUpdaterNestedInput
+    driverDeductionsUpdated?: DriverDeductionUncheckedUpdateManyWithoutUpdaterNestedInput
+    driverSettlementsUpdated?: DriverSettlementUncheckedUpdateManyWithoutUpdaterNestedInput
+    driverDisputesUpdated?: DriverDisputeUncheckedUpdateManyWithoutUpdaterNestedInput
+  }
+
+  export type UserCreateWithoutGridViewsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryCreateNestedManyWithoutUpdatedByInput
+    carrierClientsCreated?: CarrierClientCreateNestedManyWithoutCreatedByInput
+    carrierClientsUpdated?: CarrierClientCreateNestedManyWithoutUpdatedByInput
+    carrierContractsCreated?: CarrierContractCreateNestedManyWithoutCreatedByInput
+    carrierContractsUpdated?: CarrierContractCreateNestedManyWithoutUpdatedByInput
+    carrierFacilitiesCreated?: CarrierFacilityCreateNestedManyWithoutCreatedByInput
+    carrierFacilitiesUpdated?: CarrierFacilityCreateNestedManyWithoutUpdatedByInput
+    carrierDriversCreated?: CarrierDriverCreateNestedManyWithoutCreatedByInput
+    carrierDriversUpdated?: CarrierDriverCreateNestedManyWithoutUpdatedByInput
+    carrierTrucksCreated?: CarrierTruckCreateNestedManyWithoutCreatedByInput
+    carrierTrucksUpdated?: CarrierTruckCreateNestedManyWithoutUpdatedByInput
+    carrierDispatchesCreated?: CarrierDispatchCreateNestedManyWithoutCreatedByInput
+    carrierDispatchesUpdated?: CarrierDispatchCreateNestedManyWithoutUpdatedByInput
+    carrierLoadsCreated?: CarrierLoadCreateNestedManyWithoutCreatedByInput
+    carrierLoadsUpdated?: CarrierLoadCreateNestedManyWithoutUpdatedByInput
+    carrierStopsCreated?: CarrierStopCreateNestedManyWithoutCreatedByInput
+    carrierStopsUpdated?: CarrierStopCreateNestedManyWithoutUpdatedByInput
+    carrierExpensesCreated?: CarrierExpenseCreateNestedManyWithoutCreatedByInput
+    carrierExpensesUpdated?: CarrierExpenseCreateNestedManyWithoutUpdatedByInput
+    documentsCreated?: DocumentCreateNestedManyWithoutCreatedByInput
+    documentsUpdated?: DocumentCreateNestedManyWithoutUpdatedByInput
+    fleetMessagesCreated?: FleetMessageCreateNestedManyWithoutCreatedByInput
+    customersCreated?: CustomerCreateNestedManyWithoutCreatedByInput
+    customersUpdated?: CustomerCreateNestedManyWithoutUpdatedByInput
+    customerInteractionsCreated?: CustomerInteractionCreateNestedManyWithoutCreatedByUserInput
+    customerInteractionsUpdated?: CustomerInteractionCreateNestedManyWithoutUpdatedByUserInput
+    fuelRecordsCreated?: FuelRecordCreateNestedManyWithoutCreatedByInput
+    maintenanceEventsCreated?: MaintenanceEventCreateNestedManyWithoutCreatedByInput
+    maintenanceEventsUpdated?: MaintenanceEventCreateNestedManyWithoutUpdatedByInput
+    scheduledServicesCreated?: ScheduledServiceCreateNestedManyWithoutCreatedByInput
+    scheduledServicesUpdated?: ScheduledServiceCreateNestedManyWithoutUpdatedByInput
+    invoiceItemsCreated?: InvoiceItemCreateNestedManyWithoutCreatedByInput
+    invoiceItemsUpdated?: InvoiceItemCreateNestedManyWithoutUpdatedByInput
+    sysAdminInvoicesCreated?: SysAdminInvoiceCreateNestedManyWithoutCreatedByInput
+    sysAdminInvoicesUpdated?: SysAdminInvoiceCreateNestedManyWithoutUpdatedByInput
+    routeExpensesCreated?: RouteExpenseCreateNestedManyWithoutCreatedByInput
+    routeExpensesUpdated?: RouteExpenseCreateNestedManyWithoutUpdatedByInput
+    routePaymentsCreated?: RoutePaymentCreateNestedManyWithoutCreatedByInput
+    routePaymentsUpdated?: RoutePaymentCreateNestedManyWithoutUpdatedByInput
+    routeStopsCreated?: RouteStopCreateNestedManyWithoutCreatedByInput
+    routeStopsUpdated?: RouteStopCreateNestedManyWithoutUpdatedByInput
+    expenseTemplatesCreated?: ExpenseTemplateCreateNestedManyWithoutCreatedByInput
+    expenseTemplatesUpdated?: ExpenseTemplateCreateNestedManyWithoutUpdatedByInput
+    tenantIntegrationsCreated?: TenantIntegrationCreateNestedManyWithoutCreatedByInput
+    tenantIntegrationsUpdated?: TenantIntegrationCreateNestedManyWithoutUpdatedByInput
+    driverHOSEntriesCreated?: DriverHOSEntryCreateNestedManyWithoutCreatedByInput
+    driverHOSEntriesUpdated?: DriverHOSEntryCreateNestedManyWithoutUpdatedByInput
+    driverIncidentsCreated?: DriverIncidentCreateNestedManyWithoutCreatedByInput
+    driverIncidentsUpdated?: DriverIncidentCreateNestedManyWithoutUpdatedByInput
+    driverInvitationsCreated?: DriverInvitationCreateNestedManyWithoutCreatedByInput
+    driverInvitationsUpdated?: DriverInvitationCreateNestedManyWithoutUpdatedByInput
+    supportTicketsCreated?: SupportTicketCreateNestedManyWithoutCreatedByInput
+    supportTicketsUpdated?: SupportTicketCreateNestedManyWithoutUpdatedByInput
+    playbooksCreated?: PlaybookCreateNestedManyWithoutCreatedByInput
+    playbooksUpdated?: PlaybookCreateNestedManyWithoutUpdatedByInput
+    playbookInstancesCreated?: PlaybookInstanceCreateNestedManyWithoutCreatedByInput
+    playbookInstancesUpdated?: PlaybookInstanceCreateNestedManyWithoutUpdatedByInput
+    playbookTriggersCreated?: PlaybookTriggerCreateNestedManyWithoutCreatedByInput
+    playbookTriggersUpdated?: PlaybookTriggerCreateNestedManyWithoutUpdatedByInput
+    stepTemplatesCreated?: StepTemplateCreateNestedManyWithoutCreatedByInput
+    stepTemplatesUpdated?: StepTemplateCreateNestedManyWithoutUpdatedByInput
+    routeTemplatesCreated?: RouteTemplateCreateNestedManyWithoutCreatedByInput
+    routeTemplatesUpdated?: RouteTemplateCreateNestedManyWithoutUpdatedByInput
+    routeTemplateStopsCreated?: RouteTemplateStopCreateNestedManyWithoutCreatedByInput
+    driverCompensationTemplatesUpdated?: DriverCompensationTemplateCreateNestedManyWithoutUpdaterInput
+    loadDriverAssignmentsUpdated?: LoadDriverAssignmentCreateNestedManyWithoutUpdaterInput
+    loadPayComponentsUpdated?: LoadPayComponentCreateNestedManyWithoutUpdaterInput
+    payComponentAttachmentsUpdated?: PayComponentAttachmentCreateNestedManyWithoutUpdaterInput
+    driverBonusesUpdated?: DriverBonusCreateNestedManyWithoutUpdaterInput
+    driverDeductionsUpdated?: DriverDeductionCreateNestedManyWithoutUpdaterInput
+    driverSettlementsUpdated?: DriverSettlementCreateNestedManyWithoutUpdaterInput
+    driverDisputesUpdated?: DriverDisputeCreateNestedManyWithoutUpdaterInput
+  }
+
+  export type UserUncheckedCreateWithoutGridViewsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isSample?: boolean
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutCreatorInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutCreatorInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUncheckedCreateNestedManyWithoutCreatorInput
+    driverBonusesCreatedBy?: DriverBonusUncheckedCreateNestedManyWithoutCreatorInput
+    driverDeductionsCreatedBy?: DriverDeductionUncheckedCreateNestedManyWithoutCreatorInput
+    driverSettlementsCreatedBy?: DriverSettlementUncheckedCreateNestedManyWithoutCreatorInput
+    driverDisputesCreatedBy?: DriverDisputeUncheckedCreateNestedManyWithoutCreatorInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUncheckedCreateNestedManyWithoutCreatorInput
+    playbookStepsCreatedBy?: PlaybookStepUncheckedCreateNestedManyWithoutCreatorInput
+    stepInstancesCreatedBy?: StepInstanceUncheckedCreateNestedManyWithoutCreatorInput
+    routeDriversCreatedBy?: RouteDriverUncheckedCreateNestedManyWithoutCreatorInput
+    pushTokensCreatedBy?: PushTokenUncheckedCreateNestedManyWithoutCreatorInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutCreatorInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutUpdaterInput
+    tagsCreated?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    tagsUpdated?: TagUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseCategoriesCreated?: ExpenseCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseCategoriesUpdated?: ExpenseCategoryUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierClientsCreated?: CarrierClientUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierClientsUpdated?: CarrierClientUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierContractsCreated?: CarrierContractUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierContractsUpdated?: CarrierContractUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierFacilitiesCreated?: CarrierFacilityUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierFacilitiesUpdated?: CarrierFacilityUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierDriversCreated?: CarrierDriverUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierDriversUpdated?: CarrierDriverUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierTrucksCreated?: CarrierTruckUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierTrucksUpdated?: CarrierTruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierDispatchesCreated?: CarrierDispatchUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierDispatchesUpdated?: CarrierDispatchUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierLoadsCreated?: CarrierLoadUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierLoadsUpdated?: CarrierLoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierStopsCreated?: CarrierStopUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierStopsUpdated?: CarrierStopUncheckedCreateNestedManyWithoutUpdatedByInput
+    carrierExpensesCreated?: CarrierExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+    carrierExpensesUpdated?: CarrierExpenseUncheckedCreateNestedManyWithoutUpdatedByInput
+    documentsCreated?: DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+    documentsUpdated?: DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
+    fleetMessagesCreated?: FleetMessageUncheckedCreateNestedManyWithoutCreatedByInput
+    customersCreated?: CustomerUncheckedCreateNestedManyWithoutCreatedByInput
+    customersUpdated?: CustomerUncheckedCreateNestedManyWithoutUpdatedByInput
+    customerInteractionsCreated?: CustomerInteractionUncheckedCreateNestedManyWithoutCreatedByUserInput
+    customerInteractionsUpdated?: CustomerInteractionUncheckedCreateNestedManyWithoutUpdatedByUserInput
+    fuelRecordsCreated?: FuelRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    maintenanceEventsCreated?: MaintenanceEventUncheckedCreateNestedManyWithoutCreatedByInput
+    maintenanceEventsUpdated?: MaintenanceEventUncheckedCreateNestedManyWithoutUpdatedByInput
+    scheduledServicesCreated?: ScheduledServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    scheduledServicesUpdated?: ScheduledServiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoiceItemsCreated?: InvoiceItemUncheckedCreateNestedManyWithoutCreatedByInput
+    invoiceItemsUpdated?: InvoiceItemUncheckedCreateNestedManyWithoutUpdatedByInput
+    sysAdminInvoicesCreated?: SysAdminInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    sysAdminInvoicesUpdated?: SysAdminInvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    routeExpensesCreated?: RouteExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+    routeExpensesUpdated?: RouteExpenseUncheckedCreateNestedManyWithoutUpdatedByInput
+    routePaymentsCreated?: RoutePaymentUncheckedCreateNestedManyWithoutCreatedByInput
+    routePaymentsUpdated?: RoutePaymentUncheckedCreateNestedManyWithoutUpdatedByInput
+    routeStopsCreated?: RouteStopUncheckedCreateNestedManyWithoutCreatedByInput
+    routeStopsUpdated?: RouteStopUncheckedCreateNestedManyWithoutUpdatedByInput
+    expenseTemplatesCreated?: ExpenseTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    expenseTemplatesUpdated?: ExpenseTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+    tenantIntegrationsCreated?: TenantIntegrationUncheckedCreateNestedManyWithoutCreatedByInput
+    tenantIntegrationsUpdated?: TenantIntegrationUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverHOSEntriesCreated?: DriverHOSEntryUncheckedCreateNestedManyWithoutCreatedByInput
+    driverHOSEntriesUpdated?: DriverHOSEntryUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverIncidentsCreated?: DriverIncidentUncheckedCreateNestedManyWithoutCreatedByInput
+    driverIncidentsUpdated?: DriverIncidentUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverInvitationsCreated?: DriverInvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    driverInvitationsUpdated?: DriverInvitationUncheckedCreateNestedManyWithoutUpdatedByInput
+    supportTicketsCreated?: SupportTicketUncheckedCreateNestedManyWithoutCreatedByInput
+    supportTicketsUpdated?: SupportTicketUncheckedCreateNestedManyWithoutUpdatedByInput
+    playbooksCreated?: PlaybookUncheckedCreateNestedManyWithoutCreatedByInput
+    playbooksUpdated?: PlaybookUncheckedCreateNestedManyWithoutUpdatedByInput
+    playbookInstancesCreated?: PlaybookInstanceUncheckedCreateNestedManyWithoutCreatedByInput
+    playbookInstancesUpdated?: PlaybookInstanceUncheckedCreateNestedManyWithoutUpdatedByInput
+    playbookTriggersCreated?: PlaybookTriggerUncheckedCreateNestedManyWithoutCreatedByInput
+    playbookTriggersUpdated?: PlaybookTriggerUncheckedCreateNestedManyWithoutUpdatedByInput
+    stepTemplatesCreated?: StepTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    stepTemplatesUpdated?: StepTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+    routeTemplatesCreated?: RouteTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    routeTemplatesUpdated?: RouteTemplateUncheckedCreateNestedManyWithoutUpdatedByInput
+    routeTemplateStopsCreated?: RouteTemplateStopUncheckedCreateNestedManyWithoutCreatedByInput
+    driverCompensationTemplatesUpdated?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutUpdaterInput
+    loadDriverAssignmentsUpdated?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutUpdaterInput
+    loadPayComponentsUpdated?: LoadPayComponentUncheckedCreateNestedManyWithoutUpdaterInput
+    payComponentAttachmentsUpdated?: PayComponentAttachmentUncheckedCreateNestedManyWithoutUpdaterInput
+    driverBonusesUpdated?: DriverBonusUncheckedCreateNestedManyWithoutUpdaterInput
+    driverDeductionsUpdated?: DriverDeductionUncheckedCreateNestedManyWithoutUpdaterInput
+    driverSettlementsUpdated?: DriverSettlementUncheckedCreateNestedManyWithoutUpdaterInput
+    driverDisputesUpdated?: DriverDisputeUncheckedCreateNestedManyWithoutUpdaterInput
+  }
+
+  export type UserCreateOrConnectWithoutGridViewsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGridViewsInput, UserUncheckedCreateWithoutGridViewsInput>
+  }
+
+  export type UserUpsertWithoutGridViewsInput = {
+    update: XOR<UserUpdateWithoutGridViewsInput, UserUncheckedUpdateWithoutGridViewsInput>
+    create: XOR<UserCreateWithoutGridViewsInput, UserUncheckedCreateWithoutGridViewsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGridViewsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGridViewsInput, UserUncheckedUpdateWithoutGridViewsInput>
+  }
+
+  export type UserUpdateWithoutGridViewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
+    loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
+    loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
+    driverBonusesCreatedBy?: DriverBonusUpdateManyWithoutCreatorNestedInput
+    driverDeductionsCreatedBy?: DriverDeductionUpdateManyWithoutCreatorNestedInput
+    driverSettlementsCreatedBy?: DriverSettlementUpdateManyWithoutCreatorNestedInput
+    driverDisputesCreatedBy?: DriverDisputeUpdateManyWithoutCreatorNestedInput
+    payComponentAttachmentsCreatedBy?: PayComponentAttachmentUpdateManyWithoutCreatorNestedInput
+    playbookStepsCreatedBy?: PlaybookStepUpdateManyWithoutCreatorNestedInput
+    stepInstancesCreatedBy?: StepInstanceUpdateManyWithoutCreatorNestedInput
+    routeDriversCreatedBy?: RouteDriverUpdateManyWithoutCreatorNestedInput
+    pushTokensCreatedBy?: PushTokenUpdateManyWithoutCreatorNestedInput
+    userNotificationPreferencesCreatedBy?: UserNotificationPreferenceUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsCreatedBy?: SysAdminInvoiceItemUpdateManyWithoutCreatorNestedInput
+    sysAdminInvoiceItemsUpdatedBy?: SysAdminInvoiceItemUpdateManyWithoutUpdaterNestedInput
+    tagsCreated?: TagUpdateManyWithoutCreatedByNestedInput
+    tagsUpdated?: TagUpdateManyWithoutUpdatedByNestedInput
+    expenseCategoriesCreated?: ExpenseCategoryUpdateManyWithoutCreatedByNestedInput
+    expenseCategoriesUpdated?: ExpenseCategoryUpdateManyWithoutUpdatedByNestedInput
+    carrierClientsCreated?: CarrierClientUpdateManyWithoutCreatedByNestedInput
+    carrierClientsUpdated?: CarrierClientUpdateManyWithoutUpdatedByNestedInput
+    carrierContractsCreated?: CarrierContractUpdateManyWithoutCreatedByNestedInput
+    carrierContractsUpdated?: CarrierContractUpdateManyWithoutUpdatedByNestedInput
+    carrierFacilitiesCreated?: CarrierFacilityUpdateManyWithoutCreatedByNestedInput
+    carrierFacilitiesUpdated?: CarrierFacilityUpdateManyWithoutUpdatedByNestedInput
+    carrierDriversCreated?: CarrierDriverUpdateManyWithoutCreatedByNestedInput
+    carrierDriversUpdated?: CarrierDriverUpdateManyWithoutUpdatedByNestedInput
+    carrierTrucksCreated?: CarrierTruckUpdateManyWithoutCreatedByNestedInput
+    carrierTrucksUpdated?: CarrierTruckUpdateManyWithoutUpdatedByNestedInput
+    carrierDispatchesCreated?: CarrierDispatchUpdateManyWithoutCreatedByNestedInput
+    carrierDispatchesUpdated?: CarrierDispatchUpdateManyWithoutUpdatedByNestedInput
+    carrierLoadsCreated?: CarrierLoadUpdateManyWithoutCreatedByNestedInput
+    carrierLoadsUpdated?: CarrierLoadUpdateManyWithoutUpdatedByNestedInput
+    carrierStopsCreated?: CarrierStopUpdateManyWithoutCreatedByNestedInput
+    carrierStopsUpdated?: CarrierStopUpdateManyWithoutUpdatedByNestedInput
+    carrierExpensesCreated?: CarrierExpenseUpdateManyWithoutCreatedByNestedInput
+    carrierExpensesUpdated?: CarrierExpenseUpdateManyWithoutUpdatedByNestedInput
+    documentsCreated?: DocumentUpdateManyWithoutCreatedByNestedInput
+    documentsUpdated?: DocumentUpdateManyWithoutUpdatedByNestedInput
+    fleetMessagesCreated?: FleetMessageUpdateManyWithoutCreatedByNestedInput
+    customersCreated?: CustomerUpdateManyWithoutCreatedByNestedInput
+    customersUpdated?: CustomerUpdateManyWithoutUpdatedByNestedInput
+    customerInteractionsCreated?: CustomerInteractionUpdateManyWithoutCreatedByUserNestedInput
+    customerInteractionsUpdated?: CustomerInteractionUpdateManyWithoutUpdatedByUserNestedInput
+    fuelRecordsCreated?: FuelRecordUpdateManyWithoutCreatedByNestedInput
+    maintenanceEventsCreated?: MaintenanceEventUpdateManyWithoutCreatedByNestedInput
+    maintenanceEventsUpdated?: MaintenanceEventUpdateManyWithoutUpdatedByNestedInput
+    scheduledServicesCreated?: ScheduledServiceUpdateManyWithoutCreatedByNestedInput
+    scheduledServicesUpdated?: ScheduledServiceUpdateManyWithoutUpdatedByNestedInput
+    invoiceItemsCreated?: InvoiceItemUpdateManyWithoutCreatedByNestedInput
+    invoiceItemsUpdated?: InvoiceItemUpdateManyWithoutUpdatedByNestedInput
+    sysAdminInvoicesCreated?: SysAdminInvoiceUpdateManyWithoutCreatedByNestedInput
+    sysAdminInvoicesUpdated?: SysAdminInvoiceUpdateManyWithoutUpdatedByNestedInput
+    routeExpensesCreated?: RouteExpenseUpdateManyWithoutCreatedByNestedInput
+    routeExpensesUpdated?: RouteExpenseUpdateManyWithoutUpdatedByNestedInput
+    routePaymentsCreated?: RoutePaymentUpdateManyWithoutCreatedByNestedInput
+    routePaymentsUpdated?: RoutePaymentUpdateManyWithoutUpdatedByNestedInput
+    routeStopsCreated?: RouteStopUpdateManyWithoutCreatedByNestedInput
+    routeStopsUpdated?: RouteStopUpdateManyWithoutUpdatedByNestedInput
+    expenseTemplatesCreated?: ExpenseTemplateUpdateManyWithoutCreatedByNestedInput
+    expenseTemplatesUpdated?: ExpenseTemplateUpdateManyWithoutUpdatedByNestedInput
+    tenantIntegrationsCreated?: TenantIntegrationUpdateManyWithoutCreatedByNestedInput
+    tenantIntegrationsUpdated?: TenantIntegrationUpdateManyWithoutUpdatedByNestedInput
+    driverHOSEntriesCreated?: DriverHOSEntryUpdateManyWithoutCreatedByNestedInput
+    driverHOSEntriesUpdated?: DriverHOSEntryUpdateManyWithoutUpdatedByNestedInput
+    driverIncidentsCreated?: DriverIncidentUpdateManyWithoutCreatedByNestedInput
+    driverIncidentsUpdated?: DriverIncidentUpdateManyWithoutUpdatedByNestedInput
+    driverInvitationsCreated?: DriverInvitationUpdateManyWithoutCreatedByNestedInput
+    driverInvitationsUpdated?: DriverInvitationUpdateManyWithoutUpdatedByNestedInput
+    supportTicketsCreated?: SupportTicketUpdateManyWithoutCreatedByNestedInput
+    supportTicketsUpdated?: SupportTicketUpdateManyWithoutUpdatedByNestedInput
+    playbooksCreated?: PlaybookUpdateManyWithoutCreatedByNestedInput
+    playbooksUpdated?: PlaybookUpdateManyWithoutUpdatedByNestedInput
+    playbookInstancesCreated?: PlaybookInstanceUpdateManyWithoutCreatedByNestedInput
+    playbookInstancesUpdated?: PlaybookInstanceUpdateManyWithoutUpdatedByNestedInput
+    playbookTriggersCreated?: PlaybookTriggerUpdateManyWithoutCreatedByNestedInput
+    playbookTriggersUpdated?: PlaybookTriggerUpdateManyWithoutUpdatedByNestedInput
+    stepTemplatesCreated?: StepTemplateUpdateManyWithoutCreatedByNestedInput
+    stepTemplatesUpdated?: StepTemplateUpdateManyWithoutUpdatedByNestedInput
+    routeTemplatesCreated?: RouteTemplateUpdateManyWithoutCreatedByNestedInput
+    routeTemplatesUpdated?: RouteTemplateUpdateManyWithoutUpdatedByNestedInput
+    routeTemplateStopsCreated?: RouteTemplateStopUpdateManyWithoutCreatedByNestedInput
+    driverCompensationTemplatesUpdated?: DriverCompensationTemplateUpdateManyWithoutUpdaterNestedInput
+    loadDriverAssignmentsUpdated?: LoadDriverAssignmentUpdateManyWithoutUpdaterNestedInput
+    loadPayComponentsUpdated?: LoadPayComponentUpdateManyWithoutUpdaterNestedInput
+    payComponentAttachmentsUpdated?: PayComponentAttachmentUpdateManyWithoutUpdaterNestedInput
+    driverBonusesUpdated?: DriverBonusUpdateManyWithoutUpdaterNestedInput
+    driverDeductionsUpdated?: DriverDeductionUpdateManyWithoutUpdaterNestedInput
+    driverSettlementsUpdated?: DriverSettlementUpdateManyWithoutUpdaterNestedInput
+    driverDisputesUpdated?: DriverDisputeUpdateManyWithoutUpdaterNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGridViewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -323723,6 +326423,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUpdateManyWithoutCreatorNestedInput
@@ -323862,6 +326563,7 @@ export namespace Prisma {
     notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     notificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    gridViews?: GridViewUncheckedUpdateManyWithoutUserNestedInput
     driverCompensationTemplatesCreatedBy?: DriverCompensationTemplateUncheckedUpdateManyWithoutCreatorNestedInput
     loadDriverAssignmentsCreatedBy?: LoadDriverAssignmentUncheckedUpdateManyWithoutCreatorNestedInput
     loadPayComponentsCreatedBy?: LoadPayComponentUncheckedUpdateManyWithoutCreatorNestedInput
@@ -328652,6 +331354,17 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type GridViewCreateManyUserInput = {
+    id?: string
+    gridId: string
+    name: string
+    isDefault?: boolean
+    schemaVersion?: number
+    state: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type DriverCompensationTemplateCreateManyCreatorInput = {
     id?: string
     tenantId: string
@@ -332520,6 +335233,39 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridViewUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridViewUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GridViewUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    gridId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    state?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DriverCompensationTemplateUpdateWithoutCreatorInput = {
