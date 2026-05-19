@@ -24,3 +24,6 @@ export { DeleteConfirmDialog } from './DeleteConfirmDialog';
 export { EmptyState as GridEmptyState } from './EmptyState';
 export { LoadingSkeleton as GridLoadingSkeleton } from './LoadingSkeleton';
 export { ErrorState as GridErrorState } from './ErrorState';
+
+// Hooks
+export { useGridKeyboardNav } from './useGridKeyboardNav';
