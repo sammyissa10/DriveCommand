@@ -40,6 +40,8 @@ export interface CarrierTruckData {
 
 interface CarrierTruckFormProps {
   truck?: CarrierTruckData;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 function toDateInputValue(val: Date | string | null | undefined): string {
@@ -86,7 +88,7 @@ interface NhtsaResult {
   ErrorCode: string | null;
 }
 
-export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
+export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFormProps) {
   const router = useRouter();
   const isEdit = Boolean(truck?.id);
 
@@ -229,7 +231,11 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
 
       toast.success(isEdit ? 'Truck updated' : 'Truck created');
       if (isEdit) {
-        router.refresh();
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.refresh();
+        }
       } else {
         router.push('/carrier/fleet/trucks');
         router.refresh();
@@ -538,7 +544,13 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push('/carrier/fleet/trucks')}
+          onClick={() => {
+            if (onCancel) {
+              onCancel();
+            } else {
+              router.push('/carrier/fleet/trucks');
+            }
+          }}
           disabled={isSubmitting}
         >
           Cancel
