@@ -27,9 +27,14 @@ export type {
   ExtendedColumnDef,
   // Grid state
   FilterOperator,
+  TextFilterOperator,
+  SelectFilterOperator,
+  NumberFilterOperator,
+  DateFilterOperator,
   GridFilter,
   PaginationState,
   GridState,
+  GridViewState,
   // Server-side
   ServerFetchParams,
   ServerFetchResult,
@@ -57,3 +62,15 @@ export { DEFAULT_GRID_PREFERENCES } from './core/types';
 
 // Shell components (visual layer)
 export * from './shell';
+
+// Filter system
+export * from './filters';
+
+// Saved views
+export * from './views';
+
+// Inline edit
+export * from './inline-edit';
+
+// CSV export
+export * from './export';

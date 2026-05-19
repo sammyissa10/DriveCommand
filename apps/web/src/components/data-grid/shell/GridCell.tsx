@@ -10,8 +10,9 @@
 import * as React from 'react';
 import { flexRender, type Cell } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
 import { useGridShellContext } from './GridShell';
+import { useDataGridContext } from '../core/DataGrid';
+import { InlineEditCell } from '../inline-edit';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -55,99 +56,50 @@ export function GridCell<TData, TValue>({
   children,
 }: GridCellProps<TData, TValue>) {
   const { density, setFocusedCell } = useGridShellContext();
+  const { onCellEdit, refresh } = useDataGridContext();
   const cellRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [editValue, setEditValue] = React.useState<string>('');
 
   const column = cell.column;
-  const columnMeta = column.columnDef.meta as { editable?: boolean } | undefined;
+  const columnMeta = column.columnDef.meta as {
+    editable?: boolean;
+    editType?: 'text' | 'select' | 'date';
+    filterOptions?: Array<{ value: string; label: string }>;
+  } | undefined;
   const isEditable = columnMeta?.editable ?? false;
+  const editType = columnMeta?.editType ?? 'text';
+  const selectOptions = columnMeta?.filterOptions ?? [];
   const width = column.getSize();
+  const rowId = cell.row.id;
+  const columnId = column.id;
+  const value = cell.getValue();
 
   // Cell ID for ARIA
   const cellId = `${gridId}-row-${rowIndex}-col-${colIndex}`;
-
-  // Start editing
-  const startEdit = React.useCallback(() => {
-    if (!isEditable) return;
-    const value = cell.getValue();
-    setEditValue(value != null ? String(value) : '');
-    setIsEditing(true);
-  }, [isEditable, cell]);
-
-  // Commit edit
-  const commitEdit = React.useCallback(() => {
-    if (!isEditing) return;
-    setIsEditing(false);
-    // Note: In a real implementation, this would call an update function
-    // to persist the change. For now, we just exit edit mode.
-    console.log('Commit edit:', cell.column.id, editValue);
-  }, [isEditing, editValue, cell.column.id]);
-
-  // Cancel edit
-  const cancelEdit = React.useCallback(() => {
-    setIsEditing(false);
-    setEditValue('');
-  }, []);
-
-  // Handle keyboard in edit mode
-  const handleEditKeyDown = React.useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        commitEdit();
-        event.preventDefault();
-      } else if (event.key === 'Escape') {
-        cancelEdit();
-        event.preventDefault();
-      }
-    },
-    [commitEdit, cancelEdit]
-  );
-
-  // Handle cell keyboard
-  const handleCellKeyDown = React.useCallback(
-    (event: React.KeyboardEvent) => {
-      if (isEditing) {
-        handleEditKeyDown(event);
-        return;
-      }
-
-      if (event.key === 'Enter' && isEditable) {
-        startEdit();
-        event.preventDefault();
-      }
-    },
-    [isEditing, handleEditKeyDown, isEditable, startEdit]
-  );
 
   // Handle cell click
   const handleCellClick = React.useCallback(() => {
     setFocusedCell({ rowIndex, colIndex });
   }, [setFocusedCell, rowIndex, colIndex]);
 
-  // Handle cell double click for editing
-  const handleDoubleClick = React.useCallback(() => {
-    if (isEditable) {
-      startEdit();
-    }
-  }, [isEditable, startEdit]);
-
-  // Focus input when editing starts
-  React.useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [isEditing]);
-
   // Focus cell when it becomes focused
   React.useEffect(() => {
-    if (isFocused && !isEditing && cellRef.current) {
+    if (isFocused && cellRef.current) {
       cellRef.current.focus();
     }
-  }, [isFocused, isEditing]);
+  }, [isFocused]);
+
+  // Handle cell edit with refresh
+  const handleCellEdit = React.useCallback(
+    async (rowId: string, columnId: string, newValue: unknown, oldValue: unknown) => {
+      if (!onCellEdit) return;
+      await onCellEdit(rowId, columnId, newValue, oldValue);
+      // Optionally refresh data after edit
+      if (refresh) {
+        refresh();
+      }
+    },
+    [onCellEdit, refresh]
+  );
 
   return (
     <div
@@ -158,27 +110,27 @@ export function GridCell<TData, TValue>({
       tabIndex={isFocused ? 0 : -1}
       data-focused={isFocused ? 'true' : undefined}
       onClick={handleCellClick}
-      onDoubleClick={handleDoubleClick}
-      onKeyDown={handleCellKeyDown}
       style={{
         width,
         minWidth: 80,
       }}
       className={cn(
-        'flex items-center border-r border-border truncate',
+        'flex items-center border-r border-border',
         densityPadding[density],
         isFocused && 'ring-2 ring-primary/50 ring-inset',
-        isEditable && 'cursor-text'
+        !isEditable && 'truncate'
       )}
     >
-      {isEditing ? (
-        <Input
-          ref={inputRef}
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onBlur={commitEdit}
-          onKeyDown={handleEditKeyDown}
-          className="h-6 w-full text-sm"
+      {isEditable ? (
+        <InlineEditCell
+          row={cell.row.original}
+          rowId={rowId}
+          columnId={columnId}
+          value={value}
+          onCellEdit={handleCellEdit}
+          editType={editType}
+          selectOptions={selectOptions}
+          className="w-full"
         />
       ) : (
         <span className="truncate">

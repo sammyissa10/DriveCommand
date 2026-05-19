@@ -3,8 +3,8 @@
 /**
  * GridToolbar - Sticky toolbar for DataGrid.
  *
- * Provides search input (debounced 300ms), density toggle, column visibility,
- * CSV export, and optional "New" button.
+ * Provides search input (debounced 300ms), filter panel, saved views, density toggle,
+ * column visibility, CSV export with multiple options, and optional "New" button.
  */
 
 import * as React from 'react';
@@ -16,6 +16,7 @@ import {
   Columns3,
   Download,
   Plus,
+  Filter as FilterIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import {
   Tooltip,
@@ -37,13 +39,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useDataGridContext } from '../core/DataGrid';
-import type { DensityMode } from '../core/types';
+import { FilterPanel } from '../filters/FilterPanel';
+import { FilterChip } from '../filters/FilterChip';
+import type { DensityMode, ExtendedColumnDef, ServerDataFetcher, GridFilter } from '../core/types';
+import { exportVisible, exportSelected, exportAll } from '../export';
 
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
-interface GridToolbarProps {
+interface GridToolbarProps<TData> {
   /** Callback when "New" button is clicked */
   onNew?: () => void;
   /** Whether to show the "New" button */
@@ -58,6 +63,22 @@ interface GridToolbarProps {
   onSearch?: (query: string) => void;
   /** Local search value */
   searchValue?: string;
+  /** Grid columns for filter panel */
+  columns: ExtendedColumnDef<TData>[];
+  /** Data fetcher for "export all" mode */
+  dataFetcher?: ServerDataFetcher<TData>;
+  /** Current filters */
+  filters: GridFilter[];
+  /** Filters change callback */
+  onFiltersChange: (filters: GridFilter[]) => void;
+  /** Current sort state */
+  sort: { field: string; direction: 'asc' | 'desc' } | null;
+  /** Current search term */
+  search: string;
+  /** Row ID accessor for export selected */
+  rowIdAccessor?: (row: TData) => string;
+  /** Density setter from preferences hook */
+  setDensity: (density: DensityMode) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -100,7 +121,7 @@ const densityLabels: Record<DensityMode, string> = {
 // Component
 // ---------------------------------------------------------------------------
 
-export function GridToolbar({
+export function GridToolbar<TData>({
   onNew,
   showNew = false,
   searchPlaceholder = 'Search...',
@@ -108,8 +129,17 @@ export function GridToolbar({
   className,
   onSearch,
   searchValue: controlledSearchValue,
-}: GridToolbarProps) {
-  const { table, preferences, density } = useDataGridContext();
+  columns,
+  dataFetcher,
+  filters,
+  onFiltersChange,
+  sort,
+  search,
+  rowIdAccessor,
+  setDensity,
+}: GridToolbarProps<TData>) {
+  const { table, preferences, density, selection, gridId } = useDataGridContext<TData>();
+  const [filterPanelOpen, setFilterPanelOpen] = React.useState(false);
 
   // Local search state
   const [localSearch, setLocalSearch] = React.useState(controlledSearchValue ?? '');
@@ -136,74 +166,96 @@ export function GridToolbar({
 
   // Handle density change
   const handleDensityChange = (value: string) => {
-    // Note: In a real implementation, this would call preferences.setDensity
-    console.log('Set density:', value);
+    setDensity(value as DensityMode);
   };
 
-  // Handle export
-  const handleExport = () => {
-    // Get visible data
-    const rows = table.getRowModel().rows;
-    const columns = table.getVisibleLeafColumns();
-
-    // Build CSV content
-    const headers = columns.map((col) => {
-      const header = col.columnDef.header;
-      if (typeof header === 'string') return header;
-      return col.id;
+  // Get column label for filter chip
+  const getColumnLabel = (columnId: string) => {
+    const column = columns.find((col) => {
+      const colId = 'accessorKey' in col ? String(col.accessorKey) : col.id;
+      return colId === columnId;
     });
+    if (!column) return columnId;
+    return typeof column.header === 'string' ? column.header : columnId;
+  };
 
-    const csvRows = rows.map((row) => {
-      return columns.map((col) => {
-        const value = row.getValue(col.id);
-        if (value === null || value === undefined) return '';
-        const stringValue = String(value);
-        // Escape quotes and wrap in quotes if contains comma, quote, or newline
-        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-          return `"${stringValue.replace(/"/g, '""')}"`;
-        }
-        return stringValue;
-      });
-    });
+  // Remove filter
+  const handleRemoveFilter = (index: number) => {
+    const updated = filters.filter((_, i) => i !== index);
+    onFiltersChange(updated);
+  };
 
-    const csvContent = [headers.join(','), ...csvRows.map((row) => row.join(','))].join('\n');
+  // Export handlers
+  const handleExportVisible = () => {
+    const rows = table.getRowModel().rows.map((row) => row.original);
+    exportVisible(rows, columns, gridId);
+  };
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${exportFilename}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleExportSelected = () => {
+    const rows = table.getRowModel().rows.map((row) => row.original);
+    const accessor = rowIdAccessor ?? ((row: TData) => String((row as { id?: unknown }).id ?? ''));
+    exportSelected(selection.selectedIds, rows, columns, gridId, accessor);
+  };
+
+  const handleExportAll = async () => {
+    if (!dataFetcher) {
+      // Fall back to export visible if no data fetcher
+      handleExportVisible();
+      return;
+    }
+
+    await exportAll(
+      dataFetcher,
+      columns,
+      gridId,
+      filters,
+      sort,
+      search
+    );
   };
 
   return (
     <TooltipProvider>
-      <div
-        className={cn(
-          'flex items-center gap-2 p-2 border-b border-border bg-background',
-          className
-        )}
-      >
-        {/* Search input */}
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
-            className="pl-9 h-9"
-            aria-label="Search"
-          />
-        </div>
+      <div className="space-y-2">
+        <div
+          className={cn(
+            'flex items-center gap-2 p-2 border-b border-border bg-background',
+            className
+          )}
+        >
+          {/* Search input */}
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              className="pl-9 h-9"
+              aria-label="Search"
+            />
+          </div>
 
-        {/* Spacer */}
-        <div className="flex-1" />
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Filter button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={filters.length > 0 ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setFilterPanelOpen(true)}
+                aria-label="Open filters"
+              >
+                <FilterIcon className="h-4 w-4" />
+                {filters.length > 0 && (
+                  <span className="ml-1">{filters.length}</span>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Filters</TooltipContent>
+          </Tooltip>
 
         {/* Density toggle */}
         <DropdownMenu>
@@ -273,28 +325,69 @@ export function GridToolbar({
         </DropdownMenu>
 
         {/* Export CSV */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleExport}
-              aria-label="Export to CSV"
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" aria-label="Export">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>Export to CSV</TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Export</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleExportVisible}>
+              Export visible rows ({table.getRowModel().rows.length})
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleExportSelected}
+              disabled={selection.selectedCount === 0}
             >
-              <Download className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Export to CSV</TooltipContent>
-        </Tooltip>
+              Export selected rows ({selection.selectedCount})
+            </DropdownMenuItem>
+            {dataFetcher && (
+              <DropdownMenuItem onClick={handleExportAll}>
+                Export all rows (current filters)
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        {/* New button */}
-        {showNew && (
-          <Button variant="default" size="sm" onClick={onNew}>
-            <Plus className="h-4 w-4 mr-1" />
-            New
-          </Button>
+          {/* New button */}
+          {showNew && (
+            <Button variant="default" size="sm" onClick={onNew}>
+              <Plus className="h-4 w-4 mr-1" />
+              New
+            </Button>
+          )}
+        </div>
+
+        {/* Filter chips row */}
+        {filters.length > 0 && (
+          <div className="flex items-center gap-2 px-2 pb-2 flex-wrap">
+            {filters.map((filter, index) => (
+              <FilterChip
+                key={index}
+                filter={filter}
+                columnLabel={getColumnLabel(filter.columnId)}
+                onRemove={() => handleRemoveFilter(index)}
+              />
+            ))}
+          </div>
         )}
       </div>
+
+      {/* Filter panel */}
+      <FilterPanel
+        open={filterPanelOpen}
+        onOpenChange={setFilterPanelOpen}
+        columns={columns}
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+      />
     </TooltipProvider>
   );
 }
