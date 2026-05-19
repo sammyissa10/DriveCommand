@@ -114,7 +114,7 @@ export function DriverNotificationPanel({ onClose, onMarkedAllRead }: DriverNoti
   }
 
   return (
-    <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[480px] overflow-y-auto bg-popover border rounded-lg shadow-lg z-50 flex flex-col">
+    <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[calc(100dvh-140px)] overflow-y-auto bg-popover border rounded-lg shadow-lg z-50 flex flex-col">
       {/* Sticky header */}
       <div className="sticky top-0 bg-popover border-b px-4 py-3 flex items-center justify-between z-10">
         <span className="font-semibold text-sm text-foreground">Notifications</span>

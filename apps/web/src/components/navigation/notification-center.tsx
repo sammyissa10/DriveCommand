@@ -144,7 +144,7 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
   }
 
   return (
-    <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[480px] overflow-y-auto bg-[hsl(220_32%_11%)] border border-[hsl(220_25%_18%)] rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15),_0_24px_48px_-12px_rgba(0,0,0,0.4)] z-[1001] flex flex-col">
+    <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[calc(100dvh-140px)] overflow-y-auto bg-[hsl(220_32%_11%)] border border-[hsl(220_25%_18%)] rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15),_0_24px_48px_-12px_rgba(0,0,0,0.4)] z-[1001] flex flex-col">
       {/* Sticky header - Quick Create section label style */}
       <div className="sticky top-0 bg-[hsl(220_32%_11%)] px-3 py-2 flex items-center justify-between z-10 border-b border-[hsl(220_25%_18%)]">
         <span className="text-[11px] font-medium uppercase tracking-wider text-[hsl(220_10%_50%)]">
