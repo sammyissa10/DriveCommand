@@ -6,7 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import prisma from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
 import type { GridViewState } from '@/components/data-grid/core/types';
 
 // ---------------------------------------------------------------------------
