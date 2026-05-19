@@ -35,13 +35,34 @@ export async function GET(req: NextRequest) {
   if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
 
   try {
-    const { searchParams } = req.nextUrl;
+    const searchParams = req.nextUrl.searchParams;
     const status = searchParams.get('status') ?? undefined;
     const search = searchParams.get('search') ?? undefined;
     const page = parseInt(searchParams.get('page') ?? '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') ?? '50', 10);
 
-    const result = await listClients(orgId, { status, search, page, pageSize });
+    // Parse sort (format: "field:direction")
+    const sortParam = searchParams.get('sort');
+    let sort: { field: string; direction: 'asc' | 'desc' } | undefined;
+    if (sortParam) {
+      const [field, direction] = sortParam.split(':');
+      if (field && (direction === 'asc' || direction === 'desc')) {
+        sort = { field, direction };
+      }
+    }
+
+    // Parse filters (JSON array)
+    const filtersParam = searchParams.get('filters');
+    let filters;
+    if (filtersParam) {
+      try {
+        filters = JSON.parse(filtersParam);
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    const result = await listClients(orgId, { status, search, page, pageSize, sort, filters });
 
     return NextResponse.json({ data: { ...result, page, pageSize } });
   } catch (err) {

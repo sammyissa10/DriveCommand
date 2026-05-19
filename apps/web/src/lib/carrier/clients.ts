@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
+import type { GridFilter } from '@/components/data-grid/core/types';
+import type { Prisma } from '@/generated/prisma';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,6 +16,8 @@ export interface ListClientsFilters {
   search?: string;
   page?: number;
   pageSize?: number;
+  sort?: { field: string; direction: 'asc' | 'desc' };
+  filters?: GridFilter[];
 }
 
 export interface ClientCreateInput {
@@ -45,22 +49,132 @@ export type ClientUpdateInput = Partial<ClientCreateInput>;
 // Functions
 // ---------------------------------------------------------------------------
 
+/**
+ * Convert GridFilter array to Prisma where clause.
+ */
+function gridFiltersToPrismaWhere(filters: GridFilter[]): Record<string, unknown> {
+  const where: Record<string, unknown> = {};
+
+  for (const filter of filters) {
+    const { columnId, operator, value } = filter;
+
+    switch (operator) {
+      case 'equals':
+        where[columnId] = value;
+        break;
+      case 'contains':
+        where[columnId] = { contains: value as string, mode: 'insensitive' };
+        break;
+      case 'startsWith':
+        where[columnId] = { startsWith: value as string, mode: 'insensitive' };
+        break;
+      case 'endsWith':
+        where[columnId] = { endsWith: value as string, mode: 'insensitive' };
+        break;
+      case 'anyOf':
+        if (Array.isArray(value) && value.length > 0) {
+          where[columnId] = { in: value };
+        }
+        break;
+      case 'noneOf':
+        if (Array.isArray(value) && value.length > 0) {
+          where[columnId] = { notIn: value };
+        }
+        break;
+      case 'isEmpty':
+        where[columnId] = null;
+        break;
+      case 'isNotEmpty':
+        where[columnId] = { not: null };
+        break;
+      case 'eq':
+        where[columnId] = value;
+        break;
+      case 'neq':
+        where[columnId] = { not: value };
+        break;
+      case 'gt':
+        if (typeof value === 'object' && value !== null && 'min' in value) {
+          where[columnId] = { gt: value.min };
+        }
+        break;
+      case 'lt':
+        if (typeof value === 'object' && value !== null && 'min' in value) {
+          where[columnId] = { lt: value.min };
+        }
+        break;
+      case 'between':
+        if (typeof value === 'object' && value !== null) {
+          const obj = value as { min?: unknown; max?: unknown; from?: Date; to?: Date };
+          if ('min' in obj && 'max' in obj && obj.min != null && obj.max != null) {
+            where[columnId] = { gte: obj.min, lte: obj.max };
+          } else if ('from' in obj && 'to' in obj) {
+            const filters: unknown[] = [];
+            if (obj.from) filters.push({ gte: obj.from });
+            if (obj.to) filters.push({ lte: obj.to });
+            if (filters.length > 0) {
+              where[columnId] = { AND: filters };
+            }
+          }
+        }
+        break;
+      case 'is':
+      case 'before':
+      case 'after':
+        if (typeof value === 'object' && value !== null && 'from' in value) {
+          const from = (value as { from?: Date }).from;
+          if (from) {
+            if (operator === 'is') {
+              // Match the entire day
+              const start = new Date(from);
+              start.setHours(0, 0, 0, 0);
+              const end = new Date(from);
+              end.setHours(23, 59, 59, 999);
+              where[columnId] = { gte: start, lte: end };
+            } else if (operator === 'before') {
+              where[columnId] = { lt: from };
+            } else if (operator === 'after') {
+              where[columnId] = { gt: from };
+            }
+          }
+        }
+        break;
+    }
+  }
+
+  return where;
+}
+
 export async function listClients(orgId: string, filters: ListClientsFilters = {}) {
-  const { status, search, page = 1, pageSize = 50 } = filters;
+  const { status, search, page = 1, pageSize = 50, sort, filters: gridFilters = [] } = filters;
   const skip = (page - 1) * pageSize;
 
-  const where = {
+  // Build where clause
+  const where: Prisma.CarrierClientWhereInput = {
     orgId,
     ...(status ? { status } : {}),
-    ...(search ? { name: { contains: search, mode: 'insensitive' as const } } : {}),
+    ...(search ? {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' } },
+        { primaryContact: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+      ]
+    } : {}),
+    ...gridFiltersToPrismaWhere(gridFilters),
   };
+
+  // Build orderBy clause
+  let orderBy: Prisma.CarrierClientOrderByWithRelationInput = { createdAt: 'desc' };
+  if (sort) {
+    orderBy = { [sort.field]: sort.direction };
+  }
 
   const [items, total] = await Promise.all([
     prisma.carrierClient.findMany({
       where,
       skip,
       take: pageSize,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
     }),
     prisma.carrierClient.count({ where }),
   ]);
