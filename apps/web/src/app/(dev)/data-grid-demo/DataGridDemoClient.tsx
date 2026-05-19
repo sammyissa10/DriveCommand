@@ -23,6 +23,9 @@ import {
   QuickActions,
   type DataGridColumnMeta,
   type BulkAction,
+  type GridFilter,
+  type ExtendedColumnDef,
+  type DensityMode,
 } from '@/components/data-grid';
 import { Badge } from '@/components/ui/badge';
 import { Archive, Mail } from 'lucide-react';
@@ -171,6 +174,9 @@ export function DataGridDemoClient() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filteredUsers, setFilteredUsers] = React.useState(users);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [filters, setFilters] = React.useState<GridFilter[]>([]);
+  const [sort] = React.useState<{ field: string; direction: 'asc' | 'desc' } | null>(null);
+  const handleSetDensity = React.useCallback((_d: DensityMode) => {}, []);
 
   // Filter users based on search
   React.useEffect(() => {
@@ -266,6 +272,12 @@ export function DataGridDemoClient() {
                   exportFilename="users-export"
                   onSearch={setSearchQuery}
                   searchValue={searchQuery}
+                  columns={columns as ExtendedColumnDef<User>[]}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  sort={sort}
+                  search={searchQuery}
+                  setDensity={handleSetDensity}
                 />
                 <GridHeader enableSelection />
                 <GridBody enableSelection />
