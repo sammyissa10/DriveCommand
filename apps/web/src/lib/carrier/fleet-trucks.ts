@@ -30,6 +30,7 @@ export interface CarrierTruckCreateInput {
   insuranceExpiry?: string | Date | null;
   status?: string;
   notes?: string;
+  photoS3Key?: string | null;
 }
 
 export type CarrierTruckUpdateInput = Partial<CarrierTruckCreateInput>;

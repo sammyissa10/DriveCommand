@@ -25,6 +25,7 @@ const CarrierTruckUpdateSchema = z.object({
   insuranceExpiry: z.string().nullable().optional(),
   status: z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional(),
   notes: z.string().optional(),
+  photoS3Key: z.string().nullable().optional(),
 });
 
 export async function GET(
