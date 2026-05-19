@@ -10,7 +10,6 @@ import { useSidebarState } from "./useSidebarState"
 import { useMotionConfig, sidebarVariants } from "./motion"
 import { SidebarGroup } from "./SidebarGroup"
 import { SidebarFooter } from "./SidebarFooter"
-import { SidebarSearch } from "./SidebarSearch"
 import { SidebarSettingsNav } from "./SidebarSettingsNav"
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -434,14 +433,6 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
             )}
           </AnimatePresence>
         </Link>
-      </div>
-
-      {/* Search */}
-      <div className="shrink-0">
-        <SidebarSearch
-          isExpanded={expanded}
-          onExpandClick={() => setExpanded(true)}
-        />
       </div>
 
       {/* Main navigation - scrollable area */}
