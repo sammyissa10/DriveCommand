@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import type { GridViewState } from '@/components/data-grid/core/types';
+import type { Prisma } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
 // PUT - Update view
@@ -87,7 +88,7 @@ export async function PUT(
       data: {
         ...(name !== undefined && { name: name.trim() }),
         ...(isDefault !== undefined && { isDefault }),
-        ...(state !== undefined && { state: state as unknown as Record<string, unknown> }),
+        ...(state !== undefined && { state: state as unknown as Prisma.InputJsonValue }),
       },
     });
 

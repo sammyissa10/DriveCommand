@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import type { GridViewState } from '@/components/data-grid/core/types';
+import type { Prisma } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
 // GET - List views for grid + user
@@ -125,7 +126,7 @@ export async function POST(
         userId,
         name: name.trim(),
         isDefault: isDefault ?? false,
-        state: state as unknown as Record<string, unknown>,
+        state: state as unknown as Prisma.InputJsonValue,
         schemaVersion: 1,
       },
     });
