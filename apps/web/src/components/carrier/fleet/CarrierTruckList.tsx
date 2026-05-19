@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Truck, Plus, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { SamplePill } from '@/components/onboarding/sample-pill';
+import { TruckQuickViewSheet } from './TruckQuickViewSheet';
 
 export interface CarrierTruckItem {
   id: string;
@@ -21,6 +22,11 @@ export interface CarrierTruckItem {
   licenseExpiry: Date | string | null;
   status: string;
   isSample: boolean;
+  photoS3Key: string | null;
+  insuranceExpiry: Date | string | null;
+  licensePlate: string | null;
+  licenseState: string | null;
+  assignedDriver: { id: string; firstName: string; lastName: string } | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -93,6 +99,7 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [selectedTruck, setSelectedTruck] = useState<CarrierTruckItem | null>(null);
 
   const filtered = trucks.filter((t) => {
     const q = search.toLowerCase();
@@ -190,7 +197,19 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
                     (licDays !== null && licDays < 30);
 
                   return (
-                    <tr key={t.id} className="hover:bg-muted/30 transition-colors">
+                    <tr
+                      key={t.id}
+                      className="hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => setSelectedTruck(t)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedTruck(t);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           {hasAlert && (
@@ -201,6 +220,7 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
                               <Link
                                 href={`/carrier/fleet/trucks/${t.id}`}
                                 className="font-medium text-foreground hover:text-primary transition-colors"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 {t.displayName || t.unitNumber}
                               </Link>
@@ -287,6 +307,16 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
             </table>
           </div>
         </div>
+      )}
+
+      {selectedTruck && (
+        <TruckQuickViewSheet
+          truck={selectedTruck}
+          open={!!selectedTruck}
+          onOpenChange={(o) => {
+            if (!o) setSelectedTruck(null);
+          }}
+        />
       )}
     </div>
   );

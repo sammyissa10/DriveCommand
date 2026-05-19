@@ -88,6 +88,11 @@ export default async function CarrierTrucksPage() {
           licenseExpiry: t.licenseExpiry,
           status: t.status,
           isSample: t.isSample,
+          photoS3Key: t.photoS3Key ?? null,
+          insuranceExpiry: t.insuranceExpiry ?? null,
+          licensePlate: t.licensePlate ?? null,
+          licenseState: t.licenseState ?? null,
+          assignedDriver: t.primaryDispatches[0]?.primaryDriver ?? null,
         }))}
       />
     </div>

@@ -110,6 +110,18 @@ export async function listCarrierTrucks(orgId: string, filters: ListCarrierTruck
       skip,
       take: pageSize,
       orderBy: { createdAt: 'desc' },
+      include: {
+        primaryDispatches: {
+          where: { status: { in: ['planned', 'in_transit'] } },
+          select: {
+            primaryDriver: {
+              select: { id: true, firstName: true, lastName: true },
+            },
+          },
+          orderBy: { scheduledDeparture: 'desc' },
+          take: 1,
+        },
+      },
     }),
     prisma.carrierTruck.count({ where }),
   ]);
