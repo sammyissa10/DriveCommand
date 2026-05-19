@@ -54,3 +54,6 @@ export type {
 
 // Default preferences constant
 export { DEFAULT_GRID_PREFERENCES } from './core/types';
+
+// Shell components (visual layer)
+export * from './shell';
