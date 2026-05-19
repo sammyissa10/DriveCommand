@@ -336,7 +336,7 @@ export interface UseGridUrlStateReturn {
  */
 export interface UseGridSelectionReturn {
   selectedIds: Set<string>;
-  selectRow: (id: string, event: React.MouseEvent | React.KeyboardEvent) => void;
+  selectRow: (id: string, event: React.MouseEvent | React.KeyboardEvent, allRowIds?: string[]) => void;
   selectRange: (startId: string, endId: string, allRowIds: string[]) => void;
   selectAll: (allRowIds: string[]) => void;
   clearSelection: () => void;
