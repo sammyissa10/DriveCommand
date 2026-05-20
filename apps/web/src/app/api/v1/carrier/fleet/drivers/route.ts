@@ -86,14 +86,14 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // After response: record activation event for first real driver creation
-    after(async () => {
-      try {
-        await recordActivationEvent(orgId, 'first_real_driver');
-      } catch {
-        // non-fatal — tracker errors must never break the user action
-      }
-    });
+    // Activation tracker: must run BEFORE response so /onboarding/welcome
+    // re-renders with fresh data on the next navigation (TKT-0040).
+    // Wrapped in try/catch — tracker errors must NEVER fail the create.
+    try {
+      await recordActivationEvent(orgId, 'first_real_driver');
+    } catch (err) {
+      logger.error('[carrier/fleet/drivers] activation tracker failed', { driverId: carrierDriver.id, err });
+    }
 
     return NextResponse.json(
       { data: carrierDriver, ...(result.emailWarning ? { warning: result.emailWarning } : {}) },

@@ -111,16 +111,16 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // After response: record activation event for the first real (non-sample) truck
-    after(async () => {
-      if (!carrierTruck.isSample) {
-        try {
-          await recordActivationEvent(orgId, 'first_real_truck');
-        } catch (err) {
-          logger.error('[carrier/fleet/trucks] activation tracker failed', { truckId: carrierTruck.id, err });
-        }
+    // Activation tracker: must run BEFORE response so /onboarding/welcome
+    // re-renders with fresh data on the next navigation (TKT-0040).
+    // Wrapped in try/catch — tracker errors must NEVER fail the create.
+    if (!carrierTruck.isSample) {
+      try {
+        await recordActivationEvent(orgId, 'first_real_truck');
+      } catch (err) {
+        logger.error('[carrier/fleet/trucks] activation tracker failed', { truckId: carrierTruck.id, err });
       }
-    });
+    }
 
     return NextResponse.json({ data: carrierTruck }, { status: 201 });
   } catch (err) {

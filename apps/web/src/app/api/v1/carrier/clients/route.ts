@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
@@ -96,15 +96,16 @@ export async function POST(req: NextRequest) {
       revalidatePath('/onboarding/welcome');
     }
 
-    after(async () => {
-      if (!client.isSample) {
-        try {
-          await recordActivationEvent(orgId, 'first_real_client');
-        } catch (err) {
-          logger.error('[carrier/clients] activation tracker failed', { clientId: client.id, err });
-        }
+    // Activation tracker: must run BEFORE response so /onboarding/welcome
+    // re-renders with fresh data on the next navigation (TKT-0040).
+    // Wrapped in try/catch — tracker errors must NEVER fail the create.
+    if (!client.isSample) {
+      try {
+        await recordActivationEvent(orgId, 'first_real_client');
+      } catch (err) {
+        logger.error('[carrier/clients] activation tracker failed', { clientId: client.id, err });
       }
-    });
+    }
 
     return NextResponse.json({ data: client }, { status: 201 });
   } catch (err) {
