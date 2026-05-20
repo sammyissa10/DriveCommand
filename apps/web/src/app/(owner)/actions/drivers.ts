@@ -17,6 +17,7 @@ import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { encryptField, last4 } from '@/lib/security/field-crypto';
 import { getCurrentKeyId } from '@/lib/security/key-registry';
 
@@ -197,6 +198,17 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
     // Revalidate
     revalidatePath('/drivers');
     revalidateTag('dashboard-metrics', 'max');
+
+    // Record activation event for the first real driver invitation.
+    // Wrapped in try/catch — activation tracker must never break the invite flow.
+    try {
+      await recordActivationEvent(tenantId, 'first_real_driver');
+    } catch (err) {
+      logger.error('[inviteDriver] activation tracker failed', { invitationId: invitation.id, err });
+    }
+
+    // Invalidate onboarding welcome cache so activation checklist reflects new driver on back-nav.
+    revalidatePath('/onboarding/welcome');
 
     if (!emailSent) {
       return {

@@ -1,5 +1,6 @@
 import { after, NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listClients, createClient } from '@/lib/carrier/clients';
@@ -88,6 +89,12 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await createClient(orgId, parsed.data);
+
+    // Invalidate onboarding welcome cache so activation checklist reflects new client on back-nav.
+    // Must be OUTSIDE after() — Next.js does not guarantee revalidation from inside after().
+    if (!client.isSample) {
+      revalidatePath('/onboarding/welcome');
+    }
 
     after(async () => {
       if (!client.isSample) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { after } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierDrivers, createCarrierDriver } from '@/lib/carrier/fleet-drivers';
@@ -63,6 +64,10 @@ export async function POST(req: NextRequest) {
 
     const result = await createCarrierDriver(orgId, parsed.data);
     const carrierDriver = result.driver;
+
+    // Invalidate onboarding welcome cache so activation checklist reflects new driver on back-nav.
+    // Must be OUTSIDE after() — Next.js does not guarantee revalidation from inside after().
+    revalidatePath('/onboarding/welcome');
 
     // After response: spawn any ON_DRIVER_CREATE playbooks for this tenant
     // Prefer userId (linked User FK) over CarrierDriver.id as entity identifier per research Pitfall 2

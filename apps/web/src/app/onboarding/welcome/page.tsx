@@ -6,6 +6,9 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { hydrateTenant } from '@/lib/onboarding/hydrate-tenant';
 import { ActivationChecklist } from './checklist';
 
+// Force dynamic rendering — activation progress is per-tenant and must never be statically cached.
+export const dynamic = 'force-dynamic';
+
 export const metadata = { title: 'Welcome to DriveCommand' };
 
 export default async function WelcomePage() {

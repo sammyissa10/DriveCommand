@@ -91,6 +91,7 @@ export async function createCustomer(prevState: ActionState | null, formData: Fo
   }
 
   revalidatePath('/crm');
+  revalidatePath('/onboarding/welcome');
   redirect(`/crm/${createdId}`);
 }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z, ZodError } from 'zod';
 import { after } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierTrucks, createCarrierTruck } from '@/lib/carrier/fleet-trucks';
@@ -90,6 +91,12 @@ export async function POST(req: NextRequest) {
     }
 
     const carrierTruck = await createCarrierTruck(orgId, parsed.data);
+
+    // Invalidate onboarding welcome cache so activation checklist reflects new truck on back-nav.
+    // Must be OUTSIDE after() — Next.js does not guarantee revalidation from inside after().
+    if (!carrierTruck.isSample) {
+      revalidatePath('/onboarding/welcome');
+    }
 
     // After response: spawn any ON_VEHICLE_CREATE playbooks for this tenant
     after(async () => {

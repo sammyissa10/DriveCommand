@@ -146,6 +146,7 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
 
   // Revalidate and redirect OUTSIDE try/catch (Next.js redirect throws NEXT_REDIRECT internally)
   revalidatePath('/trucks');
+  revalidatePath('/onboarding/welcome');
   revalidateTag('dashboard-metrics', 'max');
   redirect(`/trucks/${truckId}`);
 }
