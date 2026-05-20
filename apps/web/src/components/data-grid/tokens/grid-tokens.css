@@ -1,0 +1,41 @@
+/**
+ * DataGrid Design Tokens
+ *
+ * Vercel/Apple-inspired crisp-minimal aesthetic tokens.
+ * These tokens define the visual foundation for the DataGrid shell.
+ */
+
+:root {
+  /* --- Dimensions --- */
+
+  /* Fixed 48px row height (NO density toggle) */
+  --grid-row-height: 48px;
+
+  /* Header height */
+  --grid-header-height: 40px;
+
+  /* Cell padding */
+  --grid-cell-padding-x: 16px;
+  --grid-cell-padding-y: 12px;
+
+  /* --- Borders --- */
+
+  /* 40% opacity for ultra-minimal horizontal separators */
+  --grid-border-opacity: 0.4;
+
+  /* --- Colors --- */
+
+  /* Primary blue accent (maps to existing b-500) */
+  --grid-accent: var(--color-b-500);
+
+  /* Subtle accent for selected rows (maps to b-050) */
+  --grid-accent-subtle: var(--color-b-050);
+
+  /* --- Transitions --- */
+
+  /* Fast micro-interactions (150ms) */
+  --grid-transition-fast: 150ms;
+
+  /* Base state changes (200ms) */
+  --grid-transition-base: 200ms;
+}

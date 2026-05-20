@@ -88,7 +88,7 @@ export async function PUT(
       data: {
         ...(name !== undefined && { name: name.trim() }),
         ...(isDefault !== undefined && { isDefault }),
-        ...(state !== undefined && { state: state as unknown as Prisma.InputJsonValue }),
+...(state !== undefined && { state: state as unknown as Prisma.InputJsonValue }),
       },
     });
 

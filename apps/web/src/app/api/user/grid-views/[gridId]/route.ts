@@ -126,7 +126,7 @@ export async function POST(
         userId,
         name: name.trim(),
         isDefault: isDefault ?? false,
-        state: state as unknown as Prisma.InputJsonValue,
+state: state as unknown as Prisma.InputJsonValue,
         schemaVersion: 1,
       },
     });
