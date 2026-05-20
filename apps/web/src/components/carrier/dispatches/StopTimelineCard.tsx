@@ -114,6 +114,7 @@ interface StopTimelineCardProps {
   facility: { name: string; addressLine1: string | null; city: string | null; state: string | null } | null;
   dispatchStatus: string;
   userRole: string;
+  canManage: boolean;
   dispatchId?: string;
   loadId?: string;
   onStopUpdated?: () => void;
@@ -135,6 +136,7 @@ export function StopTimelineCard({
   facility,
   dispatchStatus,
   userRole,
+  canManage,
   dispatchId,
   loadId,
   onStopUpdated,
@@ -170,13 +172,7 @@ export function StopTimelineCard({
 
   const canComplete = isStopArrived && !missingDocs;
 
-  const isOwnerOrManager =
-    userRole === 'owner' ||
-    userRole === 'OWNER' ||
-    userRole === 'manager' ||
-    userRole === 'MANAGER';
-
-  const canSkip = (isStopPending || isStopArrived) && isOwnerOrManager;
+  const canSkip = (isStopPending || isStopArrived) && canManage;
 
   function handleArrive() {
     startTransition(async () => {
@@ -463,7 +459,7 @@ export function StopTimelineCard({
             )}
             <StopDocumentList
               stopId={stop.id}
-              userRole={userRole}
+              canManage={canManage}
               refreshKey={docRefreshKey}
               onDeleted={() => { router.refresh(); onStopUpdated?.(); }}
             />

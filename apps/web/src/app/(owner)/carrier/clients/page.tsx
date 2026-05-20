@@ -3,10 +3,12 @@ import { Users } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { listClients } from '@/lib/carrier/clients';
 import { ClientList } from '@/components/carrier/clients/ClientList';
+import { hasPermission } from '@/lib/auth/permissions';
 
 export default async function ClientsPage() {
   const session = await getSession();
   if (!session) redirect('/login');
+  const canCreate = hasPermission(session.permissions ?? null, 'clients', session.role);
   const orgId = session.tenantId;
 
   let items: Awaited<ReturnType<typeof listClients>>['items'] = [];
@@ -70,6 +72,7 @@ export default async function ClientsPage() {
 
       <ClientList
         role={session.role ?? undefined}
+        canCreate={canCreate}
         clients={items.map((c) => ({
           id: c.id,
           name: c.name,

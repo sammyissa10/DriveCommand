@@ -144,10 +144,12 @@ export function ClientDetail({
   client,
   initialEdit,
   role,
+  canCreateContract,
 }: {
   client: ClientSerialized;
   initialEdit: boolean;
   role?: string;
+  canCreateContract?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [isEditing, setIsEditing] = useState(initialEdit);
@@ -492,7 +494,7 @@ export function ClientDetail({
           {/* Tab: Contracts */}
           {activeTab === 'contracts' && (
             <div className="space-y-4">
-              {role !== 'MANAGER' && (
+              {canCreateContract && (
                 <div className="flex justify-end">
                   <Link
                     href={`/carrier/contracts/new?clientId=${client.id}`}

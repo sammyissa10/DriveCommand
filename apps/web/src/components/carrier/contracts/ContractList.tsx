@@ -66,7 +66,7 @@ function isExpiringSoon(expirationDate: string | null, status: string): boolean 
   return exp <= thirtyDaysOut && exp > now;
 }
 
-export function ContractList({ contracts, role }: { contracts: ContractItem[]; role?: string }) {
+export function ContractList({ contracts, role, canCreate }: { contracts: ContractItem[]; role?: string; canCreate?: boolean }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -102,7 +102,7 @@ export function ContractList({ contracts, role }: { contracts: ContractItem[]; r
             </option>
           ))}
         </select>
-        {role !== 'MANAGER' && (
+        {canCreate && (
           <div className="sm:ml-auto">
             <Link
               href="/carrier/contracts/new"

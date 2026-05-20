@@ -32,7 +32,7 @@ const STATUS_OPTIONS = [
   { value: 'blocked', label: 'Blocked' },
 ];
 
-export function ClientList({ clients, role }: { clients: ClientItem[]; role?: string }) {
+export function ClientList({ clients, role, canCreate }: { clients: ClientItem[]; role?: string; canCreate?: boolean }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -69,7 +69,7 @@ export function ClientList({ clients, role }: { clients: ClientItem[]; role?: st
             </option>
           ))}
         </select>
-        {role !== 'MANAGER' && (
+        {canCreate && (
           <div className="sm:ml-auto">
             <Link
               href="/carrier/clients/new"

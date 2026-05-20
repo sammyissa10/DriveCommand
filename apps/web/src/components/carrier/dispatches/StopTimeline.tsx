@@ -32,6 +32,7 @@ interface StopTimelineProps {
   facilityMap: Record<string, { name: string; addressLine1: string | null; city: string | null; state: string | null }>;
   dispatchStatus: string;
   userRole: string;
+  canManage: boolean;
   messageCountMap?: Record<string, number>;
 }
 
@@ -46,6 +47,7 @@ export function StopTimeline({
   facilityMap,
   dispatchStatus,
   userRole,
+  canManage,
   messageCountMap,
 }: StopTimelineProps) {
   if (stops.length === 0) {
@@ -81,6 +83,7 @@ export function StopTimeline({
               facility={facilityMap[stop.facilityId] ?? null}
               dispatchStatus={dispatchStatus}
               userRole={userRole}
+              canManage={canManage}
               messageCount={messageCountMap?.[stop.id] ?? 0}
               docCount={docCounts.bolCount + docCounts.podCount}
             />

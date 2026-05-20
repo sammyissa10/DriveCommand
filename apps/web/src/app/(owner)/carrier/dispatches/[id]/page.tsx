@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getDispatch } from '@/lib/carrier/dispatches';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { hasPermission } from '@/lib/auth/permissions';
 import { DispatchHeader } from '@/components/carrier/dispatches/DispatchHeader';
 import { StopTimeline } from '@/components/carrier/dispatches/StopTimeline';
 import { DispatchLoadsPanel } from '@/components/carrier/dispatches/DispatchLoadsPanel';
@@ -19,6 +20,7 @@ interface Props {
 export default async function DispatchDetailPage({ params }: Props) {
   const session = await getSession();
   if (!session) redirect('/login');
+  const canManage = hasPermission(session.permissions ?? null, 'dispatches', session.role);
 
   const { id } = await params;
   const orgId = session.tenantId;
@@ -284,6 +286,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           facilityMap={facilityMap}
           dispatchStatus={dispatch.status}
           userRole={session.role}
+          canManage={canManage}
           messageCountMap={messageCountMap}
         />
       </div>

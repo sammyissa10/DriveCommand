@@ -3,10 +3,12 @@ import { FileText } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { listContracts } from '@/lib/carrier/contracts';
 import { ContractList } from '@/components/carrier/contracts/ContractList';
+import { hasPermission } from '@/lib/auth/permissions';
 
 export default async function ContractsPage() {
   const session = await getSession();
   if (!session) redirect('/login');
+  const canCreate = hasPermission(session.permissions ?? null, 'contracts', session.role);
   const orgId = session.tenantId;
 
   let items: Awaited<ReturnType<typeof listContracts>>['items'] = [];
@@ -71,6 +73,7 @@ export default async function ContractsPage() {
 
       <ContractList
         role={session.role ?? undefined}
+        canCreate={canCreate}
         contracts={items.map((c) => ({
           id: c.id,
           contractNumber: c.contractNumber,

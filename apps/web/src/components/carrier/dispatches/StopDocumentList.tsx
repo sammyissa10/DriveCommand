@@ -23,7 +23,7 @@ interface DocItem {
 
 interface StopDocumentListProps {
   stopId: string;
-  userRole: string;
+  canManage: boolean;
   refreshKey?: number;
   onDeleted?: () => void;
 }
@@ -60,7 +60,7 @@ function docTypeBadgeClass(docType: string): string {
 
 export function StopDocumentList({
   stopId,
-  userRole,
+  canManage,
   refreshKey,
   onDeleted,
 }: StopDocumentListProps) {
@@ -68,12 +68,6 @@ export function StopDocumentList({
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewingId, setViewingId] = useState<string | null>(null);
-
-  const isOwnerOrManager =
-    userRole === 'owner' ||
-    userRole === 'OWNER' ||
-    userRole === 'manager' ||
-    userRole === 'MANAGER';
 
   useEffect(() => {
     let cancelled = false;
@@ -180,7 +174,7 @@ export function StopDocumentList({
               {viewingId === doc.id ? '…' : 'View'}
             </Button>
 
-            {isOwnerOrManager && (
+            {canManage && (
               <Button
                 variant="ghost"
                 size="sm"

@@ -4,6 +4,7 @@ import { getClient } from '@/lib/carrier/clients';
 import { ClientDetail } from './ClientDetail';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
+import { hasPermission } from '@/lib/auth/permissions';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -13,6 +14,7 @@ interface Props {
 export default async function ClientDetailPage({ params, searchParams }: Props) {
   const session = await getSession();
   if (!session) redirect('/login');
+  const canCreateContract = hasPermission(session.permissions ?? null, 'contracts', session.role);
 
   const { id } = await params;
   const { edit } = await searchParams;
@@ -60,7 +62,7 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
 
   return (
     <>
-      <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} />
+      <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} canCreateContract={canCreateContract} />
       {clientAudit && (
         <AuditTrailFooter
           createdAt={clientAudit.createdAt}
