@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { EditUserModal, type EditableUser } from '@/app/(admin)/users/edit-user-modal';
+import { type AdminUserRow } from '@/app/(admin)/actions/users';
 
 interface TenantUser {
   id: string;
@@ -39,10 +41,12 @@ function ActionsDropdown({
   user,
   onSendReset,
   onChangeRole,
+  onEdit,
 }: {
   user: TenantUser;
   onSendReset: (user: TenantUser) => void;
   onChangeRole: (user: TenantUser) => void;
+  onEdit: (user: TenantUser) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -70,6 +74,13 @@ function ActionsDropdown({
       {open && (
         <div className="absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
           <div className="py-1">
+            <button
+              type="button"
+              onClick={() => { setOpen(false); onEdit(user); }}
+              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+            >
+              Edit User
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -105,6 +116,7 @@ export function TenantUsersSection({ tenantId }: TenantUsersSectionProps) {
   const [banner, setBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [resetConfirm, setResetConfirm] = useState<TenantUser | null>(null);
   const [roleModalUser, setRoleModalUser] = useState<ChangeRoleModalUser | null>(null);
+  const [editingUser, setEditingUser] = useState<EditableUser | null>(null);
 
   useEffect(() => {
     fetch(`/api/admin/tenants/${tenantId}/users`)
@@ -217,6 +229,14 @@ export function TenantUsersSection({ tenantId }: TenantUsersSectionProps) {
                         setRoleModalUser(u as ChangeRoleModalUser);
                       }
                     }}
+                    onEdit={(u) => setEditingUser({
+                      id: u.id,
+                      firstName: u.firstName,
+                      lastName: u.lastName,
+                      email: u.email,
+                      role: u.role,
+                      isActive: u.isActive,
+                    })}
                   />
                 </td>
               </tr>
@@ -267,6 +287,21 @@ export function TenantUsersSection({ tenantId }: TenantUsersSectionProps) {
           }}
         />
       )}
+
+      {/* Edit User modal */}
+      <EditUserModal
+        user={editingUser}
+        open={editingUser !== null}
+        onOpenChange={(open) => { if (!open) setEditingUser(null); }}
+        onSuccess={(updated: AdminUserRow) => {
+          setUsers((prev) => prev.map((u) => (u.id === updated.id
+            ? { ...u, firstName: updated.firstName, lastName: updated.lastName,
+                role: updated.role as 'OWNER' | 'MANAGER' | 'DRIVER', isActive: updated.isActive }
+            : u)));
+          const name = [updated.firstName, updated.lastName].filter(Boolean).join(' ') || updated.email;
+          showBanner('success', `Updated profile for ${name}`);
+        }}
+      />
     </div>
   );
 }

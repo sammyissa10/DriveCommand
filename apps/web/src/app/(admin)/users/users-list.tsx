@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { type AdminUserRow } from '@/app/(admin)/actions/users';
+import { EditUserModal } from './edit-user-modal';
 
 interface UsersListProps {
   users: AdminUserRow[];
@@ -42,6 +43,7 @@ export function UsersList({ users }: UsersListProps) {
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [tenantFilter, setTenantFilter] = useState('ALL');
+  const [editingUser, setEditingUser] = useState<AdminUserRow | null>(null);
 
   /** Distinct sorted tenant names for the tenant dropdown. */
   const tenantOptions = useMemo(() => {
@@ -129,6 +131,19 @@ export function UsersList({ users }: UsersListProps) {
         const date = info.getValue() as Date;
         return format(new Date(date), 'MMM d, yyyy');
       },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <button
+          type="button"
+          onClick={() => setEditingUser(row.original)}
+          className="rounded-md border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          Edit
+        </button>
+      ),
     },
   ];
 
@@ -249,6 +264,12 @@ export function UsersList({ users }: UsersListProps) {
           </tbody>
         </table>
       </div>
+
+      <EditUserModal
+        user={editingUser}
+        open={editingUser !== null}
+        onOpenChange={(open) => { if (!open) setEditingUser(null); }}
+      />
     </div>
   );
 }
