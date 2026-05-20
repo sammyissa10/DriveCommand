@@ -184,8 +184,8 @@ export function ClientForm({ initialData }: ClientFormProps) {
       }
 
       toast.success(isEdit ? 'Client updated' : 'Client created');
-      router.push('/carrier/clients');
       router.refresh();
+      router.push('/carrier/clients');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

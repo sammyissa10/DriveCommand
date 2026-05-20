@@ -237,8 +237,8 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
           router.refresh();
         }
       } else {
-        router.push('/carrier/fleet/trucks');
         router.refresh();
+        router.push('/carrier/fleet/trucks');
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');

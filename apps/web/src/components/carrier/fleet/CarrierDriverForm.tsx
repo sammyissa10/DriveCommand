@@ -148,6 +148,7 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
       if (isEdit) {
         router.refresh();
       } else {
+        router.refresh();
         router.push('/carrier/fleet/drivers');
       }
     } catch (err) {
