@@ -18,6 +18,7 @@ import { GridCardList } from './mobile/GridCardList';
 import { MobileFAB } from './mobile/MobileFAB';
 import { GridToolbar } from './shared/GridToolbar';
 import { BulkActionsBar } from './shared/BulkActionsBar';
+import { ColumnSizingProvider } from '../hooks/useColumnSizing';
 import { cn } from '@/lib/utils';
 import type { ExtendedColumnDef, GridFilter, ServerDataFetcher } from '../core/types';
 
@@ -292,22 +293,24 @@ export function GridShell<TData>({
 
         {/* Desktop: Table view */}
         {!isMobile ? (
-          <div ref={parentRef} className="overflow-auto" style={{ maxHeight: '600px' }}>
-            <GridHeader table={table} enableSelection={enableSelection} />
-            <GridBody
-              table={table}
-              rows={rows}
-              virtualizer={virtualizer}
-              isLoading={isLoading}
-              error={error}
-              onRefresh={onRefresh}
-              enableSelection={enableSelection}
-              selectedIds={selectedIds}
-              onRowSelect={onRowSelect}
-              onRowDoubleClick={onRowDoubleClick}
-              renderQuickActions={renderQuickActions}
-            />
-          </div>
+          <ColumnSizingProvider table={table} enableSelection={enableSelection}>
+            <div ref={parentRef} className="overflow-auto" style={{ maxHeight: '600px' }}>
+              <GridHeader table={table} enableSelection={enableSelection} />
+              <GridBody
+                table={table}
+                rows={rows}
+                virtualizer={virtualizer}
+                isLoading={isLoading}
+                error={error}
+                onRefresh={onRefresh}
+                enableSelection={enableSelection}
+                selectedIds={selectedIds}
+                onRowSelect={onRowSelect}
+                onRowDoubleClick={onRowDoubleClick}
+                renderQuickActions={renderQuickActions}
+              />
+            </div>
+          </ColumnSizingProvider>
         ) : (
           /* Mobile: Card view */
           <GridCardList

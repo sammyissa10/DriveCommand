@@ -2,6 +2,7 @@
  * GridRow Component (Desktop)
  *
  * Desktop table row with 48px fixed height, selection, hover states, and QuickActions slot.
+ * Uses CSS Grid layout matching GridHeader for perfect column alignment.
  */
 
 'use client';
@@ -10,6 +11,7 @@ import { type Row } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { GridCell } from './GridCell';
+import { useColumnSizing } from '../../hooks/useColumnSizing';
 
 export interface GridRowProps<TData> {
   row: Row<TData>;
@@ -26,12 +28,13 @@ export interface GridRowProps<TData> {
  * GridRow renders a full table row with cells, selection, and interaction states.
  *
  * Design:
+ * - Layout: CSS Grid with shared templateColumns from useColumnSizing
  * - Height: 48px fixed (--grid-row-height)
  * - Border: border-b border-border/40 (last row no border)
  * - Hover: bg-muted/50 (very subtle)
  * - Selected: bg-b-050 (--grid-accent-subtle) + left border accent
  * - Focus: ring-2 ring-primary ring-inset
- * - QuickActions: rendered in last cell, opacity-0 group-hover:opacity-100
+ * - QuickActions: rendered in FIRST cell (actions column), ALWAYS visible (not hover)
  *
  * @example
  * <GridRow
@@ -53,18 +56,22 @@ export function GridRow<TData>({
   quickActions,
   className,
 }: GridRowProps<TData>) {
+  const { templateColumns } = useColumnSizing();
   const { getVisibleCells } = row;
 
   return (
     <div
       className={cn(
-        'group flex items-center border-b border-border/40 transition-colors',
+        'group grid items-center border-b border-border/40 transition-colors',
         'hover:bg-muted/50',
         isSelected && 'bg-b-050 border-l-2 border-l-primary',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset',
         className
       )}
-      style={{ height: 'var(--grid-row-height, 48px)' }}
+      style={{
+        height: 'var(--grid-row-height, 48px)',
+        gridTemplateColumns: templateColumns,
+      }}
       role="row"
       aria-rowindex={rowIndex + 2} // +2 because header is row 1
       aria-selected={isSelected}
@@ -80,9 +87,14 @@ export function GridRow<TData>({
         }
       }}
     >
-      {/* Selection checkbox */}
+      {/* Actions column cell (FIRST) */}
+      <div className="flex items-center justify-center px-2">
+        {quickActions}
+      </div>
+
+      {/* Checkbox column cell (SECOND if enabled) */}
       {enableSelection && (
-        <div className="flex w-12 items-center justify-center">
+        <div className="flex items-center justify-center">
           <Checkbox
             checked={isSelected}
             onCheckedChange={onSelect}
@@ -92,25 +104,12 @@ export function GridRow<TData>({
         </div>
       )}
 
-      {/* Cells */}
-      {getVisibleCells().map((cell, cellIndex) => {
-        const isCheckboxColumn = cell.column.id === 'select';
-        if (isCheckboxColumn) return null;
+      {/* Data cells */}
+      {getVisibleCells().map((cell) => {
+        // Skip internal columns (already rendered above)
+        if (cell.column.id === 'select' || cell.column.id === 'actions') return null;
 
-        const isLastCell = cellIndex === getVisibleCells().length - 1;
-
-        return (
-          <div key={cell.id} className="relative flex items-center">
-            <GridCell cell={cell} />
-
-            {/* QuickActions in last cell */}
-            {isLastCell && quickActions && (
-              <div className="absolute right-4 opacity-0 transition-opacity motion-safe:duration-150 group-hover:opacity-100">
-                {quickActions}
-              </div>
-            )}
-          </div>
-        );
+        return <GridCell key={cell.id} cell={cell} />;
       })}
     </div>
   );
