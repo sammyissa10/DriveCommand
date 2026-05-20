@@ -1,6 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+/**
+ * @deprecated LEGACY COMPONENT — Migrated to DataGrid in quick-382.
+ * This file is preserved for reference only.
+ * See: /app/(owner)/carrier/fleet/drivers/_grid/DriversGrid.tsx
+ */
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Users, Plus, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -16,10 +22,6 @@ export interface CarrierDriverItem {
   status: string;
   isSample: boolean;
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function daysUntil(date: Date | string | null): number | null {
   if (!date) return null;
@@ -66,13 +68,18 @@ const PAY_BADGE_CLASSES: Record<string, string> = {
 
 const DRIVER_STATUSES = ['active', 'inactive', 'suspended'];
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 export function CarrierDriverList({ drivers }: { drivers: CarrierDriverItem[] }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // Dev-mode deprecation warning
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[DEPRECATED] CarrierDriverList is a legacy component. Migration: see quick-382, use DriversGrid instead.'
+      );
+    }
+  }, []);
 
   const filtered = drivers.filter((d) => {
     const q = search.toLowerCase();
@@ -84,7 +91,6 @@ export function CarrierDriverList({ drivers }: { drivers: CarrierDriverItem[] })
 
   return (
     <div className="space-y-4">
-      {/* Filters + New button */}
       <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
@@ -116,7 +122,6 @@ export function CarrierDriverList({ drivers }: { drivers: CarrierDriverItem[] })
         </div>
       </div>
 
-      {/* Table */}
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-12 text-center">
           <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />

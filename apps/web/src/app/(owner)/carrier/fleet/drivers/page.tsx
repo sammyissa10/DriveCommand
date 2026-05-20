@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { Users } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { listCarrierDrivers } from '@/lib/carrier/fleet-drivers';
-import { CarrierDriverList } from '@/components/carrier/fleet/CarrierDriverList';
+import { DriversGrid } from './_grid/DriversGrid';
 
 export default async function CarrierDriversPage() {
   const session = await getSession();
@@ -44,8 +44,8 @@ export default async function CarrierDriversPage() {
       {total > 0 && (
         <div className="flex flex-wrap gap-3">
           <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold">{total}</span>
+            <Users className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+            <span className="font-medium">{total}</span>
             <span className="text-muted-foreground">total</span>
           </div>
           {Object.entries(statusCounts).map(([status, count]) => (
@@ -53,14 +53,14 @@ export default async function CarrierDriversPage() {
               key={status}
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm"
             >
-              <span className="font-semibold">{count}</span>
+              <span className="font-medium">{count}</span>
               <span className="text-muted-foreground capitalize">{status}</span>
             </div>
           ))}
         </div>
       )}
 
-      <CarrierDriverList
+      <DriversGrid
         drivers={items.map((d) => ({
           id: d.id,
           firstName: d.firstName,

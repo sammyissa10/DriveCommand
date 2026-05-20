@@ -1,6 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+/**
+ * @deprecated LEGACY COMPONENT — Migrated to DataGrid in quick-382.
+ * This file is preserved for reference only.
+ * See: /app/(owner)/carrier/facilities/_grid/FacilitiesGrid.tsx
+ */
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Warehouse, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +47,15 @@ function getFacilityTypeLabel(type: string | null): string {
 export function FacilityList({ facilities }: { facilities: FacilityItem[] }) {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+
+  // Dev-mode deprecation warning
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[DEPRECATED] FacilityList is a legacy component. Migration: see quick-382, use FacilitiesGrid instead.'
+      );
+    }
+  }, []);
 
   const filtered = facilities.filter((f) => {
     const q = search.toLowerCase();

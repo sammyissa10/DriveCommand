@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation';
 import { Users } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { listClients } from '@/lib/carrier/clients';
-import { ClientList } from '@/components/carrier/clients/ClientList';
 import { hasPermission } from '@/lib/auth/permissions';
+import { ClientsGrid } from './_grid/ClientsGrid';
 
 export default async function ClientsPage() {
   const session = await getSession();
@@ -52,8 +52,8 @@ export default async function ClientsPage() {
       {total > 0 && (
         <div className="flex flex-wrap gap-3">
           <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold">{total}</span>
+            <Users className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+            <span className="font-medium">{total}</span>
             <span className="text-muted-foreground">total</span>
           </div>
           {Object.entries(statusCounts).map(([status, count]) => (
@@ -61,7 +61,7 @@ export default async function ClientsPage() {
               key={status}
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm"
             >
-              <span className="font-semibold">{count}</span>
+              <span className="font-medium">{count}</span>
               <span className="text-muted-foreground capitalize">
                 {STATUS_LABELS[status] ?? status}
               </span>
@@ -70,7 +70,7 @@ export default async function ClientsPage() {
         </div>
       )}
 
-      <ClientList
+      <ClientsGrid
         role={session.role ?? undefined}
         canCreate={canCreate}
         clients={items.map((c) => ({

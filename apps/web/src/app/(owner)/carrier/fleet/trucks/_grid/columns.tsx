@@ -1,0 +1,260 @@
+/**
+ * Trucks Grid Column Definitions
+ *
+ * Column config following DataGrid DESIGN.md:
+ * - Every column declares dataType
+ * - StatusBadge for all status/type pills
+ * - Expiration dates with urgency badges
+ * - VIN displayed in monospace, NOT editable
+ */
+
+import Link from 'next/link';
+import { AlertTriangle } from 'lucide-react';
+import type { ColumnDef } from '@tanstack/react-table';
+import { StatusBadge } from '@/components/data-grid/shell';
+import { SamplePill } from '@/components/onboarding/sample-pill';
+import type { TruckRow } from './types';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function daysUntil(date: Date | string | null): number | null {
+  if (!date) return null;
+  const d = date instanceof Date ? date : new Date(date);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const diff = d.getTime() - now.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+function formatDate(date: Date | string | null): string {
+  if (!date) return '—';
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatOdometer(miles: number | null): string {
+  if (miles == null) return '—';
+  return miles.toLocaleString() + ' mi';
+}
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const TRUCK_TYPE_LABELS: Record<string, string> = {
+  semi: 'Semi',
+  box_truck: 'Box Truck',
+  flatbed: 'Flatbed',
+  reefer: 'Reefer',
+  tanker: 'Tanker',
+  day_cab: 'Day Cab',
+  straight_truck: 'Straight Truck',
+};
+
+const TRUCK_TYPE_VARIANTS: Record<string, 'info' | 'success' | 'purple' | 'warning' | 'neutral'> = {
+  semi: 'info',
+  box_truck: 'warning',
+  flatbed: 'warning',
+  reefer: 'info',
+  tanker: 'purple',
+  day_cab: 'success',
+  straight_truck: 'neutral',
+};
+
+const STATUS_VARIANTS: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
+  active: 'success',
+  maintenance: 'warning',
+  out_of_service: 'danger',
+  inactive: 'neutral',
+};
+
+// ---------------------------------------------------------------------------
+// Expiration Cell Renderer
+// ---------------------------------------------------------------------------
+
+function ExpirationCell({ date }: { date: Date | string | null }) {
+  if (!date) return <span className="text-muted-foreground">—</span>;
+
+  const days = daysUntil(date);
+  const formatted = formatDate(date);
+
+  if (days === null) {
+    return <span className="tabular-nums text-foreground">{formatted}</span>;
+  }
+
+  const variant = days < 0 ? 'danger' : days < 30 ? 'warning' : 'neutral';
+  const badgeText =
+    days < 0
+      ? `${Math.abs(days)}d overdue`
+      : days === 0
+      ? 'Today'
+      : days < 30
+      ? `${days}d`
+      : null;
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="tabular-nums text-foreground">{formatted}</span>
+      {badgeText && <StatusBadge variant={variant}>{badgeText}</StatusBadge>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Column Definitions
+// ---------------------------------------------------------------------------
+
+export const trucksColumns: ColumnDef<TruckRow, unknown>[] = [
+  {
+    id: 'unitNumber',
+    accessorKey: 'unitNumber',
+    header: 'Unit #',
+    meta: {
+      dataType: 'text',
+      freezable: true,
+      defaultFrozen: true,
+      minWidth: 140,
+    },
+    cell: ({ row }) => {
+      const t = row.original;
+      const regDays = daysUntil(t.registrationExpiry);
+      const licDays = daysUntil(t.licenseExpiry);
+      const hasAlert = (regDays !== null && regDays < 30) || (licDays !== null && licDays < 30);
+
+      return (
+        <div className="flex items-center gap-2">
+          {hasAlert && (
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 text-status-danger-foreground" strokeWidth={1.5} />
+          )}
+          <div>
+            <div className="flex items-center gap-1">
+              <Link
+                href={`/carrier/fleet/trucks/${t.id}`}
+                className="font-medium text-foreground hover:text-primary transition-colors"
+              >
+                {t.displayName || t.unitNumber}
+              </Link>
+              {t.isSample && <SamplePill />}
+            </div>
+            {t.displayName && t.displayName !== t.unitNumber && (
+              <p className="text-xs text-muted-foreground">{t.unitNumber}</p>
+            )}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    id: 'vehicleId',
+    accessorKey: 'vehicleId',
+    header: 'Vehicle ID',
+    meta: {
+      dataType: 'text',
+      minWidth: 100,
+    },
+    cell: ({ row }) => (
+      <span className="font-mono text-xs text-muted-foreground">{row.original.vehicleId}</span>
+    ),
+  },
+  {
+    id: 'vin',
+    accessorKey: 'vin',
+    header: 'VIN',
+    meta: {
+      dataType: 'text',
+      editable: false, // VIN should NEVER be inline-editable
+      minWidth: 180,
+    },
+    cell: ({ row }) => {
+      const vin = row.original.vin;
+      return vin ? (
+        <span className="font-mono text-xs tabular-nums text-muted-foreground whitespace-nowrap">{vin}</span>
+      ) : (
+        <span className="text-muted-foreground">—</span>
+      );
+    },
+  },
+  {
+    id: 'yearMakeModel',
+    accessorFn: (row) => [row.year, row.make, row.model].filter(Boolean).join(' ') || null,
+    header: 'Year / Make / Model',
+    meta: {
+      dataType: 'text',
+      minWidth: 180,
+    },
+    cell: ({ getValue }) => {
+      const value = getValue() as string | null;
+      return value ? (
+        <span className="text-foreground">{value}</span>
+      ) : (
+        <span className="text-muted-foreground">—</span>
+      );
+    },
+  },
+  {
+    id: 'truckType',
+    accessorKey: 'truckType',
+    header: 'Type',
+    meta: {
+      dataType: 'text',
+      minWidth: 110,
+    },
+    cell: ({ row }) => {
+      const type = row.original.truckType;
+      const variant = TRUCK_TYPE_VARIANTS[type] ?? 'neutral';
+      const label = TRUCK_TYPE_LABELS[type] ?? type.replace(/_/g, ' ');
+      return <StatusBadge variant={variant}>{label}</StatusBadge>;
+    },
+  },
+  {
+    id: 'currentOdometerMiles',
+    accessorKey: 'currentOdometerMiles',
+    header: 'Odometer',
+    meta: {
+      dataType: 'number',
+      minWidth: 100,
+    },
+    cell: ({ row }) => (
+      <span className="tabular-nums text-muted-foreground">
+        {formatOdometer(row.original.currentOdometerMiles)}
+      </span>
+    ),
+  },
+  {
+    id: 'registrationExpiry',
+    accessorKey: 'registrationExpiry',
+    header: 'Reg. Expiry',
+    meta: {
+      dataType: 'date',
+      minWidth: 130,
+    },
+    cell: ({ row }) => <ExpirationCell date={row.original.registrationExpiry} />,
+  },
+  {
+    id: 'licenseExpiry',
+    accessorKey: 'licenseExpiry',
+    header: 'License Expiry',
+    meta: {
+      dataType: 'date',
+      minWidth: 130,
+    },
+    cell: ({ row }) => <ExpirationCell date={row.original.licenseExpiry} />,
+  },
+  {
+    id: 'status',
+    accessorKey: 'status',
+    header: 'Status',
+    meta: {
+      dataType: 'text',
+      minWidth: 120,
+    },
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const variant = STATUS_VARIANTS[status] ?? 'neutral';
+      const label = status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      return <StatusBadge variant={variant}>{label}</StatusBadge>;
+    },
+  },
+];

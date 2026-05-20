@@ -1,6 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+/**
+ * @deprecated LEGACY COMPONENT — Migrated to DataGrid in quick-382.
+ * This file is preserved for reference only.
+ * See: /app/(owner)/carrier/fleet/trucks/_grid/TrucksGrid.tsx
+ */
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Truck, Plus, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +34,6 @@ export interface CarrierTruckItem {
   licenseState: string | null;
   assignedDriver: { id: string; firstName: string; lastName: string } | null;
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function daysUntil(date: Date | string | null): number | null {
   if (!date) return null;
@@ -91,15 +93,20 @@ const STATUS_CLASSES: Record<string, string> = {
 const TRUCK_TYPES = ['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck'];
 const TRUCK_STATUSES = ['active', 'inactive', 'maintenance', 'out_of_service'];
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [selectedTruck, setSelectedTruck] = useState<CarrierTruckItem | null>(null);
+
+  // Dev-mode deprecation warning
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[DEPRECATED] CarrierTruckList is a legacy component. Migration: see quick-382, use TrucksGrid instead.'
+      );
+    }
+  }, []);
 
   const filtered = trucks.filter((t) => {
     const q = search.toLowerCase();
@@ -116,7 +123,6 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
 
   return (
     <div className="space-y-4">
-      {/* Filters + New button */}
       <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
         <input
           type="text"
@@ -160,7 +166,6 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
         </div>
       </div>
 
-      {/* Table */}
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-12 text-center">
           <Truck className="mx-auto h-12 w-12 text-muted-foreground/50" />

@@ -1,6 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+/**
+ * @deprecated LEGACY COMPONENT — Migrated to DataGrid in quick-382.
+ * This file is preserved for reference only.
+ * See: /app/(owner)/carrier/clients/_grid/ClientsGrid.tsx
+ */
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Users, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +42,15 @@ export function ClientList({ clients, role, canCreate }: { clients: ClientItem[]
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Dev-mode deprecation warning
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[DEPRECATED] ClientList is a legacy component. Migration: see quick-382, use ClientsGrid instead.'
+      );
+    }
+  }, []);
+
   const filtered = clients.filter((c) => {
     const q = search.toLowerCase();
     const matchesSearch =
@@ -49,7 +64,6 @@ export function ClientList({ clients, role, canCreate }: { clients: ClientItem[]
 
   return (
     <div className="space-y-4">
-      {/* Filters + New button */}
       <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
@@ -82,7 +96,6 @@ export function ClientList({ clients, role, canCreate }: { clients: ClientItem[]
         )}
       </div>
 
-      {/* Table */}
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-12 text-center">
           <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
