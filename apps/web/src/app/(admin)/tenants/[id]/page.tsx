@@ -245,6 +245,9 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
             initialContactEmail={tenant.contactEmail ?? null}
             initialTimezone={tenant.timezone}
             initialPlan={tenant.plan}
+            initialProfitMarginThreshold={Number(tenant.profitMarginThreshold)}
+            initialFleetSizeBucket={tenant.fleetSizeBucket}
+            initialManualTrial={tenant.manualTrial}
           />
         </CardContent>
       </Card>

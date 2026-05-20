@@ -300,6 +300,9 @@ export async function getTenantById(tenantId: string) {
       contactEmail: true,
       plan: true,
       isActive: true,
+      profitMarginThreshold: true,
+      fleetSizeBucket: true,
+      manualTrial: true,
       createdAt: true,
       updatedAt: true,
       _count: { select: { users: true, trucks: true, routes: true } },
@@ -500,11 +503,18 @@ export async function updateOwnerEmail(
 }
 
 /**
- * Update tenant settings: contactEmail, timezone, plan.
+ * Update tenant settings: contactEmail, timezone, plan, profitMarginThreshold, fleetSizeBucket, manualTrial.
  */
 export async function updateTenantSettings(
   tenantId: string,
-  data: { contactEmail?: string; timezone: string; plan: string }
+  data: {
+    contactEmail?: string;
+    timezone: string;
+    plan: string;
+    profitMarginThreshold: number;
+    fleetSizeBucket: 'OWNER_OPERATOR' | 'SMALL' | 'MEDIUM' | 'LARGE';
+    manualTrial: boolean;
+  }
 ): Promise<{ success: boolean; error?: string }> {
   await requireAdminAccess();
 
@@ -512,6 +522,12 @@ export async function updateTenantSettings(
     contactEmail: z.string().email('Must be a valid email address').optional().or(z.literal('')),
     timezone: z.string().min(1, 'Timezone is required'),
     plan: z.enum(['starter', 'pro', 'enterprise'] as const),
+    profitMarginThreshold: z
+      .number()
+      .min(0, 'Profit margin threshold must be at least 0')
+      .max(100, 'Profit margin threshold must be at most 100'),
+    fleetSizeBucket: z.enum(['OWNER_OPERATOR', 'SMALL', 'MEDIUM', 'LARGE'] as const),
+    manualTrial: z.boolean(),
   });
 
   const validation = schema.safeParse(data);
@@ -526,6 +542,9 @@ export async function updateTenantSettings(
         contactEmail: validation.data.contactEmail || null,
         timezone: validation.data.timezone,
         plan: validation.data.plan,
+        profitMarginThreshold: validation.data.profitMarginThreshold,
+        fleetSizeBucket: validation.data.fleetSizeBucket,
+        manualTrial: validation.data.manualTrial,
       },
     });
 

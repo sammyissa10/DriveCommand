@@ -9,6 +9,9 @@ interface TenantSettingsFormProps {
   initialContactEmail: string | null;
   initialTimezone: string;
   initialPlan: string;
+  initialProfitMarginThreshold: number;
+  initialFleetSizeBucket: 'OWNER_OPERATOR' | 'SMALL' | 'MEDIUM' | 'LARGE';
+  initialManualTrial: boolean;
 }
 
 const TIMEZONES = [
@@ -27,34 +30,64 @@ const PLANS = [
   { value: 'enterprise', label: 'Enterprise' },
 ];
 
+const FLEET_SIZE_BUCKETS = [
+  { value: 'OWNER_OPERATOR', label: 'Owner-Operator (1 truck)' },
+  { value: 'SMALL', label: 'Small (2-10 trucks)' },
+  { value: 'MEDIUM', label: 'Medium (11-50 trucks)' },
+  { value: 'LARGE', label: 'Large (51+ trucks)' },
+] as const;
+
 export function TenantSettingsForm({
   tenantId,
   initialContactEmail,
   initialTimezone,
   initialPlan,
+  initialProfitMarginThreshold,
+  initialFleetSizeBucket,
+  initialManualTrial,
 }: TenantSettingsFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [contactEmail, setContactEmail] = useState(initialContactEmail ?? '');
   const [timezone, setTimezone] = useState(initialTimezone || 'UTC');
   const [plan, setPlan] = useState(initialPlan || 'starter');
+  const [profitMarginThreshold, setProfitMarginThreshold] = useState(
+    String(initialProfitMarginThreshold ?? 10)
+  );
+  const [fleetSizeBucket, setFleetSizeBucket] = useState<'OWNER_OPERATOR' | 'SMALL' | 'MEDIUM' | 'LARGE'>(
+    initialFleetSizeBucket ?? 'OWNER_OPERATOR'
+  );
+  const [manualTrial, setManualTrial] = useState(initialManualTrial ?? false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const isDirty =
     contactEmail !== (initialContactEmail ?? '') ||
     timezone !== (initialTimezone || 'UTC') ||
-    plan !== (initialPlan || 'starter');
+    plan !== (initialPlan || 'starter') ||
+    profitMarginThreshold !== String(initialProfitMarginThreshold ?? 10) ||
+    fleetSizeBucket !== (initialFleetSizeBucket ?? 'OWNER_OPERATOR') ||
+    manualTrial !== (initialManualTrial ?? false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSuccess(false);
+
+    const threshold = Number(profitMarginThreshold);
+    if (Number.isNaN(threshold) || threshold < 0 || threshold > 100) {
+      setError('Profit margin threshold must be a number between 0 and 100');
+      return;
+    }
+
     startTransition(async () => {
       const result = await updateTenantSettings(tenantId, {
         contactEmail: contactEmail.trim() || undefined,
         timezone,
         plan,
+        profitMarginThreshold: threshold,
+        fleetSizeBucket,
+        manualTrial,
       });
       if (result.success) {
         setSuccess(true);
@@ -135,6 +168,70 @@ export function TenantSettingsForm({
           </select>
         </div>
       </div>
+
+      <details className="border-t pt-4">
+        <summary className="cursor-pointer text-sm font-medium text-gray-700 select-none">
+          Advanced
+        </summary>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {/* Profit Margin Threshold */}
+          <div>
+            <label htmlFor="profit-margin-threshold" className="block text-xs font-medium text-gray-500 mb-1">
+              Profit Margin Threshold (%)
+            </label>
+            <input
+              id="profit-margin-threshold"
+              type="number"
+              step="0.01"
+              min={0}
+              max={100}
+              value={profitMarginThreshold}
+              onChange={(e) => { setProfitMarginThreshold(e.target.value); setSuccess(false); }}
+              disabled={isPending}
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+            />
+            <p className="mt-1 text-xs text-gray-400">Loads below this margin trigger low-profit alerts.</p>
+          </div>
+
+          {/* Fleet Size Bucket */}
+          <div>
+            <label htmlFor="fleet-size-bucket" className="block text-xs font-medium text-gray-500 mb-1">
+              Fleet Size
+            </label>
+            <select
+              id="fleet-size-bucket"
+              value={fleetSizeBucket}
+              onChange={(e) => { setFleetSizeBucket(e.target.value as typeof fleetSizeBucket); setSuccess(false); }}
+              disabled={isPending}
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60 bg-white"
+            >
+              {FLEET_SIZE_BUCKETS.map((b) => (
+                <option key={b.value} value={b.value}>{b.label}</option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-gray-400">Used for analytics segmentation and onboarding flow.</p>
+          </div>
+
+          {/* Manual Trial */}
+          <div>
+            <label htmlFor="manual-trial" className="block text-xs font-medium text-gray-500 mb-1">
+              Manual Trial
+            </label>
+            <label className="inline-flex items-center gap-2 cursor-pointer mt-1">
+              <input
+                id="manual-trial"
+                type="checkbox"
+                checked={manualTrial}
+                onChange={(e) => { setManualTrial(e.target.checked); setSuccess(false); }}
+                disabled={isPending}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-60"
+              />
+              <span className="text-sm text-gray-900">Tenant is on a manually-managed trial</span>
+            </label>
+            <p className="mt-1 text-xs text-gray-400">Bypasses automatic trial expiry and billing transitions.</p>
+          </div>
+        </div>
+      </details>
 
       <div className="flex justify-end">
         <button
