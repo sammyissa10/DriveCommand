@@ -43,6 +43,12 @@ export default async function AdminLayout({
                 Tenants
               </Link>
               <Link
+                href="/users"
+                className="text-white hover:text-gray-300 font-medium"
+              >
+                Users
+              </Link>
+              <Link
                 href="/admin-support"
                 className="text-white hover:text-gray-300 font-medium"
               >
