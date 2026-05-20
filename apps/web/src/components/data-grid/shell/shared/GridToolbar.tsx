@@ -7,6 +7,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import { Search, Filter, Columns3, Download, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { MobileToolbar } from '../mobile/MobileToolbar';
+import { FilterSheet } from './FilterSheet';
 import { cn } from '@/lib/utils';
 import type { ExtendedColumnDef, GridFilter, ServerDataFetcher } from '../../core/types';
 
@@ -99,8 +101,14 @@ export function GridToolbar<TData>({
   className,
 }: GridToolbarProps<TData>) {
   const { isMobile } = useBreakpoint();
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
   const activeFiltersCount = filters.length;
+
+  const handleFilterClick = () => {
+    setFilterSheetOpen(true);
+    onFilterClick?.();
+  };
 
   const handleColumnVisibilityChange = (columnId: string, visible: boolean) => {
     if (visible) {
@@ -115,22 +123,26 @@ export function GridToolbar<TData>({
   // Mobile layout
   if (isMobile) {
     return (
-      <MobileToolbar
-        search={search}
-        onSearchChange={onSearchChange}
-        searchPlaceholder={searchPlaceholder}
-        activeFiltersCount={activeFiltersCount}
-        onFilterClick={onFilterClick}
-        onSortClick={() => {}} // Handled by parent
-        onColumnsClick={() => {}} // Handled by parent
-        className={className}
-      />
+      <>
+        <MobileToolbar
+          search={search}
+          onSearchChange={onSearchChange}
+          searchPlaceholder={searchPlaceholder}
+          activeFiltersCount={activeFiltersCount}
+          onFilterClick={handleFilterClick}
+          onSortClick={() => {}} // Handled by parent
+          onColumnsClick={() => {}} // Handled by parent
+          className={className}
+        />
+        <FilterSheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen} />
+      </>
     );
   }
 
   // Desktop layout
   return (
-    <div className={cn('flex items-center gap-3 border-b border-border/40 p-3', className)}>
+    <>
+      <div className={cn('flex items-center gap-3 border-b border-border/40 p-3', className)}>
       {/* Search input */}
       <div className="relative w-64">
         <Search
@@ -153,7 +165,7 @@ export function GridToolbar<TData>({
       <Button
         variant="ghost"
         size="sm"
-        onClick={onFilterClick}
+        onClick={handleFilterClick}
         className="relative"
       >
         <Filter className="mr-2 h-4 w-4" strokeWidth={1.5} />
@@ -225,6 +237,10 @@ export function GridToolbar<TData>({
           New
         </Button>
       )}
-    </div>
+      </div>
+
+      {/* FilterSheet */}
+      <FilterSheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen} />
+    </>
   );
 }

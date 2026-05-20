@@ -320,6 +320,172 @@ Minimum 48px height for all interactive elements on mobile.
 
 ---
 
+## Column Alignment
+
+**CSS Grid for pixel-perfect alignment:**
+
+The DataGrid uses a shared CSS Grid template between header and body rows to ensure perfect column alignment. This is managed via the `useColumnSizing` hook.
+
+### Column Order
+
+1. **Actions column** (first, 132px fixed) — QuickActions always visible
+2. **Checkbox column** (second, 44px fixed) — if `enableSelection={true}`
+3. **Data columns** (variable widths from TanStack table)
+
+### Implementation
+
+```tsx
+// Provider wraps header + body
+<ColumnSizingProvider table={table} enableSelection={enableSelection}>
+  <GridHeader />
+  <GridBody />
+</ColumnSizingProvider>
+
+// Hook provides shared templateColumns
+const { templateColumns } = useColumnSizing();
+
+// Applied to both header and body rows
+<div
+  className="grid"
+  style={{ gridTemplateColumns: templateColumns }}
+>
+```
+
+### Key Rules
+
+- Header and body **MUST** use identical `grid-template-columns` string
+- Actions column is **ALWAYS** first (no hover reveal, always visible)
+- QuickActions renders in the actions column cell (first child)
+- Checkbox column is **ALWAYS** second if `enableSelection={true}`
+
+---
+
+## Selection
+
+### Select-All Checkbox (Tri-State)
+
+The header checkbox has three states:
+
+- **Unchecked**: No rows selected
+- **Indeterminate** (horizontal bar): Some rows selected
+- **Checked**: All rows on current page selected
+
+When all rows on current page are selected and `totalRows > pageSize`, show banner:
+
+> All {pageSize} on this page selected. [Select all {totalRows}?](#)
+
+### QuickActions Row Selection Behavior
+
+- All action buttons call `e.stopPropagation()` to prevent row selection
+- When `selectedCount > 1`: View and Edit actions are disabled with tooltip "Select single row"
+- Delete action remains enabled for bulk delete
+
+---
+
+## Sorting
+
+### Auto-Sorting by Data Type
+
+Columns can specify a `dataType` in their `meta` to enable automatic sorting:
+
+```tsx
+{
+  id: 'id',
+  accessorKey: 'id',
+  header: 'ID',
+  meta: {
+    dataType: 'number', // Enables numeric sorting
+  },
+}
+```
+
+### Supported Data Types
+
+| Type | Behavior |
+|------|----------|
+| `'number'` | Numeric comparison: `(a || 0) - (b || 0)` |
+| `'currency'` | Same as number |
+| `'date'` | Date comparison via `new Date().getTime()` |
+| `'boolean'` | Boolean comparison (false < true) |
+| `'text'` | Default string sorting (TanStack built-in) |
+
+Consumer-provided `sortingFn` always takes precedence over auto-sorting.
+
+---
+
+## Filters
+
+### FilterSheet Component
+
+Responsive side panel for filter controls:
+
+- **Desktop** (>=768px): `side="right"`, `w-[400px]`
+- **Mobile** (<768px): `side="bottom"`, `h-[60vh]`
+- **Status**: Placeholder UI (actual filters coming in future phases)
+
+Opened via Filter button in GridToolbar.
+
+---
+
+## Mobile UX Hierarchy
+
+### MobileToolbar Button Hierarchy
+
+Visual hierarchy differentiates primary from secondary actions:
+
+- **Filter button**: `variant="default"` (primary blue), includes text label "Filter", takes `flex-1` space
+- **Sort button**: `variant="ghost"`, icon-only (ArrowUpDown), fixed width
+- **Columns button**: `variant="ghost"`, icon-only (Columns), fixed width
+
+```tsx
+<div className="flex items-center gap-2">
+  <Button variant="default" size="sm" className="flex-1">
+    <Filter className="mr-2 h-4 w-4" strokeWidth={1.5} />
+    Filter
+  </Button>
+  <Button variant="ghost" size="icon">
+    <ArrowUpDown className="h-4 w-4" strokeWidth={1.5} />
+  </Button>
+  <Button variant="ghost" size="icon">
+    <Columns className="h-4 w-4" strokeWidth={1.5} />
+  </Button>
+</div>
+```
+
+### GridCard 3-Zone Layout
+
+Mobile cards have a clear visual hierarchy:
+
+```
+┌─────────────────────────────────────┐
+│ TITLE                    [STATUS]  │  <- Zone 1: Primary info
+├─────────────────────────────────────┤  <- Divider (border-t)
+│ Label          Value               │  <- Zone 2: Metadata pairs
+│ Label          Value               │
+└─────────────────────────────────────┘
+```
+
+**Zone 1** (top):
+- Primary column value (`font-medium`)
+- StatusBadge on right (`justify-between`)
+- Padding: `p-4`
+
+**Divider**:
+- `border-t border-border/40`
+
+**Zone 2** (middle):
+- Metadata label/value pairs
+- Layout: `grid grid-cols-2 gap-y-1`
+- Labels: `text-xs text-muted-foreground`
+- Values: `text-xs text-foreground font-medium`
+- Padding: `p-4 pt-2`
+
+### GridCardList FAB Clearance
+
+The card list container has `pb-20` (80px bottom padding) to ensure the last card isn't hidden behind the fixed FAB.
+
+---
+
 ## Do's and Don'ts
 
 ### Do ✅

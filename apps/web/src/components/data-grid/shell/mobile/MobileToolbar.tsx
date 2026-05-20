@@ -30,7 +30,7 @@ export interface MobileToolbarProps {
  * Design:
  * - Layout: vertical stack with gap-2
  * - Search: full width, h-10, rounded-lg
- * - Buttons: icon buttons below search (Filter/Sort/Columns)
+ * - Button hierarchy: Filter is primary (variant="default", flex-1), Sort/Columns are ghost icon-only
  * - Active filter count badge (if filters > 0)
  * - Typography: text-sm
  * - Icons: strokeWidth={1.5}
@@ -69,44 +69,42 @@ export function MobileToolbar({
         />
       </div>
 
-      {/* Action buttons */}
+      {/* Action buttons - Filter primary, Sort/Columns secondary */}
       <div className="flex items-center gap-2">
-        {/* Filter button with badge */}
+        {/* Filter button - primary with text label (takes flex space) */}
         <Button
-          variant="outline"
+          variant="default"
           size="sm"
           onClick={onFilterClick}
-          className="relative flex items-center gap-1.5"
+          className="flex-1"
         >
-          <Filter className="h-4 w-4" strokeWidth={1.5} />
-          <span className="text-sm">Filter</span>
+          <Filter className="mr-2 h-4 w-4" strokeWidth={1.5} />
+          Filter
           {activeFiltersCount > 0 && (
-            <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] rounded-full px-1 text-xs">
+            <Badge variant="secondary" className="ml-2 h-5 min-w-[20px] rounded-full px-1 text-xs bg-background/20 text-primary-foreground">
               {activeFiltersCount}
             </Badge>
           )}
         </Button>
 
-        {/* Sort button */}
+        {/* Sort button - ghost icon-only */}
         <Button
-          variant="outline"
-          size="sm"
+          variant="ghost"
+          size="icon"
           onClick={onSortClick}
-          className="flex items-center gap-1.5"
+          aria-label="Sort"
         >
           <ArrowUpDown className="h-4 w-4" strokeWidth={1.5} />
-          <span className="text-sm">Sort</span>
         </Button>
 
-        {/* Columns button */}
+        {/* Columns button - ghost icon-only */}
         <Button
-          variant="outline"
-          size="sm"
+          variant="ghost"
+          size="icon"
           onClick={onColumnsClick}
-          className="flex items-center gap-1.5"
+          aria-label="Columns"
         >
           <Columns className="h-4 w-4" strokeWidth={1.5} />
-          <span className="text-sm">Columns</span>
         </Button>
       </div>
     </div>

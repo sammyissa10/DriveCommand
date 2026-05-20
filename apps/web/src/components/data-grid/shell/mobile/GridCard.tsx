@@ -32,11 +32,11 @@ export interface GridCardProps<TData> {
 /**
  * GridCard displays a single row as a card on mobile devices.
  *
- * Design:
+ * Design (3-zone hierarchy):
+ * - Zone 1 (top): Primary value (font-medium) + StatusBadge, justify-between
+ * - Divider: border-t border-border/40
+ * - Zone 2 (middle): Metadata label/value pairs in grid grid-cols-2
  * - Container: bg-card border border-border rounded-lg p-4 mb-2
- * - Title row: primary column value, text-sm font-medium
- * - Metadata rows: label-value pairs, text-xs text-muted-foreground
- * - StatusBadge: integrated for status columns
  * - Swipe-left: reveals action drawer (3 icons max)
  * - Selection: checkbox in top-right, visible in multi-select mode
  * - Tap: navigate to detail view
@@ -88,7 +88,7 @@ export function GridCard<TData>({
       ref={swipeRef}
       {...longPressHandlers}
       className={cn(
-        'relative rounded-lg border border-border bg-card p-4 transition-all',
+        'relative rounded-lg border border-border bg-card transition-all',
         'motion-safe:duration-200',
         isSelected && 'ring-2 ring-primary bg-b-050',
         'cursor-pointer',
@@ -108,9 +108,9 @@ export function GridCard<TData>({
         </div>
       )}
 
-      {/* Title row */}
-      <div className="mb-2 flex items-center gap-2">
-        <h3 className="text-sm font-medium text-foreground line-clamp-1">
+      {/* Zone 1: Title + Status */}
+      <div className="flex items-center justify-between p-4">
+        <h3 className="text-sm font-medium text-foreground line-clamp-1 flex-1">
           {primaryValue}
         </h3>
         {statusValue && (
@@ -127,9 +127,14 @@ export function GridCard<TData>({
         )}
       </div>
 
-      {/* Metadata rows */}
+      {/* Divider */}
       {metadataColumns.length > 0 && (
-        <div className="space-y-1">
+        <div className="border-t border-border/40" />
+      )}
+
+      {/* Zone 2: Metadata grid */}
+      {metadataColumns.length > 0 && (
+        <div className="grid grid-cols-2 gap-y-1 p-4 pt-2">
           {metadataColumns.map((columnId) => {
             const column = row.getAllCells().find((cell) => cell.column.id === columnId);
             if (!column) return null;
@@ -140,9 +145,9 @@ export function GridCard<TData>({
             const value = column.getValue();
 
             return (
-              <div key={columnId} className="flex items-center justify-between">
+              <div key={columnId} className="flex flex-col">
                 <span className="text-xs text-muted-foreground">{label}</span>
-                <span className="text-xs text-foreground">
+                <span className="text-xs text-foreground font-medium">
                   {value ? String(value) : '—'}
                 </span>
               </div>

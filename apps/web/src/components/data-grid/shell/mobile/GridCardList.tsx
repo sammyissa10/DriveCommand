@@ -34,7 +34,7 @@ export interface GridCardListProps<TData> {
  * Design:
  * - Virtualized with @tanstack/react-virtual
  * - estimateSize: 100px per card
- * - Padding: px-4 for card list container
+ * - Padding: px-4 horizontal, pb-20 (80px) bottom for FAB clearance
  * - Shows EmptyState when rows.length === 0
  * - Shows LoadingSkeleton when loading
  * - Pull-to-refresh support (optional, via onRefresh callback)
@@ -103,7 +103,7 @@ export function GridCardList<TData>({
       }}
     >
       <div
-        className="px-4 py-2"
+        className="px-4 py-2 pb-20"
         style={{
           height: `${virtualizer.getTotalSize()}px`,
           width: '100%',

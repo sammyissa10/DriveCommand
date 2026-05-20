@@ -96,7 +96,8 @@ export function ColumnSizingProvider<TData>({
       if (column.id === 'select' || column.id === 'actions') continue;
 
       // Get size from TanStack column or meta default or fallback 150px
-      const size = column.getSize() || column.columnDef.meta?.defaultWidth || 150;
+      const meta = column.columnDef.meta as { defaultWidth?: number } | undefined;
+      const size = column.getSize() || meta?.defaultWidth || 150;
       widths.push(`${size}px`);
       widthsMap[column.id] = size;
     }
