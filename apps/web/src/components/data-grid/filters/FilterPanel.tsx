@@ -49,8 +49,8 @@ import type {
 interface FilterPanelProps<TData> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  columns: ExtendedColumnDef<TData>[];
-  filters: GridFilter[];
+  columns?: ExtendedColumnDef<TData>[];
+  filters?: GridFilter[];
   onFiltersChange: (filters: GridFilter[]) => void;
 }
 
@@ -82,25 +82,29 @@ function getDefaultOperator(filterType: FilterType): string {
 export function FilterPanel<TData>({
   open,
   onOpenChange,
-  columns,
-  filters,
+  columns = [],
+  filters = [],
   onFiltersChange,
 }: FilterPanelProps<TData>) {
+  // Ensure columns is always an array
+  const safeColumns = columns ?? [];
+  const safeFilters = filters ?? [];
+
   // Local state for editing filters before applying
-  const [localFilters, setLocalFilters] = React.useState<GridFilter[]>(filters);
+  const [localFilters, setLocalFilters] = React.useState<GridFilter[]>(safeFilters);
 
   // Sync local filters when external filters change
   React.useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters]);
+    setLocalFilters(safeFilters);
+  }, [safeFilters]);
 
   // Get filterable columns
   const filterableColumns = React.useMemo(() => {
-    return columns.filter((col) => {
+    return safeColumns.filter((col) => {
       const filterType = col.meta?.filterType;
       return filterType !== undefined;
     });
-  }, [columns]);
+  }, [safeColumns]);
 
   // Get column label
   const getColumnLabel = (columnId: string) => {

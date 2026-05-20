@@ -64,21 +64,21 @@ interface GridToolbarProps<TData> {
   /** Local search value */
   searchValue?: string;
   /** Grid columns for filter panel */
-  columns: ExtendedColumnDef<TData>[];
+  columns?: ExtendedColumnDef<TData>[];
   /** Data fetcher for "export all" mode */
   dataFetcher?: ServerDataFetcher<TData>;
   /** Current filters */
-  filters: GridFilter[];
+  filters?: GridFilter[];
   /** Filters change callback */
-  onFiltersChange: (filters: GridFilter[]) => void;
+  onFiltersChange?: (filters: GridFilter[]) => void;
   /** Current sort state */
-  sort: { field: string; direction: 'asc' | 'desc' } | null;
+  sort?: { field: string; direction: 'asc' | 'desc' } | null;
   /** Current search term */
-  search: string;
+  search?: string;
   /** Row ID accessor for export selected */
   rowIdAccessor?: (row: TData) => string;
   /** Density setter from preferences hook */
-  setDensity: (density: DensityMode) => void;
+  setDensity?: (density: DensityMode) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -129,15 +129,18 @@ export function GridToolbar<TData>({
   className,
   onSearch,
   searchValue: controlledSearchValue,
-  columns,
+  columns = [],
   dataFetcher,
-  filters,
+  filters = [],
   onFiltersChange,
-  sort,
-  search,
+  sort = null,
+  search = '',
   rowIdAccessor,
   setDensity,
 }: GridToolbarProps<TData>) {
+  // Ensure filters and columns are always arrays
+  const safeFilters = filters ?? [];
+  const safeColumns = columns ?? [];
   const { table, preferences, density, selection, gridId } = useDataGridContext<TData>();
   const [filterPanelOpen, setFilterPanelOpen] = React.useState(false);
 
@@ -166,12 +169,12 @@ export function GridToolbar<TData>({
 
   // Handle density change
   const handleDensityChange = (value: string) => {
-    setDensity(value as DensityMode);
+    setDensity?.(value as DensityMode);
   };
 
   // Get column label for filter chip
   const getColumnLabel = (columnId: string) => {
-    const column = columns.find((col) => {
+    const column = safeColumns.find((col) => {
       const colId = 'accessorKey' in col ? String(col.accessorKey) : col.id;
       return colId === columnId;
     });
@@ -181,20 +184,20 @@ export function GridToolbar<TData>({
 
   // Remove filter
   const handleRemoveFilter = (index: number) => {
-    const updated = filters.filter((_, i) => i !== index);
-    onFiltersChange(updated);
+    const updated = safeFilters.filter((_, i) => i !== index);
+    onFiltersChange?.(updated);
   };
 
   // Export handlers
   const handleExportVisible = () => {
     const rows = table.getRowModel().rows.map((row) => row.original);
-    exportVisible(rows, columns, gridId);
+    exportVisible(rows, safeColumns, gridId);
   };
 
   const handleExportSelected = () => {
     const rows = table.getRowModel().rows.map((row) => row.original);
     const accessor = rowIdAccessor ?? ((row: TData) => String((row as { id?: unknown }).id ?? ''));
-    exportSelected(selection.selectedIds, rows, columns, gridId, accessor);
+    exportSelected(selection.selectedIds, rows, safeColumns, gridId, accessor);
   };
 
   const handleExportAll = async () => {
@@ -206,11 +209,11 @@ export function GridToolbar<TData>({
 
     await exportAll(
       dataFetcher,
-      columns,
+      safeColumns,
       gridId,
-      filters,
-      sort,
-      search
+      safeFilters,
+      sort ?? null,
+      search ?? ''
     );
   };
 
@@ -243,14 +246,14 @@ export function GridToolbar<TData>({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant={filters.length > 0 ? 'default' : 'ghost'}
+                variant={safeFilters.length > 0 ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFilterPanelOpen(true)}
                 aria-label="Open filters"
               >
                 <FilterIcon className="h-4 w-4" />
-                {filters.length > 0 && (
-                  <span className="ml-1">{filters.length}</span>
+                {safeFilters.length > 0 && (
+                  <span className="ml-1">{safeFilters.length}</span>
                 )}
               </Button>
             </TooltipTrigger>
@@ -366,9 +369,9 @@ export function GridToolbar<TData>({
         </div>
 
         {/* Filter chips row */}
-        {filters.length > 0 && (
+        {safeFilters.length > 0 && (
           <div className="flex items-center gap-2 px-2 pb-2 flex-wrap">
-            {filters.map((filter, index) => (
+            {safeFilters.map((filter, index) => (
               <FilterChip
                 key={index}
                 filter={filter}
@@ -384,9 +387,9 @@ export function GridToolbar<TData>({
       <FilterPanel
         open={filterPanelOpen}
         onOpenChange={setFilterPanelOpen}
-        columns={columns}
-        filters={filters}
-        onFiltersChange={onFiltersChange}
+        columns={safeColumns}
+        filters={safeFilters}
+        onFiltersChange={onFiltersChange ?? (() => {})}
       />
     </TooltipProvider>
   );
