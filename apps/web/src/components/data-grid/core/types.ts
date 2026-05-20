@@ -65,6 +65,8 @@ export interface DataGridColumnMeta {
   maxWidth?: number;
   /** Default column width in pixels */
   defaultWidth?: number;
+  /** Data type for auto-sorting. Defaults to 'text'. */
+  dataType?: 'text' | 'number' | 'date' | 'currency' | 'boolean';
 }
 
 /**

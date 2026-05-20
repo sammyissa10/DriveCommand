@@ -219,15 +219,54 @@ export function useDataGrid<TData>(props: DataGridProps<TData>): UseDataGridRetu
   const configuredColumns = useMemo(() => {
     const { columnOrder, columnWidths, hiddenColumns, frozenColumns } = preferences.preferences;
 
-    // Map columns with preference overrides
+    // Map columns with preference overrides and auto-sorting
     let cols = columns.map((col) => {
       const colId = 'accessorKey' in col ? String(col.accessorKey) : col.id;
       if (!colId) return col;
+
+      // Auto-assign sortingFn based on dataType (if not already provided)
+      let sortingFn = col.sortingFn;
+      if (!sortingFn && col.meta?.dataType) {
+        switch (col.meta.dataType) {
+          case 'number':
+          case 'currency':
+            // Numeric sorting
+            sortingFn = (rowA, rowB, columnId) => {
+              const a = rowA.getValue(columnId) as number;
+              const b = rowB.getValue(columnId) as number;
+              return (a || 0) - (b || 0);
+            };
+            break;
+          case 'date':
+            // Date sorting
+            sortingFn = (rowA, rowB, columnId) => {
+              const a = rowA.getValue(columnId);
+              const b = rowB.getValue(columnId);
+              const dateA = a ? new Date(a as string).getTime() : 0;
+              const dateB = b ? new Date(b as string).getTime() : 0;
+              return dateA - dateB;
+            };
+            break;
+          case 'boolean':
+            // Boolean sorting (false < true)
+            sortingFn = (rowA, rowB, columnId) => {
+              const a = rowA.getValue(columnId) as boolean;
+              const b = rowB.getValue(columnId) as boolean;
+              return (a === b) ? 0 : a ? 1 : -1;
+            };
+            break;
+          case 'text':
+          default:
+            // Default text sorting (TanStack handles this)
+            break;
+        }
+      }
 
       return {
         ...col,
         size: columnWidths[colId] ?? col.meta?.defaultWidth ?? col.size,
         enableHiding: true,
+        sortingFn,
       } as ColumnDef<TData, unknown>;
     });
 

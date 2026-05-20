@@ -76,6 +76,9 @@ export default function DataGridDemoPage() {
       columnHelper.accessor('id', {
         header: 'ID',
         size: 80,
+        meta: {
+          dataType: 'number',
+        },
       }),
       columnHelper.accessor('name', {
         header: 'Name',
@@ -168,7 +171,7 @@ export default function DataGridDemoPage() {
         confirmDescription: `Are you sure you want to delete ${row.name}?`,
       },
     ];
-    return <QuickActions actions={actions} />;
+    return <QuickActions actions={actions} selectedCount={selectedIds.size} />;
   };
 
   // Pagination

@@ -43,29 +43,39 @@ export interface QuickAction {
   confirmTitle?: string;
   /** Destructive action confirmation description */
   confirmDescription?: string;
+  /** Whether action is disabled */
+  disabled?: boolean;
+  /** Disabled tooltip message */
+  disabledTooltip?: string;
 }
 
 export interface QuickActionsProps {
   /** Array of actions to display */
   actions?: QuickAction[];
+  /** Number of selected rows (for auto-disabling View/Edit) */
+  selectedCount?: number;
   /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * QuickActions displays a floating pill with action icons on row hover.
+ * QuickActions displays inline action icons (always visible, not hover-revealed).
  *
  * Design:
- * - Container: bg-background border border-border shadow-sm rounded-md
- * - Icons: Eye, Pencil, Trash2 with strokeWidth={1.5}
- * - Icon buttons: h-7 w-7, variant="ghost"
- * - Gap between icons: gap-0.5
- * - Transition: opacity-0 group-hover:opacity-100 with motion-safe
+ * - Container: simple flex layout (no border/shadow/floating pill)
+ * - Icons: Eye, Pencil, Trash2 with strokeWidth={1.5}, h-4 w-4
+ * - Icon buttons: variant="ghost", size="sm"
+ * - Gap between icons: gap-1
+ * - Always visible (no opacity transitions)
+ * - When selectedCount > 1: View/Edit disabled with tooltip "Select single row"
+ * - Delete still works (bulk delete)
  * - Delete triggers confirmation dialog
  * - Tooltips on each action
+ * - All button clicks call e.stopPropagation() to prevent row selection
  *
  * @example
  * <QuickActions
+ *   selectedCount={2}
  *   actions={[
  *     { id: 'view', label: 'View', icon: Eye, onClick: () => {} },
  *     { id: 'edit', label: 'Edit', icon: Pencil, onClick: () => {} },
@@ -73,8 +83,11 @@ export interface QuickActionsProps {
  *   ]}
  * />
  */
-export function QuickActions({ actions, className }: QuickActionsProps) {
+export function QuickActions({ actions, selectedCount = 1, className }: QuickActionsProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<QuickAction | null>(null);
+
+  // Auto-disable View/Edit when multiple rows selected
+  const isMultiSelect = selectedCount > 1;
 
   // Default actions if none provided
   const defaultActions: QuickAction[] = [
@@ -83,12 +96,16 @@ export function QuickActions({ actions, className }: QuickActionsProps) {
       label: 'View details',
       icon: Eye,
       onClick: () => console.log('View'),
+      disabled: isMultiSelect,
+      disabledTooltip: 'Select single row',
     },
     {
       id: 'edit',
       label: 'Edit',
       icon: Pencil,
       onClick: () => console.log('Edit'),
+      disabled: isMultiSelect,
+      disabledTooltip: 'Select single row',
     },
     {
       id: 'delete',
@@ -103,7 +120,9 @@ export function QuickActions({ actions, className }: QuickActionsProps) {
 
   const finalActions = actions || defaultActions;
 
-  const handleAction = (action: QuickAction) => {
+  const handleAction = (action: QuickAction, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row selection
+    if (action.disabled) return;
     if (action.destructive) {
       setDeleteConfirm(action);
     } else {
@@ -121,15 +140,15 @@ export function QuickActions({ actions, className }: QuickActionsProps) {
   return (
     <TooltipProvider>
       <div
-        className={cn(
-          'flex items-center gap-0.5 rounded-md border border-border bg-background px-1 py-0.5 shadow-sm',
-          'motion-safe:transition-opacity motion-safe:duration-150',
-          className
-        )}
+        className={cn('flex items-center gap-1', className)}
         onClick={(e) => e.stopPropagation()}
       >
         {finalActions.map((action) => {
           const Icon = action.icon;
+          const tooltipText = action.disabled && action.disabledTooltip
+            ? action.disabledTooltip
+            : action.label;
+
           return (
             <Tooltip key={action.id}>
               <TooltipTrigger asChild>
@@ -138,16 +157,18 @@ export function QuickActions({ actions, className }: QuickActionsProps) {
                   size="sm"
                   className={cn(
                     'h-7 w-7 p-0',
-                    action.destructive && 'hover:text-destructive'
+                    action.destructive && !action.disabled && 'hover:text-destructive',
+                    action.disabled && 'cursor-not-allowed opacity-40'
                   )}
-                  onClick={() => handleAction(action)}
+                  onClick={(e) => handleAction(action, e)}
+                  disabled={action.disabled}
                   aria-label={action.label}
                 >
                   <Icon className="h-4 w-4" strokeWidth={1.5} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="text-xs">{action.label}</p>
+                <p className="text-xs">{tooltipText}</p>
               </TooltipContent>
             </Tooltip>
           );
