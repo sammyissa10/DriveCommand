@@ -1,4 +1,5 @@
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 /**
  * Activation event types that mark progression through the onboarding checklist.
@@ -49,7 +50,7 @@ export async function recordActivationEvent(
       // Idempotency: only update if this field is not yet set.
       // Fetch all relevant fields with explicit (non-dynamic) keys so TypeScript
       // can correctly infer the shape of `current`.
-      const current = await tx.activationProgress.findUnique({
+      let current = await tx.activationProgress.findUnique({
         where: { tenantId },
         select: {
           firstRealTruckAt: true,
@@ -61,7 +62,37 @@ export async function recordActivationEvent(
         },
       });
 
-      if (!current) return; // ActivationProgress row missing — skip silently
+      if (!current) {
+        // ActivationProgress row missing — auto-create it and log a warning so
+        // we can detect future provisioning drift (e.g. provision-tenant.ts skipped).
+        logger.warn(
+          'ActivationProgress row missing during recordActivationEvent — auto-creating',
+          { tenantId, event }
+        );
+        await tx.activationProgress.create({
+          data: { tenantId, accountCreatedAt: new Date() },
+        });
+        current = await tx.activationProgress.findUnique({
+          where: { tenantId },
+          select: {
+            firstRealTruckAt: true,
+            firstRealDriverAt: true,
+            firstRealClientAt: true,
+            firstLoadInTransitAt: true,
+            isActivated: true,
+            accountCreatedAt: true,
+          },
+        });
+        if (!current) {
+          // Truly defensive — if create+refetch still returns null something is very wrong
+          logger.error(
+            'ActivationProgress row still missing after auto-create — aborting',
+            undefined,
+            { tenantId, event }
+          );
+          return;
+        }
+      }
 
       // Skip if this event was already recorded (idempotency)
       const currentFieldValue = current[field as keyof typeof current];
