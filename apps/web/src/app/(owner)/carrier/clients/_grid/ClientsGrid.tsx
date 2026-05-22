@@ -30,11 +30,9 @@ import type { ClientRow } from './types';
 
 interface ClientsGridProps {
   clients: ClientRow[];
-  /** User role - MANAGER cannot create new clients */
-  role?: string;
 }
 
-export function ClientsGrid({ clients, role }: ClientsGridProps) {
+export function ClientsGrid({ clients }: ClientsGridProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -61,9 +59,6 @@ export function ClientsGrid({ clients, role }: ClientsGridProps) {
 
   const rows = table.getRowModel().rows;
 
-  // Check if user can create (MANAGER role cannot)
-  const canCreate = role !== 'MANAGER';
-
   // Quick actions for each row
   const renderQuickActions = (row: ClientRow): React.ReactNode => {
     const actions: QuickAction[] = [
@@ -81,19 +76,16 @@ export function ClientsGrid({ clients, role }: ClientsGridProps) {
       },
     ];
 
-    // Only add delete for non-managers
-    if (canCreate) {
-      actions.push({
-        id: 'delete',
-        label: 'Delete',
-        icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to delete mutation
-          console.warn('Delete not implemented');
-        },
-        destructive: true,
-      });
-    }
+    actions.push({
+      id: 'delete',
+      label: 'Delete',
+      icon: Trash2,
+      onClick: () => {
+        // TODO: Wire to delete mutation
+        console.warn('Delete not implemented');
+      },
+      destructive: true,
+    });
 
     return <QuickActions actions={actions} />;
   };
@@ -111,24 +103,21 @@ export function ClientsGrid({ clients, role }: ClientsGridProps) {
     });
   };
 
-  // Bulk actions (only for non-managers)
+  // Bulk actions
   const bulkActions = useMemo(
-    () =>
-      canCreate
-        ? [
-            {
-              id: 'delete',
-              label: 'Delete',
-              icon: Trash2,
-              onClick: () => {
-                // TODO: Wire to bulk delete mutation
-                console.warn('Bulk delete not implemented');
-              },
-              destructive: true,
-            },
-          ]
-        : [],
-    [canCreate]
+    () => [
+      {
+        id: 'delete',
+        label: 'Delete',
+        icon: Trash2,
+        onClick: () => {
+          // TODO: Wire to bulk delete mutation
+          console.warn('Bulk delete not implemented');
+        },
+        destructive: true,
+      },
+    ],
+    []
   );
 
   return (
@@ -144,8 +133,9 @@ export function ClientsGrid({ clients, role }: ClientsGridProps) {
       search={globalFilter}
       onSearchChange={setGlobalFilter}
       searchPlaceholder="Search by name, contact, or email..."
-      showNew={canCreate}
-      onNew={canCreate ? () => router.push('/carrier/clients/new') : undefined}
+      showNew
+      onNew={() => router.push('/carrier/clients/new')}
+      recordName="Client"
       bulkActions={bulkActions}
       onClearSelection={() => setSelectedIds(new Set())}
       primaryColumn="name"

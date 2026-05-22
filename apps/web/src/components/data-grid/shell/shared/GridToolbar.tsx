@@ -1,20 +1,20 @@
 /**
- * GridToolbar Component (Responsive)
+ * GridToolbar Component (Responsive) — DriveCommand Brand
  *
  * Responsive toolbar that renders desktop or mobile variants based on breakpoint.
  * Desktop: inline controls. Mobile: delegates to MobileToolbar.
+ * Paper white surface, Signal Blue accents.
  */
 
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, Columns3, Download, Plus } from 'lucide-react';
+import { Search, Filter, Download, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -24,10 +24,14 @@ import {
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { MobileToolbar } from '../mobile/MobileToolbar';
 import { FilterSheet } from './FilterSheet';
+import { ColumnsMenu } from './ColumnsMenu';
+import { exportVisible, exportSelected, exportAll } from '../../export/exportToCsv';
 import { cn } from '@/lib/utils';
 import type { ExtendedColumnDef, GridFilter, ServerDataFetcher } from '../../core/types';
 
 export interface GridToolbarProps<TData> {
+  /** Grid ID for export filename */
+  gridId?: string;
   /** Search value */
   search?: string;
   /** Search change handler */
@@ -46,16 +50,34 @@ export interface GridToolbarProps<TData> {
   hiddenColumns?: string[];
   /** Hidden columns change handler */
   onHiddenColumnsChange?: (columns: string[]) => void;
+  /** Column order (for reordering) */
+  columnOrder?: string[];
+  /** Column order change handler */
+  onColumnOrderChange?: (order: string[]) => void;
+  /** Current sort (for mobile sort sheet) */
+  currentSort?: { id: string; desc: boolean } | null;
+  /** Sort change handler (for mobile sort sheet) */
+  onSortChange?: (sort: { id: string; desc: boolean } | null) => void;
+  /** Mobile view mode (cards or table) */
+  viewMode?: 'cards' | 'table';
+  /** View mode change handler */
+  onViewModeChange?: (mode: 'cards' | 'table') => void;
   /** Export filename */
   exportFilename?: string;
   /** Data fetcher for export all */
   dataFetcher?: ServerDataFetcher<TData>;
   /** Row ID accessor for export selected */
   rowIdAccessor?: (row: TData) => string;
+  /** Visible rows for export */
+  visibleRows?: TData[];
+  /** Selected IDs for export */
+  selectedIds?: Set<string>;
   /** Whether to show "New" button */
   showNew?: boolean;
   /** New button click handler */
   onNew?: () => void;
+  /** Record name for dynamic button label (e.g., "Client", "Driver") */
+  recordName?: string;
   /** Additional CSS classes */
   className?: string;
 }
@@ -63,14 +85,15 @@ export interface GridToolbarProps<TData> {
 /**
  * GridToolbar provides responsive controls for DataGrid.
  *
- * Design:
+ * Design (DriveCommand Brand):
  * - Desktop (>=768px): Search (w-64) + spacer + Filter + Columns + Export + New
  * - Mobile (<768px): Delegates to MobileToolbar
- * - Border-b border-border/40
- * - Padding: p-3
- * - Buttons: variant="ghost" size="sm"
- * - All icons: strokeWidth={1.5}
- * - NO density toggle (removed per design)
+ * - Background: Paper white (#FFFFFF)
+ * - Border-b: N200 at 40%
+ * - Search: N200/50 border, Signal Blue/60 focus, no heavy shadow
+ * - Filter/Columns/Export: ghost buttons, hover bg-accent/[0.04]
+ * - New button: solid Signal Blue #0A21C0, white text, Inter font-medium
+ * - All icons: strokeWidth={1.6} (brand icon weight)
  *
  * @example
  * <GridToolbar
@@ -84,6 +107,7 @@ export interface GridToolbarProps<TData> {
  * />
  */
 export function GridToolbar<TData>({
+  gridId = 'grid',
   search,
   onSearchChange,
   searchPlaceholder = 'Search...',
@@ -93,11 +117,20 @@ export function GridToolbar<TData>({
   columns = [],
   hiddenColumns = [],
   onHiddenColumnsChange,
-  exportFilename = 'export',
+  columnOrder = [],
+  onColumnOrderChange,
+  currentSort,
+  onSortChange,
+  viewMode,
+  onViewModeChange,
+  exportFilename,
   dataFetcher,
   rowIdAccessor,
+  visibleRows = [],
+  selectedIds,
   showNew,
   onNew,
+  recordName,
   className,
 }: GridToolbarProps<TData>) {
   const { isMobile } = useBreakpoint();
@@ -110,18 +143,29 @@ export function GridToolbar<TData>({
     onFilterClick?.();
   };
 
-  const handleColumnVisibilityChange = (columnId: string, visible: boolean) => {
-    if (visible) {
-      // Show column (remove from hidden)
-      onHiddenColumnsChange?.(hiddenColumns.filter((id) => id !== columnId));
-    } else {
-      // Hide column (add to hidden)
-      onHiddenColumnsChange?.([...hiddenColumns, columnId]);
-    }
-  };
-
-  // Mobile layout
+  // Mobile layout - MobileToolbar handles sort/columns internally with bottom sheets
   if (isMobile) {
+    // Build column items for MobileColumnsSheet
+    const columnItems = columns
+      .filter((col) => col.id !== 'select' && col.id !== 'actions')
+      .map((col) => {
+        const meta = col.meta as { hideable?: boolean } | undefined;
+        return {
+          id: col.id!,
+          name: typeof col.header === 'string' ? col.header : col.id!,
+          isHidden: hiddenColumns.includes(col.id!),
+          isHideable: meta?.hideable !== false,
+        };
+      });
+
+    // Build sort options from columns
+    const sortOptions = columns
+      .filter((col) => col.id !== 'select' && col.id !== 'actions')
+      .map((col) => ({
+        id: col.id!,
+        label: typeof col.header === 'string' ? col.header : col.id!,
+      }));
+
     return (
       <>
         <MobileToolbar
@@ -130,8 +174,29 @@ export function GridToolbar<TData>({
           searchPlaceholder={searchPlaceholder}
           activeFiltersCount={activeFiltersCount}
           onFilterClick={handleFilterClick}
-          onSortClick={() => {}} // Handled by parent
-          onColumnsClick={() => {}} // Handled by parent
+          columns={columnItems}
+          onToggleColumn={(columnId) => {
+            if (hiddenColumns.includes(columnId)) {
+              onHiddenColumnsChange?.(hiddenColumns.filter((id) => id !== columnId));
+            } else {
+              onHiddenColumnsChange?.([...hiddenColumns, columnId]);
+            }
+          }}
+          onShowAllColumns={() => {
+            const hideableIds = columnItems.filter((c) => c.isHideable).map((c) => c.id);
+            onHiddenColumnsChange?.(hiddenColumns.filter((id) => !hideableIds.includes(id)));
+          }}
+          onHideAllColumns={() => {
+            const hideableIds = columnItems.filter((c) => c.isHideable).map((c) => c.id);
+            onHiddenColumnsChange?.([...new Set([...hiddenColumns, ...hideableIds])]);
+          }}
+          sortOptions={sortOptions}
+          currentSort={currentSort}
+          onSortChange={onSortChange}
+          viewMode={viewMode}
+          onViewModeChange={onViewModeChange}
+          visibleRows={visibleRows}
+          gridId={gridId}
           className={className}
         />
         <FilterSheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen} />
@@ -142,101 +207,167 @@ export function GridToolbar<TData>({
   // Desktop layout
   return (
     <>
-      <div className={cn('flex items-center gap-3 border-b border-border/40 p-3', className)}>
-      {/* Search input */}
-      <div className="relative w-64">
-        <Search
-          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-          strokeWidth={1.5}
-        />
-        <Input
-          type="search"
-          placeholder={searchPlaceholder}
-          value={search}
-          onChange={(e) => onSearchChange?.(e.target.value)}
-          className="pl-9"
-        />
-      </div>
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Filter button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleFilterClick}
-        className="relative"
-      >
-        <Filter className="mr-2 h-4 w-4" strokeWidth={1.5} />
-        Filter
-        {activeFiltersCount > 0 && (
-          <Badge variant="secondary" className="ml-2 h-5 min-w-[20px] rounded-full px-1 text-xs">
-            {activeFiltersCount}
-          </Badge>
+      <div
+        className={cn(
+          'flex items-center gap-3 border-b p-3',
+          // Background: Paper white
+          'bg-[var(--grid-paper,#FFFFFF)]',
+          className
         )}
-      </Button>
+        style={{
+          borderColor: 'var(--grid-border-header)',
+          fontFamily: "var(--grid-font-ui, 'Inter', sans-serif)",
+        }}
+      >
+        {/* Search input */}
+        <div className="relative w-64">
+          <Search
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+            style={{ color: 'var(--grid-n400, #8E909A)' }}
+            strokeWidth={1.6}
+          />
+          <Input
+            type="search"
+            placeholder={searchPlaceholder}
+            value={search}
+            onChange={(e) => onSearchChange?.(e.target.value)}
+            className={cn(
+              'pl-9',
+              // Border: N200/50 rest, Signal Blue/60 focus
+              'border-[var(--grid-n200,#D0D1D7)]/50',
+              'focus:border-[var(--grid-accent,#0A21C0)]/60',
+              'focus:ring-0 focus:ring-offset-0',
+              // Typography: Inter
+              'text-sm'
+            )}
+            style={{
+              fontFamily: "var(--grid-font-ui, 'Inter', sans-serif)",
+            }}
+          />
+        </div>
 
-      {/* Columns dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <Columns3 className="mr-2 h-4 w-4" strokeWidth={1.5} />
-            Columns
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {columns
-            .filter((col) => col.id !== 'select' && col.id !== 'actions')
-            .map((column) => {
-              const isHidden = hiddenColumns.includes(column.id!);
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={!isHidden}
-                  onCheckedChange={(checked) =>
-                    handleColumnVisibilityChange(column.id!, checked)
-                  }
-                >
-                  {typeof column.header === 'string' ? column.header : column.id}
-                </DropdownMenuCheckboxItem>
-              );
-            })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        {/* Spacer */}
+        <div className="flex-1" />
 
-      {/* Export dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <Download className="mr-2 h-4 w-4" strokeWidth={1.5} />
-            Export
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Export to CSV</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => console.log('Export visible')}>
-            Visible rows
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log('Export selected')}>
-            Selected rows
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log('Export all')}>
-            All rows
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* New button */}
-      {showNew && onNew && (
-        <Button onClick={onNew} size="sm">
-          <Plus className="mr-2 h-4 w-4" strokeWidth={1.5} />
-          New
+        {/* Filter button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleFilterClick}
+          className={cn(
+            'relative',
+            'bg-transparent hover:bg-[var(--grid-toolbar-hover)]',
+            'text-[var(--grid-n500,#6B6E78)] hover:text-[var(--grid-ink,#141619)]'
+          )}
+          style={{
+            borderRadius: 'var(--grid-radius-button, 6px)',
+            fontFamily: "var(--grid-font-ui, 'Inter', sans-serif)",
+          }}
+        >
+          <Filter className="mr-2 h-4 w-4" strokeWidth={1.6} />
+          Filter
+          {activeFiltersCount > 0 && (
+            <Badge
+              variant="secondary"
+              className="ml-2 h-5 min-w-[20px] rounded-full px-1 text-xs"
+              style={{
+                backgroundColor: 'var(--grid-accent-l50, #E7EAFF)',
+                color: 'var(--grid-accent, #0A21C0)',
+              }}
+            >
+              {activeFiltersCount}
+            </Badge>
+          )}
         </Button>
-      )}
+
+        {/* Columns menu with drag-to-reorder */}
+        <ColumnsMenu
+          columns={columns}
+          hiddenColumns={hiddenColumns}
+          onHiddenColumnsChange={onHiddenColumnsChange || (() => {})}
+          columnOrder={columnOrder}
+          onColumnOrderChange={onColumnOrderChange || (() => {})}
+        />
+
+        {/* Export dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'bg-transparent hover:bg-[var(--grid-toolbar-hover)]',
+                'text-[var(--grid-n500,#6B6E78)] hover:text-[var(--grid-ink,#141619)]'
+              )}
+              style={{
+                borderRadius: 'var(--grid-radius-button, 6px)',
+                fontFamily: "var(--grid-font-ui, 'Inter', sans-serif)",
+              }}
+            >
+              <Download className="mr-2 h-4 w-4" strokeWidth={1.6} />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Export to CSV</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                exportVisible(visibleRows, columns, gridId);
+              }}
+            >
+              Visible rows ({visibleRows.length})
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (selectedIds && selectedIds.size > 0 && rowIdAccessor) {
+                  exportSelected(selectedIds, visibleRows, columns, gridId, rowIdAccessor);
+                } else {
+                  // If no rowIdAccessor, use id field as default
+                  exportSelected(
+                    selectedIds || new Set(),
+                    visibleRows,
+                    columns,
+                    gridId,
+                    (row: TData) => (row as { id: string }).id
+                  );
+                }
+              }}
+              disabled={!selectedIds || selectedIds.size === 0}
+            >
+              Selected rows {selectedIds && selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (dataFetcher) {
+                  exportAll(dataFetcher, columns, gridId, filters, null, search || '');
+                } else {
+                  // No server fetcher, just export all visible rows
+                  exportVisible(visibleRows, columns, gridId);
+                }
+              }}
+            >
+              All rows
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* New button — solid Signal Blue, white text */}
+        {showNew && onNew && (
+          <Button
+            onClick={onNew}
+            size="sm"
+            className="text-white font-medium"
+            style={{
+              backgroundColor: 'var(--grid-accent, #0A21C0)',
+              borderRadius: 'var(--grid-radius-button, 6px)',
+              fontFamily: "var(--grid-font-ui, 'Inter', sans-serif)",
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" strokeWidth={1.6} />
+            {recordName ? `Add New ${recordName}` : 'New'}
+          </Button>
+        )}
       </div>
 
       {/* FilterSheet */}

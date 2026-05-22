@@ -1,5 +1,5 @@
 /**
- * DataGrid public API.
+ * Single-source DataGrid widget. Visual or behavior changes here propagate to every consumer. Do not fork.
  *
  * @example
  * import { DataGrid, useDataGrid, useDataGridContext } from '@/components/data-grid';

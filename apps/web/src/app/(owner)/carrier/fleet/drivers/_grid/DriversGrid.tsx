@@ -133,6 +133,7 @@ export function DriversGrid({ drivers }: DriversGridProps) {
       searchPlaceholder="Search by name..."
       showNew
       onNew={() => router.push('/carrier/fleet/drivers/new')}
+      recordName="Driver"
       bulkActions={bulkActions}
       onClearSelection={() => setSelectedIds(new Set())}
       primaryColumn="name"

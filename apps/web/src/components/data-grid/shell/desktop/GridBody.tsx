@@ -1,8 +1,9 @@
 /**
- * GridBody Component (Desktop)
+ * GridBody Component (Desktop) — DriveCommand Brand
  *
  * Virtualized body container for desktop table rows.
  * Handles empty, loading, and error states.
+ * Paper white surface.
  */
 
 'use client';
@@ -32,8 +33,9 @@ export interface GridBodyProps<TData> {
 /**
  * GridBody renders virtualized table rows with state handling.
  *
- * Design:
+ * Design (DriveCommand Brand):
  * - Scrollable container with overflow-auto
+ * - Background: Paper white (#FFFFFF)
  * - Virtualizes rows for performance
  * - Shows EmptyState when rows.length === 0
  * - Shows LoadingSkeleton when isLoading
@@ -66,7 +68,10 @@ export function GridBody<TData>({
   // Loading state
   if (isLoading) {
     return (
-      <div className={className}>
+      <div
+        className={className}
+        style={{ backgroundColor: 'var(--grid-paper, #FFFFFF)' }}
+      >
         <LoadingSkeleton
           rows={5}
           columns={table.getAllColumns().length}
@@ -79,7 +84,10 @@ export function GridBody<TData>({
   // Error state
   if (error) {
     return (
-      <div className={className}>
+      <div
+        className={className}
+        style={{ backgroundColor: 'var(--grid-paper, #FFFFFF)' }}
+      >
         <ErrorState error={error} onRetry={onRefresh} />
       </div>
     );
@@ -88,7 +96,10 @@ export function GridBody<TData>({
   // Empty state
   if (rows.length === 0) {
     return (
-      <div className={className}>
+      <div
+        className={className}
+        style={{ backgroundColor: 'var(--grid-paper, #FFFFFF)' }}
+      >
         <EmptyState variant="no-data" />
       </div>
     );
@@ -98,7 +109,11 @@ export function GridBody<TData>({
   const virtualRows = virtualizer?.getVirtualItems() || [];
 
   return (
-    <div className={className} role="rowgroup">
+    <div
+      className={className}
+      role="rowgroup"
+      style={{ backgroundColor: 'var(--grid-paper, #FFFFFF)' }}
+    >
       {virtualizer ? (
         // Virtualized rendering
         <div
@@ -112,6 +127,7 @@ export function GridBody<TData>({
             const row = rows[virtualRow.index];
             const rowId = row.id;
             const isSelected = selectedIds?.has(rowId) || false;
+            const isLast = virtualRow.index === rows.length - 1;
 
             return (
               <div
@@ -131,6 +147,7 @@ export function GridBody<TData>({
                   rowIndex={virtualRow.index}
                   isSelected={isSelected}
                   enableSelection={enableSelection}
+                  isLast={isLast}
                   onSelect={
                     onRowSelect
                       ? () => onRowSelect(rowId, {} as React.MouseEvent)
@@ -152,6 +169,7 @@ export function GridBody<TData>({
         rows.map((row, index) => {
           const rowId = row.id;
           const isSelected = selectedIds?.has(rowId) || false;
+          const isLast = index === rows.length - 1;
 
           return (
             <GridRow
@@ -160,6 +178,7 @@ export function GridBody<TData>({
               rowIndex={index}
               isSelected={isSelected}
               enableSelection={enableSelection}
+              isLast={isLast}
               onSelect={
                 onRowSelect
                   ? () => onRowSelect(rowId, {} as React.MouseEvent)

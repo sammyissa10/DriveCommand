@@ -1,26 +1,38 @@
 /**
- * GridShell Component (Main Responsive Container)
+ * GridShell Component (Main Responsive Container) — DriveCommand Brand
  *
  * Main container that orchestrates the entire DataGrid shell.
  * Switches between desktop table and mobile cards based on breakpoint.
+ * Paper white surface, 8px radius, Signal Blue focus ring.
+ *
+ * COLUMN STATE MANAGEMENT:
+ * GridShell now internally uses useGridPreferences when column callbacks
+ * aren't provided, so column visibility/order "just works" automatically.
  */
 
 'use client';
 
 import { type Table, type Row } from '@tanstack/react-table';
 import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
-import { createContext, useContext, useRef, useState } from 'react';
+import { createContext, useContext, useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint';
+import { useGridPreferences } from '../core/useGridPreferences';
 import { GridHeader } from './desktop/GridHeader';
 import { GridBody } from './desktop/GridBody';
 import { GridFooter } from './desktop/GridFooter';
 import { GridCardList } from './mobile/GridCardList';
+import { MobileTableView } from './mobile/MobileTableView';
 import { MobileFAB } from './mobile/MobileFAB';
+import { MobileBulkActionsBar } from './mobile/MobileBulkActionsBar';
+import type { MobileViewMode } from './mobile/MobileToolbar';
 import { GridToolbar } from './shared/GridToolbar';
 import { BulkActionsBar } from './shared/BulkActionsBar';
 import { ColumnSizingProvider } from '../hooks/useColumnSizing';
 import { cn } from '@/lib/utils';
 import type { ExtendedColumnDef, GridFilter, ServerDataFetcher } from '../core/types';
+
+// Import tokens CSS
+import '../tokens/grid-tokens.css';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -28,11 +40,11 @@ import type { ExtendedColumnDef, GridFilter, ServerDataFetcher } from '../core/t
 
 /**
  * Get row height for density mode.
- * NOTE: Density is always 'normal' (48px) in this redesign.
+ * NOTE: Density is always 'normal' (52px) in this redesign.
  */
 export function getDensityRowHeight(density: string): number {
-  // Always return 48px (design constraint: fixed row height)
-  return 48;
+  // Always return 52px (design constraint: fixed row height with generous padding)
+  return 52;
 }
 
 // ---------------------------------------------------------------------------
@@ -107,6 +119,10 @@ export interface GridShellProps<TData> {
   columns?: ExtendedColumnDef<TData>[];
   hiddenColumns?: string[];
   onHiddenColumnsChange?: (columns: string[]) => void;
+  /** Column order (IDs in display order) */
+  columnOrder?: string[];
+  /** Column order change handler */
+  onColumnOrderChange?: (order: string[]) => void;
   /** Export config */
   exportFilename?: string;
   dataFetcher?: ServerDataFetcher<TData>;
@@ -114,6 +130,8 @@ export interface GridShellProps<TData> {
   /** New button */
   showNew?: boolean;
   onNew?: () => void;
+  /** Record name for dynamic button label (e.g., "Client", "Driver") */
+  recordName?: string;
   /** Bulk actions */
   bulkActions?: Array<{
     id: string;
@@ -134,11 +152,11 @@ export interface GridShellProps<TData> {
 /**
  * GridShell is the main responsive container for the DataGrid.
  *
- * Design:
+ * Design (DriveCommand Brand):
  * - Desktop (>=768px): Table layout with header/body/footer
  * - Mobile (<768px): Card list with FAB
- * - Container: bg-background border border-border rounded-lg overflow-hidden
- * - Focus: focus-visible:ring-2 ring-primary
+ * - Container: Paper white (#FFFFFF), 8px radius, N200 at 50% border
+ * - Focus: focus-visible:ring-2 Signal Blue
  * - Keyboard navigation: arrow keys, space, escape
  *
  * @example
@@ -171,14 +189,17 @@ export function GridShell<TData>({
   filters,
   onFiltersChange,
   onFilterClick,
-  columns,
-  hiddenColumns,
-  onHiddenColumnsChange,
+  columns: columnsProp,
+  hiddenColumns: hiddenColumnsProp,
+  onHiddenColumnsChange: onHiddenColumnsChangeProp,
+  columnOrder: columnOrderProp,
+  onColumnOrderChange: onColumnOrderChangeProp,
   exportFilename,
   dataFetcher,
   rowIdAccessor,
   showNew,
   onNew,
+  recordName,
   bulkActions,
   onClearSelection,
   primaryColumn,
@@ -186,6 +207,122 @@ export function GridShell<TData>({
   statusColumn,
   className,
 }: GridShellProps<TData>) {
+  // Use internal preferences when external callbacks not provided
+  // This makes column visibility/order "just work" automatically
+  const preferences = useGridPreferences(gridId);
+
+  // Determine whether to use external or internal column state
+  const useInternalColumnState = !onHiddenColumnsChangeProp && !onColumnOrderChangeProp;
+
+  // Effective column state - use external props or internal preferences
+  const effectiveHiddenColumns = useInternalColumnState
+    ? preferences.preferences.hiddenColumns
+    : (hiddenColumnsProp || []);
+
+  const effectiveColumnOrder = useInternalColumnState
+    ? preferences.preferences.columnOrder
+    : (columnOrderProp || []);
+
+  // Effective callbacks - use external or internal handlers
+  const handleHiddenColumnsChange = useCallback((columns: string[]) => {
+    if (onHiddenColumnsChangeProp) {
+      onHiddenColumnsChangeProp(columns);
+    } else {
+      preferences.setHiddenColumns(columns);
+    }
+  }, [onHiddenColumnsChangeProp, preferences]);
+
+  const handleColumnOrderChange = useCallback((order: string[]) => {
+    if (onColumnOrderChangeProp) {
+      onColumnOrderChangeProp(order);
+    } else {
+      preferences.setColumnOrder(order);
+    }
+  }, [onColumnOrderChangeProp, preferences]);
+
+  // Derive columns from table if not provided explicitly
+  // This ensures the Columns toggle always has data to display
+  const derivedColumns = useMemo(() => {
+    if (columnsProp && columnsProp.length > 0) {
+      return columnsProp;
+    }
+    // Extract column definitions from TanStack Table instance
+    return table.getAllColumns().map((column) => ({
+      id: column.id,
+      header: typeof column.columnDef.header === 'string'
+        ? column.columnDef.header
+        : column.id,
+      meta: column.columnDef.meta,
+    })) as ExtendedColumnDef<TData>[];
+  }, [columnsProp, table]);
+
+  // Sync hidden columns with TanStack Table's column visibility state
+  // This ensures the table actually hides/shows columns when preferences change
+  useEffect(() => {
+    if (effectiveHiddenColumns.length === 0) {
+      // Show all columns
+      table.setColumnVisibility({});
+    } else {
+      // Build visibility map: false = hidden, true (or omitted) = visible
+      const visibilityMap: Record<string, boolean> = {};
+      effectiveHiddenColumns.forEach((colId) => {
+        visibilityMap[colId] = false;
+      });
+      table.setColumnVisibility(visibilityMap);
+    }
+  }, [table, effectiveHiddenColumns]);
+
+  // Sync column order with TanStack Table's column order state
+  // This ensures the table actually reorders columns when preferences change
+  useEffect(() => {
+    if (effectiveColumnOrder.length > 0) {
+      table.setColumnOrder(effectiveColumnOrder);
+    }
+  }, [table, effectiveColumnOrder]);
+
+  // Get current sort state from TanStack Table for mobile sort sheet
+  const sortingState = table.getState().sorting;
+  const currentSort = useMemo(() => {
+    if (sortingState.length === 0) return null;
+    return { id: sortingState[0].id, desc: sortingState[0].desc };
+  }, [sortingState]);
+
+  // Handle sort change from mobile sort sheet
+  const handleSortChange = useCallback(
+    (sort: { id: string; desc: boolean } | null) => {
+      if (sort === null) {
+        table.setSorting([]);
+      } else {
+        table.setSorting([{ id: sort.id, desc: sort.desc }]);
+      }
+    },
+    [table]
+  );
+
+  // Mobile view mode state (cards vs table)
+  const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('cards');
+
+  // Load view mode from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(`grid-view-mode-${gridId}`);
+      if (stored === 'cards' || stored === 'table') {
+        setMobileViewMode(stored);
+      }
+    }
+  }, [gridId]);
+
+  // Handle view mode change with persistence
+  const handleViewModeChange = useCallback(
+    (mode: MobileViewMode) => {
+      setMobileViewMode(mode);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`grid-view-mode-${gridId}`, mode);
+      }
+    },
+    [gridId]
+  );
+
   const { isMobile } = useBreakpoint();
   const [focusedCell, setFocusedCell] = useState<{ rowIndex: number; colIndex: number } | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -196,7 +333,7 @@ export function GridShell<TData>({
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 48, // Fixed row height
+    estimateSize: () => 52, // Fixed row height (52px for generous spacing)
     overscan: 5,
   });
 
@@ -254,108 +391,151 @@ export function GridShell<TData>({
 
   return (
     <GridShellContext.Provider value={contextValue}>
-      <div
-        role="grid"
-        className={cn(
-          'overflow-hidden rounded-lg border border-border bg-background',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-          className
-        )}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-      >
-        {/* Toolbar */}
-        <GridToolbar
-          search={search}
-          onSearchChange={onSearchChange}
-          searchPlaceholder={searchPlaceholder}
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          onFilterClick={onFilterClick}
-          columns={columns}
-          hiddenColumns={hiddenColumns}
-          onHiddenColumnsChange={onHiddenColumnsChange}
-          exportFilename={exportFilename}
-          dataFetcher={dataFetcher}
-          rowIdAccessor={rowIdAccessor}
-          showNew={showNew}
-          onNew={onNew}
-        />
-
-        {/* Bulk actions bar (desktop: below toolbar, mobile: fixed bottom) */}
-        {selectedCount > 0 && !isMobile && (
-          <BulkActionsBar
-            selectedCount={selectedCount}
-            actions={bulkActions}
-            onClearSelection={onClearSelection}
+      {/* Wrapper for grid + fixed elements (FAB/BulkActions need to be outside overflow-hidden) */}
+      <>
+        <div
+          role="grid"
+          className={cn(
+            'overflow-hidden',
+            // Shape: 8px radius (brand container radius)
+            'rounded-lg',
+            // Border: N200 at 50%
+            'border',
+            // Background: Paper white
+            'bg-[var(--grid-paper,#FFFFFF)]',
+            // Focus ring: Signal Blue
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--grid-accent,#0A21C0)]',
+            // Mobile: no bottom rounding when bulk bar visible
+            isMobile && selectedCount > 0 && 'rounded-b-none',
+            className
+          )}
+          style={{
+            borderColor: 'var(--grid-border-container)',
+          }}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+        >
+          {/* Toolbar */}
+          <GridToolbar
+            gridId={gridId}
+            search={search}
+            onSearchChange={onSearchChange}
+            searchPlaceholder={searchPlaceholder}
+            filters={filters}
+            onFiltersChange={onFiltersChange}
+            onFilterClick={onFilterClick}
+            columns={derivedColumns}
+            hiddenColumns={effectiveHiddenColumns}
+            onHiddenColumnsChange={handleHiddenColumnsChange}
+            columnOrder={effectiveColumnOrder}
+            onColumnOrderChange={handleColumnOrderChange}
+            currentSort={currentSort}
+            onSortChange={handleSortChange}
+            viewMode={mobileViewMode}
+            onViewModeChange={handleViewModeChange}
+            exportFilename={exportFilename}
+            dataFetcher={dataFetcher}
+            rowIdAccessor={rowIdAccessor}
+            visibleRows={rows.map((r) => r.original)}
+            selectedIds={selectedIds}
+            showNew={showNew}
+            onNew={onNew}
+            recordName={recordName}
           />
-        )}
 
-        {/* Desktop: Table view */}
-        {!isMobile ? (
-          <ColumnSizingProvider table={table} enableSelection={enableSelection}>
-            <div ref={parentRef} className="overflow-auto" style={{ maxHeight: '600px' }}>
-              <GridHeader table={table} enableSelection={enableSelection} />
-              <GridBody
+          {/* Bulk actions bar (desktop only: below toolbar) */}
+          {selectedCount > 0 && !isMobile && (
+            <BulkActionsBar
+              selectedCount={selectedCount}
+              actions={bulkActions}
+              onClearSelection={onClearSelection}
+            />
+          )}
+
+          {/* Desktop: Table view */}
+          {!isMobile ? (
+            <ColumnSizingProvider table={table} enableSelection={enableSelection}>
+              <div ref={parentRef} className="overflow-auto" style={{ maxHeight: '600px' }}>
+                <GridHeader table={table} enableSelection={enableSelection} />
+                <GridBody
+                  table={table}
+                  rows={rows}
+                  virtualizer={virtualizer}
+                  isLoading={isLoading}
+                  error={error}
+                  onRefresh={onRefresh}
+                  enableSelection={enableSelection}
+                  selectedIds={selectedIds}
+                  onRowSelect={onRowSelect}
+                  onRowDoubleClick={onRowDoubleClick}
+                  renderQuickActions={renderQuickActions}
+                />
+              </div>
+            </ColumnSizingProvider>
+          ) : (
+            /* Mobile: Card or Table view based on viewMode */
+            mobileViewMode === 'table' ? (
+              <MobileTableView
                 table={table}
                 rows={rows}
-                virtualizer={virtualizer}
                 isLoading={isLoading}
-                error={error}
-                onRefresh={onRefresh}
-                enableSelection={enableSelection}
                 selectedIds={selectedIds}
                 onRowSelect={onRowSelect}
                 onRowDoubleClick={onRowDoubleClick}
-                renderQuickActions={renderQuickActions}
+                primaryColumn={primaryColumn}
+                hiddenColumns={effectiveHiddenColumns}
               />
-            </div>
-          </ColumnSizingProvider>
-        ) : (
-          /* Mobile: Card view */
-          <GridCardList
-            rows={rows}
-            isLoading={isLoading}
-            selectedIds={selectedIds}
-            isMultiSelectMode={selectedCount > 0}
-            onCardPress={onRowDoubleClick}
-            onCardLongPress={(rowId) => onRowSelect?.(rowId, {} as React.MouseEvent)}
-            onCardSelect={(rowId) => onRowSelect?.(rowId, {} as React.MouseEvent)}
-            primaryColumn={primaryColumn}
-            metadataColumns={metadataColumns}
-            statusColumn={statusColumn}
-          />
-        )}
+            ) : (
+              <GridCardList
+                rows={rows}
+                isLoading={isLoading}
+                selectedIds={selectedIds}
+                isMultiSelectMode={selectedCount > 0}
+                onCardPress={onRowDoubleClick}
+                onCardLongPress={(rowId) => onRowSelect?.(rowId, {} as React.MouseEvent)}
+                onCardSelect={(rowId) => onRowSelect?.(rowId, {} as React.MouseEvent)}
+                primaryColumn={primaryColumn}
+                metadataColumns={metadataColumns}
+                statusColumn={statusColumn}
+                recordName={recordName}
+              />
+            )
+          )}
 
-        {/* Footer (desktop only) */}
-        {!isMobile && pagination && (
-          <GridFooter
-            pageIndex={pagination.pageIndex}
-            pageCount={pagination.pageCount}
-            pageSize={pagination.pageSize}
-            totalRows={pagination.totalRows}
-            canPreviousPage={pagination.canPreviousPage}
-            canNextPage={pagination.canNextPage}
-            previousPage={pagination.previousPage}
-            nextPage={pagination.nextPage}
-            setPageSize={pagination.setPageSize}
-          />
-        )}
+          {/* Footer (desktop only) */}
+          {!isMobile && pagination && (
+            <GridFooter
+              pageIndex={pagination.pageIndex}
+              pageCount={pagination.pageCount}
+              pageSize={pagination.pageSize}
+              totalRows={pagination.totalRows}
+              canPreviousPage={pagination.canPreviousPage}
+              canNextPage={pagination.canNextPage}
+              previousPage={pagination.previousPage}
+              nextPage={pagination.nextPage}
+              setPageSize={pagination.setPageSize}
+            />
+          )}
+        </div>
 
-        {/* Bulk actions bar (mobile: fixed bottom) */}
+        {/* Mobile bulk actions bar - OUTSIDE overflow-hidden container */}
         {selectedCount > 0 && isMobile && (
-          <BulkActionsBar
+          <MobileBulkActionsBar
             selectedCount={selectedCount}
             actions={bulkActions}
             onClearSelection={onClearSelection}
           />
         )}
 
-        {/* FAB (mobile only, hidden during selection) */}
+        {/* FAB - OUTSIDE overflow-hidden container for proper fixed positioning */}
         {showNew && onNew && isMobile && selectedCount === 0 && (
-          <MobileFAB onClick={onNew} visible label="Create new" />
+          <MobileFAB
+            onClick={onNew}
+            visible
+            label={recordName ? `Add New ${recordName}` : 'Create new'}
+          />
         )}
-      </div>
+      </>
     </GridShellContext.Provider>
   );
 }

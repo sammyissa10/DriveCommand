@@ -133,6 +133,7 @@ export function TrucksGrid({ trucks }: TrucksGridProps) {
       searchPlaceholder="Search by unit # or VIN..."
       showNew
       onNew={() => router.push('/carrier/fleet/trucks/new')}
+      recordName="Truck"
       bulkActions={bulkActions}
       onClearSelection={() => setSelectedIds(new Set())}
       primaryColumn="unitNumber"

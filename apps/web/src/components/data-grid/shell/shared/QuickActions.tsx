@@ -1,8 +1,8 @@
 /**
- * QuickActions Component
+ * QuickActions Component (DriveCommand Brand)
  *
- * Floating action pill that appears on row hover.
- * Vercel/Apple crisp-minimal aesthetic with refined icons.
+ * Inline action icons (always visible).
+ * Signal Blue hover on destructive, brand icon weight.
  */
 
 'use client';
@@ -157,14 +157,17 @@ export function QuickActions({ actions, selectedCount = 1, className }: QuickAct
                   size="sm"
                   className={cn(
                     'h-7 w-7 p-0',
-                    action.destructive && !action.disabled && 'hover:text-destructive',
+                    'hover:bg-[var(--grid-toolbar-hover)]',
+                    'text-[var(--grid-n500,#6B6E78)] hover:text-[var(--grid-ink,#141619)]',
+                    action.destructive && !action.disabled && 'hover:text-[var(--grid-status-danger,#FF3B30)]',
                     action.disabled && 'cursor-not-allowed opacity-40'
                   )}
+                  style={{ borderRadius: 'var(--grid-radius-button, 6px)' }}
                   onClick={(e) => handleAction(action, e)}
                   disabled={action.disabled}
                   aria-label={action.label}
                 >
-                  <Icon className="h-4 w-4" strokeWidth={1.5} />
+                  <Icon className="h-4 w-4" strokeWidth={1.6} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

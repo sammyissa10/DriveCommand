@@ -2,8 +2,19 @@ import { redirect } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { listContracts } from '@/lib/carrier/contracts';
-import { ContractList } from '@/components/carrier/contracts/ContractList';
 import { hasPermission } from '@/lib/auth/permissions';
+import { ContractsGrid } from './_grid/ContractsGrid';
+import type { ContractRow } from './_grid/types';
+
+function isExpiringSoon(expirationDate: string | null, status: string): boolean {
+  if (!expirationDate) return false;
+  if (status === 'terminated' || status === 'expired') return false;
+  const exp = new Date(expirationDate);
+  const now = new Date();
+  const thirtyDaysOut = new Date(now);
+  thirtyDaysOut.setDate(thirtyDaysOut.getDate() + 30);
+  return exp <= thirtyDaysOut && exp > now;
+}
 
 export default async function ContractsPage() {
   const session = await getSession();
@@ -35,6 +46,26 @@ export default async function ContractsPage() {
     expired: 'Expired',
     terminated: 'Terminated',
   };
+
+  // Transform to ContractRow format
+  const contracts: ContractRow[] = items.map((c) => ({
+    id: c.id,
+    contractNumber: c.contractNumber,
+    contractType: c.contractType,
+    rateType: c.rateType,
+    baseRate: c.baseRate,
+    fuelSurchargeMethod: c.fuelSurchargeMethod,
+    fuelSurchargeRate: c.fuelSurchargeRate,
+    status: c.status,
+    effectiveDate: c.effectiveDate ? c.effectiveDate.toISOString() : null,
+    expirationDate: c.expirationDate ? c.expirationDate.toISOString() : null,
+    clientId: c.clientId,
+    clientName: c.client.name,
+    isExpiringSoon: isExpiringSoon(
+      c.expirationDate ? c.expirationDate.toISOString() : null,
+      c.status
+    ),
+  }));
 
   return (
     <div className="space-y-6">
@@ -71,24 +102,7 @@ export default async function ContractsPage() {
         </div>
       )}
 
-      <ContractList
-        role={session.role ?? undefined}
-        canCreate={canCreate}
-        contracts={items.map((c) => ({
-          id: c.id,
-          contractNumber: c.contractNumber,
-          contractType: c.contractType,
-          rateType: c.rateType,
-          baseRate: c.baseRate,
-          fuelSurchargeMethod: c.fuelSurchargeMethod,
-          fuelSurchargeRate: c.fuelSurchargeRate,
-          status: c.status,
-          effectiveDate: c.effectiveDate ? c.effectiveDate.toISOString() : null,
-          expirationDate: c.expirationDate ? c.expirationDate.toISOString() : null,
-          clientId: c.clientId,
-          client: { name: c.client.name },
-        }))}
-      />
+      <ContractsGrid contracts={contracts} />
     </div>
   );
 }

@@ -1,21 +1,16 @@
 'use client';
 
 /**
- * OvertimeExposureReport — OVERTIME pay components with driver/load context, paginated.
+ * OvertimeExposureReport — Migrated to DataGrid.
+ * OVERTIME pay components with driver/load context, paginated.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { type ColumnDef } from '@tanstack/react-table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { GridShell } from '@/components/data-grid';
+import { useDataGrid } from '@/components/data-grid/core/useDataGrid';
+import type { DataGridColumnMeta, ServerFetchParams, ServerFetchResult } from '@/components/data-grid/core/types';
 import { BigNumberHero } from './BigNumberHero';
 import { CsvExportButton } from './CsvExportButton';
 import { ReportTableSkeleton } from './ReportTableSkeleton';
@@ -51,33 +46,168 @@ interface Props {
 
 const EMPTY_MSG = 'No data for this period. Try selecting a different date range.';
 
+// ---------------------------------------------------------------------------
+// Column Definitions
+// ---------------------------------------------------------------------------
+
+const columns: ColumnDef<OvertimeExposureRow, unknown>[] = [
+  {
+    id: 'driverName',
+    accessorKey: 'driverName',
+    header: 'Driver',
+    cell: ({ row }) => (
+      <span className="font-medium text-sm">{row.original.driverName}</span>
+    ),
+    enableSorting: true,
+    meta: {
+      freezable: true,
+      defaultFrozen: true,
+      filterType: 'text',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'referenceNumber',
+    accessorKey: 'referenceNumber',
+    header: 'Load Ref',
+    cell: ({ row }) => (
+      <span className="text-muted-foreground text-sm">
+        {row.original.referenceNumber ?? '—'}
+      </span>
+    ),
+    meta: {
+      filterType: 'text',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'overtimeAmount',
+    accessorKey: 'overtimeAmount',
+    header: 'OT Amount',
+    cell: ({ row }) => (
+      <span className="text-right font-mono text-sm font-semibold text-amber-600 dark:text-amber-400">
+        {fmtMoney(row.original.overtimeAmount)}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      dataType: 'currency',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'actualHours',
+    accessorKey: 'actualHours',
+    header: 'Actual Hours',
+    cell: ({ row }) => (
+      <span className="text-right text-sm">{row.original.actualHours ?? '—'}</span>
+    ),
+    enableSorting: true,
+    meta: {
+      dataType: 'number',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'assignmentId',
+    accessorKey: 'assignmentId',
+    header: 'Assignment ID',
+    cell: ({ row }) => (
+      <span className="text-xs text-muted-foreground font-mono">
+        {row.original.assignmentId.slice(0, 8)}…
+      </span>
+    ),
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export function OvertimeExposureReport({ period, customStart, customEnd, driverIds }: Props) {
-  const [data, setData] = useState<ApiResult | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [headerData, setHeaderData] = useState<{
+    bigNumber: string;
+    deltaPct: number | null;
+    totalLoadsAffected: number;
+  } | null>(null);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isEmpty, setIsEmpty] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({ period, page: String(page), pageSize: '25' });
-      if (customStart) params.set('customStart', customStart);
-      if (customEnd) params.set('customEnd', customEnd);
+  // Fetch header data on mount
+  useEffect(() => {
+    const fetchHeader = async () => {
+      setInitialLoading(true);
+      try {
+        const params = new URLSearchParams({ period, page: '1', pageSize: '1' });
+        if (customStart) params.set('customStart', customStart);
+        if (customEnd) params.set('customEnd', customEnd);
+        if (driverIds?.length) {
+          for (const id of driverIds) params.append('driverIds', id);
+        }
+        const res = await fetch(`/api/driver-pay/reports/overtime-exposure?${params.toString()}`);
+        if (res.ok) {
+          const json = (await res.json()) as ApiResult;
+          setHeaderData({
+            bigNumber: json.bigNumber,
+            deltaPct: json.deltaPct,
+            totalLoadsAffected: json.totalLoadsAffected,
+          });
+          setIsEmpty(json.totalCount === 0);
+        }
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    void fetchHeader();
+  }, [period, customStart, customEnd, driverIds]);
+
+  // Server-side data fetcher for DataGrid
+  const dataFetcher = useCallback(
+    async (params: ServerFetchParams): Promise<ServerFetchResult<OvertimeExposureRow>> => {
+      const queryParams = new URLSearchParams({
+        period,
+        page: String(params.page + 1),
+        pageSize: String(params.pageSize),
+      });
+
+      if (customStart) queryParams.set('customStart', customStart);
+      if (customEnd) queryParams.set('customEnd', customEnd);
       if (driverIds?.length) {
-        for (const id of driverIds) params.append('driverIds', id);
+        for (const id of driverIds) queryParams.append('driverIds', id);
       }
-      const res = await fetch(`/api/driver-pay/reports/overtime-exposure?${params.toString()}`);
-      if (res.ok) {
-        const json = await res.json() as ApiResult;
-        setData(json);
+
+      if (params.sort) {
+        queryParams.set('sortBy', params.sort.field);
+        queryParams.set('sortDir', params.sort.direction);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, [period, customStart, customEnd, driverIds, page]);
 
-  useEffect(() => { void fetchData(); }, [fetchData]);
+      if (params.search) {
+        queryParams.set('search', params.search);
+      }
 
-  const totalPages = data ? Math.ceil(data.totalCount / 25) : 1;
+      if (params.filters.length > 0) {
+        queryParams.set('filters', JSON.stringify(params.filters));
+      }
+
+      const res = await fetch(`/api/driver-pay/reports/overtime-exposure?${queryParams.toString()}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch overtime exposure data');
+      }
+
+      const json = (await res.json()) as ApiResult;
+      return { rows: json.rows, total: json.totalCount };
+    },
+    [period, customStart, customEnd, driverIds]
+  );
+
+  const { table, isLoading, urlState } = useDataGrid({
+    gridId: 'overtime-exposure-report',
+    columns,
+    dataFetcher,
+    rowIdAccessor: (row) => row.assignmentId,
+    initialPageSize: 25,
+    enableUrlSync: true,
+  });
+
+  const rows = table.getRowModel().rows;
+  const pageCount = table.getPageCount();
+  const { pageIndex, pageSize } = table.getState().pagination;
 
   const csvParams: Record<string, string | string[] | undefined> = {
     period,
@@ -95,15 +225,15 @@ export function OvertimeExposureReport({ period, customStart, customEnd, driverI
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {loading ? (
+        {initialLoading ? (
           <ReportTableSkeleton rows={5} columns={5} />
-        ) : !data || data.rows.length === 0 ? (
+        ) : isEmpty ? (
           <>
-            {data && (
+            {headerData && (
               <BigNumberHero
-                value={fmtMoney(data.bigNumber)}
-                subtitle={`Total overtime exposure (${data.totalLoadsAffected} loads)`}
-                deltaPct={data.deltaPct}
+                value={fmtMoney(headerData.bigNumber)}
+                subtitle={`Total overtime exposure (${headerData.totalLoadsAffected} loads)`}
+                deltaPct={headerData.deltaPct}
                 deltaInvertedForSpend
               />
             )}
@@ -111,56 +241,34 @@ export function OvertimeExposureReport({ period, customStart, customEnd, driverI
           </>
         ) : (
           <>
-            <BigNumberHero
-              value={fmtMoney(data.bigNumber)}
-              subtitle={`Total overtime exposure (${data.totalLoadsAffected} loads)`}
-              deltaPct={data.deltaPct}
-              deltaInvertedForSpend
+            {headerData && (
+              <BigNumberHero
+                value={fmtMoney(headerData.bigNumber)}
+                subtitle={`Total overtime exposure (${headerData.totalLoadsAffected} loads)`}
+                deltaPct={headerData.deltaPct}
+                deltaInvertedForSpend
+              />
+            )}
+            <GridShell
+              gridId="overtime-exposure-report"
+              table={table}
+              rows={rows}
+              isLoading={isLoading}
+              columns={columns}
+              dataFetcher={dataFetcher}
+              rowIdAccessor={(row) => row.assignmentId}
+              pagination={{
+                pageIndex,
+                pageSize,
+                pageCount,
+                totalRows: table.getRowCount(),
+                canPreviousPage: table.getCanPreviousPage(),
+                canNextPage: table.getCanNextPage(),
+                previousPage: () => table.previousPage(),
+                nextPage: () => table.nextPage(),
+                setPageSize: (size) => table.setPageSize(size),
+              }}
             />
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Driver</TableHead>
-                    <TableHead>Load Ref</TableHead>
-                    <TableHead className="text-right">OT Amount</TableHead>
-                    <TableHead className="text-right">Actual Hours</TableHead>
-                    <TableHead>Assignment ID</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.rows.map((row) => (
-                    <TableRow key={row.assignmentId}>
-                      <TableCell className="font-medium text-sm">{row.driverName}</TableCell>
-                      <TableCell className="text-muted-foreground text-sm">{row.referenceNumber ?? '—'}</TableCell>
-                      <TableCell className="text-right font-mono text-sm font-semibold text-amber-600 dark:text-amber-400">
-                        {fmtMoney(row.overtimeAmount)}
-                      </TableCell>
-                      <TableCell className="text-right text-sm">{row.actualHours ?? '—'}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground font-mono">{row.assignmentId.slice(0, 8)}…</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>
-                {data.totalCount > 0
-                  ? `Showing ${(page - 1) * 25 + 1}–${Math.min(page * 25, data.totalCount)} of ${data.totalCount}`
-                  : 'No results'}
-              </span>
-              <div className="flex gap-1">
-                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-                  <ChevronLeft className="h-4 w-4" />
-                  Prev
-                </Button>
-                <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
           </>
         )}
       </CardContent>

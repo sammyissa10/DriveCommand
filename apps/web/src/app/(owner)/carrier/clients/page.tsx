@@ -71,8 +71,6 @@ export default async function ClientsPage() {
       )}
 
       <ClientsGrid
-        role={session.role ?? undefined}
-        canCreate={canCreate}
         clients={items.map((c) => ({
           id: c.id,
           name: c.name,

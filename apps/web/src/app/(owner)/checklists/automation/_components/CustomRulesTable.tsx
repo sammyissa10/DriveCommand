@@ -1,7 +1,16 @@
 'use client';
 
+/**
+ * CustomRulesTable — Migrated to DataGrid.
+ * Custom automation rules with delete action.
+ */
+
 import { useState } from 'react';
+import { type ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
+import { GridShell } from '@/components/data-grid';
+import { useDataGrid } from '@/components/data-grid/core/useDataGrid';
+import type { DataGridColumnMeta } from '@/components/data-grid/core/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,8 +62,127 @@ function formatConditions(conditions: any): string {
   return entries.map(([k, v]) => `${k} = ${String(v)}`).join(', ');
 }
 
-export function CustomRulesTable({ rules, isLoading, onDelete, deletingId }: CustomRulesTableProps) {
+// ---------------------------------------------------------------------------
+// Column Definitions Factory
+// ---------------------------------------------------------------------------
+
+function createColumns(
+  onDeleteClick: (ruleId: string) => void,
+  deletingId: string | null
+): ColumnDef<CustomRule, unknown>[] {
+  return [
+    {
+      id: 'triggerEvent',
+      accessorKey: 'triggerEvent',
+      header: 'When',
+      cell: ({ row }) => (
+        <span className="font-medium">
+          {EVENT_LABELS[row.original.triggerEvent] ?? row.original.triggerEvent}
+        </span>
+      ),
+      meta: {
+        freezable: true,
+        defaultFrozen: true,
+        filterType: 'select',
+        filterOptions: Object.entries(EVENT_LABELS).map(([value, label]) => ({
+          value,
+          label,
+        })),
+      } as DataGridColumnMeta,
+    },
+    {
+      id: 'conditions',
+      accessorFn: (row) => formatConditions(row.conditions),
+      header: 'For which records',
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">
+          {formatConditions(row.original.conditions)}
+        </span>
+      ),
+      meta: {
+        filterType: 'text',
+      } as DataGridColumnMeta,
+    },
+    {
+      id: 'playbookName',
+      accessorKey: 'playbookName',
+      header: 'Checklist',
+      cell: ({ row }) => row.original.playbookName,
+      meta: {
+        filterType: 'text',
+      } as DataGridColumnMeta,
+    },
+    {
+      id: 'isActive',
+      accessorKey: 'isActive',
+      header: 'Status',
+      cell: ({ row }) => (
+        <Badge
+          variant={row.original.isActive ? 'default' : 'secondary'}
+          className="text-xs"
+        >
+          {row.original.isActive ? 'Active' : 'Inactive'}
+        </Badge>
+      ),
+      meta: {
+        filterType: 'select',
+        filterOptions: [
+          { value: 'true', label: 'Active' },
+          { value: 'false', label: 'Inactive' },
+        ],
+      } as DataGridColumnMeta,
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          onClick={() => onDeleteClick(row.original.id)}
+          disabled={deletingId === row.original.id}
+          aria-label={`Delete rule: ${EVENT_LABELS[row.original.triggerEvent] ?? row.original.triggerEvent} — ${row.original.playbookName}`}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      ),
+      meta: {
+        exportable: false,
+      } as DataGridColumnMeta,
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+export function CustomRulesTable({
+  rules,
+  isLoading,
+  onDelete,
+  deletingId,
+}: CustomRulesTableProps) {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const columns = createColumns(
+    (ruleId) => setConfirmDeleteId(ruleId),
+    deletingId
+  );
+
+  // Use data grid hook
+  const { table } = useDataGrid({
+    gridId: 'custom-rules',
+    columns,
+    data: rules,
+    rowIdAccessor: (row) => row.id,
+    initialPageSize: 25,
+  });
+
+  const rows = table.getRowModel().rows;
+  const pageCount = table.getPageCount();
+  const { pageIndex, pageSize } = table.getState().pagination;
 
   if (isLoading) {
     return (
@@ -79,64 +207,37 @@ export function CustomRulesTable({ rules, isLoading, onDelete, deletingId }: Cus
 
   return (
     <>
-      <div className="border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="border-b border-border bg-muted/50">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground w-[220px]">When</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">For which records</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Checklist</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground w-[90px]">Status</th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground w-[56px]">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rules.map((rule) => (
-              <tr key={rule.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-medium">
-                  {EVENT_LABELS[rule.triggerEvent] ?? rule.triggerEvent}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {formatConditions(rule.conditions)}
-                </td>
-                <td className="px-4 py-3">{rule.playbookName}</td>
-                <td className="px-4 py-3">
-                  <Badge
-                    variant={rule.isActive ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {rule.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={() => setConfirmDeleteId(rule.id)}
-                    disabled={deletingId === rule.id}
-                    aria-label={`Delete rule: ${EVENT_LABELS[rule.triggerEvent] ?? rule.triggerEvent} — ${rule.playbookName}`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <GridShell
+        gridId="custom-rules"
+        table={table}
+        rows={rows}
+        columns={columns}
+        pagination={{
+          pageIndex,
+          pageSize,
+          pageCount,
+          totalRows: rules.length,
+          canPreviousPage: table.getCanPreviousPage(),
+          canNextPage: table.getCanNextPage(),
+          previousPage: () => table.previousPage(),
+          nextPage: () => table.nextPage(),
+          setPageSize: (size) => table.setPageSize(size),
+        }}
+      />
 
       {/* Confirm delete dialog */}
       <AlertDialog
         open={Boolean(confirmDeleteId)}
-        onOpenChange={(open) => { if (!open) setConfirmDeleteId(null); }}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDeleteId(null);
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this auto-start rule?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove the rule. Any checklists already started by this
-              rule will not be affected.
+              This will permanently remove the rule. Any checklists already started by this rule
+              will not be affected.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

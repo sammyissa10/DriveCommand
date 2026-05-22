@@ -8,22 +8,15 @@ import Link from 'next/link';
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Download } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { computeDriverDetail } from '@/lib/driver-pay/reporting';
 import { KpiCard } from '../_components/KpiCard';
 import { NetPaySparkline } from '../_components/NetPaySparkline';
+import { SettlementsYtdTable } from './_components/SettlementsYtdTable';
 
 export const metadata = { title: 'Driver Pay Detail | DriveCommand' };
 
@@ -36,21 +29,6 @@ function formatMoney(val: string): string {
 function formatDate(iso: string | null): string {
   if (!iso) return '—';
   return format(parseISO(iso), 'MMM d, yyyy');
-}
-
-function StatusBadge({ status }: { status: string }) {
-  switch (status) {
-    case 'DRAFT':
-      return <Badge variant="secondary">Draft</Badge>;
-    case 'FINALIZED':
-      return <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">Finalized</Badge>;
-    case 'PAID':
-      return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Paid</Badge>;
-    case 'VOIDED':
-      return <Badge variant="destructive">Voided</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
 }
 
 function formatBonusType(type: string): string {
@@ -145,36 +123,7 @@ export default async function DriverDetailPage({
         {settlements.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4">No finalized or paid settlements for {safeYear}.</p>
         ) : (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Period</TableHead>
-                  <TableHead className="text-right">Gross Taxable</TableHead>
-                  <TableHead className="text-right">Gross Non-Tax</TableHead>
-                  <TableHead className="text-right">Deductions</TableHead>
-                  <TableHead className="text-right">Net Pay</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Paid At</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {settlements.map((s) => (
-                  <TableRow key={s.id}>
-                    <TableCell className="text-sm">
-                      {format(parseISO(s.periodStart), 'MMM d')} – {format(parseISO(s.periodEnd), 'MMM d, yyyy')}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-sm">{formatMoney(s.grossTaxable)}</TableCell>
-                    <TableCell className="text-right font-mono text-sm">{formatMoney(s.grossNonTaxable)}</TableCell>
-                    <TableCell className="text-right font-mono text-sm">{formatMoney(s.totalDeductions)}</TableCell>
-                    <TableCell className="text-right font-mono text-sm font-semibold">{formatMoney(s.netPay)}</TableCell>
-                    <TableCell><StatusBadge status={s.status} /></TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{formatDate(s.paidAt)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <SettlementsYtdTable settlements={settlements} />
         )}
       </section>
 

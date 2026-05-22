@@ -123,22 +123,22 @@
     --chart-4: 280 70% 58%;            /* Purple */
     --chart-5: 350 90% 55%;            /* Vibrant red */
 
-    /* Semantic status colors — light mode */
-    --status-success: 142 71% 45%;
-    --status-success-foreground: 144 61% 20%;
-    --status-success-bg: 138 76% 97%;
-    --status-warning: 38 92% 50%;
-    --status-warning-foreground: 32 95% 44%;
-    --status-warning-bg: 48 96% 95%;
-    --status-danger: 0 84% 60%;
-    --status-danger-foreground: 0 74% 42%;
-    --status-danger-bg: 0 86% 97%;
-    --status-info: 221 83% 53%;
-    --status-info-foreground: 224 76% 48%;
-    --status-info-bg: 214 95% 97%;
-    --status-purple: 270 60% 52%;
-    --status-purple-foreground: 272 51% 42%;
-    --status-purple-bg: 270 70% 96%;
+    /* Semantic status colors — light mode (desaturated for clean aesthetic) */
+    --status-success: 142 50% 42%;
+    --status-success-foreground: 144 45% 22%;
+    --status-success-bg: 138 40% 96%;
+    --status-warning: 38 55% 48%;
+    --status-warning-foreground: 32 50% 38%;
+    --status-warning-bg: 48 45% 95%;
+    --status-danger: 0 50% 55%;
+    --status-danger-foreground: 0 45% 38%;
+    --status-danger-bg: 0 40% 96%;
+    --status-info: 221 50% 50%;
+    --status-info-foreground: 224 45% 42%;
+    --status-info-bg: 214 40% 96%;
+    --status-purple: 270 45% 50%;
+    --status-purple-foreground: 272 40% 40%;
+    --status-purple-bg: 270 35% 96%;
 
     /* Glassmorphism */
     --glass-bg: 0 0% 100% / 0.7;
@@ -295,22 +295,22 @@
     --chart-4: 280 75% 65%;            /* Bright purple */
     --chart-5: 0 85% 60%;              /* Bright red */
 
-    /* Semantic status colors — dark mode */
-    --status-success: 142 70% 45%;
-    --status-success-foreground: 142 70% 70%;
-    --status-success-bg: 144 50% 12%;
-    --status-warning: 38 92% 50%;
-    --status-warning-foreground: 45 93% 58%;
-    --status-warning-bg: 32 60% 12%;
-    --status-danger: 0 84% 60%;
-    --status-danger-foreground: 0 90% 70%;
-    --status-danger-bg: 0 50% 12%;
-    --status-info: 217 91% 60%;
-    --status-info-foreground: 213 94% 68%;
-    --status-info-bg: 224 50% 14%;
-    --status-purple: 270 60% 62%;
-    --status-purple-foreground: 270 70% 75%;
-    --status-purple-bg: 270 40% 14%;
+    /* Semantic status colors — dark mode (desaturated for clean aesthetic) */
+    --status-success: 142 50% 42%;
+    --status-success-foreground: 142 50% 65%;
+    --status-success-bg: 144 35% 14%;
+    --status-warning: 38 55% 48%;
+    --status-warning-foreground: 45 55% 55%;
+    --status-warning-bg: 32 40% 14%;
+    --status-danger: 0 50% 55%;
+    --status-danger-foreground: 0 55% 65%;
+    --status-danger-bg: 0 35% 14%;
+    --status-info: 217 50% 55%;
+    --status-info-foreground: 213 50% 65%;
+    --status-info-bg: 224 35% 16%;
+    --status-purple: 270 45% 55%;
+    --status-purple-foreground: 270 50% 70%;
+    --status-purple-bg: 270 30% 16%;
 
     /* Glassmorphism — dark */
     --glass-bg: 222 47% 11% / 0.6;

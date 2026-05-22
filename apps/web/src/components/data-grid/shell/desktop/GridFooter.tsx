@@ -1,8 +1,8 @@
 /**
- * GridFooter Component (Desktop)
+ * GridFooter Component (Desktop) — DriveCommand Brand
  *
  * Pagination controls for desktop table view.
- * Compact layout with page info and navigation.
+ * Paper white surface, Inter typography, Signal Blue accents.
  */
 
 'use client';
@@ -46,12 +46,14 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 /**
  * GridFooter displays pagination controls and row count info.
  *
- * Design:
+ * Design (DriveCommand Brand):
  * - Height: 48px
- * - Border: border-t border-border/40
- * - Typography: text-sm text-muted-foreground
+ * - Background: Paper white (#FFFFFF)
+ * - Border: border-t N200 at 60%
+ * - Typography: Inter, text-sm, N500
+ * - Data numbers: JetBrains Mono (row counts, page numbers)
  * - Layout: compact with gap-4
- * - Buttons: variant="ghost" size="sm" with ChevronLeft/ChevronRight (strokeWidth={1.5})
+ * - Buttons: ghost, hover bg-accent/[0.04], strokeWidth={1.6}
  *
  * @example
  * <GridFooter
@@ -84,38 +86,101 @@ export function GridFooter({
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-4 border-t border-border/40 px-4',
+        'flex items-center justify-between gap-4 border-t px-4',
+        // Background: Paper white
+        'bg-[var(--grid-paper,#FFFFFF)]',
         className
       )}
-      style={{ height: '48px' }}
+      style={{
+        height: '48px',
+        borderColor: 'var(--grid-border-header)',
+        fontFamily: "var(--grid-font-ui, 'Inter', sans-serif)",
+      }}
     >
       {/* Left: Row count info */}
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <span>
-          Showing {startRow}-{endRow} of {totalRows} results
+      <div
+        className="flex items-center gap-1 text-sm"
+        style={{ color: 'var(--grid-n500, #6B6E78)' }}
+      >
+        <span>Showing</span>
+        <span
+          style={{
+            fontFamily: "var(--grid-font-data, 'JetBrains Mono', monospace)",
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {startRow}-{endRow}
         </span>
+        <span>of</span>
+        <span
+          style={{
+            fontFamily: "var(--grid-font-data, 'JetBrains Mono', monospace)",
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {totalRows}
+        </span>
+        <span>results</span>
       </div>
 
       {/* Right: Pagination controls */}
       <div className="flex items-center gap-4">
         {/* Page info */}
-        <span className="text-sm text-muted-foreground">
-          Page {pageIndex + 1} of {pageCount}
-        </span>
+        <div
+          className="flex items-center gap-1 text-sm"
+          style={{ color: 'var(--grid-n500, #6B6E78)' }}
+        >
+          <span>Page</span>
+          <span
+            style={{
+              fontFamily: "var(--grid-font-data, 'JetBrains Mono', monospace)",
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {pageIndex + 1}
+          </span>
+          <span>of</span>
+          <span
+            style={{
+              fontFamily: "var(--grid-font-data, 'JetBrains Mono', monospace)",
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {pageCount}
+          </span>
+        </div>
 
         {/* Page size selector */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rows per page</span>
+          <span
+            className="text-sm"
+            style={{ color: 'var(--grid-n500, #6B6E78)' }}
+          >
+            Rows per page
+          </span>
           <Select
             value={String(pageSize)}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger
+              className="h-8 w-[70px]"
+              style={{
+                fontFamily: "var(--grid-font-data, 'JetBrains Mono', monospace)",
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {PAGE_SIZE_OPTIONS.map((size) => (
-                <SelectItem key={size} value={String(size)}>
+                <SelectItem
+                  key={size}
+                  value={String(size)}
+                  style={{
+                    fontFamily: "var(--grid-font-data, 'JetBrains Mono', monospace)",
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
                   {size}
                 </SelectItem>
               ))}
@@ -131,8 +196,10 @@ export function GridFooter({
             onClick={previousPage}
             disabled={!canPreviousPage}
             aria-label="Previous page"
+            className="bg-transparent hover:bg-[var(--grid-toolbar-hover)]"
+            style={{ borderRadius: 'var(--grid-radius-button, 6px)' }}
           >
-            <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
+            <ChevronLeft className="h-4 w-4" strokeWidth={1.6} />
           </Button>
           <Button
             variant="ghost"
@@ -140,8 +207,10 @@ export function GridFooter({
             onClick={nextPage}
             disabled={!canNextPage}
             aria-label="Next page"
+            className="bg-transparent hover:bg-[var(--grid-toolbar-hover)]"
+            style={{ borderRadius: 'var(--grid-radius-button, 6px)' }}
           >
-            <ChevronRight className="h-4 w-4" strokeWidth={1.5} />
+            <ChevronRight className="h-4 w-4" strokeWidth={1.6} />
           </Button>
         </div>
       </div>

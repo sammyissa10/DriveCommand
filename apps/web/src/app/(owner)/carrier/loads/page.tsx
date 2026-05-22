@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
-import { LoadList } from '@/components/carrier/loads/LoadList';
+import { LoadsGrid } from './_grid/LoadsGrid';
 
 export default async function LoadsPage() {
   const session = await getSession();
@@ -32,7 +32,7 @@ export default async function LoadsPage() {
         </div>
       </div>
 
-      <LoadList clientMap={clientMap} />
+      <LoadsGrid clientMap={clientMap} />
     </div>
   );
 }

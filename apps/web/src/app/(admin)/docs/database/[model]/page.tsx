@@ -1,19 +1,11 @@
 import { notFound } from 'next/navigation';
 import { parsePrismaSchema } from '@/lib/docs/prisma-parser';
-import type { PrismaModel, PrismaRelation } from '@/lib/docs/prisma-parser';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, AlertTriangle, ArrowRight, ArrowLeftRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, AlertTriangle, ArrowRight } from 'lucide-react';
 import { features } from '@/lib/docs/feature-registry';
+import { FieldsTable } from './_components/FieldsTable';
 
 // Pre-generate all model pages at build time
 export async function generateStaticParams() {
@@ -154,57 +146,7 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ mo
       {/* Fields Section */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Fields</h2>
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Required</TableHead>
-                <TableHead>Default</TableHead>
-                <TableHead>Constraints</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {model.fields.map((field) => (
-                <TableRow key={field.name}>
-                  <TableCell className="font-mono font-medium">{field.name}</TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {field.type}
-                    {field.isArray && '[]'}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={field.isRequired ? 'default' : 'outline'} className="text-xs">
-                      {field.isRequired ? 'Yes' : 'No'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-gray-600">
-                    {field.defaultValue || '—'}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {field.isId && (
-                        <Badge variant="outline" className="text-xs">
-                          @id
-                        </Badge>
-                      )}
-                      {field.isUnique && (
-                        <Badge variant="outline" className="text-xs">
-                          @unique
-                        </Badge>
-                      )}
-                      {field.dbType && (
-                        <Badge variant="secondary" className="text-xs">
-                          {field.dbType}
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <FieldsTable fields={model.fields} />
       </section>
 
       {/* Outgoing Relations Section */}

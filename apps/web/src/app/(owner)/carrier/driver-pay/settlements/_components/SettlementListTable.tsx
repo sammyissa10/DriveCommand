@@ -1,20 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { type ColumnDef } from '@tanstack/react-table';
 import { formatPayPeriodDate } from '@/lib/utils/date';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { GridShell } from '@/components/data-grid';
+import { useDataGrid } from '@/components/data-grid/core/useDataGrid';
+import type { DataGridColumnMeta } from '@/components/data-grid/core/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -92,6 +86,102 @@ function formatMoney(val: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Column Definitions
+// ---------------------------------------------------------------------------
+
+const columns: ColumnDef<SettlementRow, unknown>[] = [
+  {
+    id: 'settlementReference',
+    accessorKey: 'settlementReference',
+    header: 'Reference',
+    cell: ({ row }) => (
+      <span className="font-mono text-xs text-muted-foreground">
+        {row.original.settlementReference ?? row.original.id.slice(0, 8)}
+      </span>
+    ),
+    meta: {
+      filterType: 'text',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'driver',
+    accessorFn: (row) => row.driver ? `${row.driver.firstName} ${row.driver.lastName}` : row.driverId.slice(0, 8),
+    header: 'Driver',
+    cell: ({ row }) => (
+      <span className="font-medium">
+        {row.original.driver
+          ? `${row.original.driver.firstName} ${row.original.driver.lastName}`
+          : row.original.driverId.slice(0, 8)}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      freezable: true,
+      defaultFrozen: true,
+      filterType: 'text',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'period',
+    accessorKey: 'periodEnd',
+    header: 'Period',
+    cell: ({ row }) => (
+      <span className="text-sm text-muted-foreground">
+        {formatPayPeriodDate(row.original.periodStart, { month: 'short', day: 'numeric', year: 'numeric' })} – {formatPayPeriodDate(row.original.periodEnd, { month: 'short', day: 'numeric', year: 'numeric' })}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      filterType: 'date',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'netPay',
+    accessorKey: 'netPay',
+    header: 'Net Pay',
+    cell: ({ row }) => (
+      <span className="text-right font-semibold">
+        {formatMoney(row.original.netPay)}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      dataType: 'currency',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'status',
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    enableSorting: true,
+    meta: {
+      filterType: 'select',
+      filterOptions: [
+        { value: 'DRAFT', label: 'Draft' },
+        { value: 'FINALIZED', label: 'Finalized' },
+        { value: 'PAID', label: 'Paid' },
+        { value: 'VOIDED', label: 'Voided' },
+      ],
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'createdAt',
+    accessorKey: 'createdAt',
+    header: 'Created',
+    cell: ({ row }) => (
+      <span className="text-sm text-muted-foreground">
+        {formatDate(row.original.createdAt)}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      filterType: 'date',
+    } as DataGridColumnMeta,
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -102,17 +192,27 @@ export function SettlementListTable({
   pageSize,
 }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+
+  // Use the data grid hook
+  const { table, isLoading, urlState } = useDataGrid({
+    gridId: 'settlement-list',
+    columns,
+    data: settlements,
+    rowIdAccessor: (row) => row.id,
+    initialPageSize: pageSize,
+    enableUrlSync: true,
+  });
+
+  const rows = table.getRowModel().rows;
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  function goToPage(p: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(p));
-    router.push(`${pathname}?${params.toString()}`);
-  }
+  // Navigate to detail page on row double-click
+  const handleRowDoubleClick = (row: SettlementRow) => {
+    router.push(`/carrier/driver-pay/settlements/${row.id}`);
+  };
 
-  if (settlements.length === 0) {
+  // Empty state
+  if (settlements.length === 0 && totalCount === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <p className="text-lg font-semibold text-foreground">No settlements yet</p>
@@ -127,79 +227,28 @@ export function SettlementListTable({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Table>
-        <TableCaption className="sr-only">Driver settlement records</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Reference</TableHead>
-            <TableHead>Driver</TableHead>
-            <TableHead>Period</TableHead>
-            <TableHead className="text-right">Net Pay</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {settlements.map((s) => (
-            <TableRow
-              key={s.id}
-              className="cursor-pointer hover:bg-muted/50 transition-colors"
-              onClick={() => router.push(`/carrier/driver-pay/settlements/${s.id}`)}
-            >
-              <TableCell className="font-mono text-xs text-muted-foreground">
-                {s.settlementReference ?? s.id.slice(0, 8)}
-              </TableCell>
-              <TableCell className="font-medium">
-                {s.driver
-                  ? `${s.driver.firstName} ${s.driver.lastName}`
-                  : s.driverId.slice(0, 8)}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {formatPayPeriodDate(s.periodStart, { month: 'short', day: 'numeric', year: 'numeric' })} – {formatPayPeriodDate(s.periodEnd, { month: 'short', day: 'numeric', year: 'numeric' })}
-              </TableCell>
-              <TableCell className="text-right font-semibold">
-                {formatMoney(s.netPay)}
-              </TableCell>
-              <TableCell>
-                <StatusBadge status={s.status} />
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {formatDate(s.createdAt)}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between px-1">
-          <p className="text-sm text-muted-foreground">
-            {totalCount} total · Page {page} of {totalPages}
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => goToPage(page - 1)}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => goToPage(page + 1)}
-              aria-label="Next page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+    <GridShell
+      gridId="settlement-list"
+      table={table}
+      rows={rows}
+      isLoading={isLoading}
+      onRowDoubleClick={handleRowDoubleClick}
+      searchPlaceholder="Search settlements..."
+      search={urlState.search}
+      onSearchChange={urlState.setSearch}
+      exportFilename="settlements-export"
+      columns={columns}
+      pagination={{
+        pageIndex: page - 1,
+        pageSize,
+        pageCount: totalPages,
+        totalRows: totalCount,
+        canPreviousPage: page > 1,
+        canNextPage: page < totalPages,
+        previousPage: () => urlState.setPage(urlState.page - 1),
+        nextPage: () => urlState.setPage(urlState.page + 1),
+        setPageSize: urlState.setPageSize,
+      }}
+    />
   );
 }

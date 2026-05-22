@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
-import { DispatchList } from '@/components/carrier/dispatches/DispatchList';
+import { DispatchesGrid } from './_grid/DispatchesGrid';
 
 export default async function DispatchesPage() {
   const session = await getSession();
@@ -42,7 +42,7 @@ export default async function DispatchesPage() {
         </div>
       </div>
 
-      <DispatchList driverMap={driverMap} truckMap={truckMap} userRole={session.role} />
+      <DispatchesGrid driverMap={driverMap} truckMap={truckMap} userRole={session.role} />
     </div>
   );
 }

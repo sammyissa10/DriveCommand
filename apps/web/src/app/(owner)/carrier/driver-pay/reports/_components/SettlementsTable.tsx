@@ -1,25 +1,18 @@
 'use client';
 
 /**
- * SettlementsTable — Client component.
+ * SettlementsTable — Migrated to DataGrid.
  * Fetches /api/driver-pay/reports/settlements with pagination + sorting.
  * Displays anomaly badge when isAnomaly=true.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { type ColumnDef } from '@tanstack/react-table';
+import { GridShell } from '@/components/data-grid';
+import { useDataGrid } from '@/components/data-grid/core/useDataGrid';
+import type { DataGridColumnMeta, ServerFetchParams, ServerFetchResult } from '@/components/data-grid/core/types';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronLeft, ChevronRight, ArrowUp, ArrowDown, Download } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 interface SettlementRow {
@@ -37,14 +30,6 @@ interface SettlementRow {
   isAnomaly: boolean;
 }
 
-interface ApiResponse {
-  rows: SettlementRow[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
 interface InitialQuery {
   period: string;
   driverIds?: string[];
@@ -55,8 +40,6 @@ interface InitialQuery {
 interface Props {
   initialQuery: InitialQuery;
 }
-
-type SortBy = 'periodEnd' | 'netPay' | 'driverName' | 'status';
 
 function formatMoney(val: string): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
@@ -83,209 +66,224 @@ function StatusBadge({ status }: { status: string }) {
   }
 }
 
-function SortIcon({ active, dir }: { active: boolean; dir: 'asc' | 'desc' }) {
-  if (!active) return null;
-  return dir === 'asc' ? (
-    <ArrowUp className="inline ml-1 h-3 w-3" />
-  ) : (
-    <ArrowDown className="inline ml-1 h-3 w-3" />
-  );
-}
+// ---------------------------------------------------------------------------
+// Column Definitions
+// ---------------------------------------------------------------------------
+
+const columns: ColumnDef<SettlementRow, unknown>[] = [
+  {
+    id: 'driverName',
+    accessorKey: 'driverName',
+    header: 'Driver',
+    cell: ({ row }) => (
+      <Link
+        href={`/carrier/driver-pay/reports/${row.original.driverId}`}
+        className="font-medium hover:underline"
+      >
+        {row.original.driverName ?? 'Unknown Driver'}
+      </Link>
+    ),
+    enableSorting: true,
+    meta: {
+      freezable: true,
+      defaultFrozen: true,
+      filterType: 'text',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'periodEnd',
+    accessorKey: 'periodEnd',
+    header: 'Period',
+    cell: ({ row }) => (
+      <span className="text-sm text-muted-foreground">
+        {formatPeriod(row.original.periodStart, row.original.periodEnd)}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      filterType: 'date',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'grossTaxable',
+    accessorKey: 'grossTaxable',
+    header: 'Gross Taxable',
+    cell: ({ row }) => (
+      <span className="text-right font-mono text-sm">
+        {formatMoney(row.original.grossTaxable)}
+      </span>
+    ),
+    meta: {
+      dataType: 'currency',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'grossNonTaxable',
+    accessorKey: 'grossNonTaxable',
+    header: 'Gross Non-Tax',
+    cell: ({ row }) => (
+      <span className="text-right font-mono text-sm">
+        {formatMoney(row.original.grossNonTaxable)}
+      </span>
+    ),
+    meta: {
+      dataType: 'currency',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'totalDeductions',
+    accessorKey: 'totalDeductions',
+    header: 'Deductions',
+    cell: ({ row }) => (
+      <span className="text-right font-mono text-sm">
+        {formatMoney(row.original.totalDeductions)}
+      </span>
+    ),
+    meta: {
+      dataType: 'currency',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'netPay',
+    accessorKey: 'netPay',
+    header: 'Net Pay',
+    cell: ({ row }) => (
+      <span className="text-right font-mono text-sm font-semibold">
+        {formatMoney(row.original.netPay)}
+      </span>
+    ),
+    enableSorting: true,
+    meta: {
+      dataType: 'currency',
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'status',
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    enableSorting: true,
+    meta: {
+      filterType: 'select',
+      filterOptions: [
+        { value: 'DRAFT', label: 'Draft' },
+        { value: 'FINALIZED', label: 'Finalized' },
+        { value: 'PAID', label: 'Paid' },
+        { value: 'VOIDED', label: 'Voided' },
+      ],
+    } as DataGridColumnMeta,
+  },
+  {
+    id: 'isAnomaly',
+    accessorKey: 'isAnomaly',
+    header: 'Anomaly',
+    cell: ({ row }) =>
+      row.original.isAnomaly ? (
+        <Badge variant="destructive" className="text-xs">
+          Anomaly
+        </Badge>
+      ) : null,
+    meta: {
+      filterType: 'select',
+      filterOptions: [
+        { value: 'true', label: 'Yes' },
+        { value: 'false', label: 'No' },
+      ],
+    } as DataGridColumnMeta,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export function SettlementsTable({ initialQuery }: Props) {
-  const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState<SortBy>('periodEnd');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
-  const [data, setData] = useState<ApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Server-side data fetcher
+  const dataFetcher = async (
+    params: ServerFetchParams
+  ): Promise<ServerFetchResult<SettlementRow>> => {
+    const queryParams = new URLSearchParams({
+      period: initialQuery.period,
+      page: String(params.page + 1),
+      pageSize: String(params.pageSize),
+    });
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        period: initialQuery.period,
-        page: String(page),
-        pageSize: '25',
-        sortBy,
-        sortDir,
-      });
-      if (initialQuery.driverIds?.length) {
-        params.set('driverIds', initialQuery.driverIds.join(','));
-      }
-      if (initialQuery.employmentType && initialQuery.employmentType !== 'ALL') {
-        params.set('employmentType', initialQuery.employmentType);
-      }
-      if (initialQuery.status && initialQuery.status !== 'ALL') {
-        params.set('status', initialQuery.status);
-      }
-
-      const res = await fetch(`/api/driver-pay/reports/settlements?${params.toString()}`);
-      if (res.ok) {
-        const json = await res.json() as ApiResponse;
-        setData(json);
-      }
-    } finally {
-      setLoading(false);
+    if (params.sort) {
+      queryParams.set('sortBy', params.sort.field);
+      queryParams.set('sortDir', params.sort.direction);
     }
-  }, [page, sortBy, sortDir, initialQuery]);
 
-  useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
-
-  function handleSort(col: SortBy) {
-    if (sortBy === col) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortBy(col);
-      setSortDir('desc');
+    if (params.search) {
+      queryParams.set('search', params.search);
     }
-    setPage(1);
-  }
 
-  const total = data?.total ?? 0;
-  const totalPages = data?.totalPages ?? 1;
-  const start = (page - 1) * 25 + 1;
-  const end = Math.min(page * 25, total);
+    if (initialQuery.driverIds?.length) {
+      queryParams.set('driverIds', initialQuery.driverIds.join(','));
+    }
+    if (initialQuery.employmentType && initialQuery.employmentType !== 'ALL') {
+      queryParams.set('employmentType', initialQuery.employmentType);
+    }
+    if (initialQuery.status && initialQuery.status !== 'ALL') {
+      queryParams.set('status', initialQuery.status);
+    }
+
+    if (params.filters.length > 0) {
+      queryParams.set('filters', JSON.stringify(params.filters));
+    }
+
+    const res = await fetch(`/api/driver-pay/reports/settlements?${queryParams.toString()}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch settlements');
+    }
+
+    const json = await res.json();
+    return { rows: json.rows, total: json.total };
+  };
+
+  const { table, isLoading, urlState } = useDataGrid({
+    gridId: 'settlements-report',
+    columns,
+    dataFetcher,
+    rowIdAccessor: (row) => row.id,
+    initialPageSize: 25,
+    enableUrlSync: true,
+    enablePersistence: true,
+  });
+
+  const rows = table.getRowModel().rows;
+  const pageCount = table.getPageCount();
+  const { pageIndex, pageSize } = table.getState().pagination;
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold">Settlements</h2>
-        <div className="flex items-center gap-2">
-          {/* TODO(phase-11): Wire to Phase 11 export engine when shipped */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => alert('CSV export wires up in Phase 11')}
-            title="TODO: Wire to Phase 11 export engine"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-        </div>
       </div>
 
-      {loading ? (
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-10 rounded-md bg-muted animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead
-                    className="cursor-pointer select-none"
-                    onClick={() => handleSort('driverName')}
-                  >
-                    Driver <SortIcon active={sortBy === 'driverName'} dir={sortDir} />
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer select-none"
-                    onClick={() => handleSort('periodEnd')}
-                  >
-                    Period <SortIcon active={sortBy === 'periodEnd'} dir={sortDir} />
-                  </TableHead>
-                  <TableHead className="text-right">Gross Taxable</TableHead>
-                  <TableHead className="text-right">Gross Non-Tax</TableHead>
-                  <TableHead className="text-right">Deductions</TableHead>
-                  <TableHead
-                    className="text-right cursor-pointer select-none"
-                    onClick={() => handleSort('netPay')}
-                  >
-                    Net Pay <SortIcon active={sortBy === 'netPay'} dir={sortDir} />
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer select-none"
-                    onClick={() => handleSort('status')}
-                  >
-                    Status <SortIcon active={sortBy === 'status'} dir={sortDir} />
-                  </TableHead>
-                  <TableHead>Anomaly</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(!data?.rows || data.rows.length === 0) ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      No settlements in this period
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.rows.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell>
-                        <Link
-                          href={`/carrier/driver-pay/reports/${row.driverId}`}
-                          className="font-medium hover:underline"
-                        >
-                          {row.driverName ?? 'Unknown Driver'}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {formatPeriod(row.periodStart, row.periodEnd)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {formatMoney(row.grossTaxable)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {formatMoney(row.grossNonTaxable)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {formatMoney(row.totalDeductions)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm font-semibold">
-                        {formatMoney(row.netPay)}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={row.status} />
-                      </TableCell>
-                      <TableCell>
-                        {row.isAnomaly && (
-                          <Badge variant="destructive" className="text-xs">
-                            Anomaly
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>
-              {total > 0 ? `Showing ${start}–${end} of ${total}` : 'No results'}
-            </span>
-            <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Prev
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
+      <GridShell
+        gridId="settlements-report"
+        table={table}
+        rows={rows}
+        isLoading={isLoading}
+        searchPlaceholder="Search settlements..."
+        search={urlState.search}
+        onSearchChange={urlState.setSearch}
+        exportFilename="settlements-report"
+        columns={columns}
+        dataFetcher={dataFetcher}
+        rowIdAccessor={(row) => row.id}
+        pagination={{
+          pageIndex,
+          pageSize,
+          pageCount,
+          totalRows: table.getRowCount(),
+          canPreviousPage: table.getCanPreviousPage(),
+          canNextPage: table.getCanNextPage(),
+          previousPage: () => table.previousPage(),
+          nextPage: () => table.nextPage(),
+          setPageSize: (size) => table.setPageSize(size),
+        }}
+      />
     </div>
   );
 }

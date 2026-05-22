@@ -132,6 +132,7 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
       searchPlaceholder="Search by name or city..."
       showNew
       onNew={() => router.push('/carrier/facilities/new')}
+      recordName="Facility"
       bulkActions={bulkActions}
       onClearSelection={() => setSelectedIds(new Set())}
       primaryColumn="name"
