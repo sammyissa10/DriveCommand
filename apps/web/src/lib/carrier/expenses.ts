@@ -94,7 +94,7 @@ export async function createExpense(
 
   // Verify dispatchId belongs to this org
   if (data.dispatchId) {
-    const dispatch = await prisma.carrierDispatch.findFirst({
+    const dispatch = await prisma.trip.findFirst({
       where: { id: data.dispatchId, orgId },
       select: { id: true },
     });

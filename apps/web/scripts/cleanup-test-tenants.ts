@@ -167,7 +167,7 @@ async function deleteTenant(tenantId: string, tenantName: string): Promise<void>
   // f. dispatches
   // -------------------------------------------------------------------------
   try {
-    const { count } = await prisma.carrierDispatch.deleteMany({
+    const { count } = await prisma.trip.deleteMany({
       where: { orgId: tenantId },
     });
     console.log(`  f. dispatches deleted: ${count}`);

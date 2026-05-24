@@ -226,7 +226,7 @@ export async function completeStop(
   });
 
   if (pendingDispatchStops === 0) {
-    await prisma.carrierDispatch.update({
+    await prisma.trip.update({
       where: { id: stop.dispatchId },
       data: {
         status: 'completed',

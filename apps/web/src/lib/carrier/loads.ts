@@ -573,7 +573,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
         // Write plannedMiles back to the dispatch so pay record recalculation
         // can resolve miles without needing the load form context.
         if (loadForCalc.dispatchId && !loadForCalc.dispatch?.plannedMiles) {
-          await tenantPrisma.carrierDispatch.update({
+          await tenantPrisma.trip.update({
             where: { id: loadForCalc.dispatchId },
             data: { plannedMiles: data.plannedMiles },
           });
@@ -594,4 +594,51 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
   }
 
   return updated;
+}
+
+/**
+ * Remove load from trip and optionally delete its pending stops
+ * Used when cancelling a load that's already assigned to a trip
+ */
+export async function removeLoadFromTrip(
+  orgId: string,
+  loadId: string,
+  removeStops: boolean
+): Promise<{ error: string } | { removedStopCount: number }> {
+  const tenantPrisma = await getTenantPrisma();
+
+  const load = await prisma.carrierLoad.findFirst({
+    where: { id: loadId, orgId },
+    select: { dispatchId: true },
+  });
+
+  if (!load) return { error: 'Load not found' };
+  if (!load.dispatchId) return { removedStopCount: 0 }; // No trip assigned
+
+  let removedStopCount = 0;
+
+  // Delete pending stops for this load if requested
+  if (removeStops) {
+    const deletedStops = await tenantPrisma.carrierStop.deleteMany({
+      where: {
+        loadId: loadId,
+        status: 'pending',
+      },
+    });
+    removedStopCount = deletedStops.count;
+  }
+
+  // Unlink load from trip
+  await tenantPrisma.carrierLoad.update({
+    where: { id: loadId },
+    data: { dispatchId: null },
+  });
+
+  logger.info('removeLoadFromTrip: unlinked load from trip', {
+    orgId,
+    loadId,
+    removedStopCount,
+  });
+
+  return { removedStopCount };
 }

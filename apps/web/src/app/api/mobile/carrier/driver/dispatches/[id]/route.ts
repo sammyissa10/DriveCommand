@@ -50,7 +50,7 @@ export async function GET(
         return { type: 'no_driver' as const };
       }
 
-      const dispatch = await tx.carrierDispatch.findFirst({
+      const dispatch = await tx.trip.findFirst({
         where: {
           id,
           orgId: auth.tenantId,

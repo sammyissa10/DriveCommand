@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
     if (dispatchIds.size > 0) {
       const dispatches = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        return tx.carrierDispatch.findMany({
+        return tx.trip.findMany({
           where: { id: { in: Array.from(dispatchIds) }, orgId: tenantId },
           select: { id: true, status: true, scheduledDeparture: true },
         });

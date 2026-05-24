@@ -85,8 +85,8 @@ function setupReadyDriver() {
   } as any);
   vi.mocked(prisma.carrierTruck.findFirst).mockResolvedValue({ id: TRUCK_ID, orgId: ORG_ID } as any);
   vi.mocked(prisma.user.findUnique).mockResolvedValue({ isDispatchReady: true } as any);
-  vi.mocked(prisma.carrierDispatch.findFirst).mockResolvedValue(null);
-  vi.mocked(prisma.carrierDispatch.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
+  vi.mocked(prisma.trip.findFirst).mockResolvedValue(null);
+  vi.mocked(prisma.trip.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
 }
 
 function setupNotReadyDriver() {
@@ -117,7 +117,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     );
 
     // No dispatch or audit row should have been created
-    expect(prisma.carrierDispatch.create).not.toHaveBeenCalled();
+    expect(prisma.trip.create).not.toHaveBeenCalled();
     expect(prisma.dispatchOverrideAudit.create).not.toHaveBeenCalled();
   });
 
@@ -136,8 +136,8 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     vi.mocked(prisma.user.findUnique)
       .mockResolvedValueOnce({ isDispatchReady: false } as any)
       .mockResolvedValueOnce({ role: 'OWNER' } as any);
-    vi.mocked(prisma.carrierDispatch.findFirst).mockResolvedValue(null);
-    vi.mocked(prisma.carrierDispatch.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
+    vi.mocked(prisma.trip.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.trip.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
     vi.mocked(prisma.dispatchOverrideAudit.create).mockResolvedValue({} as any);
 
     await createDispatch(ORG_ID, {
@@ -149,7 +149,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     });
 
     // Dispatch was created exactly once
-    expect(prisma.carrierDispatch.create).toHaveBeenCalledTimes(1);
+    expect(prisma.trip.create).toHaveBeenCalledTimes(1);
 
     // Audit row written with all 5 required fields
     expect(prisma.dispatchOverrideAudit.create).toHaveBeenCalledTimes(1);
@@ -192,7 +192,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     ).rejects.toThrow('OVERRIDE_REQUIRES_ADMIN');
 
     // Neither dispatch nor audit row should have been created
-    expect(prisma.carrierDispatch.create).not.toHaveBeenCalled();
+    expect(prisma.trip.create).not.toHaveBeenCalled();
     expect(prisma.dispatchOverrideAudit.create).not.toHaveBeenCalled();
   });
 
@@ -204,7 +204,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
 
     await createDispatch(ORG_ID, { ...BASE_INPUT });
 
-    expect(prisma.carrierDispatch.create).toHaveBeenCalledTimes(1);
+    expect(prisma.trip.create).toHaveBeenCalledTimes(1);
     expect(prisma.dispatchOverrideAudit.create).not.toHaveBeenCalled();
   });
 
@@ -221,8 +221,8 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     vi.mocked(prisma.user.findUnique)
       .mockResolvedValueOnce({ isDispatchReady: false } as any)
       .mockResolvedValueOnce({ role: 'OWNER' } as any);
-    vi.mocked(prisma.carrierDispatch.findFirst).mockResolvedValue(null);
-    vi.mocked(prisma.carrierDispatch.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
+    vi.mocked(prisma.trip.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.trip.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
     vi.mocked(prisma.dispatchOverrideAudit.create).mockResolvedValue({} as any);
 
     await createDispatch(ORG_ID, {

@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
         });
         if (!carrierDriver) return null;
 
-        const activeDispatch = await tx.carrierDispatch.findFirst({
+        const activeDispatch = await tx.trip.findFirst({
           where: {
             primaryDriverId: carrierDriver.id,
             orgId: tenantId,

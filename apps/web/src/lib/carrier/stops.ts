@@ -93,7 +93,7 @@ export async function getStop(orgId: string, id: string) {
 
 export async function createStop(orgId: string, data: StopCreateInput) {
   // Verify the dispatch belongs to this org
-  const dispatch = await prisma.carrierDispatch.findFirst({
+  const dispatch = await prisma.trip.findFirst({
     where: { id: data.dispatchId, orgId },
   });
   if (!dispatch) {

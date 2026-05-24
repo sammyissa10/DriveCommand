@@ -313,7 +313,7 @@ export async function deleteCarrierDriver(
   if (!driver) return { error: 'Not found' };
 
   // Check for active dispatches
-  const activeDispatchCount = await prisma.carrierDispatch.count({
+  const activeDispatchCount = await prisma.trip.count({
     where: {
       OR: [{ primaryDriverId: driverId }, { coDriverId: driverId }],
       status: 'in_progress',

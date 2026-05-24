@@ -257,7 +257,7 @@ export const triggerRouter = router({
           })
         : Promise.resolve([]),
       dispatchIds.length
-        ? prisma.carrierDispatch.findMany({
+        ? prisma.trip.findMany({
             where: { id: { in: dispatchIds } },
             select: { id: true, status: true, createdAt: true },
           })

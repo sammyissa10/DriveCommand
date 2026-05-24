@@ -82,7 +82,7 @@ export async function sendDispatchAssignedNotification(
     if (alreadySent) return;
 
     // Resolve the dispatch number from notes for use in the subject/log
-    const dispatchRaw = await prisma.carrierDispatch.findFirst({
+    const dispatchRaw = await prisma.trip.findFirst({
       where: { id: dispatchId, orgId },
       include: {
         truck: { select: { unitNumber: true } },
@@ -468,7 +468,7 @@ export async function sendPayRecordReadyNotification(
     }
 
     // Extract dispatch number from the dispatch notes
-    const dispatch = await prisma.carrierDispatch.findFirst({
+    const dispatch = await prisma.trip.findFirst({
       where: { id: dispatchId, orgId },
       select: { notes: true },
     });

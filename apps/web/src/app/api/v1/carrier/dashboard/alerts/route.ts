@@ -85,7 +85,7 @@ export async function GET() {
         },
       }),
       // 5. Planned dispatches for today that haven't started
-      prisma.carrierDispatch.count({
+      prisma.trip.count({
         where: {
           orgId,
           status: 'planned',

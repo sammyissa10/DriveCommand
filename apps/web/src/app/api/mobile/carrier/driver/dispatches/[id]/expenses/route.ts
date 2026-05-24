@@ -106,7 +106,7 @@ export async function POST(
       }
 
       // Verify dispatch exists and belongs to this driver
-      const dispatch = await tx.carrierDispatch.findFirst({
+      const dispatch = await tx.trip.findFirst({
         where: {
           id,
           orgId: auth.tenantId,

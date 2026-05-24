@@ -93,7 +93,7 @@ export async function uploadDocument(
       }
     }
   } else if (parentType === 'dispatch') {
-    const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: parentId, orgId } });
+    const dispatch = await prisma.trip.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
     if (dispatch && !dispatchId) dispatchId = parentId;
     // Resolve clientId and contractId from the single linked load (ambiguous if 0 or 2+)
@@ -207,7 +207,7 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
     const load = await prisma.carrierLoad.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!load;
   } else if (parentType === 'dispatch') {
-    const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: parentId, orgId } });
+    const dispatch = await prisma.trip.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
   } else if (parentType === 'contract') {
     const contract = await prisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
@@ -289,7 +289,7 @@ export async function deleteDocument(
     const load = await prisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!load;
   } else if (doc.parentType === 'dispatch') {
-    const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: doc.parentId, orgId } });
+    const dispatch = await prisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!dispatch;
   } else if (doc.parentType === 'contract') {
     const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
@@ -342,7 +342,7 @@ export async function verifyDocument(
     const load = await prisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!load;
   } else if (doc.parentType === 'dispatch') {
-    const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: doc.parentId, orgId } });
+    const dispatch = await prisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!dispatch;
   } else if (doc.parentType === 'contract') {
     const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });

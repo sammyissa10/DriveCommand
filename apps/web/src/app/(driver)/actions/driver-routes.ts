@@ -74,7 +74,7 @@ export async function getMyActiveDispatch() {
     };
 
     // Prioritize in_progress dispatches over planned
-    let dispatch = await tx.carrierDispatch.findFirst({
+    let dispatch = await tx.trip.findFirst({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: session.tenantId,
@@ -85,7 +85,7 @@ export async function getMyActiveDispatch() {
     });
 
     if (!dispatch) {
-      dispatch = await tx.carrierDispatch.findFirst({
+      dispatch = await tx.trip.findFirst({
         where: {
           primaryDriverId: carrierDriver.id,
           orgId: session.tenantId,
@@ -126,7 +126,7 @@ export async function getMyDispatchHistory() {
 
     if (!carrierDriver) return [];
 
-    return tx.carrierDispatch.findMany({
+    return tx.trip.findMany({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: session.tenantId,
@@ -182,7 +182,7 @@ export async function startTrip(dispatchId: string) {
     });
     if (!carrierDriver) return false;
 
-    const dispatch = await tx.carrierDispatch.findFirst({
+    const dispatch = await tx.trip.findFirst({
       where: {
         id: dispatchId,
         primaryDriverId: carrierDriver.id,

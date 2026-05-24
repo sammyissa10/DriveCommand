@@ -254,7 +254,7 @@ export async function generateDispatches(
   // We count ALL org dispatches (manual + auto) so that auto-generated numbers never
   // collide with manually created dispatch numbers. Migration should add a proper
   // `dispatchNumber` column and backfill from the notes prefix.
-  const existingCount = await prisma.carrierDispatch.count({ where: { orgId } });
+  const existingCount = await prisma.trip.count({ where: { orgId } });
   let dispatchCounter = existingCount;
 
   for (const dateStr of scheduledDates) {
@@ -263,7 +263,7 @@ export async function generateDispatches(
       const dayStart = applyTimeToDate(dateStr, '00:00');
       const dayEnd = applyTimeToDate(dateStr, '23:59');
 
-      const existingDispatch = await prisma.carrierDispatch.findFirst({
+      const existingDispatch = await prisma.trip.findFirst({
         where: {
           routeTemplateId: templateId,
           orgId,
@@ -292,14 +292,14 @@ export async function generateDispatches(
 
       // 4b. Conflict detection for driver and truck (outside transaction — read-only check)
       const [driverConflict, truckConflict] = await Promise.all([
-        prisma.carrierDispatch.findFirst({
+        prisma.trip.findFirst({
           where: {
             primaryDriverId: template.defaultDriverId,
             orgId,
             scheduledDeparture: { gte: dayStart, lt: dayEnd },
           },
         }),
-        prisma.carrierDispatch.findFirst({
+        prisma.trip.findFirst({
           where: {
             truckId: template.defaultTruckId,
             orgId,
@@ -328,7 +328,7 @@ export async function generateDispatches(
       // 4d. Wrap dispatch + load + stops in a single transaction per date
       const { newDispatch, loadCreated, stopsCreatedCount } = await prisma.$transaction(async (tx) => {
         // Create dispatch
-        const dispatch = await tx.carrierDispatch.create({
+        const dispatch = await tx.trip.create({
           data: {
             orgId,
             routeTemplateId: templateId,

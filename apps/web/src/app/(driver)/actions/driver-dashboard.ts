@@ -85,7 +85,7 @@ export async function getDriverQuickActionBadges(): Promise<DriverQuickActionBad
         ? prisma.$transaction(async (tx) => {
             await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-            const activeDispatch = await tx.carrierDispatch.findFirst({
+            const activeDispatch = await tx.trip.findFirst({
               where: {
                 primaryDriverId: carrierDriver.id,
                 orgId: user.tenantId,

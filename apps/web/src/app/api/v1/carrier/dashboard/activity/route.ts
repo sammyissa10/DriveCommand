@@ -40,7 +40,7 @@ export async function GET() {
       newDispatches,
     ] = await Promise.all([
       // 1. Dispatch status changes (recently updated, not planned)
-      prisma.carrierDispatch.findMany({
+      prisma.trip.findMany({
         where: {
           orgId,
           updatedAt: { gte: sevenDaysAgo },
@@ -96,7 +96,7 @@ export async function GET() {
         },
       }),
       // 6. New dispatches created
-      prisma.carrierDispatch.findMany({
+      prisma.trip.findMany({
         where: { orgId, createdAt: { gte: sevenDaysAgo } },
         orderBy: { createdAt: 'desc' },
         take: 15,

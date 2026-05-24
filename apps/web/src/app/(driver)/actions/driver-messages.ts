@@ -88,7 +88,7 @@ export async function sendDriverMessage(prevState: ActionState | null, formData:
   // Find the active dispatch for this driver (planned or in_progress, most recent)
   let activeDispatchId: string | undefined = undefined;
   if (carrierDriver) {
-    const activeDispatch = await prisma.carrierDispatch.findFirst({
+    const activeDispatch = await prisma.trip.findFirst({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: user.tenantId,
@@ -174,7 +174,7 @@ export async function sendDriverVoiceMessage(audioUrl: string): Promise<ActionSt
   // Find the active dispatch for this driver
   let activeDispatchId: string | undefined = undefined;
   if (carrierDriver) {
-    const activeDispatch = await prisma.carrierDispatch.findFirst({
+    const activeDispatch = await prisma.trip.findFirst({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: user.tenantId,

@@ -31,7 +31,7 @@ export async function POST(
     const { loadId } = parsed.data;
 
     // Verify dispatch exists and belongs to this org
-    const dispatch = await prisma.carrierDispatch.findFirst({
+    const dispatch = await prisma.trip.findFirst({
       where: { id, orgId },
       select: { id: true, status: true },
     });

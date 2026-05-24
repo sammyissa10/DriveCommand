@@ -46,7 +46,7 @@ export async function getMyLoads() {
     if (!carrierDriver) return [];
 
     // Find dispatches for this driver that are active
-    const activeDispatches = await tx.carrierDispatch.findMany({
+    const activeDispatches = await tx.trip.findMany({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: session.tenantId,

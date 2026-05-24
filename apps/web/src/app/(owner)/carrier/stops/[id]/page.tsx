@@ -86,7 +86,7 @@ export default async function StopDetailPage({ params }: Props) {
   // Fetch dispatch details with primary driver userId
   const dispatch = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.carrierDispatch.findFirst({
+    return tx.trip.findFirst({
       where: { id: stop.dispatchId, orgId },
       select: {
         id: true,

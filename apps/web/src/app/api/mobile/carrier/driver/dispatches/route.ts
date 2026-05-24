@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
         return null;
       }
 
-      return tx.carrierDispatch.findMany({
+      return tx.trip.findMany({
         where: {
           orgId: auth.tenantId,
           status: { in: ['planned', 'in_progress'] },

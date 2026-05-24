@@ -62,7 +62,7 @@ export async function generateDriverPayRecords(
   dispatchId: string
 ): PayResult {
   // Step 1: Load dispatch with all required relations
-  const dispatch = await prisma.carrierDispatch.findFirst({
+  const dispatch = await prisma.trip.findFirst({
     where: { id: dispatchId, orgId },
     include: {
       primaryDriver: true,
@@ -404,7 +404,7 @@ export async function recalculatePayRecordReimbursements(
   let newEmptyMiles = record.emptyMiles ?? 0;
 
   if (record.payModel === 'per_mile' || record.payModel === 'team_split') {
-    const dispatch = await prisma.carrierDispatch.findFirst({
+    const dispatch = await prisma.trip.findFirst({
       where: { id: record.dispatchId, orgId },
     });
 

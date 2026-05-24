@@ -33,7 +33,7 @@ export async function GET(
       const load = await prisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!load;
     } else if (doc.parentType === 'dispatch') {
-      const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: doc.parentId, orgId } });
+      const dispatch = await prisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!dispatch;
     } else if (doc.parentType === 'contract') {
       const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });

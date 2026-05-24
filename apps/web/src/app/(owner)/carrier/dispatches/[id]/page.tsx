@@ -28,7 +28,7 @@ export default async function DispatchDetailPage({ params }: Props) {
 
   const [dispatch, dispatchAudit] = await Promise.all([
     getDispatch(orgId, id),
-    prisma.carrierDispatch.findUnique({
+    prisma.trip.findUnique({
       where: { id },
       select: {
         createdBy: { select: { firstName: true, lastName: true, email: true } },
