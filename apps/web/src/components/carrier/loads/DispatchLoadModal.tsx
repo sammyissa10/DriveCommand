@@ -38,6 +38,11 @@ interface Template {
   client: { name: string } | null;
 }
 
+interface ExistingTrip {
+  id: string;
+  label: string;
+}
+
 export interface DispatchLoadModalProps {
   loadId: string;
   open: boolean;
@@ -80,6 +85,12 @@ export function DispatchLoadModal({
   drivers,
   trucks,
 }: DispatchLoadModalProps) {
+  // Mode: 'new' to create a new trip, 'existing' to add to an existing planned trip
+  const [mode, setMode] = useState<'new' | 'existing'>('new');
+  const [existingTrips, setExistingTrips] = useState<ExistingTrip[]>([]);
+  const [selectedExistingTripId, setSelectedExistingTripId] = useState('');
+  const [loadingTrips, setLoadingTrips] = useState(false);
+
   const [primaryDriverId, setPrimaryDriverId] = useState('');
   const [truckId, setTruckId] = useState('');
   const [coDriverId, setCoDriverId] = useState('');
@@ -104,9 +115,44 @@ export function DispatchLoadModal({
       });
   }, []);
 
+  // Fetch existing planned trips when mode is 'existing'
+  useEffect(() => {
+    if (open && mode === 'existing') {
+      setLoadingTrips(true);
+      fetch('/api/v1/carrier/dispatches?status=planned&pageSize=50')
+        .then((r) => r.json())
+        .then((body) => {
+          interface TripItem {
+            id: string;
+            notes: string | null;
+            scheduledDeparture: string;
+            primaryDriver?: { firstName: string; lastName: string };
+          }
+          const items = (body.items ?? []) as TripItem[];
+          setExistingTrips(
+            items.map((t) => {
+              const match = t.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+              const tripNumber = match ? match[1] : t.id.slice(0, 8);
+              const driverName = t.primaryDriver
+                ? `${t.primaryDriver.firstName} ${t.primaryDriver.lastName}`
+                : 'No driver';
+              const date = new Date(t.scheduledDeparture).toLocaleDateString();
+              return { id: t.id, label: `${tripNumber} - ${driverName} - ${date}` };
+            })
+          );
+        })
+        .catch(() => {
+          toast.error('Failed to load trips');
+        })
+        .finally(() => setLoadingTrips(false));
+    }
+  }, [open, mode]);
+
   // Reset form when modal opens
   useEffect(() => {
     if (open) {
+      setMode('new');
+      setSelectedExistingTripId('');
       setPrimaryDriverId('');
       setTruckId('');
       setCoDriverId('');
@@ -165,74 +211,104 @@ export function DispatchLoadModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!primaryDriverId) {
-      setError('Primary driver is required.');
-      return;
-    }
-    if (!truckId) {
-      setError('Truck is required.');
-      return;
-    }
-    if (!scheduledDeparture) {
-      setError('Scheduled departure is required.');
-      return;
-    }
-    if (coDriverId && coDriverId === primaryDriverId) {
-      setCoDriverError('Co-driver cannot be the same as the primary driver.');
-      return;
+    // Validation for 'existing' mode
+    if (mode === 'existing') {
+      if (!selectedExistingTripId) {
+        setError('Please select a trip.');
+        return;
+      }
+    } else {
+      // Validation for 'new' mode
+      if (!primaryDriverId) {
+        setError('Primary driver is required.');
+        return;
+      }
+      if (!truckId) {
+        setError('Truck is required.');
+        return;
+      }
+      if (!scheduledDeparture) {
+        setError('Scheduled departure is required.');
+        return;
+      }
+      if (coDriverId && coDriverId === primaryDriverId) {
+        setCoDriverError('Co-driver cannot be the same as the primary driver.');
+        return;
+      }
     }
 
     setSubmitting(true);
     setError(null);
 
     try {
-      // Step 1: Create the dispatch
-      const dispatchBody: Record<string, unknown> = {
-        primaryDriverId,
-        truckId,
-        scheduledDeparture: new Date(scheduledDeparture).toISOString(),
-      };
-      if (coDriverId) dispatchBody.coDriverId = coDriverId;
-      if (plannedMiles !== '') dispatchBody.plannedMiles = plannedMiles;
-      if (notes.trim()) dispatchBody.notes = notes.trim();
-      if (selectedTemplateId) dispatchBody.routeTemplateId = selectedTemplateId;
+      if (mode === 'existing') {
+        // Add load to existing trip via PATCH
+        const loadRes = await fetch(`/api/v1/carrier/loads/${loadId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dispatchId: selectedExistingTripId }),
+        });
 
-      const dispatchRes = await fetch('/api/v1/carrier/dispatches', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dispatchBody),
-      });
+        if (!loadRes.ok) {
+          const data = await loadRes.json().catch(() => ({}));
+          throw new Error(data.error ?? `Failed to add load to trip (${loadRes.status})`);
+        }
 
-      if (!dispatchRes.ok) {
-        const data = await dispatchRes.json().catch(() => ({}));
-        throw new Error(data.error ?? `Failed to create dispatch (${dispatchRes.status})`);
+        // Get trip number for toast
+        const selectedTrip = existingTrips.find((t) => t.id === selectedExistingTripId);
+        const tripNumber = selectedTrip?.label.split(' - ')[0] ?? selectedExistingTripId.slice(0, 8);
+
+        toast.success(`Load added to trip ${tripNumber}`);
+        onSuccess(selectedExistingTripId, tripNumber);
+      } else {
+        // Step 1: Create the dispatch
+        const dispatchBody: Record<string, unknown> = {
+          primaryDriverId,
+          truckId,
+          scheduledDeparture: new Date(scheduledDeparture).toISOString(),
+        };
+        if (coDriverId) dispatchBody.coDriverId = coDriverId;
+        if (plannedMiles !== '') dispatchBody.plannedMiles = plannedMiles;
+        if (notes.trim()) dispatchBody.notes = notes.trim();
+        if (selectedTemplateId) dispatchBody.routeTemplateId = selectedTemplateId;
+
+        const dispatchRes = await fetch('/api/v1/carrier/dispatches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dispatchBody),
+        });
+
+        if (!dispatchRes.ok) {
+          const data = await dispatchRes.json().catch(() => ({}));
+          throw new Error(data.error ?? `Failed to create dispatch (${dispatchRes.status})`);
+        }
+
+        const dispatchData = await dispatchRes.json();
+        const newDispatchId: string = dispatchData.data?.id;
+        if (!newDispatchId) throw new Error('No dispatch ID returned from server');
+
+        // Extract dispatch number from notes tag
+        const dispatchNotes: string = dispatchData.data?.notes ?? '';
+        const match = dispatchNotes.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+        const dispatchNumber = match ? match[1] : `DC-${newDispatchId.slice(0, 8)}`;
+
+        // Step 2: Attach this load to the dispatch
+        const loadRes = await fetch(`/api/v1/carrier/loads/${loadId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dispatchId: newDispatchId }),
+        });
+
+        if (!loadRes.ok) {
+          const data = await loadRes.json().catch(() => ({}));
+          throw new Error(data.error ?? `Failed to attach load to dispatch (${loadRes.status})`);
+        }
+
+        toast.success(`Dispatch ${dispatchNumber} created and load attached`);
+        onSuccess(newDispatchId, dispatchNumber);
       }
-
-      const dispatchData = await dispatchRes.json();
-      const newDispatchId: string = dispatchData.data?.id;
-      if (!newDispatchId) throw new Error('No dispatch ID returned from server');
-
-      // Extract dispatch number from notes tag
-      const dispatchNotes: string = dispatchData.data?.notes ?? '';
-      const match = dispatchNotes.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
-      const dispatchNumber = match ? match[1] : `DC-${newDispatchId.slice(0, 8)}`;
-
-      // Step 2: Attach this load to the dispatch
-      const loadRes = await fetch(`/api/v1/carrier/loads/${loadId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dispatchId: newDispatchId }),
-      });
-
-      if (!loadRes.ok) {
-        const data = await loadRes.json().catch(() => ({}));
-        throw new Error(data.error ?? `Failed to attach load to dispatch (${loadRes.status})`);
-      }
-
-      toast.success(`Dispatch ${dispatchNumber} created and load attached`);
-      onSuccess(newDispatchId, dispatchNumber);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to create dispatch';
+      const msg = err instanceof Error ? err.message : 'Failed to dispatch load';
       setError(msg);
       toast.error(msg);
     } finally {
@@ -249,11 +325,74 @@ export function DispatchLoadModal({
         <DialogHeader>
           <DialogTitle>Dispatch This Load</DialogTitle>
           <DialogDescription>
-            Create a new dispatch and attach this load to it.
+            Create a new trip or add this load to an existing planned trip.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          {/* Mode Selection */}
+          <div className="space-y-2">
+            <label className={LABEL_CLASSES}>Dispatch Mode</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="new"
+                  checked={mode === 'new'}
+                  onChange={() => setMode('new')}
+                  disabled={submitting}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">Create new trip</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="existing"
+                  checked={mode === 'existing'}
+                  onChange={() => setMode('existing')}
+                  disabled={submitting}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">Add to existing trip</span>
+              </label>
+            </div>
+          </div>
+
+          {mode === 'existing' ? (
+            /* Existing Trip Selection */
+            <div>
+              <label className={LABEL_CLASSES}>
+                Select Trip <span className="text-destructive">*</span>
+              </label>
+              {loadingTrips ? (
+                <div className="flex items-center gap-2 text-muted-foreground text-sm py-2">
+                  <RefreshCw className="h-4 w-4 animate-spin" /> Loading trips...
+                </div>
+              ) : existingTrips.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">
+                  No planned trips available. Create a new trip instead.
+                </p>
+              ) : (
+                <select
+                  value={selectedExistingTripId}
+                  onChange={(e) => setSelectedExistingTripId(e.target.value)}
+                  className={SELECT_CLASSES}
+                  disabled={submitting}
+                >
+                  <option value="">Select a planned trip...</option>
+                  {existingTrips.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          ) : (
+            <>
           {/* Route Template (optional) */}
           <div>
             <label className={LABEL_CLASSES}>Route Template (optional)</label>
@@ -388,6 +527,8 @@ export function DispatchLoadModal({
               className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             />
           </div>
+            </>
+          )}
 
           {/* Error */}
           {error && <p className="text-sm text-destructive">{error}</p>}
@@ -404,10 +545,12 @@ export function DispatchLoadModal({
             </button>
             <button
               type="submit"
-              disabled={submitting || !!coDriverError}
+              disabled={submitting || !!coDriverError || (mode === 'existing' && !selectedExistingTripId)}
               className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              {submitting ? 'Creating...' : 'Create Dispatch & Attach Load'}
+              {submitting
+                ? (mode === 'existing' ? 'Adding...' : 'Creating...')
+                : (mode === 'existing' ? 'Add to Trip' : 'Create Trip & Attach Load')}
             </button>
           </div>
         </form>
