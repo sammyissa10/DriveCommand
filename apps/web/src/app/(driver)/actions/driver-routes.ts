@@ -12,7 +12,7 @@
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { transitionDispatchStatus } from '@/lib/carrier/dispatches';
+import { transitionTripStatus } from '@/lib/carrier/trips';
 import { arriveStop, completeStop } from '@/lib/carrier/stop-completion';
 import { revalidatePath } from 'next/cache';
 
@@ -196,7 +196,7 @@ export async function startTrip(dispatchId: string) {
     return { error: 'Dispatch not found or not assigned to you' };
   }
 
-  const result = await transitionDispatchStatus(session.tenantId, dispatchId, 'in_progress');
+  const result = await transitionTripStatus(session.tenantId, dispatchId, 'in_progress');
   revalidatePath('/my-route');
   return result;
 }

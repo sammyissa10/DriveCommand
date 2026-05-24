@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { transitionDispatchStatus } from '@/lib/carrier/dispatches';
+import { transitionTripStatus } from '@/lib/carrier/trips';
 
 const StatusTransitionSchema = z.object({
   status: z.enum(['in_progress', 'completed', 'cancelled', 'tonu']),
@@ -29,7 +29,7 @@ export async function PATCH(
       );
     }
 
-    const result = await transitionDispatchStatus(
+    const result = await transitionTripStatus(
       orgId,
       id,
       parsed.data.status,

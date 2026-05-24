@@ -13,7 +13,7 @@
  *   5. Audit row tenantId matches the dispatch's orgId (cross-tenant bug guard)
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createDispatch } from '@/lib/carrier/dispatches';
+import { createTrip } from '@/lib/carrier/trips';
 import { prisma } from '@/lib/db/prisma';
 
 vi.mock('@/lib/db/prisma', () => ({
@@ -22,7 +22,7 @@ vi.mock('@/lib/db/prisma', () => ({
     carrierTruck: { findFirst: vi.fn() },
     carrierDriver_coDriver: { findFirst: vi.fn() },
     user: { findUnique: vi.fn() },
-    carrierDispatch: { findFirst: vi.fn(), create: vi.fn() },
+    trip: { findFirst: vi.fn(), create: vi.fn() },
     dispatchOverrideAudit: { create: vi.fn() },
     carrierStop: { count: vi.fn() },
     routeTemplateStop: { findMany: vi.fn() },
@@ -112,7 +112,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
   it('DoD test 4: throws DRIVER_NOT_DISPATCH_READY and does NOT create dispatch when driver is not ready', async () => {
     setupNotReadyDriver();
 
-    await expect(createDispatch(ORG_ID, { ...BASE_INPUT })).rejects.toThrow(
+    await expect(createTrip(ORG_ID, { ...BASE_INPUT })).rejects.toThrow(
       'DRIVER_NOT_DISPATCH_READY'
     );
 
@@ -140,7 +140,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     vi.mocked(prisma.trip.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
     vi.mocked(prisma.dispatchOverrideAudit.create).mockResolvedValue({} as any);
 
-    await createDispatch(ORG_ID, {
+    await createTrip(ORG_ID, {
       ...BASE_INPUT,
       overrideReason: 'customer emergency',
       overrideForEntityType: 'DRIVER',
@@ -182,7 +182,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
       .mockResolvedValueOnce({ role: 'DRIVER' } as any); // non-admin
 
     await expect(
-      createDispatch(ORG_ID, {
+      createTrip(ORG_ID, {
         ...BASE_INPUT,
         overrideReason: 'trying to force it',
         overrideForEntityType: 'DRIVER',
@@ -202,7 +202,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
   it('creates dispatch normally for a dispatch-ready driver without writing any audit row', async () => {
     setupReadyDriver();
 
-    await createDispatch(ORG_ID, { ...BASE_INPUT });
+    await createTrip(ORG_ID, { ...BASE_INPUT });
 
     expect(prisma.trip.create).toHaveBeenCalledTimes(1);
     expect(prisma.dispatchOverrideAudit.create).not.toHaveBeenCalled();
@@ -225,7 +225,7 @@ describe('dispatch enforcement + override audit (Phase 4 DoD tests 3 + 4)', () =
     vi.mocked(prisma.trip.create).mockResolvedValue({ id: DISPATCH_ID, orgId: ORG_ID } as any);
     vi.mocked(prisma.dispatchOverrideAudit.create).mockResolvedValue({} as any);
 
-    await createDispatch(ORG_ID, {
+    await createTrip(ORG_ID, {
       ...BASE_INPUT,
       overrideReason: 'emergency run',
       overrideForEntityType: 'DRIVER',

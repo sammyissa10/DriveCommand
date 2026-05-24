@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
-import { getDispatch } from '@/lib/carrier/dispatches';
+import { getTrip } from '@/lib/carrier/trips';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 
 interface Props {
@@ -63,7 +63,7 @@ export default async function StopsOverviewPage({ params }: Props) {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
-  const dispatch = await getDispatch(orgId, id);
+  const dispatch = await getTrip(orgId, id);
   if (!dispatch) notFound();
 
   const dispatchNumber = extractDispatchNumber(dispatch.notes ?? null);

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { getDispatch, updateDispatch } from '@/lib/carrier/dispatches';
+import { getTrip, updateTrip } from '@/lib/carrier/trips';
 
 const DispatchUpdateSchema = z.object({
   primaryDriverId: z.string().uuid().optional(),
@@ -30,7 +30,7 @@ export async function GET(
 
   try {
     const { id } = await params;
-    const dispatch = await getDispatch(orgId, id);
+    const dispatch = await getTrip(orgId, id);
     if (!dispatch) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ data: dispatch });
@@ -60,7 +60,7 @@ export async function PATCH(
       );
     }
 
-    const result = await updateDispatch(orgId, id, parsed.data);
+    const result = await updateTrip(orgId, id, parsed.data);
     if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     if ('error' in result) {
       return NextResponse.json({ error: result.error }, { status: 409 });

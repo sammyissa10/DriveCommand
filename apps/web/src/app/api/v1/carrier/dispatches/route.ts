@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { listDispatches, createDispatch } from '@/lib/carrier/dispatches';
+import { listTrips, createTrip } from '@/lib/carrier/trips';
 
 const DispatchCreateSchema = z.object({
   primaryDriverId: z.string().uuid(),
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get('page') ?? '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') ?? '50', 10);
 
-    const result = await listDispatches(orgId, {
+    const result = await listTrips(orgId, {
       status,
       dateFrom,
       dateTo,
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const dispatch = await createDispatch(orgId, {
+    const dispatch = await createTrip(orgId, {
       ...parsed.data,
       currentUserId: session.userId,
     });

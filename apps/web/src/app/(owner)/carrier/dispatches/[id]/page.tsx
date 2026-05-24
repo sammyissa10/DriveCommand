@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
-import { getDispatch } from '@/lib/carrier/dispatches';
+import { getTrip } from '@/lib/carrier/trips';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { hasPermission } from '@/lib/auth/permissions';
 import { DispatchHeader } from '@/components/carrier/dispatches/DispatchHeader';
@@ -27,7 +27,7 @@ export default async function DispatchDetailPage({ params }: Props) {
   if (!orgId) redirect('/login');
 
   const [dispatch, dispatchAudit] = await Promise.all([
-    getDispatch(orgId, id),
+    getTrip(orgId, id),
     prisma.trip.findUnique({
       where: { id },
       select: {
