@@ -13,7 +13,32 @@ import {
   SheetDescription,
   SheetFooter,
 } from '@/components/ui/sheet';
-import type { CarrierTruckItem } from './CarrierTruckList';
+
+// ---------------------------------------------------------------------------
+// CarrierTruckItem type (previously imported from CarrierTruckList, now inline)
+// ---------------------------------------------------------------------------
+
+export interface CarrierTruckItem {
+  id: string;
+  vehicleId: string;
+  displayName: string | null;
+  unitNumber: string;
+  vin: string | null;
+  year: number | null;
+  make: string | null;
+  model: string | null;
+  truckType: string;
+  currentOdometerMiles: number | null;
+  registrationExpiry: Date | string | null;
+  licenseExpiry: Date | string | null;
+  status: string;
+  isSample: boolean;
+  photoS3Key: string | null;
+  insuranceExpiry: Date | string | null;
+  licensePlate: string | null;
+  licenseState: string | null;
+  assignedDriver: { id: string; firstName: string; lastName: string } | null;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers (self-contained copies)

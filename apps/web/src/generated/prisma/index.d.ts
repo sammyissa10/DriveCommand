@@ -73300,6 +73300,7 @@ export namespace Prisma {
     status: string | null
     isSample: boolean | null
     notes: string | null
+    photoS3Key: string | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date | null
@@ -73329,6 +73330,7 @@ export namespace Prisma {
     status: string | null
     isSample: boolean | null
     notes: string | null
+    photoS3Key: string | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date | null
@@ -73358,6 +73360,7 @@ export namespace Prisma {
     status: number
     isSample: number
     notes: number
+    photoS3Key: number
     createdById: number
     updatedById: number
     createdAt: number
@@ -73403,6 +73406,7 @@ export namespace Prisma {
     status?: true
     isSample?: true
     notes?: true
+    photoS3Key?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -73432,6 +73436,7 @@ export namespace Prisma {
     status?: true
     isSample?: true
     notes?: true
+    photoS3Key?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -73461,6 +73466,7 @@ export namespace Prisma {
     status?: true
     isSample?: true
     notes?: true
+    photoS3Key?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -73577,6 +73583,7 @@ export namespace Prisma {
     status: string
     isSample: boolean
     notes: string | null
+    photoS3Key: string | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date
@@ -73625,6 +73632,7 @@ export namespace Prisma {
     status?: boolean
     isSample?: boolean
     notes?: boolean
+    photoS3Key?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -73662,6 +73670,7 @@ export namespace Prisma {
     status?: boolean
     isSample?: boolean
     notes?: boolean
+    photoS3Key?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -73694,6 +73703,7 @@ export namespace Prisma {
     status?: boolean
     isSample?: boolean
     notes?: boolean
+    photoS3Key?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -73726,13 +73736,14 @@ export namespace Prisma {
     status?: boolean
     isSample?: boolean
     notes?: boolean
+    photoS3Key?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierTruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "vehicleId" | "displayName" | "unitNumber" | "year" | "make" | "model" | "vin" | "truckType" | "payloadCapacityLbs" | "grossWeightLbs" | "licensePlate" | "licenseState" | "licenseExpiry" | "registrationExpiry" | "insuranceExpiry" | "currentOdometerMiles" | "lastOdometerDate" | "status" | "isSample" | "notes" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierTruck"]>
+  export type CarrierTruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "vehicleId" | "displayName" | "unitNumber" | "year" | "make" | "model" | "vin" | "truckType" | "payloadCapacityLbs" | "grossWeightLbs" | "licensePlate" | "licenseState" | "licenseExpiry" | "registrationExpiry" | "insuranceExpiry" | "currentOdometerMiles" | "lastOdometerDate" | "status" | "isSample" | "notes" | "photoS3Key" | "createdById" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierTruck"]>
   export type CarrierTruckInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     createdBy?: boolean | CarrierTruck$createdByArgs<ExtArgs>
@@ -73788,6 +73799,7 @@ export namespace Prisma {
       status: string
       isSample: boolean
       notes: string | null
+      photoS3Key: string | null
       createdById: string | null
       updatedById: string | null
       createdAt: Date
@@ -74244,6 +74256,7 @@ export namespace Prisma {
     readonly status: FieldRef<"CarrierTruck", 'String'>
     readonly isSample: FieldRef<"CarrierTruck", 'Boolean'>
     readonly notes: FieldRef<"CarrierTruck", 'String'>
+    readonly photoS3Key: FieldRef<"CarrierTruck", 'String'>
     readonly createdById: FieldRef<"CarrierTruck", 'String'>
     readonly updatedById: FieldRef<"CarrierTruck", 'String'>
     readonly createdAt: FieldRef<"CarrierTruck", 'DateTime'>
@@ -136270,6 +136283,7 @@ export namespace Prisma {
     status: 'status',
     isSample: 'isSample',
     notes: 'notes',
+    photoS3Key: 'photoS3Key',
     createdById: 'createdById',
     updatedById: 'updatedById',
     createdAt: 'createdAt',
@@ -144086,6 +144100,7 @@ export namespace Prisma {
     status?: StringFilter<"CarrierTruck"> | string
     isSample?: BoolFilter<"CarrierTruck"> | boolean
     notes?: StringNullableFilter<"CarrierTruck"> | string | null
+    photoS3Key?: StringNullableFilter<"CarrierTruck"> | string | null
     createdById?: UuidNullableFilter<"CarrierTruck"> | string | null
     updatedById?: UuidNullableFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeFilter<"CarrierTruck"> | Date | string
@@ -144122,6 +144137,7 @@ export namespace Prisma {
     status?: SortOrder
     isSample?: SortOrder
     notes?: SortOrderInput | SortOrder
+    photoS3Key?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -144161,6 +144177,7 @@ export namespace Prisma {
     status?: StringFilter<"CarrierTruck"> | string
     isSample?: BoolFilter<"CarrierTruck"> | boolean
     notes?: StringNullableFilter<"CarrierTruck"> | string | null
+    photoS3Key?: StringNullableFilter<"CarrierTruck"> | string | null
     createdById?: UuidNullableFilter<"CarrierTruck"> | string | null
     updatedById?: UuidNullableFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeFilter<"CarrierTruck"> | Date | string
@@ -144197,6 +144214,7 @@ export namespace Prisma {
     status?: SortOrder
     isSample?: SortOrder
     notes?: SortOrderInput | SortOrder
+    photoS3Key?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -144234,6 +144252,7 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"CarrierTruck"> | string
     isSample?: BoolWithAggregatesFilter<"CarrierTruck"> | boolean
     notes?: StringNullableWithAggregatesFilter<"CarrierTruck"> | string | null
+    photoS3Key?: StringNullableWithAggregatesFilter<"CarrierTruck"> | string | null
     createdById?: UuidNullableWithAggregatesFilter<"CarrierTruck"> | string | null
     updatedById?: UuidNullableWithAggregatesFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierTruck"> | Date | string
@@ -156108,6 +156127,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -156142,6 +156162,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -156174,6 +156195,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -156208,6 +156230,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -156241,6 +156264,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -156269,6 +156293,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -156296,6 +156321,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -167016,6 +167042,7 @@ export namespace Prisma {
     status?: SortOrder
     isSample?: SortOrder
     notes?: SortOrder
+    photoS3Key?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -167052,6 +167079,7 @@ export namespace Prisma {
     status?: SortOrder
     isSample?: SortOrder
     notes?: SortOrder
+    photoS3Key?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -167081,6 +167109,7 @@ export namespace Prisma {
     status?: SortOrder
     isSample?: SortOrder
     notes?: SortOrder
+    photoS3Key?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -191596,6 +191625,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCarrierTrucksCreatedInput
@@ -191628,6 +191658,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -194809,6 +194840,7 @@ export namespace Prisma {
     status?: StringFilter<"CarrierTruck"> | string
     isSample?: BoolFilter<"CarrierTruck"> | boolean
     notes?: StringNullableFilter<"CarrierTruck"> | string | null
+    photoS3Key?: StringNullableFilter<"CarrierTruck"> | string | null
     createdById?: UuidNullableFilter<"CarrierTruck"> | string | null
     updatedById?: UuidNullableFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeFilter<"CarrierTruck"> | Date | string
@@ -199851,6 +199883,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -199884,6 +199917,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -199925,6 +199959,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -199958,6 +199993,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -220775,6 +220811,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -220808,6 +220845,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -221117,6 +221155,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -221150,6 +221189,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -272247,6 +272287,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -272280,6 +272321,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -273457,6 +273499,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -273490,6 +273533,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -275961,6 +276005,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -275994,6 +276039,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -276030,6 +276076,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
@@ -276063,6 +276110,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -277831,6 +277879,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -277864,6 +277913,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -277906,6 +277956,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -277939,6 +277990,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -325725,6 +325777,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -328656,6 +328709,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCarrierTrucksCreatedNestedInput
@@ -328688,6 +328742,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -328720,6 +328775,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -331959,6 +332015,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -331987,6 +332044,7 @@ export namespace Prisma {
     status?: string
     isSample?: boolean
     notes?: string | null
+    photoS3Key?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -337133,6 +337191,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -337166,6 +337225,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -337198,6 +337258,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -337225,6 +337286,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
@@ -337258,6 +337320,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -337290,6 +337353,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

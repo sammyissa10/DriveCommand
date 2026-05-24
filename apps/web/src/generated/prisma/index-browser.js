@@ -925,6 +925,7 @@ exports.Prisma.CarrierTruckScalarFieldEnum = {
   status: 'status',
   isSample: 'isSample',
   notes: 'notes',
+  photoS3Key: 'photoS3Key',
   createdById: 'createdById',
   updatedById: 'updatedById',
   createdAt: 'createdAt',

@@ -2072,6 +2072,7 @@ model CarrierTruck {
   status               String    @default("active")
   isSample             Boolean   @default(false) @map("is_sample")
   notes                String?
+  photoS3Key           String?   @map("photo_s3_key")
   createdById          String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
   updatedById          String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
