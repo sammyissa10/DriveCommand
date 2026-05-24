@@ -152,6 +152,13 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     if (match) parsedDispatchNumber = match[1];
   }
 
+  // Count pending stops for this load (used by CancelLoadModal)
+  const pendingStopCount = load.dispatchId
+    ? await prisma.carrierStop.count({
+        where: { loadId: id, status: 'pending' },
+      })
+    : 0;
+
   // Transform load data — convert Decimal fields to numbers for LoadForm
   const initialData: LoadData = {
     id: load.id,
@@ -194,9 +201,11 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
         </div>
         <LoadDetailActions
           loadId={id}
+          loadRefNumber={load.referenceNumber ?? id.slice(0, 8)}
           loadStatus={load.status}
           dispatchId={load.dispatchId}
           dispatchNumber={parsedDispatchNumber}
+          pendingStopCount={pendingStopCount}
           drivers={driverOptions}
           trucks={truckOptions}
         />
