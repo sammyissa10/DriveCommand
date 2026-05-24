@@ -269,7 +269,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
 
   // ============================================================================
   // OPERATIONS — "The workflow — things that happen"
-  // Client → Contract → Route → Load → Dispatch (carrier workflow order)
+  // Client → Contract → Route → Load → Trip (carrier workflow order)
   // MAX 5 ITEMS — force discussion before adding more
   // ============================================================================
   if (isOwnerOrManager) {
@@ -310,7 +310,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
 
     if (managerHasPermission(perms, "dispatches")) {
       operationsItems.push({
-        label: "Dispatches",
+        label: "Trips",
         href: "/carrier/dispatches",
         icon: Truck,
         badge: <DispatchBadge />,

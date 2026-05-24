@@ -34,7 +34,7 @@ export function OwnerBottomNav() {
   const tabs: Tab[] = [
     {
       href: '/carrier/dispatches',
-      label: 'Dispatches',
+      label: 'Trips',
       icon: Truck,
       exact: false,
     },
