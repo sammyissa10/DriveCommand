@@ -978,7 +978,7 @@ exports.Prisma.RouteTemplateStopScalarFieldEnum = {
   createdById: 'createdById'
 };
 
-exports.Prisma.CarrierDispatchScalarFieldEnum = {
+exports.Prisma.TripScalarFieldEnum = {
   id: 'id',
   orgId: 'orgId',
   routeTemplateId: 'routeTemplateId',
@@ -1071,6 +1071,9 @@ exports.Prisma.CarrierStopScalarFieldEnum = {
   notes: 'notes',
   freeTimeMinutes: 'freeTimeMinutes',
   workState: 'workState',
+  checklistStatus: 'checklistStatus',
+  deferredReason: 'deferredReason',
+  checklistEntityId: 'checklistEntityId',
   createdById: 'createdById',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
@@ -2429,7 +2432,7 @@ exports.Prisma.ModelName = {
   CarrierTruck: 'CarrierTruck',
   RouteTemplate: 'RouteTemplate',
   RouteTemplateStop: 'RouteTemplateStop',
-  CarrierDispatch: 'CarrierDispatch',
+  Trip: 'Trip',
   CarrierLoad: 'CarrierLoad',
   CarrierStop: 'CarrierStop',
   CarrierDocument: 'CarrierDocument',

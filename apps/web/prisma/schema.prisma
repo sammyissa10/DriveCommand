@@ -181,7 +181,7 @@ model Tenant {
   carrierDrivers       CarrierDriver[]
   carrierTrucks        CarrierTruck[]
   routeTemplates       RouteTemplate[]
-  carrierDispatches    CarrierDispatch[]
+  trips                Trip[]
   carrierLoads         CarrierLoad[]
   carrierExpenses      CarrierExpense[]
   driverPayRecords     DriverPayRecord[]
@@ -276,7 +276,7 @@ model User {
 
   // Carrier Operations reverse relations
   carrierDriverProfile CarrierDriver?      @relation(name: "CarrierDriverUser")
-  dispatchedRuns       CarrierDispatch[]   @relation(name: "CarrierDispatcher")
+  dispatchedRuns       Trip[]              @relation(name: "TripDispatcher")
   uploadedCarrierDocs  CarrierDocument[]   @relation(name: "CarrierDocUploader")
   verifiedCarrierDocs  CarrierDocument[]   @relation(name: "CarrierDocVerifier")
   approvedExpenses     CarrierExpense[]    @relation(name: "CarrierExpenseApprover")
@@ -329,8 +329,8 @@ model User {
   carrierDriversUpdated    CarrierDriver[]    @relation(name: "CarrierDriverUpdatedBy")
   carrierTrucksCreated     CarrierTruck[]     @relation(name: "CarrierTruckCreatedBy")
   carrierTrucksUpdated     CarrierTruck[]     @relation(name: "CarrierTruckUpdatedBy")
-  carrierDispatchesCreated CarrierDispatch[]  @relation(name: "CarrierDispatchCreatedBy")
-  carrierDispatchesUpdated CarrierDispatch[]  @relation(name: "CarrierDispatchUpdatedBy")
+  tripsCreated         Trip[]              @relation(name: "TripCreatedBy")
+  tripsUpdated         Trip[]              @relation(name: "TripUpdatedBy")
   carrierLoadsCreated      CarrierLoad[]      @relation(name: "CarrierLoadCreatedBy")
   carrierLoadsUpdated      CarrierLoad[]      @relation(name: "CarrierLoadUpdatedBy")
   carrierStopsCreated      CarrierStop[]      @relation(name: "CarrierStopCreatedBy")
@@ -1456,7 +1456,7 @@ model FleetMessage {
   stopId   String? @map("stop_id") @db.Uuid
   audioUrl String? @map("audio_url")
 
-  dispatch  CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
+  dispatch  Trip? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
   stop      CarrierStop?     @relation(fields: [stopId], references: [id], onDelete: SetNull)
   createdBy User?            @relation(name: "FleetMessageCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
 
@@ -2029,8 +2029,8 @@ model CarrierDriver {
   updatedBy             User?             @relation(name: "CarrierDriverUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   user                  User?             @relation(name: "CarrierDriverUser", fields: [userId], references: [id])
   homeTerminal          CarrierFacility?  @relation(fields: [homeTerminalId], references: [id])
-  primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryDriver")
-  coDispatches          CarrierDispatch[] @relation(name: "CoDriver")
+  primaryDispatches     Trip[]            @relation(name: "PrimaryDriver")
+  coDispatches          Trip[]            @relation(name: "CoDriver")
   expenses              CarrierExpense[]
   driverPayRecords      DriverPayRecord[]
   defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultDriver")
@@ -2081,8 +2081,8 @@ model CarrierTruck {
   tenant                Tenant            @relation(fields: [orgId], references: [id])
   createdBy             User?             @relation(name: "CarrierTruckCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
   updatedBy             User?             @relation(name: "CarrierTruckUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
-  primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryTruck")
-  trailerDispatches     CarrierDispatch[] @relation(name: "TrailerTruck")
+  primaryDispatches     Trip[]            @relation(name: "PrimaryTruck")
+  trailerDispatches     Trip[]            @relation(name: "TrailerTruck")
   defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultTruck")
   gpsLocations          GPSLocation[]
 
@@ -2123,7 +2123,7 @@ model RouteTemplate {
   defaultDriver CarrierDriver?      @relation(name: "DefaultDriver", fields: [defaultDriverId], references: [id])
   defaultTruck  CarrierTruck?       @relation(name: "DefaultTruck", fields: [defaultTruckId], references: [id])
   stops         RouteTemplateStop[]
-  dispatches    CarrierDispatch[]
+  dispatches    Trip[]
   createdBy     User?               @relation(name: "RouteTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   updatedBy     User?               @relation(name: "RouteTemplateUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
@@ -2161,7 +2161,7 @@ model RouteTemplateStop {
   @@map("route_template_stops")
 }
 
-model CarrierDispatch {
+model Trip {
   id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orgId              String    @map("org_id") @db.Uuid
   routeTemplateId    String?   @map("route_template_id") @db.Uuid
@@ -2187,14 +2187,14 @@ model CarrierDispatch {
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant            @relation(fields: [orgId], references: [id])
-  createdBy        User?             @relation(name: "CarrierDispatchCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
-  updatedBy        User?             @relation(name: "CarrierDispatchUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
+  createdBy        User?             @relation(name: "TripCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy        User?             @relation(name: "TripUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   routeTemplate    RouteTemplate?    @relation(fields: [routeTemplateId], references: [id])
   primaryDriver    CarrierDriver     @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
   coDriver         CarrierDriver?    @relation(name: "CoDriver", fields: [coDriverId], references: [id])
   truck            CarrierTruck      @relation(name: "PrimaryTruck", fields: [truckId], references: [id])
   trailer          CarrierTruck?     @relation(name: "TrailerTruck", fields: [trailerId], references: [id])
-  dispatcher       User?             @relation(name: "CarrierDispatcher", fields: [dispatcherId], references: [id])
+  dispatcher       User?             @relation(name: "TripDispatcher", fields: [dispatcherId], references: [id])
   stops            CarrierStop[]
   carrierLoads     CarrierLoad[]
   expenses         CarrierExpense[]
@@ -2253,7 +2253,7 @@ model CarrierLoad {
   tenant           Tenant            @relation(fields: [orgId], references: [id])
   createdBy        User?             @relation(name: "CarrierLoadCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
   updatedBy        User?             @relation(name: "CarrierLoadUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
-  dispatch         CarrierDispatch?  @relation(fields: [dispatchId], references: [id])
+  dispatch         Trip?             @relation(fields: [dispatchId], references: [id])
   contract         CarrierContract?  @relation(fields: [contractId], references: [id])
   client           CarrierClient     @relation(fields: [clientId], references: [id])
   stops            CarrierStop[]
@@ -2302,12 +2302,16 @@ model CarrierStop {
   // Driver Pay additions (Phase 1)
   freeTimeMinutes      Int       @default(120) @map("free_time_minutes")
   workState            String?   @map("work_state") @db.VarChar(2)
+  // Workflow Engine checklist integration (quick-403)
+  checklistStatus      String?   @map("checklist_status")        // pending | in_progress | completed | deferred
+  deferredReason       String?   @map("deferred_reason")        // Why stop completion was deferred
+  checklistEntityId    String?   @map("checklist_entity_id") @db.Uuid  // FK to PlaybookInstance when workflow engine supports stops
   createdById          String?   @map("created_by_id") @db.Uuid    // NEW (Wave 2)
   updatedById          String?   @map("updated_by_id") @db.Uuid    // NEW (Wave 2)
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  dispatch  CarrierDispatch   @relation(fields: [dispatchId], references: [id])
+  dispatch  Trip              @relation(fields: [dispatchId], references: [id])
   createdBy User?             @relation(name: "CarrierStopCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
   updatedBy User?             @relation(name: "CarrierStopUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
   load      CarrierLoad?      @relation(fields: [loadId], references: [id])
@@ -2353,7 +2357,7 @@ model CarrierDocument {
   client          CarrierClient?       @relation(fields: [clientId], references: [id])
   documentTypeRef CarrierDocumentType? @relation(fields: [documentTypeId], references: [id])
   load            CarrierLoad?         @relation(fields: [loadId], references: [id])
-  dispatch        CarrierDispatch?     @relation(fields: [dispatchId], references: [id])
+  dispatch        Trip?     @relation(fields: [dispatchId], references: [id])
   contract        CarrierContract?     @relation(fields: [contractId], references: [id])
   expenses        CarrierExpense[]
 
@@ -2409,7 +2413,7 @@ model CarrierExpense {
   tenant          Tenant           @relation(fields: [orgId], references: [id])
   createdBy       User?            @relation(name: "CarrierExpenseCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
   updatedBy       User?            @relation(name: "CarrierExpenseUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
-  dispatch        CarrierDispatch? @relation(fields: [dispatchId], references: [id])
+  dispatch        Trip? @relation(fields: [dispatchId], references: [id])
   load            CarrierLoad?     @relation(fields: [loadId], references: [id])
   stop            CarrierStop?     @relation(fields: [stopId], references: [id])
   client          CarrierClient?   @relation(fields: [clientId], references: [id])
@@ -2458,7 +2462,7 @@ model DriverPayRecord {
 
   tenant   Tenant           @relation(fields: [orgId], references: [id])
   driver   CarrierDriver    @relation(fields: [driverId], references: [id])
-  dispatch CarrierDispatch? @relation(fields: [dispatchId], references: [id])
+  dispatch Trip?            @relation(fields: [dispatchId], references: [id])
   load     CarrierLoad?     @relation(fields: [loadId], references: [id])
   client   CarrierClient?   @relation(fields: [clientId], references: [id])
   approver User?            @relation(name: "DriverPayApprover", fields: [approvedBy], references: [id])
@@ -2702,7 +2706,7 @@ model DispatchOverrideAudit {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String   @db.Uuid
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  dispatchId String   @db.Uuid // CarrierDispatch.id — no FK because CarrierDispatch lives in a different module
+  dispatchId String   @db.Uuid // Trip.id — no FK because Trip lives in a different module
   userId     String   @db.Uuid // Admin user who approved the override
   reason     String
   entityType String // "DRIVER" or "VEHICLE"
