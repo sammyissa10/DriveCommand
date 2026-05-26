@@ -27,6 +27,8 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { routesColumns } from './columns';
 import type { RouteRow } from './types';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
 interface RoutesGridProps {
   routes: RouteRow[];
@@ -41,6 +43,19 @@ export function RoutesGrid({ routes: initialRoutes, deleteAction }: RoutesGridPr
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const {
+    isPending: isDeletePending,
+    dialogOpen,
+    itemCount,
+    itemName,
+    requestDelete,
+    confirmDelete,
+    setDialogOpen,
+  } = useSoftDelete({
+    entityType: 'Route',
+    onSuccess: () => router.refresh(),
+  });
 
   const table = useReactTable({
     data: routes,
@@ -114,7 +129,7 @@ export function RoutesGrid({ routes: initialRoutes, deleteAction }: RoutesGridPr
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => handleDelete(row.id),
+        onClick: () => requestDelete(row.id),
         destructive: true,
       },
     ];
@@ -141,18 +156,16 @@ export function RoutesGrid({ routes: initialRoutes, deleteAction }: RoutesGridPr
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to bulk delete
-          console.warn('Bulk delete not implemented');
-        },
+        onClick: () => requestDelete(Array.from(selectedIds)),
         destructive: true,
       },
     ],
-    []
+    [selectedIds, requestDelete]
   );
 
   return (
-    <GridShell
+    <>
+      <GridShell
       gridId="routes-overview"
       table={table}
       rows={rows}
@@ -184,6 +197,15 @@ export function RoutesGrid({ routes: initialRoutes, deleteAction }: RoutesGridPr
         nextPage: () => table.nextPage(),
         setPageSize: (size) => table.setPageSize(size),
       }}
-    />
+      />
+      <DeleteConfirmationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onConfirm={confirmDelete}
+        itemCount={itemCount}
+        itemName={itemName}
+        isLoading={isDeletePending}
+      />
+    </>
   );
 }

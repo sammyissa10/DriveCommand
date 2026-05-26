@@ -551,7 +551,7 @@ export async function listRoutes() {
 
   const prisma = await getTenantPrisma();
   return prisma.route.findMany({
-    where: { archivedAt: null },
+    where: { archivedAt: null, deletedAt: null },
     take: 100,
     include: {
       driver: {

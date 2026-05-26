@@ -96,6 +96,7 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
 
   const where = {
     orgId,
+    deletedAt: null,
     ...(status ? { status } : {}),
     ...(search
       ? {

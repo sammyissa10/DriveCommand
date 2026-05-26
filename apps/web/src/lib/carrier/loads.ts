@@ -83,6 +83,7 @@ export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
 
   const where: Record<string, unknown> = {
     orgId,
+    deletedAt: null,
     ...(clientId ? { clientId } : {}),
     ...(dispatchId ? { dispatchId } : {}),
     ...(status ? { status } : {}),

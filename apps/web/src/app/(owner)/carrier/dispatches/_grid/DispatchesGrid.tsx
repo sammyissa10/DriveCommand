@@ -25,6 +25,8 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { dispatchesColumns } from './columns';
 import type { DispatchRow } from './types';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
 interface DispatchesGridProps {
   driverMap: Record<string, string>;
@@ -54,6 +56,22 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const {
+    isPending: isDeletePending,
+    dialogOpen,
+    itemCount,
+    itemName,
+    requestDelete,
+    confirmDelete,
+    setDialogOpen,
+  } = useSoftDelete({
+    entityType: 'Trip',
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      fetchData();
+    },
+  });
 
   // Data fetching state
   const [dispatches, setDispatches] = useState<DispatchRow[]>([]);
@@ -149,10 +167,7 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to delete mutation
-          console.warn('Delete not implemented');
-        },
+        onClick: () => requestDelete(row.id),
         destructive: true,
       });
     }
@@ -182,21 +197,19 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
               id: 'delete',
               label: 'Delete',
               icon: Trash2,
-              onClick: () => {
-                // TODO: Wire to bulk delete mutation
-                console.warn('Bulk delete not implemented');
-              },
+              onClick: () => requestDelete(Array.from(selectedIds)),
               destructive: true,
             },
           ]
         : [],
-    [canCreate]
+    [canCreate, selectedIds, requestDelete]
   );
 
   const pageCount = Math.ceil(total / pageSize);
 
   return (
-    <GridShell
+    <>
+      <GridShell
       gridId="dispatches-overview"
       table={table}
       rows={rows}
@@ -234,6 +247,15 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
           setPage(0);
         },
       }}
-    />
+      />
+      <DeleteConfirmationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onConfirm={confirmDelete}
+        itemCount={itemCount}
+        itemName={itemName}
+        isLoading={isDeletePending}
+      />
+    </>
   );
 }

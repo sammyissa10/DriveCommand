@@ -89,6 +89,7 @@ export async function listCarrierTrucks(orgId: string, filters: ListCarrierTruck
 
   const where = {
     orgId,
+    deletedAt: null,
     ...(status ? { status } : {}),
     ...(truckType ? { truckType } : {}),
     ...(search

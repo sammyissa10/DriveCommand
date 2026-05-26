@@ -98,6 +98,7 @@ export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
 
   const where: Record<string, unknown> = {
     orgId,
+    deletedAt: null,
     // When filtering by routeTemplateId, skip the default date filter so all related dispatches are returned
     ...(routeTemplateId
       ? {}
