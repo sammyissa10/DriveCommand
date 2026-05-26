@@ -230,6 +230,8 @@ exports.Prisma.RouteScalarFieldEnum = {
   distanceMiles: 'distanceMiles',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   archivedAt: 'archivedAt'
@@ -814,6 +816,8 @@ exports.Prisma.CarrierClientScalarFieldEnum = {
   notes: 'notes',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -842,6 +846,8 @@ exports.Prisma.CarrierContractScalarFieldEnum = {
   defaultFreeTimeMinutes: 'defaultFreeTimeMinutes',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -898,6 +904,8 @@ exports.Prisma.CarrierDriverScalarFieldEnum = {
   notes: 'notes',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -928,6 +936,8 @@ exports.Prisma.CarrierTruckScalarFieldEnum = {
   photoS3Key: 'photoS3Key',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -999,6 +1009,8 @@ exports.Prisma.TripScalarFieldEnum = {
   notes: 'notes',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1039,6 +1051,8 @@ exports.Prisma.CarrierLoadScalarFieldEnum = {
   mileageSource: 'mileageSource',
   createdById: 'createdById',
   updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -2097,7 +2111,8 @@ exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
   stop_completed: 'stop_completed',
   needs_assignment: 'needs_assignment',
   dispatch_generated: 'dispatch_generated',
-  fleet_message: 'fleet_message'
+  fleet_message: 'fleet_message',
+  trip_change: 'trip_change'
 };
 
 exports.StepType = exports.$Enums.StepType = {

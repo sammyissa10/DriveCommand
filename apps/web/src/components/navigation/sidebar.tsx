@@ -24,6 +24,7 @@ import {
   ListChecks,
   HelpCircle,
   Bell,
+  Trash2,
 } from "lucide-react"
 import {
   Sidebar,
@@ -204,17 +205,17 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </PermissionGuard>
-                {/* Dispatches */}
+                {/* Trips */}
                 <PermissionGuard permission="dispatches">
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
                       isActive={pathname.startsWith("/carrier/dispatches")}
-                      tooltip="Dispatches"
+                      tooltip="Trips"
                     >
                       <Link href="/carrier/dispatches" onClick={handleNavClick}>
                         <Truck />
-                        <span>Dispatches</span>
+                        <span>Trips</span>
                         <DispatchBadge />
                       </Link>
                     </SidebarMenuButton>
@@ -540,6 +541,19 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     <Link href="/settings/integrations" onClick={handleNavClick}>
                       <Settings />
                       <span>Integrations</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {/* Recently Deleted — always accessible to OWNER/MANAGER */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/carrier/recently-deleted')}
+                    tooltip="Recently Deleted"
+                  >
+                    <Link href="/carrier/recently-deleted" onClick={handleNavClick}>
+                      <Trash2 />
+                      <span>Recently Deleted</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
