@@ -27,6 +27,8 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { driversColumns } from './columns';
 import type { DriverRow } from './types';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
 interface DriversGridProps {
   drivers: DriverRow[];
@@ -38,6 +40,19 @@ export function DriversGrid({ drivers }: DriversGridProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const {
+    isPending: isDeletePending,
+    dialogOpen,
+    itemCount,
+    itemName,
+    requestDelete,
+    confirmDelete,
+    setDialogOpen,
+  } = useSoftDelete({
+    entityType: 'CarrierDriver',
+    onSuccess: () => router.refresh(),
+  });
 
   const table = useReactTable({
     data: drivers,
@@ -78,10 +93,7 @@ export function DriversGrid({ drivers }: DriversGridProps) {
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to delete mutation
-          console.warn('Delete not implemented');
-        },
+        onClick: () => requestDelete(row.id),
         destructive: true,
       },
     ];
@@ -108,18 +120,16 @@ export function DriversGrid({ drivers }: DriversGridProps) {
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to bulk delete mutation
-          console.warn('Bulk delete not implemented');
-        },
+        onClick: () => requestDelete(Array.from(selectedIds)),
         destructive: true,
       },
     ],
-    []
+    [selectedIds, requestDelete]
   );
 
   return (
-    <GridShell
+    <>
+      <GridShell
       gridId="drivers-overview"
       table={table}
       rows={rows}
@@ -150,6 +160,15 @@ export function DriversGrid({ drivers }: DriversGridProps) {
         nextPage: () => table.nextPage(),
         setPageSize: (size) => table.setPageSize(size),
       }}
-    />
+      />
+      <DeleteConfirmationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onConfirm={confirmDelete}
+        itemCount={itemCount}
+        itemName={itemName}
+        isLoading={isDeletePending}
+      />
+    </>
   );
 }

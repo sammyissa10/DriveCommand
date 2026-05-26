@@ -60,6 +60,7 @@ const EXEMPT_MODELS = new Set([
   'CarrierExpense',
   'DriverPayRecord',
   'CarrierCatalogMeta',
+  'Trip', // Uses orgId, not tenantId — code in trips.ts handles isolation manually
 ]);
 
 export function withTenantRLS(tenantId: string) {

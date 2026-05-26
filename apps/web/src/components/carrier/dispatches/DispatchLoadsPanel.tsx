@@ -2,9 +2,20 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, Plus, X, Search } from 'lucide-react';
+import Link from 'next/link';
+import { Package, Plus, X, Search, AlertTriangle, Bell, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -68,8 +79,15 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
   const [unassignedLoads, setUnassignedLoads] = useState<UnassignedLoad[]>([]);
   const [searching, setSearching] = useState(false);
 
-  const canAttach = dispatchStatus === 'planned';
+  // Confirmation dialog state
+  const [confirmRemoveLoadId, setConfirmRemoveLoadId] = useState<string | null>(null);
+  const loadToRemove = loads.find((l) => l.id === confirmRemoveLoadId);
+
+  // Allow attaching loads during planned or in_transit (for backhaul use case)
+  const canAttach = dispatchStatus === 'planned' || dispatchStatus === 'in_progress';
+  // Only allow removing loads when trip is planned (before it starts)
   const canRemove = dispatchStatus === 'planned';
+  const isInProgress = dispatchStatus === 'in_progress';
 
   async function fetchUnassigned(query: string) {
     setSearching(true);
@@ -106,7 +124,15 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
     fetchUnassigned(q);
   }
 
-  function handleRemove(loadId: string) {
+  function handleRemoveClick(loadId: string) {
+    setConfirmRemoveLoadId(loadId);
+  }
+
+  function handleConfirmRemove() {
+    if (!confirmRemoveLoadId) return;
+    const loadId = confirmRemoveLoadId;
+    setConfirmRemoveLoadId(null);
+
     startTransition(async () => {
       try {
         const res = await fetch(`/api/v1/carrier/dispatches/${dispatchId}/remove-load`, {
@@ -118,7 +144,10 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
           const err = await res.json().catch(() => ({}));
           throw new Error((err as { error?: string }).error ?? 'Failed to remove load');
         }
-        toast.success('Load removed from dispatch');
+        toast.success('Load removed from trip', {
+          description: isInProgress ? 'Driver has been notified of the change.' : undefined,
+          icon: isInProgress ? <Bell className="h-4 w-4 text-blue-500" /> : undefined,
+        });
         router.refresh();
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Failed to remove load');
@@ -138,7 +167,10 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
           const err = await res.json().catch(() => ({}));
           throw new Error((err as { error?: string }).error ?? 'Failed to attach load');
         }
-        toast.success('Load attached to dispatch');
+        toast.success('Load attached to trip', {
+          description: isInProgress ? 'Driver has been notified of the new load.' : undefined,
+          icon: isInProgress ? <Bell className="h-4 w-4 text-blue-500" /> : undefined,
+        });
         setShowAttach(false);
         setSearchQuery('');
         router.refresh();
@@ -159,7 +191,7 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
         {canAttach && !showAttach && (
           <Button size="sm" variant="outline" onClick={handleOpenAttach}>
             <Plus className="h-3.5 w-3.5 mr-1" />
-            Attach Load
+            Add Load
           </Button>
         )}
       </div>
@@ -217,7 +249,7 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
 
       {/* Load list */}
       {loads.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No loads attached to this dispatch.</p>
+        <p className="text-sm text-muted-foreground">No loads attached to this trip.</p>
       ) : (
         <div className="space-y-2">
           {loads.map((load) => {
@@ -228,12 +260,18 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
                 key={load.id}
                 className="flex items-center justify-between rounded-md border bg-background px-3 py-2.5 gap-3"
               >
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-foreground truncate">
-                    {load.referenceNumber ?? 'No reference #'}
+                <Link
+                  href={`/carrier/loads/${load.id}`}
+                  className="min-w-0 group flex-1 hover:opacity-80 transition-opacity"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-medium text-foreground truncate">
+                      {load.referenceNumber ?? 'No reference #'}
+                    </span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                   </div>
                   <div className="text-xs text-muted-foreground">{load.client.name}</div>
-                </div>
+                </Link>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge}`}>
                     {statusLabel}
@@ -245,11 +283,11 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
                   )}
                   {canRemove && (
                     <button
-                      onClick={() => handleRemove(load.id)}
+                      onClick={() => handleRemoveClick(load.id)}
                       disabled={isPending}
-                      title="Remove load from dispatch"
+                      title="Remove load from trip"
                       className="ml-1 rounded p-1 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Remove load from dispatch"
+                      aria-label="Remove load from trip"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -260,6 +298,40 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
           })}
         </div>
       )}
+
+      {/* Remove Load Confirmation Dialog */}
+      <AlertDialog open={!!confirmRemoveLoadId} onOpenChange={(open) => !open && setConfirmRemoveLoadId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Remove Load from Trip?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                This will remove <span className="font-medium text-foreground">{loadToRemove?.referenceNumber ?? 'this load'}</span> from the trip.
+              </p>
+              <div className="rounded-md bg-muted p-3 text-sm space-y-1.5">
+                <p className="font-medium text-foreground">What happens:</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  <li>All pending stops for this load will be deleted</li>
+                  <li>The load itself will <span className="text-foreground font-medium">not</span> be deleted</li>
+                  <li>You can add this load to a different trip later</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmRemove}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Remove Load
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

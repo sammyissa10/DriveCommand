@@ -48,6 +48,7 @@ export async function listContracts(orgId: string, filters: ListContractsFilters
 
   const where = {
     orgId,
+    deletedAt: null,
     ...(clientId ? { clientId } : {}),
     ...(status ? { status } : {}),
   };

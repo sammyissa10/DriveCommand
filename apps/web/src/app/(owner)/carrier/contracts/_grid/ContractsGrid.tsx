@@ -26,6 +26,8 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { contractsColumns } from './columns';
 import type { ContractRow } from './types';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
 interface ContractsGridProps {
   contracts: ContractRow[];
@@ -37,6 +39,19 @@ export function ContractsGrid({ contracts }: ContractsGridProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const {
+    isPending: isDeletePending,
+    dialogOpen,
+    itemCount,
+    itemName,
+    requestDelete,
+    confirmDelete,
+    setDialogOpen,
+  } = useSoftDelete({
+    entityType: 'CarrierContract',
+    onSuccess: () => router.refresh(),
+  });
 
   const table = useReactTable({
     data: contracts,
@@ -79,10 +94,7 @@ export function ContractsGrid({ contracts }: ContractsGridProps) {
       id: 'delete',
       label: 'Delete',
       icon: Trash2,
-      onClick: () => {
-        // TODO: Wire to delete mutation
-        console.warn('Delete not implemented');
-      },
+      onClick: () => requestDelete(row.id),
       destructive: true,
     });
 
@@ -109,18 +121,16 @@ export function ContractsGrid({ contracts }: ContractsGridProps) {
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to bulk delete mutation
-          console.warn('Bulk delete not implemented');
-        },
+        onClick: () => requestDelete(Array.from(selectedIds)),
         destructive: true,
       },
     ],
-    []
+    [selectedIds, requestDelete]
   );
 
   return (
-    <GridShell
+    <>
+      <GridShell
       gridId="contracts-overview"
       table={table}
       rows={rows}
@@ -151,6 +161,15 @@ export function ContractsGrid({ contracts }: ContractsGridProps) {
         nextPage: () => table.nextPage(),
         setPageSize: (size) => table.setPageSize(size),
       }}
-    />
+      />
+      <DeleteConfirmationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onConfirm={confirmDelete}
+        itemCount={itemCount}
+        itemName={itemName}
+        isLoading={isDeletePending}
+      />
+    </>
   );
 }

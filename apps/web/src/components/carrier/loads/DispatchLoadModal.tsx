@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { useTRPC } from '@/trpc/client';
+import { RefreshCw, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -10,6 +13,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { SearchableSelect, type SearchableSelectOption } from '@/components/ui/searchable-select';
+
+// Helper to get a wide date range for fetching all planned trips
+function getWideDateRange() {
+  // From 30 days ago to 90 days in future - covers most planned trips
+  const from = new Date();
+  from.setDate(from.getDate() - 30);
+  const to = new Date();
+  to.setDate(to.getDate() + 90);
+  return {
+    dateFrom: from.toISOString(),
+    dateTo: to.toISOString(),
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -26,6 +43,7 @@ interface TruckOption {
   unitNumber: string;
   make: string | null;
   model: string | null;
+  status?: string;
 }
 
 interface Template {
@@ -73,6 +91,19 @@ const SELECT_CLASSES =
 
 const LABEL_CLASSES = 'block text-sm font-medium text-foreground mb-1';
 
+// Map driver status to display format
+function mapDriverStatus(status: string): string {
+  const statusMap: Record<string, string> = {
+    active: 'available',
+    on_duty: 'available',
+    driving: 'on_trip',
+    off_duty: 'off_duty',
+    sleeper: 'off_duty',
+    inactive: 'inactive',
+  };
+  return statusMap[status.toLowerCase()] ?? status.toLowerCase();
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -85,6 +116,9 @@ export function DispatchLoadModal({
   drivers,
   trucks,
 }: DispatchLoadModalProps) {
+  const router = useRouter();
+  const trpc = useTRPC();
+
   // Mode: 'new' to create a new trip, 'existing' to add to an existing planned trip
   const [mode, setMode] = useState<'new' | 'existing'>('new');
   const [existingTrips, setExistingTrips] = useState<ExistingTrip[]>([]);
@@ -103,6 +137,13 @@ export function DispatchLoadModal({
   const [error, setError] = useState<string | null>(null);
   const [coDriverError, setCoDriverError] = useState<string | null>(null);
 
+  // Driver readiness check
+  const { data: driverReadiness } = useQuery({
+    ...trpc.workflows.instance.getDriverReadiness.queryOptions({ carrierDriverId: primaryDriverId }),
+    enabled: Boolean(primaryDriverId),
+  });
+  const isDispatchReady = driverReadiness?.isReady ?? true;
+
   // Load route templates on mount
   useEffect(() => {
     fetch('/api/v1/carrier/route-templates/active')
@@ -119,7 +160,14 @@ export function DispatchLoadModal({
   useEffect(() => {
     if (open && mode === 'existing') {
       setLoadingTrips(true);
-      fetch('/api/v1/carrier/dispatches?status=planned&pageSize=50')
+      const { dateFrom, dateTo } = getWideDateRange();
+      const params = new URLSearchParams({
+        status: 'planned',
+        pageSize: '100',
+        date_from: dateFrom,
+        date_to: dateTo,
+      });
+      fetch(`/api/v1/carrier/dispatches?${params.toString()}`)
         .then((r) => r.json())
         .then((body) => {
           interface TripItem {
@@ -128,7 +176,8 @@ export function DispatchLoadModal({
             scheduledDeparture: string;
             primaryDriver?: { firstName: string; lastName: string };
           }
-          const items = (body.items ?? []) as TripItem[];
+          // API returns { data: { items: [...] } }
+          const items = (body.data?.items ?? []) as TripItem[];
           setExistingTrips(
             items.map((t) => {
               const match = t.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
@@ -260,6 +309,9 @@ export function DispatchLoadModal({
 
         toast.success(`Load added to trip ${tripNumber}`);
         onSuccess(selectedExistingTripId, tripNumber);
+
+        // Navigate to trip detail page
+        router.push(`/carrier/dispatches/${selectedExistingTripId}?showSuccess=true`);
       } else {
         // Step 1: Create the dispatch
         const dispatchBody: Record<string, unknown> = {
@@ -280,7 +332,12 @@ export function DispatchLoadModal({
 
         if (!dispatchRes.ok) {
           const data = await dispatchRes.json().catch(() => ({}));
-          throw new Error(data.error ?? `Failed to create dispatch (${dispatchRes.status})`);
+          // Handle DRIVER_NOT_DISPATCH_READY as a warning, not a blocker
+          if (data.error === 'DRIVER_NOT_DISPATCH_READY') {
+            // Show warning but don't block - the driver can still be assigned
+            toast.warning('Driver has incomplete required steps. Consider completing them before trip starts.');
+          }
+          throw new Error(data.error ?? `Failed to create trip (${dispatchRes.status})`);
         }
 
         const dispatchData = await dispatchRes.json();
@@ -301,14 +358,17 @@ export function DispatchLoadModal({
 
         if (!loadRes.ok) {
           const data = await loadRes.json().catch(() => ({}));
-          throw new Error(data.error ?? `Failed to attach load to dispatch (${loadRes.status})`);
+          throw new Error(data.error ?? `Failed to attach load to trip (${loadRes.status})`);
         }
 
-        toast.success(`Dispatch ${dispatchNumber} created and load attached`);
+        toast.success(`Trip ${dispatchNumber} created and load attached`);
         onSuccess(newDispatchId, dispatchNumber);
+
+        // Navigate to trip detail page with success flag
+        router.push(`/carrier/dispatches/${newDispatchId}?showSuccess=true&isNew=true`);
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to dispatch load';
+      const msg = err instanceof Error ? err.message : 'Failed to add load to trip';
       setError(msg);
       toast.error(msg);
     } finally {
@@ -316,14 +376,41 @@ export function DispatchLoadModal({
     }
   }
 
+  // Convert drivers to SearchableSelect options with status
+  const driverOptions: SearchableSelectOption[] = drivers.map((d) => ({
+    value: d.id,
+    label: d.name,
+    status: mapDriverStatus(d.status),
+  }));
+
   // Filter co-driver options to exclude the selected primary driver
-  const coDriverOptions = drivers.filter((d) => d.id !== primaryDriverId);
+  const coDriverOptions: SearchableSelectOption[] = drivers
+    .filter((d) => d.id !== primaryDriverId)
+    .map((d) => ({
+      value: d.id,
+      label: d.name,
+      status: mapDriverStatus(d.status),
+    }));
+
+  // Convert trucks to SearchableSelect options
+  const truckOptions: SearchableSelectOption[] = trucks.map((t) => ({
+    value: t.id,
+    label: t.unitNumber,
+    secondaryLabel: [t.make, t.model].filter(Boolean).join(' ') || undefined,
+    status: (t as TruckOption & { status?: string }).status,
+  }));
+
+  // Existing trips as SearchableSelect options
+  const tripOptions: SearchableSelectOption[] = existingTrips.map((t) => ({
+    value: t.id,
+    label: t.label,
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Dispatch This Load</DialogTitle>
+          <DialogTitle>Add to Trip</DialogTitle>
           <DialogDescription>
             Create a new trip or add this load to an existing planned trip.
           </DialogDescription>
@@ -332,7 +419,7 @@ export function DispatchLoadModal({
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* Mode Selection */}
           <div className="space-y-2">
-            <label className={LABEL_CLASSES}>Dispatch Mode</label>
+            <label className={LABEL_CLASSES}>Trip Mode</label>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -376,19 +463,15 @@ export function DispatchLoadModal({
                   No planned trips available. Create a new trip instead.
                 </p>
               ) : (
-                <select
+                <SearchableSelect
+                  options={tripOptions}
                   value={selectedExistingTripId}
-                  onChange={(e) => setSelectedExistingTripId(e.target.value)}
-                  className={SELECT_CLASSES}
+                  onValueChange={setSelectedExistingTripId}
+                  placeholder="Search trips..."
+                  searchPlaceholder="Search by trip number, driver..."
+                  emptyMessage="No trips found."
                   disabled={submitting}
-                >
-                  <option value="">Select a planned trip...</option>
-                  {existingTrips.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
+                />
               )}
             </div>
           ) : (
@@ -413,7 +496,7 @@ export function DispatchLoadModal({
               <div className="mt-1 flex items-center gap-1.5">
                 <RefreshCw className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                 <span className="text-xs text-blue-700 dark:text-blue-300">
-                  Template stops will be added to the dispatch.
+                  Template stops will be added to the trip.
                 </span>
               </div>
             )}
@@ -424,20 +507,67 @@ export function DispatchLoadModal({
             <label className={LABEL_CLASSES}>
               Primary Driver <span className="text-destructive">*</span>
             </label>
-            <select
+            <SearchableSelect
+              options={driverOptions}
               value={primaryDriverId}
-              onChange={(e) => handlePrimaryDriverChange(e.target.value)}
-              className={SELECT_CLASSES}
-              required
+              onValueChange={handlePrimaryDriverChange}
+              placeholder="Search drivers..."
+              searchPlaceholder="Search by name..."
+              emptyMessage="No drivers found."
               disabled={submitting}
-            >
-              <option value="">Select driver...</option>
-              {drivers.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
+              showStatus
+              sortByStatus
+            />
+
+            {/* Readiness badge — shown once a driver is selected */}
+            {primaryDriverId && driverReadiness && (
+              <div
+                className={`mt-1.5 flex items-center gap-1.5 text-xs ${
+                  isDispatchReady
+                    ? 'text-green-700 dark:text-green-400'
+                    : 'text-amber-600 dark:text-amber-400'
+                }`}
+              >
+                {isDispatchReady ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Dispatch Ready</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>
+                      {driverReadiness.blockerStepNames.length > 0
+                        ? `Warning: ${driverReadiness.blockerStepNames.length} incomplete step${driverReadiness.blockerStepNames.length !== 1 ? 's' : ''}`
+                        : 'Warning: Driver has incomplete requirements'}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Warning banner for non-ready drivers */}
+            {primaryDriverId && driverReadiness && !isDispatchReady && (
+              <div className="mt-2 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-2.5">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                  <div className="text-xs text-amber-700 dark:text-amber-300">
+                    <p className="font-medium">This driver has incomplete required steps:</p>
+                    <ul className="mt-1 list-disc list-inside space-y-0.5">
+                      {driverReadiness.blockerStepNames.slice(0, 3).map((name, i) => (
+                        <li key={i}>{name}</li>
+                      ))}
+                      {driverReadiness.blockerStepNames.length > 3 && (
+                        <li>+{driverReadiness.blockerStepNames.length - 3} more</li>
+                      )}
+                    </ul>
+                    <p className="mt-1.5 text-amber-600 dark:text-amber-400">
+                      You can still create the trip, but consider completing these before starting.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Truck */}
@@ -445,21 +575,17 @@ export function DispatchLoadModal({
             <label className={LABEL_CLASSES}>
               Truck <span className="text-destructive">*</span>
             </label>
-            <select
+            <SearchableSelect
+              options={truckOptions}
               value={truckId}
-              onChange={(e) => setTruckId(e.target.value)}
-              className={SELECT_CLASSES}
-              required
+              onValueChange={setTruckId}
+              placeholder="Search trucks..."
+              searchPlaceholder="Search by unit number..."
+              emptyMessage="No trucks found."
               disabled={submitting}
-            >
-              <option value="">Select truck...</option>
-              {trucks.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.unitNumber}
-                  {(t.make || t.model) && ` — ${[t.make, t.model].filter(Boolean).join(' ')}`}
-                </option>
-              ))}
-            </select>
+              showStatus
+              sortByStatus
+            />
           </div>
 
           {/* Scheduled Departure */}
@@ -480,19 +606,17 @@ export function DispatchLoadModal({
           {/* Co-Driver */}
           <div>
             <label className={LABEL_CLASSES}>Co-Driver (optional)</label>
-            <select
+            <SearchableSelect
+              options={coDriverOptions}
               value={coDriverId}
-              onChange={(e) => handleCoDriverChange(e.target.value)}
-              className={SELECT_CLASSES}
+              onValueChange={handleCoDriverChange}
+              placeholder="None"
+              searchPlaceholder="Search drivers..."
+              emptyMessage="No drivers found."
               disabled={submitting}
-            >
-              <option value="">None</option>
-              {coDriverOptions.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
+              showStatus
+              sortByStatus
+            />
             {coDriverError && (
               <p className="mt-1 text-xs text-destructive">{coDriverError}</p>
             )}

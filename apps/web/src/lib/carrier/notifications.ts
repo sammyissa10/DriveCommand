@@ -1170,3 +1170,110 @@ export async function sendClientInvoiceReadyNotification(
     logger.error('sendClientInvoiceReadyNotification: failed', { orgId, loadId, error: err });
   }
 }
+
+// ---------------------------------------------------------------------------
+// sendTripChangeNotification - Notify driver of trip changes (stops, loads)
+// ---------------------------------------------------------------------------
+
+export type TripChangeType = 'stop_added' | 'stop_updated' | 'stop_removed' | 'load_added' | 'load_removed';
+
+export async function sendTripChangeNotification(
+  orgId: string,
+  dispatchId: string,
+  changeType: TripChangeType,
+  details?: string
+): Promise<{ notified: boolean; driverName: string | null }> {
+  try {
+    // Fetch dispatch with driver info
+    const dispatch = await prisma.trip.findFirst({
+      where: { id: dispatchId, orgId },
+      select: {
+        notes: true,
+        status: true,
+        primaryDriverId: true,
+        primaryDriver: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            userId: true,
+          },
+        },
+      },
+    });
+
+    if (!dispatch) {
+      logger.warn('sendTripChangeNotification: dispatch not found', { orgId, dispatchId });
+      return { notified: false, driverName: null };
+    }
+
+    // Only notify for active trips (planned or in_progress)
+    if (!['planned', 'in_progress'].includes(dispatch.status)) {
+      return { notified: false, driverName: null };
+    }
+
+    const driverName = dispatch.primaryDriver
+      ? `${dispatch.primaryDriver.firstName} ${dispatch.primaryDriver.lastName}`.trim()
+      : null;
+
+    if (!dispatch.primaryDriver?.userId) {
+      logger.info('sendTripChangeNotification: driver has no userId, skipping push', { orgId, dispatchId });
+      return { notified: false, driverName };
+    }
+
+    // Extract dispatch number
+    const dispatchNumberMatch = dispatch.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+    const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : dispatchId.slice(0, 8);
+
+    // Build notification message based on change type
+    const changeMessages: Record<TripChangeType, { title: string; body: string }> = {
+      stop_added: {
+        title: 'New Stop Added',
+        body: details ? `${dispatchNumber}: ${details}` : `A new stop has been added to ${dispatchNumber}`,
+      },
+      stop_updated: {
+        title: 'Stop Updated',
+        body: details ? `${dispatchNumber}: ${details}` : `Stop details updated on ${dispatchNumber}`,
+      },
+      stop_removed: {
+        title: 'Stop Removed',
+        body: details ? `${dispatchNumber}: ${details}` : `A stop has been removed from ${dispatchNumber}`,
+      },
+      load_added: {
+        title: 'Load Added',
+        body: details ? `${dispatchNumber}: ${details}` : `A new load has been added to ${dispatchNumber}`,
+      },
+      load_removed: {
+        title: 'Load Removed',
+        body: details ? `${dispatchNumber}: ${details}` : `A load has been removed from ${dispatchNumber}`,
+      },
+    };
+
+    const message = changeMessages[changeType];
+
+    // Send push notification
+    await sendPushToUser(dispatch.primaryDriver.userId, {
+      title: message.title,
+      body: message.body,
+      data: { type: 'trip_change', dispatchId, changeType },
+    });
+
+    // Create in-app notification for driver
+    await createNotification({
+      orgId,
+      userId: dispatch.primaryDriver.userId,
+      type: 'trip_change',
+      title: message.title,
+      message: message.body,
+      entityType: 'dispatch',
+      entityId: dispatchId,
+    });
+
+    logger.info('sendTripChangeNotification: sent', { orgId, dispatchId, changeType, driverId: dispatch.primaryDriverId });
+
+    return { notified: true, driverName };
+  } catch (err) {
+    logger.error('sendTripChangeNotification: failed', { orgId, dispatchId, changeType, error: err });
+    return { notified: false, driverName: null };
+  }
+}

@@ -1,6 +1,8 @@
+import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
+import { sendTripChangeNotification } from '@/lib/carrier/notifications';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -166,6 +168,19 @@ export async function createStop(orgId: string, data: StopCreateInput) {
   });
 
   logger.info('createStop: created', { orgId, stopId: stop.id, dispatchId: data.dispatchId });
+
+  // Notify driver of new stop (only for in_progress trips)
+  const facilityName = facility.name;
+  const stopTypeLabel = data.stopType === 'pickup' ? 'Pickup' : data.stopType === 'delivery' ? 'Delivery' : data.stopType;
+  after(() =>
+    sendTripChangeNotification(
+      orgId,
+      data.dispatchId,
+      'stop_added',
+      `${stopTypeLabel} at ${facilityName} added`
+    )
+  );
+
   return stop;
 }
 
@@ -173,10 +188,14 @@ export async function updateStop(orgId: string, id: string, data: StopUpdateInpu
   const tenantPrisma = await getTenantPrisma();
   const existing = await prisma.carrierStop.findFirst({
     where: { id, dispatch: { orgId } },
+    include: {
+      dispatch: { select: { id: true, status: true } },
+      facility: { select: { name: true } },
+    },
   });
   if (!existing) return null;
 
-  return tenantPrisma.carrierStop.update({
+  const updated = await tenantPrisma.carrierStop.update({
     where: { id },
     data: {
       contactName: data.contactName,
@@ -188,4 +207,20 @@ export async function updateStop(orgId: string, id: string, data: StopUpdateInpu
       departedAt: data.departedAt ? new Date(data.departedAt) : undefined,
     },
   });
+
+  // Notify driver of stop update (only for in_progress trips where meaningful fields changed)
+  const hasAddressChange = data.appointmentStart !== undefined || data.appointmentEnd !== undefined;
+  if (hasAddressChange && existing.dispatch.status === 'in_progress') {
+    const facilityName = existing.facility?.name ?? 'stop';
+    after(() =>
+      sendTripChangeNotification(
+        orgId,
+        existing.dispatch.id,
+        'stop_updated',
+        `Schedule updated for ${facilityName}`
+      )
+    );
+  }
+
+  return updated;
 }

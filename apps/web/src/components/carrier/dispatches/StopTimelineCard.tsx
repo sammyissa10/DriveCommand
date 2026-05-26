@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { StopDocumentList } from './StopDocumentList';
+import { StopEditModal } from './StopEditModal';
 import {
   CheckCircle2,
   AlertCircle,
@@ -12,6 +13,7 @@ import {
   SkipForward,
   Check,
   ExternalLink,
+  Pencil,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -148,6 +150,7 @@ export function StopTimelineCard({
   const [skipReason, setSkipReason] = useState('');
   const [skipDialogOpen, setSkipDialogOpen] = useState(false);
   const [docRefreshKey, setDocRefreshKey] = useState(0);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const dotClass = STOP_STATUS_DOT[stop.status] ?? STOP_STATUS_DOT.pending;
   const statusBadgeClass = STOP_STATUS_BADGE[stop.status] ?? STOP_STATUS_BADGE.pending;
@@ -164,6 +167,11 @@ export function StopTimelineCard({
 
   const isStopPending = stop.status === 'pending' && dispatchStatus === 'in_progress';
   const isStopArrived = stop.status === 'arrived' && dispatchStatus === 'in_progress';
+
+  // Allow editing stops when trip is planned or in_progress and stop is not completed/skipped
+  const canEdit = canManage &&
+    (dispatchStatus === 'planned' || dispatchStatus === 'in_progress') &&
+    stop.status !== 'completed' && stop.status !== 'skipped';
 
   // Document compliance guard for Complete Stop
   const missingDocs =
@@ -264,6 +272,18 @@ export function StopTimelineCard({
 
           {/* Action buttons */}
           <div className="flex items-center gap-2">
+            {canEdit && (
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={isPending}
+                onClick={() => setEditModalOpen(true)}
+                className="h-7 text-xs"
+                title="Edit stop"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            )}
             {isStopPending && (
               <Button
                 size="sm"
@@ -476,6 +496,21 @@ export function StopTimelineCard({
           </Link>
         </div>
       </div>
+
+      {/* Edit Stop Modal */}
+      <StopEditModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        stop={{
+          id: stop.id,
+          contactName: stop.contactName,
+          contactPhone: stop.contactPhone,
+          appointmentStart: stop.appointmentStart,
+          appointmentEnd: stop.appointmentEnd,
+          specialInstructions: stop.specialInstructions,
+        }}
+        dispatchStatus={dispatchStatus}
+      />
     </div>
   );
 }

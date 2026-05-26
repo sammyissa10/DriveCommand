@@ -11,6 +11,7 @@ import { DispatchLoadsPanel } from '@/components/carrier/dispatches/DispatchLoad
 import { DispatchExpensesPanel } from '@/components/carrier/dispatches/DispatchExpensesPanel';
 import { DispatchPayRecordsPanel } from '@/components/carrier/dispatches/DispatchPayRecordsPanel';
 import { DispatchMessages } from '@/components/carrier/dispatches/DispatchMessages';
+import { TripSuccessBanner } from '@/components/carrier/dispatches/TripSuccessBanner';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 
 interface Props {
@@ -237,8 +238,22 @@ export default async function DispatchDetailPage({ params }: Props) {
     updatedAt: dispatch.updatedAt.toISOString(),
   };
 
+  // Extract dispatch number from notes
+  const dispatchNumberMatch = dispatch.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+  const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : `DC-${id.slice(0, 8)}`;
+
   return (
     <div className="space-y-6">
+      {/* Success Banner - shown after adding a load to trip */}
+      <TripSuccessBanner
+        dispatchId={dispatch.id}
+        dispatchNumber={dispatchNumber}
+        dispatchStatus={dispatch.status}
+        hasStops={dispatch.stops.length > 0}
+        driverName={driverName}
+        driverUserId={primaryDriverUserId}
+      />
+
       {/* Back link */}
       <div>
         <Link
@@ -246,7 +261,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Dispatches
+          Back to Trips
         </Link>
       </div>
 
@@ -269,7 +284,7 @@ export default async function DispatchDetailPage({ params }: Props) {
       />
 
       {/* Stop Timeline */}
-      <div>
+      <div id="stop-timeline">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">Stop Timeline</h2>
           <Link
@@ -284,6 +299,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           routeTemplateStopMap={routeTemplateStopMap}
           stopDocCounts={stopDocCounts}
           facilityMap={facilityMap}
+          dispatchId={dispatch.id}
           dispatchStatus={dispatch.status}
           userRole={session.role}
           canManage={canManage}

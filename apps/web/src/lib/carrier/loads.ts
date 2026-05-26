@@ -4,7 +4,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import type { PrismaClient } from '@/generated/prisma/client';
 import { logger } from '@/lib/logger';
 import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
-import { sendInvoiceGeneratedNotification, sendClientDeliveredNotification, sendClientInvoiceReadyNotification } from '@/lib/carrier/notifications';
+import { sendInvoiceGeneratedNotification, sendClientDeliveredNotification, sendClientInvoiceReadyNotification, sendTripChangeNotification } from '@/lib/carrier/notifications';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -437,6 +437,17 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
         newDispatchId: data.dispatchId,
       });
 
+      // Notify driver that a load was added to their trip
+      const loadRefNumber = updated.referenceNumber ?? id.slice(0, 8);
+      after(() =>
+        sendTripChangeNotification(
+          orgId,
+          data.dispatchId!,
+          'load_added',
+          `Load ${loadRefNumber} added to trip`
+        )
+      );
+
       // Also persist any stops that were stored as JSON during load creation (no dispatch at the time)
       const loadWithPending = await prisma.carrierLoad.findFirst({
         where: { id, orgId },
@@ -458,6 +469,13 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
             stopCount: pendingStops.length,
           });
         }
+      } else {
+        // Log when a load is attached but has no stops to copy
+        logger.info('updateLoad: load attached to dispatch has no pending stops', {
+          orgId,
+          loadId: id,
+          dispatchId: data.dispatchId,
+        });
       }
     } else {
       // Detaching from a dispatch: delete pending stops for this load
@@ -474,6 +492,17 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
         loadId: id,
         oldDispatchId: existing.dispatchId,
       });
+
+      // Notify driver that a load was removed from their trip
+      const loadRefNumber = updated.referenceNumber ?? id.slice(0, 8);
+      after(() =>
+        sendTripChangeNotification(
+          orgId,
+          existing.dispatchId!,
+          'load_removed',
+          `Load ${loadRefNumber} removed from trip`
+        )
+      );
     }
   }
 

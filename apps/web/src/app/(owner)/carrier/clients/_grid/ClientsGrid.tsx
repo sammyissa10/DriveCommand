@@ -27,6 +27,8 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { clientsColumns } from './columns';
 import type { ClientRow } from './types';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
 interface ClientsGridProps {
   clients: ClientRow[];
@@ -38,6 +40,19 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const {
+    isPending: isDeletePending,
+    dialogOpen,
+    itemCount,
+    itemName,
+    requestDelete,
+    confirmDelete,
+    setDialogOpen,
+  } = useSoftDelete({
+    entityType: 'CarrierClient',
+    onSuccess: () => router.refresh(),
+  });
 
   const table = useReactTable({
     data: clients,
@@ -80,10 +95,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
       id: 'delete',
       label: 'Delete',
       icon: Trash2,
-      onClick: () => {
-        // TODO: Wire to delete mutation
-        console.warn('Delete not implemented');
-      },
+      onClick: () => requestDelete(row.id),
       destructive: true,
     });
 
@@ -110,18 +122,16 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to bulk delete mutation
-          console.warn('Bulk delete not implemented');
-        },
+        onClick: () => requestDelete(Array.from(selectedIds)),
         destructive: true,
       },
     ],
-    []
+    [selectedIds, requestDelete]
   );
 
   return (
-    <GridShell
+    <>
+      <GridShell
       gridId="clients-overview"
       table={table}
       rows={rows}
@@ -152,6 +162,15 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
         nextPage: () => table.nextPage(),
         setPageSize: (size) => table.setPageSize(size),
       }}
-    />
+      />
+      <DeleteConfirmationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onConfirm={confirmDelete}
+        itemCount={itemCount}
+        itemName={itemName}
+        isLoading={isDeletePending}
+      />
+    </>
   );
 }

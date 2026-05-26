@@ -153,6 +153,7 @@ export async function listClients(orgId: string, filters: ListClientsFilters = {
   // Build where clause
   const where: Prisma.CarrierClientWhereInput = {
     orgId,
+    deletedAt: null,
     ...(status ? { status } : {}),
     ...(search ? {
       OR: [

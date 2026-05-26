@@ -67,7 +67,7 @@ export function LoadDetailActions({
           className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors shrink-0"
         >
           <Truck className="h-3.5 w-3.5" />
-          {dispatchNumber ? `Dispatched on ${dispatchNumber}` : 'View Dispatch'}
+          {dispatchNumber ? `On Trip ${dispatchNumber}` : 'View Trip'}
         </Link>
 
         {loadStatus === 'pending' && (
@@ -108,7 +108,7 @@ export function LoadDetailActions({
         className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors shrink-0"
       >
         <Truck className="h-4 w-4" />
-        Dispatch This Load
+        Add to Trip
       </button>
 
       <button
