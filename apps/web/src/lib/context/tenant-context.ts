@@ -33,11 +33,29 @@ export async function requireTenantId(): Promise<string> {
  * Forwards the current session's userId to the audit-columns extension so createdById/updatedById
  * are auto-populated on writes. Pass-through is null for unauthenticated/system contexts.
  *
+ * TENANT GUC (quick-411): Before returning the extended client, fires a session-scope
+ * set_config to write the caller's tenantId into app.current_tenant_id on the pooled
+ * connection. RLS policies that call current_tenant_id() read this GUC. Uses FALSE
+ * (session scope) because Supabase Session Pooler (port 6543) + max:1 pool +
+ * single-threaded Vercel workers guarantee no concurrent tenant overlap on a given
+ * physical connection. The $executeRawUnsafe runs as a single autocommit statement on
+ * the bare prisma client — NOT inside a $transaction — so it cannot deadlock against
+ * any outer transaction opened by the caller. See quick-411 plan for full rationale.
+ *
  * Use this in API routes and server actions to ensure queries are scoped to the current tenant.
  */
 export async function getTenantPrisma(): Promise<PrismaClient> {
   const tenantId = await requireTenantId();
   const session = await getSession();
+
+  // Set the tenant GUC for the current pooled connection (session scope, not tx scope).
+  // This must run on the bare client before returning the extended client so every
+  // subsequent model query on that connection sees the correct current_tenant_id().
+  await prisma.$executeRawUnsafe(
+    "SELECT set_config('app.current_tenant_id', $1, false)",
+    tenantId
+  );
+
   return createTenantClient(tenantId, session?.userId ?? null);
 }
 
