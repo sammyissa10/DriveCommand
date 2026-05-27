@@ -224,6 +224,26 @@ Required for every action on RESTRICTED data:
 
 Table: `audit_log` (also tenant-scoped, RLS-enabled, append-only, never updated).
 
+### 4.12 Platform-level tables (RLS intentionally OFF)
+
+These tables are platform-level metadata, not tenant-scoped. RLS is intentionally OFF. Adding a table to this list is the explicit, audited exception to Section 2.3. Each entry requires a written rationale and is codified here so that Supabase advisor alerts for these tables are acknowledged and dismissed — not silently ignored.
+
+**Rule:** A table belongs on this list if and only if: (a) it has no `tenant_id`, `org_id`, or equivalent scoping column, (b) it contains no foreign key to `Tenant`, and (c) it is shared read data across all tenants (reference catalog, platform config, or global defaults).
+
+**Codified by quick-410 (2026-05-27). Prior entries (Plan, Promo) were implicit — this section makes them explicit.**
+
+| Table | Rationale |
+|---|---|
+| `Plan` | Subscription plan definitions are platform-wide. All tenants read the same plan catalog. No per-tenant data. |
+| `Promo` | Promotional code definitions are platform-wide. No per-tenant scoping needed. |
+| `carrier_catalog_meta` | Catalog of carrier-document categories shared across all tenants. No org or tenant column. Pure reference data. |
+| `NotificationTemplate` | Notification template definitions are platform-wide. Templates are global, not tenant-specific. |
+| `NotificationEmailConfig` | Global SMTP / outbound email defaults. Not tenant-scoped. |
+| `grid_preference` | User-scoped grid column preferences (scoped by `user_id`, not tenant). RLS at tenant level is incorrect for user-scoped data; the application layer enforces user ownership. |
+| `grid_view` | User-scoped saved grid views (scoped by `user_id`, not tenant). Same rationale as `grid_preference`. |
+
+**What to do when Supabase advisor flags one of these tables:** Acknowledge the alert and reference this section. Do not add RLS policies. If a new column is added to any of these tables that introduces tenant scoping, remove the table from this list and apply standard Section 2.3 policies.
+
 ---
 
 ## Section 4A — Input & Upload Abuse Hardening
