@@ -428,6 +428,90 @@ async function testTenant(
 }
 
 // ---------------------------------------------------------------------------
+// Pooled-connection-reuse test
+// ---------------------------------------------------------------------------
+
+/**
+ * Verifies that the session-scoped GUC (set_config FALSE — the Quick-411
+ * deviation from Spec 2.5) does NOT leak tenant context from one pool
+ * acquisition to the next.
+ *
+ * Background: Quick-411 switched from transaction-scoped (TRUE) to
+ * session-scoped (FALSE) set_config to avoid P2028 deadlocks on the
+ * Supabase Session Pooler. Session-scoped GUCs persist on a physical
+ * connection across pool.connect()/release() cycles. pool.on('connect')
+ * only resets the GUC on NEW TCP connections, not on reuse.
+ *
+ * Safety invariant: isolation is safe ONLY IF every request calls
+ * getTenantPrisma() before any query runs. This test probes the raw
+ * infrastructure to verify whether the GUC bleeds without that call.
+ *
+ * See memory: project_rls_guc_set_config_pattern.md
+ */
+async function testPooledConnectionReuse(tenantA: string): Promise<void> {
+  console.log('\n  TEST: pooled-connection-reuse (Quick-411 session-GUC deviation probe)');
+
+  const appUserUrl = process.env.DATABASE_URL_APP_USER!;
+  const reusePool = new Pool({ connectionString: appUserUrl, max: 2 });
+
+  try {
+    // Step 1 — acquire c1 and set tenant A context (session-scoped, matching app pattern)
+    const c1 = await reusePool.connect();
+    await c1.query(`SELECT set_config('app.current_tenant_id', $1, false)`, [tenantA]);
+
+    // Verify c1 sees tenant A's Tenant row (proves GUC is active)
+    const { rows: a1Rows } = await c1.query<{ c: number }>(
+      `SELECT COUNT(*)::int AS c FROM "Tenant"`,
+    );
+    const a1Count = a1Rows[0].c;
+    if (a1Count > 0) {
+      blockPass(`pooled-reuse — c1 sees Tenant rows with context set (count=${a1Count})`);
+    } else {
+      // No rows means the Tenant table has no row for tenantA — can't prove isolation.
+      blockPass(`pooled-reuse — c1 GUC set (Tenant count=0; no rows to test leak against)`);
+    }
+
+    // Step 2 — release c1 back to pool (TCP stays alive; GUC persists on the connection)
+    c1.release();
+
+    // Step 3 — churn: acquire/release several times so the pool has a chance to
+    // return the same physical connection to idle state
+    for (let i = 0; i < 3; i++) {
+      const tmp = await reusePool.connect();
+      tmp.release();
+    }
+
+    // Step 4 — acquire c2 WITHOUT setting any tenant context
+    const c2 = await reusePool.connect();
+    const { rows: a2Rows } = await c2.query<{ c: number }>(
+      `SELECT COUNT(*)::int AS c FROM "Tenant"`,
+    );
+    const a2Count = a2Rows[0].c;
+    c2.release();
+
+    if (a2Count === 0) {
+      blockPass(
+        'pooled-reuse — c2 sees 0 Tenant rows without context (no GUC leak across pool reuse)',
+      );
+    } else if (a1Count > 0 && a2Count === a1Count) {
+      // Counts match tenant A's rows — GUC bled from c1 to c2
+      blockFail(
+        'pooled-reuse — POOL LEAK: session GUC bled from c1 to c2 without context reset',
+        `c2 returned ${a2Count} rows (= tenant A count) — Quick-411 session-scope assumption is broken under pool reuse. Every request MUST call getTenantPrisma() before any query.`,
+      );
+    } else {
+      // Non-zero but different from tenant A — unexpected; treat as fail
+      blockFail(
+        'pooled-reuse — unexpected row count on c2 without context',
+        `c2 returned ${a2Count} rows (tenant A had ${a1Count})`,
+      );
+    }
+  } finally {
+    await reusePool.end();
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -550,9 +634,13 @@ async function main(): Promise<void> {
   await testTicketMessage(appClient, tenantA, tenantB);
   await testTenant(appClient, tenantA, tenantB);
 
-  // ── Cleanup ───────────────────────────────────────────────────────────────
+  // ── Cleanup main pool ─────────────────────────────────────────────────────
   appClient.release();
   await appPool.end();
+
+  // ── Pooled-connection-reuse probe (own pool, separate from main) ──────────
+  console.log('\nStep 4: Pooled-connection-reuse probe (Quick-411 session-GUC deviation) ...');
+  await testPooledConnectionReuse(tenantA);
 
   // ── Summary ───────────────────────────────────────────────────────────────
   const total = allResults.length;
