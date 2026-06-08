@@ -10,11 +10,10 @@ interface OnboardingReminderRibbonProps {
 /**
  * OnboardingReminderRibbon
  *
- * Renders a fixed top-right ribbon that links owners to the onboarding checklist.
+ * Full-width inline banner that prompts owners to complete onboarding.
+ * Renders below the top bar, above page content, inside the owner shell.
  * Returns null once onboarding is complete — no dismiss button, no local state.
  * Visibility is driven entirely by the `onboardingComplete` prop (server-fetched).
- *
- * z-index 1100 sits above the mobile sticky header (z-[1001]).
  */
 export function OnboardingReminderRibbon({
   onboardingComplete,
@@ -24,13 +23,18 @@ export function OnboardingReminderRibbon({
   }
 
   return (
-    <Link
-      href="/onboarding/welcome"
-      aria-label="Finish onboarding setup"
-      className="fixed top-3 right-3 z-[1100] flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 shadow-md hover:shadow-lg transition-shadow text-sm"
-    >
-      <Rocket className="h-4 w-4 text-primary" aria-hidden="true" />
-      <span className="font-medium text-foreground">Finish setup</span>
-    </Link>
+    <div className="flex w-full items-center gap-3 border-b border-yellow-400/30 bg-[#0f1e3d] px-4 py-3 text-sm">
+      <Rocket className="h-4 w-4 shrink-0 text-yellow-400" aria-hidden="true" />
+      <span className="flex-1 font-medium text-white">
+        Finish setting up your DriveCommand workspace.
+      </span>
+      <Link
+        href="/onboarding/welcome"
+        aria-label="Finish onboarding setup"
+        className="inline-flex shrink-0 items-center rounded-md bg-yellow-400 px-3 py-1.5 text-sm font-semibold text-[#0f1e3d] transition-colors hover:bg-yellow-300"
+      >
+        Finish Setup
+      </Link>
+    </div>
   );
 }

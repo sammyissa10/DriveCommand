@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getSession, getRole } from "@/lib/auth/supabase";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
-import { OnboardingReminderRibbon } from "@/components/onboarding/OnboardingReminderRibbon";
 import { prisma } from "@/lib/db/prisma";
 import { TRPCReactProvider } from "@/trpc/Provider";
 
@@ -61,8 +60,7 @@ export default async function OwnerLayout({
 
   return (
     <TRPCReactProvider>
-      <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
-      <OwnerShell tenantName={tenantName}>
+      <OwnerShell tenantName={tenantName} onboardingComplete={onboardingComplete}>
         {children}
       </OwnerShell>
     </TRPCReactProvider>

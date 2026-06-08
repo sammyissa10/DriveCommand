@@ -8,10 +8,12 @@ import { TopBarHelpButton } from "@/components/navigation/topbar-help-button"
 import { AppLogo } from "@/components/navigation/app-logo"
 import { CommandPalette, SearchTrigger, CommandPaletteProvider } from "@/components/search"
 import { QuickActionsMenu } from "@/components/quick-actions"
+import { OnboardingReminderRibbon } from "@/components/onboarding/OnboardingReminderRibbon"
 
 interface OwnerShellProps {
   children: React.ReactNode;
   tenantName?: string | null;
+  onboardingComplete?: boolean;
 }
 
 /**
@@ -31,7 +33,7 @@ interface OwnerShellProps {
  *
  * Mobile layout uses standard stacked layout with bottom nav.
  */
-export function OwnerShell({ children, tenantName }: OwnerShellProps) {
+export function OwnerShell({ children, tenantName, onboardingComplete = false }: OwnerShellProps) {
   return (
     <CommandPaletteProvider>
       {/* Command Palette - renders as dialog overlay */}
@@ -74,8 +76,11 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
           </header>
 
           {/* Scrollable content area - white card with all corners rounded, inset from dark frame */}
-          <main className="flex-1 overflow-y-auto p-6 bg-white rounded-2xl m-3">
-            {children}
+          <main className="flex-1 overflow-y-auto bg-white rounded-2xl m-3">
+            <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
+            <div className="p-6">
+              {children}
+            </div>
           </main>
         </div>
       </div>
@@ -98,6 +103,7 @@ export function OwnerShell({ children, tenantName }: OwnerShellProps) {
         </header>
         {/* Mobile content panel with subtle inset */}
         <main className="flex-1 m-2 mb-[72px] bg-card rounded-lg overflow-auto">
+          <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
           <div className="p-4">
             {children}
           </div>
