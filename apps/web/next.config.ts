@@ -7,6 +7,20 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '1mb',
     },
   },
+  async redirects() {
+    return [
+      {
+        source: '/carrier/dispatches',
+        destination: '/carrier/trips',
+        permanent: true,
+      },
+      {
+        source: '/carrier/dispatches/:path*',
+        destination: '/carrier/trips/:path*',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

@@ -9,6 +9,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   contracts: "Contracts",
   templates: "Route Templates",
   dispatches: "Dispatches",
+  trips: "Trips",
   loads: "Loads",
   fleet: "Fleet",
   facilities: "Facilities",

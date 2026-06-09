@@ -210,10 +210,10 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
-                      isActive={pathname.startsWith("/carrier/dispatches")}
+                      isActive={pathname.startsWith("/carrier/trips")}
                       tooltip="Trips"
                     >
-                      <Link href="/carrier/dispatches" onClick={handleNavClick}>
+                      <Link href="/carrier/trips" onClick={handleNavClick}>
                         <Truck />
                         <span>Trips</span>
                         <DispatchBadge />

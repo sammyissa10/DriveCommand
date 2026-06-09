@@ -311,7 +311,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
     if (managerHasPermission(perms, "dispatches")) {
       operationsItems.push({
         label: "Trips",
-        href: "/carrier/dispatches",
+        href: "/carrier/trips",
         icon: Truck,
         badge: <DispatchBadge />,
       })
