@@ -1,5 +1,5 @@
 /**
- * Types for Dispatches DataGrid
+ * Types for Trips DataGrid
  */
 
 export interface DispatchRow {

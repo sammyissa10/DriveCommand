@@ -3,7 +3,7 @@
 /**
  * DispatchesGrid Component
  *
- * DataGrid-based dispatches list with:
+ * DataGrid-based trips list with:
  * - Responsive table/card views
  * - Search and status filter
  * - Row selection with quick actions
@@ -89,7 +89,7 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
       params.set('pageSize', String(pageSize));
 
       const res = await fetch(`/api/v1/carrier/dispatches?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to load dispatches');
+      if (!res.ok) throw new Error('Failed to load trips');
 
       const json = await res.json();
       const items = (json.data?.items ?? json.data ?? []) as ApiDispatch[];
@@ -112,7 +112,7 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
       setDispatches(rows);
       setTotal(tot);
     } catch (error) {
-      console.error('Error fetching dispatches:', error);
+      console.error('Error fetching trips:', error);
       setDispatches([]);
     } finally {
       setIsLoading(false);
@@ -152,13 +152,13 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
         id: 'view',
         label: 'View',
         icon: Eye,
-        onClick: () => router.push(`/carrier/dispatches/${row.id}`),
+        onClick: () => router.push(`/carrier/trips/${row.id}`),
       },
       {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/dispatches/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/trips/${row.id}/edit`),
       },
     ];
 
@@ -217,17 +217,17 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
       enableSelection
       selectedIds={selectedIds}
       onRowSelect={handleRowSelect}
-      onRowDoubleClick={(row) => router.push(`/carrier/dispatches/${row.id}`)}
+      onRowDoubleClick={(row) => router.push(`/carrier/trips/${row.id}`)}
       renderQuickActions={renderQuickActions}
       search={globalFilter}
       onSearchChange={(value) => {
         setGlobalFilter(value);
         setPage(0);
       }}
-      searchPlaceholder="Search dispatches..."
+      searchPlaceholder="Search trips..."
       showNew={canCreate}
-      onNew={canCreate ? () => router.push('/carrier/dispatches/new') : undefined}
-      recordName="Dispatch"
+      onNew={canCreate ? () => router.push('/carrier/trips/new') : undefined}
+      recordName="Trip"
       bulkActions={bulkActions}
       onClearSelection={() => setSelectedIds(new Set())}
       primaryColumn="dispatchNumber"

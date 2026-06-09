@@ -1,5 +1,5 @@
 /**
- * Column definitions for Dispatches DataGrid
+ * Column definitions for Trips DataGrid
  */
 
 import Link from 'next/link';
@@ -34,7 +34,7 @@ export const dispatchesColumns: ColumnDef<DispatchRow, unknown>[] = [
       const dispatchNum = row.original.dispatchNumber || extractDispatchNumber(row.original.notes) || row.original.id.slice(0, 8);
       return (
         <Link
-          href={`/carrier/dispatches/${row.original.id}`}
+          href={`/carrier/trips/${row.original.id}`}
           className="font-medium hover:underline"
           style={{ fontFamily: 'var(--grid-font-data)' }}
         >
