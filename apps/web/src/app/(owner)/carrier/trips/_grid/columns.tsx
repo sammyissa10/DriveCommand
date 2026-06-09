@@ -23,7 +23,7 @@ export const dispatchesColumns: ColumnDef<DispatchRow, unknown>[] = [
   {
     id: 'dispatchNumber',
     accessorFn: (row) => row.dispatchNumber || extractDispatchNumber(row.notes) || row.id.slice(0, 8),
-    header: 'Dispatch #',
+    header: 'Trip #',
     meta: {
       dataType: 'text',
       freezable: true,
