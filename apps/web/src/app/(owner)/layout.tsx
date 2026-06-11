@@ -48,19 +48,24 @@ export default async function OwnerLayout({
   // Fetch onboarding completion status — default to false (incomplete) if row is missing or query errors.
   // A missing ActivationProgress row means the tenant has not completed onboarding yet.
   let onboardingComplete = false;
+  let congratsShownAt: string | null = null;
   try {
-    const activationRows = await prisma.$queryRaw<{ isActivated: boolean }[]>`
-      SELECT "isActivated" FROM "ActivationProgress" WHERE "tenantId" = ${session.tenantId}::uuid LIMIT 1
+    const activationRows = await prisma.$queryRaw<{ isActivated: boolean; congratsShownAt: Date | null }[]>`
+      SELECT "isActivated", "congratsShownAt" FROM "ActivationProgress" WHERE "tenantId" = ${session.tenantId}::uuid LIMIT 1
     `;
     onboardingComplete = activationRows[0]?.isActivated ?? false;
+    congratsShownAt = activationRows[0]?.congratsShownAt
+      ? activationRows[0].congratsShownAt.toISOString()
+      : null;
   } catch {
     // Non-fatal — default to showing the ribbon (treat as incomplete)
     onboardingComplete = false;
+    congratsShownAt = null;
   }
 
   return (
     <TRPCReactProvider>
-      <OwnerShell tenantName={tenantName} onboardingComplete={onboardingComplete}>
+      <OwnerShell tenantName={tenantName} onboardingComplete={onboardingComplete} congratsShownAt={congratsShownAt}>
         {children}
       </OwnerShell>
     </TRPCReactProvider>

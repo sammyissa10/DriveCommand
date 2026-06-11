@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import { AnimatedSidebar } from "@/components/Sidebar"
 import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
 import { UserMenu } from "@/components/navigation/user-menu"
@@ -9,11 +10,15 @@ import { AppLogo } from "@/components/navigation/app-logo"
 import { CommandPalette, SearchTrigger, CommandPaletteProvider } from "@/components/search"
 import { QuickActionsMenu } from "@/components/quick-actions"
 import { OnboardingReminderRibbon } from "@/components/onboarding/OnboardingReminderRibbon"
+import { CongratsDialog } from "@/components/onboarding/CongratsDialog"
+import { markCongratsShown } from "@/app/(owner)/actions/activation-congrats"
+import { toast } from "sonner"
 
 interface OwnerShellProps {
   children: React.ReactNode;
   tenantName?: string | null;
   onboardingComplete?: boolean;
+  congratsShownAt?: string | null;
 }
 
 /**
@@ -33,11 +38,26 @@ interface OwnerShellProps {
  *
  * Mobile layout uses standard stacked layout with bottom nav.
  */
-export function OwnerShell({ children, tenantName, onboardingComplete = false }: OwnerShellProps) {
+export function OwnerShell({ children, tenantName, onboardingComplete = false, congratsShownAt = null }: OwnerShellProps) {
+  const [congratsOpen, setCongratsOpen] = useState(false);
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (onboardingComplete && congratsShownAt == null && !firedRef.current) {
+      firedRef.current = true;
+      setCongratsOpen(true);
+      toast.success("Your fleet is all set!");
+      void markCongratsShown();
+    }
+  }, [onboardingComplete, congratsShownAt]);
+
   return (
     <CommandPaletteProvider>
       {/* Command Palette - renders as dialog overlay */}
       <CommandPalette />
+
+      {/* One-time activation-complete congrats moment */}
+      <CongratsDialog open={congratsOpen} onOpenChange={setCongratsOpen} />
 
       {/* Desktop: Dark frame with floating white content card */}
       <div className="hidden lg:flex h-screen shell-bg">
