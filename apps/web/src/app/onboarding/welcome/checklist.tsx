@@ -14,6 +14,7 @@ interface ChecklistProps {
 
 interface ChecklistItem {
   label: string;
+  description?: string;
   complete: boolean;
   href?: string;
 }
@@ -43,7 +44,7 @@ export function ActivationChecklist({
     { label: 'Add your first truck', complete: firstRealTruckAt !== null, href: '/carrier/fleet/trucks/new' },
     { label: 'Add your first driver', complete: firstRealDriverAt !== null, href: '/carrier/fleet/drivers/new' },
     { label: 'Add your first customer', complete: firstRealClientAt !== null, href: '/carrier/clients/new' },
-    { label: 'Dispatch your first load', complete: firstLoadInTransitAt !== null, href: '/carrier/dispatches' },
+    { label: 'Send your first load in transit', description: 'Assign a load to a trip and mark it In Transit.', complete: firstLoadInTransitAt !== null, href: '/carrier/dispatches' },
   ];
 
   return (
@@ -69,14 +70,19 @@ export function ActivationChecklist({
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground/40 shrink-0" />
               )}
-              <span
-                className={
-                  item.complete
-                    ? 'text-sm line-through text-muted-foreground'
-                    : 'text-sm text-foreground'
-                }
-              >
-                {item.label}
+              <span className="flex flex-col">
+                <span
+                  className={
+                    item.complete
+                      ? 'text-sm line-through text-muted-foreground'
+                      : 'text-sm text-foreground'
+                  }
+                >
+                  {item.label}
+                </span>
+                {item.description && !item.complete && (
+                  <span className="text-xs text-muted-foreground">{item.description}</span>
+                )}
               </span>
             </>
           );
