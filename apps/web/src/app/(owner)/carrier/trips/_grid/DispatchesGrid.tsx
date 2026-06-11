@@ -158,7 +158,9 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/trips/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/trips/${row.id}`),
+        disabled: row.status !== 'planned',
+        disabledTooltip: 'Cannot edit an active or completed trip',
       },
     ];
 
