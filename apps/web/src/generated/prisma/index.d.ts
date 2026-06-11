@@ -105221,6 +105221,7 @@ export namespace Prisma {
     firstLoadDeliveredAt: Date | null
     completionPct: number | null
     isActivated: boolean | null
+    congratsShownAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -105237,6 +105238,7 @@ export namespace Prisma {
     firstLoadDeliveredAt: Date | null
     completionPct: number | null
     isActivated: boolean | null
+    congratsShownAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -105253,6 +105255,7 @@ export namespace Prisma {
     firstLoadDeliveredAt: number
     completionPct: number
     isActivated: number
+    congratsShownAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -105279,6 +105282,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: true
     completionPct?: true
     isActivated?: true
+    congratsShownAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -105295,6 +105299,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: true
     completionPct?: true
     isActivated?: true
+    congratsShownAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -105311,6 +105316,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: true
     completionPct?: true
     isActivated?: true
+    congratsShownAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -105414,6 +105420,7 @@ export namespace Prisma {
     firstLoadDeliveredAt: Date | null
     completionPct: number
     isActivated: boolean
+    congratsShownAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ActivationProgressCountAggregateOutputType | null
@@ -105449,6 +105456,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: boolean
     completionPct?: boolean
     isActivated?: boolean
+    congratsShownAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -105466,6 +105474,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: boolean
     completionPct?: boolean
     isActivated?: boolean
+    congratsShownAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -105483,6 +105492,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: boolean
     completionPct?: boolean
     isActivated?: boolean
+    congratsShownAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -105500,11 +105510,12 @@ export namespace Prisma {
     firstLoadDeliveredAt?: boolean
     completionPct?: boolean
     isActivated?: boolean
+    congratsShownAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ActivationProgressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "accountCreatedAt" | "firstRealTruckAt" | "firstRealDriverAt" | "firstRealClientAt" | "firstRealLoadCreatedAt" | "firstLoadInTransitAt" | "firstLoadDeliveredAt" | "completionPct" | "isActivated" | "createdAt" | "updatedAt", ExtArgs["result"]["activationProgress"]>
+  export type ActivationProgressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "accountCreatedAt" | "firstRealTruckAt" | "firstRealDriverAt" | "firstRealClientAt" | "firstRealLoadCreatedAt" | "firstLoadInTransitAt" | "firstLoadDeliveredAt" | "completionPct" | "isActivated" | "congratsShownAt" | "createdAt" | "updatedAt", ExtArgs["result"]["activationProgress"]>
   export type ActivationProgressInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }
@@ -105532,6 +105543,7 @@ export namespace Prisma {
       firstLoadDeliveredAt: Date | null
       completionPct: number
       isActivated: boolean
+      congratsShownAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["activationProgress"]>
@@ -105969,6 +105981,7 @@ export namespace Prisma {
     readonly firstLoadDeliveredAt: FieldRef<"ActivationProgress", 'DateTime'>
     readonly completionPct: FieldRef<"ActivationProgress", 'Int'>
     readonly isActivated: FieldRef<"ActivationProgress", 'Boolean'>
+    readonly congratsShownAt: FieldRef<"ActivationProgress", 'DateTime'>
     readonly createdAt: FieldRef<"ActivationProgress", 'DateTime'>
     readonly updatedAt: FieldRef<"ActivationProgress", 'DateTime'>
   }
@@ -137501,6 +137514,7 @@ export namespace Prisma {
     firstLoadDeliveredAt: 'firstLoadDeliveredAt',
     completionPct: 'completionPct',
     isActivated: 'isActivated',
+    congratsShownAt: 'congratsShownAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -147940,6 +147954,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: DateTimeNullableFilter<"ActivationProgress"> | Date | string | null
     completionPct?: IntFilter<"ActivationProgress"> | number
     isActivated?: BoolFilter<"ActivationProgress"> | boolean
+    congratsShownAt?: DateTimeNullableFilter<"ActivationProgress"> | Date | string | null
     createdAt?: DateTimeFilter<"ActivationProgress"> | Date | string
     updatedAt?: DateTimeFilter<"ActivationProgress"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -147957,6 +147972,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: SortOrderInput | SortOrder
     completionPct?: SortOrder
     isActivated?: SortOrder
+    congratsShownAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
@@ -147977,6 +147993,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: DateTimeNullableFilter<"ActivationProgress"> | Date | string | null
     completionPct?: IntFilter<"ActivationProgress"> | number
     isActivated?: BoolFilter<"ActivationProgress"> | boolean
+    congratsShownAt?: DateTimeNullableFilter<"ActivationProgress"> | Date | string | null
     createdAt?: DateTimeFilter<"ActivationProgress"> | Date | string
     updatedAt?: DateTimeFilter<"ActivationProgress"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -147994,6 +148011,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: SortOrderInput | SortOrder
     completionPct?: SortOrder
     isActivated?: SortOrder
+    congratsShownAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ActivationProgressCountOrderByAggregateInput
@@ -148018,6 +148036,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: DateTimeNullableWithAggregatesFilter<"ActivationProgress"> | Date | string | null
     completionPct?: IntWithAggregatesFilter<"ActivationProgress"> | number
     isActivated?: BoolWithAggregatesFilter<"ActivationProgress"> | boolean
+    congratsShownAt?: DateTimeNullableWithAggregatesFilter<"ActivationProgress"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ActivationProgress"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ActivationProgress"> | Date | string
   }
@@ -160420,6 +160439,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: Date | string | null
     completionPct?: number
     isActivated?: boolean
+    congratsShownAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutActivationProgressInput
@@ -160437,6 +160457,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: Date | string | null
     completionPct?: number
     isActivated?: boolean
+    congratsShownAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -160452,6 +160473,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completionPct?: IntFieldUpdateOperationsInput | number
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    congratsShownAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutActivationProgressNestedInput
@@ -160469,6 +160491,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completionPct?: IntFieldUpdateOperationsInput | number
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    congratsShownAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -160485,6 +160508,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: Date | string | null
     completionPct?: number
     isActivated?: boolean
+    congratsShownAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -160500,6 +160524,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completionPct?: IntFieldUpdateOperationsInput | number
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    congratsShownAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -160516,6 +160541,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completionPct?: IntFieldUpdateOperationsInput | number
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    congratsShownAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -170053,6 +170079,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: SortOrder
     completionPct?: SortOrder
     isActivated?: SortOrder
+    congratsShownAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -170073,6 +170100,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: SortOrder
     completionPct?: SortOrder
     isActivated?: SortOrder
+    congratsShownAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -170089,6 +170117,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: SortOrder
     completionPct?: SortOrder
     isActivated?: SortOrder
+    congratsShownAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -193852,6 +193881,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: Date | string | null
     completionPct?: number
     isActivated?: boolean
+    congratsShownAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -193867,6 +193897,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: Date | string | null
     completionPct?: number
     isActivated?: boolean
+    congratsShownAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -196888,6 +196919,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completionPct?: IntFieldUpdateOperationsInput | number
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    congratsShownAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -196903,6 +196935,7 @@ export namespace Prisma {
     firstLoadDeliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completionPct?: IntFieldUpdateOperationsInput | number
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    congratsShownAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

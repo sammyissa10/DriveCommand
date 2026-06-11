@@ -2834,6 +2834,7 @@ model ActivationProgress {
   firstLoadDeliveredAt   DateTime? @db.Timestamptz
   completionPct          Int       @default(20)
   isActivated            Boolean   @default(false)
+  congratsShownAt        DateTime? @db.Timestamptz
   createdAt              DateTime  @default(now()) @db.Timestamptz
   updatedAt              DateTime  @updatedAt @db.Timestamptz
 

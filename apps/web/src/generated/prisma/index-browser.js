@@ -1404,6 +1404,7 @@ exports.Prisma.ActivationProgressScalarFieldEnum = {
   firstLoadDeliveredAt: 'firstLoadDeliveredAt',
   completionPct: 'completionPct',
   isActivated: 'isActivated',
+  congratsShownAt: 'congratsShownAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
