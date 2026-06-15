@@ -201,6 +201,48 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         preview: "Special considerations for dangerous goods.",
         keywords: ["hazmat", "dangerous goods", "placard", "special handling"],
       },
+      {
+        slug: "what-is-a-trip",
+        title: "What is a trip?",
+        preview: "A plain-English intro to trips and how they organize your loads.",
+        keywords: ["trip", "what is", "definition", "overview"],
+      },
+      {
+        slug: "creating-a-trip",
+        title: "Creating a trip",
+        preview: "Step-by-step guide to building a new trip.",
+        keywords: ["create trip", "new trip", "add trip", "build trip"],
+      },
+      {
+        slug: "assigning-driver-and-truck",
+        title: "Assigning a driver and truck",
+        preview: "Match the right driver and truck to each trip.",
+        keywords: ["assign driver", "assign truck", "trip assignment", "driver", "truck"],
+      },
+      {
+        slug: "following-stop-timeline",
+        title: "Following the stop timeline",
+        preview: "Watch a trip progress through its pickups and deliveries.",
+        keywords: ["stop timeline", "stops", "progress", "pickups", "deliveries"],
+      },
+      {
+        slug: "completing-and-skipping-stops",
+        title: "Completing and skipping stops",
+        preview: "Mark stops done or skip them when plans change.",
+        keywords: ["complete stop", "skip stop", "stops", "update stop"],
+      },
+      {
+        slug: "understanding-trip-status",
+        title: "Understanding trip status",
+        preview: "What each trip status means and how trips move between them.",
+        keywords: ["trip status", "status", "lifecycle", "in progress", "completed"],
+      },
+      {
+        slug: "editing-a-trip",
+        title: "Editing a trip",
+        preview: "Update stops, assignments, or details on an existing trip.",
+        keywords: ["edit trip", "modify trip", "update trip", "change trip"],
+      },
     ],
   },
   {
