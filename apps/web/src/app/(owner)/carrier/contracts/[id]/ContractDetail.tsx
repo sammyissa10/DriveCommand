@@ -125,11 +125,13 @@ function getLinkedTo(doc: DocumentRow): string {
 export function ContractDetail({
   contract,
   loadsSummary,
+  initialEdit = false,
 }: {
   contract: ContractSerialized;
   loadsSummary: LoadsSummary | null;
+  initialEdit?: boolean;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(initialEdit);
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
 

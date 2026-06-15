@@ -159,7 +159,7 @@ export function LoadsGrid({ clientMap }: LoadsGridProps) {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/loads/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/loads/${row.id}`),
       },
       {
         id: 'delete',

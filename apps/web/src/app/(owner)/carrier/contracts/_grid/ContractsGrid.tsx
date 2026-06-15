@@ -86,7 +86,7 @@ export function ContractsGrid({ contracts }: ContractsGridProps) {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/contracts/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/contracts/${row.id}?edit=true`),
       },
     ];
 

@@ -87,7 +87,7 @@ export function TrucksGrid({ trucks }: TrucksGridProps) {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/fleet/trucks/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/fleet/trucks/${row.id}?mode=edit`),
       },
       {
         id: 'delete',

@@ -7,13 +7,15 @@ import { prisma } from '@/lib/db/prisma';
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ edit?: string }>;
 }
 
-export default async function ContractDetailPage({ params }: Props) {
+export default async function ContractDetailPage({ params, searchParams }: Props) {
   const session = await getSession();
   if (!session) redirect('/login');
 
   const { id } = await params;
+  const { edit } = await searchParams;
 
   const [contract, loadsSummary, contractAudit] = await Promise.all([
     getContract(session.tenantId, id),
@@ -69,7 +71,7 @@ export default async function ContractDetailPage({ params }: Props) {
 
   return (
     <>
-      <ContractDetail contract={serialized} loadsSummary={summary} />
+      <ContractDetail contract={serialized} loadsSummary={summary} initialEdit={edit === 'true'} />
       {contractAudit && (
         <AuditTrailFooter
           createdAt={contractAudit.createdAt}

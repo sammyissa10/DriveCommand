@@ -87,7 +87,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/clients/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/clients/${row.id}?edit=true`),
       },
     ];
 
