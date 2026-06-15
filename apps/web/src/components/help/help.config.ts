@@ -41,6 +41,8 @@ export interface HelpCategory {
   icon: LucideIcon
   /** Articles in this category */
   articles: HelpArticle[]
+  /** When true, the category is hidden from index, category/article pages, and search. Content is preserved for later restoration. */
+  hidden?: boolean
 }
 
 /**
@@ -315,6 +317,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   },
   {
     slug: "financials",
+    hidden: true,
     name: "Financials",
     description: "Track revenue, expenses, and driver pay.",
     icon: TrendingUp,
@@ -447,9 +450,12 @@ export const HELP_CATEGORIES: HelpCategory[] = [
 
 /**
  * Get a category by its slug
+ * Returns undefined for hidden categories so route pages naturally 404.
  */
 export function getCategoryBySlug(slug: string): HelpCategory | undefined {
-  return HELP_CATEGORIES.find((cat) => cat.slug === slug)
+  const category = HELP_CATEGORIES.find((cat) => cat.slug === slug)
+  if (!category || category.hidden) return undefined
+  return category
 }
 
 /**
@@ -470,10 +476,10 @@ export function getArticleBySlug(
 
 /**
  * Get all articles across all categories (flattened)
- * Useful for search indexing
+ * Useful for search indexing. Excludes hidden categories.
  */
 export function getAllArticles(): Array<HelpArticle & { categorySlug: string; categoryName: string }> {
-  return HELP_CATEGORIES.flatMap((category) =>
+  return HELP_CATEGORIES.filter((category) => !category.hidden).flatMap((category) =>
     category.articles.map((article) => ({
       ...article,
       categorySlug: category.slug,

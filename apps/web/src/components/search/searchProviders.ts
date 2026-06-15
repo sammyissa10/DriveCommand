@@ -493,8 +493,8 @@ export function createHelpProvider(
       section: "help",
       keywords: ["help", "support", "documentation", "docs", "how to", "tutorial", "guide"],
     },
-    // All categories
-    ...HELP_CATEGORIES.map((category) => ({
+    // All categories (hidden categories excluded)
+    ...HELP_CATEGORIES.filter((c) => !c.hidden).map((category) => ({
       id: `help-cat-${category.slug}`,
       label: category.name,
       secondary: "Help",
@@ -517,7 +517,7 @@ export function createHelpProvider(
   const hrefMap: Record<string, string> = {
     "help-center": "/help",
     ...Object.fromEntries(
-      HELP_CATEGORIES.map((cat) => [`help-cat-${cat.slug}`, `/help/${cat.slug}`])
+      HELP_CATEGORIES.filter((cat) => !cat.hidden).map((cat) => [`help-cat-${cat.slug}`, `/help/${cat.slug}`])
     ),
     ...Object.fromEntries(
       getAllArticles().map((article) => [
