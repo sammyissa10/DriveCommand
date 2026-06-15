@@ -5,7 +5,6 @@ import {
   FileText,
   UserCircle,
   UserPlus,
-  Receipt,
   Send,
   CheckCircle,
   Route,
@@ -105,15 +104,6 @@ const QUICK_CREATE_ITEMS: QuickActionItem[] = [
     shortcut: "C F",
     description: "Add a new facility",
   },
-  // KEYBOARD SHORTCUT: C then E
-  {
-    id: "create-expense",
-    label: "New Expense",
-    icon: Receipt,
-    href: "/carrier/financials",
-    shortcut: "C E",
-    description: "Log a new expense",
-  },
 ]
 
 /**
@@ -127,14 +117,6 @@ const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     href: "/carrier/loads",
     shortcut: "⌘⇧A",
     description: "Assign a driver to an existing load",
-  },
-  {
-    id: "action-log-expense",
-    label: "Log Expense",
-    icon: Receipt,
-    href: "/carrier/financials",
-    shortcut: "⌘⇧E",
-    description: "Record a new expense",
   },
   {
     id: "action-send-rate-confirmation",
