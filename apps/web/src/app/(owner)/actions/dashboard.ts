@@ -232,7 +232,7 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
               ? `Expired ${Math.abs(daysUntil)} day${Math.abs(daysUntil) !== 1 ? 's' : ''} ago`
               : `Expires in ${daysUntil} day${daysUntil !== 1 ? 's' : ''}`,
           href: `/trucks/${truck.id}`,
-          timestamp: expiryDate.toISOString(),
+          timestamp: now.toISOString(),
         });
       };
 
@@ -273,7 +273,7 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
             ? `Expired ${Math.abs(daysUntil)} day${Math.abs(daysUntil) !== 1 ? 's' : ''} ago`
             : `Expires in ${daysUntil} day${daysUntil !== 1 ? 's' : ''}`,
         href: `/drivers/${doc.driverId}`,
-        timestamp: expiryDate.toISOString(),
+        timestamp: now.toISOString(),
       });
     }
 
