@@ -107,8 +107,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   },
   {
     slug: "loads-and-dispatches",
-    name: "Loads & Dispatches",
-    description: "Create loads, assign drivers, and track deliveries.",
+    name: "Loads & Trips",
+    description: "Create loads, build trips, assign drivers, and track deliveries.",
     icon: Package,
     articles: [
       {
@@ -121,7 +121,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         slug: "assigning-driver-to-load",
         title: "Assigning a driver to a load",
         preview: "Match the right driver to each shipment.",
-        keywords: ["assign driver", "dispatch", "assign load", "driver assignment"],
+        keywords: ["assign driver", "trip", "assign load", "driver assignment"],
       },
       {
         slug: "tracking-load-realtime",
@@ -143,9 +143,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
       {
         slug: "dispatch-workflow",
-        title: "Understanding the dispatch workflow",
+        title: "Understanding the trip workflow",
         preview: "Learn how loads flow from creation to delivery.",
-        keywords: ["dispatch", "workflow", "process", "lifecycle"],
+        keywords: ["trip", "workflow", "process", "lifecycle"],
       },
       {
         slug: "bulk-load-import",
