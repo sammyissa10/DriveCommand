@@ -31,7 +31,6 @@ import {
   FileText,
   Boxes,
   MessageSquare,
-  TrendingUp,
   UserCircle,
   Route,
   Building2,
@@ -229,7 +228,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
 
   // ============================================================================
   // INTELLIGENCE — "What's happening right now?" (situational awareness)
-  // Max 3 items: Live Map, Dashboard, Financials
+  // Max 2 items: Live Map, Dashboard
   // ============================================================================
   if (isOwnerOrManager) {
     const intelligenceItems = []
@@ -247,15 +246,6 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
         label: "Carrier Dashboard",
         href: "/carrier/dashboard",
         icon: LayoutDashboard,
-      })
-    }
-
-    // Financials — hub for revenue/performance visibility
-    if (managerHasPermission(perms, "revenueReport") || managerHasPermission(perms, "performanceReport")) {
-      intelligenceItems.push({
-        label: "Financials",
-        href: "/carrier/financials",
-        icon: TrendingUp,
       })
     }
 
