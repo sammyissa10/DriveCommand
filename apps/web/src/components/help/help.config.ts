@@ -271,14 +271,14 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
       {
         slug: "dispatching-from-route",
-        title: "Dispatching from a route",
-        preview: "Turn a route template into an active load.",
-        keywords: ["dispatch", "route template", "create from route", "use route"],
+        title: "Generating trips from a route",
+        preview: "Turn a route template into active trips.",
+        keywords: ["trip", "generate trip", "route template", "create from route", "use route"],
       },
       {
         slug: "route-scheduling",
         title: "Setting up route schedules",
-        preview: "Automate recurring dispatches on a schedule.",
+        preview: "Automate recurring trips on a schedule.",
         keywords: ["schedule", "recurring", "weekly", "daily", "automation"],
       },
       {
