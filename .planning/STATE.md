@@ -932,6 +932,7 @@ None blocking immediate progress.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 460 | URGENT prod schema drift investigation — enumerate ALL drift, apply NOTHING | 2026-06-16 | e6416f5f | [460-urgent-prod-schema-drift-investigation-e](./quick/460-urgent-prod-schema-drift-investigation-e/) |
 | 1 | Audit and fix all Management pages with Playwright tests | 2026-02-16 | f543014 | [1-audit-and-fix-all-management-pages-with-](./quick/1-audit-and-fix-all-management-pages-with-/) |
 | 2 | Change login method - remove Google, create owner login | 2026-02-17 | a6d016f | [2-change-login-method-remove-google-create](./quick/2-change-login-method-remove-google-create/) |
 | 3 | Investigate and fix all broken pages in the app | 2026-02-18 | 3f30f62 | [3-investigate-and-fix-all-broken-pages-in-](./quick/3-investigate-and-fix-all-broken-pages-in-/) |
