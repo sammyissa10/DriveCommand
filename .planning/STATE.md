@@ -909,6 +909,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 45-05]: conditions in createCustomRuleSchema stored as JSON string to avoid Zod v4 deep type inference TS2589 limit in tRPC router chains
 - [Phase 46]: position:fixed for PreviewPanel — keeps panel out of DnD flex container so DragOverlay offset calculations remain correct
 - [Phase quick-457]: Production was already in a clean state: 0 of 37 NotificationTemplate rows had NULL defaultHtmlCache; backfill script ran with no writes needed; root cause documented (seed UPDATE omits defaultHtmlCache)
+- [Phase quick-459]: Resend SDK result capture: destructure { error: sendError } from resend.emails.send(); branch on sendError to log FAILED (API errors) vs SENT. Outer catch retained for network-level throws.
 
 ### Pending Todos
 
