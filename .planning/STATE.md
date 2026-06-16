@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-06-16 - Completed quick task 458: bisect driver.invited send failure — dispatcher silent-bug identified (Resend return value discarded)
+Last activity: 2026-06-16 - Completed quick task 459: Fix silent Resend failure — log FAILED status on API errors in dispatchNotification
 Last session: 2026-06-16T16:07:00Z
 Stopped at: Completed quick-447 — help.config.ts: category renamed to Loads & Trips, dispatch->trip copy sweep complete, 7 new trip article stubs added (22 total in category). TypeScript clean. No other files touched.
 
@@ -1337,6 +1337,7 @@ None blocking immediate progress.
 | 456 | Phase 2 driver-portal access management: portal-access status indicator and revoke/restore controls on carrier driver detail page | 2026-06-16 | 464a9b51 | [456-phase-2-driver-portal-access-management-](./quick/456-phase-2-driver-portal-access-management-/) |
 | 457 | backfill NULL defaultHtmlCache for notification templates in production | 2026-06-16 | b2457c1e | [457-backfill-null-defaulthtmlcache-for-notif](./quick/457-backfill-null-defaulthtmlcache-for-notif/) |
 | 458 | Bisect driver.invited send failure — dispatcher discards Resend SDK return value; SENT logs are unreliable; from-domain team@drivecommand.io unverifiable without Resend dashboard | 2026-06-16 | pending | [458-bisect-driver-invited-send-failure-trigg](./quick/458-bisect-driver-invited-send-failure-trigg/) |
+| 459 | Fix silent Resend failure — log FAILED status on API errors in dispatchNotification | 2026-06-16 | bc0fc058 | [459-fix-silent-resend-failure-log-failed-sta](./quick/459-fix-silent-resend-failure-log-failed-sta/) |
 
 ## Session Continuity
 
