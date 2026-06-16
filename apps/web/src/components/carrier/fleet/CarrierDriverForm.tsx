@@ -76,7 +76,6 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
     lastName: driver?.lastName ?? '',
     email: driver?.email ?? '',
     phone: driver?.phone ?? '',
-    userId: driver?.userId ?? '',
     cdlNumber: driver?.cdlNumber ?? '',
     cdlState: driver?.cdlState ?? '',
     cdlClass: driver?.cdlClass ?? '',
@@ -115,7 +114,6 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
         lastName: values.lastName.trim(),
         ...(values.email ? { email: values.email } : {}),
         ...(values.phone ? { phone: values.phone } : {}),
-        ...(values.userId ? { userId: values.userId } : {}),
         ...(values.cdlNumber ? { cdlNumber: values.cdlNumber } : {}),
         ...(values.cdlState ? { cdlState: values.cdlState } : {}),
         ...(values.cdlClass ? { cdlClass: values.cdlClass } : {}),
@@ -209,19 +207,6 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
             value={values.phone}
             onChange={handleChange}
             placeholder="+1 (555) 000-0000"
-          />
-        </div>
-        <div className="space-y-1.5 lg:col-span-2">
-          <label className="text-sm font-medium text-foreground" htmlFor="userId">
-            Linked User ID{' '}
-            <span className="text-muted-foreground text-xs">(optional — link to existing user account)</span>
-          </label>
-          <Input
-            id="userId"
-            name="userId"
-            value={values.userId}
-            onChange={handleChange}
-            placeholder="UUID of existing DRIVER-role user"
           />
         </div>
       </div>
