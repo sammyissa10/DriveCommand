@@ -5,19 +5,38 @@ import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDriverDialog } from './DeleteDriverDialog';
 import { ResendInvitationButton } from './ResendInvitationButton';
+import { PortalAccessControls } from './PortalAccessControls';
 
 interface Props {
   driverId: string;
   driverName: string;
   driverEmail: string | null;
   invitationStatus: string | null;
+  userId: string | null;
+  userIsActive: boolean | null;
+  canManageAccess: boolean;
 }
 
-export function DriverDetailActions({ driverId, driverName, driverEmail, invitationStatus }: Props) {
+export function DriverDetailActions({
+  driverId,
+  driverName,
+  driverEmail,
+  invitationStatus,
+  userId,
+  userIsActive,
+  canManageAccess,
+}: Props) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0">
+    <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+      <PortalAccessControls
+        driverId={driverId}
+        userId={userId}
+        userIsActive={userIsActive}
+        invitationStatus={invitationStatus}
+        canManageAccess={canManageAccess}
+      />
       {driverEmail && (
         <ResendInvitationButton
           driverId={driverId}
