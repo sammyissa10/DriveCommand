@@ -44,6 +44,11 @@ if (globalForPrisma.pool) {
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 1,
+    // Release idle PgBouncer session-mode slots after 10 s so warm Vercel
+    // instances don't permanently hold one of the 15 pool slots between
+    // the dashboard's 60-second polling cycles.
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 5000,
   });
   // Initialise the tenant GUC on every new physical connection so a stale value
   // from a prior process/worker can never bleed into the first query of a fresh
