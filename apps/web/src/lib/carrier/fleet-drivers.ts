@@ -182,11 +182,17 @@ export async function createCarrierDriver(
   const tenantPrisma = await getTenantPrisma();
   const { userId, cdlExpiry, payRate, ...rest } = data;
 
-  // If userId is provided, check for existing link
+  // If userId is provided, check for existing link and verify org membership
   if (userId) {
     const existing = await tenantPrisma.carrierDriver.findFirst({ where: { userId } });
     if (existing) {
       throw new Error('User already linked to a carrier driver');
+    }
+    const user = await prisma.user.findFirst({
+      where: { id: userId, tenantId: orgId },
+    });
+    if (!user) {
+      throw new Error('Invalid userId: user not found in this organization');
     }
   }
 
