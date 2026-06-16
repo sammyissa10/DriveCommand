@@ -192,26 +192,48 @@ export async function dispatchNotification<K extends TriggerKey>(
             skipped++;
           } else {
             try {
-              await resend.emails.send({
+              const { error: sendError } = await resend.emails.send({
                 from: FROM_EMAIL,
                 to: r.email,
                 subject: subjectFinal,
                 react: React.createElement(DynamicTemplateEmail, { bodyHtml: html }),
               });
-              audits.push({
-                tenantId: options.tenantId,
-                triggerKey,
-                recipientUserId: r.userId ?? null,
-                recipientEmail: r.email,
-                channel: 'EMAIL',
-                subject: subjectFinal,
-                status: 'SENT',
-                idempotencyKey: idemKey,
-                relatedEntityType: options.relatedEntity?.type ?? null,
-                relatedEntityId: options.relatedEntity?.id ?? null,
-              });
-              sent++;
+
+              if (sendError) {
+                // API-level failure (e.g. unverified domain, bad from-address, 4xx/5xx).
+                // Resend does NOT throw in this case — it returns { error }.
+                const failMessage = `${sendError.name}: ${sendError.message}`;
+                audits.push({
+                  tenantId: options.tenantId,
+                  triggerKey,
+                  recipientUserId: r.userId ?? null,
+                  recipientEmail: r.email,
+                  channel: 'EMAIL',
+                  subject: subjectFinal,
+                  status: 'FAILED',
+                  idempotencyKey: idemKey,
+                  errorMessage: failMessage.slice(0, 1000),
+                  relatedEntityType: options.relatedEntity?.type ?? null,
+                  relatedEntityId: options.relatedEntity?.id ?? null,
+                });
+                failed++;
+              } else {
+                audits.push({
+                  tenantId: options.tenantId,
+                  triggerKey,
+                  recipientUserId: r.userId ?? null,
+                  recipientEmail: r.email,
+                  channel: 'EMAIL',
+                  subject: subjectFinal,
+                  status: 'SENT',
+                  idempotencyKey: idemKey,
+                  relatedEntityType: options.relatedEntity?.type ?? null,
+                  relatedEntityId: options.relatedEntity?.id ?? null,
+                });
+                sent++;
+              }
             } catch (emailErr) {
+              // Network-level throw (Resend only throws here, not on API errors).
               audits.push({
                 tenantId: options.tenantId,
                 triggerKey,
