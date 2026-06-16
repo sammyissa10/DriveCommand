@@ -146694,6 +146694,7 @@ export namespace Prisma {
 
   export type InAppNotificationWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    orgId_entityId_type?: InAppNotificationOrgIdEntityIdTypeCompoundUniqueInput
     AND?: InAppNotificationWhereInput | InAppNotificationWhereInput[]
     OR?: InAppNotificationWhereInput[]
     NOT?: InAppNotificationWhereInput | InAppNotificationWhereInput[]
@@ -146708,7 +146709,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"InAppNotification"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-  }, "id">
+  }, "id" | "orgId_entityId_type">
 
   export type InAppNotificationOrderByWithAggregationInput = {
     id?: SortOrder
@@ -169116,6 +169117,12 @@ export namespace Prisma {
     in?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumInAppNotificationTypeFilter<$PrismaModel> | $Enums.InAppNotificationType
+  }
+
+  export type InAppNotificationOrgIdEntityIdTypeCompoundUniqueInput = {
+    orgId: string
+    entityId: string
+    type: $Enums.InAppNotificationType
   }
 
   export type InAppNotificationCountOrderByAggregateInput = {
