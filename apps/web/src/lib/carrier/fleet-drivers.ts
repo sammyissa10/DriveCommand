@@ -134,7 +134,7 @@ export async function getCarrierDriver(orgId: string, id: string) {
   const driver = await tenantPrisma.carrierDriver.findFirst({
     where: { id, orgId },
     include: {
-      user: { select: { email: true } },
+      user: { select: { email: true, isActive: true } },
       homeTerminal: { select: { id: true, name: true } },
       primaryDispatches: {
         select: {
