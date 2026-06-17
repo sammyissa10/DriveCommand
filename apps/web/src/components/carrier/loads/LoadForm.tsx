@@ -488,7 +488,7 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
         if (!dispatchRes.ok) {
           const dispatchJson = await dispatchRes.json().catch(() => ({}));
           if (dispatchJson.error === 'DRIVER_NOT_DISPATCH_READY') {
-            toast.error("The load was created, but the selected driver isn't dispatch-ready yet (onboarding steps incomplete). The trip wasn't started. You can assign this load to a trip later once the driver completes onboarding.", { duration: 6000 });
+            toast.error("Load saved. Driver isn't dispatch-ready yet, so the trip wasn't started — assign it to a trip later.", { duration: 6000 });
           } else {
             toast.error('The load was created, but the trip could not be started. You can assign it to a trip later.');
           }
