@@ -3,6 +3,7 @@
 import { useState, useEffect, FormEvent, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 function AcceptInvitationForm() {
   const searchParams = useSearchParams();
@@ -229,16 +230,30 @@ function AcceptInvitationForm() {
 
 export default function AcceptInvitationPage() {
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-sm">
-      <Suspense
-        fallback={
-          <div className="w-full rounded-xl border border-border bg-card shadow-sm p-6 flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        }
-      >
-        <AcceptInvitationForm />
-      </Suspense>
+    <div className="min-h-dvh w-full flex flex-col items-center justify-center px-4">
+      <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+        <div className="flex flex-row items-center gap-3 mb-2">
+          <Image
+            src="/brand/drivecommand-mark-mono-light.svg"
+            alt="DriveCommand"
+            width={56}
+            height={56}
+            priority
+          />
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            DriveCommand
+          </h1>
+        </div>
+        <Suspense
+          fallback={
+            <div className="w-full rounded-xl border border-border bg-card shadow-sm p-6 flex items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          }
+        >
+          <AcceptInvitationForm />
+        </Suspense>
+      </div>
     </div>
   );
 }
