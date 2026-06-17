@@ -231,7 +231,7 @@ function SwimlaneColumn({ title, bucket, instances }: SwimlaneColumnProps) {
           {instances.length}
         </span>
       </div>
-      <div className="flex-1 flex flex-col gap-3 overflow-y-auto md:max-h-[calc(100vh-260px)] pr-1">
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto md:max-h-[376px] pr-1">
         {instances.length === 0 ? (
           <p className="text-xs text-muted-foreground py-4 text-center">Nothing here</p>
         ) : (
