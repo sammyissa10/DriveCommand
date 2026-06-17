@@ -224,20 +224,22 @@ function SwimlaneColumn({ title, bucket, instances }: SwimlaneColumnProps) {
         : 'text-green-600 dark:text-green-400';
 
   return (
-    <div className="flex flex-col gap-3 min-w-0">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col min-w-0 h-full">
+      <div className="flex items-center gap-2 mb-3">
         <h3 className={`text-sm font-semibold ${headerColor}`}>{title}</h3>
         <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
           {instances.length}
         </span>
       </div>
-      {instances.length === 0 ? (
-        <p className="text-xs text-muted-foreground py-4 text-center">Nothing here</p>
-      ) : (
-        instances.map((inst) => (
-          <InstanceCard key={inst.id} instance={inst} bucket={bucket} />
-        ))
-      )}
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto md:max-h-[calc(100vh-260px)] pr-1">
+        {instances.length === 0 ? (
+          <p className="text-xs text-muted-foreground py-4 text-center">Nothing here</p>
+        ) : (
+          instances.map((inst) => (
+            <InstanceCard key={inst.id} instance={inst} bucket={bucket} />
+          ))
+        )}
+      </div>
     </div>
   );
 }
@@ -284,7 +286,7 @@ export function WorkBoardSection({ instances, isLoading }: WorkBoardSectionProps
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-stretch">
       <SwimlaneColumn title="Needs Attention" bucket="attention" instances={attention} />
       <SwimlaneColumn title="In Progress" bucket="progress" instances={progress} />
       <SwimlaneColumn title="Completed Today" bucket="completed" instances={completed} />
