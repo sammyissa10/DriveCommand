@@ -1,30 +1,49 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { DriverForm } from '@/components/drivers/driver-invite-form';
 import { inviteDriver } from '@/app/(owner)/actions/drivers';
+import { DriverInviteForm } from './_components/DriverInviteForm';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function InviteDriverPage() {
+function FormSkeleton() {
+  return (
+    <div className="max-w-2xl space-y-8">
+      <Skeleton className="h-6 w-32" />
+      <div className="space-y-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-12 w-full" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function DriverInvitePage() {
   return (
     <div className="space-y-6">
+      {/* Back link */}
+      <Link
+        href="/drivers"
+        className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+        Back to Drivers
+      </Link>
+
+      {/* Header */}
       <div>
-        <Link
-          href="/drivers"
-          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
-        >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-          Back to Drivers
-        </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Invite Driver</h1>
-        <p className="mt-1 text-muted-foreground">Send an invitation to a new driver</p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          Invite Driver
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          Send an invitation to add a new driver to your fleet
+        </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <DriverForm
-          action={inviteDriver}
-          mode="invite"
-          submitLabel="Send Invitation"
-        />
-      </div>
+      {/* Form */}
+      <Suspense fallback={<FormSkeleton />}>
+        <DriverInviteForm action={inviteDriver} />
+      </Suspense>
     </div>
   );
 }
