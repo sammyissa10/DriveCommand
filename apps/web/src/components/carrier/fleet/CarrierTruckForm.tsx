@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -15,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { FormField, FormSection, FormRow } from '@/components/design-system';
+import { cn } from '@/lib/utils';
 
 export interface CarrierTruckData {
   id: string;
@@ -114,6 +117,26 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLookingUp, setIsLookingUp] = useState(false);
+  const [showCompleteness, setShowCompleteness] = useState(true);
+
+  // Calculate form completeness
+  const completeness = useMemo(() => {
+    const fields = [
+      values.unitNumber,
+      values.vin,
+      values.year,
+      values.make,
+      values.model,
+      values.truckType,
+      values.grossWeightLbs,
+      values.licensePlate,
+      values.licenseState,
+      values.registrationExpiry,
+      values.insuranceExpiry,
+    ];
+    const filled = fields.filter((f) => f && String(f).trim() !== '').length;
+    return Math.round((filled / fields.length) * 100);
+  }, [values]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -259,36 +282,63 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
         </div>
       )}
 
-      {/* Basic info */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground" htmlFor="unitNumber">
-            Unit Number <span className="text-destructive">*</span>
-          </label>
-          <Input
-            id="unitNumber"
-            name="unitNumber"
-            value={values.unitNumber}
-            onChange={handleChange}
-            placeholder="TRK-001"
-          />
+      {/* Completeness indicator (optional, dismissible) */}
+      {!isEdit && showCompleteness && completeness < 100 && (
+        <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-muted/50 border border-border">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-foreground">Profile completeness</span>
+                <span className="text-sm text-muted-foreground">{completeness}%</span>
+              </div>
+              <Progress value={completeness} className="h-2" />
+            </div>
+            {completeness === 100 && (
+              <CheckCircle className="h-5 w-5 text-status-success-foreground flex-shrink-0" />
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowCompleteness(false)}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Dismiss
+          </button>
         </div>
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground" htmlFor="displayName">
-            Display Name
-          </label>
-          <Input
-            id="displayName"
+      )}
+
+      {/* Section 1: Identity */}
+      <FormSection title="Identity" description="Basic vehicle identification">
+        <FormRow>
+          <FormField label="Unit Number" name="unitNumber" required>
+            <Input
+              id="unitNumber"
+              name="unitNumber"
+              value={values.unitNumber}
+              onChange={handleChange}
+              placeholder="TRK-001"
+            />
+          </FormField>
+          <FormField
+            label="Display Name"
             name="displayName"
-            value={values.displayName}
-            onChange={handleChange}
-            placeholder="e.g. Big Red, Unit Alpha, Truck 7"
-          />
-        </div>
-        <div className="space-y-1.5 lg:col-span-2">
-          <label className="text-sm font-medium text-foreground" htmlFor="vin">
-            VIN
-          </label>
+            helperText="Optional friendly name (e.g. Big Red)"
+          >
+            <Input
+              id="displayName"
+              name="displayName"
+              value={values.displayName}
+              onChange={handleChange}
+              placeholder="e.g. Big Red, Unit Alpha"
+            />
+          </FormField>
+        </FormRow>
+
+        <FormField
+          label="VIN"
+          name="vin"
+          helperText="Enter 17-character VIN and click Lookup to auto-fill vehicle details"
+        >
           <div className="flex gap-2">
             <Input
               id="vin"
@@ -296,7 +346,8 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               value={values.vin}
               onChange={handleChange}
               placeholder="1HGBH41JXMN109186"
-              className="font-mono flex-1"
+              className="font-mono flex-1 uppercase"
+              maxLength={17}
             />
             <Button
               type="button"
@@ -313,80 +364,65 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               <span className="ml-1.5">{isLookingUp ? 'Looking up…' : 'Lookup'}</span>
             </Button>
           </div>
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground" htmlFor="year">
-            Year
-          </label>
-          <Input
-            id="year"
-            name="year"
-            type="number"
-            min="1900"
-            max="2099"
-            value={values.year}
-            onChange={handleChange}
-            placeholder="2022"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground" htmlFor="make">
-            Make
-          </label>
-          <Input
-            id="make"
-            name="make"
-            value={values.make}
-            onChange={handleChange}
-            placeholder="Kenworth"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground" htmlFor="model">
-            Model
-          </label>
-          <Input
-            id="model"
-            name="model"
-            value={values.model}
-            onChange={handleChange}
-            placeholder="T680"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground" htmlFor="truckType">
-            Truck Type
-          </label>
-          <Select
-            value={values.truckType}
-            onValueChange={(val) => setValues((prev) => ({ ...prev, truckType: val }))}
-          >
-            <SelectTrigger id="truckType">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="semi">Semi</SelectItem>
-              <SelectItem value="box_truck">Box Truck</SelectItem>
-              <SelectItem value="flatbed">Flatbed</SelectItem>
-              <SelectItem value="reefer">Reefer</SelectItem>
-              <SelectItem value="tanker">Tanker</SelectItem>
-              <SelectItem value="day_cab">Day Cab</SelectItem>
-              <SelectItem value="straight_truck">Straight Truck</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+        </FormField>
 
-      {/* Weight & capacity */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Weight &amp; Capacity
-        </h3>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="grossWeightLbs">
-              GVWR (lbs)
-            </label>
+        <FormRow columns={4}>
+          <FormField label="Year" name="year">
+            <Input
+              id="year"
+              name="year"
+              type="number"
+              min="1900"
+              max="2099"
+              value={values.year}
+              onChange={handleChange}
+              placeholder="2022"
+            />
+          </FormField>
+          <FormField label="Make" name="make">
+            <Input
+              id="make"
+              name="make"
+              value={values.make}
+              onChange={handleChange}
+              placeholder="Kenworth"
+            />
+          </FormField>
+          <FormField label="Model" name="model">
+            <Input
+              id="model"
+              name="model"
+              value={values.model}
+              onChange={handleChange}
+              placeholder="T680"
+            />
+          </FormField>
+          <FormField label="Truck Type" name="truckType">
+            <Select
+              value={values.truckType}
+              onValueChange={(val) => setValues((prev) => ({ ...prev, truckType: val }))}
+            >
+              <SelectTrigger id="truckType">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="semi">Semi</SelectItem>
+                <SelectItem value="box_truck">Box Truck</SelectItem>
+                <SelectItem value="flatbed">Flatbed</SelectItem>
+                <SelectItem value="reefer">Reefer</SelectItem>
+                <SelectItem value="tanker">Tanker</SelectItem>
+                <SelectItem value="day_cab">Day Cab</SelectItem>
+                <SelectItem value="straight_truck">Straight Truck</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
+        </FormRow>
+      </FormSection>
+
+      {/* Section 2: Weight & Capacity */}
+      <FormSection title="Weight & Capacity" divider>
+        <FormRow columns={3}>
+          <FormField label="GVWR (lbs)" name="grossWeightLbs" helperText="Gross Vehicle Weight Rating">
             <Input
               id="grossWeightLbs"
               name="grossWeightLbs"
@@ -396,11 +432,8 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               onChange={handleChange}
               placeholder="80000"
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="payloadCapacityLbs">
-              Payload Capacity (lbs)
-            </label>
+          </FormField>
+          <FormField label="Payload Capacity (lbs)" name="payloadCapacityLbs">
             <Input
               id="payloadCapacityLbs"
               name="payloadCapacityLbs"
@@ -410,11 +443,8 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               onChange={handleChange}
               placeholder="44000"
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="currentOdometerMiles">
-              Odometer (miles)
-            </label>
+          </FormField>
+          <FormField label="Odometer (miles)" name="currentOdometerMiles">
             <Input
               id="currentOdometerMiles"
               name="currentOdometerMiles"
@@ -424,32 +454,24 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               onChange={handleChange}
               placeholder="125000"
             />
-          </div>
-        </div>
-      </div>
+          </FormField>
+        </FormRow>
+      </FormSection>
 
-      {/* Registration & compliance */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Registration &amp; Compliance
-        </h3>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="licensePlate">
-              License Plate
-            </label>
+      {/* Section 3: Registration & Compliance */}
+      <FormSection title="Registration & Compliance" divider>
+        <FormRow>
+          <FormField label="License Plate" name="licensePlate">
             <Input
               id="licensePlate"
               name="licensePlate"
               value={values.licensePlate}
               onChange={handleChange}
               placeholder="ABC1234"
+              className="uppercase"
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="licenseState">
-              License State
-            </label>
+          </FormField>
+          <FormField label="License State" name="licenseState">
             <Select
               value={values.licenseState || undefined}
               onValueChange={(val) => setValues((prev) => ({ ...prev, licenseState: val }))}
@@ -465,11 +487,11 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="registrationExpiry">
-              Registration Expiry
-            </label>
+          </FormField>
+        </FormRow>
+
+        <FormRow columns={3}>
+          <FormField label="Registration Expiry" name="registrationExpiry">
             <Input
               id="registrationExpiry"
               name="registrationExpiry"
@@ -477,11 +499,8 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               value={values.registrationExpiry}
               onChange={handleChange}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="licenseExpiry">
-              License Expiry
-            </label>
+          </FormField>
+          <FormField label="License Expiry" name="licenseExpiry">
             <Input
               id="licenseExpiry"
               name="licenseExpiry"
@@ -489,11 +508,8 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               value={values.licenseExpiry}
               onChange={handleChange}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="insuranceExpiry">
-              Insurance Expiry
-            </label>
+          </FormField>
+          <FormField label="Insurance Expiry" name="insuranceExpiry">
             <Input
               id="insuranceExpiry"
               name="insuranceExpiry"
@@ -501,11 +517,11 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               value={values.insuranceExpiry}
               onChange={handleChange}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="truckStatus">
-              Status
-            </label>
+          </FormField>
+        </FormRow>
+
+        <FormRow>
+          <FormField label="Status" name="status">
             <Select
               value={values.status}
               onValueChange={(val) => setValues((prev) => ({ ...prev, status: val }))}
@@ -520,15 +536,12 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
                 <SelectItem value="out_of_service">Out of Service</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-        </div>
-      </div>
+          </FormField>
+        </FormRow>
+      </FormSection>
 
       {/* Notes */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-foreground" htmlFor="truckNotes">
-          Notes
-        </label>
+      <FormField label="Notes" name="notes">
         <Textarea
           id="truckNotes"
           name="notes"
@@ -537,7 +550,7 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
           placeholder="Additional notes about this truck..."
           rows={3}
         />
-      </div>
+      </FormField>
 
       {/* Submit */}
       <div className="flex justify-end gap-3 pt-2">

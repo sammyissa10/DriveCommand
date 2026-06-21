@@ -17,6 +17,31 @@ export interface TruckRow {
   currentOdometerMiles: number | null;
   registrationExpiry: Date | string | null;
   licenseExpiry: Date | string | null;
+  insuranceExpiry: Date | string | null;
+  licensePlate: string | null;
+  licenseState: string | null;
   status: string;
   isSample: boolean;
+  photoS3Key: string | null;
+  assignedDriver: { id: string; firstName: string; lastName: string } | null;
+}
+
+/**
+ * KPI data for trucks overview
+ */
+export interface TruckKPIData {
+  totalFleet: number;
+  activeCompliant: number;
+  expiringSoon: number;
+  needsAction: number;
+}
+
+/**
+ * Status tab counts
+ */
+export interface TruckStatusCounts {
+  all: number;
+  active: number;
+  maintenance: number;
+  out_of_service: number;
 }

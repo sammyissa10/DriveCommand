@@ -60,6 +60,11 @@ export function getStatusVariant(status: string): StatusBadgeVariant {
     overdue: 'danger',
     cancelled: 'danger',
     failed: 'danger',
+    outofservice: 'danger',
+    out_of_service: 'danger',
+
+    // Warning states (truck maintenance)
+    maintenance: 'warning',
 
     // Info states (in-transit)
     intransit: 'info',
