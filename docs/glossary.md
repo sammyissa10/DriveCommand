@@ -38,6 +38,9 @@ The owner-facing view that aggregates driver document expiry (CDL, medical card,
 **complianceStatus**
 A computed field on driver and document objects: `ok` (all documents valid), `warning` (at least one document expiring within 30 days), `critical` (at least one document expired).
 
+**CarrierStop**
+An individual stop within a trip (dispatch). Represents a pickup, delivery, relay, or drop-hook location. Stops have appointment windows, status tracking (`pending` → `arrived` → `completed` or `skipped`), and BOL/POD document requirements. Ordered by `sequenceOrder` within a trip.
+
 ---
 
 ## D
@@ -50,6 +53,9 @@ A load status indicating the freight has been delivered to the destination. Driv
 
 **DISPATCHED** (DB enum)
 Internal database status meaning the driver has accepted the dispatch (driver sees this as "ACCEPTED"). See [Load Status Mapping](#load-status-mapping).
+
+**Dispatch Number**
+Auto-generated identifier for a trip in the format `DC-YYYY-NNNNN` (e.g., `DC-2026-00042`). Sequential per tenant per year. Stored in the trip's `notes` field as `[DISPATCH_NUMBER=DC-2026-00042]`.
 
 **driverId**
 In the mobile auth context, `auth.driverId` is the authenticated user's ID when their role is `DRIVER`. It equals `auth.userId`. Driver endpoints filter all data by this ID to ensure isolation.
@@ -92,6 +98,12 @@ The database model for messages between owners and drivers. Messages can be scop
 
 **HOS (Hours of Service)**
 FMCSA regulations limiting the number of hours a commercial truck driver can drive per day and week. Key limits: 11-hour driving limit, 14-hour on-duty window. DriveCommand drivers record HOS status changes manually via the mobile app. ELD integration for automatic recording is planned.
+
+**HOS Cycle**
+The Hours of Service regulatory cycle applied to a trip. Stored in the `hosCycle` field on trips. Common values:
+- `us_70` — US 70-hour/8-day cycle (most common)
+- `us_60` — US 60-hour/7-day cycle
+- `canada_70` — Canadian 70-hour cycle
 
 **HOSStatus**
 Enum values used for driver duty status entries: `OFF_DUTY`, `SLEEPER_BERTH`, `DRIVING`, `ON_DUTY`.
@@ -179,6 +191,9 @@ A user role in DriveCommand representing the fleet owner or dispatcher. Has full
 **PENDING**
 Initial load status. The load has been created but the driver has not yet accepted it.
 
+**pendingStopsJson**
+A JSON field on the `CarrierLoad` model that temporarily stores pickup/delivery stop data before the load is attached to a trip. When a load is added to a trip via `addLoadToTrip()`, this JSON is persisted as `CarrierStop` records and the field is cleared. This allows loads to be created without immediately requiring a trip.
+
 **PICKED_UP**
 An intermediate load status indicating the driver has picked up the freight. Not exposed as a direct driver transition in the current mobile app flow (used primarily on the web side).
 
@@ -201,6 +216,9 @@ A PostgreSQL feature that enforces access control at the database row level. Dri
 **Route**
 A collection of stops and loads assigned to a driver and truck for a single trip. Contains `RouteStop` records ordered by position. Related to loads via `routeId` FK on the `Load` model.
 
+**Route Template** (model: `RouteTemplate`)
+A reusable template for creating recurring trips. Stores facility references, appointment window offsets, and recurrence rules (daily, weekly, bi-weekly, monthly). When creating a trip from a template, stops are auto-inherited. If a template has a recurrence rule, completing a trip auto-generates the next occurrence.
+
 **RouteStop**
 An individual stop in a route (pickup, delivery, or waypoint). Has a `position` (ordering), `address`, `status` (`SCHEDULED`, `ARRIVED`, `DEPARTED`), and `departedAt` timestamp.
 
@@ -210,6 +228,13 @@ An individual stop in a route (pickup, delivery, or waypoint). Has a `position` 
 
 **SLEEPER_BERTH**
 An HOS status indicating the driver is in the sleeper berth section of the truck for mandatory rest.
+
+**Stop Type**
+The type of activity at a `CarrierStop`:
+- `pickup` — Loading freight onto the truck
+- `delivery` — Unloading freight at destination
+- `relay` — Driver handoff point for team-driver scenarios
+- `drop_hook` — Trailer drop/hook operation (no driver wait)
 
 **Supabase Auth**
 The authentication provider used by the DriveCommand mobile app. Handles email/password login, JWT token issuance, and token refresh. Separate from the web app's custom AES-256-GCM session cookie system.
@@ -221,8 +246,22 @@ The authentication provider used by the DriveCommand mobile app. Handles email/p
 **tenantId**
 The unique identifier for a fleet organization (tenant) in DriveCommand. Every database record is scoped to a `tenantId`. All mobile API queries filter by `tenantId` extracted from the verified JWT.
 
+**TONU (Truck On Not Used)**
+A terminal trip status indicating the driver arrived but the load was cancelled or unavailable. The truck was dispatched but no freight was moved. Compensation may still apply. Abbreviated as TONU (pronounced "TOE-new").
+
 **Tracking Token**
 A unique token stored on an active load that the mobile app fetches via `GET /api/mobile/driver/tracking-token`. Used as supplementary context in GPS reporting.
+
+**Trip** (model: `Trip`, table: `dispatches`)
+A scheduled driver assignment that connects a truck, primary driver (and optional co-driver), and a sequence of stops. The primary operational unit for dispatch management. Status workflow: `planned` → `in_progress` → `completed` (or `cancelled` / `tonu`). Renamed from `CarrierDispatch` in Phase 403 while maintaining the `dispatches` table name for backward compatibility. See [Trips Technical Spec](/docs/specs/trips.md).
+
+**Trip Status**
+The current state of a trip in its lifecycle:
+- `planned` — Trip scheduled but not started; driver/truck can still be changed
+- `in_progress` — Driver has departed; driver/truck assignments locked
+- `completed` — All stops completed; pay records generated
+- `cancelled` — Trip cancelled before completion; cascades to attached loads
+- `tonu` — Truck On Not Used; terminal state for loads that fell through
 
 **Turborepo**
 The monorepo build system used by DriveCommand. Manages two apps (`apps/web`, `apps/mobile`) and three shared packages (`@drivecommand/types`, `@drivecommand/validation`, `@drivecommand/api-client`).

@@ -38,7 +38,7 @@ Create and track trips. A Route connects a driver, a truck, an origin, and a des
 
 ---
 
-### 4. Loads / Dispatch — `/loads`
+### 4. Loads — `/loads`
 
 Manage freight loads through the full dispatch lifecycle: `PENDING` → `DISPATCHED` → `PICKED_UP` → `IN_TRANSIT` → `DELIVERED` → `INVOICED`. Loads are linked to customers, drivers, trucks, and routes. Each load gets a unique `trackingToken` that powers the public shipment tracking page at `/track/[token]`.
 
@@ -48,7 +48,31 @@ Manage freight loads through the full dispatch lifecycle: `PENDING` → `DISPATC
 
 ---
 
-### 5. Invoices — `/invoices`
+### 5. Trips / Dispatch — `/carrier/trips`
+
+Schedule and manage driver assignments. A Trip connects a driver, truck, and sequence of stops into a single dispatchable unit. Supports multi-stop routes, multi-load trips (LTL scenarios), template-based recurring dispatches, stop reordering via drag-drop, and driver pay generation on completion.
+
+Status workflow: `planned` → `in_progress` → `completed` (or `cancelled` / `tonu`). Starting a trip locks the driver and truck assignments. Completing a trip auto-generates driver pay records and can trigger the next recurring dispatch if created from a template.
+
+**Key features:**
+- Dispatch number auto-generation (`DC-YYYY-NNNNN`)
+- Route template inheritance for recurring trips
+- Stop sequencing with appointment windows
+- BOL/POD document tracking per stop
+- Load attachment and pending stop persistence
+- Driver readiness enforcement (Phase 45)
+- Workflow playbook triggers (`ON_DISPATCH_CREATE`, `ON_DISPATCH_DEPART`, `ON_DISPATCH_DELIVER`)
+
+**Key files:**
+- `src/app/(owner)/carrier/trips/` — Trip list, detail, plan editor pages
+- `src/app/(owner)/carrier/driver/trips/` — Driver-facing trip pages
+- `src/lib/carrier/trips.ts` — Core trip library (988 lines)
+- `src/app/api/v1/carrier/dispatches/` — Trip API routes
+- `docs/specs/trips.md` — Full technical specification
+
+---
+
+### 6. Invoices — `/invoices`
 
 Create and manage invoices for customers. Invoices can be linked to a load or route. Supports line items, tax, due dates, and status tracking (`DRAFT` → `SENT` → `PAID` → `OVERDUE`). PDF generation for download and email delivery.
 
@@ -57,7 +81,7 @@ Create and manage invoices for customers. Invoices can be linked to a load or ro
 
 ---
 
-### 6. Payroll — `/payroll`
+### 7. Payroll — `/payroll`
 
 Track driver pay periods. Each `PayrollRecord` covers a period with base pay, bonuses, deductions, and miles logged. Status lifecycle: `DRAFT` → `APPROVED` → `PAID`. PDF payslip generation for download.
 
@@ -66,7 +90,7 @@ Track driver pay periods. Each `PayrollRecord` covers a period with base pay, bo
 
 ---
 
-### 7. CRM — `/crm`
+### 8. CRM — `/crm`
 
 Customer relationship management. Track shippers and brokers as `Customer` records with contact info, load history, and revenue totals. Log interactions (calls, emails, meetings). Automated interactions are created when loads are updated or ETA notification emails are sent.
 
@@ -75,7 +99,7 @@ Customer relationship management. Track shippers and brokers as `Customer` recor
 
 ---
 
-### 8. Compliance — `/compliance`
+### 9. Compliance — `/compliance`
 
 Document expiry tracking. Shows upcoming expiry dates for truck documents (registration, insurance) and driver documents (licenses, applications). Aggregates safety events per driver over the last 90 days for a compliance score. Triggers email reminders via the daily cron job.
 
@@ -86,7 +110,7 @@ Document expiry tracking. Shows upcoming expiry dates for truck documents (regis
 
 ---
 
-### 9. AI Documents — `/ai-documents`
+### 10. AI Documents — `/ai-documents`
 
 Upload and AI-read rate confirmations, invoices, and load tenders. Uses Claude claude-sonnet-4-6 to extract structured freight data (origin, destination, rate, dates) from PDF or image uploads. Magic-byte validation runs before the Claude API call. Extracted data can be used to auto-populate load and route forms.
 
@@ -96,7 +120,7 @@ Upload and AI-read rate confirmations, invoices, and load tenders. Uses Claude c
 
 ---
 
-### 10. Profit Predictor — `/profit-predictor`
+### 11. Profit Predictor — `/profit-predictor`
 
 AI-powered profitability analysis for potential loads. Owner inputs a load (origin, destination, rate, weight) and receives an AI assessment: Accept (≥15% margin), Caution (0–14.9%), or Reject (negative margin). Uses historical lane performance and the tenant's `profitMarginThreshold` setting.
 
@@ -105,7 +129,7 @@ AI-powered profitability analysis for potential loads. Owner inputs a load (orig
 
 ---
 
-### 11. Lane Analytics — `/lane-analytics`
+### 12. Lane Analytics — `/lane-analytics`
 
 Profitability analysis by route lane (origin–destination pair). Aggregates revenue, expenses, and margin per lane across all completed routes. Displays the top 10 lanes in a bar chart and the full list in a sortable table. Helps owners identify their most and least profitable lanes.
 
@@ -114,7 +138,7 @@ Profitability analysis by route lane (origin–destination pair). Aggregates rev
 
 ---
 
-### 12. Live Map — `/live-map`
+### 13. Live Map — `/live-map`
 
 Real-time truck location map. Displays GPS pings from the `GPSLocation` table on a Leaflet map. Truck positions update on a 30-second polling interval. GPS data is submitted by the driver app (browser geolocation) or a connected ELD (Samsara, Motive) via the GPS API endpoint.
 
@@ -124,7 +148,7 @@ Real-time truck location map. Displays GPS pings from the `GPSLocation` table on
 
 ---
 
-### 13. Fuel Dashboard — `/fuel`
+### 14. Fuel Dashboard — `/fuel`
 
 Fuel economy tracking. Log fill-ups (quantity, cost, odometer) per truck. Dashboard shows MPG trends, cost per mile, and total fuel spend over time. Supports estimated fuel records for routes without explicit fill-up data.
 
@@ -133,7 +157,7 @@ Fuel economy tracking. Log fill-ups (quantity, cost, odometer) per truck. Dashbo
 
 ---
 
-### 14. Safety Analytics — `/safety`
+### 15. Safety Analytics — `/safety`
 
 Driver safety scoring. `SafetyEvent` records (harsh braking, speeding, etc.) are logged per truck, driver, and route. Dashboard shows event counts by type and severity, safety scores per driver, and trend charts.
 
@@ -142,7 +166,7 @@ Driver safety scoring. `SafetyEvent` records (harsh braking, speeding, etc.) are
 
 ---
 
-### 15. IFTA — `/ifta`
+### 16. IFTA — `/ifta`
 
 International Fuel Tax Agreement reporting. Aggregates miles driven and fuel purchased per jurisdiction using GPS ping data to detect state crossings (bounding-box method). Helps prepare quarterly IFTA filings. CSV export available.
 
@@ -151,7 +175,7 @@ International Fuel Tax Agreement reporting. Aggregates miles driven and fuel pur
 
 ---
 
-### 16. Tags — `/tags`
+### 17. Tags — `/tags`
 
 Color labels for organizing trucks and drivers. Tags are tenant-scoped. Can be applied to trucks or users for filtering and grouping in list views.
 
@@ -160,7 +184,7 @@ Color labels for organizing trucks and drivers. Tags are tenant-scoped. Can be a
 
 ---
 
-### 17. Settings — `/settings`
+### 18. Settings — `/settings`
 
 Tenant configuration. Set tenant name, timezone, and profit margin threshold. Manage third-party integrations (QuickBooks, Samsara, KeepTruckin/Motive, factoring services, email providers). Only accessible to users with the `OWNER` role.
 
@@ -169,7 +193,7 @@ Tenant configuration. Set tenant name, timezone, and profit margin threshold. Ma
 
 ---
 
-### 18. Support (Owner) — `/support`
+### 19. Support (Owner) — `/support`
 
 Owner submits support tickets to the DriveCommand team. Each ticket has a title, description, category, and priority. Owners and the DriveCommand team can message back and forth through a `TicketMessage` thread. Ticket numbers are auto-generated in `TKT-NNNN` format.
 
@@ -184,7 +208,7 @@ Driver portal modules live under `src/app/(driver)/` and are accessible to users
 
 ---
 
-### 19. Driver Portal — `/my-route`, `/my-load`, `/my-tickets`, `/hours`, `/incidents`, `/messages`
+### 20. Driver Portal — `/my-route`, `/my-load`, `/my-tickets`, `/hours`, `/incidents`, `/messages`
 
 Driver-facing interface for active operations:
 
@@ -207,7 +231,7 @@ SysAdmin portal lives under `src/app/(admin)/`. Login is at `/admin/login` using
 
 ---
 
-### 20. SysAdmin Portal — `/admin-dashboard`, `/admin-support`, `/tenants`
+### 21. SysAdmin Portal — `/admin-dashboard`, `/admin-support`, `/tenants`
 
 DriveCommand internal tools for the platform team:
 
@@ -222,7 +246,7 @@ Access requires the `ADMIN_SECRET_KEY` env var to be set. The admin session is m
 
 ---
 
-### 21. SysAdmin Invoicing — `/admin-dashboard` (invoices section)
+### 22. SysAdmin Invoicing — `/admin-dashboard` (invoices section)
 
 Billing management for DriveCommand to charge tenants. Create, edit, and send invoices from DriveCommand to fleet operators. Supports line items, recurring billing flags, and status lifecycle (`DRAFT` → `SENT` → `PAID` → `OVERDUE`). Uses the `SysAdminInvoice` and `SysAdminInvoiceItem` models.
 
@@ -233,7 +257,7 @@ Billing management for DriveCommand to charge tenants. Create, edit, and send in
 
 ## Shared / Public
 
-### 22. Shipment Tracking — `/track/[token]`
+### 23. Shipment Tracking — `/track/[token]`
 
 Public page (no login required) for customers to track their shipment. Accessible via a unique `trackingToken` on each load. Shows GPS map position, status timeline, and estimated delivery info. Polling updates the map every 30 seconds.
 
