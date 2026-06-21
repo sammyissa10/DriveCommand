@@ -40,7 +40,7 @@ export interface DriverWithRelations {
   /** Documents with an expiry date (pre-filtered to expiryDate not null). */
   documents: {
     id: string;
-    documentType: string;
+    documentType: string | null;
     expiryDate: Date | null;
   }[];
   /** Optional audit fields. */
