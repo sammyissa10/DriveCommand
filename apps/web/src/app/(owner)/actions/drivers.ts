@@ -230,7 +230,7 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
 }
 
 /**
- * List all drivers for the current tenant.
+ * List all drivers for the current tenant with compliance documents.
  * Requires OWNER or MANAGER role.
  */
 export async function listDrivers() {
@@ -238,15 +238,57 @@ export async function listDrivers() {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  return prisma.user.findMany({
+  const users = await prisma.user.findMany({
     take: 100,
     where: {
       role: 'DRIVER',
+    },
+    include: {
+      driverDocuments: {
+        where: {
+          expiryDate: { not: null },
+          documentType: {
+            in: ['DRIVER_LICENSE', 'MEDICAL_CARD', 'CDL_SCAN'],
+          },
+        },
+        select: {
+          id: true,
+          documentType: true,
+          expiryDate: true,
+        },
+      },
     },
     orderBy: {
       createdAt: 'desc',
     },
   });
+
+  // Map driverDocuments to documents for the DriverWithRelations interface
+  return users.map((user) => ({
+    ...user,
+    documents: user.driverDocuments,
+  }));
+}
+
+/**
+ * Delete a driver (soft delete via deactivation).
+ * Used for optimistic updates in the data grid.
+ * Requires OWNER or MANAGER role.
+ */
+export async function deleteDriver(id: string): Promise<{ success: boolean }> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  // Soft delete via deactivation (same as deactivateDriver but returns success object)
+  await prisma.user.update({
+    where: { id },
+    data: { isActive: false },
+  });
+
+  revalidatePath('/drivers');
+  revalidateTag('dashboard-metrics', 'max');
+
+  return { success: true };
 }
 
 /**
@@ -262,6 +304,40 @@ export async function getDriver(id: string) {
   return prisma.user.findUnique({
     where: { id },
   });
+}
+
+/**
+ * Get a single driver by ID with all related data for the detail page.
+ * Includes compliance documents and audit trail info.
+ * Requires OWNER or MANAGER role.
+ */
+export async function getDriverWithRelations(id: string) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const prisma = await getTenantPrisma();
+  const user = await prisma.user.findUnique({
+    where: { id, role: 'DRIVER' },
+    include: {
+      driverDocuments: {
+        where: {
+          expiryDate: { not: null },
+        },
+        select: {
+          id: true,
+          documentType: true,
+          expiryDate: true,
+        },
+      },
+    },
+  });
+
+  if (!user) return null;
+
+  // Map driverDocuments to documents for the DriverWithRelations interface
+  return {
+    ...user,
+    documents: user.driverDocuments,
+  };
 }
 
 /**
