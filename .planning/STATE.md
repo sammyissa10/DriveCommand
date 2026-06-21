@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-06-21 - Completed quick task 471: Implement Drivers section per approved spec (design system rebuild).
+Last activity: 2026-06-21 - Completed quick task 474: Build Contracts section per approved spec (overview, create, view/edit).
 Last session: 2026-06-16T21:02:00Z
 Stopped at: Completed quick-463 diagnosis — /notifications 500 is pool exhaustion, not a code bug. Critical blocker: increase Supabase pool_size from 15 to 50+ in dashboard settings. Also found: trip_change enum drift (tech debt, not urgent) and uncommitted local getTenantPrisma() change in notifications route (consistent with GUC pattern, does not fix root cause).
 
@@ -932,6 +932,7 @@ None blocking immediate progress.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 474 | Build Contracts section per approved spec | 2026-06-21 | 26637200 | [474-build-contracts-section-per-approved-spe](./quick/474-build-contracts-section-per-approved-spe/) |
 | 471 | Implement Drivers section per approved spec | 2026-06-21 | 8538d61e | [471-implement-drivers-section-per-approved-s](./quick/471-implement-drivers-section-per-approved-s/) |
 | 470 | Propose Drivers section spec mirroring Trucks pattern | 2026-06-21 | — (docs) | [470-propose-drivers-section-spec-mirroring-t](./quick/470-propose-drivers-section-spec-mirroring-t/) |
 | 469 | Pass 2 Phase A: Design System Consolidation | 2026-06-21 | 9f98eae1 | [469-pass-2-phase-a-design-system-consolidati](./quick/469-pass-2-phase-a-design-system-consolidati/) |
