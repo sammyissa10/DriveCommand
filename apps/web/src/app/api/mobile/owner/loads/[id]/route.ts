@@ -198,6 +198,28 @@ export async function PATCH(
     return NextResponse.json({ error: 'Load not found' }, { status: 404 });
   }
 
+  // Guard: require at least one linked invoice before marking as INVOICED (mirrors web action)
+  if (body.status === 'INVOICED') {
+    let invoiceCount: number;
+    try {
+      invoiceCount = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.invoice.count({
+          where: { loadId: id, status: { not: 'CANCELLED' } },
+        });
+      }, TX_OPTIONS);
+    } catch (err) {
+      logger.error('[mobile/owner/loads/[id] PATCH] invoice guard error:', err);
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
+    if (invoiceCount === 0) {
+      return NextResponse.json(
+        { error: 'An invoice must be created and linked to this load before it can be marked as Invoiced.' },
+        { status: 422 }
+      );
+    }
+  }
+
   // Geocode BEFORE the transaction if addresses changed
   const addressChanged =
     (body.origin !== undefined && body.origin !== existingLoad.origin) ||

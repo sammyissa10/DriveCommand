@@ -10,7 +10,7 @@
  * - orgId is always required; userId is optional (null = visible to all owners in org)
  */
 
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { InAppNotificationType } from '@/generated/prisma';
 
@@ -56,13 +56,17 @@ export async function createMessageNotification(params: CreateMessageNotificatio
 /**
  * Persist an in-app notification row for the owner portal notification center.
  *
+ * Idempotent on (org_id, entity_id, type): if a row already exists for this
+ * combination the insert is silently skipped (ON CONFLICT DO NOTHING), so
+ * nightly cron re-runs never create a second unread row for the same entity.
  * Errors are caught and logged; this function never throws.
  */
 export async function createNotification(params: CreateNotificationParams): Promise<void> {
   const { orgId, userId, type, title, message, entityType, entityId } = params;
   try {
-    await prisma.inAppNotification.create({
-      data: {
+    const tenantPrisma = await getTenantPrisma();
+    await tenantPrisma.inAppNotification.createMany({
+      data: [{
         orgId,
         userId: userId ?? null,
         type,
@@ -70,7 +74,8 @@ export async function createNotification(params: CreateNotificationParams): Prom
         message,
         entityType,
         entityId,
-      },
+      }],
+      skipDuplicates: true,
     });
   } catch (err) {
     logger.error('createNotification: failed to persist in-app notification', {

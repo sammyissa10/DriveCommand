@@ -7,11 +7,9 @@ import {
   Users2,
   FileText,
   Truck,
-  TrendingUp,
   MessageSquare,
   Plus,
   UserPlus,
-  Receipt,
   Send,
   CheckCircle,
   Route,
@@ -57,14 +55,6 @@ export function createNavigationProvider(
       section: "navigation",
       keywords: ["dashboard", "home", "overview", "stats", "kpi"],
     },
-    {
-      id: "nav-financials",
-      label: "Financials",
-      icon: TrendingUp,
-      section: "navigation",
-      keywords: ["money", "revenue", "billing", "invoices", "profit", "reports"],
-    },
-
     // ─── OPERATIONS (workflow order) ────────────────────────────────────────
     {
       id: "nav-clients",
@@ -190,7 +180,6 @@ export function createNavigationProvider(
   const hrefMap: Record<string, string> = {
     "nav-live-map": "/live-map",
     "nav-dashboard": "/carrier/dashboard",
-    "nav-financials": "/carrier/financials",
     "nav-clients": "/carrier/clients",
     "nav-contracts": "/carrier/contracts",
     "nav-routes": "/routes",
@@ -325,16 +314,6 @@ export const QUICK_ACTIONS: QuickAction[] = [
     shortcut: "C F",
     keywords: ["create facility", "new facility", "add facility", "warehouse", "location"],
   },
-  {
-    id: "create-expense",
-    label: "New Expense",
-    icon: Receipt,
-    section: "quick-create",
-    href: "/carrier/financials",
-    shortcut: "C E", // KEYBOARD SHORTCUT
-    keywords: ["create expense", "new expense", "add expense", "log expense"],
-  },
-
   // ─── Quick Actions section ────────────────────────────────────────────────
   {
     id: "action-assign-driver",
@@ -514,8 +493,8 @@ export function createHelpProvider(
       section: "help",
       keywords: ["help", "support", "documentation", "docs", "how to", "tutorial", "guide"],
     },
-    // All categories
-    ...HELP_CATEGORIES.map((category) => ({
+    // All categories (hidden categories excluded)
+    ...HELP_CATEGORIES.filter((c) => !c.hidden).map((category) => ({
       id: `help-cat-${category.slug}`,
       label: category.name,
       secondary: "Help",
@@ -538,7 +517,7 @@ export function createHelpProvider(
   const hrefMap: Record<string, string> = {
     "help-center": "/help",
     ...Object.fromEntries(
-      HELP_CATEGORIES.map((cat) => [`help-cat-${cat.slug}`, `/help/${cat.slug}`])
+      HELP_CATEGORIES.filter((cat) => !cat.hidden).map((cat) => [`help-cat-${cat.slug}`, `/help/${cat.slug}`])
     ),
     ...Object.fromEntries(
       getAllArticles().map((article) => [

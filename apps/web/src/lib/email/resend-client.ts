@@ -27,6 +27,7 @@ export const resend = new Proxy({} as Resend, {
 });
 
 export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'DriveCommand <team@drivecommand.io>';
+export const REPLY_TO_EMAIL = process.env.RESEND_REPLY_TO || 'team@drivecommand.io';
 
 export interface SendEmailOptions {
   to: string | string[];

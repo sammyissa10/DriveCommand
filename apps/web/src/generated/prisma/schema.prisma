@@ -2537,6 +2537,7 @@ model InAppNotification {
   tenant Tenant @relation(fields: [orgId], references: [id])
   user   User?  @relation(fields: [userId], references: [id])
 
+  @@unique([orgId, entityId, type])
   @@index([orgId, read, createdAt(sort: Desc)])
   @@index([orgId, createdAt(sort: Desc)])
   @@map("in_app_notifications")

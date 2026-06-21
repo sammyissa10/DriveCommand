@@ -71,7 +71,7 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/facilities/${row.id}/edit`),
+        onClick: () => router.push(`/carrier/facilities/${row.id}`),
       },
       {
         id: 'delete',

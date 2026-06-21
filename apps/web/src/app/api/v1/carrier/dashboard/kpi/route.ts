@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 /**
@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
  * Returns KPI counts for the owner dashboard:
  * - loadsThisWeek: CarrierLoads created since Monday of this week
  * - pendingPayApprovals: DriverPayRecords with status = 'pending'
- * - openInvoices: CarrierLoads with status = 'invoiced'
+ * - openInvoices: Invoice records with status SENT or OVERDUE (outstanding AR per spec §5.8)
  * - revenueThisWeek: Sum of totalRevenue (or fallback to rate fields) for loads this week
  */
 export async function GET() {
@@ -28,29 +28,31 @@ export async function GET() {
     monday.setUTCDate(now.getUTCDate() + daysToMonday);
     monday.setUTCHours(0, 0, 0, 0);
 
-    const [loadsThisWeek, pendingPayApprovals, openInvoices, revenueRows] = await Promise.all([
-      prisma.carrierLoad.count({
+    const tenantPrisma = await getTenantPrisma();
+    const [loadsThisWeek, pendingPayApprovals, openInvoiceGroups, revenueRows] = await Promise.all([
+      tenantPrisma.carrierLoad.count({
         where: {
           orgId,
           isSample: false,
           createdAt: { gte: monday },
         },
       }),
-      prisma.driverPayRecord.count({
+      tenantPrisma.driverPayRecord.count({
         where: {
           orgId,
           status: 'pending',
         },
       }),
-      prisma.carrierLoad.count({
-        where: {
-          orgId,
-          isSample: false,
-          status: 'invoiced',
-        },
+      // Invoice/InvoiceItem are RLS-scoped via getTenantPrisma() GUC — no explicit orgId filter needed.
+      // CarrierLoad/CarrierExpense/DriverPayRecord use explicit orgId filters (those models have an orgId column).
+      // "open" = SENT + OVERDUE per spec §5.8 outstanding-AR semantics.
+      tenantPrisma.invoice.groupBy({
+        by: ['status'],
+        where: { archivedAt: null },
+        _count: true,
       }),
       // Fetch revenue fields for this week's non-cancelled loads (exclude sample data)
-      prisma.carrierLoad.findMany({
+      tenantPrisma.carrierLoad.findMany({
         where: {
           orgId,
           isSample: false,
@@ -66,6 +68,10 @@ export async function GET() {
         },
       }),
     ]);
+
+    const openInvoices = openInvoiceGroups
+      .filter(g => g.status === 'SENT' || g.status === 'OVERDUE')
+      .reduce((sum, g) => sum + g._count, 0);
 
     // Compute revenue: prefer totalRevenue, fall back to summing rate fields
     let revenueThisWeek = 0;

@@ -41,6 +41,8 @@ export interface HelpCategory {
   icon: LucideIcon
   /** Articles in this category */
   articles: HelpArticle[]
+  /** When true, the category is hidden from index, category/article pages, and search. Content is preserved for later restoration. */
+  hidden?: boolean
 }
 
 /**
@@ -105,8 +107,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   },
   {
     slug: "loads-and-dispatches",
-    name: "Loads & Dispatches",
-    description: "Create loads, assign drivers, and track deliveries.",
+    name: "Loads & Trips",
+    description: "Create loads, build trips, assign drivers, and track deliveries.",
     icon: Package,
     articles: [
       {
@@ -119,7 +121,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         slug: "assigning-driver-to-load",
         title: "Assigning a driver to a load",
         preview: "Match the right driver to each shipment.",
-        keywords: ["assign driver", "dispatch", "assign load", "driver assignment"],
+        keywords: ["assign driver", "trip", "assign load", "driver assignment"],
       },
       {
         slug: "tracking-load-realtime",
@@ -141,9 +143,9 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
       {
         slug: "dispatch-workflow",
-        title: "Understanding the dispatch workflow",
+        title: "Understanding the trip workflow",
         preview: "Learn how loads flow from creation to delivery.",
-        keywords: ["dispatch", "workflow", "process", "lifecycle"],
+        keywords: ["trip", "workflow", "process", "lifecycle"],
       },
       {
         slug: "bulk-load-import",
@@ -199,6 +201,48 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         preview: "Special considerations for dangerous goods.",
         keywords: ["hazmat", "dangerous goods", "placard", "special handling"],
       },
+      {
+        slug: "what-is-a-trip",
+        title: "What is a trip?",
+        preview: "A plain-English intro to trips and how they organize your loads.",
+        keywords: ["trip", "what is", "definition", "overview"],
+      },
+      {
+        slug: "creating-a-trip",
+        title: "Creating a trip",
+        preview: "Step-by-step guide to building a new trip.",
+        keywords: ["create trip", "new trip", "add trip", "build trip"],
+      },
+      {
+        slug: "assigning-driver-and-truck",
+        title: "Assigning a driver and truck",
+        preview: "Match the right driver and truck to each trip.",
+        keywords: ["assign driver", "assign truck", "trip assignment", "driver", "truck"],
+      },
+      {
+        slug: "following-stop-timeline",
+        title: "Following the stop timeline",
+        preview: "Watch a trip progress through its pickups and deliveries.",
+        keywords: ["stop timeline", "stops", "progress", "pickups", "deliveries"],
+      },
+      {
+        slug: "completing-and-skipping-stops",
+        title: "Completing and skipping stops",
+        preview: "Mark stops done or skip them when plans change.",
+        keywords: ["complete stop", "skip stop", "stops", "update stop"],
+      },
+      {
+        slug: "understanding-trip-status",
+        title: "Understanding trip status",
+        preview: "What each trip status means and how trips move between them.",
+        keywords: ["trip status", "status", "lifecycle", "in progress", "completed"],
+      },
+      {
+        slug: "editing-a-trip",
+        title: "Editing a trip",
+        preview: "Update stops, assignments, or details on an existing trip.",
+        keywords: ["edit trip", "modify trip", "update trip", "change trip"],
+      },
     ],
   },
   {
@@ -227,14 +271,14 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
       {
         slug: "dispatching-from-route",
-        title: "Dispatching from a route",
-        preview: "Turn a route template into an active load.",
-        keywords: ["dispatch", "route template", "create from route", "use route"],
+        title: "Generating trips from a route",
+        preview: "Turn a route template into active trips.",
+        keywords: ["trip", "generate trip", "route template", "create from route", "use route"],
       },
       {
         slug: "route-scheduling",
         title: "Setting up route schedules",
-        preview: "Automate recurring dispatches on a schedule.",
+        preview: "Automate recurring trips on a schedule.",
         keywords: ["schedule", "recurring", "weekly", "daily", "automation"],
       },
       {
@@ -315,6 +359,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   },
   {
     slug: "financials",
+    hidden: true,
     name: "Financials",
     description: "Track revenue, expenses, and driver pay.",
     icon: TrendingUp,
@@ -447,9 +492,12 @@ export const HELP_CATEGORIES: HelpCategory[] = [
 
 /**
  * Get a category by its slug
+ * Returns undefined for hidden categories so route pages naturally 404.
  */
 export function getCategoryBySlug(slug: string): HelpCategory | undefined {
-  return HELP_CATEGORIES.find((cat) => cat.slug === slug)
+  const category = HELP_CATEGORIES.find((cat) => cat.slug === slug)
+  if (!category || category.hidden) return undefined
+  return category
 }
 
 /**
@@ -470,10 +518,10 @@ export function getArticleBySlug(
 
 /**
  * Get all articles across all categories (flattened)
- * Useful for search indexing
+ * Useful for search indexing. Excludes hidden categories.
  */
 export function getAllArticles(): Array<HelpArticle & { categorySlug: string; categoryName: string }> {
-  return HELP_CATEGORIES.flatMap((category) =>
+  return HELP_CATEGORIES.filter((category) => !category.hidden).flatMap((category) =>
     category.articles.map((article) => ({
       ...article,
       categorySlug: category.slug,

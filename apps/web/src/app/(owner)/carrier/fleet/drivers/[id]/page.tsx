@@ -64,6 +64,7 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
   const role = (session.role ?? '').toUpperCase();
   const canEdit = role === 'SYSTEM_ADMIN' || role === 'OWNER';
   const canMarkPaid = role === 'SYSTEM_ADMIN' || role === 'OWNER' || role === 'MANAGER';
+  const canManageAccess = role === 'OWNER' || role === 'MANAGER' || role === 'SYSTEM_ADMIN';
 
   const [driver, facilitiesResult] = await Promise.all([
     getCarrierDriver(orgId, id),
@@ -136,6 +137,9 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
             driverName={`${driver.firstName} ${driver.lastName}`}
             driverEmail={driver.email ?? null}
             invitationStatus={invitationStatus}
+            userId={driver.userId ?? null}
+            userIsActive={driver.user?.isActive ?? null}
+            canManageAccess={canManageAccess}
           />
         </div>
       </div>

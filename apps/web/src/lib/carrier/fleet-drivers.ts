@@ -6,6 +6,7 @@ import { logger } from '@/lib/logger';
 import { encryptField, decryptField } from '@/lib/security/field-crypto';
 import { getCurrentKey } from '@/lib/security/key-registry';
 import { writeAuditLog } from '@/lib/security/audit-log';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -91,6 +92,7 @@ function redactCdlFields<T extends Record<string, unknown>>(driver: T): T {
 // ---------------------------------------------------------------------------
 
 export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriversFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { status, search, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
@@ -110,7 +112,7 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierDriver.findMany({
+    tenantPrisma.carrierDriver.findMany({
       where,
       skip,
       take: pageSize,
@@ -120,7 +122,7 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
         homeTerminal: { select: { id: true, name: true } },
       },
     }),
-    prisma.carrierDriver.count({ where }),
+    tenantPrisma.carrierDriver.count({ where }),
   ]);
 
   // Redact plaintext + ciphertext — return only last4
@@ -128,10 +130,11 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
 }
 
 export async function getCarrierDriver(orgId: string, id: string) {
-  const driver = await prisma.carrierDriver.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const driver = await tenantPrisma.carrierDriver.findFirst({
     where: { id, orgId },
     include: {
-      user: { select: { email: true } },
+      user: { select: { email: true, isActive: true } },
       homeTerminal: { select: { id: true, name: true } },
       primaryDispatches: {
         select: {
@@ -179,17 +182,23 @@ export async function createCarrierDriver(
   const tenantPrisma = await getTenantPrisma();
   const { userId, cdlExpiry, payRate, ...rest } = data;
 
-  // If userId is provided, check for existing link
+  // If userId is provided, check for existing link and verify org membership
   if (userId) {
-    const existing = await prisma.carrierDriver.findFirst({ where: { userId } });
+    const existing = await tenantPrisma.carrierDriver.findFirst({ where: { userId } });
     if (existing) {
       throw new Error('User already linked to a carrier driver');
+    }
+    const user = await prisma.user.findFirst({
+      where: { id: userId, tenantId: orgId },
+    });
+    if (!user) {
+      throw new Error('Invalid userId: user not found in this organization');
     }
   }
 
   // Verify homeTerminalId belongs to this org (FK ownership check)
   if (data.homeTerminalId) {
-    const facility = await prisma.carrierFacility.findFirst({
+    const facility = await tenantPrisma.carrierFacility.findFirst({
       where: { id: data.homeTerminalId, orgId },
     });
     if (!facility) {
@@ -310,11 +319,12 @@ export async function deleteCarrierDriver(
   orgId: string,
   driverId: string
 ): Promise<{ deleted: true } | { error: string }> {
-  const driver = await prisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const driver = await tenantPrisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
   if (!driver) return { error: 'Not found' };
 
   // Check for active dispatches
-  const activeDispatchCount = await prisma.trip.count({
+  const activeDispatchCount = await tenantPrisma.trip.count({
     where: {
       OR: [{ primaryDriverId: driverId }, { coDriverId: driverId }],
       status: 'in_progress',
@@ -327,7 +337,7 @@ export async function deleteCarrierDriver(
   }
 
   // Check for approved/paid pay records
-  const lockedPayCount = await prisma.driverPayRecord.count({
+  const lockedPayCount = await tenantPrisma.driverPayRecord.count({
     where: { driverId, status: { in: ['approved', 'paid'] } },
   });
   if (lockedPayCount > 0) {
@@ -374,13 +384,14 @@ export async function resendCarrierDriverInvitation(
   orgId: string,
   driverId: string
 ): Promise<{ sent: true; email: string; warning?: string } | { error: string }> {
-  const driver = await prisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const driver = await tenantPrisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
   if (!driver) return { error: 'Not found' };
 
   if (!driver.email) return { error: 'Driver has no email address on file.' };
 
   // Find the most recent invitation
-  const latestInvitation = await prisma.driverInvitation.findFirst({
+  const latestInvitation = await tenantPrisma.driverInvitation.findFirst({
     where: { email: driver.email, tenantId: orgId },
     orderBy: { createdAt: 'desc' },
   });
@@ -390,8 +401,6 @@ export async function resendCarrierDriverInvitation(
       error: 'This driver has already accepted their invitation and has an active account.',
     };
   }
-
-  const tenantPrisma = await getTenantPrisma();
 
   // Cancel any existing PENDING or EXPIRED invitations
   if (latestInvitation && ['PENDING', 'EXPIRED'].includes(latestInvitation.status)) {
@@ -458,7 +467,8 @@ export async function getLatestInvitationStatus(
   orgId: string,
   email: string
 ): Promise<string | null> {
-  const invitation = await prisma.driverInvitation.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const invitation = await tenantPrisma.driverInvitation.findFirst({
     where: { email, tenantId: orgId },
     orderBy: { createdAt: 'desc' },
     select: { status: true },
@@ -472,7 +482,7 @@ export async function updateCarrierDriver(
   data: CarrierDriverUpdateInput
 ) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierDriver.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierDriver.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const { cdlExpiry, payRate, userId, cdlNumber, ...rest } = data;
@@ -489,7 +499,7 @@ export async function updateCarrierDriver(
 
   // Verify homeTerminalId belongs to this org when being set (FK ownership check)
   if (data.homeTerminalId !== undefined && data.homeTerminalId) {
-    const facility = await prisma.carrierFacility.findFirst({
+    const facility = await tenantPrisma.carrierFacility.findFirst({
       where: { id: data.homeTerminalId, orgId },
     });
     if (!facility) {
@@ -580,7 +590,8 @@ export async function decryptCarrierDriverCDL(args: {
   }
 
   // Fetch driver with encrypted columns
-  const driver = await prisma.carrierDriver.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const driver = await tenantPrisma.carrierDriver.findFirst({
     where: { id: driverId, orgId },
     select: {
       cdlNumberCiphertext: true,
@@ -613,4 +624,59 @@ export async function decryptCarrierDriverCDL(args: {
 
   await writeAuditLog({ ...auditBase, action: 'VIEW_PII' });
   return { ok: true, cdlNumber: plaintext };
+}
+
+export async function revokeCarrierDriverAccess(
+  orgId: string,
+  carrierDriverId: string
+): Promise<{ revoked: true; userId: string } | { error: string }> {
+  const tenantPrisma = await getTenantPrisma();
+  const driver = await tenantPrisma.carrierDriver.findFirst({
+    where: { id: carrierDriverId, orgId },
+    select: { id: true, userId: true },
+  });
+  if (!driver) return { error: 'Not found' };
+  if (!driver.userId) return { error: 'Driver has no linked account to revoke' };
+
+  await tenantPrisma.user.update({
+    where: { id: driver.userId },
+    data: { isActive: false },
+  });
+
+  try {
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin.auth.admin.updateUserById(driver.userId, { ban_duration: '87600h' });
+    await supabaseAdmin.auth.admin.signOut(driver.userId, 'global');
+  } catch (err) {
+    logger.error('[revokeCarrierDriverAccess] Supabase ban failed for user:' + driver.userId, err);
+  }
+
+  return { revoked: true, userId: driver.userId };
+}
+
+export async function restoreCarrierDriverAccess(
+  orgId: string,
+  carrierDriverId: string
+): Promise<{ restored: true; userId: string } | { error: string }> {
+  const tenantPrisma = await getTenantPrisma();
+  const driver = await tenantPrisma.carrierDriver.findFirst({
+    where: { id: carrierDriverId, orgId },
+    select: { id: true, userId: true },
+  });
+  if (!driver) return { error: 'Not found' };
+  if (!driver.userId) return { error: 'Driver has no linked account to restore' };
+
+  await tenantPrisma.user.update({
+    where: { id: driver.userId },
+    data: { isActive: true },
+  });
+
+  try {
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin.auth.admin.updateUserById(driver.userId, { ban_duration: 'none' });
+  } catch (err) {
+    logger.error('[restoreCarrierDriverAccess] Supabase unban failed for user:' + driver.userId, err);
+  }
+
+  return { restored: true, userId: driver.userId };
 }

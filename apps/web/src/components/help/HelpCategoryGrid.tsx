@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 export function HelpCategoryGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-      {HELP_CATEGORIES.map((category) => {
+      {HELP_CATEGORIES.filter((category) => !category.hidden).map((category) => {
         const Icon = category.icon
         const articleCount = category.articles.length
 

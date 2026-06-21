@@ -487,7 +487,11 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
 
         if (!dispatchRes.ok) {
           const dispatchJson = await dispatchRes.json().catch(() => ({}));
-          toast.error(dispatchJson.error ?? 'Load created but dispatch failed');
+          if (dispatchJson.error === 'DRIVER_NOT_DISPATCH_READY') {
+            toast.error("Load saved. Driver isn't dispatch-ready yet, so the trip wasn't started — assign it to a trip later.", { duration: 6000 });
+          } else {
+            toast.error('The load was created, but the trip could not be started. You can assign it to a trip later.');
+          }
           router.push('/carrier/loads');
           return;
         }
@@ -729,7 +733,7 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
                 id="dispatch-toggle"
               />
               <label htmlFor="dispatch-toggle" className="text-sm font-medium cursor-pointer select-none">
-                Dispatch immediately
+                Add to Trip immediately
               </label>
             </div>
           </div>
