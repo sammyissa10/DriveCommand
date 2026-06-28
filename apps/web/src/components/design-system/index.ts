@@ -13,6 +13,11 @@ export {
   type FormSectionProps,
   type FormRowProps,
 } from './FormSection';
+export { ActionField, type ActionFieldProps } from './ActionField';
+export {
+  CompletenessIndicator,
+  type CompletenessIndicatorProps,
+} from './CompletenessIndicator';
 
 // Status & alerts
 export {
@@ -21,6 +26,9 @@ export {
   formatExpiryMessage,
   type AlertBadgeProps,
 } from './AlertBadge';
+
+// Navigation & filtering
+export { StatusTabs, type StatusTab, type StatusTabsProps } from './StatusTabs';
 
 // Data display
 export {

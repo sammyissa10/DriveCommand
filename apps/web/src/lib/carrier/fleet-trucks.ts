@@ -16,21 +16,21 @@ export interface ListCarrierTrucksFilters {
 export interface CarrierTruckCreateInput {
   unitNumber: string;
   displayName?: string | null;
-  vin?: string;
+  vin?: string | null;
   year?: number | null;
-  make?: string;
-  model?: string;
+  make?: string | null;
+  model?: string | null;
   truckType?: string;
   grossWeightLbs?: number | null;
   payloadCapacityLbs?: number | null;
   currentOdometerMiles?: number | null;
-  licensePlate?: string;
-  licenseState?: string;
+  licensePlate?: string | null;
+  licenseState?: string | null;
   registrationExpiry?: string | Date | null;
   licenseExpiry?: string | Date | null;
   insuranceExpiry?: string | Date | null;
   status?: string;
-  notes?: string;
+  notes?: string | null;
   photoS3Key?: string | null;
 }
 

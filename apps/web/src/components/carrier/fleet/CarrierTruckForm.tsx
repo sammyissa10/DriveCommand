@@ -282,9 +282,9 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
         </div>
       )}
 
-      {/* Completeness indicator (optional, dismissible) */}
+      {/* Completeness indicator (optional, dismissible, sticky) */}
       {!isEdit && showCompleteness && completeness < 100 && (
-        <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-muted/50 border border-border">
+        <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-muted/80 border border-border sticky top-0 z-10 backdrop-blur-sm">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-1">

@@ -14,8 +14,11 @@ This document defines the reusable components and design rules for the DriveComm
 | `FormField` | Label + input + error + helper wrapper | `@/components/design-system` |
 | `FormSection` | Titled group of form fields | `@/components/design-system` |
 | `FormRow` | Horizontal layout for multiple fields | `@/components/design-system` |
+| `ActionField` | Form field with inline action button | `@/components/design-system` |
+| `CompletenessIndicator` | Optional/dismissible form progress bar | `@/components/design-system` |
 | `StatusBadge` | Colored status pill (Active, Pending, etc.) | `@/components/design-system` |
 | `AlertBadge` | Icon + text compliance/alert indicator | `@/components/design-system` |
+| `StatusTabs` | Segmented tabs with counts for filtering | `@/components/design-system` |
 | `KPICard` | Metric card with number, label, icon, trend | `@/components/design-system` |
 | `KPICardGrid` | Responsive grid for KPI cards | `@/components/design-system` |
 | `SearchBar` | Wide search with inline filter button | `@/components/design-system` |
@@ -245,6 +248,39 @@ import { SearchBar, ActiveFilters } from '@/components/design-system';
   ]}
   onRemove={(id) => removeFilter(id)}
   onClearAll={() => clearFilters()}
+/>
+```
+
+### StatusTabs
+
+Segmented tabs with counts for filtering records.
+
+```tsx
+import { StatusTabs } from '@/components/design-system';
+
+<StatusTabs
+  value={activeTab}
+  onValueChange={setActiveTab}
+  tabs={[
+    { value: 'all', label: 'All', count: 24 },
+    { value: 'active', label: 'Active', count: 18 },
+    { value: 'maintenance', label: 'In Shop', count: 3 },
+    { value: 'expired', label: 'Out of Service', count: 3 },
+  ]}
+/>
+```
+
+### CompletenessIndicator
+
+Optional/dismissible progress indicator for forms (never blocks saving).
+
+```tsx
+import { CompletenessIndicator } from '@/components/design-system';
+
+<CompletenessIndicator
+  completed={5}
+  total={10}
+  onDismiss={() => setShowIndicator(false)}
 />
 ```
 

@@ -44,7 +44,7 @@ export default async function CarrierTrucksPage() {
       {/* Page Header */}
       <div className="min-w-0">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Fleet Trucks
+          Fleet
         </h1>
         <p className="mt-1 text-muted-foreground text-sm">
           Manage your carrier fleet vehicles

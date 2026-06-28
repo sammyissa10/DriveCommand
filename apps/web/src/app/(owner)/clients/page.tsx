@@ -1,93 +1,62 @@
 /**
- * Trucks overview page — rebuilt on the design system.
+ * Clients overview page — built on the design system.
  *
  * Features:
- * - KPI cards (total fleet, active & compliant, expiring soon, needs action)
+ * - KPI cards (total clients, active, on hold, revenue MTD)
  * - Segmented status tabs with counts
  * - Wide search with filter button
  * - Sortable table with type-aware filters (desktop)
- * - Card list with compliance alerts prominent (mobile)
+ * - Card list with status badges (mobile)
  * - Suspense streaming for fast initial render
  */
 
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { listTrucks, deleteTruck } from '@/app/(owner)/actions/trucks';
-import { TrucksKPICards, type TruckKPIData } from './_components/TrucksKPICards';
-import { TrucksDataGrid } from './_components/TrucksDataGrid';
-import { TrucksPageClient } from './_components/TrucksPageClient';
+import { listClients, deleteClient } from '@/app/(owner)/actions/clients';
+import { ClientsKPICards, type ClientKPIData } from './_components/ClientsKPICards';
+import { ClientsPageClient } from './_components/ClientsPageClient';
 import { logger } from '@/lib/logger';
 import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
+import type { ClientWithRelations } from '@/lib/clients/compute-client-status';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// ─── Compute KPI data from trucks ────────────────────────────────────────────
+// ─── Compute KPI data from clients ────────────────────────────────────────────
 
-function computeKPIData(trucks: TruckWithRelations[]): TruckKPIData {
-  let activeCompliant = 0;
-  let expiringSoon = 0;
-  let needsAction = 0;
+function computeKPIData(clients: ClientWithRelations[]): ClientKPIData {
+  let active = 0;
+  let onHold = 0;
 
-  const now = new Date();
-  const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-  trucks.forEach((truck) => {
-    const { status, variant } = computeTruckStatus(truck);
-
-    // Active & Compliant = Ready to Use or In Use
-    if (status === 'Ready to Use' || status === 'In Use') {
-      activeCompliant++;
-    }
-
-    // Needs Action = In Maintenance or Expired Docs
-    if (status === 'In Maintenance' || status === 'Expired Docs') {
-      needsAction++;
-    }
-
-    // Expiring Soon = check document metadata for dates within 30 days
-    const docMeta = truck.documentMetadata as {
-      registrationExpiry?: string;
-      insuranceExpiry?: string;
-    } | null;
-
-    if (docMeta) {
-      const checkExpiry = (dateStr: string | undefined) => {
-        if (!dateStr) return false;
-        const date = new Date(dateStr);
-        return date > now && date <= thirtyDaysFromNow;
-      };
-
-      if (
-        checkExpiry(docMeta.registrationExpiry) ||
-        checkExpiry(docMeta.insuranceExpiry)
-      ) {
-        expiringSoon++;
-      }
+  clients.forEach((client) => {
+    if (client.status === 'active') {
+      active++;
+    } else if (client.status === 'on_hold') {
+      onHold++;
     }
   });
 
   return {
-    total: trucks.length,
-    activeCompliant,
-    expiringSoon,
-    needsAction,
+    total: clients.length,
+    active,
+    onHold,
+    // Revenue MTD would require invoice data - leaving null for now
+    revenueMTD: null,
   };
 }
 
 // ─── Async data section ───────────────────────────────────────────────────────
 
-async function TrucksContent() {
-  const [trucks, tenantId] = await Promise.all([
-    listTrucks().catch((e) => {
-      logger.error('[trucks] listTrucks failed:', e);
+async function ClientsContent() {
+  const [clients, tenantId] = await Promise.all([
+    listClients().catch((e) => {
+      logger.error('[clients] listClients failed:', e);
       return [];
     }),
     requireTenantId().catch(() => ''),
   ]);
 
-  const hasSampleRecords = trucks.some((t) => t.isSample);
+  const hasSampleRecords = clients.some((c) => c.isSample);
 
   let sampleDataSeeded = false;
   if (hasSampleRecords && tenantId) {
@@ -102,7 +71,7 @@ async function TrucksContent() {
     }
   }
 
-  const kpiData = computeKPIData(trucks);
+  const kpiData = computeKPIData(clients as ClientWithRelations[]);
 
   return (
     <>
@@ -111,17 +80,20 @@ async function TrucksContent() {
       )}
 
       {/* KPI Cards */}
-      <TrucksKPICards data={kpiData} />
+      <ClientsKPICards data={kpiData} />
 
       {/* Data Grid with optimistic updates */}
-      <TrucksPageClient trucks={trucks} deleteAction={deleteTruck} />
+      <ClientsPageClient
+        clients={clients as ClientWithRelations[]}
+        deleteAction={deleteClient}
+      />
     </>
   );
 }
 
 // ─── Skeleton fallback ────────────────────────────────────────────────────────
 
-function TrucksContentSkeleton() {
+function ClientsContentSkeleton() {
   return (
     <div className="space-y-6">
       {/* KPI Cards Skeleton */}
@@ -157,31 +129,31 @@ function TrucksContentSkeleton() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function TrucksPage() {
+export default function ClientsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Trucks
+            Clients
           </h1>
           <p className="mt-1 text-muted-foreground">
-            View and manage your fleet
+            View and manage your customers
           </p>
         </div>
         <Link
-          href="/trucks/new"
+          href="/clients/new"
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors shrink-0"
         >
           <Plus className="h-4 w-4" />
-          Add Truck
+          Add Client
         </Link>
       </div>
 
       {/* Content with Suspense */}
-      <Suspense fallback={<TrucksContentSkeleton />}>
-        <TrucksContent />
+      <Suspense fallback={<ClientsContentSkeleton />}>
+        <ClientsContent />
       </Suspense>
     </div>
   );

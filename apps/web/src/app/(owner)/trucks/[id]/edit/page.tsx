@@ -1,8 +1,20 @@
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+/**
+ * Truck edit page — uses unified TruckRecord component in edit mode.
+ *
+ * This page and /trucks/[id] share the exact same component,
+ * ensuring view and edit layouts never drift apart.
+ *
+ * Features:
+ * - Same layout as view page
+ * - Unlocked form fields
+ * - Save/Cancel buttons
+ * - Unsaved changes indicator
+ * - Navigation guard for unsaved changes
+ */
+
 import { notFound } from 'next/navigation';
 import { getTruck, updateTruck } from '@/app/(owner)/actions/trucks';
-import { EditTruckClient } from './edit-truck-client';
+import { TruckRecord } from '../_components/TruckRecord';
 
 interface EditTruckPageProps {
   params: Promise<{ id: string }>;
@@ -10,48 +22,17 @@ interface EditTruckPageProps {
 
 export default async function EditTruckPage({ params }: EditTruckPageProps) {
   const { id } = await params;
-  let truck;
-  try {
-    truck = await getTruck(id);
-  } catch {
-    notFound();
-  }
+
+  const truck = await getTruck(id);
 
   if (!truck) {
     notFound();
   }
 
-  // Parse documentMetadata from JSONB
-  const documentMetadata = truck.documentMetadata as any;
+  // Bind the updateTruck action to include the truck ID
+  const boundUpdateTruck = updateTruck.bind(null, id);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <Link
-          href={`/trucks/${truck.id}`}
-          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
-        >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-          Back to Truck
-        </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Truck</h1>
-        <p className="mt-1 text-muted-foreground">Update vehicle details</p>
-      </div>
-
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <EditTruckClient
-          truckId={truck.id}
-          initialData={{
-            make: truck.make,
-            model: truck.model,
-            year: truck.year,
-            vin: truck.vin,
-            licensePlate: truck.licensePlate,
-            odometer: truck.odometer,
-            documentMetadata: documentMetadata || undefined,
-          }}
-        />
-      </div>
-    </div>
+    <TruckRecord truck={truck} mode="edit" updateAction={boundUpdateTruck} />
   );
 }

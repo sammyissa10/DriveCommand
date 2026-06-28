@@ -8,23 +8,23 @@ import { getCarrierTruck, updateCarrierTruck } from '@/lib/carrier/fleet-trucks'
 const CarrierTruckUpdateSchema = z.object({
   unitNumber: z.string().min(1).optional(),
   displayName: z.string().nullable().optional(),
-  vin: z.string().optional(),
-  year: z.number().int().optional(),
-  make: z.string().optional(),
-  model: z.string().optional(),
+  vin: z.string().nullable().optional(),
+  year: z.number().int().nullable().optional(),
+  make: z.string().nullable().optional(),
+  model: z.string().nullable().optional(),
   truckType: z
     .enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck'])
     .optional(),
-  grossWeightLbs: z.number().int().optional(),
-  payloadCapacityLbs: z.number().int().optional(),
-  currentOdometerMiles: z.number().int().optional(),
-  licensePlate: z.string().optional(),
-  licenseState: z.string().max(2).optional(),
+  grossWeightLbs: z.number().int().nullable().optional(),
+  payloadCapacityLbs: z.number().int().nullable().optional(),
+  currentOdometerMiles: z.number().int().nullable().optional(),
+  licensePlate: z.string().nullable().optional(),
+  licenseState: z.string().max(2).nullable().optional(),
   registrationExpiry: z.string().nullable().optional(),
   licenseExpiry: z.string().nullable().optional(),
   insuranceExpiry: z.string().nullable().optional(),
   status: z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional(),
-  notes: z.string().optional(),
+  notes: z.string().nullable().optional(),
   photoS3Key: z.string().nullable().optional(),
 });
 

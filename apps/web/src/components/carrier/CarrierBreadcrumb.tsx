@@ -22,6 +22,12 @@ const SEGMENT_LABELS: Record<string, string> = {
   performance: "Performance",
 }
 
+// Segments to skip in breadcrumb (e.g., "fleet" when followed by "trucks" or "drivers")
+// This avoids redundant breadcrumbs like "Fleet > Trucks" - just show the subsection
+const SKIP_PARENT_SEGMENTS: Record<string, string[]> = {
+  fleet: ["trucks", "drivers"],
+}
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function getLabel(segment: string): string {
@@ -50,9 +56,20 @@ export function CarrierBreadcrumb() {
   type BreadcrumbItem = { label: string; href?: string }
   const items: BreadcrumbItem[] = [{ label: "Carrier", href: "/carrier/dashboard" }]
 
-  segments.forEach((seg, idx) => {
-    const isLast = idx === segments.length - 1
-    const href = isLast ? undefined : "/carrier/" + segments.slice(0, idx + 1).join("/")
+  // Filter out redundant parent segments (e.g., skip "fleet" when followed by "trucks")
+  const filteredSegments = segments.filter((seg, idx) => {
+    const nextSeg = segments[idx + 1]
+    if (nextSeg && SKIP_PARENT_SEGMENTS[seg]?.includes(nextSeg)) {
+      return false // Skip this segment
+    }
+    return true
+  })
+
+  filteredSegments.forEach((seg, idx) => {
+    const isLast = idx === filteredSegments.length - 1
+    // Find original index for href construction
+    const originalIdx = segments.indexOf(seg)
+    const href = isLast ? undefined : "/carrier/" + segments.slice(0, originalIdx + 1).join("/")
     items.push({ label: getLabel(seg), href })
   })
 
