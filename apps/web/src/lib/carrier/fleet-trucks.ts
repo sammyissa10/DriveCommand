@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { ACTIVE_DISPATCH_STATUSES } from '@/lib/carrier/truck-status';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -132,7 +133,7 @@ export async function listCarrierTrucks(orgId: string, filters: ListCarrierTruck
       orderBy: { createdAt: 'desc' },
       include: {
         primaryDispatches: {
-          where: { status: { in: ['planned', 'in_transit'] } },
+          where: { status: { in: [...ACTIVE_DISPATCH_STATUSES] } },
           select: {
             primaryDriver: {
               select: { id: true, firstName: true, lastName: true },

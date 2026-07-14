@@ -3,6 +3,7 @@ import { Truck } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { hasPermission } from '@/lib/auth/permissions';
 import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
+import { ACTIVE_DISPATCH_STATUSES, computeTruckDisplayStatus, type TruckDisplayStatus } from '@/lib/carrier/truck-status';
 import { TrucksGrid } from './_grid/TrucksGrid';
 import { TrucksMobile, type TruckMobileRow } from './TrucksMobile';
 
@@ -62,15 +63,13 @@ const TRUCK_TYPE_LABELS: Record<string, string> = {
 };
 
 /**
- * Design-system truck status, derived server-side (never on the client):
- * stored `maintenance`/`out_of_service`/`inactive` pass through; an `active`
- * truck is "On Load" when it has an active dispatch, otherwise "Ready".
+ * Design-system truck status via the shared helper (same logic as Detail).
+ * `primaryDispatches` is pre-filtered to active (in-progress) dispatches, so a
+ * non-empty list means the truck is on a load right now.
  */
-function displayStatus(t: TruckItem): 'ready' | 'on_load' | 'in_shop' | 'out_of_service' | 'inactive' {
-  if (t.status === 'maintenance') return 'in_shop';
-  if (t.status === 'out_of_service') return 'out_of_service';
-  if (t.status === 'inactive') return 'inactive';
-  return (t.primaryDispatches?.length ?? 0) > 0 ? 'on_load' : 'ready';
+function displayStatus(t: TruckItem): TruckDisplayStatus {
+  const active = (t.primaryDispatches?.length ?? 0) > 0;
+  return computeTruckDisplayStatus(t.status, active ? [...ACTIVE_DISPATCH_STATUSES] : []);
 }
 
 export default async function CarrierTrucksPage() {

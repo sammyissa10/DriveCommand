@@ -3,8 +3,11 @@ import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
+import { hasPermission } from '@/lib/auth/permissions';
 import { getCarrierTruck } from '@/lib/carrier/fleet-trucks';
+import { computeTruckDisplayStatus } from '@/lib/carrier/truck-status';
 import { CarrierTruckDetailClient } from '@/components/carrier/fleet/CarrierTruckDetailClient';
+import { TruckDetailMobile, type TruckDetailData, type TruckTripRow, type TruckParent } from './TruckDetailMobile';
 import { Badge } from '@/components/ui/badge';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
@@ -12,6 +15,9 @@ import { prisma } from '@/lib/db/prisma';
 interface Props {
   params: Promise<{ id: string }>;
 }
+
+const iso = (d: Date | string | null): string | null =>
+  d ? (d instanceof Date ? d.toISOString() : new Date(d).toISOString()) : null;
 
 const DISPATCH_STATUS_CLASSES: Record<string, string> = {
   planned: 'border-blue-500 text-blue-600 dark:text-blue-400',
@@ -54,8 +60,87 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
     return bDate - aDate;
   });
 
+  // ---- Mobile-web design system inputs ----
+  const canEdit = hasPermission(session.permissions ?? null, 'carrierTrucks', session.role);
+  const tripStatuses = dispatches.map((d) => d.status);
+  const hasChildren = dispatches.length > 0;
+
+  // Active load (+ its client) → the ParentStrip chips. A truck is on a load
+  // when it has an in-progress dispatch carrying a load. (Dispatch status vocab
+  // in this DB is planned | in_progress | completed | cancelled — no in_transit.)
+  const activeTrip = await prisma.trip
+    .findFirst({
+      where: {
+        truckId: id,
+        orgId,
+        status: 'in_progress',
+        deletedAt: null,
+        carrierLoads: { some: { deletedAt: null } },
+      },
+      orderBy: { scheduledDeparture: 'desc' },
+      select: {
+        carrierLoads: {
+          take: 1,
+          orderBy: { createdAt: 'desc' },
+          select: { id: true, referenceNumber: true, client: { select: { id: true, name: true } } },
+        },
+      },
+    })
+    .catch(() => null);
+  const activeLoad = activeTrip?.carrierLoads?.[0] ?? null;
+  const parent: TruckParent | null = activeLoad
+    ? {
+        load: { id: activeLoad.id, label: activeLoad.referenceNumber ?? 'Active load' },
+        client: activeLoad.client ? { id: activeLoad.client.id, name: activeLoad.client.name } : null,
+      }
+    : null;
+
+  const mobileTruck: TruckDetailData = {
+    id: truck.id,
+    vehicleId: truck.vehicleId,
+    unitNumber: truck.unitNumber,
+    displayName: truck.displayName,
+    vin: truck.vin,
+    year: truck.year,
+    make: truck.make,
+    model: truck.model,
+    truckType: truck.truckType,
+    grossWeightLbs: truck.grossWeightLbs,
+    payloadCapacityLbs: truck.payloadCapacityLbs,
+    currentOdometerMiles: truck.currentOdometerMiles,
+    licensePlate: truck.licensePlate,
+    licenseState: truck.licenseState,
+    registrationExpiry: iso(truck.registrationExpiry),
+    licenseExpiry: iso(truck.licenseExpiry),
+    insuranceExpiry: iso(truck.insuranceExpiry),
+    status: truck.status,
+    displayStatus: computeTruckDisplayStatus(truck.status, tripStatuses),
+    notes: truck.notes,
+  };
+
+  const mobileDispatches: TruckTripRow[] = dispatches.map((d) => ({
+    id: d.id,
+    status: d.status,
+    scheduledDeparture: iso(d.scheduledDeparture),
+    miles: d.actualMiles != null ? Number(d.actualMiles) : d.plannedMiles != null ? Number(d.plannedMiles) : null,
+    driver: d.primaryDriver ? `${d.primaryDriver.firstName ?? ''} ${d.primaryDriver.lastName ?? ''}`.trim() || null : null,
+  }));
+
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <TruckDetailMobile
+          truck={mobileTruck}
+          dispatches={mobileDispatches}
+          parent={parent}
+          hasChildren={hasChildren}
+          canEdit={canEdit}
+        />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       {/* Header */}
       <div>
         <Link
@@ -183,6 +268,7 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
           updatedByEmail={truckAudit.updatedBy?.email ?? null}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
