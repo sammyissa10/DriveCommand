@@ -36,6 +36,23 @@ export interface CarrierTruckCreateInput {
 
 export type CarrierTruckUpdateInput = Partial<CarrierTruckCreateInput>;
 
+/**
+ * Thrown when a create would collide with an existing (non-deleted) truck in the
+ * same org on a user-facing identifier. The route maps this to a 409 so the
+ * quick-create sheet can surface an inline error on the right field — never a
+ * raw 500.
+ */
+export class CarrierTruckConflictError extends Error {
+  constructor(
+    public readonly field: 'vin' | 'unitNumber',
+    /** The existing truck's unit number, for a message that names the record. */
+    public readonly existingUnitNumber: string,
+  ) {
+    super(`DUPLICATE_${field.toUpperCase()}`);
+    this.name = 'CarrierTruckConflictError';
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -84,6 +101,7 @@ export async function generateVehicleIds(count: number): Promise<string[]> {
 // ---------------------------------------------------------------------------
 
 export async function listCarrierTrucks(orgId: string, filters: ListCarrierTrucksFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { status, truckType, search, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
@@ -107,7 +125,7 @@ export async function listCarrierTrucks(orgId: string, filters: ListCarrierTruck
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierTruck.findMany({
+    tenantPrisma.carrierTruck.findMany({
       where,
       skip,
       take: pageSize,
@@ -125,14 +143,15 @@ export async function listCarrierTrucks(orgId: string, filters: ListCarrierTruck
         },
       },
     }),
-    prisma.carrierTruck.count({ where }),
+    tenantPrisma.carrierTruck.count({ where }),
   ]);
 
   return { items, total };
 }
 
 export async function getCarrierTruck(orgId: string, id: string) {
-  return prisma.carrierTruck.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  return tenantPrisma.carrierTruck.findFirst({
     where: { id, orgId },
     include: {
       primaryDispatches: {
@@ -159,6 +178,22 @@ export async function createCarrierTruck(orgId: string, data: CarrierTruckCreate
   const tenantPrisma = await getTenantPrisma();
   const { registrationExpiry, licenseExpiry, insuranceExpiry, displayName, ...rest } = data;
 
+  // Guard the two user-facing identifiers before we mint a vehicleId. Neither
+  // has a DB unique constraint, so without this a duplicate silently creates a
+  // second record. Scoped to the org and non-deleted rows.
+  if (data.vin && data.vin.trim()) {
+    const dupVin = await tenantPrisma.carrierTruck.findFirst({
+      where: { orgId, deletedAt: null, vin: { equals: data.vin.trim(), mode: 'insensitive' } },
+      select: { unitNumber: true },
+    });
+    if (dupVin) throw new CarrierTruckConflictError('vin', dupVin.unitNumber);
+  }
+  const dupUnit = await tenantPrisma.carrierTruck.findFirst({
+    where: { orgId, deletedAt: null, unitNumber: data.unitNumber.trim() },
+    select: { unitNumber: true },
+  });
+  if (dupUnit) throw new CarrierTruckConflictError('unitNumber', dupUnit.unitNumber);
+
   const vehicleId = await generateVehicleId();
   const resolvedDisplayName = displayName || data.unitNumber;
 
@@ -181,7 +216,7 @@ export async function updateCarrierTruck(
   data: CarrierTruckUpdateInput
 ) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierTruck.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierTruck.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const { registrationExpiry, licenseExpiry, insuranceExpiry, ...rest } = data;

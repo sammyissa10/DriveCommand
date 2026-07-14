@@ -4,7 +4,7 @@ import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { listCarrierTrucks, createCarrierTruck } from '@/lib/carrier/fleet-trucks';
+import { listCarrierTrucks, createCarrierTruck, CarrierTruckConflictError } from '@/lib/carrier/fleet-trucks';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
@@ -124,6 +124,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data: carrierTruck }, { status: 201 });
   } catch (err) {
+    if (err instanceof CarrierTruckConflictError) {
+      const message =
+        err.field === 'vin'
+          ? `This VIN is already on Unit ${err.existingUnitNumber}.`
+          : `Unit ${err.existingUnitNumber} already exists.`;
+      return NextResponse.json(
+        { error: message, field: err.field, existingUnitNumber: err.existingUnitNumber },
+        { status: 409 }
+      );
+    }
     if (err instanceof ZodError) {
       return NextResponse.json(
         {

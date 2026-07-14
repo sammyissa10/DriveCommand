@@ -1,13 +1,83 @@
 import { redirect } from 'next/navigation';
 import { Truck } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
+import { hasPermission } from '@/lib/auth/permissions';
 import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
 import { TrucksGrid } from './_grid/TrucksGrid';
+import { TrucksMobile, type TruckMobileRow } from './TrucksMobile';
+
+const DAY_MS = 86_400_000;
+
+type TruckItem = Awaited<ReturnType<typeof listCarrierTrucks>>['items'][number];
+
+/**
+ * The single most urgent fact per truck, computed server-side (no client
+ * status/derivation): active load → expired/expiring doc → odometer → type.
+ */
+function urgentFact(t: TruckItem): string {
+  const dispatch = t.primaryDispatches?.[0];
+  if (dispatch) {
+    const d = dispatch.primaryDriver;
+    const name = d ? `${d.firstName ?? ''} ${d.lastName ?? ''}`.trim() : '';
+    // Pill already reads "On Load" — the meta just adds the driver when known.
+    return name ? `Driver · ${name}` : '';
+  }
+
+  const now = Date.now();
+  const docs = (
+    [
+      ['License', t.licenseExpiry],
+      ['Registration', t.registrationExpiry],
+      ['Insurance', t.insuranceExpiry],
+    ] as const
+  )
+    .filter(([, date]) => date != null)
+    .map(([label, date]) => ({
+      label,
+      days: Math.ceil((new Date(date as Date).getTime() - now) / DAY_MS),
+    }));
+
+  const expired = docs.filter((x) => x.days < 0).sort((a, b) => a.days - b.days);
+  if (expired.length > 0) return `${expired[0].label} expired`;
+
+  const soon = docs.filter((x) => x.days >= 0 && x.days <= 30).sort((a, b) => a.days - b.days);
+  if (soon.length > 0) return `${soon[0].label} expires in ${soon[0].days}d`;
+
+  if (t.currentOdometerMiles != null) {
+    return `${t.currentOdometerMiles.toLocaleString('en-US')} mi`;
+  }
+  // No urgent fact — leave the meta line empty rather than repeat the type
+  // (the type already shows in the subline as its fallback).
+  return '';
+}
+
+const TRUCK_TYPE_LABELS: Record<string, string> = {
+  semi: 'Semi',
+  box_truck: 'Box Truck',
+  flatbed: 'Flatbed',
+  reefer: 'Reefer',
+  tanker: 'Tanker',
+  day_cab: 'Day Cab',
+  straight_truck: 'Straight Truck',
+};
+
+/**
+ * Design-system truck status, derived server-side (never on the client):
+ * stored `maintenance`/`out_of_service`/`inactive` pass through; an `active`
+ * truck is "On Load" when it has an active dispatch, otherwise "Ready".
+ */
+function displayStatus(t: TruckItem): 'ready' | 'on_load' | 'in_shop' | 'out_of_service' | 'inactive' {
+  if (t.status === 'maintenance') return 'in_shop';
+  if (t.status === 'out_of_service') return 'out_of_service';
+  if (t.status === 'inactive') return 'inactive';
+  return (t.primaryDispatches?.length ?? 0) > 0 ? 'on_load' : 'ready';
+}
 
 export default async function CarrierTrucksPage() {
   const session = await getSession();
   if (!session) redirect('/login');
   const orgId = session.tenantId;
+  const canCreate = hasPermission(session.permissions ?? null, 'carrierTrucks', session.role);
 
   let items: Awaited<ReturnType<typeof listCarrierTrucks>>['items'] = [];
   let total = 0;
@@ -27,18 +97,30 @@ export default async function CarrierTrucksPage() {
     typeCounts[type] = (typeCounts[type] ?? 0) + 1;
   }
 
-  const TRUCK_TYPE_LABELS: Record<string, string> = {
-    semi: 'Semi',
-    box_truck: 'Box Truck',
-    flatbed: 'Flatbed',
-    reefer: 'Reefer',
-    tanker: 'Tanker',
-    day_cab: 'Day Cab',
-    straight_truck: 'Straight Truck',
-  };
+  const mobileTrucks: TruckMobileRow[] = items.map((t) => ({
+    id: t.id,
+    unitNumber: t.unitNumber,
+    displayName: t.displayName,
+    make: t.make,
+    model: t.model,
+    year: t.year,
+    vin: t.vin,
+    licensePlate: t.licensePlate,
+    licenseState: t.licenseState,
+    truckType: t.truckType,
+    displayStatus: displayStatus(t),
+    meta: urgentFact(t),
+  }));
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <TrucksMobile trucks={mobileTrucks} canCreate={canCreate} />
+      </div>
+
+      {/* Desktop grid (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
@@ -95,6 +177,7 @@ export default async function CarrierTrucksPage() {
           assignedDriver: t.primaryDispatches[0]?.primaryDriver ?? null,
         }))}
       />
-    </div>
+      </div>
+    </>
   );
 }
