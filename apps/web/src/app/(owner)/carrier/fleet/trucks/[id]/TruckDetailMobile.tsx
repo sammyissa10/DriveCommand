@@ -87,14 +87,6 @@ const TRUCK_TYPE_OPTIONS = [
 ];
 const TRUCK_TYPE_LABEL = Object.fromEntries(TRUCK_TYPE_OPTIONS.map((o) => [o.value, o.label]));
 
-const STATUS_OPTIONS = [
-  { label: 'Active', value: 'active' },
-  { label: 'Inactive', value: 'inactive' },
-  { label: 'In maintenance', value: 'maintenance' },
-  { label: 'Out of service', value: 'out_of_service' },
-];
-const STATUS_LABEL = Object.fromEntries(STATUS_OPTIONS.map((o) => [o.value, o.label]));
-
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
 const EXPIRY_THRESHOLD_DAYS = 30;
 
@@ -143,12 +135,6 @@ function displayStatusMeta(s: string): { tone: StatusTone; label: string } {
     default:
       return { tone: 'neutral', label: s.replace(/_/g, ' ') };
   }
-}
-function storedStatusTone(s: string): StatusTone {
-  if (s === 'active') return 'success';
-  if (s === 'maintenance') return 'warning';
-  if (s === 'out_of_service') return 'danger';
-  return 'neutral';
 }
 function tripStatusMeta(s: string): { tone: StatusTone; label: string } {
   switch (s) {
@@ -323,7 +309,11 @@ export function TruckDetailMobile({
     { key: 'grossWeightLbs', label: 'GVWR', value: data.grossWeightLbs != null ? `${num(data.grossWeightLbs)} lbs` : null, input: { ...numInput('grossWeightLbs'), placeholder: '80,000' } },
     { key: 'payloadCapacityLbs', label: 'Payload', value: data.payloadCapacityLbs != null ? `${num(data.payloadCapacityLbs)} lbs` : null, input: { ...numInput('payloadCapacityLbs'), placeholder: '44,000' } },
     { key: 'currentOdometerMiles', label: 'Odometer', value: data.currentOdometerMiles != null ? `${num(data.currentOdometerMiles)} mi` : null, input: { ...numInput('currentOdometerMiles'), placeholder: '125,000' } },
-    { key: 'status', label: 'Status', value: STATUS_LABEL[data.status] ?? data.status, tone: storedStatusTone(data.status), input: { value: form.status, onChange: (v) => setField('status', v), options: STATUS_OPTIONS } },
+    // Status is the computed display status: a read-only row in view mode, and
+    // omitted in edit (the identity header states it's computed).
+    ...(isEditing
+      ? []
+      : [{ key: 'status', label: 'Status', value: dstatus.label, tone: dstatus.tone, editable: false } as FieldDef]),
   ];
 
   const complianceFields: FieldDef[] = [
@@ -429,7 +419,6 @@ export function TruckDetailMobile({
         registrationExpiry: form.registrationExpiry || null,
         licenseExpiry: form.licenseExpiry || null,
         insuranceExpiry: form.insuranceExpiry || null,
-        status: form.status,
         notes: t(form.notes),
       };
       if (form.year.trim()) body.year = parseInt(form.year, 10);
@@ -479,7 +468,6 @@ export function TruckDetailMobile({
         registrationExpiry: form.registrationExpiry || null,
         licenseExpiry: form.licenseExpiry || null,
         insuranceExpiry: form.insuranceExpiry || null,
-        status: form.status,
         notes: t(form.notes) || null,
         ...(hasChildren ? {} : { unitNumber: t(form.unitNumber), vin: t(form.vin).toUpperCase() || null }),
       };
@@ -517,7 +505,7 @@ export function TruckDetailMobile({
   return (
     <MobileScreen className="pb-6 pt-2">
       <NavHeader
-        title="Truck"
+        title={isEditing ? 'Edit Truck' : 'Truck'}
         onBack={isEditing ? undefined : () => router.push('/carrier/fleet/trucks')}
         left={isEditing ? <NavTextButton label="Cancel" onClick={cancelEdit} /> : undefined}
         right={
@@ -529,14 +517,20 @@ export function TruckDetailMobile({
         }
       />
 
-      {/* Identity */}
+      {/* Identity — condenses in edit: pill hides, status stated as computed */}
       <div className="flex flex-col items-center pb-4 pt-2">
         <UnitChip number={data.unitNumber} size={72} />
         <h1 className="mt-3 text-center text-[22px] font-bold text-ds-txt">{title}</h1>
-        {subtitle ? <p className="mt-1 text-[13px] text-ds-txt3">{subtitle}</p> : null}
-        <div className="mt-2">
-          <StatusPill label={dstatus.label} tone={dstatus.tone} />
-        </div>
+        {isEditing ? (
+          <p className="mt-1 text-[13px] text-ds-txt3">Status is computed — not editable</p>
+        ) : (
+          <>
+            {subtitle ? <p className="mt-1 text-[13px] text-ds-txt3">{subtitle}</p> : null}
+            <div className="mt-2">
+              <StatusPill label={dstatus.label} tone={dstatus.tone} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Parents (view only — navigates away) */}
@@ -572,10 +566,14 @@ export function TruckDetailMobile({
         </button>
       ) : null}
 
-      {/* Tabs */}
-      <div className="py-3">
-        <SegmentedControl options={TABS} value={tab} onChange={setTab} />
-      </div>
+      {/* Tabs — hidden in edit; editing is Details-only (children aren't editable) */}
+      {isEditing ? (
+        <div className="pt-1" />
+      ) : (
+        <div className="py-3">
+          <SegmentedControl options={TABS} value={tab} onChange={setTab} />
+        </div>
+      )}
 
       {tab === 'details' ? (
         <div className="space-y-6">
