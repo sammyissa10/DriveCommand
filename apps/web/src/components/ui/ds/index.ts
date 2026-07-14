@@ -10,7 +10,7 @@ export { LargeTitleHeader, AddButton } from './Header';
 export { KPICard, KPIRow } from './KPICard';
 export { SearchField } from './SearchField';
 export { SegmentedControl, type SegmentOption } from './SegmentedControl';
-export { EntityRow } from './EntityRow';
+export { EntityRow, type MetaTone } from './EntityRow';
 export { MonogramAvatar } from './MonogramAvatar';
 export { UnitChip } from './UnitChip';
 export { StatusPill, type StatusTone } from './StatusPill';

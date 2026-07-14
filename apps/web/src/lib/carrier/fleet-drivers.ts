@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { ACTIVE_DISPATCH_STATUSES } from '@/lib/carrier/truck-status';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';
@@ -96,6 +97,12 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
   const { status, search, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
+  // Today's UTC window for the linked driver's HOS clocks (duty status + meta).
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+  const endOfDay = new Date();
+  endOfDay.setUTCHours(23, 59, 59, 999);
+
   const where = {
     orgId,
     deletedAt: null,
@@ -118,8 +125,38 @@ export async function listCarrierDrivers(orgId: string, filters: ListCarrierDriv
       take: pageSize,
       orderBy: { createdAt: 'desc' },
       include: {
-        user: { select: { email: true } },
+        user: {
+          select: {
+            email: true,
+            isActive: true,
+            // Today's HOS entries (+ any open overnight entry) via the linked
+            // driver account — feeds duty status and the hours meta line.
+            hosEntries: {
+              where: {
+                OR: [{ startTime: { gte: startOfDay, lte: endOfDay } }, { endTime: null }],
+              },
+              orderBy: { startTime: 'asc' },
+              select: { status: true, startTime: true, endTime: true },
+            },
+          },
+        },
         homeTerminal: { select: { id: true, name: true } },
+        // Active dispatch (in progress) — drives the "On Trip" pill + live subline.
+        primaryDispatches: {
+          where: { status: { in: [...ACTIVE_DISPATCH_STATUSES] }, deletedAt: null },
+          orderBy: { scheduledDeparture: 'desc' },
+          take: 1,
+          select: {
+            id: true,
+            scheduledDeparture: true,
+            routeTemplate: { select: { templateName: true } },
+          },
+        },
+        coDispatches: {
+          where: { status: { in: [...ACTIVE_DISPATCH_STATUSES] }, deletedAt: null },
+          take: 1,
+          select: { id: true },
+        },
       },
     }),
     tenantPrisma.carrierDriver.count({ where }),
@@ -474,6 +511,20 @@ export async function getLatestInvitationStatus(
     select: { status: true },
   });
   return invitation?.status ?? null;
+}
+
+/**
+ * Lower-cased emails with a PENDING invitation for this org. Used to flag drivers
+ * as "Invited" (not yet onboarded) on the Overview in a single batched query
+ * rather than one lookup per row.
+ */
+export async function getPendingInvitationEmails(orgId: string): Promise<Set<string>> {
+  const tenantPrisma = await getTenantPrisma();
+  const invites = await tenantPrisma.driverInvitation.findMany({
+    where: { tenantId: orgId, status: 'PENDING' },
+    select: { email: true },
+  });
+  return new Set(invites.map((i) => i.email.toLowerCase()));
 }
 
 export async function updateCarrierDriver(

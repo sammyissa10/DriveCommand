@@ -2,6 +2,15 @@
 
 import { ChevronRight } from 'lucide-react';
 
+/** Tint for the meta line — muted by default, warning/danger for at-risk stats. */
+export type MetaTone = 'muted' | 'warning' | 'danger';
+
+const META_TONE: Record<MetaTone, string> = {
+  muted: 'text-ds-txt3',
+  warning: 'text-ds-warning',
+  danger: 'text-ds-danger',
+};
+
 /**
  * Standard entity list row — a full card (fill, radius 20, no border). Left
  * avatar/chip, middle 3-line stack, right pill (top) or chevron (centered).
@@ -13,6 +22,7 @@ export function EntityRow({
   titleAccessory,
   subline,
   meta,
+  metaTone = 'muted',
   pill,
   onClick,
   ariaLabel,
@@ -22,6 +32,8 @@ export function EntityRow({
   titleAccessory?: React.ReactNode;
   subline?: string;
   meta?: string;
+  /** Tints the meta line (e.g. warning/danger when a license is expiring/expired). */
+  metaTone?: MetaTone;
   /** A StatusPill. When present the chevron is dropped (whole card taps). */
   pill?: React.ReactNode;
   onClick: () => void;
@@ -42,7 +54,7 @@ export function EntityRow({
           {titleAccessory}
         </div>
         {subline ? <div className="mt-0.5 truncate text-[15px] text-ds-txt2">{subline}</div> : null}
-        {meta ? <div className="mt-0.5 truncate text-[13px] text-ds-txt3">{meta}</div> : null}
+        {meta ? <div className={`mt-0.5 truncate text-[13px] ${META_TONE[metaTone]}`}>{meta}</div> : null}
       </div>
 
       {pill ? (
