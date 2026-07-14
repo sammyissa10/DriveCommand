@@ -6,6 +6,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // ── DriveCommand Mobile Design System (Apple language, dark) ─────────
+        // Namespaced under `ds` so the redesign palette adds without colliding
+        // with the legacy bg/success/warning/danger tokens used by live screens.
+        // Source of truth: .planning/mobile-design-system.md + docs/specs PDF.
+        ds: {
+          bg: '#0B1120',        // screen background
+          card: '#171E2E',      // cards & list rows (never a border)
+          elevated: '#212A3D',  // segmented thumb, pressed, skeleton fill
+          input: '#1E2638',     // text field fill (edit mode & sheets)
+          hairline: '#232C40',  // dividers inside grouped rows only
+          txt: '#F5F7FA',       // titles, values (text.primary)
+          txt2: '#8B93A7',      // labels, sublines (text.secondary)
+          txt3: '#5B6478',      // meta, placeholders, inactive icons (text.muted)
+          initials: '#DDE3F0',  // monogram / unit-chip glyphs
+          accent: '#0A84FF',    // the only brand color in the UI
+          vip: '#FFB340',       // VIP tag only (15% fill)
+          success: '#30D158',   // ready / on-duty / paid
+          warning: '#FF9F0A',   // expiring docs / service due / in shop
+          danger: '#FF453A',    // destructive / overdue / HOS violation
+          avatar: '#2B3550',    // monogram & unit-chip fill
+          sheet: '#141B2B',     // bottom-sheet fill
+        },
+
         // Semantic CSS variable aliases — switch automatically with theme class
         bg: 'rgb(var(--color-bg) / <alpha-value>)',
         'surface-card': 'rgb(var(--color-surface-card) / <alpha-value>)',
