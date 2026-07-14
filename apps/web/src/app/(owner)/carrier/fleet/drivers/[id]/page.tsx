@@ -12,6 +12,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BonusesTab } from '@/components/driver-pay/bonuses/bonuses-tab';
 import { DeductionsTab } from '@/components/driver-pay/deductions/deductions-tab';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import type { HOSDutyStatusLike } from '@/lib/hos/compute-hos-clocks';
+import { DriverDetailMobile } from './DriverDetailMobile';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -112,8 +114,105 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
     return bDate - aDate;
   });
 
+  // ---- Mobile-web (ds) data: tenant tz, HOS window, active dispatch, trips ----
+  const nowMs = Date.now();
+  const tenant = await prisma.tenant
+    .findUnique({ where: { id: orgId }, select: { timezone: true } })
+    .catch(() => null);
+  const timezone = tenant?.timezone || 'UTC';
+
+  const hosRaw = driver.userId
+    ? await prisma.driverHOSEntry
+        .findMany({
+          where: {
+            driverId: driver.userId,
+            OR: [{ startTime: { gte: new Date(nowMs - 14 * 86_400_000) } }, { endTime: null }],
+          },
+          orderBy: { startTime: 'asc' },
+          select: { status: true, startTime: true, endTime: true },
+        })
+        .catch(() => [])
+    : [];
+  const hosEntries = hosRaw.map((e) => ({
+    status: e.status,
+    startTime: e.startTime.toISOString(),
+    endTime: e.endTime ? e.endTime.toISOString() : null,
+  }));
+  const openEntry = [...hosRaw].reverse().find((e) => e.endTime == null);
+  const dutyStatus = (openEntry?.status ?? 'OFF_DUTY') as HOSDutyStatusLike;
+
+  const activeTrip = await prisma.trip
+    .findFirst({
+      where: { OR: [{ primaryDriverId: id }, { coDriverId: id }], status: 'in_progress', deletedAt: null },
+      orderBy: { scheduledDeparture: 'desc' },
+      select: {
+        id: true,
+        truck: { select: { id: true, unitNumber: true } },
+        carrierLoads: { select: { id: true, referenceNumber: true }, take: 1 },
+      },
+    })
+    .catch(() => null);
+  const activeLoad = activeTrip?.carrierLoads[0] ?? null;
+  const parent = activeTrip
+    ? {
+        trip: {
+          id: activeTrip.id,
+          label: activeLoad?.referenceNumber ? `Load ${activeLoad.referenceNumber}` : 'Active trip',
+        },
+        truck: activeTrip.truck ? { id: activeTrip.truck.id, label: `Unit ${activeTrip.truck.unitNumber}` } : null,
+      }
+    : null;
+
+  const mobileTrips = allDispatches.map((d) => ({
+    id: d.id,
+    status: d.status,
+    scheduledDeparture: d.scheduledDeparture ? new Date(d.scheduledDeparture).toISOString() : null,
+    miles: d.actualMiles != null ? Number(d.actualMiles) : d.plannedMiles != null ? Number(d.plannedMiles) : null,
+    role: d.role,
+    netPay: d.driverPayRecords?.length
+      ? d.driverPayRecords.reduce((s, r) => s + Number(r.netPay ?? 0), 0)
+      : null,
+  }));
+
+  const invited = invitationStatus === 'PENDING' && driver.user?.isActive !== true;
+
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <DriverDetailMobile
+          driver={{
+            id: driver.id,
+            firstName: driver.firstName,
+            lastName: driver.lastName,
+            email: driver.email,
+            phone: driver.phone,
+            cdlNumberLast4: driver.cdlNumberLast4 ?? null,
+            cdlClass: driver.cdlClass,
+            cdlState: driver.cdlState,
+            cdlExpiry: driver.cdlExpiry ? new Date(driver.cdlExpiry).toISOString() : null,
+            homeTerminalId: driver.homeTerminalId,
+            homeTerminalName: driver.homeTerminal?.name ?? null,
+            payModel: driver.payModel,
+            payRate: driver.payRate != null ? Number(driver.payRate) : null,
+            payPeriod: driver.payPeriod,
+            status: driver.status,
+            notes: driver.notes,
+            dutyStatus,
+            invited,
+          }}
+          trips={mobileTrips}
+          parent={parent}
+          facilities={facilitiesResult.items.map((f) => ({ id: f.id, name: f.name }))}
+          hosEntries={hosEntries}
+          timezone={timezone}
+          nowMs={nowMs}
+          canEdit={canEdit}
+        />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       {/* Header */}
       <div>
         <Link
@@ -365,6 +464,7 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
           updatedByEmail={driverAudit.updatedBy?.email ?? null}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
