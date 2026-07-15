@@ -72,9 +72,10 @@ export function formatRecurrence(rule: string | null, tz: string | null, departu
   }
 }
 
-type Scope = 'active' | 'all';
+type Scope = 'active' | 'inactive' | 'all';
 const SCOPE_OPTIONS: { label: string; value: Scope }[] = [
   { label: 'Active', value: 'active' },
+  { label: 'Inactive', value: 'inactive' },
   { label: 'All', value: 'all' },
 ];
 
@@ -137,6 +138,7 @@ export function TemplatesMobile({ canCreate }: { canCreate: boolean }) {
   const visible = useMemo(() => {
     let list = rows ?? [];
     if (scope === 'active') list = list.filter((t) => t.active);
+    else if (scope === 'inactive') list = list.filter((t) => !t.active);
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter(
