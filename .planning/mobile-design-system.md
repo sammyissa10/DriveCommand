@@ -518,4 +518,19 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   filter chips with counts, a freshness/refresh pill, and an Apple-Maps-style bottom bar opening the truck
   list as a `SheetContainer` of `EntityRow`s (tap → flyTo) — a sheet, not a FAB (§5). Leaflet's loading
   state is a ds `Skeleton`, not the old spinner. 15s polling paused while the tab is hidden.
-  `tsc --noEmit` → exit 0.
+  Follow-ups from device review: Leaflet's default zoom control was an unstyled white box colliding with
+  the chips (`showZoomControl={false}` on touch); the bottom bar sat on the tab bar because the shell
+  renders `OnboardingReminderRibbon` **in flow** above page content, so no viewport calc can be right —
+  the map is now `fixed top-14 bottom-[72px] z-0`; chip tones were realigned to `STATUS_COLORS` so the
+  chip you tap matches the dot you see; the marker's shadcn `VehicleDetailsSheet` was replaced with a ds
+  sheet (`hideDetailsSheet`); and CARTO's roads needed `brightness(1.9) contrast(1.12)` on the tile pane
+  (multiplicative, so the base stays dark while roads/labels lift) — tunable in one place.
+- **Loads (Overview)** · 2026-07-15 · `carrier/loads/LoadsMobile.tsx`. Same `/api/v1/carrier/loads`
+  endpoint as the desktop grid. Standard Overview, but **no back chevron** — Loads is a bottom-tab root,
+  unlike the More sub-pages. Tappable status KPIs (Active/Delivered/Invoiced), search (ref #/client/trip #),
+  All/Active/Delivered segmented, `EntityRow` (square Package tile, client subline, type·revenue·trip meta).
+  Status tones: pending=neutral, in_transit=accent, delivered=success, cancelled=danger. The desktop paints
+  **invoiced purple**, which the ds has no equivalent for (`vip` amber is reserved for VIP tags), so invoiced
+  reads success like delivered — the label carries the difference, and tinting it warning would imply being
+  billed is a problem. `tsc --noEmit` → exit 0.
+  **Pending:** Loads **Detail** (`/carrier/loads/[id]`) + **Create** (`/carrier/loads/new`) are still desktop-only.
