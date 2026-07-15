@@ -13,6 +13,7 @@ import { DispatchPayRecordsPanel } from '@/components/carrier/dispatches/Dispatc
 import { DispatchMessages } from '@/components/carrier/dispatches/DispatchMessages';
 import { TripSuccessBanner } from '@/components/carrier/dispatches/TripSuccessBanner';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { TripDetailMobile } from './TripDetailMobile';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -243,7 +244,40 @@ export default async function DispatchDetailPage({ params }: Props) {
   const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : `DC-${id.slice(0, 8)}`;
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
+      <div className="lg:hidden -m-4">
+        <TripDetailMobile
+          trip={{
+            id: dispatch.id,
+            status: dispatch.status,
+            notes: dispatch.notes,
+            primaryDriverId: dispatch.primaryDriverId,
+            coDriverId: dispatch.coDriverId ?? null,
+            truckId: dispatch.truckId,
+            plannedMiles: serializedDispatch.plannedMiles,
+            actualMiles: serializedDispatch.actualMiles,
+            scheduledDeparture: serializedDispatch.scheduledDeparture,
+            routeTemplateId: dispatch.routeTemplateId ?? null,
+            routeTemplateName: routeTemplate?.templateName ?? null,
+            routeTemplateRecurrenceRule: routeTemplate?.recurrenceRule ?? null,
+            routeTemplateRecurrenceTimezone: routeTemplate?.recurrenceTimezone ?? null,
+            routeTemplateScheduledDepartureTime: routeTemplate?.scheduledDepartureTime ?? null,
+          }}
+          driverName={driverName}
+          coDriverName={coDriverName}
+          truckUnit={truckUnit}
+          allStopsDone={allStopsDone}
+          allDrivers={driversForPanels}
+          allTrucks={trucksForAttach}
+          stops={serializedDispatch.stops}
+          facilityMap={facilityMap}
+          canManage={canManage}
+        />
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
       {/* Success Banner - shown after adding a load to trip */}
       <TripSuccessBanner
         dispatchId={dispatch.id}
@@ -346,6 +380,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           updatedByEmail={dispatchAudit.updatedBy?.email ?? null}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }

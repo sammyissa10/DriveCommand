@@ -466,5 +466,16 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   selects, `datetime-local` departure, planned miles, notes — all via `FieldGroup` edit mode grouped by
   Route/Assignment/Schedule/Notes. Driver-readiness tRPC check → "Dispatch ready" badge; not-ready or 409
   opens a `SheetContainer` block sheet with the blocker list, View-checklist, and admin Override→reason→
-  "Create anyway". `tsc --noEmit` → exit 0. Trip **Detail/Edit** (`/carrier/trips/[id]`) still on desktop
-  layout — the remaining Trips sub-step.
+  "Create anyway". `tsc --noEmit` → exit 0.
+- **Trips (Detail/Edit — pass 1 of 2)** · 2026-07-14 · `carrier/trips/[id]/TripDetailMobile.tsx`. The desktop
+  page stacks 6 child panels inline; the ds rebuild follows §6 (children as tabs, no inline child sections).
+  Pass 1 ships the shell + **Details** + **Stops** tabs: identity (trip #, status pill, Recurring pill,
+  recurrence summary), `ParentStrip` → route template, contextual primary action (Start Trip when planned /
+  Complete Trip when in-progress, gated on `allStopsDone`), `SheetContainer` for Cancel / Mark TONU, and
+  `Edit` (planned only, matching desktop) driving a single `isEditing` component — assignment/schedule/notes
+  via `FieldGroup`, with the desktop's notes-tag preservation (`[DISPATCH_NUMBER=…]`, `[AUTO-GENERATED]`)
+  and co-driver≠primary validation ported verbatim. **Odometer stays inline-editable** (`FieldGroup`
+  `isEditing` + `onBlur` save) because Edit locks once a trip is in progress — exactly when the end reading
+  is recorded. Stops tab renders a ds dot timeline (sequence, type, facility·city, window, status pill) with
+  Manage → `/carrier/trips/[id]/stops`. `tsc --noEmit` → exit 0.
+  **Pass 2 (pending):** Loads / Expenses / Messages tabs (+ Pay when completed) and the audit footer.
