@@ -92,6 +92,13 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  /**
+   * Whether we actually know the fleet yet. The page swallows server errors into
+   * an empty array (`getLatestVehicleLocations().catch(() => [])`), so an empty
+   * `initialVehicles` means "unknown", not "none" — without this the empty state
+   * confidently claims you own no trucks while the first fetch is still in flight.
+   */
+  const [hasLoaded, setHasLoaded] = useState(initialVehicles.length > 0);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -126,6 +133,7 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
       const json = await res.json();
       if (!mountedRef.current) return;
       setVehicles((json.data ?? []) as VehicleLocation[]);
+      setHasLoaded(true);
       setLastUpdated(new Date());
       setSecondsAgo(0);
     } catch (err) {
@@ -215,7 +223,7 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
         Nothing plottable — otherwise this is an empty dark map with no explanation
         of why a fleet you own isn't on it. One line, one way forward (§1).
       */}
-      {plottableCount === 0 ? (
+      {hasLoaded && plottableCount === 0 ? (
         <div className="pointer-events-none absolute inset-0 z-[400] flex items-center justify-center px-8">
           <div className="pointer-events-auto w-full max-w-sm rounded-[20px] bg-ds-card p-5 text-center shadow-2xl">
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ds-accent/[0.16]">
