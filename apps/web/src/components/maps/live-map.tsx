@@ -31,6 +31,11 @@ interface LiveMapProps {
   dark?: boolean;
   /** Suppress the built-in details sheet when the caller renders its own. */
   hideDetailsSheet?: boolean;
+  /**
+   * Leaflet's default +/- control is an unstyled white box that collides with
+   * floating ds chrome. Touch has pinch-zoom, so mobile turns it off.
+   */
+  showZoomControl?: boolean;
 }
 
 const TILES = {
@@ -151,6 +156,7 @@ export default function LiveMap({
   onVehicleClick,
   dark = false,
   hideDetailsSheet = false,
+  showZoomControl = true,
 }: LiveMapProps) {
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
@@ -187,6 +193,7 @@ export default function LiveMap({
       <MapContainer
         center={center as [number, number]}
         zoom={DEFAULT_ZOOM}
+        zoomControl={showZoomControl}
         style={{ height: '100%', width: '100%' }}
         className="z-0"
       >

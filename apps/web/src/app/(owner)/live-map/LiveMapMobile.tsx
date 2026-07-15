@@ -24,11 +24,26 @@ const LiveMapDynamic = dynamic(() => import('@/components/maps/live-map'), {
 
 const POLL_INTERVAL_MS = 15_000;
 
+/**
+ * Tones deliberately track STATUS_COLORS (the map markers): moving=green,
+ * idle=amber, offline=red, no-location=grey. The chip you tap and the dot you
+ * see must be the same colour — an offline truck reading grey in the list but
+ * red on the map is worse than either choice on its own.
+ */
 const STATUS_META: Record<Exclude<VehicleStatusKey, 'all'>, { tone: StatusTone; label: string }> = {
-  moving: { tone: 'accent', label: 'Moving' },
+  moving: { tone: 'success', label: 'Moving' },
   idle: { tone: 'warning', label: 'Idle' },
-  offline: { tone: 'neutral', label: 'Offline' },
+  offline: { tone: 'danger', label: 'Offline' },
   'no-location': { tone: 'neutral', label: 'No GPS' },
+};
+
+const CHIP_ON: Record<StatusTone, string> = {
+  success: 'bg-ds-success text-white',
+  warning: 'bg-ds-warning text-white',
+  danger: 'bg-ds-danger text-white',
+  accent: 'bg-ds-accent text-white',
+  neutral: 'bg-ds-elevated text-ds-txt',
+  vip: 'bg-ds-vip text-white',
 };
 
 const FILTERS: { key: VehicleStatusKey; label: string }[] = [
@@ -151,6 +166,7 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
           initialVehicles={mapVehicles}
           flyToTarget={flyToTarget}
           dark
+          showZoomControl={false}
           onVehicleClick={() => undefined}
         />
       </div>
@@ -162,6 +178,7 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
             const on = filter === key;
             const n = counts[key] ?? 0;
             if (key !== 'all' && n === 0) return null;
+            const tone = key === 'all' ? 'accent' : STATUS_META[key as Exclude<VehicleStatusKey, 'all'>].tone;
             return (
               <button
                 key={key}
@@ -169,11 +186,11 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
                 aria-pressed={on}
                 onClick={() => setFilter(key)}
                 className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold shadow-lg transition active:opacity-75 ${
-                  on ? 'bg-ds-accent text-white' : 'bg-ds-card text-ds-txt2'
+                  on ? CHIP_ON[tone] : 'bg-ds-card text-ds-txt2'
                 }`}
               >
                 <span>{label}</span>
-                <span className={on ? 'text-white/80' : 'text-ds-txt3'}>{n}</span>
+                <span className={on ? 'opacity-80' : 'text-ds-txt3'}>{n}</span>
               </button>
             );
           })}
