@@ -17,7 +17,7 @@ import { saveRouteTemplate } from '@/actions/carrier/save-route-template';
 import type { RouteTemplateFormData } from '@/components/carrier/templates/RouteTemplateForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
 import { formatRecurrence } from '../TemplatesMobile';
-import { TemplateStopsEditor, type FacilityOption } from '../TemplateStopsEditor';
+import { MobileStopsEditor, type FacilityOption } from '@/components/carrier/stops/MobileStopsEditor';
 
 // ---------------------------------------------------------------------------
 // Vocabulary (mirrors RouteTemplateForm)
@@ -409,7 +409,7 @@ export function TemplateEditMobile({
         </div>
 
         {/* Stops — editable in place; the server requires at least one */}
-        <TemplateStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} />
+        <MobileStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} mode="template" />
 
         <div>
           <SectionHeader title="Notes" />

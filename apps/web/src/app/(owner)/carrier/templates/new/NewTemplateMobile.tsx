@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/ds';
 import { saveRouteTemplate } from '@/actions/carrier/save-route-template';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
-import { TemplateStopsEditor, type FacilityOption } from '../TemplateStopsEditor';
+import { MobileStopsEditor, type FacilityOption } from '@/components/carrier/stops/MobileStopsEditor';
 
 const EQUIPMENT_TYPES = [
   { label: 'Dry Van', value: 'dry_van' },
@@ -331,7 +331,7 @@ export function NewTemplateMobile({
         </div>
 
         {/* Stops — required by the server, so they're part of create, not an afterthought */}
-        <TemplateStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} />
+        <MobileStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} mode="template" />
 
         <div>
           <SectionHeader title="Notes" />

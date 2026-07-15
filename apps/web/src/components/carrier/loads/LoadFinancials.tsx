@@ -2,113 +2,22 @@
 
 // ---------------------------------------------------------------------------
 // LoadFinancials — client-side financial preview
-// NOTE: Cannot import revenue-calculator.ts (it imports prisma).
-// The calculateRevenue logic is replicated inline here.
+// The arithmetic lives in lib/carrier/revenue-preview.ts, shared with the
+// mobile-web ds financials card. revenue-calculator.ts (server) can't be imported
+// here because it pulls in prisma — revenue-preview is its client-safe twin.
 // ---------------------------------------------------------------------------
 
-interface LoadFinancialsProps {
-  rateType?: string;
-  rateAmount?: number;
-  weightLbs?: number;
-  pallets?: number;
-  otherCharges?: number;
-  fuelSurchargeMethod?: string;
-  fuelSurchargeRate?: number;
-  brokerFlag?: boolean;
-  carrierCost?: number;
-  plannedMiles?: number;
-  deliveryStopCount?: number;
-}
+import { calculateRevenuePreview, type RevenuePreviewInput } from '@/lib/carrier/revenue-preview';
+
+type LoadFinancialsProps = RevenuePreviewInput;
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 }
 
-// Replicated from apps/web/src/lib/carrier/revenue-calculator.ts
-function calculateRevenue(props: LoadFinancialsProps) {
-  const {
-    rateType = 'flat',
-    rateAmount = 0,
-    weightLbs = 0,
-    pallets = 0,
-    otherCharges = 0,
-    fuelSurchargeMethod = 'none',
-    fuelSurchargeRate = 0,
-    brokerFlag = false,
-    carrierCost = 0,
-  } = props;
-
-  const amount = Number(rateAmount) || 0;
-  const weight = Number(weightLbs) || 0;
-  const pals = Number(pallets) || 0;
-
-  let baseRevenue = 0;
-  let baseNote: string | null = null;
-
-  switch (rateType) {
-    case 'flat':
-      baseRevenue = amount;
-      break;
-    case 'per_cwt':
-      baseRevenue = amount * (weight / 100);
-      break;
-    case 'per_pallet':
-      baseRevenue = amount * pals;
-      break;
-    case 'hourly':
-      baseRevenue = amount * 8; // hardcoded default 8 hours
-      baseNote = '(8 hr default)';
-      break;
-    case 'per_mile': {
-      const miles = Number(props.plannedMiles) || 0;
-      baseRevenue = amount * miles;
-      if (miles === 0) {
-        baseNote = '(enter planned miles)';
-      }
-      break;
-    }
-    case 'per_stop': {
-      const stopCount = Number(props.deliveryStopCount) || 0;
-      baseRevenue = amount * stopCount;
-      if (stopCount === 0) {
-        baseNote = '(add delivery stops)';
-      }
-      break;
-    }
-    default:
-      baseRevenue = amount;
-  }
-
-  let fuelSurcharge = 0;
-  let fscNote: string | null = null;
-  const fscRate = Number(fuelSurchargeRate) || 0;
-
-  if (fuelSurchargeMethod && fuelSurchargeMethod !== 'none') {
-    if (fuelSurchargeMethod === 'percent_of_linehaul') {
-      fuelSurcharge = baseRevenue * fscRate;
-    } else if (fuelSurchargeMethod === 'per_mile') {
-      const miles = Number(props.plannedMiles) || 0;
-      fuelSurcharge = miles * fscRate;
-      if (miles === 0) {
-        fscNote = 'per-mile FSC (enter planned miles)';
-      }
-    }
-  }
-
-  const other = Number(otherCharges) || 0;
-  const totalRevenue = baseRevenue + fuelSurcharge + other;
-
-  let grossMargin: number | null = null;
-  if (brokerFlag) {
-    grossMargin = totalRevenue - (Number(carrierCost) || 0);
-  }
-
-  return { baseRevenue, baseNote, fuelSurcharge, fscNote, other, totalRevenue, grossMargin };
-}
-
 export function LoadFinancials(props: LoadFinancialsProps) {
   const { baseRevenue, baseNote, fuelSurcharge, fscNote, other, totalRevenue, grossMargin } =
-    calculateRevenue(props);
+    calculateRevenuePreview(props);
 
   return (
     <div className="rounded-lg border bg-muted/30 p-4 space-y-2">

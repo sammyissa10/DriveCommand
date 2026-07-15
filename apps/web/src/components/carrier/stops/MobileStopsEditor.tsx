@@ -20,6 +20,7 @@ export interface FacilityOption {
 }
 
 type StopType = StopBuilderStop['stop_type'];
+export type StopsEditorMode = 'template' | 'load';
 
 const STOP_TYPE_OPTIONS: { label: string; value: StopType }[] = [
   { label: 'Pickup', value: 'pickup' },
@@ -41,6 +42,8 @@ const DEFAULT_FORM = {
   podRequired: false,
   commodityDescription: '',
   specialInstructions: '',
+  appointmentStart: '',
+  appointmentEnd: '',
 };
 
 /** Sequence is always the array order — recomputed on every change. */
@@ -48,24 +51,44 @@ function resequence(stops: StopBuilderStop[]): StopBuilderStop[] {
   return stops.map((s, i) => ({ ...s, sequence_order: i + 1 }));
 }
 
+function fmtWindow(start: string | null, end: string | null): string | null {
+  if (!start) return null;
+  const s = new Date(start);
+  if (isNaN(s.getTime())) return null;
+  const sStr = s.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  if (!end) return sStr;
+  const e = new Date(end);
+  if (isNaN(e.getTime())) return sStr;
+  return `${sStr} – ${e.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+}
+
 /**
- * Template stops, ds-style. The desktop builder reorders by drag (dnd-kit), which
- * fights the page scroll on touch — here order is changed with explicit up/down
- * controls instead.
+ * Stops for the mobile-web ds, shared by route templates and loads.
+ *
+ * The desktop StopBuilder reorders by drag (dnd-kit), which fights page scroll on
+ * touch — order is changed with explicit up/down controls instead. Sequence is
+ * recomputed from array order either way, so the payload is identical.
+ *
+ * `mode` follows the desktop's split: a template's stops are relative to the route
+ * (no wall-clock times), a load's stops have real appointment windows.
  */
-export function TemplateStopsEditor({
+export function MobileStopsEditor({
   stops,
   onChange,
   facilities,
   error,
+  mode = 'template',
 }: {
   stops: StopBuilderStop[];
   onChange: (stops: StopBuilderStop[]) => void;
   facilities: FacilityOption[];
   error?: string;
+  mode?: StopsEditorMode;
 }) {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
+
+  const noun = mode === 'load' ? 'load' : 'route';
 
   function setStopType(value: string) {
     const v = value as StopType;
@@ -96,10 +119,11 @@ export function TemplateStopsEditor({
       bol_required: form.bolRequired,
       pod_required: form.podRequired,
       special_instructions: form.specialInstructions || null,
+      // Template stops are relative to the route; only loads carry wall-clock times.
       appt_window_start_offset_min: null,
       appt_window_end_offset_min: null,
-      appointment_start: null,
-      appointment_end: null,
+      appointment_start: mode === 'load' && form.appointmentStart ? new Date(form.appointmentStart).toISOString() : null,
+      appointment_end: mode === 'load' && form.appointmentEnd ? new Date(form.appointmentEnd).toISOString() : null,
     };
     onChange(resequence([...stops, stop]));
     setForm(DEFAULT_FORM);
@@ -140,6 +164,26 @@ export function TemplateStopsEditor({
       input: { value: form.stopType, onChange: setStopType, options: STOP_TYPE_OPTIONS },
     },
   ];
+  const appointmentFields: FieldDef[] = [
+    {
+      key: 'appointmentStart',
+      label: 'Start',
+      input: {
+        value: form.appointmentStart,
+        onChange: (v) => setForm((p) => ({ ...p, appointmentStart: v })),
+        type: 'datetime-local',
+      },
+    },
+    {
+      key: 'appointmentEnd',
+      label: 'End',
+      input: {
+        value: form.appointmentEnd,
+        onChange: (v) => setForm((p) => ({ ...p, appointmentEnd: v })),
+        type: 'datetime-local',
+      },
+    },
+  ];
   const detailFields: FieldDef[] = [
     {
       key: 'commodityDescription',
@@ -174,16 +218,25 @@ export function TemplateStopsEditor({
           <div className="rounded-[20px] bg-ds-warning/[0.14] p-4">
             <p className="text-[15px] font-semibold text-ds-warning">No facilities yet</p>
             <p className="mt-0.5 text-[13px] text-ds-txt2">
-              A route is built from facilities. Add one first, then come back.
+              Stops happen at facilities. Add one first, then come back.
             </p>
           </div>
         ) : (
-          <EmptyState icon={MapPin} title="No stops yet" message="A route template needs at least one stop. Tap Add to place the first." />
+          <EmptyState
+            icon={MapPin}
+            title="No stops yet"
+            message={
+              mode === 'load'
+                ? 'Add the pickup and delivery for this load.'
+                : 'A route template needs at least one stop. Tap Add to place the first.'
+            }
+          />
         )
       ) : (
         <div className="space-y-3">
           {stops.map((s, i) => {
             const place = [s.facility_city, s.facility_state].filter(Boolean).join(', ');
+            const when = mode === 'load' ? fmtWindow(s.appointment_start, s.appointment_end) : null;
             return (
               <div key={s.id} className="rounded-[20px] bg-ds-card p-4">
                 <div className="flex items-start gap-3">
@@ -198,6 +251,7 @@ export function TemplateStopsEditor({
                       {s.facility_name}
                       {place ? <span className="text-ds-txt3"> · {place}</span> : null}
                     </div>
+                    {when ? <div className="mt-0.5 text-[13px] text-ds-txt3">{when}</div> : null}
                     {s.bol_required || s.pod_required ? (
                       <div className="mt-0.5 text-[13px] text-ds-txt3">
                         {[s.bol_required ? 'BOL required' : null, s.pod_required ? 'POD required' : null]
@@ -249,7 +303,7 @@ export function TemplateStopsEditor({
         open={addOpen}
         onCancel={() => setAddOpen(false)}
         title="Add Stop"
-        subtitle={`Stop ${stops.length + 1} on this route`}
+        subtitle={`Stop ${stops.length + 1} on this ${noun}`}
       >
         <div className="space-y-4">
           <FieldGroup fields={addFields} isEditing />
@@ -280,6 +334,13 @@ export function TemplateStopsEditor({
               })}
             </div>
           </div>
+
+          {mode === 'load' ? (
+            <div>
+              <SectionHeader title="Appointment" />
+              <FieldGroup fields={appointmentFields} isEditing />
+            </div>
+          ) : null}
 
           <div>
             <SectionHeader title="Details" />
