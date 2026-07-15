@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { getClient } from '@/lib/carrier/clients';
 import { ClientDetail } from './ClientDetail';
+import { ClientDetailMobile } from './ClientDetailMobile';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
 import { hasPermission } from '@/lib/auth/permissions';
@@ -62,6 +63,13 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
 
   return (
     <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <ClientDetailMobile client={serialized} initialEdit={edit === 'true'} />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block">
       <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} canCreateContract={canCreateContract} />
       {clientAudit && (
         <AuditTrailFooter
@@ -73,6 +81,7 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
           updatedByEmail={clientAudit.updatedBy?.email ?? null}
         />
       )}
+      </div>
     </>
   );
 }
