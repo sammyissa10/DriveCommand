@@ -35,6 +35,35 @@ export default async function EditRouteTemplatePage({ params }: Props) {
 
   if (!template) notFound();
 
+  // Fetched server-side so the mobile selects render with the right option on the
+  // first paint. Client-fetching them made the Client field flash "Select client…"
+  // (a native select with no matching option falls back to its first one).
+  const orgId = session.tenantId;
+  const [clients, drivers, trucks, contracts] = await Promise.all([
+    prisma.carrierClient.findMany({
+      where: { orgId },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.carrierDriver.findMany({
+      where: { orgId, status: 'active' },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: { lastName: 'asc' },
+    }),
+    prisma.carrierTruck.findMany({
+      where: { orgId, status: 'active' },
+      select: { id: true, unitNumber: true },
+      orderBy: { unitNumber: 'asc' },
+    }),
+    template.clientId
+      ? prisma.carrierContract.findMany({
+          where: { orgId, clientId: template.clientId },
+          select: { id: true, contractNumber: true, contractName: true },
+          orderBy: { contractNumber: 'asc' },
+        })
+      : Promise.resolve([]),
+  ]);
+
   // Map DB stops → StopBuilderStop format
   const stops: StopBuilderStop[] = template.stops.map((s) => ({
     id: s.id,
@@ -82,7 +111,15 @@ export default async function EditRouteTemplatePage({ params }: Props) {
     <>
       {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
       <div className="lg:hidden -m-4">
-        <TemplateEditMobile initialData={formData} templateId={id} initialActive={template.active} />
+        <TemplateEditMobile
+          initialData={formData}
+          templateId={id}
+          initialActive={template.active}
+          clients={clients}
+          drivers={drivers}
+          trucks={trucks}
+          initialContracts={contracts}
+        />
       </div>
 
       {/* Desktop */}

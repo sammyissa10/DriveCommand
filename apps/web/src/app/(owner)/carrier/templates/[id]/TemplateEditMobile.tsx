@@ -72,10 +72,19 @@ export function TemplateEditMobile({
   initialData,
   templateId,
   initialActive,
+  clients,
+  drivers,
+  trucks,
+  initialContracts,
 }: {
   initialData: RouteTemplateFormData;
   templateId: string;
   initialActive: boolean;
+  /** Server-provided so every select has its option on the first paint. */
+  clients: ClientItem[];
+  drivers: DriverItem[];
+  trucks: TruckItem[];
+  initialContracts: ContractItem[];
 }) {
   const router = useRouter();
 
@@ -114,10 +123,9 @@ export function TemplateEditMobile({
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [clients, setClients] = useState<ClientItem[]>([]);
-  const [contracts, setContracts] = useState<ContractItem[]>([]);
-  const [drivers, setDrivers] = useState<DriverItem[]>([]);
-  const [trucks, setTrucks] = useState<TruckItem[]>([]);
+  // Contracts depend on the selected client, so they refetch — but seed from the
+  // server so the current contract shows immediately.
+  const [contracts, setContracts] = useState<ContractItem[]>(initialContracts);
 
   // The RRULE is derived from the builder state, exactly as on desktop.
   const recurrenceRule = useMemo(() => {
@@ -131,31 +139,27 @@ export function TemplateEditMobile({
 
   const showRecurrence = scheduleType === 'fixed_days' || scheduleType === 'frequency';
 
+  // Only refetch when the client is actually switched — the initial client's
+  // contracts already came from the server.
   useEffect(() => {
-    fetch('/api/v1/carrier/clients?pageSize=200')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setClients((d?.data?.items ?? []) as ClientItem[]))
-      .catch(() => undefined);
-    fetch('/api/v1/carrier/fleet/drivers?status=active&pageSize=200')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setDrivers((d?.data?.items ?? []) as DriverItem[]))
-      .catch(() => undefined);
-    fetch('/api/v1/carrier/fleet/trucks?status=active&pageSize=200')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setTrucks((d?.data?.items ?? []) as TruckItem[]))
-      .catch(() => undefined);
-  }, []);
-
-  useEffect(() => {
+    if (clientId === initialData.clientId) return;
     if (!clientId) {
       setContracts([]);
       return;
     }
+    let cancelled = false;
     fetch(`/api/v1/carrier/contracts?client_id=${clientId}&pageSize=100`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setContracts((d?.data?.items ?? []) as ContractItem[]))
-      .catch(() => setContracts([]));
-  }, [clientId]);
+      .then((d) => {
+        if (!cancelled) setContracts((d?.data?.items ?? []) as ContractItem[]);
+      })
+      .catch(() => {
+        if (!cancelled) setContracts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [clientId, initialData.clientId]);
 
   async function toggleActive() {
     const next = !active;
