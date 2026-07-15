@@ -72,11 +72,11 @@ export function formatRecurrence(rule: string | null, tz: string | null, departu
   }
 }
 
-type Scope = 'active' | 'inactive' | 'all';
+type Scope = 'all' | 'active' | 'inactive';
 const SCOPE_OPTIONS: { label: string; value: Scope }[] = [
+  { label: 'All', value: 'all' },
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' },
-  { label: 'All', value: 'all' },
 ];
 
 /** Square tile — a template is a "thing", not a person. */
@@ -150,7 +150,9 @@ export function TemplatesMobile({ canCreate }: { canCreate: boolean }) {
     return [...list].sort((a, b) => a.templateName.localeCompare(b.templateName, undefined, { numeric: true }));
   }, [rows, scope, query, clientMap]);
 
-  const isFiltering = query.trim().length > 0 || scope !== 'active';
+  // Any narrowing counts — 'active' is the default but it still hides rows, so a
+  // fleet whose templates are all deactivated must not read as "none yet".
+  const isFiltering = query.trim().length > 0 || scope !== 'all';
   const hasAny = (rows?.length ?? 0) > 0;
   const countLabel = rows === null ? ' ' : `${rows.length} template${rows.length === 1 ? '' : 's'}`;
 
