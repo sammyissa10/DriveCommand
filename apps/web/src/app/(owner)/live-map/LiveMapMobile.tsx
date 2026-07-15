@@ -112,6 +112,13 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
     [filtered],
   );
 
+  // Ignores the filter on purpose: this asks "is there anything plottable at all?",
+  // which is a data problem, not a filter result.
+  const plottableCount = useMemo(
+    () => vehicles.filter((v) => v.status !== 'no-location' && v.latitude !== null && v.longitude !== null).length,
+    [vehicles],
+  );
+
   const fetchVehicles = useCallback(async () => {
     try {
       const res = await fetch('/api/v1/carrier/live-map/vehicles');
@@ -203,6 +210,36 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
           onVehicleClick={(truckId) => setSelectedTruckId(truckId)}
         />
       </div>
+
+      {/*
+        Nothing plottable — otherwise this is an empty dark map with no explanation
+        of why a fleet you own isn't on it. One line, one way forward (§1).
+      */}
+      {plottableCount === 0 ? (
+        <div className="pointer-events-none absolute inset-0 z-[400] flex items-center justify-center px-8">
+          <div className="pointer-events-auto w-full max-w-sm rounded-[20px] bg-ds-card p-5 text-center shadow-2xl">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ds-accent/[0.16]">
+              <Truck className="h-6 w-6 text-ds-accent" />
+            </span>
+            <p className="mt-3 text-[17px] font-semibold text-ds-txt">
+              {vehicles.length === 0 ? 'No trucks yet' : 'No trucks reporting GPS'}
+            </p>
+            <p className="mt-1 text-[13px] text-ds-txt2">
+              {vehicles.length === 0
+                ? 'Trucks you add to the fleet will show here once they report a position.'
+                : `${vehicles.length} truck${vehicles.length === 1 ? '' : 's'} ${
+                    vehicles.length === 1 ? "hasn't" : "haven't"
+                  } sent a position yet. Connect an ELD, or check the driver app is running.`}
+            </p>
+            <div className="mt-4">
+              <PrimaryButton
+                label={vehicles.length === 0 ? 'View trucks' : 'Set up tracking'}
+                onClick={() => router.push(vehicles.length === 0 ? '/carrier/fleet/trucks' : '/settings/integrations')}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Status filters — float over the map */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] pt-3">
