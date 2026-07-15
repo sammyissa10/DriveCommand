@@ -147,6 +147,14 @@ export default async function DispatchDetailPage({ params }: Props) {
     select: { id: true, unitNumber: true, displayName: true },
   });
 
+  // Every facility in the org — the mobile Stops tab picks from these when adding
+  // a stop inline (desktop uses a search modal instead).
+  const allFacilities = await prisma.carrierFacility.findMany({
+    where: { orgId },
+    select: { id: true, name: true, city: true, state: true },
+    orderBy: { name: 'asc' },
+  });
+
   // Fetch all active drivers and trucks for the expenses panel
   const [allDrivers, allTrucks] = await Promise.all([
     prisma.carrierDriver.findMany({
@@ -272,6 +280,9 @@ export default async function DispatchDetailPage({ params }: Props) {
           allTrucks={trucksForAttach}
           stops={serializedDispatch.stops}
           facilityMap={facilityMap}
+          facilities={allFacilities}
+          routeTemplateStopMap={routeTemplateStopMap}
+          stopDocCounts={stopDocCounts}
           canManage={canManage}
         />
       </div>

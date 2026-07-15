@@ -184,6 +184,24 @@ const TABS: { label: string; value: Tab }[] = [
 // Trip Detail — mobile-web design system view (carrier)
 // ---------------------------------------------------------------------------
 
+const DEFAULT_STOP_FORM = {
+  facilityId: '',
+  stopType: 'pickup',
+  appointmentStart: '',
+  appointmentEnd: '',
+  contactName: '',
+  contactPhone: '',
+  commodityDescription: '',
+  specialInstructions: '',
+};
+
+const STOP_TYPE_OPTIONS = [
+  { label: 'Pickup', value: 'pickup' },
+  { label: 'Delivery', value: 'delivery' },
+  { label: 'Fuel stop', value: 'fuel_stop' },
+  { label: 'Layover', value: 'layover' },
+];
+
 export function TripDetailMobile({
   trip,
   driverName,
@@ -194,6 +212,9 @@ export function TripDetailMobile({
   allTrucks,
   stops,
   facilityMap,
+  facilities,
+  routeTemplateStopMap,
+  stopDocCounts,
   canManage,
 }: {
   trip: TripDetailData;
@@ -205,6 +226,9 @@ export function TripDetailMobile({
   allTrucks: { id: string; unitNumber: string }[];
   stops: TripStopItem[];
   facilityMap: Record<string, { name: string; addressLine1: string | null; city: string | null; state: string | null }>;
+  facilities: { id: string; name: string; city: string | null; state: string | null }[];
+  routeTemplateStopMap: Record<number, { bolRequired: boolean; podRequired: boolean }>;
+  stopDocCounts: Record<string, { bolCount: number; podCount: number }>;
   canManage: boolean;
 }) {
   const router = useRouter();
@@ -215,6 +239,12 @@ export function TripDetailMobile({
   const [actionsOpen, setActionsOpen] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [templatesLoaded, setTemplatesLoaded] = useState(false);
+
+  // Stops are managed in place — no trip to a separate page.
+  const [addStopOpen, setAddStopOpen] = useState(false);
+  const [stopForm, setStopForm] = useState(DEFAULT_STOP_FORM);
+  const [skipStopId, setSkipStopId] = useState<string | null>(null);
+  const [skipReason, setSkipReason] = useState('');
 
   // Odometer stays inline-editable: Edit is locked once a trip is in progress,
   // which is exactly when the end reading gets recorded.
@@ -238,6 +268,8 @@ export function TripDetailMobile({
   const isInProgress = trip.status === 'in_progress';
   const isPlanned = trip.status === 'planned';
   const canEdit = canManage && !isInProgress && !isLocked;
+  // Stops can be added while a trip is planned or running (matches the desktop).
+  const canAddStop = canManage && (isPlanned || isInProgress);
 
   const dispatchNumber = extractDispatchNumber(trip.notes);
   const s = STATUS_META[trip.status] ?? { tone: 'neutral' as StatusTone, label: trip.status.replace(/_/g, ' ') };
@@ -355,6 +387,94 @@ export function TripDetailMobile({
         router.refresh();
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Failed to update trip');
+      }
+    });
+  }
+
+  // ---- stop actions (same endpoints as the desktop StopTimelineCard) ----
+  function stopAction(stopId: string, path: 'arrived' | 'complete', okMsg: string) {
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/v1/carrier/stops/${stopId}/${path}`, { method: 'PATCH' });
+        if (!res.ok) {
+          const err = (await res.json().catch(() => ({}))) as { error?: string };
+          throw new Error(err.error ?? 'Failed to update stop');
+        }
+        navigator.vibrate?.(10);
+        toast.success(okMsg);
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to update stop');
+      }
+    });
+  }
+
+  function confirmSkip() {
+    if (!skipReason.trim()) {
+      toast.error('Skip reason is required');
+      return;
+    }
+    const id = skipStopId;
+    if (!id) return;
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/v1/carrier/stops/${id}/skip`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ skip_reason: skipReason.trim() }),
+        });
+        if (!res.ok) {
+          const err = (await res.json().catch(() => ({}))) as { error?: string };
+          throw new Error(err.error ?? 'Failed to skip stop');
+        }
+        toast.success('Stop skipped');
+        setSkipStopId(null);
+        setSkipReason('');
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to skip stop');
+      }
+    });
+  }
+
+  function submitStop() {
+    if (!stopForm.facilityId) {
+      toast.error('Pick a facility for this stop');
+      return;
+    }
+    startTransition(async () => {
+      try {
+        const body: Record<string, unknown> = {
+          dispatchId: trip.id,
+          facilityId: stopForm.facilityId,
+          stopType: stopForm.stopType,
+          sequenceOrder: stops.length + 1,
+        };
+        if (stopForm.contactName.trim()) body.contactName = stopForm.contactName.trim();
+        if (stopForm.contactPhone.trim()) body.contactPhone = stopForm.contactPhone.trim();
+        if (stopForm.appointmentStart) body.appointmentStart = new Date(stopForm.appointmentStart).toISOString();
+        if (stopForm.appointmentEnd) body.appointmentEnd = new Date(stopForm.appointmentEnd).toISOString();
+        if (stopForm.specialInstructions.trim()) body.specialInstructions = stopForm.specialInstructions.trim();
+        if (stopForm.commodityDescription.trim()) body.commodityDescription = stopForm.commodityDescription.trim();
+
+        const res = await fetch('/api/v1/carrier/stops', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = (await res.json().catch(() => ({}))) as { error?: string };
+          throw new Error(err.error ?? 'Failed to add stop');
+        }
+        navigator.vibrate?.(10);
+        toast.success('Stop added to trip', {
+          description: isInProgress ? 'Driver has been notified.' : undefined,
+        });
+        setStopForm(DEFAULT_STOP_FORM);
+        setAddStopOpen(false);
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to add stop');
       }
     });
   }
@@ -584,15 +704,15 @@ export function TripDetailMobile({
             <div>
               <SectionHeader
                 title={`${stops.length} stop${stops.length === 1 ? '' : 's'}`}
-                action={{ label: 'Manage', onClick: () => router.push(`/carrier/trips/${trip.id}/stops`) }}
+                action={canAddStop ? { label: 'Add', onClick: () => setAddStopOpen(true) } : undefined}
               />
               {stops.length === 0 ? (
                 <EmptyState
                   icon={MapPin}
                   title="No stops yet"
                   message={
-                    canManage
-                      ? 'Tap Manage to add the first stop to this trip.'
+                    canAddStop
+                      ? 'Tap Add to put the first stop on this trip.'
                       : 'Stops added to this trip will appear here.'
                   }
                 />
@@ -603,26 +723,86 @@ export function TripDetailMobile({
                     const f = facilityMap[stop.facilityId] ?? null;
                     const place = f ? [f.city, f.state].filter(Boolean).join(', ') : '';
                     const when = fmtWindow(stop.appointmentStart, stop.appointmentEnd);
+
+                    // Same gating as the desktop StopTimelineCard.
+                    const isStopPending = stop.status === 'pending' && isInProgress;
+                    const isStopArrived = stop.status === 'arrived' && isInProgress;
+                    const req = routeTemplateStopMap[stop.sequenceOrder];
+                    const docs = stopDocCounts[stop.id] ?? { bolCount: 0, podCount: 0 };
+                    const missingDocs =
+                      (stop.stopType === 'pickup' && (req?.bolRequired ?? false) && docs.bolCount === 0) ||
+                      (stop.stopType === 'delivery' && (req?.podRequired ?? false) && docs.podCount === 0);
+                    const showArrive = canManage && isStopPending;
+                    const showComplete = canManage && isStopArrived;
+                    const showSkip = canManage && (isStopPending || isStopArrived);
+                    const hasActions = showArrive || showComplete || showSkip;
+
                     return (
-                      <div key={stop.id} className="flex gap-3 rounded-[20px] bg-ds-card p-4">
-                        <div className="flex flex-col items-center pt-0.5">
-                          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${DOT_BG[meta.tone]}`} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <span className="text-[15px] font-semibold text-ds-txt">
-                              {stop.sequenceOrder}. {STOP_TYPE_LABEL[stop.stopType] ?? stop.stopType}
-                            </span>
-                            <StatusPill label={meta.label} tone={meta.tone} />
+                      <div key={stop.id} className="rounded-[20px] bg-ds-card p-4">
+                        <div className="flex gap-3">
+                          <div className="flex flex-col items-center pt-1.5">
+                            <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${DOT_BG[meta.tone]}`} />
                           </div>
-                          {f ? (
-                            <div className="mt-0.5 truncate text-[15px] text-ds-txt2">
-                              {f.name}
-                              {place ? <span className="text-ds-txt3"> · {place}</span> : null}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="text-[15px] font-semibold text-ds-txt">
+                                {stop.sequenceOrder}. {STOP_TYPE_LABEL[stop.stopType] ?? stop.stopType}
+                              </span>
+                              <StatusPill label={meta.label} tone={meta.tone} />
                             </div>
-                          ) : null}
-                          {when ? <div className="mt-0.5 text-[13px] text-ds-txt3">{when}</div> : null}
+                            {f ? (
+                              <div className="mt-0.5 truncate text-[15px] text-ds-txt2">
+                                {f.name}
+                                {place ? <span className="text-ds-txt3"> · {place}</span> : null}
+                              </div>
+                            ) : null}
+                            {when ? <div className="mt-0.5 text-[13px] text-ds-txt3">{when}</div> : null}
+                          </div>
                         </div>
+
+                        {hasActions ? (
+                          <div className="mt-3 flex gap-2">
+                            {showArrive ? (
+                              <button
+                                type="button"
+                                disabled={isPending}
+                                onClick={() => stopAction(stop.id, 'arrived', 'Marked as arrived')}
+                                className="h-11 flex-1 rounded-[12px] bg-ds-accent/[0.16] text-[15px] font-semibold text-ds-accent transition active:opacity-75 disabled:opacity-35"
+                              >
+                                Arrive
+                              </button>
+                            ) : null}
+                            {showComplete ? (
+                              <button
+                                type="button"
+                                disabled={isPending || missingDocs}
+                                onClick={() => stopAction(stop.id, 'complete', 'Stop completed')}
+                                className="h-11 flex-1 rounded-[12px] bg-ds-success/[0.16] text-[15px] font-semibold text-ds-success transition active:opacity-75 disabled:opacity-35"
+                              >
+                                Complete
+                              </button>
+                            ) : null}
+                            {showSkip ? (
+                              <button
+                                type="button"
+                                disabled={isPending}
+                                onClick={() => {
+                                  setSkipReason('');
+                                  setSkipStopId(stop.id);
+                                }}
+                                className="h-11 flex-1 rounded-[12px] bg-ds-elevated text-[15px] font-semibold text-ds-txt2 transition active:opacity-75 disabled:opacity-35"
+                              >
+                                Skip
+                              </button>
+                            ) : null}
+                          </div>
+                        ) : null}
+
+                        {showComplete && missingDocs ? (
+                          <p className="mt-2 text-[13px] text-ds-warning">
+                            Upload the {stop.stopType === 'pickup' ? 'BOL' : 'POD'} before completing this stop.
+                          </p>
+                        ) : null}
                       </div>
                     );
                   })}
@@ -656,6 +836,183 @@ export function TripDetailMobile({
           >
             Mark TONU
           </button>
+        </div>
+      </SheetContainer>
+
+      {/* Add stop — in place, so managing a trip never leaves the trip */}
+      <SheetContainer
+        open={addStopOpen}
+        onCancel={() => setAddStopOpen(false)}
+        title="Add Stop"
+        subtitle={`Stop ${stops.length + 1} on this trip`}
+      >
+        {facilities.length === 0 ? (
+          <div className="space-y-3">
+            <div className="rounded-[20px] bg-ds-warning/[0.14] p-4">
+              <p className="text-[15px] font-semibold text-ds-warning">No facilities yet</p>
+              <p className="mt-0.5 text-[13px] text-ds-txt2">
+                A stop happens at a facility. Add one first, then come back.
+              </p>
+            </div>
+            <PrimaryButton label="Add a facility" onClick={() => router.push('/carrier/facilities')} />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <FieldGroup
+              isEditing
+              fields={[
+                {
+                  key: 'facilityId',
+                  label: 'Facility *',
+                  input: {
+                    value: stopForm.facilityId,
+                    onChange: (v) => setStopForm((p) => ({ ...p, facilityId: v })),
+                    options: [
+                      { label: 'Select facility…', value: '' },
+                      ...facilities.map((f) => ({
+                        label: [f.name, [f.city, f.state].filter(Boolean).join(', ')].filter(Boolean).join(' — '),
+                        value: f.id,
+                      })),
+                    ],
+                  },
+                },
+                {
+                  key: 'stopType',
+                  label: 'Stop type',
+                  input: {
+                    value: stopForm.stopType,
+                    onChange: (v) => setStopForm((p) => ({ ...p, stopType: v })),
+                    options: STOP_TYPE_OPTIONS,
+                  },
+                },
+              ]}
+            />
+
+            <div>
+              <SectionHeader title="Appointment" />
+              <FieldGroup
+                isEditing
+                fields={[
+                  {
+                    key: 'appointmentStart',
+                    label: 'Start',
+                    input: {
+                      value: stopForm.appointmentStart,
+                      onChange: (v) => setStopForm((p) => ({ ...p, appointmentStart: v })),
+                      type: 'datetime-local',
+                    },
+                  },
+                  {
+                    key: 'appointmentEnd',
+                    label: 'End',
+                    input: {
+                      value: stopForm.appointmentEnd,
+                      onChange: (v) => setStopForm((p) => ({ ...p, appointmentEnd: v })),
+                      type: 'datetime-local',
+                    },
+                  },
+                ]}
+              />
+            </div>
+
+            <div>
+              <SectionHeader title="Contact" />
+              <FieldGroup
+                isEditing
+                fields={[
+                  {
+                    key: 'contactName',
+                    label: 'Name',
+                    input: {
+                      value: stopForm.contactName,
+                      onChange: (v) => setStopForm((p) => ({ ...p, contactName: v })),
+                      placeholder: 'John Doe',
+                    },
+                  },
+                  {
+                    key: 'contactPhone',
+                    label: 'Phone',
+                    input: {
+                      value: stopForm.contactPhone,
+                      onChange: (v) => setStopForm((p) => ({ ...p, contactPhone: v })),
+                      type: 'tel',
+                      inputMode: 'tel',
+                      placeholder: '(555) 123-4567',
+                    },
+                  },
+                ]}
+              />
+            </div>
+
+            <div>
+              <SectionHeader title="Details" />
+              <FieldGroup
+                isEditing
+                fields={[
+                  {
+                    key: 'commodityDescription',
+                    label: 'Commodity',
+                    input: {
+                      value: stopForm.commodityDescription,
+                      onChange: (v) => setStopForm((p) => ({ ...p, commodityDescription: v })),
+                      placeholder: 'e.g. Dry goods',
+                    },
+                  },
+                  {
+                    key: 'specialInstructions',
+                    label: 'Special instructions',
+                    input: {
+                      value: stopForm.specialInstructions,
+                      onChange: (v) => setStopForm((p) => ({ ...p, specialInstructions: v })),
+                      multiline: true,
+                      placeholder: 'Any special handling notes…',
+                    },
+                  },
+                ]}
+              />
+            </div>
+
+            <PrimaryButton
+              label={isPending ? 'Adding…' : 'Add Stop'}
+              onClick={submitStop}
+              disabled={!stopForm.facilityId || isPending}
+              loading={isPending}
+            />
+          </div>
+        )}
+      </SheetContainer>
+
+      {/* Skip stop — reason is required */}
+      <SheetContainer
+        open={skipStopId !== null}
+        onCancel={() => {
+          setSkipStopId(null);
+          setSkipReason('');
+        }}
+        title="Skip stop"
+        subtitle="Tell the team why this stop was skipped."
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label htmlFor="skip-reason" className="block text-[13px] text-ds-txt2">
+              Reason <span className="text-ds-danger">*</span>
+            </label>
+            <textarea
+              id="skip-reason"
+              value={skipReason}
+              onChange={(e) => setSkipReason(e.target.value)}
+              placeholder="e.g. Facility closed on arrival"
+              rows={3}
+              autoFocus
+              className="w-full resize-none rounded-[10px] bg-ds-input px-3 py-2.5 text-[16px] text-ds-txt outline-none placeholder:text-ds-txt3"
+            />
+          </div>
+          <PrimaryButton
+            label={isPending ? 'Skipping…' : 'Skip stop'}
+            onClick={confirmSkip}
+            disabled={!skipReason.trim() || isPending}
+            loading={isPending}
+          />
         </div>
       </SheetContainer>
     </MobileScreen>
