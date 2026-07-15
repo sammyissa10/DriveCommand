@@ -121,6 +121,7 @@ export function DriversMobile({
       <LargeTitleHeader
         title="Drivers"
         subtitle={countLabel}
+        onBack={() => router.back()}
         onAdd={canCreate ? () => setInviteOpen(true) : undefined}
         addLabel="Invite driver"
       />

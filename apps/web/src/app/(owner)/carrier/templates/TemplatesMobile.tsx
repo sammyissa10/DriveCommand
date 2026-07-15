@@ -161,6 +161,7 @@ export function TemplatesMobile({ canCreate }: { canCreate: boolean }) {
       <LargeTitleHeader
         title="Route Templates"
         subtitle={countLabel}
+        onBack={() => router.back()}
         onAdd={canCreate ? () => router.push('/carrier/templates/new') : undefined}
         addLabel="New route template"
       />

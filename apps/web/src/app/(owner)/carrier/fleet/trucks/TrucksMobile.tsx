@@ -166,6 +166,7 @@ export function TrucksMobile({
       <LargeTitleHeader
         title="Trucks"
         subtitle={countLabel}
+        onBack={() => router.back()}
         onAdd={canCreate ? () => setCreateOpen(true) : undefined}
         addLabel="Add truck"
       />
