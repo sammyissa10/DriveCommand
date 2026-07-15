@@ -615,7 +615,7 @@ export function TruckDetailMobile({
                   title={d.scheduledDeparture ? `Trip · ${fmtDate(d.scheduledDeparture)}` : `Trip ${d.id.slice(0, 8).toUpperCase()}`}
                   meta={meta || undefined}
                   pill={{ label: s.label, tone: s.tone }}
-                  onOpen={() => router.push(`/carrier/dispatches/${d.id}`)}
+                  onOpen={() => router.push(`/carrier/trips/${d.id}`)}
                 />
               );
             })}

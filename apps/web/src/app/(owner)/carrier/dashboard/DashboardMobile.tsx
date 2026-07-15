@@ -304,7 +304,7 @@ export function DashboardMobile({
                 <button
                   key={d.id}
                   type="button"
-                  onClick={() => router.push(`/carrier/dispatches/${d.dispatchId}`)}
+                  onClick={() => router.push(`/carrier/trips/${d.dispatchId}`)}
                   className="shrink-0 transition active:opacity-75"
                   aria-label={`${d.firstName} ${d.lastName} — view dispatch`}
                 >
@@ -322,7 +322,7 @@ export function DashboardMobile({
 
       {/* Today's dispatches */}
       <div className="mt-6">
-        <SectionHeader title="Today's dispatches" action={{ label: 'See all', onClick: () => router.push('/carrier/dispatches') }} />
+        <SectionHeader title="Today's dispatches" action={{ label: 'See all', onClick: () => router.push('/carrier/trips') }} />
         {dispatches === null ? (
           <div className="space-y-3">
             {[0, 1, 2].map((i) => (
@@ -347,7 +347,7 @@ export function DashboardMobile({
                   title={dispatchNumberFromNotes(d.notes)}
                   meta={total > 0 ? `${done}/${total} stops` : undefined}
                   pill={{ label: s.label, tone: s.tone }}
-                  onOpen={() => router.push(`/carrier/dispatches/${d.id}`)}
+                  onOpen={() => router.push(`/carrier/trips/${d.id}`)}
                 />
               );
             })}
@@ -389,7 +389,7 @@ export function DashboardMobile({
         <SectionHeader title="Quick actions" />
         <div className="space-y-2">
           {[
-            { icon: Send, label: 'New dispatch', href: '/carrier/dispatches?new=true' },
+            { icon: Send, label: 'New dispatch', href: '/carrier/trips/new' },
             { icon: Package, label: 'New load', href: '/carrier/loads/new' },
             { icon: UserPlus, label: 'New client', href: '/carrier/clients/new' },
           ].map(({ icon: Icon, label, href }) => (

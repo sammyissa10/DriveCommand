@@ -303,7 +303,7 @@ export function DriverDetailMobile({
   // ---- parent chips (active trip + its truck) ----
   const parentChips: ParentChip[] = [];
   if (parent?.trip) {
-    parentChips.push({ key: 'trip', icon: Package, label: parent.trip.label, onClick: () => router.push(`/carrier/dispatches/${parent.trip!.id}`) });
+    parentChips.push({ key: 'trip', icon: Package, label: parent.trip.label, onClick: () => router.push(`/carrier/trips/${parent.trip!.id}`) });
   }
   if (parent?.truck) {
     parentChips.push({ key: 'truck', icon: Truck, label: parent.truck.label, onClick: () => router.push(`/carrier/fleet/trucks/${parent.truck!.id}`) });
@@ -533,7 +533,7 @@ export function DriverDetailMobile({
                       title={`Trip ${t.id.slice(0, 8).toUpperCase()}`}
                       meta={meta || undefined}
                       pill={{ label: s.label, tone: s.tone }}
-                      onOpen={() => router.push(`/carrier/dispatches/${t.id}`)}
+                      onOpen={() => router.push(`/carrier/trips/${t.id}`)}
                     />
                   );
                 })}
