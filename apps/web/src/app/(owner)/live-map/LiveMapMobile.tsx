@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { ChevronUp, RotateCw, Truck } from 'lucide-react';
 import {
   SheetContainer,
@@ -9,7 +11,10 @@ import {
   StatusPill,
   EmptyState,
   Skeleton,
+  FieldGroup,
+  PrimaryButton,
   type StatusTone,
+  type FieldDef,
 } from '@/components/ui/ds';
 import type { VehicleLocation } from '@/lib/maps/map-utils';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
@@ -78,9 +83,11 @@ function fmtAgo(ts: Date | string | null): string | null {
 // ---------------------------------------------------------------------------
 
 export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLocation[] }) {
+  const router = useRouter();
   const [vehicles, setVehicles] = useState<VehicleLocation[]>(initialVehicles);
   const [filter, setFilter] = useState<VehicleStatusKey>('all');
   const [listOpen, setListOpen] = useState(false);
+  const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
   const [flyToTarget, setFlyToTarget] = useState<{ lat: number; lng: number } | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
@@ -150,13 +157,36 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
   }
 
   function focusVehicle(v: VehicleLocation) {
-    if (v.latitude === null || v.longitude === null) return;
+    // A truck that never reported has nowhere to fly to — say so rather than
+    // swallowing the tap.
+    if (v.latitude === null || v.longitude === null) {
+      toast.message(`${truckLabel(v)} has no GPS position yet`, {
+        description: 'It will appear on the map once it reports.',
+      });
+      return;
+    }
     setFlyToTarget({ lat: v.latitude, lng: v.longitude });
     setListOpen(false);
+    setSelectedTruckId(v.truckId);
     navigator.vibrate?.(10);
   }
 
   const countLabel = `${filtered.length} truck${filtered.length === 1 ? '' : 's'}`;
+  const selected = selectedTruckId ? vehicles.find((v) => v.truckId === selectedTruckId) ?? null : null;
+
+  /**
+   * Say what is actually true. "0 moving · 0 idle" is noise on a fleet whose
+   * trucks are all offline or haven't reported — and "13 trucks" over a map with
+   * one dot needs explaining.
+   */
+  const summary = useMemo(() => {
+    const parts: string[] = [];
+    if (counts.moving) parts.push(`${counts.moving} moving`);
+    if (counts.idle) parts.push(`${counts.idle} idle`);
+    if (counts.offline) parts.push(`${counts.offline} offline`);
+    if (counts['no-location']) parts.push(`${counts['no-location']} no GPS`);
+    return parts.slice(0, 3).join(' · ') || 'None reporting yet';
+  }, [counts]);
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-ds-bg">
@@ -167,7 +197,10 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
           flyToTarget={flyToTarget}
           dark
           showZoomControl={false}
-          onVehicleClick={() => undefined}
+          // The built-in details sheet is shadcn — it would pop a white panel out
+          // of the dark map. We render our own ds sheet instead.
+          hideDetailsSheet
+          onVehicleClick={(truckId) => setSelectedTruckId(truckId)}
         />
       </div>
 
@@ -222,9 +255,7 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-[15px] font-semibold text-ds-txt">{countLabel}</span>
-          <span className="block text-[13px] text-ds-txt3">
-            {counts.moving} moving · {counts.idle} idle
-          </span>
+          <span className="block truncate text-[13px] text-ds-txt3">{summary}</span>
         </span>
         <ChevronUp className="h-5 w-5 shrink-0 text-ds-txt3" />
       </button>
@@ -272,6 +303,51 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
             })}
           </div>
         )}
+      </SheetContainer>
+
+      {/* Truck detail — ds replacement for the shadcn VehicleDetailsSheet */}
+      <SheetContainer
+        open={selected !== null}
+        onCancel={() => setSelectedTruckId(null)}
+        title={selected ? truckLabel(selected) : 'Truck'}
+        subtitle={selected?.driver?.name ?? 'Unassigned'}
+        cancelLabel="Close"
+      >
+        {selected ? (
+          <div className="space-y-4">
+            <div className="flex justify-center">
+              <StatusPill
+                label={STATUS_META[selected.status as Exclude<VehicleStatusKey, 'all'>]?.label ?? String(selected.status)}
+                tone={STATUS_META[selected.status as Exclude<VehicleStatusKey, 'all'>]?.tone ?? 'neutral'}
+              />
+            </div>
+
+            <FieldGroup
+              isEditing={false}
+              fields={
+                [
+                  { key: 'driver', label: 'Driver', value: selected.driver?.name ?? null },
+                  { key: 'speed', label: 'Speed', value: fmtSpeed(selected.speed) },
+                  { key: 'lastPing', label: 'Last report', value: fmtAgo(selected.timestamp) },
+                  {
+                    key: 'vehicle',
+                    label: 'Vehicle',
+                    value: [selected.truck.year, selected.truck.make, selected.truck.model].filter(Boolean).join(' ') || null,
+                  },
+                  { key: 'plate', label: 'Plate', value: selected.truck.licensePlate || null },
+                ] as FieldDef[]
+              }
+            />
+
+            <PrimaryButton
+              label="View truck"
+              onClick={() => {
+                setSelectedTruckId(null);
+                router.push(`/carrier/fleet/trucks/${selected.truckId}`);
+              }}
+            />
+          </div>
+        ) : null}
       </SheetContainer>
     </div>
   );
