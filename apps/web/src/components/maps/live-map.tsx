@@ -188,6 +188,24 @@ export default function LiveMap({
           background: none !important;
           border: none !important;
         }
+        /*
+         * CARTO dark_matter deliberately sinks its roads (~#2a2a2a on ~#0e0e0e) so
+         * data pops — but on a fleet map you need to read the street a truck is on.
+         * Lifting the tile pane raises the road/base delta rather than just making
+         * everything grey, and keeps labels legible. Scoped so the desktop light
+         * basemap is untouched.
+         */
+        .ds-dark-map .leaflet-tile-pane {
+          filter: brightness(1.45) contrast(1.08);
+        }
+        /* Keep Leaflet's attribution readable on the dark base. */
+        .ds-dark-map .leaflet-control-attribution {
+          background: rgba(11, 17, 32, 0.75);
+          color: #5b6478;
+        }
+        .ds-dark-map .leaflet-control-attribution a {
+          color: #8b93a7;
+        }
       `}</style>
 
       <MapContainer
@@ -195,7 +213,7 @@ export default function LiveMap({
         zoom={DEFAULT_ZOOM}
         zoomControl={showZoomControl}
         style={{ height: '100%', width: '100%' }}
-        className="z-0"
+        className={dark ? 'z-0 ds-dark-map' : 'z-0'}
       >
         <TileLayer
           key={dark ? 'dark' : 'light'}
