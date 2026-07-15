@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { LoadsGrid } from './_grid/LoadsGrid';
+import { LoadsMobile } from './LoadsMobile';
 
 export default async function LoadsPage() {
   const session = await getSession();
@@ -19,20 +20,30 @@ export default async function LoadsPage() {
   const clientMap: Record<string, string> = {};
   for (const c of clients) clientMap[c.id] = c.name;
 
+  const canCreate = session.role !== 'MANAGER';
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Loads
-          </h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            All loads across your carrier operations &mdash; filter by client, status, or date range.
-          </p>
-        </div>
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
+      <div className="lg:hidden -m-4">
+        <LoadsMobile clientMap={clientMap} canCreate={canCreate} />
       </div>
 
-      <LoadsGrid clientMap={clientMap} />
-    </div>
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Loads
+            </h1>
+            <p className="mt-1 text-muted-foreground text-sm">
+              All loads across your carrier operations &mdash; filter by client, status, or date range.
+            </p>
+          </div>
+        </div>
+
+        <LoadsGrid clientMap={clientMap} />
+      </div>
+    </>
   );
 }
