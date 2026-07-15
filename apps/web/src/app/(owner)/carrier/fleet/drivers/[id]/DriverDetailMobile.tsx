@@ -74,7 +74,7 @@ interface CarrierDocRow {
   createdAt?: string;
 }
 
-type Tab = 'profile' | 'hours' | 'loads' | 'documents';
+type Tab = 'profile' | 'hours' | 'trips' | 'documents';
 
 // ---------------------------------------------------------------------------
 // Constants / formatting
@@ -185,7 +185,7 @@ function ChildListSkeleton() {
 const TABS: { label: string; value: Tab }[] = [
   { label: 'Profile', value: 'profile' },
   { label: 'Hours', value: 'hours' },
-  { label: 'Loads', value: 'loads' },
+  { label: 'Trips', value: 'trips' },
   { label: 'Docs', value: 'documents' },
 ];
 
@@ -512,7 +512,7 @@ export function DriverDetailMobile({
             </div>
           ) : null}
 
-          {tab === 'loads' ? (
+          {tab === 'trips' ? (
             trips.length === 0 ? (
               <EmptyState icon={Route} title="No trips yet" message="Dispatches assigned to this driver will appear here." />
             ) : (

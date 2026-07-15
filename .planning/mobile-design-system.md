@@ -42,6 +42,16 @@ The new shared kit lives in **`apps/mobile/components/ui/ds/`** (its own `index.
 the legacy `components/ui/` kit so the redesign never clobbers a component a live screen imports.
 Import from `@/components/ui/ds`.
 
+### Web (mobile-web) port
+
+The same design system is realized for the **web app** (`apps/web`, Next.js + Tailwind) so it can
+render as the **mobile-web** experience. The `ds` tokens live in `apps/web/tailwind.config.ts` (same
+hex, same `ds` namespace, non-colliding with the shadcn HSL theme), and a React-DOM mirror of the kit
+lives in **`apps/web/src/components/ui/ds/`** (import from `@/components/ui/ds`). The web design is
+applied **only at mobile/tablet widths** (`lg:hidden`); the desktop UI keeps its existing layout. A page
+renders both: `<div className="lg:hidden">` for the mobile-web design and `<div className="hidden
+lg:block">` for the desktop view, fed by the same server data.
+
 ---
 
 ## 1. Design principles
@@ -389,3 +399,57 @@ Data screens (`hos`, `loads/[id]`, `drivers/[id]`, `trucks/[id]`, `routes/[id]`,
   `tsc --noEmit` on `color` / `strokeWidth` / `style` / `className`. The shim restores those (all
   runtime-valid) prop types. Result: `npx tsc --noEmit` went from **284 errors → 0**. Purely
   additive types; no component changed.
+
+---
+
+## 11. Prompt 10 — Global QA sweep (carrier-fleet mobile-web) · 2026-07-14
+
+Reviewer sweep of the `apps/web` carrier-fleet mobile-web surface (the `lg:hidden` branch of each
+`page.tsx` + its `*Mobile` components + `apps/web/src/components/ui/ds/`). Scope note: the Prompts 1–9
+four-page rebuilds landed **here**, not in `apps/mobile` (whose §10 baseline is a separate, not-yet-run
+track). Files swept: `drivers/DriversMobile.tsx`, `drivers/InviteDriverSheet.tsx`,
+`drivers/[id]/DriverDetailMobile.tsx`, `drivers/[id]/DriverHoursTab.tsx`, `trucks/TrucksMobile.tsx`,
+`trucks/NewTruckSheet.tsx`, `trucks/[id]/TruckDetailMobile.tsx`, and the shared `ds/` kit.
+
+**Result: compliant on all eight dimensions — zero code fixes required.**
+
+- **Spacing:** layout spacing exact — screen margin `px-5`=20 (`MobileScreen`), card gap `space-y-3`=12,
+  card padding `p-4`=16, section `space-y-6`=24. Sub-8px values (`gap-1.5`, `p-1`, `py-2.5`, `mt-1`) are
+  component-internal geometry in the `ds/` kit, governed by §3's Sizes/Radii tables (52px field row,
+  22px pill, 9px segmented thumb), not the layout scale — left as-is by design.
+- **Borders:** zero on cards/rows in the mobile branch; the `ds/` kit is border-free by construction.
+  The 7 `border` hits in `page.tsx` files are all in the `hidden lg:block` desktop branch (legitimate).
+- **Accent / States / Interaction / Parity / Hierarchy / Forms:** all pass — single `isEditing` detail
+  component with shared field defs; `ParentStrip` above tabs, children as tabs; content-shaped
+  `Skeleton` + `EmptyState` + input-preserving errors, no spinners in the mobile branch; ≥44px targets +
+  `active:opacity-75` + `navigator.vibrate` + `aria-label` on icon-only controls; Quick-Create sheets
+  follow Form & Field Intelligence (3–5 required-first fields, native pickers, inline validation).
+- **Gate:** `npx tsc --noEmit` in `apps/web` → **exit 0**.
+
+**Flags raised:**
+
+1. **Trip vs Loads vocabulary** — ✅ FIXED. `DriverDetailMobile.tsx` driver tab renamed `Loads` → `Trips`
+   (label + internal `Tab` value `'loads'`→`'trips'`) to match the row wording ("Trip …", "No trips yet")
+   and `TruckDetailMobile.tsx`.
+2. **Breakpoint drift** — ✅ RESOLVED. §0 web-port note updated to `lg:hidden` / `hidden lg:block` to match
+   the shipped pages (the established pattern).
+3. **Stray FAB** — ✅ IDENTIFIED (leave as-is, per owner). The blue crosshair is the global
+   `SupportTicketModal`'s draggable `SupportFAB` (LifeBuoy icon, `components/support/support-ticket-modal.tsx`),
+   mounted in `app/layout.tsx` for authenticated users. Intentional; kept.
+
+---
+
+## 12. Screen rebuild log (post-mockup pages, built from §1–8 principles)
+
+The mockup deck (`docs/specs/DriveCommand-Mobile-Design-System.pdf`) covers only Clients, Trucks, Drivers.
+Remaining carrier pages are rebuilt on the ds kit from the principles + the four-page pattern, in order:
+**Dashboard → Trips → Live Map → More-tab pages.** Each: `page.tsx` renders `lg:hidden <XMobile>` +
+`hidden lg:block` desktop; the mobile branch reuses the desktop data sources.
+
+- **Dashboard** · 2026-07-14 · `carrier/dashboard/DashboardMobile.tsx`. Client component reusing the five
+  desktop widget endpoints (`/dashboard/kpi|alerts|drivers-status|activity`, `/dispatches`). Sections:
+  LargeTitleHeader → 2×2 KPI grid (revenue=success, pending-pay=warning, open-invoices=accent, tap →
+  navigate) → compliance alerts (tinted cards, or "All clear" success line) → on-duty driver strip
+  (horizontal MonogramAvatar chips) → today's dispatches (`DocumentRow` + status pill / EmptyState) →
+  recent activity (`DocumentRow` / EmptyState) → quick actions (New dispatch/load/client). Content-shaped
+  skeletons per section; all spacing on-scale; `tsc --noEmit` → exit 0.

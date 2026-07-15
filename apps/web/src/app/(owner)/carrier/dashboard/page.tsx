@@ -11,6 +11,7 @@ import { RecentActivity } from '@/components/carrier/dashboard/RecentActivity';
 import { QuickMessageBoard } from '@/components/carrier/dashboard/QuickMessageBoard';
 import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { DashboardMobile } from './DashboardMobile';
 
 export default async function CarrierDashboardPage() {
   const session = await getSession();
@@ -37,12 +38,19 @@ export default async function CarrierDashboardPage() {
       }, TX_OPTIONS).catch(() => false)
     : false;
 
+  const showSampleBanner = !!(tenant?.sampleDataSeeded && hasSampleRecords);
+
   return (
-    <div className="space-y-6">
-      {/* Sample data banner — shown when tenant has seeded sample records */}
-      {tenant?.sampleDataSeeded && hasSampleRecords && (
-        <SampleDataBanner tenantId={orgId} />
-      )}
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
+      <div className="lg:hidden -m-4">
+        <DashboardMobile showSampleBanner={showSampleBanner} tenantId={orgId} />
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
+        {/* Sample data banner — shown when tenant has seeded sample records */}
+        {showSampleBanner && <SampleDataBanner tenantId={orgId} />}
 
       {/* Header */}
       <div className="min-w-0">
@@ -110,6 +118,7 @@ export default async function CarrierDashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
