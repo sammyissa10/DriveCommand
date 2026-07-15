@@ -345,37 +345,48 @@ export function NewLoadMobile({
       ) : (
         <div className="space-y-6 pt-1">
           <div>
-            <SectionHeader title="Client" />
+            <SectionHeader title="Client & load" />
             <FieldGroup fields={clientFields} isEditing />
           </div>
 
           <div>
             <SectionHeader title="Commodity" />
             <FieldGroup fields={commodityFields} isEditing />
-            <div className="mt-2 flex gap-2">
-              {(
-                [
-                  { key: 'hazmat', label: 'Hazmat', on: hazmat, toggle: () => setHazmat((v) => !v) },
-                  { key: 'broker', label: 'Brokered', on: brokerFlag, toggle: () => setBrokerFlag((v) => !v) },
-                ] as const
-              ).map(({ key, label, on, toggle }) => (
-                <button
-                  key={key}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={toggle}
-                  className={`h-11 flex-1 rounded-[12px] text-[15px] font-semibold transition active:opacity-75 ${
-                    on ? 'bg-ds-accent text-white' : 'bg-ds-input text-ds-txt2'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            {/* Hazmat is a hazard, not a primary action — warning, not accent. */}
+            <button
+              type="button"
+              aria-pressed={hazmat}
+              onClick={() => setHazmat((v) => !v)}
+              className={`mt-2 h-11 w-full rounded-[12px] text-[15px] font-semibold transition active:opacity-75 ${
+                hazmat ? 'bg-ds-warning text-white' : 'bg-ds-input text-ds-txt2'
+              }`}
+            >
+              Hazmat
+            </button>
           </div>
+
+          {/*
+            Stops sit above Rate on purpose: they're operational (§7 orders
+            Identity → Operational → Financial), and the rate depends on them —
+            a per_stop base counts delivery stops, per_mile needs the miles. Asking
+            for the rate first showed "(add delivery stops)" before offering stops.
+          */}
+          <MobileStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} mode="load" />
 
           <div>
             <SectionHeader title="Rate" />
+            {/* Brokered lives here, not with Commodity: it's what drives carrier
+                cost and gross margin, nothing to do with the freight itself. */}
+            <button
+              type="button"
+              aria-pressed={brokerFlag}
+              onClick={() => setBrokerFlag((v) => !v)}
+              className={`mb-2 h-11 w-full rounded-[12px] text-[15px] font-semibold transition active:opacity-75 ${
+                brokerFlag ? 'bg-ds-accent text-white' : 'bg-ds-input text-ds-txt2'
+              }`}
+            >
+              Brokered to another carrier
+            </button>
             <FieldGroup fields={rateFields} isEditing />
 
             {/* Live preview — same calculator the desktop uses */}
@@ -411,8 +422,6 @@ export function NewLoadMobile({
               ) : null}
             </div>
           </div>
-
-          <MobileStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} mode="load" />
 
           <div>
             <SectionHeader title="Instructions" />
