@@ -453,3 +453,18 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   (horizontal MonogramAvatar chips) → today's dispatches (`DocumentRow` + status pill / EmptyState) →
   recent activity (`DocumentRow` / EmptyState) → quick actions (New dispatch/load/client). Content-shaped
   skeletons per section; all spacing on-scale; `tsc --noEmit` → exit 0.
+- **Trips (Overview)** · 2026-07-14 · `carrier/trips/TripsMobile.tsx`. Client component on the dispatches
+  API (`/api/v1/carrier/dispatches`), driver/truck maps + `canCreate` passed from the server page.
+  Standard Overview: LargeTitleHeader (+ count, `onAdd` → `/carrier/trips/new`) → tappable status KPIs
+  (Planned / In progress / Completed) → SearchField (trip #/driver/unit) → scope SegmentedControl
+  (All / Today / Upcoming) → `EntityRow` list (square Route tile — a trip is a "thing", subline
+  driver·unit, meta day·loads, status pill → `/carrier/trips/[id]`). Skeleton + filter/empty states;
+  `tsc --noEmit` → exit 0.
+- **Trips (Create)** · 2026-07-14 · `carrier/trips/new/NewTripMobile.tsx`. Full ds create page (kept as a
+  page, not a sheet — 7 fields + readiness gate exceed quick-create). Ports the desktop `NewDispatchForm`
+  logic verbatim: route-template fetch + prefill (with a ds stop-preview card), driver/truck/co-driver
+  selects, `datetime-local` departure, planned miles, notes — all via `FieldGroup` edit mode grouped by
+  Route/Assignment/Schedule/Notes. Driver-readiness tRPC check → "Dispatch ready" badge; not-ready or 409
+  opens a `SheetContainer` block sheet with the blocker list, View-checklist, and admin Override→reason→
+  "Create anyway". `tsc --noEmit` → exit 0. Trip **Detail/Edit** (`/carrier/trips/[id]`) still on desktop
+  layout — the remaining Trips sub-step.

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { DispatchesGrid } from './_grid/DispatchesGrid';
+import { TripsMobile } from './TripsMobile';
 
 export default async function TripsPage() {
   const session = await getSession();
@@ -29,20 +30,30 @@ export default async function TripsPage() {
   const truckMap: Record<string, string> = {};
   for (const t of trucks) truckMap[t.id] = t.unitNumber;
 
+  const canCreate = session.role !== 'MANAGER';
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Trips
-          </h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Daily trips view &mdash; showing today and tomorrow by default.
-          </p>
-        </div>
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
+      <div className="lg:hidden -m-4">
+        <TripsMobile driverMap={driverMap} truckMap={truckMap} canCreate={canCreate} />
       </div>
 
-      <DispatchesGrid driverMap={driverMap} truckMap={truckMap} userRole={session.role} />
-    </div>
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Trips
+            </h1>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Daily trips view &mdash; showing today and tomorrow by default.
+            </p>
+          </div>
+        </div>
+
+        <DispatchesGrid driverMap={driverMap} truckMap={truckMap} userRole={session.role} />
+      </div>
+    </>
   );
 }
