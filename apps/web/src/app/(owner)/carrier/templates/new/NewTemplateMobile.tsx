@@ -3,62 +3,55 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { AlertTriangle } from 'lucide-react';
 import {
   MobileScreen,
   NavHeader,
   NavTextButton,
   SectionHeader,
   FieldGroup,
-  StatusPill,
+  PrimaryButton,
   type FieldDef,
 } from '@/components/ui/ds';
 import { saveRouteTemplate } from '@/actions/carrier/save-route-template';
-import type { RouteTemplateFormData } from '@/components/carrier/templates/RouteTemplateForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
-import { formatRecurrence } from '../TemplatesMobile';
 import { TemplateStopsEditor, type FacilityOption } from '../TemplateStopsEditor';
 
-// ---------------------------------------------------------------------------
-// Vocabulary (mirrors RouteTemplateForm)
-// ---------------------------------------------------------------------------
-
 const EQUIPMENT_TYPES = [
-  { value: 'dry_van', label: 'Dry Van' },
-  { value: 'flatbed', label: 'Flatbed' },
-  { value: 'reefer', label: 'Reefer' },
-  { value: 'tanker', label: 'Tanker' },
-  { value: 'step_deck', label: 'Step Deck' },
-  { value: 'other', label: 'Other' },
+  { label: 'Dry Van', value: 'dry_van' },
+  { label: 'Flatbed', value: 'flatbed' },
+  { label: 'Reefer', value: 'reefer' },
+  { label: 'Tanker', value: 'tanker' },
+  { label: 'Step Deck', value: 'step_deck' },
+  { label: 'Other', value: 'other' },
 ];
 const SCHEDULE_TYPES = [
-  { value: 'fixed_days', label: 'Fixed days' },
-  { value: 'frequency', label: 'Frequency' },
-  { value: 'on_call', label: 'On call' },
+  { label: 'Fixed days', value: 'fixed_days' },
+  { label: 'Frequency', value: 'frequency' },
+  { label: 'On call', value: 'on_call' },
 ];
 const TIMEZONES = [
-  { value: 'America/New_York', label: 'Eastern (ET)' },
-  { value: 'America/Chicago', label: 'Central (CT)' },
-  { value: 'America/Denver', label: 'Mountain (MT)' },
-  { value: 'America/Los_Angeles', label: 'Pacific (PT)' },
-  { value: 'America/Phoenix', label: 'Arizona (AZ)' },
-  { value: 'America/Anchorage', label: 'Alaska (AKT)' },
-  { value: 'Pacific/Honolulu', label: 'Hawaii (HT)' },
-  { value: 'UTC', label: 'UTC' },
+  { label: 'Eastern (ET)', value: 'America/New_York' },
+  { label: 'Central (CT)', value: 'America/Chicago' },
+  { label: 'Mountain (MT)', value: 'America/Denver' },
+  { label: 'Pacific (PT)', value: 'America/Los_Angeles' },
+  { label: 'Arizona (AZ)', value: 'America/Phoenix' },
+  { label: 'Alaska (AKT)', value: 'America/Anchorage' },
+  { label: 'Hawaii (HT)', value: 'Pacific/Honolulu' },
+  { label: 'UTC', value: 'UTC' },
 ];
 const FREQ_OPTIONS = [
   { label: 'Weekly', value: 'WEEKLY' },
   { label: 'Daily', value: 'DAILY' },
   { label: 'Monthly', value: 'MONTHLY' },
 ];
-const WEEK_DAYS: { key: string; label: string }[] = [
-  { key: 'MO', label: 'Mon' },
-  { key: 'TU', label: 'Tue' },
-  { key: 'WE', label: 'Wed' },
-  { key: 'TH', label: 'Thu' },
-  { key: 'FR', label: 'Fri' },
-  { key: 'SA', label: 'Sat' },
-  { key: 'SU', label: 'Sun' },
+const WEEK_DAYS = [
+  { key: 'MO', label: 'M' },
+  { key: 'TU', label: 'T' },
+  { key: 'WE', label: 'W' },
+  { key: 'TH', label: 'T' },
+  { key: 'FR', label: 'F' },
+  { key: 'SA', label: 'S' },
+  { key: 'SU', label: 'S' },
 ];
 
 interface ClientItem { id: string; name: string }
@@ -67,87 +60,58 @@ interface DriverItem { id: string; firstName: string; lastName: string }
 interface TruckItem { id: string; unitNumber: string }
 
 // ---------------------------------------------------------------------------
-// Route Template edit — mobile-web design system view (carrier)
+// New Route Template — mobile-web design system create page (carrier)
 // ---------------------------------------------------------------------------
 
-export function TemplateEditMobile({
-  initialData,
-  templateId,
-  initialActive,
+export function NewTemplateMobile({
   clients,
   drivers,
   trucks,
   facilities,
-  initialContracts,
 }: {
-  initialData: RouteTemplateFormData;
-  templateId: string;
-  initialActive: boolean;
-  /** Server-provided so every select has its option on the first paint. */
   clients: ClientItem[];
   drivers: DriverItem[];
   trucks: TruckItem[];
   facilities: FacilityOption[];
-  initialContracts: ContractItem[];
 }) {
   const router = useRouter();
 
-  const [templateName, setTemplateName] = useState(initialData.templateName ?? '');
-  const [clientId, setClientId] = useState(initialData.clientId ?? '');
-  const [contractId, setContractId] = useState(initialData.contractId ?? '');
-  const [scheduleType, setScheduleType] = useState(initialData.scheduleType ?? 'fixed_days');
-  const [rruleFrequency, setRruleFrequency] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY'>(() => {
-    const rule = initialData.recurrenceRule ?? '';
-    if (rule.includes('FREQ=MONTHLY')) return 'MONTHLY';
-    if (rule.includes('FREQ=DAILY')) return 'DAILY';
-    return 'WEEKLY';
-  });
-  const [rruleSelectedDays, setRruleSelectedDays] = useState<string[]>(() => {
-    const m = (initialData.recurrenceRule ?? '').match(/BYDAY=([^;]+)/);
-    return m ? m[1].split(',').map((d) => d.trim().toUpperCase()) : [];
-  });
-  const [rruleMonthlyDays, setRruleMonthlyDays] = useState(() => {
-    const m = (initialData.recurrenceRule ?? '').match(/BYMONTHDAY=([^;]+)/);
-    return m ? m[1] : '';
-  });
-  const [recurrenceTimezone, setRecurrenceTimezone] = useState(initialData.recurrenceTimezone ?? 'America/Chicago');
-  const [scheduledDepartureTime, setScheduledDepartureTime] = useState(initialData.scheduledDepartureTime ?? '');
-  const [equipmentType, setEquipmentType] = useState(initialData.equipmentType ?? 'dry_van');
-  const [tempMinF, setTempMinF] = useState(initialData.tempMinF != null ? String(initialData.tempMinF) : '');
-  const [tempMaxF, setTempMaxF] = useState(initialData.tempMaxF != null ? String(initialData.tempMaxF) : '');
-  const [maxWeightLbs, setMaxWeightLbs] = useState(initialData.maxWeightLbs != null ? String(initialData.maxWeightLbs) : '');
-  const [commodityDescription, setCommodityDescription] = useState(initialData.commodityDescription ?? '');
-  const [defaultDriverId, setDefaultDriverId] = useState(initialData.defaultDriverId ?? '');
-  const [defaultTruckId, setDefaultTruckId] = useState(initialData.defaultTruckId ?? '');
-  const [autoGenerateDaysAhead, setAutoGenerateDaysAhead] = useState(String(initialData.autoGenerateDaysAhead ?? 7));
-  const [notes, setNotes] = useState(initialData.notes ?? '');
-  const [stops, setStops] = useState<StopBuilderStop[]>(initialData.stops ?? []);
+  const [templateName, setTemplateName] = useState('');
+  const [clientId, setClientId] = useState('');
+  const [contractId, setContractId] = useState('');
+  const [contracts, setContracts] = useState<ContractItem[]>([]);
+  const [scheduleType, setScheduleType] = useState('fixed_days');
+  const [rruleFrequency, setRruleFrequency] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY'>('WEEKLY');
+  const [rruleSelectedDays, setRruleSelectedDays] = useState<string[]>([]);
+  const [rruleMonthlyDays, setRruleMonthlyDays] = useState('');
+  const [recurrenceTimezone, setRecurrenceTimezone] = useState('America/Chicago');
+  const [scheduledDepartureTime, setScheduledDepartureTime] = useState('');
+  const [equipmentType, setEquipmentType] = useState('dry_van');
+  const [tempMinF, setTempMinF] = useState('');
+  const [tempMaxF, setTempMaxF] = useState('');
+  const [maxWeightLbs, setMaxWeightLbs] = useState('');
+  const [commodityDescription, setCommodityDescription] = useState('');
+  const [defaultDriverId, setDefaultDriverId] = useState('');
+  const [defaultTruckId, setDefaultTruckId] = useState('');
+  const [autoGenerateDaysAhead, setAutoGenerateDaysAhead] = useState('7');
+  const [notes, setNotes] = useState('');
+  const [stops, setStops] = useState<StopBuilderStop[]>([]);
 
-  const [active, setActive] = useState(initialActive);
-  const [togglingActive, setTogglingActive] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Contracts depend on the selected client, so they refetch — but seed from the
-  // server so the current contract shows immediately.
-  const [contracts, setContracts] = useState<ContractItem[]>(initialContracts);
+  const showRecurrence = scheduleType === 'fixed_days' || scheduleType === 'frequency';
 
-  // The RRULE is derived from the builder state, exactly as on desktop.
   const recurrenceRule = useMemo(() => {
-    if (scheduleType !== 'fixed_days' && scheduleType !== 'frequency') return '';
+    if (!showRecurrence) return '';
     if (rruleFrequency === 'DAILY') return 'FREQ=DAILY';
     if (rruleFrequency === 'WEEKLY') {
       return rruleSelectedDays.length === 0 ? 'FREQ=WEEKLY' : `FREQ=WEEKLY;BYDAY=${rruleSelectedDays.join(',')}`;
     }
     return rruleMonthlyDays.trim() ? `FREQ=MONTHLY;BYMONTHDAY=${rruleMonthlyDays.trim()}` : 'FREQ=MONTHLY';
-  }, [scheduleType, rruleFrequency, rruleSelectedDays, rruleMonthlyDays]);
+  }, [showRecurrence, rruleFrequency, rruleSelectedDays, rruleMonthlyDays]);
 
-  const showRecurrence = scheduleType === 'fixed_days' || scheduleType === 'frequency';
-
-  // Only refetch when the client is actually switched — the initial client's
-  // contracts already came from the server.
   useEffect(() => {
-    if (clientId === initialData.clientId) return;
     if (!clientId) {
       setContracts([]);
       return;
@@ -164,28 +128,7 @@ export function TemplateEditMobile({
     return () => {
       cancelled = true;
     };
-  }, [clientId, initialData.clientId]);
-
-  async function toggleActive() {
-    const next = !active;
-    setTogglingActive(true);
-    setActive(next); // optimistic
-    try {
-      const res = await fetch(`/api/v1/carrier/route-templates/${templateId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ active: next }),
-      });
-      if (!res.ok) throw new Error();
-      toast.success(next ? 'Template activated' : 'Template deactivated');
-      router.refresh();
-    } catch {
-      setActive(!next); // roll back
-      toast.error('Failed to update template status');
-    } finally {
-      setTogglingActive(false);
-    }
-  }
+  }, [clientId]);
 
   function validate(): boolean {
     const e: Record<string, string> = {};
@@ -193,8 +136,8 @@ export function TemplateEditMobile({
     if (!clientId) e.clientId = 'Client is required';
     if (!equipmentType) e.equipmentType = 'Equipment type is required';
     if (!scheduleType) e.scheduleType = 'Schedule type is required';
-    // Mirror the server rule so it surfaces here rather than as a failed save.
-    if (stops.length === 0) e.stops = 'A route template needs at least one stop';
+    // The server requires at least one stop — say so here rather than failing on save.
+    if (stops.length === 0) e.stops = 'Add at least one stop';
     if (stops.some((s) => !s.facility_id)) e.stops = 'Every stop needs a facility';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -202,14 +145,12 @@ export function TemplateEditMobile({
 
   async function save() {
     if (!validate()) {
-      const first = Object.keys(errors)[0];
-      if (first) document.getElementById(`field-${first}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      toast.error('Check the highlighted fields');
       return;
     }
     setSaving(true);
     try {
       const result = await saveRouteTemplate({
-        templateId,
         templateName: templateName.trim(),
         clientId,
         contractId: contractId || undefined,
@@ -229,12 +170,12 @@ export function TemplateEditMobile({
         stops,
       });
       if (!result.success) {
-        toast.error(result.error ?? 'Failed to save template');
+        toast.error(result.error ?? 'Failed to create template');
         setSaving(false);
         return;
       }
       navigator.vibrate?.(10);
-      toast.success('Template updated');
+      toast.success('Template created');
       router.push('/carrier/templates');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
@@ -242,7 +183,6 @@ export function TemplateEditMobile({
     }
   }
 
-  // ---- field groups ----
   const detailFields: FieldDef[] = [
     {
       key: 'templateName',
@@ -253,7 +193,7 @@ export function TemplateEditMobile({
           setTemplateName(v);
           if (errors.templateName) setErrors((e) => ({ ...e, templateName: '' }));
         },
-        placeholder: 'e.g. Chi to Dal',
+        placeholder: 'e.g. Chicago to Dallas',
         error: errors.templateName || undefined,
       },
     },
@@ -290,14 +230,10 @@ export function TemplateEditMobile({
   ];
 
   const scheduleFields: FieldDef[] = [
-    {
-      key: 'scheduleType',
-      label: 'Schedule',
-      input: { value: scheduleType, onChange: setScheduleType, options: SCHEDULE_TYPES.map((s) => ({ label: s.label, value: s.value })) },
-    },
+    { key: 'scheduleType', label: 'Schedule', input: { value: scheduleType, onChange: setScheduleType, options: SCHEDULE_TYPES } },
     ...(showRecurrence
       ? ([
-          { key: 'frequency', label: 'Repeats', input: { value: rruleFrequency, onChange: (v) => setRruleFrequency(v as 'DAILY' | 'WEEKLY' | 'MONTHLY'), options: FREQ_OPTIONS } },
+          { key: 'frequency', label: 'Repeats', input: { value: rruleFrequency, onChange: (v: string) => setRruleFrequency(v as 'DAILY' | 'WEEKLY' | 'MONTHLY'), options: FREQ_OPTIONS } },
           ...(rruleFrequency === 'MONTHLY'
             ? [{ key: 'monthlyDays', label: 'Days of month', input: { value: rruleMonthlyDays, onChange: (v: string) => setRruleMonthlyDays(v.replace(/[^\d,]/g, '')), inputMode: 'numeric' as const, placeholder: 'e.g. 1,15' } }]
             : []),
@@ -309,7 +245,7 @@ export function TemplateEditMobile({
   ];
 
   const equipmentFields: FieldDef[] = [
-    { key: 'equipmentType', label: 'Equipment *', input: { value: equipmentType, onChange: setEquipmentType, options: EQUIPMENT_TYPES.map((e) => ({ label: e.label, value: e.value })), error: errors.equipmentType || undefined } },
+    { key: 'equipmentType', label: 'Equipment *', input: { value: equipmentType, onChange: setEquipmentType, options: EQUIPMENT_TYPES, error: errors.equipmentType || undefined } },
     ...(equipmentType === 'reefer'
       ? ([
           { key: 'tempMinF', label: 'Temp min (°F)', input: { value: tempMinF, onChange: (v: string) => setTempMinF(v.replace(/[^\d-]/g, '')), inputMode: 'numeric' as const, placeholder: '—' } },
@@ -329,37 +265,19 @@ export function TemplateEditMobile({
     { key: 'notes', label: 'Notes', input: { value: notes, onChange: setNotes, multiline: true, placeholder: 'Anything worth remembering' } },
   ];
 
+  const canSave = templateName.trim().length > 0 && clientId.length > 0 && stops.length > 0 && !saving;
+
   return (
     <MobileScreen className="pb-10 pt-2">
       <NavHeader
-        title="Route Template"
-        onBack={() => router.push('/carrier/templates')}
-        right={<NavTextButton label={saving ? 'Saving…' : 'Save'} emphasized onClick={save} disabled={saving} />}
+        title="New Template"
+        left={<NavTextButton label="Cancel" onClick={() => router.push('/carrier/templates')} />}
+        right={<NavTextButton label={saving ? 'Creating…' : 'Create'} emphasized onClick={save} disabled={!canSave} />}
       />
 
-      {/* Identity */}
-      <div className="flex flex-col items-center pb-4 pt-2">
-        <h1 className="text-center text-[22px] font-bold text-ds-txt">{templateName || 'Route template'}</h1>
-        <p className="mt-1 text-center text-[13px] text-ds-txt3">
-          {formatRecurrence(recurrenceRule || null, recurrenceTimezone, scheduledDepartureTime || null)}
-        </p>
-        <button
-          type="button"
-          onClick={toggleActive}
-          disabled={togglingActive}
-          className="mt-3 transition active:opacity-75 disabled:opacity-50"
-          aria-label={active ? 'Deactivate template' : 'Activate template'}
-        >
-          <StatusPill label={active ? 'Active' : 'Inactive'} tone={active ? 'success' : 'neutral'} />
-        </button>
-        <p className="mt-1 text-[12px] text-ds-txt3">Tap to {active ? 'deactivate' : 'activate'}</p>
-      </div>
-
-      {/* Changes only affect future auto-generated trips */}
-      <div className="mb-3 flex items-start gap-2 rounded-[20px] bg-ds-warning/[0.14] p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-ds-warning" />
-        <p className="text-[13px] text-ds-txt2">
-          Changes apply to future auto-generated trips only. Trips already created are not affected.
+      <div className="pb-2 pt-1">
+        <p className="text-center text-[13px] text-ds-txt3">
+          A recurring route that generates trips automatically.
         </p>
       </div>
 
@@ -368,6 +286,7 @@ export function TemplateEditMobile({
           <SectionHeader title="Details" />
           <FieldGroup fields={detailFields} isEditing />
         </div>
+
         <div>
           <SectionHeader title="Schedule" />
           <FieldGroup fields={scheduleFields} isEditing />
@@ -375,13 +294,14 @@ export function TemplateEditMobile({
             <div className="mt-2 rounded-[20px] bg-ds-card p-4">
               <p className="mb-2 text-[13px] text-ds-txt2">Repeat on</p>
               <div className="flex gap-2">
-                {WEEK_DAYS.map((d) => {
+                {WEEK_DAYS.map((d, i) => {
                   const on = rruleSelectedDays.includes(d.key);
                   return (
                     <button
                       key={d.key}
                       type="button"
                       aria-pressed={on}
+                      aria-label={['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i]}
                       onClick={() =>
                         setRruleSelectedDays((prev) =>
                           prev.includes(d.key) ? prev.filter((x) => x !== d.key) : [...prev, d.key],
@@ -391,7 +311,7 @@ export function TemplateEditMobile({
                         on ? 'bg-ds-accent text-white' : 'bg-ds-input text-ds-txt2'
                       }`}
                     >
-                      {d.label.slice(0, 1)}
+                      {d.label}
                     </button>
                   );
                 })}
@@ -399,22 +319,26 @@ export function TemplateEditMobile({
             </div>
           ) : null}
         </div>
+
         <div>
           <SectionHeader title="Equipment" />
           <FieldGroup fields={equipmentFields} isEditing />
         </div>
+
         <div>
           <SectionHeader title="Defaults" />
           <FieldGroup fields={defaultsFields} isEditing />
         </div>
 
-        {/* Stops — editable in place; the server requires at least one */}
+        {/* Stops — required by the server, so they're part of create, not an afterthought */}
         <TemplateStopsEditor stops={stops} onChange={setStops} facilities={facilities} error={errors.stops} />
 
         <div>
           <SectionHeader title="Notes" />
           <FieldGroup fields={notesFields} isEditing />
         </div>
+
+        <PrimaryButton label={saving ? 'Creating…' : 'Create Template'} onClick={save} disabled={!canSave} loading={saving} />
       </div>
     </MobileScreen>
   );
