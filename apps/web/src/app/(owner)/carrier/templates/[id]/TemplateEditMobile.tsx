@@ -11,6 +11,7 @@ import {
   SectionHeader,
   FieldGroup,
   StatusPill,
+  Toggle,
   type FieldDef,
 } from '@/components/ui/ds';
 import { saveRouteTemplate } from '@/actions/carrier/save-route-template';
@@ -375,26 +376,17 @@ export function TemplateEditMobile({
             <div className="mt-2 rounded-[20px] bg-ds-card p-4">
               <p className="mb-2 text-[13px] text-ds-txt2">Repeat on</p>
               <div className="flex gap-2">
-                {WEEK_DAYS.map((d) => {
-                  const on = rruleSelectedDays.includes(d.key);
-                  return (
-                    <button
-                      key={d.key}
-                      type="button"
-                      aria-pressed={on}
-                      onClick={() =>
-                        setRruleSelectedDays((prev) =>
-                          prev.includes(d.key) ? prev.filter((x) => x !== d.key) : [...prev, d.key],
-                        )
-                      }
-                      className={`h-10 flex-1 rounded-[10px] text-[13px] font-semibold transition active:opacity-75 ${
-                        on ? 'bg-ds-accent text-white' : 'bg-ds-input text-ds-txt2'
-                      }`}
-                    >
-                      {d.label.slice(0, 1)}
-                    </button>
-                  );
-                })}
+                {WEEK_DAYS.map((d) => (
+                  <Toggle
+                    key={d.key}
+                    label={d.label.slice(0, 1)}
+                    ariaLabel={d.label}
+                    on={rruleSelectedDays.includes(d.key)}
+                    onChange={(next) =>
+                      setRruleSelectedDays((prev) => (next ? [...prev, d.key] : prev.filter((x) => x !== d.key)))
+                    }
+                  />
+                ))}
               </div>
             </div>
           ) : null}

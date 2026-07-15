@@ -10,6 +10,7 @@ import {
   SectionHeader,
   FieldGroup,
   PrimaryButton,
+  Toggle,
   type FieldDef,
 } from '@/components/ui/ds';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
@@ -52,6 +53,23 @@ interface Contract {
 
 function money(n: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+
+/** Strip display formatting back to something Number() can read. */
+const raw = (s: string) => s.replace(/[^\d.]/g, '');
+const num = (s: string) => Number(raw(s)) || 0;
+/** 2400 -> "2,400.00" on blur; §7 wants money to format live. */
+function fmtMoneyInput(s: string): string {
+  const v = raw(s);
+  if (!v) return '';
+  const n = Number(v);
+  return isNaN(n) ? '' : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+/** 125000 -> "125,000" on blur. */
+function fmtIntInput(s: string): string {
+  const v = s.replace(/[^\d]/g, '');
+  if (!v) return '';
+  return Number(v).toLocaleString('en-US');
 }
 
 // ---------------------------------------------------------------------------
@@ -130,16 +148,17 @@ export function NewLoadMobile({
   const deliveryStopCount = useMemo(() => stops.filter((s) => s.stop_type === 'delivery').length, [stops]);
 
   // Shared with the desktop LoadFinancials — one calculator, not a third copy.
+  // num() strips the display commas — Number("2,400.00") is NaN.
   const preview = useMemo(
     () =>
       calculateRevenuePreview({
         rateType,
-        rateAmount: rateAmount ? Number(rateAmount) : 0,
-        weightLbs: commodityWeightLbs ? Number(commodityWeightLbs) : 0,
-        otherCharges: otherCharges ? Number(otherCharges) : 0,
+        rateAmount: num(rateAmount),
+        weightLbs: num(commodityWeightLbs),
+        otherCharges: num(otherCharges),
         brokerFlag,
-        carrierCost: carrierCost ? Number(carrierCost) : 0,
-        plannedMiles: plannedMiles ? Number(plannedMiles) : 0,
+        carrierCost: num(carrierCost),
+        plannedMiles: num(plannedMiles),
         deliveryStopCount,
       }),
     [rateType, rateAmount, commodityWeightLbs, otherCharges, brokerFlag, carrierCost, plannedMiles, deliveryStopCount],
@@ -166,17 +185,17 @@ export function NewLoadMobile({
         contractId: contractId || undefined,
         loadType,
         commodityDescription: commodityDescription.trim() || undefined,
-        commodityWeightLbs: commodityWeightLbs ? Number(commodityWeightLbs) : undefined,
-        commodityPieces: commodityPieces ? parseInt(commodityPieces, 10) : undefined,
+        commodityWeightLbs: commodityWeightLbs ? num(commodityWeightLbs) : undefined,
+        commodityPieces: commodityPieces ? parseInt(raw(commodityPieces), 10) : undefined,
         hazmat,
         bolNumber: bolNumber || undefined,
         poNumber: poNumber || undefined,
         rateType,
-        rateAmount: rateAmount ? Number(rateAmount) : undefined,
-        plannedMiles: plannedMiles ? parseInt(plannedMiles, 10) : undefined,
-        otherCharges: otherCharges ? Number(otherCharges) : undefined,
+        rateAmount: rateAmount ? num(rateAmount) : undefined,
+        plannedMiles: plannedMiles ? parseInt(raw(plannedMiles), 10) : undefined,
+        otherCharges: otherCharges ? num(otherCharges) : undefined,
         brokerFlag,
-        carrierCost: brokerFlag && carrierCost ? Number(carrierCost) : undefined,
+        carrierCost: brokerFlag && carrierCost ? num(carrierCost) : undefined,
         specialInstructions: specialInstructions || undefined,
         stops: stops.map((s) => ({
           id: s.id,
@@ -217,6 +236,26 @@ export function NewLoadMobile({
   }
 
   // ---- field groups ----
+
+  /** Money field: type freely, strip formatting on focus, comma-format on blur. */
+  const moneyInput = (value: string, set: (fn: (prev: string) => string) => void) => ({
+    value,
+    onChange: (v: string) => set(() => raw(v)),
+    onFocus: () => set((prev) => raw(prev)),
+    onBlur: () => set((prev) => fmtMoneyInput(prev)),
+    inputMode: 'decimal' as const,
+    placeholder: '0.00',
+  });
+  /** Whole-number field (miles, weight, pieces) — same trick, no decimals. */
+  const intInput = (value: string, set: (fn: (prev: string) => string) => void) => ({
+    value,
+    onChange: (v: string) => set(() => v.replace(/[^\d]/g, '')),
+    onFocus: () => set((prev) => prev.replace(/[^\d]/g, '')),
+    onBlur: () => set((prev) => fmtIntInput(prev)),
+    inputMode: 'numeric' as const,
+    placeholder: '—',
+  });
+
   const clientFields: FieldDef[] = [
     {
       key: 'clientId',
@@ -266,53 +305,17 @@ export function NewLoadMobile({
         error: errors.commodityDescription || undefined,
       },
     },
-    {
-      key: 'commodityWeightLbs',
-      label: 'Weight (lbs)',
-      input: {
-        value: commodityWeightLbs,
-        onChange: (v) => setCommodityWeightLbs(v.replace(/[^\d]/g, '')),
-        inputMode: 'numeric',
-        placeholder: '—',
-      },
-    },
-    {
-      key: 'commodityPieces',
-      label: 'Pieces',
-      input: {
-        value: commodityPieces,
-        onChange: (v) => setCommodityPieces(v.replace(/[^\d]/g, '')),
-        inputMode: 'numeric',
-        placeholder: '—',
-      },
-    },
+    { key: 'commodityWeightLbs', label: 'Weight (lbs)', input: intInput(commodityWeightLbs, setCommodityWeightLbs) },
+    { key: 'commodityPieces', label: 'Pieces', input: intInput(commodityPieces, setCommodityPieces) },
   ];
 
   const rateFields: FieldDef[] = [
     { key: 'rateType', label: 'Rate type', input: { value: rateType, onChange: setRateType, options: RATE_TYPES } },
-    {
-      key: 'rateAmount',
-      label: 'Rate ($)',
-      input: { value: rateAmount, onChange: (v) => setRateAmount(v.replace(/[^\d.]/g, '')), inputMode: 'decimal', placeholder: '0.00' },
-    },
-    {
-      key: 'otherCharges',
-      label: 'Other charges ($)',
-      input: { value: otherCharges, onChange: (v) => setOtherCharges(v.replace(/[^\d.]/g, '')), inputMode: 'decimal', placeholder: '0.00' },
-    },
-    {
-      key: 'plannedMiles',
-      label: 'Planned miles',
-      input: { value: plannedMiles, onChange: (v) => setPlannedMiles(v.replace(/[^\d]/g, '')), inputMode: 'numeric', placeholder: '—' },
-    },
+    { key: 'rateAmount', label: 'Rate ($)', input: moneyInput(rateAmount, setRateAmount) },
+    { key: 'otherCharges', label: 'Other charges ($)', input: moneyInput(otherCharges, setOtherCharges) },
+    { key: 'plannedMiles', label: 'Planned miles', input: intInput(plannedMiles, setPlannedMiles) },
     ...(brokerFlag
-      ? [
-          {
-            key: 'carrierCost',
-            label: 'Carrier cost ($)',
-            input: { value: carrierCost, onChange: (v: string) => setCarrierCost(v.replace(/[^\d.]/g, '')), inputMode: 'decimal' as const, placeholder: '0.00' },
-          } as FieldDef,
-        ]
+      ? [{ key: 'carrierCost', label: 'Carrier cost ($)', input: moneyInput(carrierCost, setCarrierCost) } as FieldDef]
       : []),
   ];
 
@@ -353,16 +356,9 @@ export function NewLoadMobile({
             <SectionHeader title="Commodity" />
             <FieldGroup fields={commodityFields} isEditing />
             {/* Hazmat is a hazard, not a primary action — warning, not accent. */}
-            <button
-              type="button"
-              aria-pressed={hazmat}
-              onClick={() => setHazmat((v) => !v)}
-              className={`mt-2 h-11 w-full rounded-[12px] text-[15px] font-semibold transition active:opacity-75 ${
-                hazmat ? 'bg-ds-warning text-white' : 'bg-ds-input text-ds-txt2'
-              }`}
-            >
-              Hazmat
-            </button>
+            <div className="mt-2 flex">
+              <Toggle label="Hazmat" on={hazmat} onChange={setHazmat} tone="warning" />
+            </div>
           </div>
 
           {/*
@@ -377,16 +373,9 @@ export function NewLoadMobile({
             <SectionHeader title="Rate" />
             {/* Brokered lives here, not with Commodity: it's what drives carrier
                 cost and gross margin, nothing to do with the freight itself. */}
-            <button
-              type="button"
-              aria-pressed={brokerFlag}
-              onClick={() => setBrokerFlag((v) => !v)}
-              className={`mb-2 h-11 w-full rounded-[12px] text-[15px] font-semibold transition active:opacity-75 ${
-                brokerFlag ? 'bg-ds-accent text-white' : 'bg-ds-input text-ds-txt2'
-              }`}
-            >
-              Brokered to another carrier
-            </button>
+            <div className="mb-2 flex">
+              <Toggle label="Brokered to another carrier" on={brokerFlag} onChange={setBrokerFlag} />
+            </div>
             <FieldGroup fields={rateFields} isEditing />
 
             {/* Live preview — same calculator the desktop uses */}

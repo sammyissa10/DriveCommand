@@ -25,3 +25,4 @@ export { ParentStrip, type ParentChip } from './ParentStrip';
 export { DocumentRow, type DocumentRowProps } from './DocumentRow';
 export { ContactActionsRow } from './ContactActionsRow';
 export { SectionHeader } from './SectionHeader';
+export { Toggle, type ToggleTone } from './Toggle';

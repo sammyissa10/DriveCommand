@@ -8,6 +8,7 @@ import {
   FieldGroup,
   PrimaryButton,
   EmptyState,
+  Toggle,
   type FieldDef,
 } from '@/components/ui/ds';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
@@ -316,22 +317,14 @@ export function MobileStopsEditor({
                   { key: 'bolRequired', label: 'BOL required' },
                   { key: 'podRequired', label: 'POD required' },
                 ] as const
-              ).map(({ key, label }) => {
-                const on = form[key];
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => setForm((p) => ({ ...p, [key]: !p[key] }))}
-                    className={`h-11 flex-1 rounded-[12px] text-[15px] font-semibold transition active:opacity-75 ${
-                      on ? 'bg-ds-accent text-white' : 'bg-ds-input text-ds-txt2'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+              ).map(({ key, label }) => (
+                <Toggle
+                  key={key}
+                  label={label}
+                  on={form[key]}
+                  onChange={(next) => setForm((p) => ({ ...p, [key]: next }))}
+                />
+              ))}
             </div>
           </div>
 
