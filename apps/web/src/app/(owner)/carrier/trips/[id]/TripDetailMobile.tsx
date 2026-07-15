@@ -267,7 +267,11 @@ export function TripDetailMobile({
   const isLocked = trip.status === 'completed' || trip.status === 'cancelled' || trip.status === 'tonu';
   const isInProgress = trip.status === 'in_progress';
   const isPlanned = trip.status === 'planned';
-  const canEdit = canManage && !isInProgress && !isLocked;
+  // The server (updateTrip) only hard-blocks edits on a completed trip, and strips
+  // driver/truck itself while in_progress — so a running trip's schedule, odometer
+  // and notes are editable. The desktop hides Edit whenever in_progress, which is
+  // stricter than the rule requires; mobile follows the server instead.
+  const canEdit = canManage && !isLocked;
   // Stops can be added while a trip is planned or running (matches the desktop).
   const canAddStop = canManage && (isPlanned || isInProgress);
 
@@ -608,7 +612,15 @@ export function TripDetailMobile({
               <SectionHeader title="Assignment" />
               <FieldGroup fields={editAssignment} isEditing />
             </div>
-          ) : null}
+          ) : (
+            /* Say why the assignment fields aren't here, rather than just omitting them. */
+            <div className="rounded-[20px] bg-ds-card p-4">
+              <p className="text-[13px] text-ds-txt2">
+                Driver, truck and route template are locked once a trip is running. Schedule, odometer
+                and notes can still be changed.
+              </p>
+            </div>
+          )}
           <div>
             <SectionHeader title="Schedule" />
             <FieldGroup fields={editSchedule} isEditing />
