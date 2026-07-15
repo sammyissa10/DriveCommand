@@ -479,3 +479,24 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   is recorded. Stops tab renders a ds dot timeline (sequence, type, facility·city, window, status pill) with
   Manage → `/carrier/trips/[id]/stops`. `tsc --noEmit` → exit 0.
   **Pass 2 (pending):** Loads / Expenses / Messages tabs (+ Pay when completed) and the audit footer.
+- **Trips (Stops, inline)** · 2026-07-14 · Manage used to hand off to the white desktop stops table, so
+  stops are now managed in the Stops tab itself: an `Add Stop` `SheetContainer` (facility picker, type,
+  appointment, contact, commodity, instructions → `POST /api/v1/carrier/stops`) and per-stop
+  **Arrive / Complete / Skip** ported from `StopTimelineCard` with identical gating + the BOL/POD guard.
+  This closed a real hole: without stop actions on mobile, `allStopsDone` could never be satisfied and
+  **Complete Trip was unreachable**.
+- **Trips (edit while running)** · 2026-07-14 · The desktop hides Edit whenever a trip is in progress, but
+  `updateTrip()` only hard-blocks a *completed* trip — for `in_progress` it strips driver/truck itself and
+  applies the rest. Mobile follows the server: Edit is available on planned + in-progress (locked only on
+  completed/cancelled/tonu), and edit mode states which fields are locked instead of dropping them silently.
+- **Route Templates (Overview + Edit — phase 1 of 2)** · 2026-07-14 ·
+  `carrier/templates/TemplatesMobile.tsx` + `carrier/templates/[id]/TemplateEditMobile.tsx`. Reached from
+  a trip's Belongs-to chip, so it was a white desktop page inside a ds flow. Overview: LargeTitleHeader
+  (+ count, add → `/new`), search, Active/All segmented, `EntityRow` (square RefreshCw tile, client
+  subline, recurrence + stop-count meta, Inactive pill). Edit: ds form on the same `saveRouteTemplate`
+  action — Details / Schedule (RRULE builder: frequency, tappable day toggles, departs-at, timezone,
+  generate-days-ahead) / Equipment (temp fields only for reefer) / Defaults / Notes, plus a tap-to-toggle
+  Active pill (optimistic, rolls back on failure) and the "future trips only" warning.
+  **Stops are passed through untouched** — `validate()` requires `stops.length > 0`, so dropping them
+  would fail every save. `tsc --noEmit` → exit 0.
+  **Phase 2 (pending):** ds stop builder + dispatch preview, and the `/templates/new` create page.

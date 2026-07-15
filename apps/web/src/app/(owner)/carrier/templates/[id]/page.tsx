@@ -9,6 +9,7 @@ import { TemplateStatusToggle } from './TemplateStatusToggle';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
+import { TemplateEditMobile } from './TemplateEditMobile';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -78,7 +79,14 @@ export default async function EditRouteTemplatePage({ params }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
+      <div className="lg:hidden -m-4">
+        <TemplateEditMobile initialData={formData} templateId={id} initialActive={template.active} />
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
       <div>
         <Link
           href="/carrier/templates"
@@ -114,6 +122,7 @@ export default async function EditRouteTemplatePage({ params }: Props) {
           updatedByEmail={templateAudit.updatedBy?.email ?? null}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
