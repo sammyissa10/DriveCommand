@@ -33,7 +33,10 @@ export default async function CarrierLayout({
 
   return (
     <>
-      <CarrierBreadcrumb />
+      {/* Desktop only — the mobile-web design leads with its own large title */}
+      <div className="hidden lg:block">
+        <CarrierBreadcrumb />
+      </div>
       {children}
     </>
   )
