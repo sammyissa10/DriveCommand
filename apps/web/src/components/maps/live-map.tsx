@@ -24,7 +24,27 @@ interface LiveMapProps {
   historySegments?: RouteSegment[] | null;
   historyPoints?: HistoryPoint[] | null;
   onVehicleClick?: (truckId: string) => void;
+  /**
+   * Dark basemap for the mobile-web design system — light OSM tiles read as a
+   * glowing panel inside the dark ds shell. CARTO dark_matter needs no API key.
+   */
+  dark?: boolean;
+  /** Suppress the built-in details sheet when the caller renders its own. */
+  hideDetailsSheet?: boolean;
 }
+
+const TILES = {
+  light: {
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  dark: {
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  },
+} as const;
 
 /**
  * Helper component to fit map bounds on initial load only.
@@ -129,6 +149,8 @@ export default function LiveMap({
   historySegments,
   historyPoints,
   onVehicleClick,
+  dark = false,
+  hideDetailsSheet = false,
 }: LiveMapProps) {
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
@@ -169,8 +191,10 @@ export default function LiveMap({
         className="z-0"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          key={dark ? 'dark' : 'light'}
+          attribution={dark ? TILES.dark.attribution : TILES.light.attribution}
+          url={dark ? TILES.dark.url : TILES.light.url}
+          subdomains={dark ? 'abcd' : 'abc'}
         />
 
         {!showHistory && <FitBoundsOnMount vehicles={vehicles} />}
@@ -240,7 +264,7 @@ export default function LiveMap({
       </MapContainer>
 
       {/* Vehicle details sheet — only in live mode */}
-      {!showHistory && (
+      {!showHistory && !hideDetailsSheet && (
         <VehicleDetailsSheet
           truckId={selectedVehicleId || ''}
           open={!!selectedVehicleId}

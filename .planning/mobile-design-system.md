@@ -499,4 +499,23 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   Active pill (optimistic, rolls back on failure) and the "future trips only" warning.
   **Stops are passed through untouched** — `validate()` requires `stops.length > 0`, so dropping them
   would fail every save. `tsc --noEmit` → exit 0.
-  **Phase 2 (pending):** ds stop builder + dispatch preview, and the `/templates/new` create page.
+- **Route Templates (Create + stop editor — phase 2)** · 2026-07-15 · `templates/TemplateStopsEditor.tsx`
+  + `templates/new/NewTemplateMobile.tsx`. The create page could not be re-skinned alone: `validate()`
+  requires `stops.length > 0` and a create inherits none, so the ds stop editor was a prerequisite. Built
+  once, used by create **and** edit (the edit page's "stops are desktop-only" placeholder is gone).
+  Editor mints stops exactly like `StopBuilderAddModal` (`crypto.randomUUID`, same shape, pickup→BOL /
+  delivery→BOL+POD defaults). **Reorder is ↑/↓ buttons, not the desktop's dnd-kit drag** — drag fights
+  page scroll on touch; sequence is recomputed from array order either way. `tsc --noEmit` → exit 0.
+- **Back navigation** · 2026-07-15 · `LargeTitleHeader` gained an optional `onBack` (accent chevron above
+  the large title). The overviews reached from the **More** sheet — Templates, Clients, Drivers, Trucks —
+  were dead ends. Tab roots (Dashboard/Trips/Loads/Live Map) omit it. More is an overlay, not a route, so
+  `router.back()` is the destination.
+- **Live Map** · 2026-07-15 · `app/(owner)/live-map/LiveMapMobile.tsx`. Note this route lives **outside**
+  `/carrier` and is one responsive component (not page + `XMobile`), so the mobile branch is additive and
+  the desktop `LiveMapWrapper` is untouched. The real mismatch was the basemap: light OSM tiles read as a
+  glowing panel inside the dark shell, so `live-map.tsx` gained an opt-in `dark` prop switching to **CARTO
+  dark_matter** (no API key, attribution kept; desktop still light until asked). ds chrome: floating status
+  filter chips with counts, a freshness/refresh pill, and an Apple-Maps-style bottom bar opening the truck
+  list as a `SheetContainer` of `EntityRow`s (tap → flyTo) — a sheet, not a FAB (§5). Leaflet's loading
+  state is a ds `Skeleton`, not the old spinner. 15s polling paused while the tab is hidden.
+  `tsc --noEmit` → exit 0.
