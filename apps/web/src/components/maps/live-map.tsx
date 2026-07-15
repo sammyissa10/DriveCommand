@@ -191,12 +191,15 @@ export default function LiveMap({
         /*
          * CARTO dark_matter deliberately sinks its roads (~#2a2a2a on ~#0e0e0e) so
          * data pops — but on a fleet map you need to read the street a truck is on.
-         * Lifting the tile pane raises the road/base delta rather than just making
-         * everything grey, and keeps labels legible. Scoped so the desktop light
-         * basemap is untouched.
+         *
+         * Brightness is multiplicative, which is exactly what this needs: the base
+         * only climbs ~13 levels (14 -> 27, still dark) while roads climb ~38
+         * (42 -> 80) and labels ~92 (102 -> 194). So the map stays dark while the
+         * lines and street names actually become readable. Contrast then widens
+         * what's left. Scoped so the desktop light basemap is untouched.
          */
         .ds-dark-map .leaflet-tile-pane {
-          filter: brightness(1.45) contrast(1.08);
+          filter: brightness(1.9) contrast(1.12);
         }
         /* Keep Leaflet's attribution readable on the dark base. */
         .ds-dark-map .leaflet-control-attribution {
