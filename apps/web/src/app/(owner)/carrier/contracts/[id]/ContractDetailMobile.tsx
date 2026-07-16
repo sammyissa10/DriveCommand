@@ -17,50 +17,14 @@ import {
   type ParentChip,
 } from '@/components/ui/ds';
 
-// ---------------------------------------------------------------------------
-// Option sets — mirror components/carrier/contracts/ContractForm.tsx verbatim
-// so the mobile edit writes the same values the desktop form does.
-// ---------------------------------------------------------------------------
-
-const CONTRACT_TYPES = [
-  { value: 'spot', label: 'Spot' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'dedicated', label: 'Dedicated' },
-];
-const RATE_TYPES = [
-  { value: 'per_mile', label: 'Per Mile' },
-  { value: 'per_load', label: 'Per Load' },
-  { value: 'per_hour', label: 'Per Hour' },
-  { value: 'per_stop', label: 'Per Stop' },
-  { value: 'flat', label: 'Flat Rate' },
-  { value: 'per_cwt', label: 'Per CWT' },
-  { value: 'per_pallet', label: 'Per Pallet' },
-  { value: 'hourly', label: 'Hourly' },
-];
-const FUEL_SURCHARGE_METHODS = [
-  { value: 'none', label: 'None' },
-  { value: 'percentage', label: 'Percentage' },
-  { value: 'per_mile', label: 'Per Mile' },
-  { value: 'table', label: 'Table' },
-];
-const STATUS_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'expired', label: 'Expired' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'draft', label: 'Draft' },
-];
-const PAYMENT_TERMS = [
-  { value: 'net_15', label: 'Net 15' },
-  { value: 'net_30', label: 'Net 30' },
-  { value: 'net_45', label: 'Net 45' },
-  { value: 'net_60', label: 'Net 60' },
-  { value: 'net_90', label: 'Net 90' },
-  { value: 'due_on_receipt', label: 'Due on Receipt' },
-];
-const YES_NO = [
-  { value: 'true', label: 'Yes' },
-  { value: 'false', label: 'No' },
-];
+import {
+  CONTRACT_TYPES,
+  RATE_TYPES,
+  FUEL_SURCHARGE_METHODS,
+  STATUS_OPTIONS,
+  PAYMENT_TERMS,
+  YES_NO,
+} from '../contract-options';
 
 const LABEL: Record<string, string> = {
   ...Object.fromEntries(CONTRACT_TYPES.map((o) => [o.value, o.label])),
