@@ -110,11 +110,19 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
         <header
           className="dark sticky top-0 z-[1001] flex h-14 shrink-0 items-center gap-2 px-4 bg-ds-bg"
         >
-          <AppLogo size={28} variant="light" />
-          {tenantName && (
-            <span className="text-sm font-semibold text-ds-txt truncate">{tenantName}</span>
+          {/* The workspace/company name is the mobile title. The product logo is
+              dropped here (kept on the desktop sidebar) so a real tenant name gets
+              the full width instead of clipping behind the brand mark — the
+              standard in-app pattern. Falls back to the logo only if the name
+              hasn't loaded. */}
+          {tenantName ? (
+            <span className="min-w-0 flex-1 truncate text-[17px] font-semibold text-ds-txt">
+              {tenantName}
+            </span>
+          ) : (
+            <AppLogo size={28} variant="light" />
           )}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <QuickActionsMenu />
             <TopBarHelpButton />
             <NotificationBell variant="mobile" />
