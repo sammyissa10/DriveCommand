@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { listContracts } from '@/lib/carrier/contracts';
 import { hasPermission } from '@/lib/auth/permissions';
 import { ContractsGrid } from './_grid/ContractsGrid';
+import { ContractsMobile } from './ContractsMobile';
 import type { ContractRow } from './_grid/types';
 
 function isExpiringSoon(expirationDate: string | null, status: string): boolean {
@@ -68,7 +69,14 @@ export default async function ContractsPage() {
   }));
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its grid */}
+      <div className="lg:hidden -m-4">
+        <ContractsMobile contracts={contracts} canCreate={canCreate} />
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
@@ -103,6 +111,7 @@ export default async function ContractsPage() {
       )}
 
       <ContractsGrid contracts={contracts} />
-    </div>
+      </div>
+    </>
   );
 }
