@@ -577,3 +577,15 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   is dropped — the sheet renders in a portal (outside the bell's `containerRef`) and owns its own
   backdrop/Escape close, so the old `mousedown` handler would have self-closed it on the first tap.
   `tsc --noEmit` → exit 0.
+- **Contracts (Overview)** · 2026-07-16 · `carrier/contracts/ContractsMobile.tsx`. Was still the desktop
+  DataGrid crammed into the phone (white page, Cards/Table + Filter/Sort/Export). Standard Overview on the
+  `ContractRow` data the server page already builds: LargeTitleHeader (+ count, `onBack` — a More sub-page,
+  `onAdd` → `/carrier/contracts/new` which is a **page, not a sheet**, gated by `canCreate`) → Total / Active /
+  Expiring KPIs (Active + Expiring double as tap-filters, sharing the segmented state) → SearchField (contract
+  # / client) → All/Active/Expiring `SegmentedControl` → `EntityRow` list (**square FileText tile** — a
+  contract is a "thing", not a person, so no monogram; client subline; meta `"rate · exp date"` tinted
+  **warning** when `isExpiringSoon`, mirroring the driver CDL-expiry signal; status pill active=success /
+  pending=warning / expired=danger / terminated=neutral). Renewals sort to the top, then newest contract #.
+  Rate/date formatting ported from the grid's `columns.tsx` so both views agree. Chrome hidden until ≥1 row.
+  **Detail (`ContractDetail.tsx`, 507 lines) still desktop-only** — tapping a row lands on the white page;
+  that's the pass-2 follow-up. `tsc --noEmit` → exit 0.
