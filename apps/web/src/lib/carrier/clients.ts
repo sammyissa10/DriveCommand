@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import type { GridFilter } from '@/components/data-grid/core/types';
@@ -171,35 +170,69 @@ export async function listClients(orgId: string, filters: ListClientsFilters = {
     orderBy = { [sort.field]: sort.direction };
   }
 
+  const tenantPrisma = await getTenantPrisma();
   const [items, total] = await Promise.all([
-    prisma.carrierClient.findMany({
+    tenantPrisma.carrierClient.findMany({
       where,
       skip,
       take: pageSize,
       orderBy,
     }),
-    prisma.carrierClient.count({ where }),
+    tenantPrisma.carrierClient.count({ where }),
   ]);
 
   return { items, total };
 }
 
+export interface ClientLoadStat {
+  loads: number;
+  revenue: number;
+}
+
+/**
+ * Per-client load count + total revenue, aggregated from non-deleted
+ * CarrierLoads. Used by the mobile-web Clients Overview KPIs and row meta.
+ * Returns a Map keyed by clientId; clients with no loads are simply absent.
+ */
+export async function getClientLoadStats(
+  orgId: string,
+  clientIds: string[],
+): Promise<Map<string, ClientLoadStat>> {
+  if (clientIds.length === 0) return new Map();
+
+  const tenantPrisma = await getTenantPrisma();
+  const rows = await tenantPrisma.carrierLoad.groupBy({
+    by: ['clientId'],
+    where: { orgId, clientId: { in: clientIds }, deletedAt: null },
+    _count: { _all: true },
+    _sum: { totalRevenue: true },
+  });
+
+  return new Map(
+    rows.map((r) => [
+      r.clientId,
+      { loads: r._count._all, revenue: Number(r._sum.totalRevenue ?? 0) },
+    ]),
+  );
+}
+
 export async function getClient(orgId: string, id: string) {
-  const client = await prisma.carrierClient.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const client = await tenantPrisma.carrierClient.findFirst({
     where: { id, orgId },
   });
 
   if (!client) return null;
 
   const [openLoadsCount, arResult] = await Promise.all([
-    prisma.carrierLoad.count({
+    tenantPrisma.carrierLoad.count({
       where: {
         clientId: id,
         orgId,
         status: { notIn: ['delivered', 'cancelled', 'invoiced'] },
       },
     }),
-    prisma.carrierLoad.aggregate({
+    tenantPrisma.carrierLoad.aggregate({
       where: { clientId: id, orgId, status: 'invoiced' },
       _sum: { totalRevenue: true },
     }),
@@ -212,12 +245,32 @@ export async function getClient(orgId: string, id: string) {
   };
 }
 
+/** Thrown when a client with the same name already exists in the org. */
+export class DuplicateClientError extends Error {
+  readonly clientName: string;
+  constructor(clientName: string) {
+    super(`A client named "${clientName}" already exists`);
+    this.name = 'DuplicateClientError';
+    this.clientName = clientName;
+  }
+}
+
 export async function createClient(orgId: string, data: ClientCreateInput) {
   const tenantPrisma = await getTenantPrisma();
   const { creditLimit, ...rest } = data;
+  const name = rest.name.trim();
+
+  // Enforce unique client name per org (case-insensitive, excluding soft-deleted).
+  const existing = await tenantPrisma.carrierClient.findFirst({
+    where: { orgId, deletedAt: null, name: { equals: name, mode: 'insensitive' } },
+    select: { id: true },
+  });
+  if (existing) throw new DuplicateClientError(name);
+
   return tenantPrisma.carrierClient.create({
     data: {
       ...rest,
+      name,
       orgId,
       ...(creditLimit !== undefined
         ? { creditLimit: creditLimit !== null ? Number(creditLimit) : null }
@@ -228,7 +281,7 @@ export async function createClient(orgId: string, data: ClientCreateInput) {
 
 export async function updateClient(orgId: string, id: string, data: ClientUpdateInput) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierClient.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierClient.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const { creditLimit, ...rest } = data;
@@ -245,7 +298,7 @@ export async function updateClient(orgId: string, id: string, data: ClientUpdate
 
 export async function softDeleteClient(orgId: string, id: string) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierClient.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierClient.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   return tenantPrisma.carrierClient.update({
