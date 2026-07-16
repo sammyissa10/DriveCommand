@@ -555,3 +555,11 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   required to put a load on a trip — the desktop modal stays available at lg+); driver-pay Assignments are
   **read-only** on mobile (`listAssignmentsForLoad`, ported vocabulary from `assignment-card.tsx`) —
   creating/editing assignments stays desktop-only. `tsc --noEmit` → exit 0.
+- **Loads (Detail — destructive action prominence)** · 2026-07-15 · Device review: on a load already on a
+  trip, `showAddToTrip` is false, so the danger-tinted **Cancel Load** trigger inherited the whole action
+  slot and led the page as a red slab. The trigger now carries the neutral card fill (`bg-ds-card` /
+  `text-ds-txt`) like `TripDetailMobile`'s "More actions"; the sheet it opens is unchanged and its confirm
+  keeps solid `bg-ds-danger`. **Principle: the page body never leads with a destructive action — the danger
+  colour belongs at the point of no return, inside the sheet.** No intermediate "Load actions" sheet was
+  added: the trip has one because it holds Cancel + TONU together, but a load has a single action, so a
+  middle layer would cost a tap to hold one row. `tsc --noEmit` → exit 0.

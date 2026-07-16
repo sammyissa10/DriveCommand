@@ -777,7 +777,16 @@ export function LoadDetailMobile({
       ) : null}
 
       {/* Add to Trip / Cancel Load — hidden while editing, same as the header
-          swapping to Cancel/Save. */}
+          swapping to Cancel/Save.
+
+          Cancel Load is the trigger for the reason sheet below, so it carries
+          the neutral card fill, not a danger tint: the page body must never
+          lead with a destructive action — TripDetailMobile's "More actions"
+          button does the same. The danger colour lives on the confirm inside
+          the sheet, at the point of no return. (No intermediate "Load actions"
+          sheet: the trip has one to hold Cancel + TONU together, but a load has
+          only this one action, so a middle layer would add a tap and hold a
+          single row.) */}
       {!isEditing && (showAddToTrip || showCancel) ? (
         <div className="space-y-2 pb-3">
           {showAddToTrip ? <PrimaryButton label="Add to Trip" onClick={openAddToTrip} /> : null}
@@ -785,7 +794,7 @@ export function LoadDetailMobile({
             <button
               type="button"
               onClick={() => setCancelOpen(true)}
-              className="h-[50px] w-full rounded-[15px] bg-ds-danger/[0.14] text-[17px] font-semibold text-ds-danger transition active:opacity-75"
+              className="h-[50px] w-full rounded-[15px] bg-ds-card text-[17px] font-semibold text-ds-txt transition active:opacity-75"
             >
               Cancel Load
             </button>
