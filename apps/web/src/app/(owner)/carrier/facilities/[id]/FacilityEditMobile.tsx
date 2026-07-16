@@ -50,8 +50,6 @@ export interface FacilityEditInitial {
 interface FormErrors {
   name?: string;
   state?: string;
-  latitude?: string;
-  longitude?: string;
 }
 
 /**
@@ -73,8 +71,9 @@ export function FacilityEditMobile({ initial }: { initial: FacilityEditInitial }
   const [state, setState] = useState(initial.state ?? '');
   const [zip, setZip] = useState(initial.zip ?? '');
   const [country, setCountry] = useState(initial.country ?? 'US');
-  const [latitude, setLatitude] = useState(initial.latitude != null ? String(initial.latitude) : '');
-  const [longitude, setLongitude] = useState(initial.longitude != null ? String(initial.longitude) : '');
+  // Coordinates aren't edited on mobile, but preserve whatever's already set on save.
+  const latitude = initial.latitude != null ? String(initial.latitude) : '';
+  const longitude = initial.longitude != null ? String(initial.longitude) : '';
   const [notes, setNotes] = useState(initial.notes ?? '');
   const [lumperRequired, setLumperRequired] = useState(initial.lumperRequired);
   const [appointmentRequired, setAppointmentRequired] = useState(initial.appointmentRequired);
@@ -119,8 +118,6 @@ export function FacilityEditMobile({ initial }: { initial: FacilityEditInitial }
     const e: FormErrors = {};
     if (!name.trim()) e.name = 'Name is required';
     if (state && state.length > 2) e.state = 'State must be 2 characters max';
-    if (latitude && isNaN(Number(latitude))) e.latitude = 'Latitude must be a number';
-    if (longitude && isNaN(Number(longitude))) e.longitude = 'Longitude must be a number';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -236,37 +233,6 @@ export function FacilityEditMobile({ initial }: { initial: FacilityEditInitial }
     { key: 'country', label: 'Country', input: { value: country, onChange: setCountry, placeholder: 'US' } },
   ];
 
-  const coordinateFields: FieldDef[] = [
-    {
-      key: 'latitude',
-      label: 'Latitude',
-      input: {
-        value: latitude,
-        onChange: (v) => {
-          setLatitude(v.replace(/[^\d.-]/g, ''));
-          if (errors.latitude) setErrors((e) => ({ ...e, latitude: undefined }));
-        },
-        placeholder: '41.8781',
-        inputMode: 'decimal',
-        error: errors.latitude,
-      },
-    },
-    {
-      key: 'longitude',
-      label: 'Longitude',
-      input: {
-        value: longitude,
-        onChange: (v) => {
-          setLongitude(v.replace(/[^\d.-]/g, ''));
-          if (errors.longitude) setErrors((e) => ({ ...e, longitude: undefined }));
-        },
-        placeholder: '-87.6298',
-        inputMode: 'decimal',
-        error: errors.longitude,
-      },
-    },
-  ];
-
   const notesFields: FieldDef[] = [
     { key: 'notes', label: 'Notes', input: { value: notes, onChange: setNotes, multiline: true, placeholder: 'Anything worth remembering' } },
   ];
@@ -338,11 +304,6 @@ export function FacilityEditMobile({ initial }: { initial: FacilityEditInitial }
               ))}
             </div>
           )}
-        </div>
-
-        <div>
-          <SectionHeader title="Coordinates" />
-          <FieldGroup fields={coordinateFields} isEditing />
         </div>
 
         <div>
