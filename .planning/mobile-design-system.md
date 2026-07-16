@@ -563,3 +563,17 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   colour belongs at the point of no return, inside the sheet.** No intermediate "Load actions" sheet was
   added: the trip has one because it holds Cancel + TONU together, but a load has a single action, so a
   middle layer would cost a tap to hold one row. `tsc --noEmit` → exit 0.
+- **Notifications (bell panel)** · 2026-07-16 · Device review: the top-bar bell shares
+  `NotificationBell`/`NotificationCenter` across the desktop sidebar and the mobile top bar. On mobile the
+  panel was a desktop dropdown anchored `absolute right-0` to the far-right bell, so its `100vw`-wide body
+  was shoved off the left edge — the title clipped to "…FICATIONS" and it overflowed the viewport.
+  `NotificationBell` gained a `variant`: `desktop` keeps the anchored dropdown byte-for-byte; `mobile` opens
+  the list in the ds `SheetContainer` (backdrop, `ds.sheet` fill, grabber, Cancel, centred "Notifications"
+  title) — same primitive as the Live Map truck list and Trip actions. Because the shell already mounts each
+  variant in its own responsive (`lg:hidden` / `hidden lg:*`) branch, this is a **prop, not a
+  `useBreakpoint()`** — no SSR hydration mismatch (the trap the grid `MobileToolbar` still falls into).
+  `NotificationCenter` got a matching variant: dropdown branch unchanged, sheet branch renders the same rows
+  on `ds` tokens at mobile touch sizes; fetch/mark-read/navigation shared. The mobile click-outside listener
+  is dropped — the sheet renders in a portal (outside the bell's `containerRef`) and owns its own
+  backdrop/Escape close, so the old `mousedown` handler would have self-closed it on the first tap.
+  `tsc --noEmit` → exit 0.
