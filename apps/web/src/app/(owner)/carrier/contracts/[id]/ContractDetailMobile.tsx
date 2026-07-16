@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, FileText } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   MobileScreen,
@@ -16,6 +16,7 @@ import {
   type FieldDef,
   type ParentChip,
 } from '@/components/ui/ds';
+import { ContractDocuments } from './ContractDocuments';
 
 import {
   CONTRACT_TYPES,
@@ -392,11 +393,7 @@ export function ContractDetailMobile({
             <FieldGroup fields={notesView} isEditing={false} />
           </div>
 
-          {/* Documents live on the desktop detail for now — flagged as the follow-up. */}
-          <div className="flex items-center gap-2 rounded-[16px] bg-ds-card px-4 py-3">
-            <FileText className="h-4 w-4 shrink-0 text-ds-txt3" />
-            <span className="text-[13px] text-ds-txt2">Manage documents on desktop</span>
-          </div>
+          <ContractDocuments contractId={contract.id} />
         </div>
       )}
     </MobileScreen>
