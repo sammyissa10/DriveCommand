@@ -10,6 +10,28 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+  			// ── DriveCommand Mobile Design System (Apple language, dark) ──────
+  			// Fixed dark palette for the mobile-web experience. Namespaced under
+  			// `ds` so it never collides with the shadcn HSL theme tokens used by
+  			// the desktop UI. Source: .planning/mobile-design-system.md
+  			ds: {
+  				bg: '#0B1120',
+  				card: '#171E2E',
+  				elevated: '#212A3D',
+  				input: '#1E2638',
+  				hairline: '#232C40',
+  				txt: '#F5F7FA',
+  				txt2: '#8B93A7',
+  				txt3: '#5B6478',
+  				initials: '#DDE3F0',
+  				accent: '#0A84FF',
+  				vip: '#FFB340',
+  				success: '#30D158',
+  				warning: '#FF9F0A',
+  				danger: '#FF453A',
+  				avatar: '#2B3550',
+  				sheet: '#141B2B',
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			border: 'hsl(var(--border))',
