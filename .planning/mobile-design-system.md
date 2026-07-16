@@ -587,5 +587,16 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   **warning** when `isExpiringSoon`, mirroring the driver CDL-expiry signal; status pill active=success /
   pending=warning / expired=danger / terminated=neutral). Renewals sort to the top, then newest contract #.
   Rate/date formatting ported from the grid's `columns.tsx` so both views agree. Chrome hidden until ≥1 row.
-  **Detail (`ContractDetail.tsx`, 507 lines) still desktop-only** — tapping a row lands on the white page;
-  that's the pass-2 follow-up. `tsc --noEmit` → exit 0.
+  `tsc --noEmit` → exit 0.
+- **Contracts (Detail / Edit + Create)** · 2026-07-16 · `contracts/[id]/ContractDetailMobile.tsx` +
+  `contracts/new/NewContractMobile.tsx` + `contracts/contract-options.ts`. Tapping a contract had landed on
+  the 507-line desktop `ContractDetail` (white). Detail: identity (name/number + status pill) → `ParentStrip`
+  to the client → `NavHeader` Edit toggle over one `isEditing` flag. View = Terms + Rate & accessorials
+  `FieldGroup`s + a Loads-summary tile grid (loads/revenue/invoiced/paid/avg rate/route templates) + notes;
+  Edit = the 16 fields as `FieldGroup` selects/inputs, PATCH `/api/v1/carrier/contracts/[id]` with the body
+  shape **ported verbatim from `ContractForm.handleSubmit`**, then stay-and-`router.refresh()` (don't bounce
+  to the list). Create: full ds page (not a sheet — 16 fields), same field set, POST. **Client `<select>`
+  server-fetched** in both `page.tsx` files (client-fetching flashes "Select a client"). Status tones span
+  both vocabularies (grid pending/terminated + form draft/cancelled). The six option sets live once in
+  `contract-options.ts` — a third divergent copy is how the loads rate-type enum drifted. **Documents stay on
+  desktop** (`DocumentUploadModal` is shadcn) — flagged inline as the follow-up. `tsc --noEmit` → exit 0.
