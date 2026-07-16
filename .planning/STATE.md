@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-06-17 - Completed quick task 468: Shorten Active Work Board column height to ~4 cards.
+Last activity: 2026-07-15 - Completed quick task 469: Rebuilt carrier Loads Detail on the mobile-web ds (last page blocking the create->save flow end-to-end) + fixed the stale PATCH rate-type enum that made per_load/per_hour loads unsaveable.
 Last session: 2026-06-16T21:02:00Z
 Stopped at: Completed quick-463 diagnosis — /notifications 500 is pool exhaustion, not a code bug. Critical blocker: increase Supabase pool_size from 15 to 50+ in dashboard settings. Also found: trip_change enum drift (tech debt, not urgent) and uncommitted local getTenantPrisma() change in notifications route (consistent with GUC pattern, does not fix root cause).
 
@@ -932,6 +932,7 @@ None blocking immediate progress.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 469 | Rebuild carrier Loads Detail on the mobile-web ds (+ fix rate-type Zod save error) | 2026-07-15 | fa2237a7 | [469-rebuild-carrier-loads-detail-on-the-mobi](./quick/469-rebuild-carrier-loads-detail-on-the-mobi/) |
 | 468 | Shorten Active Work Board column height to ~4 cards | 2026-06-17 | dc3065e4 | [468-shorten-active-work-board-column-height-](./quick/468-shorten-active-work-board-column-height-/) |
 | 467 | Contain Active Work Board column overflow on /checklists (spec-compliant) | 2026-06-17 | 57726932 | [467-contain-active-work-board-column-overflo](./quick/467-contain-active-work-board-column-overflo/) |
 | 466 | Shorten DRIVER_NOT_DISPATCH_READY toast message in LoadForm.tsx | 2026-06-17 | bd7d7801 | [466-shorten-driver-not-dispatch-ready-toast-](./quick/466-shorten-driver-not-dispatch-ready-toast-/) |
