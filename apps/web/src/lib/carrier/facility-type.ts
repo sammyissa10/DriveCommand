@@ -9,13 +9,18 @@ import type { StatusTone } from '@/components/ui/ds';
  * reserved for VIP tags, so it is never used for a facility type.
  */
 
-const FACILITY_TYPE_LABELS: Record<string, string> = {
-  terminal: 'Terminal',
-  yard: 'Yard',
-  warehouse: 'Warehouse',
-  drop_yard: 'Drop Yard',
-  customer_site: 'Customer Site',
-};
+/** The pickable facility types, in the order the create/edit form offers them. */
+export const FACILITY_TYPE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'terminal', label: 'Terminal' },
+  { value: 'yard', label: 'Yard' },
+  { value: 'warehouse', label: 'Warehouse' },
+  { value: 'drop_yard', label: 'Drop Yard' },
+  { value: 'customer_site', label: 'Customer Site' },
+];
+
+const FACILITY_TYPE_LABELS: Record<string, string> = Object.fromEntries(
+  FACILITY_TYPE_OPTIONS.map((o) => [o.value, o.label]),
+);
 
 const FACILITY_TYPE_TONES: Record<string, StatusTone> = {
   terminal: 'accent',

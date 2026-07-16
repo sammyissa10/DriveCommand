@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { getFacility } from '@/lib/carrier/facilities';
 import { FacilityForm } from '@/components/carrier/facilities/FacilityForm';
 import { DeleteFacilityButton } from './DeleteFacilityButton';
+import { FacilityEditMobile, type FacilityContact } from './FacilityEditMobile';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
 
@@ -32,8 +33,42 @@ export default async function FacilityDetailPage({ params }: Props) {
 
   if (!facility) notFound();
 
+  const contacts: FacilityContact[] = Array.isArray(facility.contacts)
+    ? (facility.contacts as Array<Partial<FacilityContact>>).map((c) => ({
+        name: c?.name ?? '',
+        phone: c?.phone ?? '',
+        email: c?.email ?? '',
+        role: c?.role ?? '',
+      }))
+    : [];
+
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <FacilityEditMobile
+          initial={{
+            id: facility.id,
+            name: facility.name,
+            facilityType: facility.facilityType,
+            addressLine1: facility.addressLine1,
+            addressLine2: facility.addressLine2,
+            city: facility.city,
+            state: facility.state,
+            zip: facility.zip,
+            country: facility.country,
+            latitude: facility.latitude ? Number(facility.latitude) : null,
+            longitude: facility.longitude ? Number(facility.longitude) : null,
+            lumperRequired: facility.lumperRequired,
+            appointmentRequired: facility.appointmentRequired,
+            contacts,
+            notes: facility.notes,
+          }}
+        />
+      </div>
+
+      {/* Desktop form (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <Link
@@ -92,6 +127,7 @@ export default async function FacilityDetailPage({ params }: Props) {
           updatedByEmail={facilityAudit.updatedBy?.email ?? null}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
