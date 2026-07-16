@@ -445,7 +445,10 @@ export function ClientDetailMobile({
       {/* Contact actions (view only) */}
       {!isEditing ? (
         <div className="pb-2">
-          <ContactActionsRow phone={data.phone} email={data.email} />
+          {/* alwaysShow: a client has a named primary contact, so Call/Message/Mail
+              are part of the identity here — a channel not on file shows muted as a
+              prompt to add it, rather than the row collapsing to a lone button. */}
+          <ContactActionsRow phone={data.phone} email={data.email} alwaysShow />
         </div>
       ) : null}
 
