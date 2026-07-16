@@ -188,8 +188,18 @@ export function DashboardMobile({
 
   const kpiCards = kpi
     ? [
-        { label: 'Loads this week', value: String(kpi.loadsThisWeek ?? 0), tone: 'neutral' as StatusTone },
-        { label: 'Revenue this week', value: fmtCurrency(kpi.revenueThisWeek ?? 0), tone: 'success' as StatusTone },
+        {
+          label: 'Loads this week',
+          value: String(kpi.loadsThisWeek ?? 0),
+          tone: 'neutral' as StatusTone,
+          onClick: () => router.push('/carrier/loads'),
+        },
+        {
+          label: 'Revenue this week',
+          value: fmtCurrency(kpi.revenueThisWeek ?? 0),
+          tone: 'success' as StatusTone,
+          onClick: () => router.push('/carrier/reports/revenue'),
+        },
         {
           label: 'Pending pay',
           value: String(kpi.pendingPayApprovals ?? 0),
