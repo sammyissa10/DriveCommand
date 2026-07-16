@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { getContract, getContractLoadsSummary } from '@/lib/carrier/contracts';
 import { ContractDetail } from './ContractDetail';
+import { ContractDetailMobile } from './ContractDetailMobile';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
 
@@ -17,7 +18,7 @@ export default async function ContractDetailPage({ params, searchParams }: Props
   const { id } = await params;
   const { edit } = await searchParams;
 
-  const [contract, loadsSummary, contractAudit] = await Promise.all([
+  const [contract, loadsSummary, contractAudit, clients] = await Promise.all([
     getContract(session.tenantId, id),
     getContractLoadsSummary(session.tenantId, id),
     prisma.carrierContract.findUnique({
@@ -29,6 +30,11 @@ export default async function ContractDetailPage({ params, searchParams }: Props
         updatedAt: true,
       },
     }).catch(() => null),
+    // Server-fetched so the mobile edit's client <select> paints with the row
+    // already chosen (client-fetching would flash "Select a client").
+    prisma.carrierClient
+      .findMany({ where: { orgId: session.tenantId }, select: { id: true, name: true }, orderBy: { name: 'asc' } })
+      .catch(() => [] as { id: string; name: string }[]),
   ]);
 
   if (!contract) notFound();
@@ -71,17 +77,30 @@ export default async function ContractDetailPage({ params, searchParams }: Props
 
   return (
     <>
-      <ContractDetail contract={serialized} loadsSummary={summary} initialEdit={edit === 'true'} />
-      {contractAudit && (
-        <AuditTrailFooter
-          createdAt={contractAudit.createdAt}
-          createdByName={contractAudit.createdBy ? `${contractAudit.createdBy.firstName ?? ''} ${contractAudit.createdBy.lastName ?? ''}`.trim() || null : null}
-          createdByEmail={contractAudit.createdBy?.email ?? null}
-          updatedAt={contractAudit.updatedAt}
-          updatedByName={contractAudit.updatedBy ? `${contractAudit.updatedBy.firstName ?? ''} ${contractAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
-          updatedByEmail={contractAudit.updatedBy?.email ?? null}
+      {/* Mobile-web design system — rendered below lg; desktop keeps its layout */}
+      <div className="lg:hidden -m-4">
+        <ContractDetailMobile
+          contract={serialized}
+          loadsSummary={summary}
+          clients={clients}
+          initialEdit={edit === 'true'}
         />
-      )}
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <ContractDetail contract={serialized} loadsSummary={summary} initialEdit={edit === 'true'} />
+        {contractAudit && (
+          <AuditTrailFooter
+            createdAt={contractAudit.createdAt}
+            createdByName={contractAudit.createdBy ? `${contractAudit.createdBy.firstName ?? ''} ${contractAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+            createdByEmail={contractAudit.createdBy?.email ?? null}
+            updatedAt={contractAudit.updatedAt}
+            updatedByName={contractAudit.updatedBy ? `${contractAudit.updatedBy.firstName ?? ''} ${contractAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+            updatedByEmail={contractAudit.updatedBy?.email ?? null}
+          />
+        )}
+      </div>
     </>
   );
 }
