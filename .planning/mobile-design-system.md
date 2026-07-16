@@ -533,4 +533,25 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   **invoiced purple**, which the ds has no equivalent for (`vip` amber is reserved for VIP tags), so invoiced
   reads success like delivered — the label carries the difference, and tinting it warning would imply being
   billed is a problem. `tsc --noEmit` → exit 0.
-  **Pending:** Loads **Detail** (`/carrier/loads/[id]`) + **Create** (`/carrier/loads/new`) are still desktop-only.
+  **Create** (`carrier/loads/new/NewLoadMobile.tsx`) and **Detail** (below) are both done — the Loads
+  four-page set is complete.
+- **Loads (Detail)** · 2026-07-15 · `carrier/loads/[id]/LoadDetailMobile.tsx`. Closed the last hole in the
+  Loads set: the post-create redirect used to drop the owner onto the old white desktop page. Shipped
+  alongside an independent bug fix — the PATCH `LoadUpdateSchema` (`loads/[id]/route.ts`) was stale at 6
+  rate types while POST and contracts carried 8, so a `per_load`/`per_hour` load saved fine at creation but
+  could never be edited again (400 Zod error). A shared `RATE_TYPES` tuple
+  (`src/lib/carrier/rate-types.ts`) now backs all three carrier Zod schemas.
+  Structure follows `TripDetailMobile.tsx`'s shape but diverges on one point: **tabs (Details/Stops/
+  Assignments) stay visible through Edit** rather than swapping to one big edit-mode form — each tab
+  internally flips between its view and edit content off the same `isEditing` flag, since the Stops tab's
+  editor (`MobileStopsEditor`, reused from `NewLoadMobile`) feeds the same save payload as Details, not a
+  separate save path. Identity + `StatusPill` (tones locked to `LoadsMobile`'s STATUS_META — invoiced reads
+  success like delivered) and `ParentStrip` → the trip stay mounted in both modes. Decisions: **all select
+  options are server-derived** in `page.tsx` (contracts for `load.clientId`, facilities) — a native
+  `<select>` with no matching `<option>` on first paint silently reads its first option, which was the
+  reported "Select a client…" bug on a load with a real client; the `ParentStrip` chip links to
+  `/carrier/trips/[dispatchId]`, not `/carrier/dispatches/...` (commit 4986a301 removed that 308 redirect
+  hop); Add to Trip deliberately omits route-template prefill and co-driver (desktop-only conveniences, not
+  required to put a load on a trip — the desktop modal stays available at lg+); driver-pay Assignments are
+  **read-only** on mobile (`listAssignmentsForLoad`, ported vocabulary from `assignment-card.tsx`) —
+  creating/editing assignments stays desktop-only. `tsc --noEmit` → exit 0.
