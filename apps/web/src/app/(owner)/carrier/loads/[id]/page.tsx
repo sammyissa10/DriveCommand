@@ -9,6 +9,7 @@ import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
 import { LoadDetailActions } from '@/components/carrier/loads/LoadDetailActions';
 import { DriverAssignmentSection } from '@/components/driver-pay/assignment-section';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { LoadDetailMobile } from './LoadDetailMobile';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -52,6 +53,39 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   ]);
 
   if (!load) notFound();
+
+  // Server-derived selects for the mobile-web ds branch — a native <select> with no
+  // matching <option> on first paint silently falls back to its first option, so
+  // every select value (contracts, facilities) is resolved here, not client-side.
+  const [mobileContracts, mobileFacilities] = await Promise.all([
+    prisma.carrierContract.findMany({
+      where: { orgId, clientId: load.clientId, status: 'active' },
+      select: {
+        id: true,
+        contractNumber: true,
+        contractName: true,
+        rateType: true,
+        baseRate: true,
+        fuelSurchargeMethod: true,
+        fuelSurchargeRate: true,
+      },
+      orderBy: { contractName: 'asc' },
+    }),
+    prisma.carrierFacility.findMany({
+      where: { orgId },
+      select: { id: true, name: true, city: true, state: true },
+      orderBy: { name: 'asc' },
+    }),
+  ]);
+  const mobileContractsSerialized = mobileContracts.map((c) => ({
+    id: c.id,
+    contractNumber: c.contractNumber,
+    contractName: c.contractName,
+    rateType: c.rateType,
+    baseRate: c.baseRate != null ? String(c.baseRate) : null,
+    fuelSurchargeMethod: c.fuelSurchargeMethod,
+    fuelSurchargeRate: c.fuelSurchargeRate != null ? String(c.fuelSurchargeRate) : null,
+  }));
 
   // If no stops found via loadId but load is on a dispatch, check for stops
   // that belong to the dispatch but weren't linked to this load via loadId yet.
@@ -132,6 +166,15 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     }));
   }
 
+  // Stop id -> status, for the mobile Stops tab timeline pill. Only real CarrierStop
+  // rows (branch A/B) carry a status; pendingStopsJson stops (branch C) get none.
+  const stopStatusMap: Record<string, string> = {};
+  for (const s of stopsForMapping) {
+    if (s && typeof s === 'object' && 'id' in s && 'status' in s) {
+      stopStatusMap[s.id as string] = s.status as string;
+    }
+  }
+
   // Map driver and truck data for the dispatch modal
   const driverOptions = rawDrivers.map((d) => ({
     id: d.id,
@@ -189,62 +232,117 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Load {load.referenceNumber}
-          </h1>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Edit load details, rate, and freight information.
-          </p>
-        </div>
-        <LoadDetailActions
-          loadId={id}
-          loadRefNumber={load.referenceNumber ?? id.slice(0, 8)}
-          loadStatus={load.status}
-          dispatchId={load.dispatchId}
+    <>
+      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
+      <div className="lg:hidden -m-4">
+        <LoadDetailMobile
+          load={{
+            id: load.id,
+            referenceNumber: load.referenceNumber ?? id.slice(0, 8),
+            status: load.status,
+            clientId: load.clientId,
+            contractId: load.contractId ?? null,
+            dispatchId: load.dispatchId ?? null,
+            loadType: load.loadType,
+            bolNumber: load.bolNumber ?? null,
+            poNumber: load.poNumber ?? null,
+            commodityDescription: load.commodityDescription ?? null,
+            commodityWeightLbs: load.commodityWeightLbs != null ? Number(load.commodityWeightLbs) : null,
+            commodityPieces: load.commodityPieces != null ? Number(load.commodityPieces) : null,
+            hazmat: load.hazmat,
+            rateType: load.rateType,
+            rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
+            otherCharges: load.financials.otherCharges != null ? Number(load.financials.otherCharges) : null,
+            brokerFlag: load.brokerFlag,
+            carrierCost: load.financials.carrierCost != null ? Number(load.financials.carrierCost) : null,
+            specialInstructions: load.specialInstructions ?? null,
+          }}
+          clients={clients}
+          contracts={mobileContractsSerialized}
+          facilities={mobileFacilities}
+          driverOptions={driverOptions}
+          truckOptions={truckOptions}
+          stops={mappedStops}
+          stopStatusMap={stopStatusMap}
           dispatchNumber={parsedDispatchNumber}
           pendingStopCount={pendingStopCount}
-          drivers={driverOptions}
-          trucks={truckOptions}
+          loadAudit={
+            loadAudit
+              ? {
+                  createdAt: loadAudit.createdAt.toISOString(),
+                  createdByName: loadAudit.createdBy
+                    ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null
+                    : null,
+                  createdByEmail: loadAudit.createdBy?.email ?? null,
+                  updatedAt: loadAudit.updatedAt.toISOString(),
+                  updatedByName: loadAudit.updatedBy
+                    ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null
+                    : null,
+                  updatedByEmail: loadAudit.updatedBy?.email ?? null,
+                }
+              : null
+          }
         />
       </div>
 
-      <LoadForm
-        mode="edit"
-        initialData={initialData}
-        clients={clients}
-        loadId={id}
-      />
+      {/* Desktop */}
+      <div className="hidden lg:block space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Load {load.referenceNumber}
+            </h1>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Edit load details, rate, and freight information.
+            </p>
+          </div>
+          <LoadDetailActions
+            loadId={id}
+            loadRefNumber={load.referenceNumber ?? id.slice(0, 8)}
+            loadStatus={load.status}
+            dispatchId={load.dispatchId}
+            dispatchNumber={parsedDispatchNumber}
+            pendingStopCount={pendingStopCount}
+            drivers={driverOptions}
+            trucks={truckOptions}
+          />
+        </div>
 
-      <DriverAssignmentSection
-        loadId={id}
-        load={{
-          id: load.id,
-          hazmat: load.hazmat,
-          referenceNumber: load.referenceNumber ?? null,
-          rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
-          createdAt: (load.createdAt as Date).toISOString(),
-        }}
-        drivers={rawDrivers}
-        stops={mappedStops.map((s) => ({
-          id: s.id,
-          facilityName: s.facility_name,
-          stopType: s.stop_type,
-        }))}
-      />
-
-      {loadAudit && (
-        <AuditTrailFooter
-          createdAt={loadAudit.createdAt}
-          createdByName={loadAudit.createdBy ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null : null}
-          createdByEmail={loadAudit.createdBy?.email ?? null}
-          updatedAt={loadAudit.updatedAt}
-          updatedByName={loadAudit.updatedBy ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
-          updatedByEmail={loadAudit.updatedBy?.email ?? null}
+        <LoadForm
+          mode="edit"
+          initialData={initialData}
+          clients={clients}
+          loadId={id}
         />
-      )}
-    </div>
+
+        <DriverAssignmentSection
+          loadId={id}
+          load={{
+            id: load.id,
+            hazmat: load.hazmat,
+            referenceNumber: load.referenceNumber ?? null,
+            rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
+            createdAt: (load.createdAt as Date).toISOString(),
+          }}
+          drivers={rawDrivers}
+          stops={mappedStops.map((s) => ({
+            id: s.id,
+            facilityName: s.facility_name,
+            stopType: s.stop_type,
+          }))}
+        />
+
+        {loadAudit && (
+          <AuditTrailFooter
+            createdAt={loadAudit.createdAt}
+            createdByName={loadAudit.createdBy ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+            createdByEmail={loadAudit.createdBy?.email ?? null}
+            updatedAt={loadAudit.updatedAt}
+            updatedByName={loadAudit.updatedBy ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+            updatedByEmail={loadAudit.updatedBy?.email ?? null}
+          />
+        )}
+      </div>
+    </>
   );
 }
