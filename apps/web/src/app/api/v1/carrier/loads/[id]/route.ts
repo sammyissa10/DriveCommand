@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getLoad, updateLoad } from '@/lib/carrier/loads';
+import { RATE_TYPES } from '@/lib/carrier/rate-types';
 
 const StopInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -36,7 +37,7 @@ const LoadUpdateSchema = z.object({
   commodityPallets: z.number().int().optional(),
   hazmat: z.boolean().optional(),
   hazmatClass: z.string().optional(),
-  rateType: z.enum(['per_mile', 'flat', 'per_stop', 'per_cwt', 'per_pallet', 'hourly']).optional(),
+  rateType: z.enum(RATE_TYPES).optional(),
   rateAmount: z.number().optional(),
   plannedMiles: z.number().int().optional(),
   brokerFlag: z.boolean().optional(),

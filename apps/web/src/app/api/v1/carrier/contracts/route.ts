@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
 import { listContracts, createContract } from '@/lib/carrier/contracts';
+import { RATE_TYPES } from '@/lib/carrier/rate-types';
 
 const ContractCreateSchema = z.object({
   clientId: z.string().uuid(),
@@ -11,7 +12,7 @@ const ContractCreateSchema = z.object({
   contractType: z.enum(['spot', 'contract', 'dedicated']).optional(),
   effectiveDate: z.string().optional(),
   expirationDate: z.string().optional(),
-  rateType: z.enum(['per_mile', 'per_load', 'per_hour', 'per_stop', 'flat', 'per_cwt', 'per_pallet', 'hourly']).optional(),
+  rateType: z.enum(RATE_TYPES).optional(),
   baseRate: z.string().optional(),
   fuelSurchargeRate: z.string().optional(),
   fuelSurchargeMethod: z.enum(['none', 'percentage', 'per_mile', 'table']).optional(),
@@ -65,8 +66,9 @@ export async function POST(req: NextRequest) {
 
     const { clientId, ...contractData } = parsed.data;
 
+    const tenantPrisma = await getTenantPrisma();
     // Verify client belongs to this org (prevents cross-tenant contract creation)
-    const client = await prisma.carrierClient.findFirst({
+    const client = await tenantPrisma.carrierClient.findFirst({
       where: { id: clientId, orgId },
     });
     if (!client) {
