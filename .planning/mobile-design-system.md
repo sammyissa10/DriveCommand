@@ -600,3 +600,20 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   both vocabularies (grid pending/terminated + form draft/cancelled). The six option sets live once in
   `contract-options.ts` — a third divergent copy is how the loads rate-type enum drifted. **Documents stay on
   desktop** (`DocumentUploadModal` is shadcn) — flagged inline as the follow-up. `tsc --noEmit` → exit 0.
+- **Facilities (Overview + Edit + Create)** · 2026-07-16 · `facilities/FacilitiesMobile.tsx` +
+  `facilities/[id]/FacilityEditMobile.tsx` + `facilities/new/FacilityCreateMobile.tsx` +
+  `lib/carrier/facility-type.ts`. All three landed on white desktop pages before. Overview: server-derived
+  rows (location/contact+dock-flag meta, type label/tone) → KPIRow of the 3 headline types
+  (Terminal/Warehouse/Yard, tap-to-filter) + **a horizontally scrollable filter-chip row** (All + every type
+  present) added after Sammy flagged the KPIs alone weren't a discoverable filter and left drop_yard /
+  customer_site unreachable; both drive one `typeFilter`. Every row carries its own type `StatusPill` so all
+  5 types stay labeled. Square icon tile per type (places, not people). Edit/Create: `NavHeader` + `FieldGroup`
+  sections (Details/Address/Coordinates/Notes) + two `Toggle` requirements (Appointment/Lumper) + an
+  add/remove Contacts editor (`SheetInput` cards). **PATCH/POST body + validation ported verbatim from
+  `FacilityForm`** (incl. its conditional-spread semantics — clearing a set field doesn't persist, matching
+  desktop; don't "fix" without an API that accepts nulls). Edit has a ds delete-confirm `SheetContainer`
+  (replacing the shadcn `Dialog` on mobile) + a discard-guard on back; audit footer stays desktop-only.
+  Facility type label/tone/**option set** centralized in `facility-type.ts` (shared by all three). Authoritative
+  types come from `FacilityForm` (terminal/yard/warehouse/drop_yard/customer_site) — the grid `columns.tsx`
+  labels (shipper/receiver/fuel_stop) are stale; left untouched. **No address autocomplete** (no ds equivalent;
+  every mobile ds form uses plain fields — lat/lng stay manually editable). `tsc --noEmit` → exit 0.
