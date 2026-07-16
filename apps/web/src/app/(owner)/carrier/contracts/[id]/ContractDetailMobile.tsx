@@ -362,15 +362,8 @@ export function ContractDetailMobile({
         </div>
       ) : (
         <div className="space-y-6">
-          <div>
-            <SectionHeader title="Terms" />
-            <FieldGroup fields={termsView} isEditing={false} />
-          </div>
-          <div>
-            <SectionHeader title="Rate & accessorials" />
-            <FieldGroup fields={rateView} isEditing={false} />
-          </div>
-
+          {/* Loads summary leads the view — the at-a-glance value of the
+              contract, directly under the client it belongs to. */}
           {loadsSummary ? (
             <div>
               <SectionHeader title="Loads summary" />
@@ -384,6 +377,15 @@ export function ContractDetailMobile({
               </div>
             </div>
           ) : null}
+
+          <div>
+            <SectionHeader title="Terms" />
+            <FieldGroup fields={termsView} isEditing={false} />
+          </div>
+          <div>
+            <SectionHeader title="Rate & accessorials" />
+            <FieldGroup fields={rateView} isEditing={false} />
+          </div>
 
           <div>
             <SectionHeader title="Notes" />
