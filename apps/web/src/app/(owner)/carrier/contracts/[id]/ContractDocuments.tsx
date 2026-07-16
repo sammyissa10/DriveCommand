@@ -58,6 +58,8 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [docTypes, setDocTypes] = useState<DocType[]>([]);
+  const [typesLoading, setTypesLoading] = useState(false);
+  const [typesError, setTypesError] = useState(false);
   const [typeId, setTypeId] = useState('');
   const [notes, setNotes] = useState('');
   const [progress, setProgress] = useState<number | null>(null);
@@ -87,14 +89,26 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
     }
   }
 
+  function loadTypes() {
+    setTypesLoading(true);
+    setTypesError(false);
+    fetch('/api/v1/carrier/document-types?active_only=true')
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((json) => {
+        const types = (json.data ?? []) as DocType[];
+        setDocTypes(types);
+        if (types.length === 0) setTypesError(true); // empty is unusual — surface it
+      })
+      .catch(() => {
+        setDocTypes([]);
+        setTypesError(true);
+      })
+      .finally(() => setTypesLoading(false));
+  }
+
   function openSheet() {
     setOpen(true);
-    if (docTypes.length === 0) {
-      fetch('/api/v1/carrier/document-types?active_only=true')
-        .then((r) => (r.ok ? r.json() : Promise.reject()))
-        .then((json) => setDocTypes(json.data ?? []))
-        .catch(() => setDocTypes([]));
-    }
+    if (docTypes.length === 0) loadTypes();
   }
 
   function closeSheet() {
@@ -244,17 +258,26 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
               <span className="text-[13px] text-ds-txt2">Document type</span>
               <span className="text-[13px] text-ds-txt3">Required</span>
             </div>
-            <select
-              value={typeId}
-              onChange={(e) => setTypeId(e.target.value)}
-              disabled={uploading}
-              className="h-[46px] w-full rounded-[12px] bg-ds-input px-3 text-[16px] text-ds-txt outline-none disabled:opacity-50"
-            >
-              <option value="">Select type…</option>
-              {docTypes.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
+            {typesError ? (
+              <div className="flex items-center justify-between gap-3 rounded-[12px] bg-ds-input px-3 py-2.5">
+                <span className="text-[13px] text-ds-danger">Couldn&rsquo;t load document types</span>
+                <button type="button" onClick={loadTypes} className="text-[13px] font-medium text-ds-accent active:opacity-70">
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <select
+                value={typeId}
+                onChange={(e) => setTypeId(e.target.value)}
+                disabled={uploading || typesLoading}
+                className="h-[46px] w-full rounded-[12px] bg-ds-input px-3 text-[16px] text-ds-txt outline-none disabled:opacity-50"
+              >
+                <option value="">{typesLoading ? 'Loading types…' : 'Select type…'}</option>
+                {docTypes.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Notes */}
