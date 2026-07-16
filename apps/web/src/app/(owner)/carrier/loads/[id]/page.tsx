@@ -9,6 +9,7 @@ import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
 import { LoadDetailActions } from '@/components/carrier/loads/LoadDetailActions';
 import { DriverAssignmentSection } from '@/components/driver-pay/assignment-section';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { listAssignmentsForLoad } from '@/app/(owner)/actions/load-driver-assignments';
 import { LoadDetailMobile } from './LoadDetailMobile';
 
 interface LoadDetailPageProps {
@@ -57,7 +58,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   // Server-derived selects for the mobile-web ds branch — a native <select> with no
   // matching <option> on first paint silently falls back to its first option, so
   // every select value (contracts, facilities) is resolved here, not client-side.
-  const [mobileContracts, mobileFacilities] = await Promise.all([
+  const [mobileContracts, mobileFacilities, mobileAssignmentsResult] = await Promise.all([
     prisma.carrierContract.findMany({
       where: { orgId, clientId: load.clientId, status: 'active' },
       select: {
@@ -76,7 +77,9 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),
+    listAssignmentsForLoad(id),
   ]);
+  const mobileInitialAssignments = mobileAssignmentsResult.data?.assignments ?? [];
   const mobileContractsSerialized = mobileContracts.map((c) => ({
     id: c.id,
     contractNumber: c.contractNumber,
@@ -266,6 +269,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
           stopStatusMap={stopStatusMap}
           dispatchNumber={parsedDispatchNumber}
           pendingStopCount={pendingStopCount}
+          initialAssignments={mobileInitialAssignments}
           loadAudit={
             loadAudit
               ? {
