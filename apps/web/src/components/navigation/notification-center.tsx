@@ -26,9 +26,18 @@ interface InAppNotification {
   createdAt: string;
 }
 
+/**
+ * `dropdown` = the desktop bell's anchored panel (self-contained chrome).
+ * `sheet` = the mobile-web ds bottom sheet body; the surrounding
+ * `SheetContainer` owns the fill/radius/grabber/title, so this renders bare on
+ * `ds` tokens. The fetch + mark-read + navigation logic is shared across both.
+ */
+type NotificationVariant = 'dropdown' | 'sheet';
+
 interface NotificationCenterProps {
   onClose: () => void;
   onMarkedAllRead?: () => void;
+  variant?: NotificationVariant;
 }
 
 /** Format a timestamp as relative time (e.g. "2m ago", "3h ago", "5d ago") */
@@ -47,9 +56,9 @@ function relativeTime(date: Date | string): string {
   return `${months}mo ago`;
 }
 
-function NotificationIcon({ type }: { type: InAppNotificationType }) {
+function NotificationIcon({ type, className }: { type: InAppNotificationType; className?: string }) {
   // Match Quick Create icon styling: muted gray, consistent size
-  const cls = 'h-4 w-4 shrink-0 text-[hsl(220_10%_60%)]';
+  const cls = className ?? 'h-4 w-4 shrink-0 text-[hsl(220_10%_60%)]';
   switch (type) {
     case 'dispatch_assigned':
       return <Truck className={cls} strokeWidth={1.75} />;
@@ -88,7 +97,78 @@ function resolveLink(entityType: string, entityId: string): string {
   }
 }
 
-export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCenterProps) {
+/**
+ * A single notification row. The `dropdown` branch reproduces the desktop
+ * panel's exact classes (no visual change on lg+); the `sheet` branch renders
+ * the same content on `ds` tokens at mobile touch sizes.
+ */
+function NotificationRow({
+  notification,
+  variant,
+  onClick,
+}: {
+  notification: InAppNotification;
+  variant: NotificationVariant;
+  onClick: () => void;
+}) {
+  const sheet = variant === 'sheet';
+  return (
+    <button
+      onClick={onClick}
+      className={
+        sheet
+          ? 'relative w-full text-left flex items-start gap-3 px-3 py-3 rounded-[14px] hover:bg-ds-card active:opacity-80 transition'
+          : 'relative w-full text-left flex items-start gap-3 px-3 py-2.5 mx-1 rounded-lg cursor-pointer hover:bg-[hsl(220_28%_18%)] transition-none'
+      }
+    >
+      {/* Unread indicator - accent left border */}
+      <div
+        className={`absolute left-0 top-1 bottom-1 w-0.5 rounded-full ${
+          notification.read ? 'bg-transparent' : sheet ? 'bg-ds-accent' : 'bg-blue-500'
+        }`}
+      />
+      <div className="mt-0.5">
+        <NotificationIcon
+          type={notification.type}
+          className={sheet ? 'h-[18px] w-[18px] shrink-0 text-ds-txt2' : undefined}
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <p
+            className={
+              sheet
+                ? `text-[15px] leading-tight text-ds-txt ${notification.read ? 'font-normal' : 'font-semibold'}`
+                : `text-sm leading-tight text-[hsl(0_0%_92%)] ${notification.read ? 'font-normal' : 'font-medium'}`
+            }
+          >
+            {notification.title}
+          </p>
+          <span
+            className={
+              sheet
+                ? 'text-[12px] text-ds-txt3 font-mono shrink-0'
+                : 'text-[11px] text-[hsl(220_10%_50%)] font-mono shrink-0'
+            }
+          >
+            {relativeTime(notification.createdAt)}
+          </span>
+        </div>
+        <p
+          className={
+            sheet
+              ? 'text-[13px] text-ds-txt2 mt-0.5 line-clamp-2 leading-relaxed'
+              : 'text-xs text-[hsl(220_10%_60%)] mt-0.5 line-clamp-2 leading-relaxed'
+          }
+        >
+          {notification.message}
+        </p>
+      </div>
+    </button>
+  );
+}
+
+export function NotificationCenter({ onClose, onMarkedAllRead, variant = 'dropdown' }: NotificationCenterProps) {
   const router = useRouter();
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,6 +223,48 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
     onClose();
   }
 
+  // ── Mobile-web ds bottom-sheet body ──────────────────────────────────────
+  // SheetContainer supplies the fill, radius, grabber, Cancel and centered
+  // "Notifications" title, so this renders only the mark-all action + the list.
+  if (variant === 'sheet') {
+    return (
+      <div className="pb-2">
+        <div className="flex items-center justify-end pb-1">
+          <button
+            onClick={handleMarkAllRead}
+            className="min-h-[36px] px-1 text-[15px] text-ds-accent active:opacity-70"
+          >
+            Mark all read
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="px-3 py-10 text-center text-[15px] text-ds-txt2">Loading…</div>
+        ) : notifications.length === 0 ? (
+          <div className="px-3 py-14 flex flex-col items-center gap-2 text-ds-txt2">
+            <Bell className="h-8 w-8 opacity-30" strokeWidth={1.75} />
+            <span className="text-[15px]">No notifications</span>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-0.5">
+            {notifications.map((notification) => (
+              <NotificationRow
+                key={notification.id}
+                notification={notification}
+                variant="sheet"
+                onClick={() => handleNotificationClick(notification)}
+              />
+            ))}
+            {notifications.length >= 20 && (
+              <div className="px-3 py-3 text-center text-[13px] text-ds-txt3">Showing latest 20</div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Desktop anchored dropdown (unchanged) ────────────────────────────────
   return (
     <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[calc(100dvh-140px)] overflow-y-auto bg-[hsl(220_32%_11%)] border border-[hsl(220_25%_18%)] rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15),_0_24px_48px_-12px_rgba(0,0,0,0.4)] z-[1001] flex flex-col">
       {/* Sticky header - Quick Create section label style */}
@@ -170,34 +292,12 @@ export function NotificationCenter({ onClose, onMarkedAllRead }: NotificationCen
         ) : (
           <>
             {notifications.map((notification) => (
-              <button
+              <NotificationRow
                 key={notification.id}
+                notification={notification}
+                variant="dropdown"
                 onClick={() => handleNotificationClick(notification)}
-                className="relative w-full text-left flex items-start gap-3 px-3 py-2.5 mx-1 rounded-lg cursor-pointer hover:bg-[hsl(220_28%_18%)] transition-none"
-              >
-                {/* Unread indicator - blue left border accent */}
-                <div
-                  className={`absolute left-0 top-1 bottom-1 w-0.5 rounded-full ${
-                    notification.read ? 'bg-transparent' : 'bg-blue-500'
-                  }`}
-                />
-                <div className="mt-0.5">
-                  <NotificationIcon type={notification.type} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className={`text-sm leading-tight text-[hsl(0_0%_92%)] ${notification.read ? 'font-normal' : 'font-medium'}`}>
-                      {notification.title}
-                    </p>
-                    <span className="text-[11px] text-[hsl(220_10%_50%)] font-mono shrink-0">
-                      {relativeTime(notification.createdAt)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-[hsl(220_10%_60%)] mt-0.5 line-clamp-2 leading-relaxed">
-                    {notification.message}
-                  </p>
-                </div>
-              </button>
+              />
             ))}
 
             {notifications.length >= 20 && (

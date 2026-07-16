@@ -108,16 +108,16 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
       {/* Mobile: Standard stacked layout with bottom nav - uses theme-appropriate colors */}
       <div className="lg:hidden min-h-screen flex flex-col bg-background">
         <header
-          className="sticky top-0 z-[1001] flex h-14 shrink-0 items-center gap-2 px-4 bg-card border-b border-border shadow-sm"
+          className="dark sticky top-0 z-[1001] flex h-14 shrink-0 items-center gap-2 px-4 bg-ds-bg"
         >
-          <AppLogo size={28} variant="dark" />
+          <AppLogo size={28} variant="light" />
           {tenantName && (
-            <span className="text-sm font-semibold text-foreground truncate">{tenantName}</span>
+            <span className="text-sm font-semibold text-ds-txt truncate">{tenantName}</span>
           )}
           <div className="ml-auto flex items-center gap-2">
             <QuickActionsMenu />
             <TopBarHelpButton />
-            <NotificationBell />
+            <NotificationBell variant="mobile" />
             <UserMenu compactOnMobile />
           </div>
         </header>

@@ -3,10 +3,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bell } from 'lucide-react';
 import { NotificationCenter } from './notification-center';
+import { SheetContainer } from '@/components/ui/ds';
 
 const POLL_INTERVAL_MS = 60_000; // 60 seconds
 
-export function NotificationBell() {
+/**
+ * `desktop` = the sidebar/top-bar bell with an anchored dropdown panel.
+ * `mobile` = the mobile-web ds shell: the panel opens as a bottom `SheetContainer`
+ * so it never gets clipped by the far-right anchor at narrow widths. The shell
+ * mounts each variant in its own responsive (`lg:hidden` / `hidden lg:*`) branch,
+ * so this is a prop, not a JS breakpoint — no SSR hydration mismatch.
+ */
+export function NotificationBell({ variant = 'desktop' }: { variant?: 'desktop' | 'mobile' }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,9 +37,11 @@ export function NotificationBell() {
     return () => clearInterval(intervalId);
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close the desktop dropdown when clicking outside. The mobile sheet renders
+  // in a portal (outside containerRef) and owns its own backdrop/Escape close,
+  // so this listener must not run for it — it would close on its own first tap.
   useEffect(() => {
-    if (!isOpen) return;
+    if (variant !== 'desktop' || !isOpen) return;
 
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -41,7 +51,7 @@ export function NotificationBell() {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+  }, [isOpen, variant]);
 
   function handleMarkedAllRead() {
     setUnreadCount(0);
@@ -64,13 +74,24 @@ export function NotificationBell() {
         )}
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-40">
+      {variant === 'mobile' ? (
+        <SheetContainer open={isOpen} onCancel={() => setIsOpen(false)} title="Notifications">
           <NotificationCenter
+            variant="sheet"
             onClose={() => setIsOpen(false)}
             onMarkedAllRead={handleMarkedAllRead}
           />
-        </div>
+        </SheetContainer>
+      ) : (
+        isOpen && (
+          <div className="absolute right-0 top-full mt-2 z-40">
+            <NotificationCenter
+              variant="dropdown"
+              onClose={() => setIsOpen(false)}
+              onMarkedAllRead={handleMarkedAllRead}
+            />
+          </div>
+        )
       )}
     </div>
   );
