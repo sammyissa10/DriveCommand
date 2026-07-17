@@ -8,6 +8,7 @@ import {
   LargeTitleHeader,
   KPIRow,
   KPICard,
+  SearchField,
   SegmentedControl,
   SectionHeader,
   StatusPill,
@@ -77,10 +78,18 @@ function StackedBar({ buckets, height = 10 }: { buckets: number[]; height?: numb
 export function AgingMobile({ rows, loading }: Props) {
   const router = useRouter();
   const [sort, setSort] = useState<AgingSort>('risk');
+  const [query, setQuery] = useState('');
 
   const clients = useMemo(() => rows.map(toAgingClient), [rows]);
   const totals = useMemo(() => agingTotals(clients), [clients]);
   const sorted = useMemo(() => sortClients(clients, sort), [clients, sort]);
+
+  // Search is only worth showing once the worklist is long enough to scroll.
+  const showSearch = clients.length >= 8;
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q ? sorted.filter((c) => c.clientName.toLowerCase().includes(q)) : sorted;
+  }, [sorted, query]);
 
   const countLabel =
     clients.length === 0 ? 'Accounts receivable' : `${clients.length} client${clients.length === 1 ? '' : 's'} with a balance`;
@@ -136,9 +145,17 @@ export function AgingMobile({ rows, loading }: Props) {
           {/* Client worklist */}
           <div>
             <SectionHeader title="By client" />
+            {showSearch ? (
+              <div className="mb-2">
+                <SearchField value={query} onChange={setQuery} placeholder="Search client" />
+              </div>
+            ) : null}
             <SegmentedControl options={SORT_OPTIONS} value={sort} onChange={setSort} />
+            {visible.length === 0 ? (
+              <p className="mt-4 text-center text-[13px] text-ds-txt3">No clients match “{query.trim()}”.</p>
+            ) : (
             <div className="mt-3 space-y-3">
-              {sorted.map((c) => {
+              {visible.map((c) => {
                 const oldest = oldestBalance(c);
                 return (
                   <button
@@ -165,6 +182,7 @@ export function AgingMobile({ rows, loading }: Props) {
                 );
               })}
             </div>
+            )}
           </div>
         </div>
       )}
