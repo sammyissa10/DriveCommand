@@ -56,6 +56,8 @@ import { Prisma } from '../../../generated/prisma/client';
 //   CarrierDocument — no tenantId; scoped via parentId/parentType
 //   CarrierExpense — uses orgId; no tenantId column
 //   DriverPayRecord — uses orgId; no tenantId column
+//   InAppNotification — uses orgId; no tenantId column (carrier notifications)
+//   CarrierDocumentType — uses orgId; no tenantId column
 //   CarrierCatalogMeta — global lookup table; no orgId or tenantId column
 //   Trip           — uses orgId; no tenantId column; code in trips.ts handles isolation
 // Note: CarrierDispatch was listed in a previous version of this set but that model
@@ -81,6 +83,8 @@ const EXEMPT_MODELS = new Set([
   'CarrierDocument', // no tenantId; scoped via parentId/parentType
   'CarrierExpense', // uses orgId instead of tenantId
   'DriverPayRecord', // uses orgId instead of tenantId
+  'InAppNotification', // uses orgId instead of tenantId — carrier notifications
+  'CarrierDocumentType', // uses orgId instead of tenantId
   'CarrierCatalogMeta', // global lookup table — no org/tenant scoping
   'Trip', // uses orgId, not tenantId — code in trips.ts handles isolation manually
   // RouteDriver — removed: now has tenantId (quick-327)
