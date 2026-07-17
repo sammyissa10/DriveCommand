@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { createInvoice } from '@/app/(owner)/actions/invoices';
 import { InvoiceForm } from '@/components/invoices/invoice-form';
+import { InvoiceFormMobile } from '@/components/invoices/InvoiceFormMobile';
 
 export default async function NewInvoicePage({
   searchParams,
@@ -93,7 +94,25 @@ export default async function NewInvoicePage({
     : undefined;
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <InvoiceFormMobile
+          action={createInvoice}
+          title="New Invoice"
+          backHref={loadId ? `/loads/${loadId}` : '/invoices'}
+          submitLabel="Create Invoice"
+          customers={customers}
+          loads={loads}
+          nextInvoiceNumber={nextInvoiceNumber}
+          initialData={initialData}
+          loadId={loadId}
+          loadNumber={loadNumber}
+        />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex items-center gap-3">
         <Link
           href={loadId ? `/loads/${loadId}` : '/invoices'}
@@ -117,6 +136,7 @@ export default async function NewInvoicePage({
         loadId={loadId}
         loadNumber={loadNumber}
       />
-    </div>
+      </div>
+    </>
   );
 }
