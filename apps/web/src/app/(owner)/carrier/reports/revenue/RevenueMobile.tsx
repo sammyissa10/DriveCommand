@@ -91,8 +91,10 @@ export function RevenueMobile({
           </KPIRow>
         ) : null}
 
-        {/* Monthly invoiced trend — CSS bars, no chart lib */}
-        {!loading && monthTotals.length > 0 ? (
+        {/* Monthly invoiced trend — CSS bars, no chart lib. Gated on data (not
+            !loading) so it persists across refetches like the KPIs and the
+            period filter below it never jumps mid-interaction. */}
+        {monthTotals.length > 0 ? (
           <div>
             <SectionHeader title="Monthly invoiced" />
             <div className="space-y-2.5 rounded-[20px] bg-ds-card p-4">
