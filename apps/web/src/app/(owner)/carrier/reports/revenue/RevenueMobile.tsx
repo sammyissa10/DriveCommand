@@ -91,6 +91,29 @@ export function RevenueMobile({
           </KPIRow>
         ) : null}
 
+        {/* Monthly invoiced trend — CSS bars, no chart lib */}
+        {!loading && monthTotals.length > 0 ? (
+          <div>
+            <SectionHeader title="Monthly invoiced" />
+            <div className="space-y-2.5 rounded-[20px] bg-ds-card p-4">
+              {monthTotals.map((m) => (
+                <div key={m.month} className="flex items-center gap-3">
+                  <span className="w-16 shrink-0 text-[12px] text-ds-txt3">{fmtMonthLabel(m.month)}</span>
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-ds-elevated">
+                    <div
+                      className="h-full rounded-full bg-ds-accent"
+                      style={{ width: `${Math.max((m.total / maxMonth) * 100, 2)}%` }}
+                    />
+                  </div>
+                  <span className="w-14 shrink-0 text-right text-[12px] font-medium text-ds-txt2">
+                    {fmtCompactDollar(m.total)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {/* Filters — auto-apply on change */}
         <div>
           <SectionHeader title="Period" />
@@ -114,29 +137,6 @@ export function RevenueMobile({
           />
         ) : (
           <>
-            {/* Monthly invoiced trend — CSS bars, no chart lib */}
-            {monthTotals.length > 0 ? (
-              <div>
-                <SectionHeader title="Monthly invoiced" />
-                <div className="space-y-2.5 rounded-[20px] bg-ds-card p-4">
-                  {monthTotals.map((m) => (
-                    <div key={m.month} className="flex items-center gap-3">
-                      <span className="w-16 shrink-0 text-[12px] text-ds-txt3">{fmtMonthLabel(m.month)}</span>
-                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-ds-elevated">
-                        <div
-                          className="h-full rounded-full bg-ds-accent"
-                          style={{ width: `${Math.max((m.total / maxMonth) * 100, 2)}%` }}
-                        />
-                      </div>
-                      <span className="w-14 shrink-0 text-right text-[12px] font-medium text-ds-txt2">
-                        {fmtCompactDollar(m.total)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
             {/* Per-client breakdown */}
             {clientSummary.length > 0 ? (
               <div>
