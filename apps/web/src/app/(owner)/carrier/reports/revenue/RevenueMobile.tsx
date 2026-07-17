@@ -82,12 +82,6 @@ export function RevenueMobile({
       <LargeTitleHeader title="Revenue" subtitle="Monthly revenue by client" onBack={() => router.back()} />
 
       <div className="space-y-6">
-        {/* Filters — auto-apply on change */}
-        <div>
-          <SectionHeader title="Period" />
-          <FieldGroup fields={filterFields} isEditing />
-        </div>
-
         {/* Summary KPIs */}
         {summary ? (
           <KPIRow>
@@ -96,6 +90,12 @@ export function RevenueMobile({
             <KPICard value={fmtCompactDollar(summary.outstanding)} label="Outstanding" tone="warning" />
           </KPIRow>
         ) : null}
+
+        {/* Filters — auto-apply on change */}
+        <div>
+          <SectionHeader title="Period" />
+          <FieldGroup fields={filterFields} isEditing />
+        </div>
 
         {loading ? (
           <div className="space-y-3">
