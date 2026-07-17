@@ -5,6 +5,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { deletePayrollRecord } from '@/app/(owner)/actions/payroll';
 import { DeletePayrollButton } from '@/components/payroll/delete-payroll-button';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { PayrollDetailMobile } from '@/components/payroll/PayrollDetailMobile';
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -41,7 +42,31 @@ export default async function PayrollDetailPage({
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <PayrollDetailMobile
+          record={{
+            id: record.id,
+            driverName: `${record.driver.firstName ?? ''} ${record.driver.lastName ?? ''}`.trim() || record.driver.email,
+            driverEmail: record.driver.email,
+            periodStart: new Date(record.periodStart).toISOString(),
+            periodEnd: new Date(record.periodEnd).toISOString(),
+            status: record.status,
+            basePay: Number(record.basePay),
+            bonuses: Number(record.bonuses),
+            deductions: Number(record.deductions),
+            totalPay: Number(record.totalPay),
+            paidAt: record.paidAt ? new Date(record.paidAt).toISOString() : null,
+            milesLogged: record.milesLogged,
+            loadsCompleted: record.loadsCompleted,
+            notes: record.notes,
+          }}
+        />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex items-center gap-3">
         <Link
           href="/payroll"
@@ -179,6 +204,7 @@ export default async function PayrollDetailPage({
         updatedByName={record.updatedBy ? `${record.updatedBy.firstName ?? ''} ${record.updatedBy.lastName ?? ''}`.trim() || null : null}
         updatedByEmail={record.updatedBy?.email ?? null}
       />
-    </div>
+      </div>
+    </>
   );
 }

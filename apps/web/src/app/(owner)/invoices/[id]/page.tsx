@@ -7,6 +7,7 @@ import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button
 import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
 import { ITEM_TYPE_LABELS, ITEM_UNIT_LABELS, type InvoiceItemType, type InvoiceItemUnit } from '@drivecommand/validation';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { InvoiceDetailMobile, type InvoiceLineItem } from '@/components/invoices/InvoiceDetailMobile';
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -89,8 +90,51 @@ export default async function InvoiceDetailPage({
     invoice.pieces ||
     invoice.loadedMiles;
 
+  const mobileItems: InvoiceLineItem[] = invoice.items.map((item) => ({
+    id: item.id,
+    description: item.description,
+    typeLabel:
+      item.itemType && item.itemType !== 'OTHER'
+        ? ITEM_TYPE_LABELS[item.itemType as InvoiceItemType]
+        : null,
+    qtyLabel: formatQtyWithUnit(item.quantity, item.unitType),
+    unitPrice: Number(item.unitPrice),
+    amount: Number(item.amount),
+  }));
+
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <InvoiceDetailMobile
+          invoice={{
+            id: invoice.id,
+            invoiceNumber: invoice.invoiceNumber,
+            status: invoice.status,
+            customerName,
+            issueDate: new Date(invoice.issueDate).toISOString(),
+            dueDate: new Date(invoice.dueDate).toISOString(),
+            paidDate: invoice.paidDate ? new Date(invoice.paidDate).toISOString() : null,
+            amount: Number(invoice.amount),
+            tax: Number(invoice.tax),
+            totalAmount: Number(invoice.totalAmount),
+            freight: {
+              bolNumber: invoice.bolNumber,
+              proNumber: invoice.proNumber,
+              poNumber: invoice.poNumber,
+              commodity: invoice.commodity,
+              weightLbs: invoice.weightLbs ? Number(invoice.weightLbs) : null,
+              pieces: invoice.pieces ? Number(invoice.pieces) : null,
+              loadedMiles: invoice.loadedMiles ? Number(invoice.loadedMiles) : null,
+            },
+            notes: invoice.notes,
+            items: mobileItems,
+          }}
+        />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex items-center gap-3">
         <Link
           href="/invoices"
@@ -352,6 +396,7 @@ export default async function InvoiceDetailPage({
         updatedByName={invoice.updatedBy ? `${invoice.updatedBy.firstName ?? ''} ${invoice.updatedBy.lastName ?? ''}`.trim() || null : null}
         updatedByEmail={invoice.updatedBy?.email ?? null}
       />
-    </div>
+      </div>
+    </>
   );
 }
