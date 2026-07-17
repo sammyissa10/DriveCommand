@@ -18,24 +18,46 @@ export default function ResetPasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // Real reason a link failed (from Supabase), so "invalid" isn't a dead end.
+  const [linkError, setLinkError] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
 
-    // Listen for PASSWORD_RECOVERY event from Supabase magic link
+    // Supabase appends errors to either the query string or the URL hash
+    // (e.g. ?error_description=... or #error_code=otp_expired). Surface the real
+    // reason instead of a generic "invalid link".
+    const url = new URL(window.location.href);
+    const hashParams = new URLSearchParams(url.hash.replace(/^#/, ""));
+    const errDesc =
+      url.searchParams.get("error_description") ?? hashParams.get("error_description");
+    const errCode = url.searchParams.get("error_code") ?? hashParams.get("error_code");
+    if (errDesc || errCode) {
+      setLinkError((errDesc ?? errCode)!.replace(/\+/g, " "));
+      setPageState("invalid");
+      return;
+    }
+
+    // A valid recovery link establishes a session. The @supabase/ssr browser
+    // client auto-detects the token in the URL (implicit hash OR PKCE ?code=)
+    // and fires an auth event; we also poll getSession() in case the exchange
+    // completed before this listener attached.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
         setPageState("ready");
       }
     });
 
-    // Timeout: if no PASSWORD_RECOVERY after 5 seconds, link is invalid/expired
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setPageState((c) => (c === "loading" ? "ready" : c));
+    });
+
+    // Timeout: if no session materializes, the link is invalid/expired. Common
+    // cause: the link was opened in a different browser/device than the one that
+    // requested it (PKCE code verifier is per-browser).
     const timeout = setTimeout(() => {
-      setPageState((current) => {
-        if (current === "loading") return "invalid";
-        return current;
-      });
-    }, 5000);
+      setPageState((current) => (current === "loading" ? "invalid" : current));
+    }, 6000);
 
     return () => {
       subscription.unsubscribe();
@@ -90,7 +112,12 @@ export default function ResetPasswordPage() {
           <div className="space-y-3">
             <div className="rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2">
               <p className="text-sm text-destructive">
-                Invalid or expired reset link. Please request a new one.
+                {linkError
+                  ? `Reset link problem: ${linkError}`
+                  : "Invalid or expired reset link. Please request a new one."}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Tip: open the reset link in the same browser you requested it from.
               </p>
             </div>
             <Link
