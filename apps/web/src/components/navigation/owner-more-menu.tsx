@@ -13,7 +13,7 @@ import {
   Boxes,
   BarChart3,
   FileSearch,
-  Settings,
+  Shield,
   LifeBuoy,
   LogOut,
 } from 'lucide-react';
@@ -57,7 +57,7 @@ const menuSections: MenuSection[] = [
     label: 'Other',
     items: [
       { label: 'AI Documents', href: '/ai-documents', icon: FileSearch },
-      { label: 'Settings', href: '/settings/team-permissions', icon: Settings },
+      { label: 'Team Permissions', href: '/settings/team-permissions', icon: Shield },
       { label: 'Support', href: '/support', icon: LifeBuoy },
     ],
   },
