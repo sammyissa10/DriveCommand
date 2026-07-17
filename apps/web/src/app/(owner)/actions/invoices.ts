@@ -42,9 +42,9 @@ export async function createInvoice(prevState: ActionState | null, formData: For
     proNumber: (formData.get('proNumber') as string) || '',
     poNumber: (formData.get('poNumber') as string) || '',
     commodity: (formData.get('commodity') as string) || '',
-    weightLbs: formData.get('weightLbs') as string,
-    pieces: formData.get('pieces') as string,
-    loadedMiles: formData.get('loadedMiles') as string,
+    weightLbs: (formData.get('weightLbs') as string) || '',
+    pieces: (formData.get('pieces') as string) || '',
+    loadedMiles: (formData.get('loadedMiles') as string) || '',
     items: parsedItems,
   };
 
@@ -155,9 +155,9 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
     proNumber: (formData.get('proNumber') as string) || '',
     poNumber: (formData.get('poNumber') as string) || '',
     commodity: (formData.get('commodity') as string) || '',
-    weightLbs: formData.get('weightLbs') as string,
-    pieces: formData.get('pieces') as string,
-    loadedMiles: formData.get('loadedMiles') as string,
+    weightLbs: (formData.get('weightLbs') as string) || '',
+    pieces: (formData.get('pieces') as string) || '',
+    loadedMiles: (formData.get('loadedMiles') as string) || '',
     items: parsedItems,
   };
 

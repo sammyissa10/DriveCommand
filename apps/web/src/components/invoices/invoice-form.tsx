@@ -6,6 +6,7 @@ import { useActionState, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { InvoiceItemsEditor } from './invoice-items-editor';
 import type { InvoiceItemType, InvoiceItemUnit } from '@drivecommand/validation';
+import { US_STATE_SALES_TAX, getStateSalesTaxRate } from '@/lib/finance/us-state-sales-tax';
 
 interface Customer {
   id: string;
@@ -63,6 +64,27 @@ function toDateInputValue(date?: Date): string {
   return new Date(date).toISOString().split('T')[0];
 }
 
+// Tax is stored as an absolute amount but edited here as a percent. Reconstruct
+// the percent from the saved amount + line items so editing an existing invoice
+// preserves its tax instead of snapping back to the new-invoice default.
+function initialTaxPercent(initialData?: {
+  tax?: unknown;
+  items?: Array<{ quantity?: unknown; unitPrice?: unknown; unitType?: string }>;
+}): number {
+  const rawTax = initialData?.tax;
+  // New invoice (no saved tax): default to 0% — freight is generally not taxed.
+  if (rawTax === undefined || rawTax === null || rawTax === '') return 0;
+  const taxAmount = Number(rawTax);
+  if (!Number.isFinite(taxAmount)) return 0;
+  const subtotal = (initialData?.items ?? []).reduce((sum, it) => {
+    const qty = Number(it.quantity) || 0;
+    const price = Number(it.unitPrice) || 0;
+    return sum + (it.unitType === 'PERCENT' ? (qty / 100) * price : qty * price);
+  }, 0);
+  if (subtotal <= 0) return 0;
+  return Math.round((taxAmount / subtotal) * 10000) / 100;
+}
+
 export function InvoiceForm({
   action,
   initialData,
@@ -75,7 +97,10 @@ export function InvoiceForm({
 }: InvoiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [subtotal, setSubtotal] = useState(0);
-  const [taxPercent, setTaxPercent] = useState(7);
+  const [taxPercent, setTaxPercent] = useState(() => initialTaxPercent(initialData));
+  // Optional convenience: pick a state to auto-fill the tax %. Default '' =
+  // exempt (no tax). Not persisted — it only drives the % / amount that is.
+  const [taxState, setTaxState] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(initialData?.customerId || '');
   const [selectedLoadId, setSelectedLoadId] = useState(loadId || '');
 
@@ -406,25 +431,53 @@ export function InvoiceForm({
         {/* Hidden field submits the computed dollar amount to the server */}
         <input type="hidden" name="tax" value={taxAmount.toFixed(2)} />
         <div className="flex items-center justify-between gap-8">
-          <div className="w-48">
-            <label htmlFor="taxPercent" className={labelClass}>
-              Tax (%)
-            </label>
-            <input
-              type="number"
-              id="taxPercent"
-              step="0.01"
-              min="0"
-              max="100"
-              placeholder="0"
-              value={taxPercent || ''}
-              onChange={(e) => setTaxPercent(parseFloat(e.target.value) || 0)}
-              disabled={isPending}
-              className={inputClass}
-            />
-            {fieldErrors?.tax && (
-              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.tax}</p>
-            )}
+          <div className="flex w-96 gap-3">
+            <div className="flex-1">
+              <label htmlFor="taxState" className={labelClass}>
+                Tax state
+              </label>
+              <select
+                id="taxState"
+                value={taxState}
+                onChange={(e) => {
+                  const code = e.target.value;
+                  setTaxState(code);
+                  setTaxPercent(code ? getStateSalesTaxRate(code) ?? 0 : 0);
+                }}
+                disabled={isPending}
+                className={inputClass}
+              >
+                <option value="">Exempt / none</option>
+                {US_STATE_SALES_TAX.map((s) => (
+                  <option key={s.code} value={s.code}>
+                    {s.code} — {s.rate}%
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="w-32">
+              <label htmlFor="taxPercent" className={labelClass}>
+                Tax (%)
+              </label>
+              <input
+                type="number"
+                id="taxPercent"
+                step="0.01"
+                min="0"
+                max="100"
+                placeholder="0"
+                value={taxPercent || ''}
+                onChange={(e) => {
+                  setTaxPercent(parseFloat(e.target.value) || 0);
+                  setTaxState('');
+                }}
+                disabled={isPending}
+                className={inputClass}
+              />
+              {fieldErrors?.tax && (
+                <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.tax}</p>
+              )}
+            </div>
           </div>
           <div className="space-y-1 text-right">
             <div className="flex items-center justify-between gap-8 text-sm">
@@ -447,6 +500,10 @@ export function InvoiceForm({
             </div>
           </div>
         </div>
+        <p className="text-xs text-muted-foreground">
+          Freight is usually tax-exempt — leave as Exempt unless this invoice has taxable charges.
+          State rates are base rates only (no local tax); adjust the % if needed.
+        </p>
       </div>
 
       {/* Notes */}

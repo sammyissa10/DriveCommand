@@ -61,6 +61,24 @@ export default async function InvoicesPage() {
     dueDate: new Date(inv.dueDate).toISOString(),
   }));
 
+  // Prisma returns Decimal objects, which can't cross the Server→Client boundary.
+  // Map to plain numbers before handing rows to the InvoiceList client component.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const desktopInvoices = invoices.map((inv: any) => ({
+    id: inv.id,
+    invoiceNumber: inv.invoiceNumber,
+    customerId: inv.customerId,
+    amount: Number(inv.amount),
+    tax: Number(inv.tax),
+    totalAmount: Number(inv.totalAmount),
+    status: inv.status,
+    issueDate: inv.issueDate,
+    dueDate: inv.dueDate,
+    paidDate: inv.paidDate,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    items: inv.items.map((it: any) => ({ id: it.id, amount: Number(it.amount) })),
+  }));
+
   return (
     <>
       {/* Mobile-web design system view (phone widths only) */}
@@ -111,7 +129,7 @@ export default async function InvoicesPage() {
         </div>
       </div>
 
-      <InvoiceList invoices={invoices} />
+      <InvoiceList invoices={desktopInvoices} />
       </div>
     </>
   );

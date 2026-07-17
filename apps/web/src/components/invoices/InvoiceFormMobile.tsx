@@ -11,6 +11,7 @@ import {
   PrimaryButton,
 } from '@/components/ui/ds';
 import { InvoiceItemsEditorMobile } from './InvoiceItemsEditorMobile';
+import { US_STATE_SALES_TAX, getStateSalesTaxRate } from '@/lib/finance/us-state-sales-tax';
 
 interface Customer {
   id: string;
@@ -31,6 +32,7 @@ interface InvoiceFormMobileProps {
   initialData?: {
     customerId?: string | null;
     invoiceNumber?: string;
+    tax?: unknown;
     status?: string;
     issueDate?: Date;
     dueDate?: Date;
@@ -61,6 +63,27 @@ function toDateInputValue(date?: Date): string {
 }
 function money(n: number): string {
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Tax is stored as an absolute amount but edited here as a percent. Reconstruct
+// the percent from the saved amount + line items so editing an existing invoice
+// preserves its tax instead of snapping back to the new-invoice default.
+function initialTaxPercent(initialData?: {
+  tax?: unknown;
+  items?: Array<{ quantity?: unknown; unitPrice?: unknown; unitType?: string }>;
+}): number {
+  const rawTax = initialData?.tax;
+  // New invoice (no saved tax): default to 0% — freight is generally not taxed.
+  if (rawTax === undefined || rawTax === null || rawTax === '') return 0;
+  const taxAmount = Number(rawTax);
+  if (!Number.isFinite(taxAmount)) return 0;
+  const subtotal = (initialData?.items ?? []).reduce((sum, it) => {
+    const qty = Number(it.quantity) || 0;
+    const price = Number(it.unitPrice) || 0;
+    return sum + (it.unitType === 'PERCENT' ? (qty / 100) * price : qty * price);
+  }, 0);
+  if (subtotal <= 0) return 0;
+  return Math.round((taxAmount / subtotal) * 10000) / 100;
 }
 
 function Field({ label, htmlFor, children }: { label: string; htmlFor?: string; children: React.ReactNode }) {
@@ -110,7 +133,10 @@ export function InvoiceFormMobile({
   }
 
   const [subtotal, setSubtotal] = useState(0);
-  const [taxPercent, setTaxPercent] = useState(7);
+  const [taxPercent, setTaxPercent] = useState(() => initialTaxPercent(initialData));
+  // Optional convenience: pick a state to auto-fill the tax %. Default '' =
+  // exempt (no tax). Not persisted — it only drives the % / amount that is.
+  const [taxState, setTaxState] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(initialData?.customerId || '');
   const [selectedLoadId, setSelectedLoadId] = useState(loadId || '');
 
@@ -160,6 +186,20 @@ export function InvoiceFormMobile({
 
         {state?.error && typeof state.error === 'string' ? (
           <div className="mb-4 rounded-[16px] bg-ds-danger/[0.14] p-4 text-[13px] text-ds-danger">{state.error}</div>
+        ) : null}
+
+        {/* Catch-all: surface any validation error not shown inline below, so a
+            rejected submit is never silent (it would just scroll to the top). */}
+        {fieldErrors &&
+        Object.keys(fieldErrors).some((k) => !['invoiceNumber', 'dueDate', 'items'].includes(k)) ? (
+          <div className="mb-4 space-y-1 rounded-[16px] bg-ds-danger/[0.14] p-4 text-[13px] text-ds-danger">
+            {Object.entries(fieldErrors)
+              .filter(([k]) => !['invoiceNumber', 'dueDate', 'items'].includes(k))
+              .flatMap(([, msgs]) => (Array.isArray(msgs) ? msgs : [String(msgs)]))
+              .map((m, i) => (
+                <p key={i}>{m}</p>
+              ))}
+          </div>
         ) : null}
 
         {loadId ? (
@@ -321,20 +361,49 @@ export function InvoiceFormMobile({
             <SectionHeader title="Tax & total" />
             <div className="space-y-3 rounded-[20px] bg-ds-card p-4">
               <input type="hidden" name="tax" value={taxAmount.toFixed(2)} />
-              <Field label="Tax (%)" htmlFor="taxPercent">
-                <input
-                  id="taxPercent"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  placeholder="0"
-                  value={taxPercent || ''}
-                  onChange={(e) => setTaxPercent(parseFloat(e.target.value) || 0)}
-                  disabled={isPending}
-                  className={dsInput}
-                />
-              </Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Tax state" htmlFor="taxState">
+                  <select
+                    id="taxState"
+                    value={taxState}
+                    onChange={(e) => {
+                      const code = e.target.value;
+                      setTaxState(code);
+                      setTaxPercent(code ? getStateSalesTaxRate(code) ?? 0 : 0);
+                    }}
+                    disabled={isPending}
+                    className={dsInput}
+                  >
+                    <option value="">Exempt / none</option>
+                    {US_STATE_SALES_TAX.map((s) => (
+                      <option key={s.code} value={s.code}>
+                        {s.code} — {s.rate}%
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Tax (%)" htmlFor="taxPercent">
+                  <input
+                    id="taxPercent"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="0"
+                    value={taxPercent || ''}
+                    onChange={(e) => {
+                      setTaxPercent(parseFloat(e.target.value) || 0);
+                      setTaxState('');
+                    }}
+                    disabled={isPending}
+                    className={dsInput}
+                  />
+                </Field>
+              </div>
+              <p className="text-[12px] text-ds-txt3">
+                Freight is usually tax-exempt — leave as Exempt unless this invoice has taxable
+                charges. State rates are base rates only; adjust the % if needed.
+              </p>
               <div className="space-y-1.5 border-t border-ds-hairline pt-3">
                 <div className="flex justify-between text-[13px]">
                   <span className="text-ds-txt2">Subtotal</span>
