@@ -422,7 +422,16 @@ export function ClientDetailMobile({
     <MobileScreen className="pb-6 pt-2">
       <NavHeader
         title="Client"
-        onBack={isEditing ? undefined : () => router.push('/carrier/clients')}
+        onBack={
+          isEditing
+            ? undefined
+            : () => {
+                // Return to wherever we came from (e.g. the Revenue report), not
+                // always the Clients list; fall back to the list on a cold deep-link.
+                if (typeof window !== 'undefined' && window.history.length > 1) router.back();
+                else router.push('/carrier/clients');
+              }
+        }
         left={isEditing ? <NavTextButton label="Cancel" onClick={cancelEdit} /> : undefined}
         right={
           isEditing ? (
