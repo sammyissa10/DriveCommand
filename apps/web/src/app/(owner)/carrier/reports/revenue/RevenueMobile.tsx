@@ -143,7 +143,13 @@ export function RevenueMobile({
                 <SectionHeader title="By client" />
                 <div className="space-y-3">
                   {clientSummary.map((r) => (
-                    <div key={r.client_id} className="rounded-[20px] bg-ds-card p-4">
+                    <button
+                      key={r.client_id}
+                      type="button"
+                      onClick={() => router.push(`/carrier/clients/${r.client_id}`)}
+                      aria-label={`${r.client_name}, ${fmtDollar(r.total_invoiced)} invoiced`}
+                      className="w-full rounded-[20px] bg-ds-card p-4 text-left transition active:opacity-75"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="truncate text-[15px] font-semibold text-ds-txt">{r.client_name}</p>
@@ -158,7 +164,7 @@ export function RevenueMobile({
                           ) : null}
                         </div>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
