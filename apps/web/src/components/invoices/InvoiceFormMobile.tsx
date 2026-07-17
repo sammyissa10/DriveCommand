@@ -1,7 +1,7 @@
 'use client';
 
 import type { ActionState } from '@drivecommand/types';
-import { useActionState, useRef, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MobileScreen,
@@ -92,7 +92,7 @@ export function InvoiceFormMobile({
   loadNumber,
 }: InvoiceFormMobileProps) {
   const router = useRouter();
-  const formRef = useRef<HTMLFormElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
   const [state, formAction, isPending] = useActionState(action, null);
 
   const [subtotal, setSubtotal] = useState(0);
@@ -119,14 +119,23 @@ export function InvoiceFormMobile({
   const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   const navLabel = isPending ? 'Saving…' : submitLabel.toLowerCase().includes('update') ? 'Save' : 'Create';
 
+  // Server-side errors render at the top of the form; surface them if the user
+  // submitted from deep in the page (success redirects, so this only fires on error).
+  useEffect(() => {
+    if (state?.error) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [state]);
+
   return (
     <MobileScreen className="pb-10 pt-2">
-      <form action={formAction} ref={formRef}>
+      <form action={formAction}>
         <NavHeader
           title={title}
           left={<NavTextButton label="Cancel" onClick={() => router.push(backHref)} />}
-          right={<NavTextButton label={navLabel} emphasized onClick={() => formRef.current?.requestSubmit()} disabled={isPending} />}
+          right={<NavTextButton label={navLabel} emphasized onClick={() => submitRef.current?.click()} disabled={isPending} />}
         />
+
+        {/* Real submit button the nav "Create" clicks — reliable native submit + validation */}
+        <button ref={submitRef} type="submit" className="hidden" aria-hidden tabIndex={-1} />
 
         <input type="hidden" name="loadId" value={selectedLoadId} />
 
