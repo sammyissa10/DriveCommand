@@ -1,7 +1,7 @@
 'use client';
 
 import type { ActionState } from '@drivecommand/types';
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MobileScreen,
@@ -92,7 +92,6 @@ export function InvoiceFormMobile({
   loadNumber,
 }: InvoiceFormMobileProps) {
   const router = useRouter();
-  const submitRef = useRef<HTMLButtonElement>(null);
   const [state, formAction, isPending] = useActionState(action, null);
 
   const [subtotal, setSubtotal] = useState(0);
@@ -131,11 +130,16 @@ export function InvoiceFormMobile({
         <NavHeader
           title={title}
           left={<NavTextButton label="Cancel" onClick={() => router.push(backHref)} />}
-          right={<NavTextButton label={navLabel} emphasized onClick={() => submitRef.current?.click()} disabled={isPending} />}
+          right={
+            <button
+              type="submit"
+              disabled={isPending}
+              className="min-h-[44px] px-1 text-[17px] font-semibold text-ds-accent transition active:opacity-75 disabled:opacity-35"
+            >
+              {navLabel}
+            </button>
+          }
         />
-
-        {/* Real submit button the nav "Create" clicks — reliable native submit + validation */}
-        <button ref={submitRef} type="submit" className="hidden" aria-hidden tabIndex={-1} />
 
         <input type="hidden" name="loadId" value={selectedLoadId} />
 
@@ -164,7 +168,6 @@ export function InvoiceFormMobile({
                     placeholder="INV-0001"
                     disabled={isPending}
                     className={dsInput}
-                    required
                   />
                 </Field>
                 <Field label="Status" htmlFor="status">
@@ -187,7 +190,6 @@ export function InvoiceFormMobile({
                     defaultValue={toDateInputValue(initialData?.issueDate) || toDateInputValue(new Date())}
                     disabled={isPending}
                     className={dsInput}
-                    required
                   />
                 </Field>
                 <Field label="Due date" htmlFor="dueDate">
@@ -198,7 +200,6 @@ export function InvoiceFormMobile({
                     defaultValue={toDateInputValue(initialData?.dueDate)}
                     disabled={isPending}
                     className={dsInput}
-                    required
                   />
                 </Field>
               </div>

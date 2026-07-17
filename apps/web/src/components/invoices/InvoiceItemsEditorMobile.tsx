@@ -89,7 +89,6 @@ function DescriptionCombo({ value, onChange }: { value: string; onChange: (v: st
         }}
         onFocus={() => value === '' && setOpen(true)}
         className={`${dsInput} pr-9`}
-        required
         autoComplete="off"
       />
       <button
@@ -293,7 +292,6 @@ export function InvoiceItemsEditorMobile({
                 value={item.quantity}
                 onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                 className={dsInput}
-                required
               />
               <input
                 type="number"
@@ -304,7 +302,6 @@ export function InvoiceItemsEditorMobile({
                 value={item.unitPrice}
                 onChange={(e) => updateItem(index, 'unitPrice', e.target.value)}
                 className={dsInput}
-                required
               />
             </div>
 
