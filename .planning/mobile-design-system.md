@@ -617,3 +617,17 @@ Remaining carrier pages are rebuilt on the ds kit from the principles + the four
   types come from `FacilityForm` (terminal/yard/warehouse/drop_yard/customer_site) — the grid `columns.tsx`
   labels (shipper/receiver/fuel_stop) are stale; left untouched. **No address autocomplete** (no ds equivalent;
   every mobile ds form uses plain fields — lat/lng stay manually editable). `tsc --noEmit` → exit 0.
+- **Payroll (Create + Edit)** · 2026-07-17 · `payroll/PayrollFormMobile.tsx` + wired into `payroll/new/page.tsx`
+  and `payroll/[id]/edit/page.tsx`. Both create and edit had fallen back to the **white desktop `PayrollForm`**
+  on mobile (the same gap the invoice edit page had). New ds form mirrors `InvoiceFormMobile`'s structure and
+  its submission fix — **explicit `preventDefault` + `startTransition`** calling the action directly, because
+  React's `<form action>` doesn't fire reliably in the mobile webview (it did a native reload). Sections:
+  Driver select (required) → Pay period start/end → Compensation (an **hourly-rate × hours calculator** that
+  sets Base Pay, then base/bonuses/deductions) with a live total-breakdown card (base → +bonuses → −deductions →
+  total) styled like `PayrollDetailMobile` → Performance (miles/loads that **auto-populate** from
+  delivered/invoiced loads in the period via `getDriverPayPeriodStats`, Loading/Auto-filled indicator, still
+  manually editable) → Status → Notes. **Catch-all error banner** surfaces any field error not shown inline, so
+  a rejected save is never a silent scroll-to-top (the bug that first hid the invoice save failure). Shared
+  `initialData` between mobile + desktop with Prisma Decimals (`basePay/bonuses/deductions`) converted to numbers
+  at the page. Base Pay keeps desktop's `required` (a genuine $0 base is blocked at both — noted follow-up).
+  `tsc --noEmit` → exit 0.

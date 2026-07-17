@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { updatePayrollRecord } from '@/app/(owner)/actions/payroll';
 import { PayrollForm } from '@/components/payroll/payroll-form';
+import { PayrollFormMobile } from '@/components/payroll/PayrollFormMobile';
 
 export default async function EditPayrollPage({
   params,
@@ -50,40 +51,59 @@ export default async function EditPayrollPage({
 
   const boundAction = updatePayrollRecord.bind(null, id);
 
+  // Shared initialData for both the mobile-ds and desktop forms. Prisma Decimal
+  // pay fields are converted to plain numbers (can't cross the Server→Client boundary).
+  const initialData = {
+    driverId: record.driverId,
+    periodStart: record.periodStart,
+    periodEnd: record.periodEnd,
+    basePay: Number(record.basePay),
+    bonuses: Number(record.bonuses),
+    deductions: Number(record.deductions),
+    milesLogged: record.milesLogged,
+    loadsCompleted: record.loadsCompleted,
+    status: record.status,
+    notes: record.notes,
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link
-          href={`/payroll/${id}`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Record
-        </Link>
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <PayrollFormMobile
+          action={boundAction}
+          title="Edit Payroll Record"
+          backHref={`/payroll/${id}`}
+          submitLabel="Update Payroll Record"
+          drivers={drivers}
+          initialData={initialData}
+        />
       </div>
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Payroll Record</h1>
-        <p className="mt-1 text-muted-foreground">
-          Update {record.driver.firstName} {record.driver.lastName}&apos;s record
-        </p>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/payroll/${id}`}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Record
+          </Link>
+        </div>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Payroll Record</h1>
+          <p className="mt-1 text-muted-foreground">
+            Update {record.driver.firstName} {record.driver.lastName}&apos;s record
+          </p>
+        </div>
+        <PayrollForm
+          action={boundAction}
+          initialData={initialData}
+          drivers={drivers}
+          submitLabel="Update Payroll Record"
+        />
       </div>
-      <PayrollForm
-        action={boundAction}
-        initialData={{
-          driverId: record.driverId,
-          periodStart: record.periodStart,
-          periodEnd: record.periodEnd,
-          basePay: record.basePay,
-          bonuses: record.bonuses,
-          deductions: record.deductions,
-          milesLogged: record.milesLogged,
-          loadsCompleted: record.loadsCompleted,
-          status: record.status,
-          notes: record.notes,
-        }}
-        drivers={drivers}
-        submitLabel="Update Payroll Record"
-      />
-    </div>
+    </>
   );
 }
