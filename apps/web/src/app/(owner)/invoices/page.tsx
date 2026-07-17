@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { InvoiceList } from '@/components/invoices/invoice-list';
+import { InvoicesMobile, type InvoiceMobileRow } from '@/components/invoices/InvoicesMobile';
 
 export default async function InvoicesPage() {
   const prisma = await getTenantPrisma();
@@ -52,8 +53,23 @@ export default async function InvoicesPage() {
     outstandingAmount,
   };
 
+  const mobileRows: InvoiceMobileRow[] = invoices.map((inv) => ({
+    id: inv.id,
+    invoiceNumber: inv.invoiceNumber,
+    status: inv.status,
+    total: Number(inv.totalAmount),
+    dueDate: new Date(inv.dueDate).toISOString(),
+  }));
+
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <InvoicesMobile rows={mobileRows} stats={stats} />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Invoices</h1>
@@ -96,6 +112,7 @@ export default async function InvoicesPage() {
       </div>
 
       <InvoiceList invoices={invoices} />
-    </div>
+      </div>
+    </>
   );
 }

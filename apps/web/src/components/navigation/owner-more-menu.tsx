@@ -12,7 +12,8 @@ import {
   Truck,
   Boxes,
   BarChart3,
-  FileSearch,
+  Receipt,
+  DollarSign,
   Shield,
   LifeBuoy,
   LogOut,
@@ -45,18 +46,23 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
+    label: 'Finance',
+    items: [
+      { label: 'Invoices', href: '/invoices', icon: Receipt },
+      { label: 'Payroll', href: '/payroll', icon: DollarSign },
+    ],
+  },
+  {
     label: 'Reports',
     items: [
       { label: 'Revenue', href: '/carrier/reports/revenue', icon: BarChart3 },
       { label: 'Driver Pay', href: '/carrier/reports/driver-pay', icon: BarChart3 },
-      { label: 'AR Aging', href: '/carrier/reports/aging', icon: BarChart3 },
       { label: 'Performance', href: '/carrier/reports/performance', icon: BarChart3 },
     ],
   },
   {
     label: 'Other',
     items: [
-      { label: 'AI Documents', href: '/ai-documents', icon: FileSearch },
       { label: 'Team Permissions', href: '/settings/team-permissions', icon: Shield },
       { label: 'Support', href: '/support', icon: LifeBuoy },
     ],

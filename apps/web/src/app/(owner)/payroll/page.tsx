@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { PayrollList } from '@/components/payroll/payroll-list';
+import { PayrollMobile, type PayrollMobileRow } from '@/components/payroll/PayrollMobile';
 
 export default async function PayrollPage() {
   const prisma = await getTenantPrisma();
@@ -52,8 +53,24 @@ export default async function PayrollPage() {
     totalPaid,
   };
 
+  const mobileRows: PayrollMobileRow[] = records.map((rec) => ({
+    id: rec.id,
+    driverName: `${rec.driver?.firstName ?? ''} ${rec.driver?.lastName ?? ''}`.trim() || rec.driver?.email || 'Driver',
+    periodStart: new Date(rec.periodStart).toISOString(),
+    periodEnd: new Date(rec.periodEnd).toISOString(),
+    totalPay: Number(rec.totalPay),
+    status: rec.status,
+  }));
+
   return (
-    <div className="space-y-6">
+    <>
+      {/* Mobile-web design system view (phone widths only) */}
+      <div className="lg:hidden -m-4">
+        <PayrollMobile rows={mobileRows} stats={stats} />
+      </div>
+
+      {/* Desktop view (lg and up) — unchanged */}
+      <div className="hidden lg:block space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Payroll</h1>
@@ -94,6 +111,7 @@ export default async function PayrollPage() {
       </div>
 
       <PayrollList records={records} />
-    </div>
+      </div>
+    </>
   );
 }
