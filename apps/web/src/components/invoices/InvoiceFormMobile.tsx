@@ -1,7 +1,7 @@
 'use client';
 
 import type { ActionState } from '@drivecommand/types';
-import { useActionState, useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MobileScreen,
@@ -92,7 +92,22 @@ export function InvoiceFormMobile({
   loadNumber,
 }: InvoiceFormMobileProps) {
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState(action, null);
+  const [state, setState] = useState<ActionState | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  // Submit explicitly rather than via React's <form action> interception, which
+  // wasn't firing in the mobile webview (the form did a native reload). We
+  // preventDefault, then call the server action directly with the FormData; it
+  // redirects on success and returns field errors otherwise.
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (isPending) return;
+    const formData = new FormData(e.currentTarget);
+    startTransition(async () => {
+      const result = await action(null, formData);
+      if (result) setState(result);
+    });
+  }
 
   const [subtotal, setSubtotal] = useState(0);
   const [taxPercent, setTaxPercent] = useState(7);
@@ -126,7 +141,7 @@ export function InvoiceFormMobile({
 
   return (
     <MobileScreen className="pb-10 pt-2">
-      <form action={formAction}>
+      <form onSubmit={handleSubmit}>
         <NavHeader
           title={title}
           left={<NavTextButton label="Cancel" onClick={() => router.push(backHref)} />}
