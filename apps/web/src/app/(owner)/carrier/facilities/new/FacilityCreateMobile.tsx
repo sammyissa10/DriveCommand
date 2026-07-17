@@ -27,8 +27,6 @@ interface Contact {
 interface FormErrors {
   name?: string;
   state?: string;
-  latitude?: string;
-  longitude?: string;
 }
 
 /**
@@ -49,8 +47,6 @@ export function FacilityCreateMobile() {
   const [state, setState] = useState('');
   const [zip, setZip] = useState('');
   const [country, setCountry] = useState('US');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
   const [notes, setNotes] = useState('');
   const [lumperRequired, setLumperRequired] = useState(false);
   const [appointmentRequired, setAppointmentRequired] = useState(false);
@@ -73,8 +69,6 @@ export function FacilityCreateMobile() {
     const e: FormErrors = {};
     if (!name.trim()) e.name = 'Name is required';
     if (state && state.length > 2) e.state = 'State must be 2 characters max';
-    if (latitude && isNaN(Number(latitude))) e.latitude = 'Latitude must be a number';
-    if (longitude && isNaN(Number(longitude))) e.longitude = 'Longitude must be a number';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -99,8 +93,6 @@ export function FacilityCreateMobile() {
         ...(state ? { state } : {}),
         ...(zip ? { zip } : {}),
         ...(country ? { country } : {}),
-        ...(latitude ? { latitude: Number(latitude) } : {}),
-        ...(longitude ? { longitude: Number(longitude) } : {}),
         ...(notes ? { notes } : {}),
         lumperRequired,
         appointmentRequired,
@@ -174,37 +166,6 @@ export function FacilityCreateMobile() {
     { key: 'country', label: 'Country', input: { value: country, onChange: setCountry, placeholder: 'US' } },
   ];
 
-  const coordinateFields: FieldDef[] = [
-    {
-      key: 'latitude',
-      label: 'Latitude',
-      input: {
-        value: latitude,
-        onChange: (v) => {
-          setLatitude(v.replace(/[^\d.-]/g, ''));
-          if (errors.latitude) setErrors((e) => ({ ...e, latitude: undefined }));
-        },
-        placeholder: '41.8781',
-        inputMode: 'decimal',
-        error: errors.latitude,
-      },
-    },
-    {
-      key: 'longitude',
-      label: 'Longitude',
-      input: {
-        value: longitude,
-        onChange: (v) => {
-          setLongitude(v.replace(/[^\d.-]/g, ''));
-          if (errors.longitude) setErrors((e) => ({ ...e, longitude: undefined }));
-        },
-        placeholder: '-87.6298',
-        inputMode: 'decimal',
-        error: errors.longitude,
-      },
-    },
-  ];
-
   const notesFields: FieldDef[] = [
     { key: 'notes', label: 'Notes', input: { value: notes, onChange: setNotes, multiline: true, placeholder: 'Anything worth remembering' } },
   ];
@@ -265,11 +226,6 @@ export function FacilityCreateMobile() {
               ))}
             </div>
           )}
-        </div>
-
-        <div>
-          <SectionHeader title="Coordinates" />
-          <FieldGroup fields={coordinateFields} isEditing />
         </div>
 
         <div>
