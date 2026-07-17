@@ -21,7 +21,15 @@ export default async function ExpenseTemplatesPage() {
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Expense Templates</h1>
         <p className="text-muted-foreground mt-1">Create templates to quickly add common expenses to routes.</p>
       </div>
-      <TemplateManager initialTemplates={templates} categories={categories} />
+      <TemplateManager
+        // ExpenseTemplateItem.amount is a Prisma Decimal — convert before it
+        // crosses into the TemplateManager client component.
+        initialTemplates={templates.map((t) => ({
+          ...t,
+          items: t.items.map((i) => ({ ...i, amount: Number(i.amount) })),
+        }))}
+        categories={categories}
+      />
     </div>
   );
 }

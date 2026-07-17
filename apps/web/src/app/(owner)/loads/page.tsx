@@ -125,7 +125,18 @@ export default async function LoadsPage() {
         </div>
       </div>
 
-      <LoadList loads={loads.map((l: any) => ({ ...l, rate: Number(l.rate) }))} />
+      <LoadList
+        // Convert all Prisma Decimals (rate + geocoded lat/lng) to plain numbers
+        // before crossing into the LoadList client component.
+        loads={loads.map((l: any) => ({
+          ...l,
+          rate: Number(l.rate),
+          pickupLat: l.pickupLat == null ? null : Number(l.pickupLat),
+          pickupLng: l.pickupLng == null ? null : Number(l.pickupLng),
+          deliveryLat: l.deliveryLat == null ? null : Number(l.deliveryLat),
+          deliveryLng: l.deliveryLng == null ? null : Number(l.deliveryLng),
+        }))}
+      />
     </div>
   );
 }

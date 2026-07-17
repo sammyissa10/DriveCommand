@@ -130,22 +130,49 @@ export default async function RouteDetailPage({
     ? formatDateInTenantTimezone(route.completedAt, 'UTC')
     : undefined;
 
+  // Prisma Decimals can't cross the Server→Client boundary into RoutePageClient.
+  // Convert the leaking fields: stop lat/lng, expense/payment amounts, and the
+  // driver-assignment rate fields.
+  const rawStops = (route as any).stops;
+  const serializedRoute = {
+    ...route,
+    ...(Array.isArray(rawStops)
+      ? {
+          stops: rawStops.map((s: any) => ({
+            ...s,
+            lat: s.lat == null ? null : Number(s.lat),
+            lng: s.lng == null ? null : Number(s.lng),
+          })),
+        }
+      : {}),
+  };
+  const serializedExpenses = expenses.map((e: any) => ({ ...e, amount: Number(e.amount) }));
+  const serializedPayments = payments.map((p: any) => ({ ...p, amount: Number(p.amount) }));
+  const serializedDriverAssignments = driverAssignments.map((d: any) => ({
+    ...d,
+    fixedAmount: d.fixedAmount == null ? null : Number(d.fixedAmount),
+    hourlyRate: d.hourlyRate == null ? null : Number(d.hourlyRate),
+    numberOfHours: d.numberOfHours == null ? null : Number(d.numberOfHours),
+    perMileRate: d.perMileRate == null ? null : Number(d.perMileRate),
+    numberOfMiles: d.numberOfMiles == null ? null : Number(d.numberOfMiles),
+  }));
+
   return (
     <div className="space-y-6">
       <RoutePageClient
-        route={route}
+        route={serializedRoute}
         initialEditMode={isEditMode}
         drivers={drivers}
         trucks={trucks}
         formattedScheduledDate={formattedScheduledDate}
         formattedCompletedAt={formattedCompletedAt}
         analytics={safeAnalytics}
-        expenses={expenses}
-        payments={payments}
+        expenses={serializedExpenses}
+        payments={serializedPayments}
         categories={categories}
         templates={templates}
         documents={documents}
-        driverAssignments={driverAssignments}
+        driverAssignments={serializedDriverAssignments}
         messages={messages}
         linkedLoads={linkedLoads}
       />

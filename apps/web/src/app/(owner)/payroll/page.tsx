@@ -110,7 +110,16 @@ export default async function PayrollPage() {
         </div>
       </div>
 
-      <PayrollList records={records} />
+      <PayrollList
+        // Prisma Decimals can't cross the Server→Client boundary — convert to numbers.
+        records={records.map((r: any) => ({
+          ...r,
+          basePay: Number(r.basePay),
+          bonuses: Number(r.bonuses),
+          deductions: Number(r.deductions),
+          totalPay: Number(r.totalPay),
+        }))}
+      />
       </div>
     </>
   );

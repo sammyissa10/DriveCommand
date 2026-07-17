@@ -60,7 +60,9 @@ export default async function MaintenancePage({ params }: MaintenancePageProps) 
 
       <MaintenancePageClient
         truckId={id}
-        initialEvents={events}
+        // MaintenanceEvent.cost is a Prisma Decimal — convert before it crosses
+        // into the client component.
+        initialEvents={events.map((e: any) => ({ ...e, cost: e.cost == null ? null : Number(e.cost) }))}
         initialSchedules={schedules}
         deleteMaintenanceEvent={deleteMaintenanceEvent}
         deleteScheduledService={deleteScheduledService}

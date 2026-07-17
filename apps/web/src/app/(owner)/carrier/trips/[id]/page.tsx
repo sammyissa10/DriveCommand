@@ -209,6 +209,8 @@ export default async function DispatchDetailPage({ params }: Props) {
       otherCharges: l.otherCharges != null ? Number(l.otherCharges) : null,
       totalRevenue: l.totalRevenue != null ? Number(l.totalRevenue) : null,
       commodityWeightLbs: l.commodityWeightLbs != null ? Number(l.commodityWeightLbs) : null,
+      totalMiles: l.totalMiles != null ? Number(l.totalMiles) : null,
+      loadedMiles: l.loadedMiles != null ? Number(l.loadedMiles) : null,
       createdAt: l.createdAt.toISOString(),
       updatedAt: l.updatedAt.toISOString(),
     })),
