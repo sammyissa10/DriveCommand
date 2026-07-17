@@ -156,7 +156,13 @@ export function PerformanceMobile({
                   .filter(Boolean)
                   .join(' · ');
                 return (
-                  <div key={r.dispatch_id} className="rounded-[20px] bg-ds-card p-4">
+                  <button
+                    key={r.dispatch_id}
+                    type="button"
+                    onClick={() => router.push(`/carrier/trips/${r.dispatch_id}`)}
+                    aria-label={`${r.dispatch_number ?? 'Dispatch'}, ${r.driver_name}${r.on_time_pct != null ? `, ${Math.round(r.on_time_pct)}% on-time` : ''}`}
+                    className="w-full rounded-[20px] bg-ds-card p-4 text-left transition active:opacity-75"
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[15px] font-semibold text-ds-txt">
@@ -176,7 +182,7 @@ export function PerformanceMobile({
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
