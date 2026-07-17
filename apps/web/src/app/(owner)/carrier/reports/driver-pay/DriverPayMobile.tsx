@@ -123,18 +123,18 @@ export function DriverPayMobile({
       <LargeTitleHeader title="Driver Pay" subtitle="Pay records by driver and period" onBack={() => router.back()} />
 
       <div className="space-y-6">
-        {/* Filters — auto-apply on change */}
-        <div>
-          <SectionHeader title="Period" />
-          <FieldGroup fields={filterFields} isEditing />
-        </div>
-
         {/* Summary KPIs */}
         <KPIRow>
           <KPICard value={fmtCompactDollar(counts.netPay)} label="Net pay" tone="accent" />
           <KPICard value={counts.pending} label="Pending" tone="warning" />
           <KPICard value={counts.paid} label="Paid" tone="success" />
         </KPIRow>
+
+        {/* Filters — auto-apply on change */}
+        <div>
+          <SectionHeader title="Period" />
+          <FieldGroup fields={filterFields} isEditing />
+        </div>
 
         {/* Bulk approve — the primary action when anything's pending */}
         {pendingCount > 0 ? (
