@@ -83,8 +83,7 @@ const QUICK_CREATE_ITEMS: QuickActionItem[] = [
     id: "create-dispatch",
     label: "New Dispatch",
     icon: Truck,
-    // TODO: Dispatch creation uses a modal in /carrier/dispatches
-    href: "/carrier/dispatches",
+    href: "/carrier/trips/new",
     shortcut: "C D",
     description: "Create a new dispatch",
   },
