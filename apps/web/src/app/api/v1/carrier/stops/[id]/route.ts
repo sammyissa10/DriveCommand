@@ -12,6 +12,7 @@ const StopUpdateSchema = z.object({
   specialInstructions: z.string().optional(),
   arrivedAt: z.string().datetime().optional(),
   departedAt: z.string().datetime().optional(),
+  loadId: z.string().uuid().nullable().optional(),
 });
 
 export async function GET(

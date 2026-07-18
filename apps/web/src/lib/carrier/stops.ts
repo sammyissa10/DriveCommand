@@ -47,6 +47,7 @@ export interface StopUpdateInput {
   specialInstructions?: string;
   arrivedAt?: string;
   departedAt?: string;
+  loadId?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -196,6 +197,15 @@ export async function updateStop(orgId: string, id: string, data: StopUpdateInpu
   });
   if (!existing) return null;
 
+  // Verify loadId belongs to this org (if supplied as a non-empty string)
+  if (data.loadId) {
+    const load = await tenantPrisma.carrierLoad.findFirst({
+      where: { id: data.loadId, orgId },
+      select: { id: true },
+    });
+    if (!load) return null;
+  }
+
   const updated = await tenantPrisma.carrierStop.update({
     where: { id },
     data: {
@@ -206,6 +216,7 @@ export async function updateStop(orgId: string, id: string, data: StopUpdateInpu
       specialInstructions: data.specialInstructions,
       arrivedAt: data.arrivedAt ? new Date(data.arrivedAt) : undefined,
       departedAt: data.departedAt ? new Date(data.departedAt) : undefined,
+      loadId: data.loadId === undefined ? undefined : data.loadId,
     },
   });
 
