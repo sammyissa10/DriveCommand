@@ -123,7 +123,7 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
             <AppLogo size={28} variant="light" />
           )}
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <QuickActionsMenu />
+            <QuickActionsMenu variant="mobile" />
             <TopBarHelpButton />
             <NotificationBell variant="mobile" />
             <UserMenu compactOnMobile />

@@ -1,7 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ChevronDown } from "lucide-react"
+import { Plus, ChevronDown, ChevronRight } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,20 +12,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AddButton, SheetContainer, SectionHeader } from "@/components/ui/ds"
 import { cn } from "@/lib/utils"
 import { QUICK_ACTION_SECTIONS } from "./quickActions.config"
 
 /**
- * QuickActionsMenu - Create button with dropdown for quick create + actions
+ * QuickActionsMenu - Create button with dropdown/sheet for quick create + actions
  *
- * Features:
+ * Desktop (`variant="desktop"`, default):
  * - Two sections: Quick Create (records) and Quick Actions (operations)
  * - Keyboard shortcut hints for each action
  * - Linear/Vercel-style premium dropdown design
  * - Solid surfaces (no backdrop blur)
+ *
+ * Mobile (`variant="mobile"`):
+ * - AddButton trigger + ds SheetContainer bottom sheet
+ * - Grouped ds-card sections with muted icons, chevrons, inset hairlines
  */
-export function QuickActionsMenu() {
+export function QuickActionsMenu({ variant = "desktop" }: { variant?: "desktop" | "mobile" }) {
   const router = useRouter()
+
+  if (variant === "mobile") {
+    return <MobileQuickActionsMenu />
+  }
 
   const handleAction = (href: string) => {
     router.push(href)
@@ -112,5 +122,58 @@ export function QuickActionsMenu() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+/**
+ * Mobile bottom-sheet variant — ds kit only (AddButton, SheetContainer,
+ * SectionHeader). Grouped ds-card sections with muted icons, chevrons, and
+ * inset hairlines between rows.
+ */
+function MobileQuickActionsMenu() {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+
+  const handleSelect = (href: string) => {
+    setOpen(false)
+    router.push(href)
+  }
+
+  return (
+    <>
+      <AddButton label="Create" onClick={() => setOpen(true)} />
+      <SheetContainer
+        open={open}
+        onCancel={() => setOpen(false)}
+        title="Create"
+        subtitle="Create a record or run a quick action"
+      >
+        <div className="space-y-6">
+          {QUICK_ACTION_SECTIONS.map((section) => (
+            <div key={section.id}>
+              <SectionHeader title={section.label} />
+              <div className="mt-2 overflow-hidden rounded-[20px] bg-ds-card">
+                {section.items.map((item, itemIndex) => (
+                  <div key={item.id}>
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 px-4 min-h-[52px] text-left transition active:opacity-75"
+                      onClick={() => handleSelect(item.href)}
+                    >
+                      <item.icon className="h-5 w-5 shrink-0 text-ds-txt2" />
+                      <span className="flex-1 text-[17px] text-ds-txt">{item.label}</span>
+                      <ChevronRight className="h-5 w-5 shrink-0 text-ds-txt3" />
+                    </button>
+                    {itemIndex < section.items.length - 1 && (
+                      <div className="ml-12 h-px bg-ds-hairline" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </SheetContainer>
+    </>
   )
 }
