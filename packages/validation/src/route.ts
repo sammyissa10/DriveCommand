@@ -15,7 +15,8 @@ export const routeCreateSchema = z.object({
   destination: z.string().min(1, 'Destination is required').max(500),
   scheduledDate: z.string().min(1, 'Scheduled date is required'),
   driverId: z.string().uuid('Invalid driver ID'),
-  truckId: z.string().uuid('Invalid truck ID'),
+  truckId: z.string().uuid('Invalid truck ID').optional(),
+  carrierTruckId: z.string().uuid('Invalid truck ID'),
   notes: z.string().max(1000).optional(),
 });
 

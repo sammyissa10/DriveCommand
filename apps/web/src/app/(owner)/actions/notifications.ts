@@ -291,9 +291,15 @@ export async function sendETANotification(
 
     const route = await prisma.route.findUnique({
       where: { id: routeId },
-      include: { truck: true, driver: true },
+      include: { truck: true, carrierTruck: true, driver: true },
     });
     if (!route) return { error: 'Route not found.' };
+
+    const truckLabel = route.carrierTruck
+      ? `${route.carrierTruck.displayName || route.carrierTruck.unitNumber}`
+      : route.truck
+        ? `${route.truck.make} ${route.truck.model} (${route.truck.licensePlate})`
+        : 'Unassigned';
 
     await prisma.customerInteraction.create({
       data: {
@@ -301,7 +307,7 @@ export async function sendETANotification(
         customerId,
         type: 'ETA_NOTIFICATION',
         subject: `ETA Update: Arriving ${estimatedArrival}`,
-        description: `Route: ${route.origin} → ${route.destination}\nEstimated arrival: ${estimatedArrival}\nTruck: ${route.truck.make} ${route.truck.model} (${route.truck.licensePlate})`,
+        description: `Route: ${route.origin} → ${route.destination}\nEstimated arrival: ${estimatedArrival}\nTruck: ${truckLabel}`,
         isAutomated: true,
       },
     });

@@ -44,7 +44,7 @@ export async function createRoute(prevState: ActionState | null, formData: FormD
     destination: formData.get('destination') as string,
     scheduledDate: formData.get('scheduledDate') as string,
     driverId: formData.get('driverId') as string,
-    truckId: formData.get('truckId') as string,
+    carrierTruckId: formData.get('carrierTruckId') as string,
     notes: (formData.get('notes') as string) || undefined,
   };
 
@@ -59,7 +59,7 @@ export async function createRoute(prevState: ActionState | null, formData: FormD
     };
   }
 
-  const { origin, destination, scheduledDate, driverId, truckId, notes } = result.data;
+  const { origin, destination, scheduledDate, driverId, carrierTruckId, notes } = result.data;
 
   // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
   const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string; lat?: string; lng?: string }> = [];
@@ -137,15 +137,16 @@ export async function createRoute(prevState: ActionState | null, formData: FormD
       };
     }
 
-    // Validate truck exists
-    const truck = await prisma.truck.findUnique({
-      where: { id: truckId },
+    // Validate carrier truck exists and belongs to this org (CarrierTruck is EXEMPT_MODELS for tenant-RLS)
+    const carrierTruck = await prisma.carrierTruck.findFirst({
+      where: { id: carrierTruckId, orgId: tenantId, deletedAt: null },
+      select: { id: true },
     });
 
-    if (!truck) {
+    if (!carrierTruck) {
       return {
         error: {
-          truckId: ['Truck not found'],
+          carrierTruckId: ['Truck not found'],
         },
       };
     }
@@ -160,7 +161,7 @@ export async function createRoute(prevState: ActionState | null, formData: FormD
         destination,
         scheduledDate: new Date(scheduledDate),
         driverId,
-        truckId,
+        carrierTruckId,
         notes,
         name: name || null,
         distanceMiles: distanceMiles && !isNaN(distanceMiles) ? distanceMiles : null,
@@ -233,8 +234,8 @@ export async function updateRoute(id: string, prevState: ActionState | null, for
   const driverId = formData.get('driverId') as string;
   if (driverId) rawData.driverId = driverId;
 
-  const truckId = formData.get('truckId') as string;
-  if (truckId) rawData.truckId = truckId;
+  const carrierTruckId = formData.get('carrierTruckId') as string;
+  if (carrierTruckId) rawData.carrierTruckId = carrierTruckId;
 
   const notes = formData.get('notes') as string;
   if (notes !== null && notes !== undefined) rawData.notes = notes;
@@ -351,16 +352,17 @@ export async function updateRoute(id: string, prevState: ActionState | null, for
       }
     }
 
-    // Validate truck if provided
-    if (result.data.truckId) {
-      const truck = await prisma.truck.findUnique({
-        where: { id: result.data.truckId },
+    // Validate carrier truck if provided (org-scoped; CarrierTruck is EXEMPT_MODELS for tenant-RLS)
+    if (result.data.carrierTruckId) {
+      const carrierTruck = await prisma.carrierTruck.findFirst({
+        where: { id: result.data.carrierTruckId, orgId: tenantId, deletedAt: null },
+        select: { id: true },
       });
 
-      if (!truck) {
+      if (!carrierTruck) {
         return {
           error: {
-            truckId: ['Truck not found'],
+            carrierTruckId: ['Truck not found'],
           },
         };
       }
@@ -374,7 +376,7 @@ export async function updateRoute(id: string, prevState: ActionState | null, for
     if (result.data.destination) updateData.destination = result.data.destination;
     if (result.data.scheduledDate) updateData.scheduledDate = new Date(result.data.scheduledDate);
     if (result.data.driverId) updateData.driverId = result.data.driverId;
-    if (result.data.truckId) updateData.truckId = result.data.truckId;
+    if (result.data.carrierTruckId) updateData.carrierTruckId = result.data.carrierTruckId;
     if (result.data.notes !== undefined) updateData.notes = result.data.notes;
     if (distanceMiles !== undefined && !isNaN(distanceMiles)) updateData.distanceMiles = distanceMiles;
     // name is always overwritten (empty string clears it, null keeps it null)
@@ -613,6 +615,9 @@ export async function getRoute(id: string) {
           odometer: true,
           documentMetadata: true,
         },
+      },
+      carrierTruck: {
+        select: { id: true, unitNumber: true, displayName: true, year: true, make: true, model: true, vin: true, licensePlate: true },
       },
       stops: {
         orderBy: { position: 'asc' },
