@@ -493,7 +493,8 @@ model Route {
   id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String      @db.Uuid
   driverId      String      @db.Uuid
-  truckId       String      @db.Uuid
+  truckId       String?     @db.Uuid
+  carrierTruckId String?    @db.Uuid
   origin        String
   destination   String
   scheduledDate DateTime    @db.Timestamptz
@@ -515,7 +516,8 @@ model Route {
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id])
   driver            User              @relation(fields: [driverId], references: [id])
-  truck             Truck             @relation(fields: [truckId], references: [id])
+  truck             Truck?            @relation(fields: [truckId], references: [id])
+  carrierTruck      CarrierTruck?     @relation(fields: [carrierTruckId], references: [id])
   createdBy         User?             @relation(name: "RouteCreatedBy", fields: [createdById], references: [id])
   updatedBy         User?             @relation(name: "RouteUpdatedBy", fields: [updatedById], references: [id])
   deletedBy         User?             @relation(name: "RouteDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
@@ -531,6 +533,7 @@ model Route {
   @@index([tenantId])
   @@index([driverId])
   @@index([truckId])
+  @@index([carrierTruckId])
   @@index([scheduledDate])
   @@index([status])
   @@index([archivedAt])
@@ -2112,6 +2115,7 @@ model CarrierTruck {
   trailerDispatches     Trip[]            @relation(name: "TrailerTruck")
   defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultTruck")
   gpsLocations          GPSLocation[]
+  routes                Route[]
 
   @@index([orgId])
   @@index([status])

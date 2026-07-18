@@ -12565,6 +12565,7 @@ export namespace Prisma {
     trailerDispatches: number
     defaultRouteTemplates: number
     gpsLocations: number
+    routes: number
   }
 
   export type CarrierTruckCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12572,6 +12573,7 @@ export namespace Prisma {
     trailerDispatches?: boolean | CarrierTruckCountOutputTypeCountTrailerDispatchesArgs
     defaultRouteTemplates?: boolean | CarrierTruckCountOutputTypeCountDefaultRouteTemplatesArgs
     gpsLocations?: boolean | CarrierTruckCountOutputTypeCountGpsLocationsArgs
+    routes?: boolean | CarrierTruckCountOutputTypeCountRoutesArgs
   }
 
   // Custom InputTypes
@@ -12611,6 +12613,13 @@ export namespace Prisma {
    */
   export type CarrierTruckCountOutputTypeCountGpsLocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GPSLocationWhereInput
+  }
+
+  /**
+   * CarrierTruckCountOutputType without action
+   */
+  export type CarrierTruckCountOutputTypeCountRoutesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RouteWhereInput
   }
 
 
@@ -24497,6 +24506,7 @@ export namespace Prisma {
     tenantId: string | null
     driverId: string | null
     truckId: string | null
+    carrierTruckId: string | null
     origin: string | null
     destination: string | null
     scheduledDate: Date | null
@@ -24522,6 +24532,7 @@ export namespace Prisma {
     tenantId: string | null
     driverId: string | null
     truckId: string | null
+    carrierTruckId: string | null
     origin: string | null
     destination: string | null
     scheduledDate: Date | null
@@ -24547,6 +24558,7 @@ export namespace Prisma {
     tenantId: number
     driverId: number
     truckId: number
+    carrierTruckId: number
     origin: number
     destination: number
     scheduledDate: number
@@ -24588,6 +24600,7 @@ export namespace Prisma {
     tenantId?: true
     driverId?: true
     truckId?: true
+    carrierTruckId?: true
     origin?: true
     destination?: true
     scheduledDate?: true
@@ -24613,6 +24626,7 @@ export namespace Prisma {
     tenantId?: true
     driverId?: true
     truckId?: true
+    carrierTruckId?: true
     origin?: true
     destination?: true
     scheduledDate?: true
@@ -24638,6 +24652,7 @@ export namespace Prisma {
     tenantId?: true
     driverId?: true
     truckId?: true
+    carrierTruckId?: true
     origin?: true
     destination?: true
     scheduledDate?: true
@@ -24749,7 +24764,8 @@ export namespace Prisma {
     id: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId: string | null
+    carrierTruckId: string | null
     origin: string
     destination: string
     scheduledDate: Date
@@ -24794,6 +24810,7 @@ export namespace Prisma {
     tenantId?: boolean
     driverId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     origin?: boolean
     destination?: boolean
     scheduledDate?: boolean
@@ -24814,7 +24831,8 @@ export namespace Prisma {
     archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | UserDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | Route$truckArgs<ExtArgs>
+    carrierTruck?: boolean | Route$carrierTruckArgs<ExtArgs>
     createdBy?: boolean | Route$createdByArgs<ExtArgs>
     updatedBy?: boolean | Route$updatedByArgs<ExtArgs>
     deletedBy?: boolean | Route$deletedByArgs<ExtArgs>
@@ -24834,6 +24852,7 @@ export namespace Prisma {
     tenantId?: boolean
     driverId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     origin?: boolean
     destination?: boolean
     scheduledDate?: boolean
@@ -24854,7 +24873,8 @@ export namespace Prisma {
     archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | UserDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | Route$truckArgs<ExtArgs>
+    carrierTruck?: boolean | Route$carrierTruckArgs<ExtArgs>
     createdBy?: boolean | Route$createdByArgs<ExtArgs>
     updatedBy?: boolean | Route$updatedByArgs<ExtArgs>
     deletedBy?: boolean | Route$deletedByArgs<ExtArgs>
@@ -24865,6 +24885,7 @@ export namespace Prisma {
     tenantId?: boolean
     driverId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     origin?: boolean
     destination?: boolean
     scheduledDate?: boolean
@@ -24885,7 +24906,8 @@ export namespace Prisma {
     archivedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | UserDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | Route$truckArgs<ExtArgs>
+    carrierTruck?: boolean | Route$carrierTruckArgs<ExtArgs>
     createdBy?: boolean | Route$createdByArgs<ExtArgs>
     updatedBy?: boolean | Route$updatedByArgs<ExtArgs>
     deletedBy?: boolean | Route$deletedByArgs<ExtArgs>
@@ -24896,6 +24918,7 @@ export namespace Prisma {
     tenantId?: boolean
     driverId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     origin?: boolean
     destination?: boolean
     scheduledDate?: boolean
@@ -24916,11 +24939,12 @@ export namespace Prisma {
     archivedAt?: boolean
   }
 
-  export type RouteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "driverId" | "truckId" | "origin" | "destination" | "scheduledDate" | "status" | "notes" | "name" | "completedAt" | "version" | "startOdometer" | "endOdometer" | "distanceMiles" | "createdById" | "updatedById" | "deletedAt" | "deletedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["route"]>
+  export type RouteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "driverId" | "truckId" | "carrierTruckId" | "origin" | "destination" | "scheduledDate" | "status" | "notes" | "name" | "completedAt" | "version" | "startOdometer" | "endOdometer" | "distanceMiles" | "createdById" | "updatedById" | "deletedAt" | "deletedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["route"]>
   export type RouteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | UserDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | Route$truckArgs<ExtArgs>
+    carrierTruck?: boolean | Route$carrierTruckArgs<ExtArgs>
     createdBy?: boolean | Route$createdByArgs<ExtArgs>
     updatedBy?: boolean | Route$updatedByArgs<ExtArgs>
     deletedBy?: boolean | Route$deletedByArgs<ExtArgs>
@@ -24937,7 +24961,8 @@ export namespace Prisma {
   export type RouteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | UserDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | Route$truckArgs<ExtArgs>
+    carrierTruck?: boolean | Route$carrierTruckArgs<ExtArgs>
     createdBy?: boolean | Route$createdByArgs<ExtArgs>
     updatedBy?: boolean | Route$updatedByArgs<ExtArgs>
     deletedBy?: boolean | Route$deletedByArgs<ExtArgs>
@@ -24945,7 +24970,8 @@ export namespace Prisma {
   export type RouteIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     driver?: boolean | UserDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | Route$truckArgs<ExtArgs>
+    carrierTruck?: boolean | Route$carrierTruckArgs<ExtArgs>
     createdBy?: boolean | Route$createdByArgs<ExtArgs>
     updatedBy?: boolean | Route$updatedByArgs<ExtArgs>
     deletedBy?: boolean | Route$deletedByArgs<ExtArgs>
@@ -24956,7 +24982,8 @@ export namespace Prisma {
     objects: {
       tenant: Prisma.$TenantPayload<ExtArgs>
       driver: Prisma.$UserPayload<ExtArgs>
-      truck: Prisma.$TruckPayload<ExtArgs>
+      truck: Prisma.$TruckPayload<ExtArgs> | null
+      carrierTruck: Prisma.$CarrierTruckPayload<ExtArgs> | null
       createdBy: Prisma.$UserPayload<ExtArgs> | null
       updatedBy: Prisma.$UserPayload<ExtArgs> | null
       deletedBy: Prisma.$UserPayload<ExtArgs> | null
@@ -24973,7 +25000,8 @@ export namespace Prisma {
       id: string
       tenantId: string
       driverId: string
-      truckId: string
+      truckId: string | null
+      carrierTruckId: string | null
       origin: string
       destination: string
       scheduledDate: Date
@@ -25388,7 +25416,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     driver<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    truck<T extends TruckDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TruckDefaultArgs<ExtArgs>>): Prisma__TruckClient<$Result.GetResult<Prisma.$TruckPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    truck<T extends Route$truckArgs<ExtArgs> = {}>(args?: Subset<T, Route$truckArgs<ExtArgs>>): Prisma__TruckClient<$Result.GetResult<Prisma.$TruckPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    carrierTruck<T extends Route$carrierTruckArgs<ExtArgs> = {}>(args?: Subset<T, Route$carrierTruckArgs<ExtArgs>>): Prisma__CarrierTruckClient<$Result.GetResult<Prisma.$CarrierTruckPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     createdBy<T extends Route$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Route$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     updatedBy<T extends Route$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Route$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     deletedBy<T extends Route$deletedByArgs<ExtArgs> = {}>(args?: Subset<T, Route$deletedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -25433,6 +25462,7 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"Route", 'String'>
     readonly driverId: FieldRef<"Route", 'String'>
     readonly truckId: FieldRef<"Route", 'String'>
+    readonly carrierTruckId: FieldRef<"Route", 'String'>
     readonly origin: FieldRef<"Route", 'String'>
     readonly destination: FieldRef<"Route", 'String'>
     readonly scheduledDate: FieldRef<"Route", 'DateTime'>
@@ -25849,6 +25879,44 @@ export namespace Prisma {
      * Limit how many Routes to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Route.truck
+   */
+  export type Route$truckArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Truck
+     */
+    select?: TruckSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Truck
+     */
+    omit?: TruckOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckInclude<ExtArgs> | null
+    where?: TruckWhereInput
+  }
+
+  /**
+   * Route.carrierTruck
+   */
+  export type Route$carrierTruckArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierTruck
+     */
+    select?: CarrierTruckSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierTruck
+     */
+    omit?: CarrierTruckOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierTruckInclude<ExtArgs> | null
+    where?: CarrierTruckWhereInput
   }
 
   /**
@@ -74133,6 +74201,7 @@ export namespace Prisma {
     trailerDispatches?: boolean | CarrierTruck$trailerDispatchesArgs<ExtArgs>
     defaultRouteTemplates?: boolean | CarrierTruck$defaultRouteTemplatesArgs<ExtArgs>
     gpsLocations?: boolean | CarrierTruck$gpsLocationsArgs<ExtArgs>
+    routes?: boolean | CarrierTruck$routesArgs<ExtArgs>
     _count?: boolean | CarrierTruckCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierTruck"]>
 
@@ -74250,6 +74319,7 @@ export namespace Prisma {
     trailerDispatches?: boolean | CarrierTruck$trailerDispatchesArgs<ExtArgs>
     defaultRouteTemplates?: boolean | CarrierTruck$defaultRouteTemplatesArgs<ExtArgs>
     gpsLocations?: boolean | CarrierTruck$gpsLocationsArgs<ExtArgs>
+    routes?: boolean | CarrierTruck$routesArgs<ExtArgs>
     _count?: boolean | CarrierTruckCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierTruckIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -74276,6 +74346,7 @@ export namespace Prisma {
       trailerDispatches: Prisma.$TripPayload<ExtArgs>[]
       defaultRouteTemplates: Prisma.$RouteTemplatePayload<ExtArgs>[]
       gpsLocations: Prisma.$GPSLocationPayload<ExtArgs>[]
+      routes: Prisma.$RoutePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -74709,6 +74780,7 @@ export namespace Prisma {
     trailerDispatches<T extends CarrierTruck$trailerDispatchesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$trailerDispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TripPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     defaultRouteTemplates<T extends CarrierTruck$defaultRouteTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$defaultRouteTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     gpsLocations<T extends CarrierTruck$gpsLocationsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$gpsLocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GPSLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    routes<T extends CarrierTruck$routesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$routesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoutePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -75318,6 +75390,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GPSLocationScalarFieldEnum | GPSLocationScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierTruck.routes
+   */
+  export type CarrierTruck$routesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Route
+     */
+    select?: RouteSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Route
+     */
+    omit?: RouteOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RouteInclude<ExtArgs> | null
+    where?: RouteWhereInput
+    orderBy?: RouteOrderByWithRelationInput | RouteOrderByWithRelationInput[]
+    cursor?: RouteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RouteScalarFieldEnum | RouteScalarFieldEnum[]
   }
 
   /**
@@ -136147,6 +136243,7 @@ export namespace Prisma {
     tenantId: 'tenantId',
     driverId: 'driverId',
     truckId: 'truckId',
+    carrierTruckId: 'carrierTruckId',
     origin: 'origin',
     destination: 'destination',
     scheduledDate: 'scheduledDate',
@@ -140295,7 +140392,8 @@ export namespace Prisma {
     id?: UuidFilter<"Route"> | string
     tenantId?: UuidFilter<"Route"> | string
     driverId?: UuidFilter<"Route"> | string
-    truckId?: UuidFilter<"Route"> | string
+    truckId?: UuidNullableFilter<"Route"> | string | null
+    carrierTruckId?: UuidNullableFilter<"Route"> | string | null
     origin?: StringFilter<"Route"> | string
     destination?: StringFilter<"Route"> | string
     scheduledDate?: DateTimeFilter<"Route"> | Date | string
@@ -140316,7 +140414,8 @@ export namespace Prisma {
     archivedAt?: DateTimeNullableFilter<"Route"> | Date | string | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     driver?: XOR<UserScalarRelationFilter, UserWhereInput>
-    truck?: XOR<TruckScalarRelationFilter, TruckWhereInput>
+    truck?: XOR<TruckNullableScalarRelationFilter, TruckWhereInput> | null
+    carrierTruck?: XOR<CarrierTruckNullableScalarRelationFilter, CarrierTruckWhereInput> | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     deletedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -140334,7 +140433,8 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     driverId?: SortOrder
-    truckId?: SortOrder
+    truckId?: SortOrderInput | SortOrder
+    carrierTruckId?: SortOrderInput | SortOrder
     origin?: SortOrder
     destination?: SortOrder
     scheduledDate?: SortOrder
@@ -140356,6 +140456,7 @@ export namespace Prisma {
     tenant?: TenantOrderByWithRelationInput
     driver?: UserOrderByWithRelationInput
     truck?: TruckOrderByWithRelationInput
+    carrierTruck?: CarrierTruckOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
     updatedBy?: UserOrderByWithRelationInput
     deletedBy?: UserOrderByWithRelationInput
@@ -140376,7 +140477,8 @@ export namespace Prisma {
     NOT?: RouteWhereInput | RouteWhereInput[]
     tenantId?: UuidFilter<"Route"> | string
     driverId?: UuidFilter<"Route"> | string
-    truckId?: UuidFilter<"Route"> | string
+    truckId?: UuidNullableFilter<"Route"> | string | null
+    carrierTruckId?: UuidNullableFilter<"Route"> | string | null
     origin?: StringFilter<"Route"> | string
     destination?: StringFilter<"Route"> | string
     scheduledDate?: DateTimeFilter<"Route"> | Date | string
@@ -140397,7 +140499,8 @@ export namespace Prisma {
     archivedAt?: DateTimeNullableFilter<"Route"> | Date | string | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     driver?: XOR<UserScalarRelationFilter, UserWhereInput>
-    truck?: XOR<TruckScalarRelationFilter, TruckWhereInput>
+    truck?: XOR<TruckNullableScalarRelationFilter, TruckWhereInput> | null
+    carrierTruck?: XOR<CarrierTruckNullableScalarRelationFilter, CarrierTruckWhereInput> | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     deletedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -140415,7 +140518,8 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     driverId?: SortOrder
-    truckId?: SortOrder
+    truckId?: SortOrderInput | SortOrder
+    carrierTruckId?: SortOrderInput | SortOrder
     origin?: SortOrder
     destination?: SortOrder
     scheduledDate?: SortOrder
@@ -140448,7 +140552,8 @@ export namespace Prisma {
     id?: UuidWithAggregatesFilter<"Route"> | string
     tenantId?: UuidWithAggregatesFilter<"Route"> | string
     driverId?: UuidWithAggregatesFilter<"Route"> | string
-    truckId?: UuidWithAggregatesFilter<"Route"> | string
+    truckId?: UuidNullableWithAggregatesFilter<"Route"> | string | null
+    carrierTruckId?: UuidNullableWithAggregatesFilter<"Route"> | string | null
     origin?: StringWithAggregatesFilter<"Route"> | string
     destination?: StringWithAggregatesFilter<"Route"> | string
     scheduledDate?: DateTimeWithAggregatesFilter<"Route"> | Date | string
@@ -144889,6 +144994,7 @@ export namespace Prisma {
     trailerDispatches?: TripListRelationFilter
     defaultRouteTemplates?: RouteTemplateListRelationFilter
     gpsLocations?: GPSLocationListRelationFilter
+    routes?: RouteListRelationFilter
   }
 
   export type CarrierTruckOrderByWithRelationInput = {
@@ -144929,6 +145035,7 @@ export namespace Prisma {
     trailerDispatches?: TripOrderByRelationAggregateInput
     defaultRouteTemplates?: RouteTemplateOrderByRelationAggregateInput
     gpsLocations?: GPSLocationOrderByRelationAggregateInput
+    routes?: RouteOrderByRelationAggregateInput
   }
 
   export type CarrierTruckWhereUniqueInput = Prisma.AtLeast<{
@@ -144972,6 +145079,7 @@ export namespace Prisma {
     trailerDispatches?: TripListRelationFilter
     defaultRouteTemplates?: RouteTemplateListRelationFilter
     gpsLocations?: GPSLocationListRelationFilter
+    routes?: RouteListRelationFilter
   }, "id" | "vehicleId">
 
   export type CarrierTruckOrderByWithAggregationInput = {
@@ -152110,7 +152218,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -152128,7 +152237,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -152176,7 +152286,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -152194,7 +152305,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -152227,7 +152339,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -152271,7 +152384,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -157053,6 +157167,7 @@ export namespace Prisma {
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateInput = {
@@ -157089,6 +157204,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUpdateInput = {
@@ -157125,6 +157241,7 @@ export namespace Prisma {
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateInput = {
@@ -157161,6 +157278,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckCreateManyInput = {
@@ -164902,9 +165020,14 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
-  export type TruckScalarRelationFilter = {
-    is?: TruckWhereInput
-    isNot?: TruckWhereInput
+  export type TruckNullableScalarRelationFilter = {
+    is?: TruckWhereInput | null
+    isNot?: TruckWhereInput | null
+  }
+
+  export type CarrierTruckNullableScalarRelationFilter = {
+    is?: CarrierTruckWhereInput | null
+    isNot?: CarrierTruckWhereInput | null
   }
 
   export type RouteCountOrderByAggregateInput = {
@@ -164912,6 +165035,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     driverId?: SortOrder
     truckId?: SortOrder
+    carrierTruckId?: SortOrder
     origin?: SortOrder
     destination?: SortOrder
     scheduledDate?: SortOrder
@@ -164944,6 +165068,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     driverId?: SortOrder
     truckId?: SortOrder
+    carrierTruckId?: SortOrder
     origin?: SortOrder
     destination?: SortOrder
     scheduledDate?: SortOrder
@@ -164969,6 +165094,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     driverId?: SortOrder
     truckId?: SortOrder
+    carrierTruckId?: SortOrder
     origin?: SortOrder
     destination?: SortOrder
     scheduledDate?: SortOrder
@@ -165097,11 +165223,6 @@ export namespace Prisma {
     not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
   }
 
-  export type TruckNullableScalarRelationFilter = {
-    is?: TruckWhereInput | null
-    isNot?: TruckWhereInput | null
-  }
-
   export type RouteNullableScalarRelationFilter = {
     is?: RouteWhereInput | null
     isNot?: RouteWhereInput | null
@@ -165211,6 +165332,11 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type TruckScalarRelationFilter = {
+    is?: TruckWhereInput
+    isNot?: TruckWhereInput
   }
 
   export type MaintenanceEventCountOrderByAggregateInput = {
@@ -165433,11 +165559,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotificationStatusFilter<$PrismaModel>
     _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
-  }
-
-  export type CarrierTruckNullableScalarRelationFilter = {
-    is?: CarrierTruckWhereInput | null
-    isNot?: CarrierTruckWhereInput | null
   }
 
   export type GPSLocationCountOrderByAggregateInput = {
@@ -181039,6 +181160,12 @@ export namespace Prisma {
     connect?: TruckWhereUniqueInput
   }
 
+  export type CarrierTruckCreateNestedOneWithoutRoutesInput = {
+    create?: XOR<CarrierTruckCreateWithoutRoutesInput, CarrierTruckUncheckedCreateWithoutRoutesInput>
+    connectOrCreate?: CarrierTruckCreateOrConnectWithoutRoutesInput
+    connect?: CarrierTruckWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutRoutesCreatedInput = {
     create?: XOR<UserCreateWithoutRoutesCreatedInput, UserUncheckedCreateWithoutRoutesCreatedInput>
     connectOrCreate?: UserCreateOrConnectWithoutRoutesCreatedInput
@@ -181205,12 +181332,24 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssignedRoutesInput, UserUpdateWithoutAssignedRoutesInput>, UserUncheckedUpdateWithoutAssignedRoutesInput>
   }
 
-  export type TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput = {
+  export type TruckUpdateOneWithoutAssignedRoutesNestedInput = {
     create?: XOR<TruckCreateWithoutAssignedRoutesInput, TruckUncheckedCreateWithoutAssignedRoutesInput>
     connectOrCreate?: TruckCreateOrConnectWithoutAssignedRoutesInput
     upsert?: TruckUpsertWithoutAssignedRoutesInput
+    disconnect?: TruckWhereInput | boolean
+    delete?: TruckWhereInput | boolean
     connect?: TruckWhereUniqueInput
     update?: XOR<XOR<TruckUpdateToOneWithWhereWithoutAssignedRoutesInput, TruckUpdateWithoutAssignedRoutesInput>, TruckUncheckedUpdateWithoutAssignedRoutesInput>
+  }
+
+  export type CarrierTruckUpdateOneWithoutRoutesNestedInput = {
+    create?: XOR<CarrierTruckCreateWithoutRoutesInput, CarrierTruckUncheckedCreateWithoutRoutesInput>
+    connectOrCreate?: CarrierTruckCreateOrConnectWithoutRoutesInput
+    upsert?: CarrierTruckUpsertWithoutRoutesInput
+    disconnect?: CarrierTruckWhereInput | boolean
+    delete?: CarrierTruckWhereInput | boolean
+    connect?: CarrierTruckWhereUniqueInput
+    update?: XOR<XOR<CarrierTruckUpdateToOneWithWhereWithoutRoutesInput, CarrierTruckUpdateWithoutRoutesInput>, CarrierTruckUncheckedUpdateWithoutRoutesInput>
   }
 
   export type UserUpdateOneWithoutRoutesCreatedNestedInput = {
@@ -185291,6 +185430,13 @@ export namespace Prisma {
     connect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
   }
 
+  export type RouteCreateNestedManyWithoutCarrierTruckInput = {
+    create?: XOR<RouteCreateWithoutCarrierTruckInput, RouteUncheckedCreateWithoutCarrierTruckInput> | RouteCreateWithoutCarrierTruckInput[] | RouteUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: RouteCreateOrConnectWithoutCarrierTruckInput | RouteCreateOrConnectWithoutCarrierTruckInput[]
+    createMany?: RouteCreateManyCarrierTruckInputEnvelope
+    connect?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+  }
+
   export type TripUncheckedCreateNestedManyWithoutTruckInput = {
     create?: XOR<TripCreateWithoutTruckInput, TripUncheckedCreateWithoutTruckInput> | TripCreateWithoutTruckInput[] | TripUncheckedCreateWithoutTruckInput[]
     connectOrCreate?: TripCreateOrConnectWithoutTruckInput | TripCreateOrConnectWithoutTruckInput[]
@@ -185317,6 +185463,13 @@ export namespace Prisma {
     connectOrCreate?: GPSLocationCreateOrConnectWithoutCarrierTruckInput | GPSLocationCreateOrConnectWithoutCarrierTruckInput[]
     createMany?: GPSLocationCreateManyCarrierTruckInputEnvelope
     connect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+  }
+
+  export type RouteUncheckedCreateNestedManyWithoutCarrierTruckInput = {
+    create?: XOR<RouteCreateWithoutCarrierTruckInput, RouteUncheckedCreateWithoutCarrierTruckInput> | RouteCreateWithoutCarrierTruckInput[] | RouteUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: RouteCreateOrConnectWithoutCarrierTruckInput | RouteCreateOrConnectWithoutCarrierTruckInput[]
+    createMany?: RouteCreateManyCarrierTruckInputEnvelope
+    connect?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput = {
@@ -185413,6 +185566,20 @@ export namespace Prisma {
     deleteMany?: GPSLocationScalarWhereInput | GPSLocationScalarWhereInput[]
   }
 
+  export type RouteUpdateManyWithoutCarrierTruckNestedInput = {
+    create?: XOR<RouteCreateWithoutCarrierTruckInput, RouteUncheckedCreateWithoutCarrierTruckInput> | RouteCreateWithoutCarrierTruckInput[] | RouteUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: RouteCreateOrConnectWithoutCarrierTruckInput | RouteCreateOrConnectWithoutCarrierTruckInput[]
+    upsert?: RouteUpsertWithWhereUniqueWithoutCarrierTruckInput | RouteUpsertWithWhereUniqueWithoutCarrierTruckInput[]
+    createMany?: RouteCreateManyCarrierTruckInputEnvelope
+    set?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    disconnect?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    delete?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    connect?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    update?: RouteUpdateWithWhereUniqueWithoutCarrierTruckInput | RouteUpdateWithWhereUniqueWithoutCarrierTruckInput[]
+    updateMany?: RouteUpdateManyWithWhereWithoutCarrierTruckInput | RouteUpdateManyWithWhereWithoutCarrierTruckInput[]
+    deleteMany?: RouteScalarWhereInput | RouteScalarWhereInput[]
+  }
+
   export type TripUncheckedUpdateManyWithoutTruckNestedInput = {
     create?: XOR<TripCreateWithoutTruckInput, TripUncheckedCreateWithoutTruckInput> | TripCreateWithoutTruckInput[] | TripUncheckedCreateWithoutTruckInput[]
     connectOrCreate?: TripCreateOrConnectWithoutTruckInput | TripCreateOrConnectWithoutTruckInput[]
@@ -185467,6 +185634,20 @@ export namespace Prisma {
     update?: GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput | GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput[]
     updateMany?: GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput | GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput[]
     deleteMany?: GPSLocationScalarWhereInput | GPSLocationScalarWhereInput[]
+  }
+
+  export type RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput = {
+    create?: XOR<RouteCreateWithoutCarrierTruckInput, RouteUncheckedCreateWithoutCarrierTruckInput> | RouteCreateWithoutCarrierTruckInput[] | RouteUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: RouteCreateOrConnectWithoutCarrierTruckInput | RouteCreateOrConnectWithoutCarrierTruckInput[]
+    upsert?: RouteUpsertWithWhereUniqueWithoutCarrierTruckInput | RouteUpsertWithWhereUniqueWithoutCarrierTruckInput[]
+    createMany?: RouteCreateManyCarrierTruckInputEnvelope
+    set?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    disconnect?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    delete?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    connect?: RouteWhereUniqueInput | RouteWhereUniqueInput[]
+    update?: RouteUpdateWithWhereUniqueWithoutCarrierTruckInput | RouteUpdateWithWhereUniqueWithoutCarrierTruckInput[]
+    updateMany?: RouteUpdateManyWithWhereWithoutCarrierTruckInput | RouteUpdateManyWithWhereWithoutCarrierTruckInput[]
+    deleteMany?: RouteScalarWhereInput | RouteScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutRouteTemplatesInput = {
@@ -191552,7 +191733,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     archivedAt?: Date | string | null
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -191569,7 +191751,8 @@ export namespace Prisma {
   export type RouteUncheckedCreateWithoutTenantInput = {
     id?: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -193113,6 +193296,7 @@ export namespace Prisma {
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutTenantInput = {
@@ -193148,6 +193332,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutTenantInput = {
@@ -195128,7 +195313,8 @@ export namespace Prisma {
     id?: UuidFilter<"Route"> | string
     tenantId?: UuidFilter<"Route"> | string
     driverId?: UuidFilter<"Route"> | string
-    truckId?: UuidFilter<"Route"> | string
+    truckId?: UuidNullableFilter<"Route"> | string | null
+    carrierTruckId?: UuidNullableFilter<"Route"> | string | null
     origin?: StringFilter<"Route"> | string
     destination?: StringFilter<"Route"> | string
     scheduledDate?: DateTimeFilter<"Route"> | Date | string
@@ -198035,7 +198221,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -198052,7 +198239,8 @@ export namespace Prisma {
   export type RouteUncheckedCreateWithoutDriverInput = {
     id?: string
     tenantId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -198594,7 +198782,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
     documents?: DocumentCreateNestedManyWithoutRouteInput
@@ -198611,7 +198800,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -198668,7 +198858,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
     documents?: DocumentCreateNestedManyWithoutRouteInput
@@ -198685,7 +198876,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -198742,7 +198934,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     documents?: DocumentCreateNestedManyWithoutRouteInput
@@ -198759,7 +198952,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -201777,6 +201971,7 @@ export namespace Prisma {
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutCreatedByInput = {
@@ -201812,6 +202007,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutCreatedByInput = {
@@ -201857,6 +202053,7 @@ export namespace Prisma {
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutUpdatedByInput = {
@@ -201892,6 +202089,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutUpdatedByInput = {
@@ -201937,6 +202135,7 @@ export namespace Prisma {
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutDeletedByInput = {
@@ -201972,6 +202171,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutDeletedByInput = {
@@ -208717,6 +208917,7 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -208734,6 +208935,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -212238,6 +212440,83 @@ export namespace Prisma {
     create: XOR<TruckCreateWithoutAssignedRoutesInput, TruckUncheckedCreateWithoutAssignedRoutesInput>
   }
 
+  export type CarrierTruckCreateWithoutRoutesInput = {
+    id?: string
+    vehicleId: string
+    displayName?: string | null
+    unitNumber: string
+    year?: number | null
+    make?: string | null
+    model?: string | null
+    vin?: string | null
+    truckType?: string
+    payloadCapacityLbs?: number | null
+    grossWeightLbs?: number | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    licenseExpiry?: Date | string | null
+    registrationExpiry?: Date | string | null
+    insuranceExpiry?: Date | string | null
+    currentOdometerMiles?: number | null
+    lastOdometerDate?: Date | string | null
+    status?: string
+    isSample?: boolean
+    notes?: string | null
+    photoS3Key?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
+    createdBy?: UserCreateNestedOneWithoutCarrierTrucksCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutCarrierTrucksUpdatedInput
+    deletedBy?: UserCreateNestedOneWithoutCarrierTrucksDeletedInput
+    primaryDispatches?: TripCreateNestedManyWithoutTruckInput
+    trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
+    defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+  }
+
+  export type CarrierTruckUncheckedCreateWithoutRoutesInput = {
+    id?: string
+    orgId: string
+    vehicleId: string
+    displayName?: string | null
+    unitNumber: string
+    year?: number | null
+    make?: string | null
+    model?: string | null
+    vin?: string | null
+    truckType?: string
+    payloadCapacityLbs?: number | null
+    grossWeightLbs?: number | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    licenseExpiry?: Date | string | null
+    registrationExpiry?: Date | string | null
+    insuranceExpiry?: Date | string | null
+    currentOdometerMiles?: number | null
+    lastOdometerDate?: Date | string | null
+    status?: string
+    isSample?: boolean
+    notes?: string | null
+    photoS3Key?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    deletedAt?: Date | string | null
+    deletedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    primaryDispatches?: TripUncheckedCreateNestedManyWithoutTruckInput
+    trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
+    defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+  }
+
+  export type CarrierTruckCreateOrConnectWithoutRoutesInput = {
+    where: CarrierTruckWhereUniqueInput
+    create: XOR<CarrierTruckCreateWithoutRoutesInput, CarrierTruckUncheckedCreateWithoutRoutesInput>
+  }
+
   export type UserCreateWithoutRoutesCreatedInput = {
     id?: string
     email: string
@@ -214100,6 +214379,89 @@ export namespace Prisma {
     loads?: LoadUncheckedUpdateManyWithoutTruckNestedInput
   }
 
+  export type CarrierTruckUpsertWithoutRoutesInput = {
+    update: XOR<CarrierTruckUpdateWithoutRoutesInput, CarrierTruckUncheckedUpdateWithoutRoutesInput>
+    create: XOR<CarrierTruckCreateWithoutRoutesInput, CarrierTruckUncheckedCreateWithoutRoutesInput>
+    where?: CarrierTruckWhereInput
+  }
+
+  export type CarrierTruckUpdateToOneWithWhereWithoutRoutesInput = {
+    where?: CarrierTruckWhereInput
+    data: XOR<CarrierTruckUpdateWithoutRoutesInput, CarrierTruckUncheckedUpdateWithoutRoutesInput>
+  }
+
+  export type CarrierTruckUpdateWithoutRoutesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    unitNumber?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    vin?: NullableStringFieldUpdateOperationsInput | string | null
+    truckType?: StringFieldUpdateOperationsInput | string
+    payloadCapacityLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    grossWeightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    registrationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    insuranceExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
+    lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
+    createdBy?: UserUpdateOneWithoutCarrierTrucksCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutCarrierTrucksUpdatedNestedInput
+    deletedBy?: UserUpdateOneWithoutCarrierTrucksDeletedNestedInput
+    primaryDispatches?: TripUpdateManyWithoutTruckNestedInput
+    trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
+    defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+  }
+
+  export type CarrierTruckUncheckedUpdateWithoutRoutesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    unitNumber?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    vin?: NullableStringFieldUpdateOperationsInput | string | null
+    truckType?: StringFieldUpdateOperationsInput | string
+    payloadCapacityLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    grossWeightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    registrationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    insuranceExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
+    lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    primaryDispatches?: TripUncheckedUpdateManyWithoutTruckNestedInput
+    trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
+    defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+  }
+
   export type UserUpsertWithoutRoutesCreatedInput = {
     update: XOR<UserUpdateWithoutRoutesCreatedInput, UserUncheckedUpdateWithoutRoutesCreatedInput>
     create: XOR<UserCreateWithoutRoutesCreatedInput, UserUncheckedCreateWithoutRoutesCreatedInput>
@@ -215162,7 +215524,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -215179,7 +215542,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -216029,7 +216393,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -216046,7 +216411,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -217148,7 +217514,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -217165,7 +217532,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -218763,7 +219131,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -218780,7 +219149,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -224218,6 +224588,7 @@ export namespace Prisma {
     primaryDispatches?: TripCreateNestedManyWithoutTruckInput
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutGpsLocationsInput = {
@@ -224253,6 +224624,7 @@ export namespace Prisma {
     primaryDispatches?: TripUncheckedCreateNestedManyWithoutTruckInput
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutGpsLocationsInput = {
@@ -224566,6 +224938,7 @@ export namespace Prisma {
     primaryDispatches?: TripUpdateManyWithoutTruckNestedInput
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutGpsLocationsInput = {
@@ -224601,6 +224974,7 @@ export namespace Prisma {
     primaryDispatches?: TripUncheckedUpdateManyWithoutTruckNestedInput
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type TenantCreateWithoutSafetyEventsInput = {
@@ -225171,7 +225545,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -225188,7 +225563,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -225818,7 +226194,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -225835,7 +226212,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -231685,7 +232063,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -231702,7 +232081,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -232587,7 +232967,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -232604,7 +232985,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -235623,7 +236005,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -235640,7 +236023,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -236496,7 +236880,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -236513,7 +236898,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -249940,7 +250326,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -249957,7 +250344,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -251542,7 +251930,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -251559,7 +251948,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -255566,7 +255956,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -255583,7 +255974,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -256674,7 +257066,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -256691,7 +257084,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -257847,7 +258241,8 @@ export namespace Prisma {
     archivedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutRoutesInput
     driver: UserCreateNestedOneWithoutAssignedRoutesInput
-    truck: TruckCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutRoutesInput
     createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
     updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
     deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
@@ -257864,7 +258259,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -258421,7 +258817,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -258438,7 +258835,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -278235,6 +278633,82 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type RouteCreateWithoutCarrierTruckInput = {
+    id?: string
+    origin: string
+    destination: string
+    scheduledDate: Date | string
+    status?: $Enums.RouteStatus
+    notes?: string | null
+    name?: string | null
+    completedAt?: Date | string | null
+    version?: number
+    startOdometer?: number | null
+    endOdometer?: number | null
+    distanceMiles?: number | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutRoutesInput
+    driver: UserCreateNestedOneWithoutAssignedRoutesInput
+    truck?: TruckCreateNestedOneWithoutAssignedRoutesInput
+    createdBy?: UserCreateNestedOneWithoutRoutesCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutRoutesUpdatedInput
+    deletedBy?: UserCreateNestedOneWithoutRoutesDeletedInput
+    documents?: DocumentCreateNestedManyWithoutRouteInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutRouteInput
+    expenses?: RouteExpenseCreateNestedManyWithoutRouteInput
+    payments?: RoutePaymentCreateNestedManyWithoutRouteInput
+    loads?: LoadCreateNestedManyWithoutRouteInput
+    stops?: RouteStopCreateNestedManyWithoutRouteInput
+    coDrivers?: RouteDriverCreateNestedManyWithoutRouteInput
+    driverAssignments?: DriverRouteJoinCreateNestedManyWithoutRouteInput
+  }
+
+  export type RouteUncheckedCreateWithoutCarrierTruckInput = {
+    id?: string
+    tenantId: string
+    driverId: string
+    truckId?: string | null
+    origin: string
+    destination: string
+    scheduledDate: Date | string
+    status?: $Enums.RouteStatus
+    notes?: string | null
+    name?: string | null
+    completedAt?: Date | string | null
+    version?: number
+    startOdometer?: number | null
+    endOdometer?: number | null
+    distanceMiles?: number | null
+    createdById?: string | null
+    updatedById?: string | null
+    deletedAt?: Date | string | null
+    deletedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    documents?: DocumentUncheckedCreateNestedManyWithoutRouteInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutRouteInput
+    expenses?: RouteExpenseUncheckedCreateNestedManyWithoutRouteInput
+    payments?: RoutePaymentUncheckedCreateNestedManyWithoutRouteInput
+    loads?: LoadUncheckedCreateNestedManyWithoutRouteInput
+    stops?: RouteStopUncheckedCreateNestedManyWithoutRouteInput
+    coDrivers?: RouteDriverUncheckedCreateNestedManyWithoutRouteInput
+    driverAssignments?: DriverRouteJoinUncheckedCreateNestedManyWithoutRouteInput
+  }
+
+  export type RouteCreateOrConnectWithoutCarrierTruckInput = {
+    where: RouteWhereUniqueInput
+    create: XOR<RouteCreateWithoutCarrierTruckInput, RouteUncheckedCreateWithoutCarrierTruckInput>
+  }
+
+  export type RouteCreateManyCarrierTruckInputEnvelope = {
+    data: RouteCreateManyCarrierTruckInput | RouteCreateManyCarrierTruckInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutCarrierTrucksInput = {
     update: XOR<TenantUpdateWithoutCarrierTrucksInput, TenantUncheckedUpdateWithoutCarrierTrucksInput>
     create: XOR<TenantCreateWithoutCarrierTrucksInput, TenantUncheckedCreateWithoutCarrierTrucksInput>
@@ -279409,6 +279883,22 @@ export namespace Prisma {
     data: XOR<GPSLocationUpdateManyMutationInput, GPSLocationUncheckedUpdateManyWithoutCarrierTruckInput>
   }
 
+  export type RouteUpsertWithWhereUniqueWithoutCarrierTruckInput = {
+    where: RouteWhereUniqueInput
+    update: XOR<RouteUpdateWithoutCarrierTruckInput, RouteUncheckedUpdateWithoutCarrierTruckInput>
+    create: XOR<RouteCreateWithoutCarrierTruckInput, RouteUncheckedCreateWithoutCarrierTruckInput>
+  }
+
+  export type RouteUpdateWithWhereUniqueWithoutCarrierTruckInput = {
+    where: RouteWhereUniqueInput
+    data: XOR<RouteUpdateWithoutCarrierTruckInput, RouteUncheckedUpdateWithoutCarrierTruckInput>
+  }
+
+  export type RouteUpdateManyWithWhereWithoutCarrierTruckInput = {
+    where: RouteScalarWhereInput
+    data: XOR<RouteUpdateManyMutationInput, RouteUncheckedUpdateManyWithoutCarrierTruckInput>
+  }
+
   export type TenantCreateWithoutRouteTemplatesInput = {
     id?: string
     name: string
@@ -279874,6 +280364,7 @@ export namespace Prisma {
     primaryDispatches?: TripCreateNestedManyWithoutTruckInput
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutDefaultRouteTemplatesInput = {
@@ -279909,6 +280400,7 @@ export namespace Prisma {
     primaryDispatches?: TripUncheckedCreateNestedManyWithoutTruckInput
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutDefaultRouteTemplatesInput = {
@@ -281134,6 +281626,7 @@ export namespace Prisma {
     primaryDispatches?: TripUpdateManyWithoutTruckNestedInput
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutDefaultRouteTemplatesInput = {
@@ -281169,6 +281662,7 @@ export namespace Prisma {
     primaryDispatches?: TripUncheckedUpdateManyWithoutTruckNestedInput
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type RouteTemplateStopUpsertWithWhereUniqueWithoutRouteTemplateInput = {
@@ -284035,6 +284529,7 @@ export namespace Prisma {
     trailerDispatches?: TripCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutPrimaryDispatchesInput = {
@@ -284070,6 +284565,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutPrimaryDispatchesInput = {
@@ -284110,6 +284606,7 @@ export namespace Prisma {
     primaryDispatches?: TripCreateNestedManyWithoutTruckInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutTrailerDispatchesInput = {
@@ -284145,6 +284642,7 @@ export namespace Prisma {
     primaryDispatches?: TripUncheckedCreateNestedManyWithoutTruckInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
     gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
+    routes?: RouteUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutTrailerDispatchesInput = {
@@ -286282,6 +286780,7 @@ export namespace Prisma {
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutPrimaryDispatchesInput = {
@@ -286317,6 +286816,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUpsertWithoutTrailerDispatchesInput = {
@@ -286363,6 +286863,7 @@ export namespace Prisma {
     primaryDispatches?: TripUpdateManyWithoutTruckNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutTrailerDispatchesInput = {
@@ -286398,6 +286899,7 @@ export namespace Prisma {
     primaryDispatches?: TripUncheckedUpdateManyWithoutTruckNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type UserUpsertWithoutDispatchedRunsInput = {
@@ -335634,7 +336136,8 @@ export namespace Prisma {
   export type RouteCreateManyTenantInput = {
     id?: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -337389,7 +337892,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -337406,7 +337910,8 @@ export namespace Prisma {
   export type RouteUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -337438,7 +337943,8 @@ export namespace Prisma {
   export type RouteUncheckedUpdateManyWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -339212,6 +339718,7 @@ export namespace Prisma {
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutTenantInput = {
@@ -339247,6 +339754,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateManyWithoutTenantInput = {
@@ -341294,7 +341802,8 @@ export namespace Prisma {
   export type RouteCreateManyDriverInput = {
     id?: string
     tenantId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -341495,7 +342004,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -341519,7 +342029,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -341543,7 +342054,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -344064,7 +344576,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -344081,7 +344594,8 @@ export namespace Prisma {
   export type RouteUncheckedUpdateWithoutDriverInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344113,7 +344627,8 @@ export namespace Prisma {
   export type RouteUncheckedUpdateManyWithoutDriverInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344723,7 +345238,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
     documents?: DocumentUpdateManyWithoutRouteNestedInput
@@ -344740,7 +345256,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344772,7 +345289,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344811,7 +345329,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
     documents?: DocumentUpdateManyWithoutRouteNestedInput
@@ -344828,7 +345347,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344860,7 +345380,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344899,7 +345420,8 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
-    truck?: TruckUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     documents?: DocumentUpdateManyWithoutRouteNestedInput
@@ -344916,7 +345438,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -344948,7 +345471,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -348432,6 +348956,7 @@ export namespace Prisma {
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutCreatedByInput = {
@@ -348467,6 +348992,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateManyWithoutCreatedByInput = {
@@ -348533,6 +349059,7 @@ export namespace Prisma {
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutUpdatedByInput = {
@@ -348568,6 +349095,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateManyWithoutUpdatedByInput = {
@@ -348634,6 +349162,7 @@ export namespace Prisma {
     trailerDispatches?: TripUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutDeletedByInput = {
@@ -348669,6 +349198,7 @@ export namespace Prisma {
     trailerDispatches?: TripUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
     gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateManyWithoutDeletedByInput = {
@@ -352813,6 +353343,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     driverId: string
+    carrierTruckId?: string | null
     origin: string
     destination: string
     scheduledDate: Date | string
@@ -352997,6 +353528,7 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
     driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutRoutesNestedInput
     createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
     deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
@@ -353014,6 +353546,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -353046,6 +353579,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     driverId?: StringFieldUpdateOperationsInput | string
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -358133,6 +358667,31 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type RouteCreateManyCarrierTruckInput = {
+    id?: string
+    tenantId: string
+    driverId: string
+    truckId?: string | null
+    origin: string
+    destination: string
+    scheduledDate: Date | string
+    status?: $Enums.RouteStatus
+    notes?: string | null
+    name?: string | null
+    completedAt?: Date | string | null
+    version?: number
+    startOdometer?: number | null
+    endOdometer?: number | null
+    distanceMiles?: number | null
+    createdById?: string | null
+    updatedById?: string | null
+    deletedAt?: Date | string | null
+    deletedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+  }
+
   export type TripUpdateWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     scheduledDeparture?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -358435,6 +358994,97 @@ export namespace Prisma {
     accuracy?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RouteUpdateWithoutCarrierTruckInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumRouteStatusFieldUpdateOperationsInput | $Enums.RouteStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    startOdometer?: NullableIntFieldUpdateOperationsInput | number | null
+    endOdometer?: NullableIntFieldUpdateOperationsInput | number | null
+    distanceMiles?: NullableFloatFieldUpdateOperationsInput | number | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutRoutesNestedInput
+    driver?: UserUpdateOneRequiredWithoutAssignedRoutesNestedInput
+    truck?: TruckUpdateOneWithoutAssignedRoutesNestedInput
+    createdBy?: UserUpdateOneWithoutRoutesCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutRoutesUpdatedNestedInput
+    deletedBy?: UserUpdateOneWithoutRoutesDeletedNestedInput
+    documents?: DocumentUpdateManyWithoutRouteNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutRouteNestedInput
+    expenses?: RouteExpenseUpdateManyWithoutRouteNestedInput
+    payments?: RoutePaymentUpdateManyWithoutRouteNestedInput
+    loads?: LoadUpdateManyWithoutRouteNestedInput
+    stops?: RouteStopUpdateManyWithoutRouteNestedInput
+    coDrivers?: RouteDriverUpdateManyWithoutRouteNestedInput
+    driverAssignments?: DriverRouteJoinUpdateManyWithoutRouteNestedInput
+  }
+
+  export type RouteUncheckedUpdateWithoutCarrierTruckInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumRouteStatusFieldUpdateOperationsInput | $Enums.RouteStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    startOdometer?: NullableIntFieldUpdateOperationsInput | number | null
+    endOdometer?: NullableIntFieldUpdateOperationsInput | number | null
+    distanceMiles?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    documents?: DocumentUncheckedUpdateManyWithoutRouteNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutRouteNestedInput
+    expenses?: RouteExpenseUncheckedUpdateManyWithoutRouteNestedInput
+    payments?: RoutePaymentUncheckedUpdateManyWithoutRouteNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutRouteNestedInput
+    stops?: RouteStopUncheckedUpdateManyWithoutRouteNestedInput
+    coDrivers?: RouteDriverUncheckedUpdateManyWithoutRouteNestedInput
+    driverAssignments?: DriverRouteJoinUncheckedUpdateManyWithoutRouteNestedInput
+  }
+
+  export type RouteUncheckedUpdateManyWithoutCarrierTruckInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumRouteStatusFieldUpdateOperationsInput | $Enums.RouteStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    startOdometer?: NullableIntFieldUpdateOperationsInput | number | null
+    endOdometer?: NullableIntFieldUpdateOperationsInput | number | null
+    distanceMiles?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RouteTemplateStopCreateManyRouteTemplateInput = {
