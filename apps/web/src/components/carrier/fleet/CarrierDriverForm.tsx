@@ -211,15 +211,15 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
         </div>
       </div>
 
-      {/* CDL section */}
+      {/* License section */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          CDL Information
+          License Information
         </h3>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground" htmlFor="cdlNumber">
-              CDL Number
+              License Number
             </label>
             <Input
               id="cdlNumber"
@@ -231,7 +231,7 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground" htmlFor="cdlState">
-              CDL State
+              License State
             </label>
             <Select
               value={values.cdlState || undefined}
@@ -251,7 +251,7 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground" htmlFor="cdlClass">
-              CDL Class
+              License Class
             </label>
             <Select
               value={values.cdlClass || undefined}
@@ -261,15 +261,19 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
                 <SelectValue placeholder="Select class" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="A">Class A</SelectItem>
-                <SelectItem value="B">Class B</SelectItem>
-                <SelectItem value="C">Class C</SelectItem>
+                <SelectItem value="A">Class A (CDL)</SelectItem>
+                <SelectItem value="B">Class B (CDL)</SelectItem>
+                <SelectItem value="C">Class C (CDL)</SelectItem>
+                <SelectItem value="D">Class D (Non-CDL)</SelectItem>
+                <SelectItem value="E">Class E (Non-CDL)</SelectItem>
+                <SelectItem value="M">Class M (Motorcycle)</SelectItem>
+                <SelectItem value="OTHER">Non-CDL / Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground" htmlFor="cdlExpiry">
-              CDL Expiry
+              License Expiry
             </label>
             <Input
               id="cdlExpiry"

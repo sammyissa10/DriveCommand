@@ -101,6 +101,22 @@ const STATUS_OPTIONS = [
   { label: 'Inactive', value: 'inactive' },
   { label: 'Suspended', value: 'suspended' },
 ];
+// CDL (A/B/C) plus non-CDL classes — fleets run drivers on regular operator
+// licenses too (Class D/E), so the picker must cover both. Kept in sync with
+// CarrierDriverForm's create dropdown.
+const LICENSE_CLASS_OPTIONS = [
+  { label: '—', value: '' },
+  { label: 'Class A (CDL)', value: 'A' },
+  { label: 'Class B (CDL)', value: 'B' },
+  { label: 'Class C (CDL)', value: 'C' },
+  { label: 'Class D (Non-CDL)', value: 'D' },
+  { label: 'Class E (Non-CDL)', value: 'E' },
+  { label: 'Class M (Motorcycle)', value: 'M' },
+  { label: 'Non-CDL / Other', value: 'OTHER' },
+];
+const LICENSE_CLASS_LABEL = Object.fromEntries(
+  LICENSE_CLASS_OPTIONS.filter((o) => o.value).map((o) => [o.value, o.label]),
+);
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -155,14 +171,14 @@ function tripStatusMeta(s: string): { tone: StatusTone; label: string } {
   }
 }
 
-/** CDL expiry banner text/tone when due or overdue. */
+/** License expiry banner text/tone when due or overdue. */
 function cdlBanner(iso: string | null): { tone: 'danger' | 'warning'; title: string } | null {
   if (!iso) return null;
   const d = daysUntil(iso);
   if (d > EXPIRY_THRESHOLD_DAYS) return null;
-  if (d < 0) return { tone: 'danger', title: `CDL expired ${Math.abs(d)} day${Math.abs(d) === 1 ? '' : 's'} ago` };
-  if (d === 0) return { tone: 'warning', title: 'CDL expires today' };
-  return { tone: 'warning', title: `CDL expires in ${d} day${d === 1 ? '' : 's'}` };
+  if (d < 0) return { tone: 'danger', title: `License expired ${Math.abs(d)} day${Math.abs(d) === 1 ? '' : 's'} ago` };
+  if (d === 0) return { tone: 'warning', title: 'License expires today' };
+  return { tone: 'warning', title: `License expires in ${d} day${d === 1 ? '' : 's'}` };
 }
 
 function ChildListSkeleton() {
@@ -281,7 +297,7 @@ export function DriverDetailMobile({
       editable: false,
       lockReason: 'Full number is managed in the driver’s profile.',
     },
-    { key: 'cdlClass', label: 'Class', value: data.cdlClass ? `Class ${data.cdlClass}` : null, input: { value: form.cdlClass, onChange: (v) => setField('cdlClass', v.toUpperCase().slice(0, 1)), autoCapitalize: 'characters', maxLength: 1, placeholder: 'A' } },
+    { key: 'cdlClass', label: 'Class', value: data.cdlClass ? (LICENSE_CLASS_LABEL[data.cdlClass] ?? `Class ${data.cdlClass}`) : null, input: { value: form.cdlClass, onChange: (v) => setField('cdlClass', v), options: LICENSE_CLASS_OPTIONS } },
     { key: 'cdlState', label: 'State', value: data.cdlState, input: { value: form.cdlState, onChange: (v) => setField('cdlState', v.toUpperCase().slice(0, 2)), autoCapitalize: 'characters', maxLength: 2, placeholder: 'TX' } },
     { key: 'cdlExpiry', label: 'License expires', value: data.cdlExpiry ? fmtDate(data.cdlExpiry) : null, tone: expiryTone(data.cdlExpiry), input: { value: form.cdlExpiry, onChange: (v) => setField('cdlExpiry', v), type: 'date' } },
   ];
@@ -559,7 +575,7 @@ export function DriverDetailMobile({
               {documents === null ? (
                 <ChildListSkeleton />
               ) : documents.length === 0 ? (
-                <EmptyState icon={FileText} title="No documents" message="CDL, medical card, and other files will appear here." />
+                <EmptyState icon={FileText} title="No documents" message="License, medical card, and other files will appear here." />
               ) : (
                 documents.map((d) => (
                   <DocumentRow
