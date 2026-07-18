@@ -624,6 +624,7 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
               <option value="partial">Partial</option>
               <option value="drayage">Drayage</option>
               <option value="intermodal">Intermodal</option>
+              <option value="expedited">Expedited</option>
             </select>
           </div>
 

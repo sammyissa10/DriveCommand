@@ -3,13 +3,14 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getContract, updateContract, softDeleteContract } from '@/lib/carrier/contracts';
+import { RATE_TYPES } from '@/lib/carrier/rate-types';
 
 const ContractUpdateSchema = z.object({
   contractName: z.string().optional(),
   contractType: z.enum(['spot', 'contract', 'dedicated']).optional(),
   effectiveDate: z.string().optional(),
   expirationDate: z.string().optional(),
-  rateType: z.enum(['per_mile', 'flat', 'per_load', 'hourly']).optional(),
+  rateType: z.enum(RATE_TYPES).optional(),
   baseRate: z.string().optional(),
   fuelSurchargeRate: z.string().optional(),
   fuelSurchargeMethod: z.enum(['none', 'percentage', 'per_mile', 'table']).optional(),

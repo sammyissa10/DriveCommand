@@ -25,8 +25,9 @@ const LOAD_TYPES = [
   { label: 'FTL', value: 'ftl' },
   { label: 'LTL', value: 'ltl' },
   { label: 'Partial', value: 'partial' },
-  { label: 'Expedited', value: 'expedited' },
+  { label: 'Drayage', value: 'drayage' },
   { label: 'Intermodal', value: 'intermodal' },
+  { label: 'Expedited', value: 'expedited' },
 ];
 
 const RATE_TYPES = [

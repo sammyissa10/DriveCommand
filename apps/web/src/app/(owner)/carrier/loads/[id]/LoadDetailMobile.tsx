@@ -102,6 +102,7 @@ const LOAD_TYPES = [
   { label: 'Partial', value: 'partial' },
   { label: 'Drayage', value: 'drayage' },
   { label: 'Intermodal', value: 'intermodal' },
+  { label: 'Expedited', value: 'expedited' },
 ];
 const LOAD_TYPE_LABEL: Record<string, string> = {
   ftl: 'FTL',
@@ -109,6 +110,7 @@ const LOAD_TYPE_LABEL: Record<string, string> = {
   partial: 'Partial',
   drayage: 'Drayage',
   intermodal: 'Intermodal',
+  expedited: 'Expedited',
 };
 
 const RATE_TYPES = [

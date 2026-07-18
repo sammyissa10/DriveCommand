@@ -26,7 +26,7 @@ const LoadUpdateSchema = z.object({
   clientId: z.string().uuid().optional(),
   dispatchId: z.string().uuid().nullable().optional(),
   contractId: z.string().uuid().optional(),
-  loadType: z.enum(['ftl', 'ltl', 'partial', 'drayage', 'intermodal']).optional(),
+  loadType: z.enum(['ftl', 'ltl', 'partial', 'drayage', 'intermodal', 'expedited']).optional(),
   referenceNumber: z.string().optional(),
   bolNumber: z.string().optional(),
   proNumber: z.string().optional(),
