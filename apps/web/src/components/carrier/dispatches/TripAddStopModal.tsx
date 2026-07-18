@@ -39,6 +39,11 @@ interface TripAddStopModalProps {
   dispatchStatus: string;
   currentStopCount: number;
   loadId?: string;
+  loads?: { id: string; referenceNumber: string | null; clientName: string }[];
+}
+
+function loadOptionLabel(load: { referenceNumber: string | null; clientName: string }): string {
+  return `${load.referenceNumber ? load.referenceNumber : 'No ref'} — ${load.clientName}`;
 }
 
 type StopType = 'pickup' | 'delivery' | 'fuel_stop' | 'layover';
@@ -70,6 +75,7 @@ export function TripAddStopModal({
   dispatchStatus,
   currentStopCount,
   loadId,
+  loads = [],
 }: TripAddStopModalProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -77,6 +83,7 @@ export function TripAddStopModal({
   const [selectedFacility, setSelectedFacility] = useState<FacilitySearchResult | null>(null);
   const [form, setForm] = useState<StopForm>(DEFAULT_FORM);
   const [showFacilitySheet, setShowFacilitySheet] = useState(false);
+  const [selectedLoadId, setSelectedLoadId] = useState<string>(loadId ?? 'none');
 
   const isInProgress = dispatchStatus === 'in_progress';
 
@@ -87,8 +94,9 @@ export function TripAddStopModal({
       setSelectedFacility(null);
       setForm(DEFAULT_FORM);
       setShowFacilitySheet(false);
+      setSelectedLoadId(loadId ?? 'none');
     }
-  }, [open]);
+  }, [open, loadId]);
 
   function handleFacilitySelect(facility: FacilitySearchResult) {
     setSelectedFacility(facility);
@@ -107,7 +115,7 @@ export function TripAddStopModal({
           sequenceOrder: currentStopCount + 1,
         };
 
-        if (loadId) body.loadId = loadId;
+        if (selectedLoadId && selectedLoadId !== 'none') body.loadId = selectedLoadId;
         if (form.contactName.trim()) body.contactName = form.contactName.trim();
         if (form.contactPhone.trim()) body.contactPhone = form.contactPhone.trim();
         if (form.appointmentStart) body.appointmentStart = new Date(form.appointmentStart).toISOString();
@@ -222,6 +230,29 @@ export function TripAddStopModal({
               </SelectContent>
             </Select>
           </div>
+
+          {/* For Load */}
+          {loads.length > 0 && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">For Load</label>
+              <Select
+                value={selectedLoadId}
+                onValueChange={setSelectedLoadId}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No specific load</SelectItem>
+                  {loads.map((load) => (
+                    <SelectItem key={load.id} value={load.id}>
+                      {loadOptionLabel(load)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Appointment Times */}
           <div className="grid grid-cols-2 gap-4">

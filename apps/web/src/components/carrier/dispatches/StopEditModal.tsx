@@ -13,6 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface StopData {
   id: string;
@@ -21,6 +28,7 @@ interface StopData {
   appointmentStart: string | null;
   appointmentEnd: string | null;
   specialInstructions: string | null;
+  loadId: string | null;
 }
 
 interface StopEditModalProps {
@@ -28,6 +36,11 @@ interface StopEditModalProps {
   onOpenChange: (open: boolean) => void;
   stop: StopData;
   dispatchStatus: string;
+  loads?: { id: string; referenceNumber: string | null; clientName: string }[];
+}
+
+function loadOptionLabel(load: { referenceNumber: string | null; clientName: string }): string {
+  return `${load.referenceNumber ? load.referenceNumber : 'No ref'} — ${load.clientName}`;
 }
 
 function formatDateTimeLocal(isoString: string | null): string {
@@ -42,6 +55,7 @@ export function StopEditModal({
   onOpenChange,
   stop,
   dispatchStatus,
+  loads = [],
 }: StopEditModalProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -51,6 +65,7 @@ export function StopEditModal({
     appointmentStart: formatDateTimeLocal(stop.appointmentStart),
     appointmentEnd: formatDateTimeLocal(stop.appointmentEnd),
     specialInstructions: stop.specialInstructions ?? '',
+    loadId: stop.loadId ?? 'none',
   });
 
   const isInProgress = dispatchStatus === 'in_progress';
@@ -63,6 +78,7 @@ export function StopEditModal({
       appointmentStart: formatDateTimeLocal(stop.appointmentStart),
       appointmentEnd: formatDateTimeLocal(stop.appointmentEnd),
       specialInstructions: stop.specialInstructions ?? '',
+      loadId: stop.loadId ?? 'none',
     });
   }, [stop]);
 
@@ -86,6 +102,9 @@ export function StopEditModal({
         }
         if (form.specialInstructions !== (stop.specialInstructions ?? '')) {
           body.specialInstructions = form.specialInstructions.trim() || undefined;
+        }
+        if (form.loadId !== (stop.loadId ?? 'none')) {
+          body.loadId = form.loadId === 'none' ? null : form.loadId;
         }
 
         // If no changes, just close
@@ -125,6 +144,29 @@ export function StopEditModal({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* For Load */}
+          {loads.length > 0 && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">For Load</label>
+              <Select
+                value={form.loadId}
+                onValueChange={(v) => setForm((prev) => ({ ...prev, loadId: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No specific load</SelectItem>
+                  {loads.map((load) => (
+                    <SelectItem key={load.id} value={load.id}>
+                      {loadOptionLabel(load)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Appointment Times */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
