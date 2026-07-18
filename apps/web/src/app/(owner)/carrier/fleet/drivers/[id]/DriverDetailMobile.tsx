@@ -111,7 +111,6 @@ const LICENSE_CLASS_OPTIONS = [
   { label: 'Class C (CDL)', value: 'C' },
   { label: 'Class D (Non-CDL)', value: 'D' },
   { label: 'Class E (Non-CDL)', value: 'E' },
-  { label: 'Class M (Motorcycle)', value: 'M' },
   { label: 'Non-CDL / Other', value: 'OTHER' },
 ];
 const LICENSE_CLASS_LABEL = Object.fromEntries(

@@ -266,7 +266,6 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
                 <SelectItem value="C">Class C (CDL)</SelectItem>
                 <SelectItem value="D">Class D (Non-CDL)</SelectItem>
                 <SelectItem value="E">Class E (Non-CDL)</SelectItem>
-                <SelectItem value="M">Class M (Motorcycle)</SelectItem>
                 <SelectItem value="OTHER">Non-CDL / Other</SelectItem>
               </SelectContent>
             </Select>
