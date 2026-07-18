@@ -110,7 +110,7 @@ export const trucksColumns: ColumnDef<TruckRow, unknown>[] = [
   {
     id: 'unitNumber',
     accessorKey: 'unitNumber',
-    header: 'Name',
+    header: 'Identifier',
     meta: {
       dataType: 'text',
       freezable: true,
