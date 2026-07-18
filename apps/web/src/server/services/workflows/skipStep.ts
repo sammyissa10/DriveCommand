@@ -5,7 +5,7 @@
  * (enforced at the tRPC layer via adminProcedure). After skipping, recomputes
  * dispatch readiness so BLOCKED status is updated immediately.
  */
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { computeDispatchReadiness } from './computeDispatchReadiness';
 
@@ -17,7 +17,8 @@ export async function skipStep(args: {
 }) {
   const { stepInstanceId, userId, tenantId, reason } = args;
 
-  const stepInstance = await prisma.stepInstance.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const stepInstance = await tenantPrisma.stepInstance.findFirst({
     where: {
       id: stepInstanceId,
       playbookInstance: { tenantId },
@@ -28,7 +29,7 @@ export async function skipStep(args: {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Task already complete' });
   }
 
-  const updated = await prisma.stepInstance.update({
+  const updated = await tenantPrisma.stepInstance.update({
     where: { id: stepInstanceId },
     data: {
       status: 'SKIPPED',

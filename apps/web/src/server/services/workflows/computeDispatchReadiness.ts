@@ -12,7 +12,8 @@
  * Emits a DISPATCH_READY push notification when readiness flips from false → true.
  * Emits an INSTANCE_BLOCKED in-app push when status flips to BLOCKED (not BLOCKED → BLOCKED).
  */
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // platform table (user.update) kept bare
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { sendDispatchReady, sendInstanceBlocked } from './notifications';
 import type { PlaybookEntityType } from '@/generated/prisma';
@@ -21,7 +22,8 @@ export async function computeDispatchReadiness(instanceId: string): Promise<{
   isReady: boolean;
   blockers: { id: string; status: string }[];
 }> {
-  const instance = await prisma.playbookInstance.findUniqueOrThrow({
+  const tenantPrisma = await getTenantPrisma();
+  const instance = await tenantPrisma.playbookInstance.findUniqueOrThrow({
     where: { id: instanceId },
     include: { stepInstances: true },
   });
@@ -51,7 +53,7 @@ export async function computeDispatchReadiness(instanceId: string): Promise<{
   const wasReady = instance.isDispatchReady;
   const wasBlocked = instance.status === 'BLOCKED';
 
-  await prisma.playbookInstance.update({
+  await tenantPrisma.playbookInstance.update({
     where: { id: instanceId },
     data: { completionPercent, isDispatchReady: isReady, status },
   });
@@ -95,7 +97,8 @@ async function updateEntityReadiness(
   tenantId: string
 ) {
   // An entity is ready only when every non-completed active instance is ready
-  const activeInstances = await prisma.playbookInstance.findMany({
+  const tenantPrisma = await getTenantPrisma();
+  const activeInstances = await tenantPrisma.playbookInstance.findMany({
     where: { entityId, tenantId, status: { not: 'COMPLETED' } },
     select: { isDispatchReady: true },
   });

@@ -66,10 +66,17 @@ export async function POST(req: NextRequest) {
 
     // For non-sysadmin users: verify the tenant row exists and is active, and the user is active
     if (appMeta.tenantId && !appMeta.isSystemAdmin) {
-      const tenant = await prisma.tenant.findUnique({
-        where: { id: appMeta.tenantId as string },
-        select: { isActive: true },
-      });
+      // Quick-423: set app.current_tenant_id GUC inside a tx before querying Tenant so
+      // the tenant_self_read RLS policy can match. Under app_user (Phase 2), the bare
+      // findUnique returns null because the GUC is unset — wrapping in a tx with TRUE
+      // (transaction-scope) avoids pool-leak while allowing the policy to read the row.
+      const tenant = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${appMeta.tenantId as string}, TRUE)`;
+        return tx.tenant.findUnique({
+          where: { id: appMeta.tenantId as string },
+          select: { isActive: true },
+        });
+      }, TX_OPTIONS);
 
       if (!tenant) {
         logger.error('Login: tenantId in app_metadata not found in DB', undefined, {
@@ -101,10 +108,14 @@ export async function POST(req: NextRequest) {
       }
 
       // Verify the user has a local DB record and is active (guards against deactivated users)
-      const dbUser = await prisma.user.findUnique({
-        where: { id: authUserId },
-        select: { id: true, isActive: true },
-      });
+      // Quick-424: set GUC inside tx so the user_tenant_rls policy can match under app_user (Phase 2).
+      const dbUser = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${appMeta.tenantId as string}, TRUE)`;
+        return tx.user.findUnique({
+          where: { id: authUserId },
+          select: { id: true, isActive: true },
+        });
+      }, TX_OPTIONS);
       if (!dbUser) {
         logger.error('Login: Supabase auth user has no local DB record', undefined, {
           userId: authUserId,

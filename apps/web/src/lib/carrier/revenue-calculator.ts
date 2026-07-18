@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // Helper: convert Prisma Decimal | null to string | null
@@ -133,7 +133,8 @@ export async function recalculateAndStore(
   orgId: string,
   loadId: string
 ): Promise<{ id: string; totalRevenue: string | null; fuelSurcharge: string | null } | null> {
-  const load = await prisma.carrierLoad.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const load = await tenantPrisma.carrierLoad.findFirst({
     where: { id: loadId, orgId },
     include: {
       dispatch: true,
@@ -144,7 +145,7 @@ export async function recalculateAndStore(
   if (!load) return null;
 
   // Count delivery stops for per_stop rate type
-  const deliveryStopCount = await prisma.carrierStop.count({
+  const deliveryStopCount = await tenantPrisma.carrierStop.count({
     where: {
       dispatchId: load.dispatchId ?? undefined,
       stopType: 'delivery',
@@ -184,7 +185,7 @@ export async function recalculateAndStore(
     contractForRevenue
   );
 
-  const updated = await prisma.carrierLoad.update({
+  const updated = await tenantPrisma.carrierLoad.update({
     where: { id: loadId },
     data: {
       totalRevenue: result.totalRevenue,

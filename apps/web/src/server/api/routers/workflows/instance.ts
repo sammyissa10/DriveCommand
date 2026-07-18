@@ -23,7 +23,8 @@ import {
 } from '@drivecommand/validation';
 import { generatePlaybookInstance } from '@/server/services/workflows/generatePlaybookInstance';
 import { computeDispatchReadiness } from '@/server/services/workflows/computeDispatchReadiness';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma'; // kept for $transaction (bypass_rls) + user platform table
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
 const generate = adminProcedure
   .input(generateInstanceSchema)
@@ -40,8 +41,9 @@ const generate = adminProcedure
 const list = tenantMemberProcedure
   .input(listInstancesSchema)
   .query(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
     const { status, entityType, entityId, cursor, take } = input;
-    const instances = await prisma.playbookInstance.findMany({
+    const instances = await tenantPrisma.playbookInstance.findMany({
       where: {
         tenantId: ctx.tenantId,
         // No filter ⇒ returns all statuses including NOT_STARTED — Active Work Board relies on this.
@@ -80,7 +82,8 @@ const list = tenantMemberProcedure
 const get = tenantMemberProcedure
   .input(getInstanceSchema)
   .query(async ({ ctx, input }) => {
-    const instance = await prisma.playbookInstance.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const instance = await tenantPrisma.playbookInstance.findFirst({
       where: { id: input.id, tenantId: ctx.tenantId },
       include: { stepInstances: true },
     });
@@ -117,7 +120,8 @@ const get = tenantMemberProcedure
 const getForEntity = tenantMemberProcedure
   .input(getForEntitySchema)
   .query(async ({ ctx, input }) => {
-    return prisma.playbookInstance.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    return tenantPrisma.playbookInstance.findMany({
       where: {
         tenantId: ctx.tenantId,
         entityType: input.entityType,
@@ -131,8 +135,9 @@ const getForEntity = tenantMemberProcedure
 const computeReadiness = adminProcedure
   .input(computeReadinessSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
     // Verify tenant ownership before computing
-    const instance = await prisma.playbookInstance.findFirst({
+    const instance = await tenantPrisma.playbookInstance.findFirst({
       where: { id: input.instanceId, tenantId: ctx.tenantId },
       select: { id: true },
     });
@@ -157,8 +162,10 @@ const getDriverReadiness = tenantMemberProcedure
     openInstanceId: string | null;
     userId: string | null;
   }> => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Look up the CarrierDriver to get the linked User ID
-    const carrierDriver = await prisma.carrierDriver.findFirst({
+    const carrierDriver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: input.carrierDriverId, orgId: ctx.tenantId },
       select: { userId: true },
     });
@@ -170,7 +177,7 @@ const getDriverReadiness = tenantMemberProcedure
 
     const userId = carrierDriver.userId;
 
-    // Check User.isDispatchReady (updated by computeDispatchReadiness service)
+    // Check User.isDispatchReady (updated by computeDispatchReadiness service) — platform table
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { isDispatchReady: true },
@@ -183,7 +190,7 @@ const getDriverReadiness = tenantMemberProcedure
     }
 
     // Collect open blocker step names from all active (non-completed) DRIVER instances for this user
-    const activeInstances = await prisma.playbookInstance.findMany({
+    const activeInstances = await tenantPrisma.playbookInstance.findMany({
       where: {
         tenantId: ctx.tenantId,
         entityType: 'DRIVER',

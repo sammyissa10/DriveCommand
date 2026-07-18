@@ -12,7 +12,8 @@
  */
 import { TRPCError } from '@trpc/server';
 import { router, adminProcedure } from '@/server/api/trpc';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { prisma } from '@/lib/db/prisma'; // kept for user.findMany — platform table
 import { RECIPES, getRecipeByKey } from '@/server/services/workflows/recipes';
 import {
   enableRecipeSchema,
@@ -25,8 +26,9 @@ import type { Prisma } from '@/generated/prisma';
 export const triggerRouter = router({
   /** List all pre-built recipes with per-tenant enabled state + play count. */
   listRecipes: adminProcedure.query(async ({ ctx }) => {
+    const tenantPrisma = await getTenantPrisma();
     // Load all active PlaybookTrigger rows for this tenant
-    const triggers = await prisma.playbookTrigger.findMany({
+    const triggers = await tenantPrisma.playbookTrigger.findMany({
       where: { tenantId: ctx.tenantId, isActive: true },
       include: {
         playbook: { select: { id: true, name: true } },
@@ -65,14 +67,16 @@ export const triggerRouter = router({
     const recipe = getRecipeByKey(input.recipeKey);
     if (!recipe) throw new TRPCError({ code: 'NOT_FOUND', message: 'Recipe not found' });
 
+    const tenantPrisma = await getTenantPrisma();
+
     // Validate playbookId belongs to this tenant
-    const playbook = await prisma.playbook.findFirst({
+    const playbook = await tenantPrisma.playbook.findFirst({
       where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!playbook) throw new TRPCError({ code: 'NOT_FOUND', message: 'Playbook not found' });
 
     // Upsert — one active trigger per (tenantId, recipeKey) by matching on event + playbookId
-    const existing = await prisma.playbookTrigger.findFirst({
+    const existing = await tenantPrisma.playbookTrigger.findFirst({
       where: {
         tenantId: ctx.tenantId,
         triggerEvent: recipe.triggerEvent,
@@ -81,13 +85,13 @@ export const triggerRouter = router({
     });
 
     if (existing) {
-      return prisma.playbookTrigger.update({
+      return tenantPrisma.playbookTrigger.update({
         where: { id: existing.id },
         data: { isActive: true, conditions: recipe.conditions as Prisma.InputJsonValue },
       });
     }
 
-    return prisma.playbookTrigger.create({
+    return tenantPrisma.playbookTrigger.create({
       data: {
         tenantId: ctx.tenantId,
         playbookId: input.playbookId,
@@ -106,9 +110,11 @@ export const triggerRouter = router({
     const recipe = getRecipeByKey(input.recipeKey);
     if (!recipe) throw new TRPCError({ code: 'NOT_FOUND', message: 'Recipe not found' });
 
+    const tenantPrisma = await getTenantPrisma();
+
     // Find all triggers matching this recipe's event for this tenant
     // then filter by conditions client-side (Prisma's Json filter doesn't support deep equality reliably)
-    const candidates = await prisma.playbookTrigger.findMany({
+    const candidates = await tenantPrisma.playbookTrigger.findMany({
       where: {
         tenantId: ctx.tenantId,
         triggerEvent: recipe.triggerEvent,
@@ -127,7 +133,7 @@ export const triggerRouter = router({
       return { disabled: 0 };
     }
 
-    const result = await prisma.playbookTrigger.updateMany({
+    const result = await tenantPrisma.playbookTrigger.updateMany({
       where: { id: { in: matchingIds } },
       data: { isActive: false },
     });
@@ -143,7 +149,8 @@ export const triggerRouter = router({
    * (e.g. ON_DISPATCH_CREATE with empty conditions).
    */
   listCustomRules: adminProcedure.query(async ({ ctx }) => {
-    const triggers = await prisma.playbookTrigger.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    const triggers = await tenantPrisma.playbookTrigger.findMany({
       where: { tenantId: ctx.tenantId },
       include: {
         playbook: { select: { id: true, name: true } },
@@ -169,8 +176,10 @@ export const triggerRouter = router({
 
   /** Create a custom PlaybookTrigger (not linked to any recipe). */
   createCustomRule: adminProcedure.input(createCustomRuleSchema).mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Validate playbookId belongs to this tenant
-    const playbook = await prisma.playbook.findFirst({
+    const playbook = await tenantPrisma.playbook.findFirst({
       where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!playbook) throw new TRPCError({ code: 'NOT_FOUND', message: 'Playbook not found' });
@@ -185,7 +194,7 @@ export const triggerRouter = router({
       conditions = {};
     }
 
-    return prisma.playbookTrigger.create({
+    return tenantPrisma.playbookTrigger.create({
       data: {
         tenantId: ctx.tenantId,
         playbookId: input.playbookId,
@@ -199,13 +208,15 @@ export const triggerRouter = router({
 
   /** Hard-delete a PlaybookTrigger by ID (custom rules only). */
   deleteRule: adminProcedure.input(deleteRuleSchema).mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Verify ownership before deleting
-    const trigger = await prisma.playbookTrigger.findFirst({
+    const trigger = await tenantPrisma.playbookTrigger.findFirst({
       where: { id: input.triggerId, tenantId: ctx.tenantId },
     });
     if (!trigger) throw new TRPCError({ code: 'NOT_FOUND', message: 'Trigger not found' });
 
-    await prisma.playbookTrigger.delete({ where: { id: input.triggerId } });
+    await tenantPrisma.playbookTrigger.delete({ where: { id: input.triggerId } });
     return { deleted: true };
   }),
 
@@ -215,7 +226,8 @@ export const triggerRouter = router({
    * triggeredBy='trigger' filter matches the index added in migration 20260428100001.
    */
   listActivityLog: adminProcedure.query(async ({ ctx }) => {
-    const instances = await prisma.playbookInstance.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    const instances = await tenantPrisma.playbookInstance.findMany({
       where: { tenantId: ctx.tenantId, triggeredBy: 'trigger' },
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -245,19 +257,19 @@ export const triggerRouter = router({
           })
         : Promise.resolve([]),
       vehicleIds.length
-        ? prisma.carrierTruck.findMany({
+        ? tenantPrisma.carrierTruck.findMany({
             where: { id: { in: vehicleIds }, orgId: ctx.tenantId },
             select: { id: true, unitNumber: true, vin: true },
           })
         : Promise.resolve([]),
       partnerIds.length
-        ? prisma.customer.findMany({
+        ? tenantPrisma.customer.findMany({
             where: { id: { in: partnerIds }, tenantId: ctx.tenantId },
             select: { id: true, companyName: true },
           })
         : Promise.resolve([]),
       dispatchIds.length
-        ? prisma.trip.findMany({
+        ? tenantPrisma.trip.findMany({
             where: { id: { in: dispatchIds } },
             select: { id: true, status: true, createdAt: true },
           })
@@ -314,5 +326,6 @@ export const triggerRouter = router({
 });
 
 async function countInstancesForPlaybook(playbookId: string, tenantId: string): Promise<number> {
-  return prisma.playbookInstance.count({ where: { playbookId, tenantId } });
+  const tenantPrisma = await getTenantPrisma();
+  return tenantPrisma.playbookInstance.count({ where: { playbookId, tenantId } });
 }

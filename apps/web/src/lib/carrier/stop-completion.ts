@@ -4,7 +4,7 @@
 // (3) check parent load and dispatch for cascade completion — all in a single transaction.
 
 import { after } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { recalculateAndStore } from '@/lib/carrier/revenue-calculator';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
@@ -22,7 +22,8 @@ type StopResult = Promise<{ data: CarrierStop } | { error: string; status: numbe
 // ---------------------------------------------------------------------------
 
 export async function arriveStop(orgId: string, stopId: string): StopResult {
-  const stop = await prisma.carrierStop.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const stop = await tenantPrisma.carrierStop.findFirst({
     where: { id: stopId, dispatch: { orgId } },
     include: { dispatch: { select: { orgId: true, routeTemplateId: true } } },
   });
@@ -34,7 +35,7 @@ export async function arriveStop(orgId: string, stopId: string): StopResult {
     return { error: 'Stop is not in pending status', status: 422 };
   }
 
-  const updated = await prisma.carrierStop.update({
+  const updated = await tenantPrisma.carrierStop.update({
     where: { id: stopId },
     data: {
       arrivedAt: new Date(),
@@ -55,7 +56,8 @@ export async function completeStop(
   stopId: string,
   options?: { bypassDocumentCheck?: boolean }
 ): StopResult {
-  const stop = await prisma.carrierStop.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const stop = await tenantPrisma.carrierStop.findFirst({
     where: { id: stopId, dispatch: { orgId } },
     include: { dispatch: { select: { orgId: true, routeTemplateId: true } } },
   });
@@ -74,7 +76,7 @@ export async function completeStop(
   let podRequired = false;
 
   const routeTemplateStop = stop.dispatch.routeTemplateId
-    ? await prisma.routeTemplateStop.findFirst({
+    ? await tenantPrisma.routeTemplateStop.findFirst({
         where: {
           routeTemplateId: stop.dispatch.routeTemplateId,
           sequenceOrder: stop.sequenceOrder,
@@ -92,7 +94,7 @@ export async function completeStop(
     if (bolRequired) {
       const hasBolNumber = stop.bolNumber != null;
       const hasBolDoc =
-        (await prisma.carrierDocument.count({
+        (await tenantPrisma.carrierDocument.count({
           where: { stopId: stop.id, documentType: 'bol' },
         })) > 0;
 
@@ -105,7 +107,7 @@ export async function completeStop(
     if (podRequired) {
       const hasPodNumber = stop.podNumber != null;
       const hasPodDoc =
-        (await prisma.carrierDocument.count({
+        (await tenantPrisma.carrierDocument.count({
           where: { stopId: stop.id, documentType: 'pod' },
         })) > 0;
 
@@ -136,7 +138,7 @@ export async function completeStop(
 
   const mergedNotes = JSON.stringify({ ...existingNotes, dwell_minutes: dwellMinutes });
 
-  const updatedStop = await prisma.carrierStop.update({
+  const updatedStop = await tenantPrisma.carrierStop.update({
     where: { id: stopId },
     data: {
       departedAt,
@@ -154,7 +156,7 @@ export async function completeStop(
   // Fire client pickup notification when first pickup stop is completed
   // -------------------------------------------------------------------------
   if (stop.loadId && stop.stopType === 'pickup') {
-    const completedPickups = await prisma.carrierStop.count({
+    const completedPickups = await tenantPrisma.carrierStop.count({
       where: {
         loadId: stop.loadId,
         stopType: 'pickup',
@@ -174,7 +176,7 @@ export async function completeStop(
     // Update load to in_transit if currently pending/booked/assigned.
     // updateMany with status filter is idempotent — won't downgrade a load
     // that's already in_transit or delivered.
-    await prisma.carrierLoad.updateMany({
+    await tenantPrisma.carrierLoad.updateMany({
       where: {
         id: stop.loadId,
         status: { in: ['pending', 'booked', 'assigned'] },
@@ -188,7 +190,7 @@ export async function completeStop(
   // Step 5 — Load cascade: if last delivery stop completed, mark load delivered
   // -------------------------------------------------------------------------
   if (stop.loadId) {
-    const pendingDeliveries = await prisma.carrierStop.count({
+    const pendingDeliveries = await tenantPrisma.carrierStop.count({
       where: {
         loadId: stop.loadId,
         stopType: 'delivery',
@@ -197,7 +199,7 @@ export async function completeStop(
     });
 
     if (pendingDeliveries === 0) {
-      await prisma.carrierLoad.update({
+      await tenantPrisma.carrierLoad.update({
         where: { id: stop.loadId },
         data: { status: 'delivered' },
       });
@@ -218,7 +220,7 @@ export async function completeStop(
   // -------------------------------------------------------------------------
   // Step 6 — Dispatch cascade: if all stops done, mark dispatch completed
   // -------------------------------------------------------------------------
-  const pendingDispatchStops = await prisma.carrierStop.count({
+  const pendingDispatchStops = await tenantPrisma.carrierStop.count({
     where: {
       dispatchId: stop.dispatchId,
       status: { notIn: ['completed', 'skipped'] },
@@ -226,7 +228,7 @@ export async function completeStop(
   });
 
   if (pendingDispatchStops === 0) {
-    await prisma.trip.update({
+    await tenantPrisma.trip.update({
       where: { id: stop.dispatchId },
       data: {
         status: 'completed',
@@ -256,8 +258,8 @@ export async function skipStop(
   skipReason: string
 ): StopResult {
   // Note: role check happens in the API route, NOT here.
-
-  const stop = await prisma.carrierStop.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const stop = await tenantPrisma.carrierStop.findFirst({
     where: { id: stopId, dispatch: { orgId } },
     include: { dispatch: { select: { orgId: true } } },
   });
@@ -275,7 +277,7 @@ export async function skipStop(
   const skipLog = `[SKIPPED by ${userId} at ${new Date().toISOString()}]`;
   const mergedNotes = JSON.stringify({ ...existingNotes, skip_log: skipLog });
 
-  const updated = await prisma.carrierStop.update({
+  const updated = await tenantPrisma.carrierStop.update({
     where: { id: stopId },
     data: {
       status: 'skipped',

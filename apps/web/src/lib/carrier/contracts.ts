@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
@@ -43,6 +42,7 @@ export type ContractUpdateInput = Partial<ContractCreateInput> & { status?: stri
 // ---------------------------------------------------------------------------
 
 export async function listContracts(orgId: string, filters: ListContractsFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { clientId, status, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
@@ -54,7 +54,7 @@ export async function listContracts(orgId: string, filters: ListContractsFilters
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierContract.findMany({
+    tenantPrisma.carrierContract.findMany({
       where,
       skip,
       take: pageSize,
@@ -63,7 +63,7 @@ export async function listContracts(orgId: string, filters: ListContractsFilters
         client: { select: { name: true } },
       },
     }),
-    prisma.carrierContract.count({ where }),
+    tenantPrisma.carrierContract.count({ where }),
   ]);
 
   const serialized = items.map((c) => ({
@@ -79,7 +79,8 @@ export async function listContracts(orgId: string, filters: ListContractsFilters
 }
 
 export async function getContract(orgId: string, id: string) {
-  const contract = await prisma.carrierContract.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const contract = await tenantPrisma.carrierContract.findFirst({
     where: { id, orgId },
     include: {
       client: { select: { name: true } },
@@ -89,7 +90,7 @@ export async function getContract(orgId: string, id: string) {
 
   if (!contract) return null;
 
-  const revenueAgg = await prisma.carrierLoad.aggregate({
+  const revenueAgg = await tenantPrisma.carrierLoad.aggregate({
     where: { contractId: id, orgId },
     _sum: { totalRevenue: true },
     _count: { id: true },
@@ -130,7 +131,7 @@ export async function createContract(
 
   // Retry up to 5 times on unique contract number collision (race condition guard)
   for (let attempt = 0; attempt < 5; attempt++) {
-    const last = await prisma.carrierContract.findFirst({
+    const last = await tenantPrisma.carrierContract.findFirst({
       where: { contractNumber: { startsWith: `CN-${year}-` } },
       orderBy: { contractNumber: 'desc' },
       select: { contractNumber: true },
@@ -181,7 +182,7 @@ export async function createContract(
 
 export async function updateContract(orgId: string, id: string, data: ContractUpdateInput) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierContract.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierContract.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const {
@@ -223,7 +224,7 @@ export async function updateContract(orgId: string, id: string, data: ContractUp
 
 export async function softDeleteContract(orgId: string, id: string) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierContract.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierContract.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const updated = await tenantPrisma.carrierContract.update({
@@ -242,26 +243,27 @@ export async function softDeleteContract(orgId: string, id: string) {
 }
 
 export async function getContractLoadsSummary(orgId: string, contractId: string) {
-  const contract = await prisma.carrierContract.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const contract = await tenantPrisma.carrierContract.findFirst({
     where: { id: contractId, orgId },
   });
   if (!contract) return null;
 
   const [totalAgg, invoicedAgg, deliveredAgg, avgAgg] = await Promise.all([
-    prisma.carrierLoad.aggregate({
+    tenantPrisma.carrierLoad.aggregate({
       where: { contractId, orgId },
       _sum: { totalRevenue: true },
       _count: { id: true },
     }),
-    prisma.carrierLoad.aggregate({
+    tenantPrisma.carrierLoad.aggregate({
       where: { contractId, orgId, status: 'invoiced' },
       _sum: { totalRevenue: true },
     }),
-    prisma.carrierLoad.aggregate({
+    tenantPrisma.carrierLoad.aggregate({
       where: { contractId, orgId, status: 'delivered' },
       _sum: { totalRevenue: true },
     }),
-    prisma.carrierLoad.aggregate({
+    tenantPrisma.carrierLoad.aggregate({
       where: { contractId, orgId },
       _avg: { rateAmount: true },
     }),

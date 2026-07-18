@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 
@@ -18,31 +18,32 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const doc = await prisma.carrierDocument.findFirst({ where: { id } });
+    const tenantPrisma = await getTenantPrisma();
+    const doc = await tenantPrisma.carrierDocument.findFirst({ where: { id } });
     if (!doc) return NextResponse.json({ error: 'Document not found' }, { status: 404 });
 
     // Verify tenant isolation through parent chain
     let orgVerified = false;
 
     if (doc.parentType === 'stop') {
-      const stop = await prisma.carrierStop.findFirst({
+      const stop = await tenantPrisma.carrierStop.findFirst({
         where: { id: doc.parentId, dispatch: { orgId } },
       });
       orgVerified = !!stop;
     } else if (doc.parentType === 'load') {
-      const load = await prisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
+      const load = await tenantPrisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!load;
     } else if (doc.parentType === 'dispatch') {
-      const dispatch = await prisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
+      const dispatch = await tenantPrisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!dispatch;
     } else if (doc.parentType === 'contract') {
-      const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
+      const contract = await tenantPrisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!contract;
     } else if (doc.parentType === 'client') {
-      const client = await prisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
+      const client = await tenantPrisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!client;
     } else if (doc.parentType === 'expense') {
-      const expense = await prisma.carrierExpense.findFirst({ where: { id: doc.parentId, orgId } });
+      const expense = await tenantPrisma.carrierExpense.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!expense;
     }
 

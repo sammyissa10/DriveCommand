@@ -1,7 +1,7 @@
 'use server';
 
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { revalidatePath } from 'next/cache';
 import type { SoftDeletableEntity } from '@/lib/carrier/soft-delete';
 
@@ -24,19 +24,59 @@ export async function softDeleteRecords(
   if (!orgId || !userId) return { success: false, error: 'Invalid session' };
 
   const now = new Date();
+  const tenantPrisma = await getTenantPrisma();
 
   // Use dynamic model access with type-safe mapping
   const modelMap = {
-    CarrierClient: prisma.carrierClient,
-    CarrierContract: prisma.carrierContract,
-    CarrierDriver: prisma.carrierDriver,
-    CarrierTruck: prisma.carrierTruck,
-    Route: prisma.route,
-    Trip: prisma.trip,
-    CarrierLoad: prisma.carrierLoad,
+    CarrierClient: tenantPrisma.carrierClient,
+    CarrierContract: tenantPrisma.carrierContract,
+    CarrierDriver: tenantPrisma.carrierDriver,
+    CarrierTruck: tenantPrisma.carrierTruck,
+    Route: tenantPrisma.route,
+    Trip: tenantPrisma.trip,
+    CarrierLoad: tenantPrisma.carrierLoad,
   } as const;
 
   const orgField = entityType === 'Route' ? 'tenantId' : 'orgId';
+
+  // CarrierDriver soft-delete: also deactivate linked Users in the same transaction.
+  // Guard: a User is only deactivated if no OTHER non-deleted CarrierDriver in this org
+  // still references it — mirrors the otherDriverLinks check in the hard-delete path.
+  // NOTE: restoreRecords (un-delete) must also flip isActive back to true for symmetry.
+  if (entityType === 'CarrierDriver') {
+    const driversToDelete = await tenantPrisma.carrierDriver.findMany({
+      where: { id: { in: ids }, orgId, deletedAt: null },
+      select: { userId: true },
+    });
+
+    const candidateUserIds = driversToDelete
+      .map((d) => d.userId)
+      .filter((uid): uid is string => uid !== null);
+
+    const txResult = await tenantPrisma.$transaction(async (tx) => {
+      const updated = await (tx as any).carrierDriver.updateMany({
+        where: { id: { in: ids }, orgId, deletedAt: null },
+        data: { deletedAt: now, deletedById: userId },
+      });
+
+      for (const uid of candidateUserIds) {
+        const otherDriverLinks = await (tx as any).carrierDriver.count({
+          where: { userId: uid, orgId, deletedAt: null },
+        });
+        if (otherDriverLinks === 0) {
+          await (tx as any).user.updateMany({
+            where: { id: uid, tenantId: orgId, isActive: true },
+            data: { isActive: false },
+          });
+        }
+      }
+
+      return updated;
+    });
+
+    revalidatePath('/', 'layout');
+    return { success: true, deletedCount: txResult.count };
+  }
 
   const model = modelMap[entityType];
   const result = await (model as any).updateMany({
@@ -66,14 +106,16 @@ export async function restoreRecords(
   const orgId = session.tenantId;
   if (!orgId) return { success: false, error: 'Invalid session' };
 
+  const tenantPrisma = await getTenantPrisma();
+
   const modelMap = {
-    CarrierClient: prisma.carrierClient,
-    CarrierContract: prisma.carrierContract,
-    CarrierDriver: prisma.carrierDriver,
-    CarrierTruck: prisma.carrierTruck,
-    Route: prisma.route,
-    Trip: prisma.trip,
-    CarrierLoad: prisma.carrierLoad,
+    CarrierClient: tenantPrisma.carrierClient,
+    CarrierContract: tenantPrisma.carrierContract,
+    CarrierDriver: tenantPrisma.carrierDriver,
+    CarrierTruck: tenantPrisma.carrierTruck,
+    Route: tenantPrisma.route,
+    Trip: tenantPrisma.trip,
+    CarrierLoad: tenantPrisma.carrierLoad,
   } as const;
 
   const orgField = entityType === 'Route' ? 'tenantId' : 'orgId';
@@ -106,14 +148,16 @@ export async function permanentlyDeleteRecords(
   const orgId = session.tenantId;
   if (!orgId) return { success: false, error: 'Invalid session' };
 
+  const tenantPrisma = await getTenantPrisma();
+
   const modelMap = {
-    CarrierClient: prisma.carrierClient,
-    CarrierContract: prisma.carrierContract,
-    CarrierDriver: prisma.carrierDriver,
-    CarrierTruck: prisma.carrierTruck,
-    Route: prisma.route,
-    Trip: prisma.trip,
-    CarrierLoad: prisma.carrierLoad,
+    CarrierClient: tenantPrisma.carrierClient,
+    CarrierContract: tenantPrisma.carrierContract,
+    CarrierDriver: tenantPrisma.carrierDriver,
+    CarrierTruck: tenantPrisma.carrierTruck,
+    Route: tenantPrisma.route,
+    Trip: tenantPrisma.trip,
+    CarrierLoad: tenantPrisma.carrierLoad,
   } as const;
 
   const orgField = entityType === 'Route' ? 'tenantId' : 'orgId';

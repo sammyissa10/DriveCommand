@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { generateUploadUrl } from '@/lib/storage/presigned';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
 import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
-import { prisma } from '@/lib/db/prisma';
 
 const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
@@ -23,7 +23,8 @@ export async function POST(
     if (rateLimited) return rateLimited;
 
     const { id } = await params;
-    const truck = await prisma.carrierTruck.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const truck = await tenantPrisma.carrierTruck.findFirst({
       where: { id, orgId: tenantId },
       select: { id: true },
     });

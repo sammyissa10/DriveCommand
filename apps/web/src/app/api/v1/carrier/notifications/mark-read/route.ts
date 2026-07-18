@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 const MarkReadSchema = z.object({
@@ -28,10 +28,11 @@ export async function PATCH(req: NextRequest) {
     const { all, ids } = parsed.data;
     const userFilter = [{ userId: null as string | null }, { userId: session.userId }];
 
+    const tenantPrisma = await getTenantPrisma();
     let result: { count: number };
 
     if (all) {
-      result = await prisma.inAppNotification.updateMany({
+      result = await tenantPrisma.inAppNotification.updateMany({
         where: {
           orgId,
           read: false,
@@ -41,7 +42,7 @@ export async function PATCH(req: NextRequest) {
       });
     } else {
       // orgId filter ensures tenant isolation even when ids are provided
-      result = await prisma.inAppNotification.updateMany({
+      result = await tenantPrisma.inAppNotification.updateMany({
         where: {
           id: { in: ids },
           orgId,

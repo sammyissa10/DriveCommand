@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { publicLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
@@ -18,18 +18,22 @@ export async function GET(
 
   const { token } = await params;
 
-  // Look up load by tracking token — no RLS, no tenant context
-  const load = await prisma.load.findUnique({
-    where: { trackingToken: token },
-    include: {
-      truck: {
-        select: { id: true, make: true, model: true, licensePlate: true },
+  // Look up load by tracking token — public endpoint, no tenant context.
+  // Quick-424: bypass_rls is the correct mechanism for cross-tenant token lookups (spec §2.3).
+  const load = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.load.findUnique({
+      where: { trackingToken: token },
+      include: {
+        truck: {
+          select: { id: true, make: true, model: true, licensePlate: true },
+        },
+        driver: {
+          select: { firstName: true, lastName: true },
+        },
       },
-      driver: {
-        select: { firstName: true, lastName: true },
-      },
-    },
-  });
+    });
+  }, TX_OPTIONS);
 
   if (!load) {
     return NextResponse.json(
@@ -41,10 +45,13 @@ export async function GET(
   // Fetch latest GPS position for this truck (if truck is assigned)
   let latestGPS = null;
   if (load.truckId) {
-    const gps = await prisma.gPSLocation.findFirst({
-      where: { truckId: load.truckId },
-      orderBy: { timestamp: 'desc' },
-    });
+    const gps = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.gPSLocation.findFirst({
+        where: { truckId: load.truckId! },
+        orderBy: { timestamp: 'desc' },
+      });
+    }, TX_OPTIONS);
     if (gps) {
       latestGPS = {
         latitude: Number(gps.latitude),

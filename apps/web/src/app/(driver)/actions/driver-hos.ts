@@ -3,7 +3,7 @@
 import type { ActionState } from '@drivecommand/types'
 
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { HOSDutyStatus } from '@/generated/prisma';
 
 /**
@@ -14,7 +14,8 @@ export async function getDriverHOS() {
   const session = await getSession();
   if (!session) return null;
 
-  const latestEntry = await prisma.driverHOSEntry.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const latestEntry = await tenantPrisma.driverHOSEntry.findFirst({
     where: {
       driverId: session.userId,
       tenantId: session.tenantId,
@@ -53,8 +54,10 @@ export async function updateDutyStatus(prevState: ActionState | null, formData: 
   const hosStatus = status as HOSDutyStatus;
 
   try {
+    const tenantPrisma = await getTenantPrisma();
+
     // Close any currently open entry
-    await prisma.driverHOSEntry.updateMany({
+    await tenantPrisma.driverHOSEntry.updateMany({
       where: {
         driverId: session.userId,
         tenantId: session.tenantId,
@@ -64,7 +67,7 @@ export async function updateDutyStatus(prevState: ActionState | null, formData: 
     });
 
     // Create new entry for selected status
-    await prisma.driverHOSEntry.create({
+    await tenantPrisma.driverHOSEntry.create({
       data: {
         tenantId: session.tenantId,
         driverId: session.userId,

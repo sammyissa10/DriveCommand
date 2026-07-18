@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 /**
@@ -16,7 +17,8 @@ export async function GET() {
   if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
 
   try {
-    const messages = await prisma.fleetMessage.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    const messages = await tenantPrisma.fleetMessage.findMany({
       where: { tenantId: orgId },
       orderBy: { createdAt: 'desc' },
       take: 5,
@@ -77,7 +79,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message body is required' }, { status: 400 });
     }
 
-    const message = await prisma.fleetMessage.create({
+    const tenantPrisma = await getTenantPrisma();
+    const message = await tenantPrisma.fleetMessage.create({
       data: {
         tenantId: orgId,
         senderId: session.userId,

@@ -78,6 +78,7 @@ export type LoadUpdateInput = Partial<Omit<LoadCreateInput, 'dispatchId'>> & {
 // ---------------------------------------------------------------------------
 
 export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { clientId, dispatchId, status, dateFrom, dateTo, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
@@ -98,7 +99,7 @@ export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierLoad.findMany({
+    tenantPrisma.carrierLoad.findMany({
       where,
       skip,
       take: pageSize,
@@ -108,7 +109,7 @@ export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
         dispatch: { select: { id: true, notes: true } },
       },
     }),
-    prisma.carrierLoad.count({ where }),
+    tenantPrisma.carrierLoad.count({ where }),
   ]);
 
   return {
@@ -127,7 +128,8 @@ export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
 }
 
 export async function getLoad(orgId: string, id: string) {
-  const load = await prisma.carrierLoad.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const load = await tenantPrisma.carrierLoad.findFirst({
     where: { id, orgId },
     include: {
       client: true,
@@ -162,7 +164,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
   }
 
   // Verify client belongs to this org (cross-tenant isolation)
-  const client = await prisma.carrierClient.findFirst({
+  const client = await tenantPrisma.carrierClient.findFirst({
     where: { id: data.clientId, orgId },
   });
   if (!client) {
@@ -174,7 +176,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
 
   // Auto-populate rate fields from contract if contractId provided
   if (data.contractId) {
-    const contract = await prisma.carrierContract.findFirst({
+    const contract = await tenantPrisma.carrierContract.findFirst({
       where: { id: data.contractId, orgId },
     });
     if (!contract) {
@@ -190,7 +192,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
   let referenceNumber = data.referenceNumber;
   if (referenceNumber == null || referenceNumber === undefined) {
     const year = new Date().getFullYear();
-    const lastLoad = await prisma.carrierLoad.findFirst({
+    const lastLoad = await tenantPrisma.carrierLoad.findFirst({
       where: { orgId, referenceNumber: { startsWith: `LD-${year}-` } },
       orderBy: { referenceNumber: 'desc' },
       select: { referenceNumber: true },
@@ -252,7 +254,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
   await recalculateAndStore(orgId, load.id);
 
   // Return updated load
-  const updated = await prisma.carrierLoad.findFirst({ where: { id: load.id, orgId } });
+  const updated = await tenantPrisma.carrierLoad.findFirst({ where: { id: load.id, orgId } });
   return updated ?? load;
 }
 
@@ -269,7 +271,7 @@ async function persistStops(
 ) {
   // Safety guard: if no stops submitted but load already has stops, skip entirely.
   // An empty submission means "no changes to stops", not "delete all stops".
-  const existingStopCount = await prisma.carrierStop.count({
+  const existingStopCount = await tenantPrisma.carrierStop.count({
     where: { loadId },
   });
   if (stops.length === 0 && existingStopCount > 0) {
@@ -279,7 +281,7 @@ async function persistStops(
 
   // Verify all facilities belong to this org (tenant isolation)
   const facilityIds = [...new Set(stops.map((s) => s.facility_id))];
-  const validFacilities = await prisma.carrierFacility.findMany({
+  const validFacilities = await tenantPrisma.carrierFacility.findMany({
     where: { id: { in: facilityIds }, orgId },
     select: { id: true },
   });
@@ -291,7 +293,7 @@ async function persistStops(
   }
 
   // Fetch existing stops for this load
-  const existingStops = await prisma.carrierStop.findMany({
+  const existingStops = await tenantPrisma.carrierStop.findMany({
     where: { loadId },
     select: { id: true, status: true },
   });
@@ -369,7 +371,7 @@ async function persistStops(
 
 export async function updateLoad(orgId: string, id: string, data: LoadUpdateInput) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierLoad.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierLoad.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   const updated = await tenantPrisma.carrierLoad.update({
@@ -450,7 +452,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
       );
 
       // Also persist any stops that were stored as JSON during load creation (no dispatch at the time)
-      const loadWithPending = await prisma.carrierLoad.findFirst({
+      const loadWithPending = await tenantPrisma.carrierLoad.findFirst({
         where: { id, orgId },
         select: { pendingStopsJson: true },
       });
@@ -481,7 +483,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     } else {
       // Detaching from a dispatch: delete pending stops for this load
       // (completed/skipped stops are preserved as historical records)
-      await prisma.carrierStop.deleteMany({
+      await tenantPrisma.carrierStop.deleteMany({
         where: {
           loadId: id,
           dispatchId: existing.dispatchId!,
@@ -553,7 +555,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     // per_mile calculation: prefer dispatch actual/planned miles if available,
     // otherwise fall back to the submitted value.
     if (data.plannedMiles !== undefined) {
-      const loadForCalc = await prisma.carrierLoad.findFirst({
+      const loadForCalc = await tenantPrisma.carrierLoad.findFirst({
         where: { id, orgId },
         include: { dispatch: true, contract: true },
       });
@@ -619,7 +621,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     }
 
     await recalculateAndStore(orgId, id);
-    const fresh = await prisma.carrierLoad.findFirst({ where: { id, orgId } });
+    const fresh = await tenantPrisma.carrierLoad.findFirst({ where: { id, orgId } });
     return fresh ?? updated;
   }
 
@@ -637,7 +639,7 @@ export async function removeLoadFromTrip(
 ): Promise<{ error: string } | { removedStopCount: number }> {
   const tenantPrisma = await getTenantPrisma();
 
-  const load = await prisma.carrierLoad.findFirst({
+  const load = await tenantPrisma.carrierLoad.findFirst({
     where: { id: loadId, orgId },
     select: { dispatchId: true },
   });

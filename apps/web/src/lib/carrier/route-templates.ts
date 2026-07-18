@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -179,8 +179,9 @@ export async function listRouteTemplates(orgId: string, filters: ListRouteTempla
     ...(search ? { templateName: { contains: search, mode: 'insensitive' as const } } : {}),
   };
 
+  const tenantPrisma = await getTenantPrisma();
   const [rawItems, total] = await Promise.all([
-    prisma.routeTemplate.findMany({
+    tenantPrisma.routeTemplate.findMany({
       where,
       skip,
       take: pageSize,
@@ -189,7 +190,7 @@ export async function listRouteTemplates(orgId: string, filters: ListRouteTempla
         _count: { select: { stops: true } },
       },
     }),
-    prisma.routeTemplate.count({ where }),
+    tenantPrisma.routeTemplate.count({ where }),
   ]);
 
   // Attach nextDispatchDate using recurrenceRule
@@ -204,7 +205,8 @@ export async function listRouteTemplates(orgId: string, filters: ListRouteTempla
 }
 
 export async function getRouteTemplate(orgId: string, id: string) {
-  return prisma.routeTemplate.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  return tenantPrisma.routeTemplate.findFirst({
     where: { id, orgId },
     include: {
       stops: {
@@ -220,8 +222,9 @@ export async function getRouteTemplate(orgId: string, id: string) {
 }
 
 export async function createRouteTemplate(orgId: string, data: RouteTemplateCreateInput) {
+  const tenantPrisma = await getTenantPrisma();
   // Verify clientId belongs to this org
-  const client = await prisma.carrierClient.findFirst({
+  const client = await tenantPrisma.carrierClient.findFirst({
     where: { id: data.clientId, orgId },
     select: { id: true },
   });
@@ -231,7 +234,7 @@ export async function createRouteTemplate(orgId: string, data: RouteTemplateCrea
 
   // Verify contractId if supplied
   if (data.contractId) {
-    const contract = await prisma.carrierContract.findFirst({
+    const contract = await tenantPrisma.carrierContract.findFirst({
       where: { id: data.contractId, orgId },
       select: { id: true },
     });
@@ -242,7 +245,7 @@ export async function createRouteTemplate(orgId: string, data: RouteTemplateCrea
 
   // Verify defaultDriverId if supplied
   if (data.defaultDriverId) {
-    const driver = await prisma.carrierDriver.findFirst({
+    const driver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: data.defaultDriverId, orgId },
       select: { id: true },
     });
@@ -253,7 +256,7 @@ export async function createRouteTemplate(orgId: string, data: RouteTemplateCrea
 
   // Verify defaultTruckId if supplied
   if (data.defaultTruckId) {
-    const truck = await prisma.carrierTruck.findFirst({
+    const truck = await tenantPrisma.carrierTruck.findFirst({
       where: { id: data.defaultTruckId, orgId },
       select: { id: true },
     });
@@ -262,7 +265,7 @@ export async function createRouteTemplate(orgId: string, data: RouteTemplateCrea
     }
   }
 
-  return prisma.routeTemplate.create({
+  return tenantPrisma.routeTemplate.create({
     data: {
       ...data,
       orgId,
@@ -275,22 +278,24 @@ export async function updateRouteTemplate(
   id: string,
   data: RouteTemplateUpdateInput
 ) {
-  const existing = await prisma.routeTemplate.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.routeTemplate.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   // IMPORTANT: Editing this template does NOT modify already-generated dispatches —
   // only future generations are affected.
-  return prisma.routeTemplate.update({
+  return tenantPrisma.routeTemplate.update({
     where: { id },
     data,
   });
 }
 
 export async function softDeleteRouteTemplate(orgId: string, id: string) {
-  const existing = await prisma.routeTemplate.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.routeTemplate.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  return prisma.routeTemplate.update({
+  return tenantPrisma.routeTemplate.update({
     where: { id },
     data: { active: false },
   });

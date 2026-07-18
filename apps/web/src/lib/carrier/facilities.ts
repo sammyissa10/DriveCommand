@@ -43,12 +43,14 @@ export type FacilityUpdateInput = Partial<FacilityCreateInput>;
 // ---------------------------------------------------------------------------
 
 export async function listFacilities(orgId: string, filters: ListFacilitiesFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { facilityType, search, lat, lng, radiusMiles, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
   // If proximity search is requested, first get IDs within radius using haversine formula
   let proximityIds: string[] | null = null;
   if (lat != null && lng != null && radiusMiles != null) {
+    // prisma.$queryRaw stays bare — raw SQL cannot run through tenantPrisma proxy
     const rows = await prisma.$queryRaw<{ id: string }[]>`
       SELECT id FROM facilities
       WHERE org_id = ${orgId}
@@ -74,20 +76,21 @@ export async function listFacilities(orgId: string, filters: ListFacilitiesFilte
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierFacility.findMany({
+    tenantPrisma.carrierFacility.findMany({
       where,
       skip,
       take: pageSize,
       orderBy: { createdAt: 'desc' },
     }),
-    prisma.carrierFacility.count({ where }),
+    tenantPrisma.carrierFacility.count({ where }),
   ]);
 
   return { items, total };
 }
 
 export async function getFacility(orgId: string, id: string) {
-  return prisma.carrierFacility.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  return tenantPrisma.carrierFacility.findFirst({
     where: {
       id,
       orgId,
@@ -108,7 +111,7 @@ export async function createFacility(orgId: string, data: FacilityCreateInput) {
 
 export async function updateFacility(orgId: string, id: string, data: FacilityUpdateInput) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierFacility.findFirst({
+  const existing = await tenantPrisma.carrierFacility.findFirst({
     where: { id, orgId, NOT: { facilityType: { startsWith: 'inactive_' } } },
   });
   if (!existing) return null;
@@ -121,7 +124,7 @@ export async function updateFacility(orgId: string, id: string, data: FacilityUp
 
 export async function softDeleteFacility(orgId: string, id: string) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierFacility.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierFacility.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   // NOTE: CarrierFacility lacks an 'active' column. Soft-delete uses facilityType prefix convention.

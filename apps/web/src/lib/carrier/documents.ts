@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -38,6 +38,7 @@ export async function uploadDocument(
   const { parentType, parentId, documentType, documentTypeId, file } = data;
   let { loadId, dispatchId, contractId } = data;
   let clientId: string | null = null;
+  const tenantPrisma = await getTenantPrisma();
 
   // Validate file type
   const originalName = file.name ?? 'upload';
@@ -58,7 +59,7 @@ export async function uploadDocument(
   let orgVerified = false;
 
   if (parentType === 'stop') {
-    const stop = await prisma.carrierStop.findFirst({
+    const stop = await tenantPrisma.carrierStop.findFirst({
       where: { id: parentId, dispatch: { orgId } },
       select: { dispatchId: true, loadId: true, load: { select: { clientId: true, contractId: true } } },
     });
@@ -76,7 +77,7 @@ export async function uploadDocument(
       }
     }
   } else if (parentType === 'load') {
-    const load = await prisma.carrierLoad.findFirst({
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: parentId, orgId },
       select: { dispatchId: true, contractId: true, clientId: true },
     });
@@ -93,12 +94,12 @@ export async function uploadDocument(
       }
     }
   } else if (parentType === 'dispatch') {
-    const dispatch = await prisma.trip.findFirst({ where: { id: parentId, orgId } });
+    const dispatch = await tenantPrisma.trip.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
     if (dispatch && !dispatchId) dispatchId = parentId;
     // Resolve clientId and contractId from the single linked load (ambiguous if 0 or 2+)
     try {
-      const dispatchLoads = await prisma.carrierLoad.findMany({
+      const dispatchLoads = await tenantPrisma.carrierLoad.findMany({
         where: { dispatchId: parentId, orgId },
         select: { clientId: true, contractId: true },
       });
@@ -110,7 +111,7 @@ export async function uploadDocument(
       logger.warn('uploadDocument: failed to resolve clientId/contractId from dispatch loads', { parentId, err });
     }
   } else if (parentType === 'contract') {
-    const contract = await prisma.carrierContract.findFirst({
+    const contract = await tenantPrisma.carrierContract.findFirst({
       where: { id: parentId, orgId },
       select: { clientId: true },
     });
@@ -125,13 +126,13 @@ export async function uploadDocument(
       }
     }
   } else if (parentType === 'client') {
-    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: parentId, orgId } });
+    const clientRecord = await tenantPrisma.carrierClient.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!clientRecord;
     if (clientRecord) {
       clientId = parentId;
     }
   } else if (parentType === 'expense') {
-    const expense = await prisma.carrierExpense.findFirst({ where: { id: parentId, orgId } });
+    const expense = await tenantPrisma.carrierExpense.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!expense;
   }
 
@@ -141,7 +142,7 @@ export async function uploadDocument(
 
   // Validate documentTypeId ownership if provided
   if (documentTypeId) {
-    const typeRecord = await prisma.carrierDocumentType.findFirst({
+    const typeRecord = await tenantPrisma.carrierDocumentType.findFirst({
       where: { id: documentTypeId, orgId, isActive: true },
     });
     if (!typeRecord) {
@@ -167,7 +168,7 @@ export async function uploadDocument(
   // Derive stopId for document linkage
   const stopId: string | null = parentType === 'stop' ? parentId : null;
 
-  const document = await prisma.carrierDocument.create({
+  const document = await tenantPrisma.carrierDocument.create({
     data: {
       parentType,
       parentId,
@@ -194,26 +195,27 @@ export async function uploadDocument(
 // ---------------------------------------------------------------------------
 
 export async function listDocuments(orgId: string, parentType: string, parentId: string) {
+  const tenantPrisma = await getTenantPrisma();
   // CarrierDocument has no orgId column — scope by org through parent chain.
   // Strategy: query by parentType+parentId, then verify the parent belongs to orgId.
   let orgVerified = false;
 
   if (parentType === 'stop') {
-    const stop = await prisma.carrierStop.findFirst({
+    const stop = await tenantPrisma.carrierStop.findFirst({
       where: { id: parentId, dispatch: { orgId } },
     });
     orgVerified = !!stop;
   } else if (parentType === 'load') {
-    const load = await prisma.carrierLoad.findFirst({ where: { id: parentId, orgId } });
+    const load = await tenantPrisma.carrierLoad.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!load;
   } else if (parentType === 'dispatch') {
-    const dispatch = await prisma.trip.findFirst({ where: { id: parentId, orgId } });
+    const dispatch = await tenantPrisma.trip.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
   } else if (parentType === 'contract') {
-    const contract = await prisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
+    const contract = await tenantPrisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!contract;
   } else if (parentType === 'client') {
-    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: parentId, orgId } });
+    const clientRecord = await tenantPrisma.carrierClient.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!clientRecord;
   } else {
     // Unknown parent type — deny for safety
@@ -224,7 +226,7 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
     return { data: [] };
   }
 
-  const documents = await prisma.carrierDocument.findMany({
+  const documents = await tenantPrisma.carrierDocument.findMany({
     where: { parentType, parentId },
     orderBy: { createdAt: 'desc' },
     include: {
@@ -275,27 +277,28 @@ export async function deleteDocument(
   orgId: string,
   docId: string
 ): DocumentResult<{ deleted: boolean }> {
-  const doc = await prisma.carrierDocument.findFirst({ where: { id: docId } });
+  const tenantPrisma = await getTenantPrisma();
+  const doc = await tenantPrisma.carrierDocument.findFirst({ where: { id: docId } });
   if (!doc) return { error: 'Document not found', status: 404 };
 
   // Verify org ownership through parent chain
   let orgVerified = false;
   if (doc.parentType === 'stop') {
-    const stop = await prisma.carrierStop.findFirst({
+    const stop = await tenantPrisma.carrierStop.findFirst({
       where: { id: doc.parentId, dispatch: { orgId } },
     });
     orgVerified = !!stop;
   } else if (doc.parentType === 'load') {
-    const load = await prisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
+    const load = await tenantPrisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!load;
   } else if (doc.parentType === 'dispatch') {
-    const dispatch = await prisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
+    const dispatch = await tenantPrisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!dispatch;
   } else if (doc.parentType === 'contract') {
-    const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
+    const contract = await tenantPrisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!contract;
   } else if (doc.parentType === 'client') {
-    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
+    const clientRecord = await tenantPrisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!clientRecord;
   }
 
@@ -313,7 +316,7 @@ export async function deleteDocument(
     // Continue — still delete the DB record even if storage fails
   }
 
-  await prisma.carrierDocument.delete({ where: { id: docId } });
+  await tenantPrisma.carrierDocument.delete({ where: { id: docId } });
 
   logger.info('deleteDocument: deleted', { orgId, docId });
   return { data: { deleted: true } };
@@ -328,33 +331,34 @@ export async function verifyDocument(
   docId: string,
   userId: string
 ): DocumentResult<import('@/generated/prisma').CarrierDocument> {
-  const doc = await prisma.carrierDocument.findFirst({ where: { id: docId } });
+  const tenantPrisma = await getTenantPrisma();
+  const doc = await tenantPrisma.carrierDocument.findFirst({ where: { id: docId } });
   if (!doc) return { error: 'Document not found', status: 404 };
 
   // Verify org ownership through parent chain
   let orgVerified = false;
   if (doc.parentType === 'stop') {
-    const stop = await prisma.carrierStop.findFirst({
+    const stop = await tenantPrisma.carrierStop.findFirst({
       where: { id: doc.parentId, dispatch: { orgId } },
     });
     orgVerified = !!stop;
   } else if (doc.parentType === 'load') {
-    const load = await prisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
+    const load = await tenantPrisma.carrierLoad.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!load;
   } else if (doc.parentType === 'dispatch') {
-    const dispatch = await prisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
+    const dispatch = await tenantPrisma.trip.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!dispatch;
   } else if (doc.parentType === 'contract') {
-    const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
+    const contract = await tenantPrisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!contract;
   } else if (doc.parentType === 'client') {
-    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
+    const clientRecord = await tenantPrisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!clientRecord;
   }
 
   if (!orgVerified) return { error: 'Unauthorized', status: 403 };
 
-  const updated = await prisma.carrierDocument.update({
+  const updated = await tenantPrisma.carrierDocument.update({
     where: { id: docId },
     data: { verified: true, verifiedBy: userId, verifiedAt: new Date() },
   });

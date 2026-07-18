@@ -2,7 +2,8 @@
 
 import { getSession } from '@/lib/auth/supabase';
 import { createRouteTemplate, updateRouteTemplate } from '@/lib/carrier/route-templates';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // kept for $transaction
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
 
 export interface SaveRouteTemplateInput {
@@ -75,8 +76,10 @@ export async function saveRouteTemplate(
       return { success: false, error: 'All stops must have a facility selected.' };
     }
 
+    const tenantPrisma = await getTenantPrisma();
+
     // Verify clientId belongs to this org
-    const client = await prisma.carrierClient.findFirst({
+    const client = await tenantPrisma.carrierClient.findFirst({
       where: { id: clientId, orgId },
       select: { id: true },
     });
@@ -86,7 +89,7 @@ export async function saveRouteTemplate(
 
     // Verify contractId if supplied
     if (contractId) {
-      const contract = await prisma.carrierContract.findFirst({
+      const contract = await tenantPrisma.carrierContract.findFirst({
         where: { id: contractId, orgId },
         select: { id: true },
       });
@@ -97,7 +100,7 @@ export async function saveRouteTemplate(
 
     // Verify defaultDriverId if supplied
     if (defaultDriverId) {
-      const driver = await prisma.carrierDriver.findFirst({
+      const driver = await tenantPrisma.carrierDriver.findFirst({
         where: { id: defaultDriverId, orgId },
         select: { id: true },
       });
@@ -108,7 +111,7 @@ export async function saveRouteTemplate(
 
     // Verify defaultTruckId if supplied
     if (defaultTruckId) {
-      const truck = await prisma.carrierTruck.findFirst({
+      const truck = await tenantPrisma.carrierTruck.findFirst({
         where: { id: defaultTruckId, orgId },
         select: { id: true },
       });
@@ -120,7 +123,7 @@ export async function saveRouteTemplate(
     // Verify all stop facilityIds belong to this org (batch check)
     const facilityIds = [...new Set(stops.map((s) => s.facility_id).filter(Boolean))] as string[];
     if (facilityIds.length > 0) {
-      const validFacilities = await prisma.carrierFacility.findMany({
+      const validFacilities = await tenantPrisma.carrierFacility.findMany({
         where: { id: { in: facilityIds }, orgId },
         select: { id: true },
       });

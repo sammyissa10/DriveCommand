@@ -2,14 +2,15 @@
 
 import { getSession } from '@/lib/auth/supabase';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
 export async function getSignedPhotoUrl(stepInstanceId: string): Promise<string | null> {
   try {
     const session = await getSession();
     if (!session) return null;
 
-    const step = await prisma.stepInstance.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const step = await tenantPrisma.stepInstance.findFirst({
       where: {
         id: stepInstanceId,
         playbookInstance: { tenantId: session.tenantId },

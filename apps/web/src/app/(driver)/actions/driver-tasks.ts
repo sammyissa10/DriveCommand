@@ -11,7 +11,7 @@ import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { completeStep } from '@/server/services/workflows/completeStep';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { nanoid } from 'nanoid';
 import type { StepResult } from '@drivecommand/validation';
 
@@ -55,7 +55,8 @@ export async function failDriverInspection(
     const notes = result.note ?? null;
     const photoPath = result.photoUrls?.[0] ?? null;
 
-    await prisma.stepInstance.update({
+    const tenantPrisma = await getTenantPrisma();
+    await tenantPrisma.stepInstance.update({
       where: {
         id: stepInstanceId,
         playbookInstance: { tenantId: session.tenantId },

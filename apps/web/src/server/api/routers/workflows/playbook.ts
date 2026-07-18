@@ -9,7 +9,8 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { Prisma } from '@/generated/prisma/client';
 import { router, adminProcedure, tenantMemberProcedure } from '@/server/api/trpc';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // kept for $transaction
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import {
   createPlaybookSchema,
   updatePlaybookSchema,
@@ -24,7 +25,8 @@ import { reorderPlaybookSteps } from '@/server/services/workflows/playbookStepSe
 const list = tenantMemberProcedure
   .input(z.object({ entityType: playbookEntityTypeSchema.optional() }))
   .query(async ({ ctx, input }) => {
-    return prisma.playbook.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    return tenantPrisma.playbook.findMany({
       where: {
         tenantId: ctx.tenantId,
         deletedAt: null,
@@ -40,7 +42,8 @@ const list = tenantMemberProcedure
 const getById = tenantMemberProcedure
   .input(z.object({ id: z.string().uuid() }))
   .query(async ({ ctx, input }) => {
-    const playbook = await prisma.playbook.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const playbook = await tenantPrisma.playbook.findFirst({
       where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
       include: {
         steps: {
@@ -61,7 +64,8 @@ const getById = tenantMemberProcedure
 const create = adminProcedure
   .input(createPlaybookSchema)
   .mutation(async ({ ctx, input }) => {
-    return prisma.playbook.create({
+    const tenantPrisma = await getTenantPrisma();
+    return tenantPrisma.playbook.create({
       data: {
         ...input,
         tenantId: ctx.tenantId,
@@ -72,14 +76,15 @@ const create = adminProcedure
 const update = adminProcedure
   .input(updatePlaybookSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
     const { id, ...rest } = input;
-    const existing = await prisma.playbook.findFirst({
+    const existing = await tenantPrisma.playbook.findFirst({
       where: { id, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!existing) {
       throw new TRPCError({ code: 'NOT_FOUND' });
     }
-    return prisma.playbook.update({
+    return tenantPrisma.playbook.update({
       where: { id: existing.id },
       data: { ...rest },
     });
@@ -88,13 +93,14 @@ const update = adminProcedure
 const archiveProc = adminProcedure
   .input(z.object({ id: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {
-    const existing = await prisma.playbook.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const existing = await tenantPrisma.playbook.findFirst({
       where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!existing) {
       throw new TRPCError({ code: 'NOT_FOUND' });
     }
-    await prisma.playbook.update({
+    await tenantPrisma.playbook.update({
       where: { id: existing.id },
       data: { isActive: false, deletedAt: new Date() },
     });
@@ -104,7 +110,8 @@ const archiveProc = adminProcedure
 const duplicate = adminProcedure
   .input(z.object({ id: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {
-    const source = await prisma.playbook.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const source = await tenantPrisma.playbook.findFirst({
       where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
       include: {
         steps: { orderBy: [{ playbookPhase: 'asc' }, { sequence: 'asc' }] },
@@ -147,8 +154,10 @@ const duplicate = adminProcedure
 const addStep = adminProcedure
   .input(addStepSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Verify the playbook belongs to this tenant
-    const playbook = await prisma.playbook.findFirst({
+    const playbook = await tenantPrisma.playbook.findFirst({
       where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!playbook) {
@@ -156,7 +165,7 @@ const addStep = adminProcedure
     }
 
     // Verify the StepTemplate belongs to this tenant
-    const stepTemplate = await prisma.stepTemplate.findFirst({
+    const stepTemplate = await tenantPrisma.stepTemplate.findFirst({
       where: { id: input.stepTemplateId, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!stepTemplate) {
@@ -166,7 +175,7 @@ const addStep = adminProcedure
     // Compute sequence if not provided
     let sequence = input.sequence;
     if (sequence === undefined) {
-      const lastStep = await prisma.playbookStep.findFirst({
+      const lastStep = await tenantPrisma.playbookStep.findFirst({
         where: { playbookId: input.playbookId },
         orderBy: { sequence: 'desc' },
         select: { sequence: true },
@@ -174,7 +183,7 @@ const addStep = adminProcedure
       sequence = lastStep ? lastStep.sequence + 1 : 0;
     }
 
-    return prisma.playbookStep.create({
+    return tenantPrisma.playbookStep.create({
       data: {
         tenantId: ctx.tenantId, // required after quick-327 tenantId backfill
         playbookId: input.playbookId,
@@ -190,8 +199,10 @@ const addStep = adminProcedure
 const removeStep = adminProcedure
   .input(removeStepSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Verify the playbook belongs to this tenant
-    const playbook = await prisma.playbook.findFirst({
+    const playbook = await tenantPrisma.playbook.findFirst({
       where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!playbook) {
@@ -199,7 +210,7 @@ const removeStep = adminProcedure
     }
 
     // Verify the step belongs to this playbook
-    const step = await prisma.playbookStep.findFirst({
+    const step = await tenantPrisma.playbookStep.findFirst({
       where: { id: input.stepId, playbookId: input.playbookId },
     });
     if (!step) {
@@ -207,15 +218,17 @@ const removeStep = adminProcedure
     }
 
     // Hard delete of the junction row (StepTemplate itself is retained)
-    await prisma.playbookStep.delete({ where: { id: step.id } });
+    await tenantPrisma.playbookStep.delete({ where: { id: step.id } });
     return { success: true };
   });
 
 const updateStep = adminProcedure
   .input(updatePlaybookStepSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // 1. Verify the Playbook belongs to ctx.tenantId
-    const playbook = await prisma.playbook.findFirst({
+    const playbook = await tenantPrisma.playbook.findFirst({
       where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!playbook) {
@@ -223,7 +236,7 @@ const updateStep = adminProcedure
     }
 
     // 2. Verify the PlaybookStep belongs to that playbook
-    const step = await prisma.playbookStep.findFirst({
+    const step = await tenantPrisma.playbookStep.findFirst({
       where: { id: input.stepId, playbookId: input.playbookId },
     });
     if (!step) {
@@ -245,7 +258,7 @@ const updateStep = adminProcedure
     }
 
     // 4. Return the updated PlaybookStep with stepTemplate so client can re-render without refetch
-    return prisma.playbookStep.update({
+    return tenantPrisma.playbookStep.update({
       where: { id: step.id },
       data,
       include: { stepTemplate: true },
@@ -266,7 +279,8 @@ const reorderSteps = adminProcedure
     });
 
     // Return updated playbook with steps (same shape as getById)
-    return prisma.playbook.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    return tenantPrisma.playbook.findFirst({
       where: { id: input.playbookId, tenantId: ctx.tenantId },
       include: {
         steps: {

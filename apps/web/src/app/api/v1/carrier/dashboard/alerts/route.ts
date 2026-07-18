@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 interface AlertItem {
@@ -31,6 +31,7 @@ export async function GET() {
     const endOfToday = new Date(now);
     endOfToday.setHours(23, 59, 59, 999);
 
+    const tenantPrisma = await getTenantPrisma();
     const [
       pendingPayCount,
       expiringCdlCount,
@@ -41,11 +42,11 @@ export async function GET() {
       plannedDispatchCount,
     ] = await Promise.all([
       // 1. Pending pay records
-      prisma.driverPayRecord.count({
+      tenantPrisma.driverPayRecord.count({
         where: { orgId, status: 'pending' },
       }),
       // 2a. CDLs expiring within 30 days (warning)
-      prisma.carrierDriver.count({
+      tenantPrisma.carrierDriver.count({
         where: {
           orgId,
           status: 'active',
@@ -53,7 +54,7 @@ export async function GET() {
         },
       }),
       // 2b. CDLs already expired (critical)
-      prisma.carrierDriver.count({
+      tenantPrisma.carrierDriver.count({
         where: {
           orgId,
           status: 'active',
@@ -61,7 +62,7 @@ export async function GET() {
         },
       }),
       // 3a. Truck registrations expiring within 30 days (warning)
-      prisma.carrierTruck.count({
+      tenantPrisma.carrierTruck.count({
         where: {
           orgId,
           status: 'active',
@@ -69,7 +70,7 @@ export async function GET() {
         },
       }),
       // 3b. Truck registrations already expired (critical)
-      prisma.carrierTruck.count({
+      tenantPrisma.carrierTruck.count({
         where: {
           orgId,
           status: 'active',
@@ -77,7 +78,7 @@ export async function GET() {
         },
       }),
       // 4. Contracts expiring within 30 days
-      prisma.carrierContract.count({
+      tenantPrisma.carrierContract.count({
         where: {
           orgId,
           status: 'active',
@@ -85,7 +86,7 @@ export async function GET() {
         },
       }),
       // 5. Planned dispatches for today that haven't started
-      prisma.trip.count({
+      tenantPrisma.trip.count({
         where: {
           orgId,
           status: 'planned',

@@ -1,5 +1,6 @@
 import { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -218,7 +219,8 @@ export async function getDriverPayReport(
       if (filters.payPeriodEnd) where.payPeriodStart.lte = new Date(filters.payPeriodEnd);
     }
 
-    const records = await prisma.driverPayRecord.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    const records = await tenantPrisma.driverPayRecord.findMany({
       where,
       include: {
         driver: { select: { firstName: true, lastName: true } },

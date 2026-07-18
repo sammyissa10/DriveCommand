@@ -1,6 +1,7 @@
 import { after } from 'next/server';
 import { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { sendPayRecordReadyNotification } from '@/lib/carrier/notifications';
 
@@ -61,8 +62,9 @@ export async function generateDriverPayRecords(
   orgId: string,
   dispatchId: string
 ): PayResult {
+  const tenantPrisma = await getTenantPrisma();
   // Step 1: Load dispatch with all required relations
-  const dispatch = await prisma.trip.findFirst({
+  const dispatch = await tenantPrisma.trip.findFirst({
     where: { id: dispatchId, orgId },
     include: {
       primaryDriver: true,
@@ -142,7 +144,7 @@ export async function generateDriverPayRecords(
     const payRate = toNum(driver.payRate);
 
     // Step 5: Fetch approved reimbursable expenses for this driver + dispatch
-    const reimbursableExpenses = await prisma.carrierExpense.findMany({
+    const reimbursableExpenses = await tenantPrisma.carrierExpense.findMany({
       where: {
         dispatchId,
         driverId: driver.id,
@@ -163,7 +165,7 @@ export async function generateDriverPayRecords(
         const basePay = grossRevenue * payRate;
         const netPay = computeNetPay(basePay, 0, 0, 0, reimbursements);
 
-        await prisma.driverPayRecord.create({
+        await tenantPrisma.driverPayRecord.create({
           data: {
             orgId,
             driverId: driver.id,
@@ -278,7 +280,7 @@ export async function generateDriverPayRecords(
 
     const netPay = computeNetPay(basePay, 0, 0, 0, reimbursements);
 
-    await prisma.driverPayRecord.create({
+    await tenantPrisma.driverPayRecord.create({
       data: {
         ...recordData,
         basePay: new Prisma.Decimal(basePay),
@@ -293,7 +295,7 @@ export async function generateDriverPayRecords(
 
   // Notify owner about each newly created pay record
   if (recordsCreated > 0) {
-    const newRecords = await prisma.driverPayRecord.findMany({
+    const newRecords = await tenantPrisma.driverPayRecord.findMany({
       where: { dispatchId, orgId },
       select: {
         id: true,
@@ -339,7 +341,8 @@ export async function recalculatePayRecordReimbursements(
   | { error: string; status: number }
   | { data: { id: string; basePay: number; reimbursements: number; netPay: number } }
 > {
-  const record = await prisma.driverPayRecord.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const record = await tenantPrisma.driverPayRecord.findFirst({
     where: { id: payRecordId, orgId },
   });
 
@@ -358,7 +361,7 @@ export async function recalculatePayRecordReimbursements(
   // Sum all approved reimbursable expenses for this driver+dispatch.
   // Include expenses where driverId IS NULL (dispatcher-added expenses have no
   // driverId set but still belong to the dispatch and should be reimbursed).
-  const reimbursableExpenses = await prisma.carrierExpense.findMany({
+  const reimbursableExpenses = await tenantPrisma.carrierExpense.findMany({
     where: {
       dispatchId: record.dispatchId,
       reimbursable: true,
@@ -384,7 +387,7 @@ export async function recalculatePayRecordReimbursements(
   // this driver+dispatch (one per load). Other pay models have exactly one record.
   let reimbursementShare = totalReimbursements;
   if (record.payModel === 'percentage_gross' && record.dispatchId) {
-    const siblingCount = await prisma.driverPayRecord.count({
+    const siblingCount = await tenantPrisma.driverPayRecord.count({
       where: {
         orgId,
         dispatchId: record.dispatchId,
@@ -404,7 +407,7 @@ export async function recalculatePayRecordReimbursements(
   let newEmptyMiles = record.emptyMiles ?? 0;
 
   if (record.payModel === 'per_mile' || record.payModel === 'team_split') {
-    const dispatch = await prisma.trip.findFirst({
+    const dispatch = await tenantPrisma.trip.findFirst({
       where: { id: record.dispatchId, orgId },
     });
 
@@ -432,7 +435,7 @@ export async function recalculatePayRecordReimbursements(
     reimbursementShare
   );
 
-  await prisma.driverPayRecord.update({
+  await tenantPrisma.driverPayRecord.update({
     where: { id: payRecordId },
     data: {
       loadedMiles: newLoadedMiles,

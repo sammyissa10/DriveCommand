@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
 
 const RemoveLoadSchema = z.object({
   loadId: z.string().uuid(),
@@ -30,8 +30,9 @@ export async function POST(
 
     const { loadId } = parsed.data;
 
+    const tenantPrisma = await getTenantPrisma();
     // Verify dispatch exists and belongs to this org
-    const dispatch = await prisma.trip.findFirst({
+    const dispatch = await tenantPrisma.trip.findFirst({
       where: { id, orgId },
       select: { id: true, status: true },
     });
@@ -46,7 +47,7 @@ export async function POST(
     }
 
     // Verify load exists, belongs to this dispatch, and belongs to this org
-    const load = await prisma.carrierLoad.findFirst({
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: loadId, dispatchId: id, orgId },
       select: { id: true },
     });
@@ -58,7 +59,7 @@ export async function POST(
     }
 
     // Guard: check if any stops linked to this load have arrived or completed status
-    const activeStop = await prisma.carrierStop.findFirst({
+    const activeStop = await tenantPrisma.carrierStop.findFirst({
       where: {
         dispatchId: id,
         loadId,
@@ -74,14 +75,14 @@ export async function POST(
     }
 
     // Detach: clear dispatchId and reset status to pending
-    await prisma.carrierLoad.update({
+    await tenantPrisma.carrierLoad.update({
       where: { id: loadId },
       data: { dispatchId: null, status: 'pending' },
     });
 
     // Delete pending stops linked to this load on this dispatch.
     // Completed/skipped stops are preserved as historical records.
-    await prisma.carrierStop.deleteMany({
+    await tenantPrisma.carrierStop.deleteMany({
       where: {
         dispatchId: id,
         loadId,

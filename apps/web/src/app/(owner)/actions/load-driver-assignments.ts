@@ -4,7 +4,6 @@ import { Prisma } from '@/generated/prisma';
 import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { prisma as defaultPrisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { snapshotActiveTemplate, computeIsOverride } from '@/lib/driver-pay/snapshot';
 import {
@@ -244,7 +243,7 @@ export async function createAssignment(
   // origin/destination cities via the stops -> facility relation. `referenceNumber`
   // is the user-facing load identifier (replaces the non-existent `loadNumber`).
   const [load, driver] = await Promise.all([
-    defaultPrisma.carrierLoad.findUnique({
+    prisma.carrierLoad.findUnique({
       where: { id: loadId },
       select: {
         referenceNumber: true,
@@ -258,7 +257,7 @@ export async function createAssignment(
         },
       },
     }),
-    defaultPrisma.carrierDriver.findUnique({
+    prisma.carrierDriver.findUnique({
       where: { id: cd.id },
       select: { firstName: true, lastName: true, email: true },
     }),

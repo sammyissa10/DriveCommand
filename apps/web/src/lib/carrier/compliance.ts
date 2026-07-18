@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -42,6 +42,7 @@ function severity(daysLeft: number, criticalThreshold: number): AlertSeverity {
 // ---------------------------------------------------------------------------
 
 export async function getComplianceAlerts(orgId: string): Promise<ComplianceAlert[]> {
+  const tenantPrisma = await getTenantPrisma();
   const now = new Date();
   const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const in60Days = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
@@ -50,7 +51,7 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
 
   try {
     // --- CDL expiry: warn within 60 days ---
-    const drivers = await prisma.carrierDriver.findMany({
+    const drivers = await tenantPrisma.carrierDriver.findMany({
       where: {
         orgId,
         status: 'active',
@@ -76,7 +77,7 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
     }
 
     // --- Registration expiry: warn within 30 days ---
-    const regTrucks = await prisma.carrierTruck.findMany({
+    const regTrucks = await tenantPrisma.carrierTruck.findMany({
       where: {
         orgId,
         status: 'active',
@@ -102,7 +103,7 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
     }
 
     // --- Insurance expiry: warn within 30 days ---
-    const insTrucks = await prisma.carrierTruck.findMany({
+    const insTrucks = await tenantPrisma.carrierTruck.findMany({
       where: {
         orgId,
         status: 'active',
@@ -128,7 +129,7 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
     }
 
     // --- License expiry: warn within 30 days ---
-    const licTrucks = await prisma.carrierTruck.findMany({
+    const licTrucks = await tenantPrisma.carrierTruck.findMany({
       where: {
         orgId,
         status: 'active',
@@ -154,7 +155,7 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
     }
 
     // --- Contract expiry: active contracts expiring within 30 days ---
-    const contracts = await prisma.carrierContract.findMany({
+    const contracts = await tenantPrisma.carrierContract.findMany({
       where: {
         orgId,
         status: 'active',

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 export async function GET(
@@ -15,11 +15,12 @@ export async function GET(
   try {
     const { id } = await params;
 
+    const tenantPrisma = await getTenantPrisma();
     // Verify contract belongs to org (tenant isolation)
-    const contract = await prisma.carrierContract.findFirst({ where: { id, orgId } });
+    const contract = await tenantPrisma.carrierContract.findFirst({ where: { id, orgId } });
     if (!contract) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    const docs = await prisma.carrierDocument.findMany({
+    const docs = await tenantPrisma.carrierDocument.findMany({
       where: { contractId: id },
       orderBy: { createdAt: 'desc' },
       include: {

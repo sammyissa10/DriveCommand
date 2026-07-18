@@ -1,5 +1,4 @@
 import { after } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { sendTripChangeNotification } from '@/lib/carrier/notifications';
@@ -55,6 +54,7 @@ export interface StopUpdateInput {
 // ---------------------------------------------------------------------------
 
 export async function listStops(orgId: string, filters: ListStopsFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { dispatchId, loadId, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
@@ -65,20 +65,21 @@ export async function listStops(orgId: string, filters: ListStopsFilters = {}) {
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierStop.findMany({
+    tenantPrisma.carrierStop.findMany({
       where,
       skip,
       take: pageSize,
       orderBy: { sequenceOrder: 'asc' },
     }),
-    prisma.carrierStop.count({ where }),
+    tenantPrisma.carrierStop.count({ where }),
   ]);
 
   return { items, total };
 }
 
 export async function getStop(orgId: string, id: string) {
-  const stop = await prisma.carrierStop.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const stop = await tenantPrisma.carrierStop.findFirst({
     where: { id, dispatch: { orgId } },
     include: {
       documents: true,
@@ -94,8 +95,9 @@ export async function getStop(orgId: string, id: string) {
 }
 
 export async function createStop(orgId: string, data: StopCreateInput) {
+  const tenantPrisma = await getTenantPrisma();
   // Verify the dispatch belongs to this org
-  const dispatch = await prisma.trip.findFirst({
+  const dispatch = await tenantPrisma.trip.findFirst({
     where: { id: data.dispatchId, orgId },
   });
   if (!dispatch) {
@@ -104,7 +106,7 @@ export async function createStop(orgId: string, data: StopCreateInput) {
 
   // Verify loadId belongs to this org (if supplied)
   if (data.loadId) {
-    const load = await prisma.carrierLoad.findFirst({
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: data.loadId, orgId },
       select: { id: true },
     });
@@ -115,7 +117,7 @@ export async function createStop(orgId: string, data: StopCreateInput) {
 
   // Verify clientId belongs to this org (if supplied)
   if (data.clientId) {
-    const clientRecord = await prisma.carrierClient.findFirst({
+    const clientRecord = await tenantPrisma.carrierClient.findFirst({
       where: { id: data.clientId, orgId },
       select: { id: true },
     });
@@ -125,7 +127,7 @@ export async function createStop(orgId: string, data: StopCreateInput) {
   }
 
   // Fetch facility to build address_snapshot
-  const facility = await prisma.carrierFacility.findFirst({
+  const facility = await tenantPrisma.carrierFacility.findFirst({
     where: { id: data.facilityId, orgId },
   });
   if (!facility) {
@@ -143,7 +145,6 @@ export async function createStop(orgId: string, data: StopCreateInput) {
     },
   };
 
-  const tenantPrisma = await getTenantPrisma();
   const stop = await tenantPrisma.carrierStop.create({
     data: {
       dispatchId: data.dispatchId,
@@ -186,7 +187,7 @@ export async function createStop(orgId: string, data: StopCreateInput) {
 
 export async function updateStop(orgId: string, id: string, data: StopUpdateInput) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.carrierStop.findFirst({
+  const existing = await tenantPrisma.carrierStop.findFirst({
     where: { id, dispatch: { orgId } },
     include: {
       dispatch: { select: { id: true, status: true } },

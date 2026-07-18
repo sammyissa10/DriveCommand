@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { gpsLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -89,7 +90,8 @@ export async function POST(req: NextRequest) {
 
     // 6. Persist GPS coordinates to GPSLocation when carrierTruckId is resolved
     if (carrierTruckId) {
-      await prisma.gPSLocation.create({
+      const tenantPrisma = await getTenantPrisma();
+      await tenantPrisma.gPSLocation.create({
         data: {
           tenantId,
           carrierTruckId,

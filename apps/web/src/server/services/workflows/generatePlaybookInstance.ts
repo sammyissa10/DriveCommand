@@ -9,6 +9,7 @@
  * Assignee resolution and push notifications are best-effort, outside the transaction.
  */
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { sendStepAssigned } from './notifications';
 import type { PlaybookEntityType, TriggerEvent } from '@/generated/prisma';
@@ -24,8 +25,9 @@ export async function generatePlaybookInstance(args: {
 }) {
   const { playbookId, entityType, entityId, tenantId, triggeredBy, triggeredEvent } = args;
 
+  const tenantPrisma = await getTenantPrisma();
   // 1. Load Playbook with steps ordered by (playbookPhase ASC, sequence ASC)
-  const playbook = await prisma.playbook.findFirst({
+  const playbook = await tenantPrisma.playbook.findFirst({
     where: { id: playbookId, tenantId, deletedAt: null },
     include: {
       steps: {
@@ -42,7 +44,7 @@ export async function generatePlaybookInstance(args: {
   await verifyEntity(entityType, entityId, tenantId);
 
   // 3. Check for duplicate active instance
-  const existing = await prisma.playbookInstance.findFirst({
+  const existing = await tenantPrisma.playbookInstance.findFirst({
     where: { playbookId, entityId, tenantId, status: { not: 'COMPLETED' } },
   });
   if (existing) {
@@ -101,7 +103,7 @@ export async function generatePlaybookInstance(args: {
   }, TX_OPTIONS);
 
   // 7. Resolve assignees and send notifications (best-effort, outside transaction)
-  const createdSteps = await prisma.stepInstance.findMany({
+  const createdSteps = await tenantPrisma.stepInstance.findMany({
     where: { playbookInstanceId: instance.id },
     orderBy: [{ dueDate: 'asc' }],
   });
@@ -112,7 +114,7 @@ export async function generatePlaybookInstance(args: {
     const assignedUserId = await resolveAssignee(assigneeRole, tenantId, entityId, entityType);
 
     if (assignedUserId) {
-      await prisma.stepInstance.update({
+      await tenantPrisma.stepInstance.update({
         where: { id: stepInstance.id },
         data: { assignedUserId },
       });
@@ -122,7 +124,7 @@ export async function generatePlaybookInstance(args: {
     }
   }
 
-  return prisma.playbookInstance.findUniqueOrThrow({
+  return tenantPrisma.playbookInstance.findUniqueOrThrow({
     where: { id: instance.id },
     include: { stepInstances: true },
   });
@@ -223,19 +225,20 @@ async function verifyEntity(
   if (entityType === 'DRIVER') {
     const user = await prisma.user.findFirst({
       where: { id: entityId, tenantId, role: 'DRIVER' },
-    });
+    }); // platform table — bare prisma kept
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'Driver not found' });
     return user;
   }
+  const tenantPrisma = await getTenantPrisma();
   if (entityType === 'VEHICLE') {
-    const truck = await prisma.carrierTruck.findFirst({
+    const truck = await tenantPrisma.carrierTruck.findFirst({
       where: { id: entityId, orgId: tenantId },
     });
     if (!truck) throw new TRPCError({ code: 'NOT_FOUND', message: 'Vehicle not found' });
     return truck;
   }
   if (entityType === 'PARTNER') {
-    const customer = await prisma.customer.findFirst({ where: { id: entityId, tenantId } });
+    const customer = await tenantPrisma.customer.findFirst({ where: { id: entityId, tenantId } });
     if (!customer) throw new TRPCError({ code: 'NOT_FOUND', message: 'Partner not found' });
     return customer;
   }

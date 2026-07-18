@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
 
 /**
  * GET /api/v1/carrier/route-templates/active
@@ -16,7 +16,8 @@ export async function GET() {
   if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
 
   try {
-    const templates = await prisma.routeTemplate.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    const templates = await tenantPrisma.routeTemplate.findMany({
       where: { orgId, active: true },
       select: {
         id: true,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // kept for $transaction
 
 export async function PATCH(
   _req: NextRequest,

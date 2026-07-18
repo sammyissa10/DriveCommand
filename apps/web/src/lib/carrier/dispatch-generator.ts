@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -213,8 +214,9 @@ export async function generateDispatches(
     notifications: [],
   };
 
+  const tenantPrisma = await getTenantPrisma();
   // 1. Load template
-  const template = await prisma.routeTemplate.findFirst({
+  const template = await tenantPrisma.routeTemplate.findFirst({
     where: { id: templateId, orgId, active: true },
     include: {
       stops: {
@@ -254,7 +256,7 @@ export async function generateDispatches(
   // We count ALL org dispatches (manual + auto) so that auto-generated numbers never
   // collide with manually created dispatch numbers. Migration should add a proper
   // `dispatchNumber` column and backfill from the notes prefix.
-  const existingCount = await prisma.trip.count({ where: { orgId } });
+  const existingCount = await tenantPrisma.trip.count({ where: { orgId } });
   let dispatchCounter = existingCount;
 
   for (const dateStr of scheduledDates) {
@@ -263,7 +265,7 @@ export async function generateDispatches(
       const dayStart = applyTimeToDate(dateStr, '00:00');
       const dayEnd = applyTimeToDate(dateStr, '23:59');
 
-      const existingDispatch = await prisma.trip.findFirst({
+      const existingDispatch = await tenantPrisma.trip.findFirst({
         where: {
           routeTemplateId: templateId,
           orgId,
@@ -292,14 +294,14 @@ export async function generateDispatches(
 
       // 4b. Conflict detection for driver and truck (outside transaction — read-only check)
       const [driverConflict, truckConflict] = await Promise.all([
-        prisma.trip.findFirst({
+        tenantPrisma.trip.findFirst({
           where: {
             primaryDriverId: template.defaultDriverId,
             orgId,
             scheduledDeparture: { gte: dayStart, lt: dayEnd },
           },
         }),
-        prisma.trip.findFirst({
+        tenantPrisma.trip.findFirst({
           where: {
             truckId: template.defaultTruckId,
             orgId,

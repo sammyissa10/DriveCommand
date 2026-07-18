@@ -27,7 +27,8 @@ import { skipStep } from '@/server/services/workflows/skipStep';
 import { failInspectionItem } from '@/server/services/workflows/failInspectionItem';
 import { computeDispatchReadiness } from '@/server/services/workflows/computeDispatchReadiness';
 import { sendPushToUser } from '@/lib/notifications/send-push';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // kept for user.findMany — platform table
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
 const complete = tenantMemberProcedure
   .input(completeStepSchema)
@@ -54,8 +55,9 @@ const skip = adminProcedure
 const getForDriver = tenantMemberProcedure
   .input(getForDriverSchema)
   .query(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
     const { cursor, take } = input;
-    const steps = await prisma.stepInstance.findMany({
+    const steps = await tenantPrisma.stepInstance.findMany({
       where: {
         assignedUserId: ctx.userId,
         status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
@@ -98,18 +100,20 @@ const fail = tenantMemberProcedure
 const requestApproval = tenantMemberProcedure
   .input(z.object({ stepInstanceId: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Move ad-hoc APPROVAL step to IN_PROGRESS and notify dispatchers
-    const stepInstance = await prisma.stepInstance.findFirst({
+    const stepInstance = await tenantPrisma.stepInstance.findFirst({
       where: { id: input.stepInstanceId, playbookInstance: { tenantId: ctx.tenantId } },
     });
     if (!stepInstance) throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
 
-    await prisma.stepInstance.update({
+    await tenantPrisma.stepInstance.update({
       where: { id: input.stepInstanceId },
       data: { status: 'IN_PROGRESS' },
     });
 
-    // Notify dispatchers: APPROVAL_NEEDED
+    // Notify dispatchers: APPROVAL_NEEDED — user is a platform table
     const dispatchers = await prisma.user.findMany({
       where: { tenantId: ctx.tenantId, role: { in: ['OWNER', 'MANAGER'] } },
       select: { id: true },
@@ -127,8 +131,10 @@ const requestApproval = tenantMemberProcedure
 const approve = adminProcedure
   .input(approveStepSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
+
     // Approve the APPROVAL step: mark COMPLETE, recompute readiness
-    const stepInstance = await prisma.stepInstance.findFirst({
+    const stepInstance = await tenantPrisma.stepInstance.findFirst({
       where: { id: input.stepInstanceId, playbookInstance: { tenantId: ctx.tenantId } },
     });
     if (!stepInstance) throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
@@ -136,7 +142,7 @@ const approve = adminProcedure
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already approved' });
     }
 
-    await prisma.stepInstance.update({
+    await tenantPrisma.stepInstance.update({
       where: { id: input.stepInstanceId },
       data: {
         status: 'COMPLETE',

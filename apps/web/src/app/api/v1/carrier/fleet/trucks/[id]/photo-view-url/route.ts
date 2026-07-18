@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { generateDownloadUrl } from '@/lib/storage/presigned';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 export async function GET(
@@ -15,7 +15,8 @@ export async function GET(
     if (!tenantId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
 
     const { id } = await params;
-    const truck = await prisma.carrierTruck.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const truck = await tenantPrisma.carrierTruck.findFirst({
       where: { id, orgId: tenantId },
       select: { photoS3Key: true },
     });

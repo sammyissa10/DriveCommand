@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { removeLoadFromTrip } from '@/lib/carrier/loads';
@@ -41,7 +40,8 @@ export async function POST(
   const { removeStops, reason } = parseResult.data;
 
   try {
-    const load = await prisma.carrierLoad.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: loadId, orgId },
     });
 
@@ -64,7 +64,6 @@ export async function POST(
     }
 
     // Update load status to cancelled
-    const tenantPrisma = await getTenantPrisma();
     const notes = load.notes
       ? `${load.notes}\n[CANCELLED] ${reason || 'No reason provided'}`
       : `[CANCELLED] ${reason || 'No reason provided'}`;

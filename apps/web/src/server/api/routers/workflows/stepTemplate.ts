@@ -7,7 +7,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { router, adminProcedure, tenantMemberProcedure } from '@/server/api/trpc';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import {
   createStepTemplateSchema,
   updateStepTemplateSchema,
@@ -23,7 +23,8 @@ const list = tenantMemberProcedure
     })
   )
   .query(async ({ ctx, input }) => {
-    return prisma.stepTemplate.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    return tenantPrisma.stepTemplate.findMany({
       where: {
         tenantId: ctx.tenantId,
         isActive: true,
@@ -38,7 +39,8 @@ const list = tenantMemberProcedure
 const getById = tenantMemberProcedure
   .input(z.object({ id: z.string().uuid() }))
   .query(async ({ ctx, input }) => {
-    const stepTemplate = await prisma.stepTemplate.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const stepTemplate = await tenantPrisma.stepTemplate.findFirst({
       where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!stepTemplate) {
@@ -50,7 +52,8 @@ const getById = tenantMemberProcedure
 const create = adminProcedure
   .input(createStepTemplateSchema)
   .mutation(async ({ ctx, input }) => {
-    return prisma.stepTemplate.create({
+    const tenantPrisma = await getTenantPrisma();
+    return tenantPrisma.stepTemplate.create({
       data: {
         ...input,
         tenantId: ctx.tenantId,
@@ -61,14 +64,15 @@ const create = adminProcedure
 const update = adminProcedure
   .input(updateStepTemplateSchema)
   .mutation(async ({ ctx, input }) => {
+    const tenantPrisma = await getTenantPrisma();
     const { id, ...rest } = input;
-    const existing = await prisma.stepTemplate.findFirst({
+    const existing = await tenantPrisma.stepTemplate.findFirst({
       where: { id, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!existing) {
       throw new TRPCError({ code: 'NOT_FOUND' });
     }
-    return prisma.stepTemplate.update({
+    return tenantPrisma.stepTemplate.update({
       where: { id: existing.id },
       data: { ...rest },
     });
@@ -77,13 +81,14 @@ const update = adminProcedure
 const archive = adminProcedure
   .input(z.object({ id: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {
-    const existing = await prisma.stepTemplate.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const existing = await tenantPrisma.stepTemplate.findFirst({
       where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
     });
     if (!existing) {
       throw new TRPCError({ code: 'NOT_FOUND' });
     }
-    await prisma.stepTemplate.update({
+    await tenantPrisma.stepTemplate.update({
       where: { id: existing.id },
       data: { isActive: false, deletedAt: new Date() },
     });

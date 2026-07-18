@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -33,8 +33,9 @@ export async function GET(req: NextRequest) {
         : {}),
     };
 
+    const tenantPrisma = await getTenantPrisma();
     const [items, total] = await Promise.all([
-      prisma.driverPayRecord.findMany({
+      tenantPrisma.driverPayRecord.findMany({
         where,
         skip,
         take: pageSize,
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
           },
         },
       }),
-      prisma.driverPayRecord.count({ where }),
+      tenantPrisma.driverPayRecord.count({ where }),
     ]);
 
     return NextResponse.json({ data: { items, total, page, pageSize } });

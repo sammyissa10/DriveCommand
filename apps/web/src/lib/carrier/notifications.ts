@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { sendEmail } from '@/lib/email/gmail-client';
 import { getAppBaseUrl } from '@/lib/app-url';
@@ -53,6 +54,7 @@ async function getOwnerEmail(
 
 /** Get the driver email via CarrierDriver -> User join */
 async function getDriverEmail(driverId: string): Promise<string | null> {
+  // TODO E-1: bare carrierDriver lookup without orgId — needs caller trace before fix
   const driver = await prisma.carrierDriver.findFirst({
     where: { id: driverId },
     select: {
@@ -78,11 +80,12 @@ export async function sendDispatchAssignedNotification(
   const idempotencyKey = `carrier-dispatch-assigned-${dispatchId}-${driverId}`;
 
   try {
+    const tenantPrisma = await getTenantPrisma();
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
     if (alreadySent) return;
 
     // Resolve the dispatch number from notes for use in the subject/log
-    const dispatchRaw = await prisma.trip.findFirst({
+    const dispatchRaw = await tenantPrisma.trip.findFirst({
       where: { id: dispatchId, orgId },
       include: {
         truck: { select: { unitNumber: true } },
@@ -163,7 +166,7 @@ export async function sendDispatchAssignedNotification(
     await markNotificationSent(prisma, logId, result.id);
 
     // Persist in-app notification for the owner portal notification center
-    const driver = await prisma.carrierDriver.findFirst({
+    const driver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: driverId },
       select: { firstName: true, lastName: true },
     });
@@ -179,7 +182,7 @@ export async function sendDispatchAssignedNotification(
     });
 
     // Send mobile push notification to the driver
-    const driverRecord = await prisma.carrierDriver.findFirst({
+    const driverRecord = await tenantPrisma.carrierDriver.findFirst({
       where: { id: driverId },
       select: { userId: true },
     });
@@ -212,6 +215,7 @@ export async function sendLoadDeliveredNotification(
   loadId: string
 ): Promise<void> {
   try {
+    const tenantPrisma = await getTenantPrisma();
     const idempotencyKey = `carrier-load-delivered-${loadId}`;
 
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
@@ -223,7 +227,7 @@ export async function sendLoadDeliveredNotification(
       return;
     }
 
-    const load = await prisma.carrierLoad.findFirst({
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: loadId, orgId },
       include: {
         client: { select: { name: true } },
@@ -321,6 +325,7 @@ export async function sendStopCompletedNotification(
   stopId: string
 ): Promise<void> {
   try {
+    const tenantPrisma = await getTenantPrisma();
     const idempotencyKey = `carrier-stop-completed-${stopId}`;
 
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
@@ -332,7 +337,7 @@ export async function sendStopCompletedNotification(
       return;
     }
 
-    const stop = await prisma.carrierStop.findFirst({
+    const stop = await tenantPrisma.carrierStop.findFirst({
       where: { id: stopId },
       include: {
         facility: { select: { name: true, city: true, state: true } },
@@ -425,7 +430,7 @@ export async function sendStopCompletedNotification(
       entityId: stop.dispatchId,
     });
 
-    // Send push notification to owner
+    // Send push notification to owner (prisma.user kept bare — platform table)
     const ownerUser = await prisma.user.findFirst({
       where: { tenantId: orgId, role: 'OWNER', isActive: true },
       select: { id: true },
@@ -456,6 +461,7 @@ export async function sendPayRecordReadyNotification(
   netPay: number
 ): Promise<void> {
   try {
+    const tenantPrisma = await getTenantPrisma();
     const idempotencyKey = `carrier-pay-record-pending-${payRecordId}`;
 
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
@@ -468,7 +474,7 @@ export async function sendPayRecordReadyNotification(
     }
 
     // Extract dispatch number from the dispatch notes
-    const dispatch = await prisma.trip.findFirst({
+    const dispatch = await tenantPrisma.trip.findFirst({
       where: { id: dispatchId, orgId },
       select: { notes: true },
     });
@@ -541,12 +547,13 @@ export async function sendInvoiceGeneratedNotification(
   loadId: string
 ): Promise<void> {
   try {
+    const tenantPrisma = await getTenantPrisma();
     const idempotencyKey = `carrier-invoice-generated-${loadId}`;
 
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
     if (alreadySent) return;
 
-    const load = await prisma.carrierLoad.findFirst({
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: loadId, orgId },
       include: {
         client: {
@@ -758,7 +765,8 @@ export async function sendComplianceAlertNotifications(
 
 /** Load data needed for all 3 client notifications */
 async function getClientEmailForLoad(orgId: string, loadId: string) {
-  return prisma.carrierLoad.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  return tenantPrisma.carrierLoad.findFirst({
     where: { id: loadId, orgId },
     include: {
       client: {
@@ -839,6 +847,7 @@ export async function sendClientPickupNotification(
       return;
     }
 
+    // TODO E-5: prisma.tenant.findFirst is a platform-level lookup, stays bare
     const tenant = await prisma.tenant.findFirst({
       where: { id: orgId },
       select: { name: true },
@@ -970,6 +979,7 @@ export async function sendClientDeliveredNotification(
       return;
     }
 
+    // TODO E-5: prisma.tenant.findFirst is a platform-level lookup, stays bare
     const tenant = await prisma.tenant.findFirst({
       where: { id: orgId },
       select: { name: true },
@@ -1020,7 +1030,8 @@ export async function sendClientDeliveredNotification(
     // Check if POD document exists for last delivery stop
     let podNote: string | undefined;
     if (lastDelivery) {
-      const podCount = await prisma.carrierDocument.count({
+      const tenantPrisma = await getTenantPrisma();
+      const podCount = await tenantPrisma.carrierDocument.count({
         where: { stopId: lastDelivery.id, documentType: 'pod' },
       });
       if (podCount > 0) {
@@ -1105,6 +1116,7 @@ export async function sendClientInvoiceReadyNotification(
       return;
     }
 
+    // TODO E-5: prisma.tenant.findFirst is a platform-level lookup, stays bare
     const tenant = await prisma.tenant.findFirst({
       where: { id: orgId },
       select: { name: true },
@@ -1184,8 +1196,9 @@ export async function sendTripChangeNotification(
   details?: string
 ): Promise<{ notified: boolean; driverName: string | null }> {
   try {
+    const tenantPrisma = await getTenantPrisma();
     // Fetch dispatch with driver info
-    const dispatch = await prisma.trip.findFirst({
+    const dispatch = await tenantPrisma.trip.findFirst({
       where: { id: dispatchId, orgId },
       select: {
         notes: true,

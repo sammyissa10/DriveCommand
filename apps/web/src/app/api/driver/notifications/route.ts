@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 /**
@@ -34,8 +34,9 @@ export async function GET(req: NextRequest) {
     // Note: fleet_message is not an InAppNotificationType enum value — drivers get dispatch notifications
     const driverTypes = ['dispatch_assigned'] as const;
 
+    const tenantPrisma = await getTenantPrisma();
     const [notifications, unreadCount] = await Promise.all([
-      prisma.inAppNotification.findMany({
+      tenantPrisma.inAppNotification.findMany({
         where: {
           orgId,
           type: { in: [...driverTypes] },
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
         orderBy: { createdAt: 'desc' },
         take: limit,
       }),
-      prisma.inAppNotification.count({
+      tenantPrisma.inAppNotification.count({
         where: {
           orgId,
           type: { in: [...driverTypes] },

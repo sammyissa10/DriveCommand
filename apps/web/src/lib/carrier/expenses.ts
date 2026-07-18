@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { recalculatePayRecordReimbursements } from './pay-calculator';
 
@@ -33,6 +33,7 @@ export interface ListExpensesFilters {
 // ---------------------------------------------------------------------------
 
 export async function listExpenses(orgId: string, filters: ListExpensesFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const { dispatchId, loadId, stopId, driverId, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
 
@@ -45,7 +46,7 @@ export async function listExpenses(orgId: string, filters: ListExpensesFilters =
   };
 
   const [items, total] = await Promise.all([
-    prisma.carrierExpense.findMany({
+    tenantPrisma.carrierExpense.findMany({
       where,
       skip,
       take: pageSize,
@@ -54,7 +55,7 @@ export async function listExpenses(orgId: string, filters: ListExpensesFilters =
         driver: { select: { firstName: true, lastName: true } },
       },
     }),
-    prisma.carrierExpense.count({ where }),
+    tenantPrisma.carrierExpense.count({ where }),
   ]);
 
   return { items, total };
@@ -65,7 +66,8 @@ export async function listExpenses(orgId: string, filters: ListExpensesFilters =
 // ---------------------------------------------------------------------------
 
 export async function getExpense(orgId: string, id: string) {
-  const expense = await prisma.carrierExpense.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const expense = await tenantPrisma.carrierExpense.findFirst({
     where: { id, orgId },
     include: {
       driver: { select: { firstName: true, lastName: true } },
@@ -87,6 +89,7 @@ export async function createExpense(
   | { error: string; status: number }
   | import('@/generated/prisma').CarrierExpense
 > {
+  const tenantPrisma = await getTenantPrisma();
   // Validate: at least one of dispatchId or loadId must be provided
   if (!data.dispatchId && !data.loadId) {
     return { error: 'At least one of dispatchId or loadId is required', status: 400 };
@@ -94,7 +97,7 @@ export async function createExpense(
 
   // Verify dispatchId belongs to this org
   if (data.dispatchId) {
-    const dispatch = await prisma.trip.findFirst({
+    const dispatch = await tenantPrisma.trip.findFirst({
       where: { id: data.dispatchId, orgId },
       select: { id: true },
     });
@@ -105,7 +108,7 @@ export async function createExpense(
 
   // Verify stopId belongs to this org (stop's dispatch must belong to this org)
   if (data.stopId) {
-    const stop = await prisma.carrierStop.findFirst({
+    const stop = await tenantPrisma.carrierStop.findFirst({
       where: { id: data.stopId, dispatch: { orgId } },
       select: { id: true },
     });
@@ -116,7 +119,7 @@ export async function createExpense(
 
   // Verify driverId belongs to this org
   if (data.driverId) {
-    const driver = await prisma.carrierDriver.findFirst({
+    const driver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: data.driverId, orgId },
       select: { id: true },
     });
@@ -128,7 +131,7 @@ export async function createExpense(
   // Propagate clientId from load if loadId provided
   let clientId: string | null = null;
   if (data.loadId) {
-    const load = await prisma.carrierLoad.findFirst({
+    const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: data.loadId, orgId },
       select: { clientId: true },
     });
@@ -138,7 +141,7 @@ export async function createExpense(
   // Auto-set reimbursable when driver pays out of pocket
   const reimbursable = data.paidBy === 'driver_cash';
 
-  const expense = await prisma.carrierExpense.create({
+  const expense = await tenantPrisma.carrierExpense.create({
     data: {
       orgId,
       dispatchId: data.dispatchId ?? null,
@@ -170,10 +173,11 @@ export async function updateExpense(
   id: string,
   data: Partial<ExpenseCreateInput>
 ): Promise<import('@/generated/prisma').CarrierExpense | null> {
-  const existing = await prisma.carrierExpense.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.carrierExpense.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const updated = await prisma.carrierExpense.update({
+  const updated = await tenantPrisma.carrierExpense.update({
     where: { id },
     data: {
       ...(data.dispatchId !== undefined ? { dispatchId: data.dispatchId } : {}),
@@ -201,10 +205,11 @@ export async function updateExpense(
 // ---------------------------------------------------------------------------
 
 export async function deleteExpense(orgId: string, id: string): Promise<boolean | null> {
-  const existing = await prisma.carrierExpense.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.carrierExpense.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  await prisma.carrierExpense.delete({ where: { id } });
+  await tenantPrisma.carrierExpense.delete({ where: { id } });
   logger.info('deleteExpense: deleted', { orgId, expenseId: id });
   return true;
 }
@@ -218,10 +223,11 @@ export async function approveExpense(
   id: string,
   userId: string
 ): Promise<import('@/generated/prisma').CarrierExpense | null> {
-  const existing = await prisma.carrierExpense.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.carrierExpense.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const updated = await prisma.carrierExpense.update({
+  const updated = await tenantPrisma.carrierExpense.update({
     where: { id },
     data: { approvedBy: userId, approvedAt: new Date() },
   });
@@ -231,7 +237,7 @@ export async function approveExpense(
   // Propagate reimbursement to existing non-paid pay records (best-effort)
   if (updated.reimbursable && updated.dispatchId && updated.driverId) {
     try {
-      const affectedRecords = await prisma.driverPayRecord.findMany({
+      const affectedRecords = await tenantPrisma.driverPayRecord.findMany({
         where: {
           orgId,
           dispatchId: updated.dispatchId,

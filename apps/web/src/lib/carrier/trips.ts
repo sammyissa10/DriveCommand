@@ -65,6 +65,7 @@ export type TripUpdateInput = Partial<Omit<TripCreateInput, 'primaryDriverId' | 
 // ---------------------------------------------------------------------------
 
 export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
+  const tenantPrisma = await getTenantPrisma();
   const {
     status,
     dateFrom,
@@ -110,7 +111,7 @@ export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
   };
 
   const [items, total] = await Promise.all([
-    prisma.trip.findMany({
+    tenantPrisma.trip.findMany({
       where,
       skip,
       take: pageSize,
@@ -127,13 +128,13 @@ export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
         },
       },
     }),
-    prisma.trip.count({ where }),
+    tenantPrisma.trip.count({ where }),
   ]);
 
   // Attach completed/skipped stop count to each dispatch
   const itemsWithProgress = await Promise.all(
     items.map(async (dispatch) => {
-      const completedStops = await prisma.carrierStop.count({
+      const completedStops = await tenantPrisma.carrierStop.count({
         where: {
           dispatchId: dispatch.id,
           status: { in: ['completed', 'skipped'] },
@@ -147,7 +148,8 @@ export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
 }
 
 export async function getTrip(orgId: string, id: string) {
-  const dispatch = await prisma.trip.findFirst({
+  const tenantPrisma = await getTenantPrisma();
+  const dispatch = await tenantPrisma.trip.findFirst({
     where: { id, orgId },
     include: {
       stops: { orderBy: { sequenceOrder: 'asc' } },
@@ -168,7 +170,7 @@ export async function createTrip(orgId: string, data: TripCreateInput) {
   const tenantPrisma = await getTenantPrisma();
 
   // Verify primary driver belongs to this org
-  const driver = await prisma.carrierDriver.findFirst({
+  const driver = await tenantPrisma.carrierDriver.findFirst({
     where: { id: data.primaryDriverId, orgId },
   });
   if (!driver) {
@@ -176,7 +178,7 @@ export async function createTrip(orgId: string, data: TripCreateInput) {
   }
 
   // Verify truck belongs to this org
-  const truck = await prisma.carrierTruck.findFirst({
+  const truck = await tenantPrisma.carrierTruck.findFirst({
     where: { id: data.truckId, orgId },
   });
   if (!truck) {
@@ -185,7 +187,7 @@ export async function createTrip(orgId: string, data: TripCreateInput) {
 
   // Verify co-driver belongs to this org (if provided)
   if (data.coDriverId) {
-    const coDriver = await prisma.carrierDriver.findFirst({
+    const coDriver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: data.coDriverId, orgId },
     });
     if (!coDriver) {
@@ -220,7 +222,7 @@ export async function createTrip(orgId: string, data: TripCreateInput) {
 
   // Auto-generate dispatch number as DC-YYYY-NNNNN, stored in notes
   const year = new Date().getFullYear();
-  const lastDispatch = await prisma.trip.findFirst({
+  const lastDispatch = await tenantPrisma.trip.findFirst({
     where: { orgId, notes: { contains: `DC-${year}-` } },
     orderBy: { createdAt: 'desc' },
     select: { notes: true },
@@ -243,7 +245,7 @@ export async function createTrip(orgId: string, data: TripCreateInput) {
   let resolvedNotes = notes;
 
   if (data.routeTemplateId) {
-    const template = await prisma.routeTemplate.findFirst({
+    const template = await tenantPrisma.routeTemplate.findFirst({
       where: { id: data.routeTemplateId, orgId, active: true },
       select: { estimatedMiles: true, templateName: true },
     });
@@ -296,7 +298,7 @@ export async function createTrip(orgId: string, data: TripCreateInput) {
 
   // If routeTemplateId is set, inherit stops from template
   if (data.routeTemplateId) {
-    const templateStops = await prisma.routeTemplateStop.findMany({
+    const templateStops = await tenantPrisma.routeTemplateStop.findMany({
       where: { routeTemplateId: data.routeTemplateId },
       orderBy: { sequenceOrder: 'asc' },
       include: { facility: true },
@@ -379,7 +381,7 @@ export async function updateTrip(
   data: TripUpdateInput
 ): Promise<{ error: string } | Record<string, unknown> | null> {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await prisma.trip.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.trip.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
   if (existing.status === 'completed') {
@@ -388,14 +390,14 @@ export async function updateTrip(
 
   // Tenant isolation: validate driver/truck belong to this org
   if (data.primaryDriverId && data.primaryDriverId !== existing.primaryDriverId) {
-    const driver = await prisma.carrierDriver.findFirst({
+    const driver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: data.primaryDriverId, orgId },
     });
     if (!driver) return { error: 'Invalid driver' };
   }
 
   if (data.coDriverId) {
-    const coDriver = await prisma.carrierDriver.findFirst({
+    const coDriver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: data.coDriverId, orgId },
     });
     if (!coDriver) return { error: 'Invalid co-driver' };
@@ -407,7 +409,7 @@ export async function updateTrip(
   }
 
   if (data.truckId && data.truckId !== existing.truckId) {
-    const truck = await prisma.carrierTruck.findFirst({
+    const truck = await tenantPrisma.carrierTruck.findFirst({
       where: { id: data.truckId, orgId },
     });
     if (!truck) return { error: 'Invalid truck' };
@@ -428,7 +430,7 @@ export async function updateTrip(
   let templatePlannedMiles: number | null = null;
   let templateName: string | null = null;
   if (routeTemplateId && existing.status === 'planned') {
-    const template = await prisma.routeTemplate.findFirst({
+    const template = await tenantPrisma.routeTemplate.findFirst({
       where: { id: routeTemplateId, orgId, active: true },
       select: { estimatedMiles: true, templateName: true },
     });
@@ -459,10 +461,10 @@ export async function updateTrip(
   // If template changed on a planned dispatch, replace stops
   if (routeTemplateId && existing.status === 'planned') {
     // Delete existing stops
-    await prisma.carrierStop.deleteMany({ where: { dispatchId: id } });
+    await tenantPrisma.carrierStop.deleteMany({ where: { dispatchId: id } });
 
     // Re-create stops from new template
-    const templateStops = await prisma.routeTemplateStop.findMany({
+    const templateStops = await tenantPrisma.routeTemplateStop.findMany({
       where: { routeTemplateId },
       orderBy: { sequenceOrder: 'asc' },
       include: { facility: true },
@@ -543,7 +545,7 @@ export async function transitionTripStatus(
   | null
 > {
   const tenantPrisma = await getTenantPrisma();
-  const dispatch = await prisma.trip.findFirst({ where: { id, orgId } });
+  const dispatch = await tenantPrisma.trip.findFirst({ where: { id, orgId } });
   if (!dispatch) return null;
 
   const currentStatus = dispatch.status;
@@ -573,7 +575,7 @@ export async function transitionTripStatus(
     });
 
     // Notify driver that their trip has started
-    const driver = await prisma.carrierDriver.findFirst({
+    const driver = await tenantPrisma.carrierDriver.findFirst({
       where: { id: dispatch.primaryDriverId },
       select: { userId: true },
     });
@@ -613,7 +615,7 @@ export async function transitionTripStatus(
     // Guard: skip if all loads on this dispatch are sample data (user playing with seeds, not real onboarding)
     after(async () => {
       try {
-        const realLoadCount = await prisma.carrierLoad.count({
+        const realLoadCount = await tenantPrisma.carrierLoad.count({
           where: { dispatchId: id, isSample: false },
         });
         if (realLoadCount > 0) {
@@ -629,7 +631,7 @@ export async function transitionTripStatus(
 
   if (currentStatus === 'in_progress' && newStatus === 'completed') {
     // Verify all stops are completed or skipped
-    const stops = await prisma.carrierStop.findMany({
+    const stops = await tenantPrisma.carrierStop.findMany({
       where: { dispatchId: id },
       select: { status: true },
     });
@@ -659,7 +661,7 @@ export async function transitionTripStatus(
     if (dispatch.routeTemplateId) {
       after(async () => {
         try {
-          const template = await prisma.routeTemplate.findFirst({
+          const template = await tenantPrisma.routeTemplate.findFirst({
             where: { id: dispatch.routeTemplateId!, active: true },
             select: {
               id: true,
@@ -685,7 +687,7 @@ export async function transitionTripStatus(
           // Check if dispatch already exists for that date + template (dedup)
           const dayStart = new Date(`${nextDateStr}T00:00:00`);
           const dayEnd = new Date(`${nextDateStr}T23:59:59`);
-          const existingNext = await prisma.trip.findFirst({
+          const existingNext = await tenantPrisma.trip.findFirst({
             where: {
               routeTemplateId: template.id,
               orgId,
@@ -704,7 +706,7 @@ export async function transitionTripStatus(
 
           // Generate dispatch number
           const year = new Date().getFullYear();
-          const lastDispatchForNumber = await prisma.trip.findFirst({
+          const lastDispatchForNumber = await tenantPrisma.trip.findFirst({
             where: { orgId, notes: { contains: `DC-${year}-` } },
             orderBy: { createdAt: 'desc' },
             select: { notes: true },
@@ -781,7 +783,7 @@ export async function transitionTripStatus(
           }
 
           // Notify driver about next scheduled dispatch
-          const driver = await prisma.carrierDriver.findFirst({
+          const driver = await tenantPrisma.carrierDriver.findFirst({
             where: { id: driverId },
             select: { userId: true },
           });
@@ -877,12 +879,13 @@ export async function reorderTripStops(
   tripId: string,
   stopOrder: string[]  // Array of stop IDs in new order
 ): Promise<{ success: boolean } | { error: string }> {
-  const trip = await prisma.trip.findFirst({ where: { id: tripId, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const trip = await tenantPrisma.trip.findFirst({ where: { id: tripId, orgId } });
   if (!trip) return { error: 'Trip not found' };
   if (trip.status !== 'planned') return { error: 'Can only reorder stops on planned trips' };
 
   // Validate all stopIds belong to this trip
-  const existingStops = await prisma.carrierStop.findMany({
+  const existingStops = await tenantPrisma.carrierStop.findMany({
     where: { dispatchId: tripId },
     select: { id: true },
   });
@@ -917,12 +920,12 @@ export async function addLoadToTrip(
   const tenantPrisma = await getTenantPrisma();
 
   // Validate trip exists and is planned
-  const trip = await prisma.trip.findFirst({ where: { id: tripId, orgId } });
+  const trip = await tenantPrisma.trip.findFirst({ where: { id: tripId, orgId } });
   if (!trip) return { error: 'Trip not found' };
   if (trip.status !== 'planned') return { error: 'Can only add loads to planned trips' };
 
   // Validate load exists
-  const load = await prisma.carrierLoad.findFirst({ where: { id: loadId, orgId } });
+  const load = await tenantPrisma.carrierLoad.findFirst({ where: { id: loadId, orgId } });
   if (!load) return { error: 'Load not found' };
 
   // Update load.dispatchId
@@ -937,7 +940,7 @@ export async function addLoadToTrip(
       const pendingStops = JSON.parse(load.pendingStopsJson);
 
       // Get current max sequenceOrder for this trip
-      const maxStop = await prisma.carrierStop.findFirst({
+      const maxStop = await tenantPrisma.carrierStop.findFirst({
         where: { dispatchId: tripId },
         orderBy: { sequenceOrder: 'desc' },
         select: { sequenceOrder: true },

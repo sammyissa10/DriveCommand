@@ -9,7 +9,7 @@
  * Callers use after() from next/server so this runs outside the triggering
  * mutation's transaction (see spec Section 6.5 research Pitfall 5).
  */
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { generatePlaybookInstance } from './generatePlaybookInstance';
 import { logger } from '@/lib/logger';
 import type { PlaybookEntityType, TriggerEvent } from '@/generated/prisma';
@@ -46,7 +46,8 @@ export async function fireEvent(args: {
 
   let triggers;
   try {
-    triggers = await prisma.playbookTrigger.findMany({
+    const tenantPrisma = await getTenantPrisma();
+    triggers = await tenantPrisma.playbookTrigger.findMany({
       where: { tenantId, triggerEvent: event, isActive: true },
     });
   } catch (err) {

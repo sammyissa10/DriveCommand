@@ -5,7 +5,8 @@
  * then updated to their final values.
  */
 import { TRPCError } from '@trpc/server';
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // kept for $transaction
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import type { PhaseType } from '@drivecommand/validation';
 
 export async function reorderPlaybookSteps(params: {
@@ -15,8 +16,9 @@ export async function reorderPlaybookSteps(params: {
 }): Promise<void> {
   const { playbookId, tenantId, steps } = params;
 
+  const tenantPrisma = await getTenantPrisma();
   // 1. Verify the Playbook belongs to this tenant
-  const playbook = await prisma.playbook.findFirst({
+  const playbook = await tenantPrisma.playbook.findFirst({
     where: { id: playbookId, tenantId, deletedAt: null },
   });
   if (!playbook) {
@@ -25,7 +27,7 @@ export async function reorderPlaybookSteps(params: {
 
   // 2. Verify every stepId in params.steps belongs to this playbook
   const stepIds = steps.map((s) => s.stepId);
-  const existingSteps = await prisma.playbookStep.findMany({
+  const existingSteps = await tenantPrisma.playbookStep.findMany({
     where: { playbookId, id: { in: stepIds } },
     select: { id: true },
   });

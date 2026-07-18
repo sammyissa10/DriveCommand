@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
@@ -18,8 +18,9 @@ export async function GET(req: NextRequest) {
     // Users see org-wide notifications (userId null) AND their own targeted notifications
     const userFilter = [{ userId: null as string | null }, { userId: session.userId }];
 
+    const tenantPrisma = await getTenantPrisma();
     const [notifications, unreadCount] = await Promise.all([
-      prisma.inAppNotification.findMany({
+      tenantPrisma.inAppNotification.findMany({
         where: {
           orgId,
           ...(unreadOnly ? { read: false } : {}),
@@ -28,7 +29,7 @@ export async function GET(req: NextRequest) {
         orderBy: { createdAt: 'desc' },
         take: limit,
       }),
-      prisma.inAppNotification.count({
+      tenantPrisma.inAppNotification.count({
         where: {
           orgId,
           read: false,

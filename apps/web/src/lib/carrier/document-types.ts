@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -40,12 +41,13 @@ export async function seedDefaultTypes(orgId: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function listDocumentTypes(orgId: string, activeOnly = false) {
-  const count = await prisma.carrierDocumentType.count({ where: { orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const count = await tenantPrisma.carrierDocumentType.count({ where: { orgId } });
   if (count === 0) {
     await seedDefaultTypes(orgId);
   }
 
-  return prisma.carrierDocumentType.findMany({
+  return tenantPrisma.carrierDocumentType.findMany({
     where: { orgId, ...(activeOnly ? { isActive: true } : {}) },
     orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
   });
@@ -78,8 +80,9 @@ export async function createDocumentType(
   let slug = generateSlug(name.trim());
   if (!slug) return { error: 'Invalid name', status: 400 };
 
+  const tenantPrisma = await getTenantPrisma();
   // Ensure slug uniqueness within org
-  const existing = await prisma.carrierDocumentType.findMany({
+  const existing = await tenantPrisma.carrierDocumentType.findMany({
     where: { orgId, slug: { startsWith: slug } },
     select: { slug: true },
   });
@@ -90,7 +93,7 @@ export async function createDocumentType(
     slug = `${slug}-${i}`;
   }
 
-  const docType = await prisma.carrierDocumentType.create({
+  const docType = await tenantPrisma.carrierDocumentType.create({
     data: { orgId, name: name.trim(), slug, isDefault: false, isActive: true },
   });
 
@@ -110,7 +113,8 @@ export async function updateDocumentType(
   | { data: import('@/generated/prisma').CarrierDocumentType }
   | { error: string; status: number }
 > {
-  const existing = await prisma.carrierDocumentType.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.carrierDocumentType.findFirst({ where: { id, orgId } });
   if (!existing) return { error: 'Not found', status: 404 };
 
   const data: { name?: string; isActive?: boolean } = {};
@@ -127,7 +131,7 @@ export async function updateDocumentType(
     data.isActive = updates.isActive;
   }
 
-  const updated = await prisma.carrierDocumentType.update({ where: { id }, data });
+  const updated = await tenantPrisma.carrierDocumentType.update({ where: { id }, data });
   return { data: updated };
 }
 
@@ -139,14 +143,15 @@ export async function deleteDocumentType(
   orgId: string,
   id: string
 ): Promise<{ data: { deleted: boolean } } | { error: string; status: number }> {
-  const existing = await prisma.carrierDocumentType.findFirst({ where: { id, orgId } });
+  const tenantPrisma = await getTenantPrisma();
+  const existing = await tenantPrisma.carrierDocumentType.findFirst({ where: { id, orgId } });
   if (!existing) return { error: 'Not found', status: 404 };
 
   if (existing.isDefault) {
     return { error: 'Default document types cannot be deleted', status: 400 };
   }
 
-  const docCount = await prisma.carrierDocument.count({ where: { documentTypeId: id } });
+  const docCount = await tenantPrisma.carrierDocument.count({ where: { documentTypeId: id } });
   if (docCount > 0) {
     return {
       error: `Cannot delete: ${docCount} document(s) reference this type`,
@@ -154,7 +159,7 @@ export async function deleteDocumentType(
     };
   }
 
-  await prisma.carrierDocumentType.delete({ where: { id } });
+  await tenantPrisma.carrierDocumentType.delete({ where: { id } });
   logger.info('deleteDocumentType: deleted', { orgId, id });
   return { data: { deleted: true } };
 }

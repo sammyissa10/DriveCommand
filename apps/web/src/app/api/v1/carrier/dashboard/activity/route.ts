@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 interface ActivityItem {
@@ -31,6 +31,7 @@ export async function GET() {
   try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
+    const tenantPrisma = await getTenantPrisma();
     const [
       updatedDispatches,
       completedStops,
@@ -40,7 +41,7 @@ export async function GET() {
       newDispatches,
     ] = await Promise.all([
       // 1. Dispatch status changes (recently updated, not planned)
-      prisma.trip.findMany({
+      tenantPrisma.trip.findMany({
         where: {
           orgId,
           updatedAt: { gte: sevenDaysAgo },
@@ -51,7 +52,7 @@ export async function GET() {
         select: { id: true, status: true, notes: true, updatedAt: true },
       }),
       // 2. Completed stops
-      prisma.carrierStop.findMany({
+      tenantPrisma.carrierStop.findMany({
         where: {
           dispatch: { orgId },
           status: 'completed',
@@ -70,21 +71,21 @@ export async function GET() {
         },
       }),
       // 3. New loads
-      prisma.carrierLoad.findMany({
+      tenantPrisma.carrierLoad.findMany({
         where: { orgId, createdAt: { gte: sevenDaysAgo } },
         orderBy: { createdAt: 'desc' },
         take: 15,
         include: { client: { select: { name: true } } },
       }),
       // 4. Pay records created
-      prisma.driverPayRecord.findMany({
+      tenantPrisma.driverPayRecord.findMany({
         where: { orgId, createdAt: { gte: sevenDaysAgo } },
         orderBy: { createdAt: 'desc' },
         take: 15,
         include: { driver: { select: { firstName: true, lastName: true } } },
       }),
       // 5. Documents uploaded (carrier documents linked to a dispatch in org)
-      prisma.carrierDocument.findMany({
+      tenantPrisma.carrierDocument.findMany({
         where: {
           dispatch: { orgId },
           createdAt: { gte: sevenDaysAgo },
@@ -96,7 +97,7 @@ export async function GET() {
         },
       }),
       // 6. New dispatches created
-      prisma.trip.findMany({
+      tenantPrisma.trip.findMany({
         where: { orgId, createdAt: { gte: sevenDaysAgo } },
         orderBy: { createdAt: 'desc' },
         take: 15,

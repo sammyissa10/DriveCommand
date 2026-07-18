@@ -11,7 +11,7 @@
  * Note: STEP_COMPLETE is NOT a TriggerEvent per spec Section 5.1 — step completion
  * does not spawn playbooks. The previously planned TODO has been removed.
  */
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { computeDispatchReadiness } from './computeDispatchReadiness';
 import { sendStepAssigned } from './notifications';
@@ -25,8 +25,9 @@ export async function completeStep(args: {
 }) {
   const { stepInstanceId, userId, tenantId, result } = args;
 
+  const tenantPrisma = await getTenantPrisma();
   // Load step instance + verify tenant ownership via parent instance
-  const stepInstance = await prisma.stepInstance.findFirst({
+  const stepInstance = await tenantPrisma.stepInstance.findFirst({
     where: {
       id: stepInstanceId,
       playbookInstance: { tenantId },
@@ -53,7 +54,7 @@ export async function completeStep(args: {
   validateStepResult(snap.stepType, result, snap.defaultConfig);
 
   // Persist completion
-  const updated = await prisma.stepInstance.update({
+  const updated = await tenantPrisma.stepInstance.update({
     where: { id: stepInstanceId },
     data: {
       status: 'COMPLETE',
@@ -169,7 +170,8 @@ async function createDocumentRecord(args: {
 }) {
   const { tenantId, entityType, entityId, s3Key, documentTypeName, userId, stepName } = args;
   try {
-    await prisma.document.create({
+    const tenantPrisma = await getTenantPrisma();
+    await tenantPrisma.document.create({
       data: {
         tenantId,
         driverId: entityType === 'DRIVER' ? entityId : null,
@@ -190,7 +192,8 @@ async function createDocumentRecord(args: {
 
 async function notifyNextStep(playbookInstanceId: string, tenantId: string) {
   try {
-    const nextStep = await prisma.stepInstance.findFirst({
+    const tenantPrisma = await getTenantPrisma();
+    const nextStep = await tenantPrisma.stepInstance.findFirst({
       where: {
         playbookInstanceId,
         status: 'NOT_STARTED',

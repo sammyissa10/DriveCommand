@@ -8,7 +8,8 @@
  * Spec reference: Section 6.4
  * TODO(phase-5): Add SMS delivery via Twilio for STEP_FAILED notifications.
  */
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma'; // platform table (user.findMany) kept bare
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { computeDispatchReadiness } from './computeDispatchReadiness';
 import { sendStepFailed, sendApprovalNeeded } from './notifications';
@@ -21,8 +22,9 @@ export async function failInspectionItem(args: {
 }): Promise<void> {
   const { stepInstanceId, userId, tenantId, result } = args;
 
+  const tenantPrisma = await getTenantPrisma();
   // Load step + instance + playbook for category check — all tenant-scoped
-  const stepInstance = await prisma.stepInstance.findFirst({
+  const stepInstance = await tenantPrisma.stepInstance.findFirst({
     where: { id: stepInstanceId, playbookInstance: { tenantId } },
     include: {
       playbookInstance: {
@@ -53,7 +55,7 @@ export async function failInspectionItem(args: {
   const playbookCategory = playbookInstance.playbook.category;
 
   // 1. Mark step as FAILED
-  await prisma.stepInstance.update({
+  await tenantPrisma.stepInstance.update({
     where: { id: stepInstanceId },
     data: {
       status: 'FAILED',
@@ -67,7 +69,7 @@ export async function failInspectionItem(args: {
   let adHocStepId: string | undefined;
   if (playbookCategory === 'VEHICLE_INSPECTION') {
     const stepName = snap.name ?? 'Inspection Item';
-    const adHocStep = await prisma.stepInstance.create({
+    const adHocStep = await tenantPrisma.stepInstance.create({
       data: {
         tenantId, // required after quick-327 tenantId backfill
         playbookInstanceId: stepInstance.playbookInstanceId,
@@ -88,7 +90,7 @@ export async function failInspectionItem(args: {
   }
 
   // 3. Block the PlaybookInstance
-  await prisma.playbookInstance.update({
+  await tenantPrisma.playbookInstance.update({
     where: { id: stepInstance.playbookInstanceId },
     data: { status: 'BLOCKED' },
   });
