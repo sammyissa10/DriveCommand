@@ -19,7 +19,8 @@ interface RouteEditSectionProps {
     version: number;
     distanceMiles: number | null;
     driver: { id: string; firstName: string | null; lastName: string | null; email: string; licenseNumber: string | null };
-    truck: { id: string; make: string; model: string; year: number; licensePlate: string; vin: string };
+    truck?: { id: string; make: string; model: string; year: number; licensePlate: string; vin: string } | null;
+    carrierTruckId?: string | null;
     stops?: Array<{
       id: string;
       position: number;
@@ -37,7 +38,7 @@ interface RouteEditSectionProps {
     }>;
   };
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
-  trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }>;
+  trucks: Array<{ id: string; unitNumber: string; displayName: string | null }>;
   onDirtyChange?: (dirty: boolean) => void;
   onCancel: () => void;
 }
@@ -89,7 +90,7 @@ export function RouteEditSection({
     destination: route.destination,
     scheduledDate: formatForDatetimeInput(route.scheduledDate, 'UTC'),
     driverId: route.driver.id,
-    truckId: route.truck.id,
+    carrierTruckId: route.carrierTruckId ?? undefined,
     notes: route.notes || '',
     distanceMiles: route.distanceMiles,
     name: route.name,

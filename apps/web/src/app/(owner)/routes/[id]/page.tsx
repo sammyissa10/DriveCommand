@@ -7,10 +7,10 @@ import { listTemplates } from '@/app/(owner)/actions/expense-templates';
 import { getRouteFinancialAnalytics } from '@/app/(owner)/actions/route-analytics';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { listDrivers } from '@/app/(owner)/actions/drivers';
-import { listTrucks } from '@/app/(owner)/actions/trucks';
+import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
 import { listDriverRouteJoinsByRoute } from '@/app/(owner)/actions/driver-route-joins';
 import { getRouteMessages } from '@/app/(owner)/actions/fleet-messages';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { RoutePageClient } from './route-page-client';
 import { logger } from '@/lib/logger';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
@@ -32,6 +32,7 @@ export default async function RouteDetailPage({
   // so there is no reason to await getRoute() first and then fan out.
   // If the route is missing (null), notFound() is called after the parallel fetch.
   const prisma = await getTenantPrisma();
+  const orgId = await requireTenantId();
 
   const [
     route,
@@ -76,10 +77,12 @@ export default async function RouteDetailPage({
       logger.error('Failed to load drivers for route edit:', err);
       return [] as any[];
     }),
-    listTrucks().catch((err) => {
-      logger.error('Failed to load trucks for route edit:', err);
-      return [] as any[];
-    }),
+    listCarrierTrucks(orgId)
+      .then((r) => r.items)
+      .catch((err) => {
+        logger.error('Failed to load trucks for route edit:', err);
+        return [] as any[];
+      }),
     listDriverRouteJoinsByRoute(id).catch(() => [] as any[]),
     getRouteMessages(id).catch(() => [] as any[]),
     prisma.load.findMany({

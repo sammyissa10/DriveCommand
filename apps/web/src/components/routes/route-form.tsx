@@ -27,7 +27,7 @@ interface RouteFormProps {
     destination: string;
     scheduledDate: string; // datetime-local format: YYYY-MM-DDTHH:mm
     driverId: string;
-    truckId: string;
+    carrierTruckId?: string;
     notes?: string;
     distanceMiles?: number | null;
     name?: string | null;
@@ -45,10 +45,8 @@ interface RouteFormProps {
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{
     id: string;
-    make: string;
-    model: string;
-    year: number;
-    licensePlate: string;
+    unitNumber: string;
+    displayName: string | null;
   }>;
   submitLabel: string;
   extraHiddenFields?: Record<string, string | number>;
@@ -472,24 +470,31 @@ export function RouteForm({
           </div>
 
           <div>
-            <label htmlFor="truckId" className={labelClass}>Truck</label>
+            <label htmlFor="carrierTruckId" className={labelClass}>Truck</label>
             <select
-              id="truckId"
-              name="truckId"
-              defaultValue={initialData?.truckId || ''}
+              id="carrierTruckId"
+              name="carrierTruckId"
+              defaultValue={initialData?.carrierTruckId || ''}
               required
-              disabled={isPending}
+              disabled={isPending || trucks.length === 0}
               className={inputClass}
             >
-              <option value="">Select a truck...</option>
+              <option value="">
+                {trucks.length === 0 ? 'No trucks available' : 'Select a truck...'}
+              </option>
               {trucks.map((truck) => (
                 <option key={truck.id} value={truck.id}>
-                  {truck.year} {truck.make} {truck.model} ({truck.licensePlate})
+                  {truck.displayName || truck.unitNumber}
                 </option>
               ))}
             </select>
-            {fieldErrors?.truckId && (
-              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.truckId}</p>
+            {trucks.length === 0 && (
+              <p className="mt-1.5 text-sm text-amber-600">
+                Add trucks to your fleet first before creating routes.
+              </p>
+            )}
+            {fieldErrors?.carrierTruckId && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.carrierTruckId}</p>
             )}
           </div>
         </div>

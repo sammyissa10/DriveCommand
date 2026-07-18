@@ -39,7 +39,7 @@ interface RoutePageClientProps {
       email: string;
       licenseNumber: string | null
     };
-    truck: {
+    truck?: {
       id: string;
       make: string;
       model: string;
@@ -48,7 +48,18 @@ interface RoutePageClientProps {
       vin: string;
       odometer: number | null;
       documentMetadata: any
-    };
+    } | null;
+    carrierTruckId?: string | null;
+    carrierTruck?: {
+      id: string;
+      unitNumber: string;
+      displayName: string | null;
+      year: number | null;
+      make: string | null;
+      model: string | null;
+      vin: string | null;
+      licensePlate: string | null;
+    } | null;
     stops?: Array<{
       id: string;
       position: number;
@@ -67,7 +78,7 @@ interface RoutePageClientProps {
   };
   initialEditMode: boolean;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null; email: string }>;
-  trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }>;
+  trucks: Array<{ id: string; unitNumber: string; displayName: string | null }>;
   formattedScheduledDate: string;
   formattedCompletedAt?: string;
   // Financial data (pass-through for view mode sections)

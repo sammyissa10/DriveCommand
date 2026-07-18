@@ -11,10 +11,8 @@ interface Driver {
 
 interface Truck {
   id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string;
+  unitNumber: string;
+  displayName: string | null;
 }
 
 interface EditRouteClientProps {
@@ -24,7 +22,7 @@ interface EditRouteClientProps {
     destination: string;
     scheduledDate: string;
     driverId: string;
-    truckId: string;
+    carrierTruckId?: string;
     notes?: string;
   };
   drivers: Driver[];

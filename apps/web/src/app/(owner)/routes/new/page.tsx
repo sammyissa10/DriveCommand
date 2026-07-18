@@ -1,20 +1,24 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { listDrivers } from '@/app/(owner)/actions/drivers';
-import { listTrucks } from '@/app/(owner)/actions/trucks';
+import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
+import { requireTenantId } from '@/lib/context/tenant-context';
 import { NewRouteClient } from './new-route-client';
 import { logger } from '@/lib/logger';
 
 export default async function NewRoutePage() {
+  const orgId = await requireTenantId();
   const [allDrivers, trucks] = await Promise.all([
     listDrivers().catch((err) => {
       logger.error('Failed to load drivers for route form:', err);
       return [] as any[];
     }),
-    listTrucks().catch((err) => {
-      logger.error('Failed to load trucks for route form:', err);
-      return [] as any[];
-    }),
+    listCarrierTrucks(orgId)
+      .then((r) => r.items)
+      .catch((err) => {
+        logger.error('Failed to load carrier trucks for route form:', err);
+        return [] as any[];
+      }),
   ]);
 
   const drivers = allDrivers;

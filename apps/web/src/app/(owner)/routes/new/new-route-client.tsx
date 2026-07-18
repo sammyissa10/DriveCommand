@@ -11,10 +11,8 @@ interface Driver {
 
 interface Truck {
   id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string;
+  unitNumber: string;
+  displayName: string | null;
 }
 
 interface NewRouteClientProps {

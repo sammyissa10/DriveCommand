@@ -21,6 +21,17 @@ interface Truck {
   vin: string;
 }
 
+interface CarrierTruck {
+  id: string;
+  unitNumber: string;
+  displayName: string | null;
+  year: number | null;
+  make: string | null;
+  model: string | null;
+  vin: string | null;
+  licensePlate: string | null;
+}
+
 interface RouteStop {
   id: string;
   position: number;
@@ -47,7 +58,8 @@ interface Route {
   status: string;
   notes: string | null;
   driver: Driver;
-  truck: Truck;
+  truck?: Truck | null;
+  carrierTruck?: CarrierTruck | null;
   stops?: RouteStop[];
   coDrivers?: CoDriver[];
 }
@@ -234,38 +246,89 @@ export function RouteDetail({
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-card-foreground">Assigned Truck</h2>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Vehicle</p>
-            <p className="mt-1 text-sm text-card-foreground">
-              {route.truck.year} {route.truck.make} {route.truck.model}
-            </p>
-          </div>
+        {route.carrierTruck ? (
+          <>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Vehicle</p>
+                <p className="mt-1 text-sm text-card-foreground">
+                  {route.carrierTruck.displayName || route.carrierTruck.unitNumber}
+                  {(route.carrierTruck.year || route.carrierTruck.make || route.carrierTruck.model) && (
+                    <span className="text-muted-foreground">
+                      {' '}
+                      ({[route.carrierTruck.year, route.carrierTruck.make, route.carrierTruck.model].filter(Boolean).join(' ')})
+                    </span>
+                  )}
+                </p>
+              </div>
 
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">License Plate</p>
-            <p className="mt-1">
-              <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium">
-                {route.truck.licensePlate}
-              </span>
-            </p>
-          </div>
+              {route.carrierTruck.licensePlate && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">License Plate</p>
+                  <p className="mt-1">
+                    <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium">
+                      {route.carrierTruck.licensePlate}
+                    </span>
+                  </p>
+                </div>
+              )}
 
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">VIN</p>
-            <p className="mt-1 text-sm font-mono text-card-foreground">{route.truck.vin}</p>
-          </div>
-        </div>
+              {route.carrierTruck.vin && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">VIN</p>
+                  <p className="mt-1 text-sm font-mono text-card-foreground">{route.carrierTruck.vin}</p>
+                </div>
+              )}
+            </div>
 
-        <div className="mt-4">
-          <Link
-            href={`/trucks/${route.truck.id}`}
-            className="group inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-          >
-            View Truck Details
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
+            <div className="mt-4">
+              <Link
+                href={`/carrier/fleet/trucks/${route.carrierTruck.id}`}
+                className="group inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                View Truck Details
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </>
+        ) : route.truck ? (
+          <>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Vehicle</p>
+                <p className="mt-1 text-sm text-card-foreground">
+                  {route.truck.year} {route.truck.make} {route.truck.model}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">License Plate</p>
+                <p className="mt-1">
+                  <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium">
+                    {route.truck.licensePlate}
+                  </span>
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">VIN</p>
+                <p className="mt-1 text-sm font-mono text-card-foreground">{route.truck.vin}</p>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <Link
+                href={`/trucks/${route.truck.id}`}
+                className="group inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                View Truck Details
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">No truck assigned.</p>
+        )}
       </div>
     </div>
   );
