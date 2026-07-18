@@ -11,19 +11,27 @@ interface RoutePaymentData {
   status: string;
 }
 
+interface RouteLoadData {
+  rate: Prisma.Decimal | string;
+  status: string;
+}
+
 export interface RouteFinancials {
   totalExpenses: string; // Decimal as string for serialization
-  totalRevenue: string; // Sum of all payments (regardless of status)
+  totalRevenue: string; // Sum of all payments + non-cancelled linked load rates
   totalPaidRevenue: string; // Sum of PAID payments only
-  totalPendingRevenue: string; // Sum of PENDING payments only
+  totalPendingRevenue: string; // totalRevenue - totalPaidRevenue, clamped >= 0
   profit: string; // totalRevenue - totalExpenses
   marginPercent: number; // (profit / totalRevenue) * 100, or 0 if no revenue
   isLowMargin: boolean; // marginPercent < threshold
+  loadRevenue: string; // Sum of non-cancelled linked load rates
+  loadCount: number; // Count of non-cancelled linked loads
 }
 
 export function calculateRouteFinancials(
   expenses: RouteExpenseData[],
   payments: RoutePaymentData[],
+  loads: RouteLoadData[],
   profitMarginThreshold: number = 10
 ): RouteFinancials {
   // Sum expenses using Decimal.add (NEVER use JavaScript number arithmetic)
@@ -33,7 +41,7 @@ export function calculateRouteFinancials(
   );
 
   // Sum all payments
-  const totalRevenue = payments.reduce(
+  const paymentsRevenue = payments.reduce(
     (sum, p) => sum.add(new Decimal(p.amount)),
     new Decimal(0)
   );
@@ -43,9 +51,24 @@ export function calculateRouteFinancials(
     .filter((p) => p.status === 'PAID')
     .reduce((sum, p) => sum.add(new Decimal(p.amount)), new Decimal(0));
 
-  const totalPendingRevenue = payments
-    .filter((p) => p.status === 'PENDING')
-    .reduce((sum, p) => sum.add(new Decimal(p.amount)), new Decimal(0));
+  // By design: manual RoutePayment records are ADDED on top of linked load rates.
+  // If a user records a manual payment for a load already counted here, that is
+  // intentional/additive (accessorials/adjustments) — not deduplicated.
+  const activeLoads = loads.filter((l) => l.status !== 'CANCELLED');
+  const loadRevenue = activeLoads.reduce(
+    (sum, l) => sum.add(new Decimal(l.rate)),
+    new Decimal(0)
+  );
+  const loadCount = activeLoads.length;
+
+  // Total revenue = manual payments + non-cancelled linked load rates
+  const totalRevenue = paymentsRevenue.add(loadRevenue);
+
+  // Everything not yet collected = totalRevenue - totalPaidRevenue, clamped >= 0
+  let totalPendingRevenue = totalRevenue.sub(totalPaidRevenue);
+  if (totalPendingRevenue.isNegative()) {
+    totalPendingRevenue = new Decimal(0);
+  }
 
   // Calculate profit
   const profit = totalRevenue.sub(totalExpenses);
@@ -67,6 +90,8 @@ export function calculateRouteFinancials(
     profit: profit.toFixed(2),
     marginPercent,
     isLowMargin,
+    loadRevenue: loadRevenue.toFixed(2),
+    loadCount,
   };
 }
 

@@ -76,6 +76,19 @@ export async function getRouteFinancialAnalytics(
     },
   });
 
+  // Fetch non-cancelled loads linked to this route (Load is tenant-scoped
+  // and NOT RLS-exempt, so getTenantPrisma auto-injects tenantId).
+  const loads = await prisma.load.findMany({
+    where: {
+      routeId,
+      status: { not: 'CANCELLED' },
+    },
+    select: {
+      rate: true,
+      status: true,
+    },
+  });
+
   // Fetch tenant's profit margin threshold
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
@@ -90,6 +103,7 @@ export async function getRouteFinancialAnalytics(
   const financials = calculateRouteFinancials(
     expenses,
     payments,
+    loads,
     profitMarginThreshold
   );
 
