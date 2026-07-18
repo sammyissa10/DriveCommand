@@ -134,12 +134,12 @@ export const trucksColumns: ColumnDef<TruckRow, unknown>[] = [
                 href={`/carrier/fleet/trucks/${t.id}`}
                 className="font-medium text-foreground hover:text-primary transition-colors"
               >
-                {t.displayName || t.unitNumber}
+                {t.unitNumber}
               </Link>
               {t.isSample && <SamplePill />}
             </div>
             {t.displayName && t.displayName !== t.unitNumber && (
-              <p className="text-xs text-muted-foreground">{t.unitNumber}</p>
+              <p className="text-xs text-muted-foreground">{t.displayName}</p>
             )}
           </div>
         </div>
