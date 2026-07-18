@@ -8,6 +8,8 @@ interface RouteFinancialSummaryProps {
   profit: string;
   marginPercent: number;
   isLowMargin: boolean;
+  loadRevenue: string;
+  loadCount: number;
 }
 
 function formatCurrency(amount: string): string {
@@ -26,6 +28,8 @@ export function RouteFinancialSummary({
   profit,
   marginPercent,
   isLowMargin,
+  loadRevenue,
+  loadCount,
 }: RouteFinancialSummaryProps) {
   const profitNum = parseFloat(profit);
   const isNegative = profitNum < 0;
@@ -48,6 +52,12 @@ export function RouteFinancialSummary({
           <div className="text-xs text-muted-foreground mt-1">
             {formatCurrency(totalPaidRevenue)} paid / {formatCurrency(totalPendingRevenue)} pending
           </div>
+          {loadCount > 0 && (
+            <div className="text-xs text-muted-foreground mt-1">
+              Includes {formatCurrency(loadRevenue)} from {loadCount} linked load
+              {loadCount === 1 ? '' : 's'}
+            </div>
+          )}
         </div>
 
         {/* Total Expenses */}

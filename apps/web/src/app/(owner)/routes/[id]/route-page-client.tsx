@@ -91,6 +91,8 @@ interface RoutePageClientProps {
       profit: string;
       marginPercent: number;
       isLowMargin: boolean;
+      loadRevenue: string;
+      loadCount: number;
     };
     costPerMile: {
       costPerMile: string | null;
@@ -238,6 +240,8 @@ export function RoutePageClient({
             profit={analytics.financials.profit}
             marginPercent={analytics.financials.marginPercent}
             isLowMargin={analytics.financials.isLowMargin}
+            loadRevenue={analytics.financials.loadRevenue}
+            loadCount={analytics.financials.loadCount}
           />
 
           {/* Driver Assignments Section */}
@@ -386,6 +390,8 @@ export function RoutePageClient({
             profit={analytics.financials.profit}
             marginPercent={analytics.financials.marginPercent}
             isLowMargin={analytics.financials.isLowMargin}
+            loadRevenue={analytics.financials.loadRevenue}
+            loadCount={analytics.financials.loadCount}
           />
 
           {/* Cost Per Mile Analysis */}

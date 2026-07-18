@@ -117,6 +117,8 @@ export default async function RouteDetailPage({
       profit: '0.00',
       marginPercent: 0,
       isLowMargin: false,
+      loadRevenue: '0.00',
+      loadCount: 0,
     },
     costPerMile: { costPerMile: null, miles: null },
     fleetAverage: { costPerMile: null, routeCount: 0 },
