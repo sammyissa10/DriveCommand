@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-07-18 - Completed quick task 471: Route Financial Summary now auto-includes linked (non-cancelled) load rates in Total Revenue, with a "Includes $X from N linked loads" line and pending = total − paid; so carrier load revenue reflects without double-entering manual Payment records.
+Last activity: 2026-07-18 - Completed quick task 472: Trip Stops now support a per-stop Load association — "For Load" picker on Add Stop and Edit Stop dialogs, Load badge on stop cards (desktop + mobile), backend PATCH accepts/persists loadId with org-ownership verification.
 Last session: 2026-07-17T00:00:00Z
 Stopped at: Completed quick-463 diagnosis — /notifications 500 is pool exhaustion, not a code bug. Critical blocker: increase Supabase pool_size from 15 to 50+ in dashboard settings. Also found: trip_change enum drift (tech debt, not urgent) and uncommitted local getTenantPrisma() change in notifications route (consistent with GUC pattern, does not fix root cause).
 
@@ -932,6 +932,7 @@ None blocking immediate progress.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 472 | Per-stop Load picker (Add/Edit dialogs) + Load badge on stop cards, desktop + mobile | 2026-07-18 | e61cd40c | [472-trip-stops-add-per-stop-load-picker-show](./quick/472-trip-stops-add-per-stop-load-picker-show/) |
 | 471 | Route Financial Summary auto-includes linked load rates in revenue (loadRevenue/loadCount, pending = total − paid) | 2026-07-18 | 55aa4870 | [471-route-financial-summary-auto-includes-li](./quick/471-route-financial-summary-auto-includes-li/) |
 | 470 | Wire Routes create/edit Truck dropdown to carrier fleet (CarrierTruck) via nullable Route.carrierTruckId FK | 2026-07-18 | 8238c761 | [470-wire-routes-truck-dropdown-to-carrier-fl](./quick/470-wire-routes-truck-dropdown-to-carrier-fl/) |
 | 469 | Rebuild carrier Loads Detail on the mobile-web ds (+ fix rate-type Zod save error) | 2026-07-15 | fa2237a7 | [469-rebuild-carrier-loads-detail-on-the-mobi](./quick/469-rebuild-carrier-loads-detail-on-the-mobi/) |
