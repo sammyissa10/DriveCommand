@@ -39,6 +39,12 @@ export async function sendDriverInvitation(
       },
       relatedEntity: { type: 'DriverInvitation', id: toEmail },
     });
+
+    if (result.sent === 0 && result.failed > 0) {
+      console.warn('[notifications] dispatcher reported failure (sent:0 failed:%d), falling back to legacy sender', result.failed);
+      return legacySendDriverInvitation(toEmail, data);
+    }
+
     return { id: `dispatch:${result.sent}:${result.skipped}:${result.failed}` };
   } catch (err) {
     console.warn('[notifications] dispatcher failed, falling back to legacy sender', err);
