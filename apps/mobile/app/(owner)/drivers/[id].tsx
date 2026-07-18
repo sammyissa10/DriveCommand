@@ -121,6 +121,16 @@ function fmtDate(iso: string | null | undefined): string {
 
 function titleCase(s: string) { return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) }
 
+/** "6h 30m" / "45m" / "7h" from a whole-minute count (presentation only). */
+function fmtHM(totalMinutes: number): string {
+  const mins = Math.max(0, Math.round(totalMinutes))
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  if (h <= 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
 function parseName(full: string) {
   const p = full.trim().split(/\s+/)
   if (!p.length) return { firstName: '', lastName: '' }
@@ -222,13 +232,19 @@ function EditDriverSheet({ visible, onClose, initialData, onSave, isPending }: E
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function DriverDetailScreen() {
-  const { id, from } = useLocalSearchParams<{ id: string; from?: string }>()
+  const { id, from, tab } = useLocalSearchParams<{ id: string; from?: string; tab?: string }>()
   const { token } = useAuthContext()
   const router    = useRouter()
   const insets    = useSafeAreaInsets()
   const qc        = useQueryClient()
 
   const [editOpen, setEditOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'hours'>(tab === 'hours' ? 'hours' : 'overview')
+
+  // Honor a deep-link that arrives after mount (e.g. from the hours meta tap).
+  useEffect(() => {
+    if (tab === 'hours') setActiveTab('hours')
+  }, [tab])
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDriverDetail>({
     queryKey: ['owner-driver-detail', id],
@@ -408,6 +424,59 @@ export default function DriverDetailScreen() {
             </View>
           </View>
 
+          {/* ── View tabs: Overview / Hours (Hours is the hours-meta deep-link target) */}
+          <View style={{ flexDirection: 'row', backgroundColor: C.surface, borderRadius: 12, padding: 4, marginTop: 8, borderWidth: 1, borderColor: C.border }}>
+            {(['overview', 'hours'] as const).map((t) => {
+              const selected = activeTab === t
+              return (
+                <Pressable
+                  key={t}
+                  onPress={() => { haptic.light(); setActiveTab(t) }}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected }}
+                  style={{ flex: 1, paddingVertical: 10, borderRadius: 9, alignItems: 'center', backgroundColor: selected ? C.card : 'transparent' }}
+                >
+                  <Text style={{ color: selected ? C.text : C.textSub, fontWeight: '600', fontSize: 14 }}>
+                    {t === 'overview' ? 'Overview' : 'Hours'}
+                  </Text>
+                </Pressable>
+              )
+            })}
+          </View>
+
+          {activeTab === 'hours' ? (
+            <View style={{ marginTop: 24 }}>
+              {/* Elapsed today */}
+              <View style={{ backgroundColor: C.card, borderRadius: 16, borderWidth: 1, borderColor: C.border, padding: 18, marginBottom: 12 }}>
+                <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8 }}>On Duty Today</Text>
+                <Text style={{ color: C.text, fontSize: 28, fontWeight: '800' }}>{fmtHM(data.hos.onDutyMinutes)}</Text>
+                <Text style={{ color: C.textSub, fontSize: 13, marginTop: 4 }}>{fmtHM(data.hos.drivingMinutes)} driving</Text>
+              </View>
+
+              {/* Remaining clocks */}
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                {[
+                  { label: 'Drive left · 11h', mins: data.hos.driveRemainingMinutes },
+                  { label: 'Window left · 14h', mins: data.hos.dutyWindowRemainingMinutes },
+                ].map((clock) => {
+                  const color = clock.mins <= 0 ? C.danger : clock.mins < 120 ? C.warning : C.success
+                  return (
+                    <View key={clock.label} style={{ flex: 1, backgroundColor: C.card, borderRadius: 16, borderWidth: 1, borderColor: C.border, padding: 18 }}>
+                      <Text style={{ color, fontSize: 24, fontWeight: '800' }}>{fmtHM(clock.mins)}</Text>
+                      <Text style={{ color: C.textSub, fontSize: 12, marginTop: 6 }}>{clock.label}</Text>
+                    </View>
+                  )
+                })}
+              </View>
+
+              {!data.hos.hasDutyToday && (
+                <Text style={{ color: C.textMuted, fontSize: 13, marginTop: 16, textAlign: 'center' }}>
+                  Clocks haven&apos;t started today — full hours available.
+                </Text>
+              )}
+            </View>
+          ) : (
+          <>
           {/* ── Current Load */}
           <Section title="Current Load" />
           {data.currentLoad ? (
@@ -629,6 +698,8 @@ export default function DriverDetailScreen() {
                 })}
               </View>
             </>
+          )}
+          </>
           )}
 
         </ScrollView>

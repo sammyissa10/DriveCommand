@@ -1,149 +1,144 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { View, RefreshControl } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { FlashList } from '@shopify/flash-list'
-import { AlertTriangle, UserPlus, Users } from 'lucide-react-native'
-import { useAuthContext } from '../../../context/AuthContext'
+import { AlertTriangle, Clock, Users } from 'lucide-react-native'
+import Toast from 'react-native-toast-message'
+import { useAuthContext } from '@/context/AuthContext'
 import { ownerApi, type OwnerDriverSummary } from '@drivecommand/api-client'
-import { DriverCardSkeleton } from '../../../components/skeletons/DriverCardSkeleton'
-import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
-import { PageSpeedDial } from '../../../components/ui/PageSpeedDial'
-import { haptic } from '../../../lib/haptics'
+import { haptic } from '@/lib/haptics'
+import { formatHosMeta, hosMetaTone } from '@/lib/hos-format'
+import {
+  Screen,
+  LargeTitleHeader,
+  SearchField,
+  SegmentedControl,
+  KPIRow,
+  KPICard,
+  EntityRow,
+  MonogramAvatar,
+  StatusPill,
+  EmptyState,
+  EntityListSkeleton,
+  Text,
+  Icon,
+  Pressable,
+  dsColors,
+  icon,
+  type StatusTone,
+  type MetaTone,
+} from '@/components/ui/ds'
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Filters
 // ---------------------------------------------------------------------------
 
-type FilterTab = 'all' | 'on_duty' | 'off_duty'
-
-const FILTER_TABS: { key: FilterTab; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'on_duty', label: 'On Duty' },
-  { key: 'off_duty', label: 'Off Duty' },
+type Segment = 'all' | 'on_duty' | 'off_duty' | 'invited'
+const SEGMENTS: { label: string; value: Segment }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'On Duty', value: 'on_duty' },
+  { label: 'Off Duty', value: 'off_duty' },
+  { label: 'Invited', value: 'invited' },
 ]
 
-function getAvatarColor(name: string): string {
-  const COLORS = [
-    '#0ea5e9', '#8b5cf6', '#f59e0b', '#10b981',
-    '#ef4444', '#ec4899', '#06b6d4', '#f97316',
-  ]
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+/** Dispatch bucket — "who can take this load" at a glance. */
+type Dispatch = 'available' | 'on_load' | 'low_hours'
+
+/** KPI quick-filters. Tapping one narrows the list; tapping again clears it. */
+const KPIS: { key: Dispatch; label: string; tone: StatusTone }[] = [
+  { key: 'available', label: 'Available', tone: 'success' },
+  { key: 'on_load', label: 'On Load', tone: 'accent' },
+  { key: 'low_hours', label: 'Low Hours', tone: 'warning' },
+]
+
+// ---------------------------------------------------------------------------
+// Row derivations (pure — no math, just classification + labels)
+// ---------------------------------------------------------------------------
+
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/** Classify an accepted driver into a dispatch bucket. Invited rows are excluded. */
+function dispatchOf(d: OwnerDriverSummary): Dispatch | null {
+  if (d.invited) return null
+  if (d.activeLoad) return 'on_load'
+  if (d.hos?.isLow) return 'low_hours'
+  return 'available'
+}
+
+/** Duty status pill mapping per the design-system status → token table. */
+function dutyPill(d: OwnerDriverSummary): { label: string; tone: StatusTone } {
+  if (d.invited) return { label: 'Invited', tone: 'neutral' }
+  switch (d.hosStatus) {
+    case 'DRIVING':
+      return { label: 'Driving', tone: 'accent' }
+    case 'ON_DUTY':
+      return { label: 'On Duty', tone: 'success' }
+    case 'SLEEPER_BERTH':
+      return { label: 'Sleeper', tone: 'neutral' }
+    default:
+      return { label: 'Off Duty', tone: 'neutral' }
   }
-  return COLORS[Math.abs(hash) % COLORS.length]
 }
 
-function toTitleCase(str: string): string {
-  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length === 0) return '?'
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
-}
-
-function getHOSInfo(hosStatus: string | null, hasActiveLoad: boolean): { label: string; color: string } {
-  if (hosStatus === 'DRIVING')      return { label: 'Driving',  color: '#22c55e' }
-  if (hosStatus === 'ON_DUTY')      return { label: 'On Duty',  color: '#38bdf8' }
-  if (hosStatus === 'SLEEPER_BERTH') return { label: 'Sleeper', color: '#8b5cf6' }
-  if (hasActiveLoad)                return { label: 'On Load',  color: '#38bdf8' }
-  return { label: 'Off Duty', color: '#475569' }
+/** Live subline — active assignment context, never generic filler. */
+function subline(d: OwnerDriverSummary): string {
+  if (d.invited) return d.email
+  if (d.activeLoad) {
+    return `#${d.activeLoad.loadNumber} · ${d.activeLoad.origin} → ${d.activeLoad.destination}`
+  }
+  return 'No active load'
 }
 
 // ---------------------------------------------------------------------------
-// DriverRow Component
+// Row
 // ---------------------------------------------------------------------------
 
-interface DriverRowProps {
+const DriverRow = React.memo(function DriverRow({
+  driver,
+  onPress,
+  onHoursPress,
+}: {
   driver: OwnerDriverSummary
   onPress: () => void
-}
-
-function DriverRow({ driver, onPress }: DriverRowProps) {
-  const avatarColor = getAvatarColor(driver.name)
-  const initials = getInitials(driver.name)
-  const { label: statusLabel, color: statusColor } = getHOSInfo(driver.hosStatus, !!driver.currentLoadNumber)
-  const isActive = driver.hosStatus === 'DRIVING' || driver.hosStatus === 'ON_DUTY'
+  onHoursPress: () => void
+}) {
+  const pill = dutyPill(driver)
+  const hasCompliance = !driver.invited && driver.complianceStatus !== 'ok'
+  const metaTone: MetaTone = driver.hos ? hosMetaTone(driver.hos) : 'muted'
 
   return (
-    <View style={{
-      marginHorizontal: 16,
-      marginBottom: 10,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: '#334155',
-      backgroundColor: '#1e293b',
-      overflow: 'hidden',
-    }}>
-    <Pressable
-      onPress={() => { haptic.light(); onPress() }}
-      android_ripple={{ color: 'rgba(56,189,248,0.08)', borderless: false }}
-      style={({ pressed }) => ({
-        backgroundColor: pressed ? '#1a2d45' : 'transparent',
-        minHeight: 68,
-      })}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 14 }}>
-        {/* Avatar */}
-        <View
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: 21,
-            backgroundColor: avatarColor + '22',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 14,
-            flexShrink: 0,
-          }}
-        >
-          <Text style={{ color: avatarColor, fontWeight: '700', fontSize: 15 }}>
-            {initials}
-          </Text>
-        </View>
-
-        {/* Info */}
-        <View style={{ flex: 1, minWidth: 0 }}>
-          <Text
-            style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 16, marginBottom: 3 }}
-            numberOfLines={1}
-          >
-            {toTitleCase(driver.name)}
-</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: statusColor, marginRight: 5 }} />
-            <Text style={{ color: statusColor, fontSize: 13, fontWeight: '500' }}>
-              {statusLabel}
-            </Text>
-            {driver.currentLoadNumber && (
-              <>
-                <Text style={{ color: '#475569', fontSize: 13, marginHorizontal: 5 }}>·</Text>
-                <Text style={{ color: '#38bdf8', fontSize: 13, fontWeight: '500' }}>
-                  #{driver.currentLoadNumber}
-                </Text>
-              </>
-            )}
-          </View>
-        </View>
-
-        {/* Chevron */}
-        <Text style={{ color: '#475569', fontSize: 20, marginLeft: 8, flexShrink: 0 }}>›</Text>
-      </View>
-    </Pressable>
-    </View>
+    <EntityRow
+      leading={<MonogramAvatar name={driver.name} warning={hasCompliance} />}
+      title={titleCase(driver.name)}
+      subline={subline(driver)}
+      meta={driver.hos ? formatHosMeta(driver.hos) : undefined}
+      metaTone={metaTone}
+      metaIcon={
+        driver.hos ? (
+          <Icon
+            icon={Clock}
+            size={icon.sm - 2}
+            className={
+              metaTone === 'danger'
+                ? 'text-ds-danger'
+                : metaTone === 'warning'
+                  ? 'text-ds-warning'
+                  : 'text-ds-txt3'
+            }
+          />
+        ) : undefined
+      }
+      onMetaPress={driver.hos ? onHoursPress : undefined}
+      metaAccessibilityLabel={`${driver.name} hours of service — open Hours`}
+      pill={<StatusPill label={pill.label} tone={pill.tone} />}
+      onPress={onPress}
+      accessibilityLabel={`${titleCase(driver.name)}, ${pill.label}`}
+    />
   )
-}
+})
 
 // ---------------------------------------------------------------------------
 // Screen
@@ -153,12 +148,16 @@ export default function OwnerDriversScreen() {
   const { token } = useAuthContext()
   const router = useRouter()
   const { driverId } = useLocalSearchParams<{ driverId?: string }>()
-  const [activeTab, setActiveTab] = useState<FilterTab>('all')
 
+  const [segment, setSegment] = useState<Segment>('all')
+  const [kpiFilter, setKpiFilter] = useState<Dispatch | null>(null)
+  const [search, setSearch] = useState('')
+
+  // Deep-link support: a ?driverId= param routes straight to that driver's detail.
   useEffect(() => {
     if (driverId) {
       router.setParams({ driverId: undefined })
-      router.push(`/(owner)/drivers/${driverId}` as any)
+      router.push(`/(owner)/drivers/${driverId}` as never)
     }
   }, [driverId])
 
@@ -170,149 +169,186 @@ export default function OwnerDriversScreen() {
     refetchInterval: 60_000,
   })
 
-  const onRefresh = useCallback(() => { refetch() }, [refetch])
+  const drivers = data ?? []
 
-  const renderDriverItem = useCallback(
-    ({ item }: { item: OwnerDriverSummary }) => (
-      <DriverRow
-        driver={item}
-        onPress={() => router.push(`/(owner)/drivers/${item.id}` as any)}
-      />
-    ),
+  // KPI counts are over accepted drivers only (invited rows aren't dispatchable).
+  const counts = useMemo(() => {
+    const c: Record<Dispatch, number> = { available: 0, on_load: 0, low_hours: 0 }
+    for (const d of drivers) {
+      const bucket = dispatchOf(d)
+      if (bucket) c[bucket] += 1
+    }
+    return c
+  }, [drivers])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return drivers.filter((d) => {
+      // Segment filter
+      if (segment === 'invited' && !d.invited) return false
+      if (segment === 'on_duty' && (d.invited || d.status !== 'on_duty')) return false
+      if (segment === 'off_duty' && (d.invited || d.status !== 'off_duty')) return false
+      // KPI dispatch filter (ANDs with the segment; invited rows never match)
+      if (kpiFilter && dispatchOf(d) !== kpiFilter) return false
+      // Search by name or email
+      if (q && !d.name.toLowerCase().includes(q) && !d.email.toLowerCase().includes(q)) {
+        return false
+      }
+      return true
+    })
+  }, [drivers, segment, kpiFilter, search])
+
+  const onRefresh = useCallback(() => refetch(), [refetch])
+
+  const openDetail = useCallback(
+    (d: OwnerDriverSummary) => {
+      if (d.invited) {
+        haptic.light()
+        Toast.show({
+          type: 'info',
+          text1: 'Invitation pending',
+          text2: `${titleCase(d.name)} hasn't accepted yet.`,
+          visibilityTime: 2500,
+        })
+        return
+      }
+      router.push(`/(owner)/drivers/${d.id}` as never)
+    },
     [router]
   )
 
-  const keyExtractor = useCallback((item: OwnerDriverSummary) => item.id, [])
+  const openHours = useCallback(
+    (d: OwnerDriverSummary) => {
+      router.push(`/(owner)/drivers/${d.id}?tab=hours` as never)
+    },
+    [router]
+  )
 
-  const filtered = !data
-    ? []
-    : activeTab === 'all'
-      ? data
-      : data.filter((d) => d.status === activeTab)
+  const renderItem = useCallback(
+    ({ item }: { item: OwnerDriverSummary }) => (
+      <View className="px-5 pb-3">
+        <DriverRow
+          driver={item}
+          onPress={() => openDetail(item)}
+          onHoursPress={() => openHours(item)}
+        />
+      </View>
+    ),
+    [openDetail, openHours]
+  )
 
-  if (isLoading) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
-        <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 16 }}>
-          <View style={{ width: 80, height: 24, backgroundColor: '#1e293b', borderRadius: 6, marginBottom: 6 }} />
-          <View style={{ width: 130, height: 13, backgroundColor: '#1e293b', borderRadius: 4 }} />
-        </View>
-        {[...Array(6)].map((_, i) => <DriverCardSkeleton key={i} />)}
-      </SafeAreaView>
-    )
-  }
+  const toggleKpi = useCallback(
+    (key: Dispatch) => setKpiFilter((prev) => (prev === key ? null : key)),
+    []
+  )
 
+  const header = (
+    <View className="px-5">
+      <LargeTitleHeader
+        title="Drivers"
+        subtitle={`${drivers.length} in fleet`}
+        onAdd={() => router.push('/(owner)/drivers/invite' as never)}
+        addLabel="Invite driver"
+      />
+      <View className="pb-3">
+        <KPIRow>
+          {KPIS.map((k) => (
+            <KPICard
+              key={k.key}
+              value={counts[k.key]}
+              label={k.label}
+              tone={k.tone}
+              active={kpiFilter === k.key}
+              onPress={() => toggleKpi(k.key)}
+            />
+          ))}
+        </KPIRow>
+      </View>
+      <View className="pb-3">
+        <SearchField value={search} onChangeText={setSearch} placeholder="Search drivers" />
+      </View>
+      <View className="pb-3">
+        <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} />
+      </View>
+    </View>
+  )
+
+  // ── Error
   if (isError) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }} edges={['bottom', 'left', 'right']}>
-        <AlertTriangle color="#f87171" size={40} />
-        <Text style={{ color: '#f1f5f9', fontSize: 17, fontWeight: '600', marginTop: 16, textAlign: 'center' }}>Failed to load drivers</Text>
-        <Text style={{ color: '#64748b', fontSize: 14, marginTop: 6, textAlign: 'center' }}>
-          {error instanceof Error ? error.message : 'An unexpected error occurred'}
-        </Text>
-        <Pressable
-          onPress={() => refetch()}
-          style={{ marginTop: 20, backgroundColor: '#0ea5e9', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 }}
-        >
-          <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
-        </Pressable>
-      </SafeAreaView>
+      <Screen>
+        <LargeTitleHeader
+          title="Drivers"
+          onAdd={() => router.push('/(owner)/drivers/invite' as never)}
+          addLabel="Invite driver"
+        />
+        <View className="flex-1 items-center justify-center">
+          <Icon icon={AlertTriangle} size={40} className="text-ds-danger" strokeWidth={1.5} />
+          <Text variant="body" className="mt-4 text-center text-[15px]">
+            Couldn&apos;t load drivers
+          </Text>
+          <Text variant="caption" className="mt-1 text-center">
+            {error instanceof Error ? error.message : 'Something went wrong.'}
+          </Text>
+          <Pressable
+            onPress={() => refetch()}
+            className="mt-5 h-12 items-center justify-center rounded-[13px] bg-ds-accent px-6"
+          >
+            <Text className="font-semibold text-white">Retry</Text>
+          </Pressable>
+        </View>
+      </Screen>
     )
   }
 
+  // ── Loading
+  if (isLoading) {
+    return (
+      <Screen>
+        <LargeTitleHeader title="Drivers" />
+        <View className="pt-2">
+          <EntityListSkeleton count={7} />
+        </View>
+      </Screen>
+    )
+  }
+
+  // ── Loaded
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
-      <AnimatedScreen>
-        {/* Header */}
-        <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 12 }}>
-          <Text style={{ color: '#f1f5f9', fontSize: 24, fontWeight: '700' }}>Drivers</Text>
-          <Text style={{ color: '#475569', fontSize: 13, marginTop: 2 }}>
-            {data?.length ?? 0} driver{(data?.length ?? 0) !== 1 ? 's' : ''} in fleet
-          </Text>
-        </View>
-
-        {/* Filter chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ flexGrow: 0 }}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 12, gap: 8 }}
-        >
-          {FILTER_TABS.map((tab) => {
-            const count =
-              tab.key === 'all'
-                ? (data?.length ?? 0)
-                : (data?.filter((d) => d.status === tab.key).length ?? 0)
-            const isActive = activeTab === tab.key
-            return (
-              <Pressable
-                key={tab.key}
-                onPress={() => { haptic.light(); setActiveTab(tab.key) }}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  borderRadius: 20,
-                  backgroundColor: isActive ? '#38bdf8' : '#1e293b',
-                  borderWidth: 1,
-                  borderColor: isActive ? '#38bdf8' : '#334155',
-                  gap: 6,
-                }}
-              >
-                <Text style={{ color: isActive ? '#0f172a' : '#94a3b8', fontWeight: '600', fontSize: 13 }}>
-                  {tab.label}
-                </Text>
-                <View style={{
-                  backgroundColor: isActive ? 'rgba(15,23,42,0.2)' : '#334155',
-                  borderRadius: 10,
-                  paddingHorizontal: 6,
-                  paddingVertical: 1,
-                }}>
-                  <Text style={{ color: isActive ? '#0f172a' : '#64748b', fontSize: 11, fontWeight: '700' }}>
-                    {count}
-                  </Text>
-                </View>
-              </Pressable>
-            )
-          })}
-        </ScrollView>
-
-        {/* List container */}
-        <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
-          {filtered.length === 0 ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
-              <Users color="#334155" size={48} />
-              <Text style={{ color: '#64748b', fontSize: 15, marginTop: 12, textAlign: 'center' }}>
-                {activeTab === 'all' ? 'No drivers in your fleet' : `No ${activeTab === 'on_duty' ? 'on duty' : 'off duty'} drivers`}
-              </Text>
-            </View>
-          ) : (
-            <FlashList
-              data={filtered}
-
-              refreshControl={
-                <RefreshControl
-                  refreshing={isRefetching}
-                  onRefresh={onRefresh}
-                  tintColor="#38bdf8"
-                  colors={['#38bdf8']}
-                />
+    <Screen padded={false}>
+      <FlashList
+        data={filtered}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={header}
+        ListEmptyComponent={
+          <View className="px-5">
+            <EmptyState
+              icon={Users}
+              title={
+                search || kpiFilter || segment !== 'all'
+                  ? 'No drivers match these filters'
+                  : 'No drivers in your fleet yet'
               }
-              renderItem={renderDriverItem}
-              keyExtractor={keyExtractor}
-              contentContainerStyle={{ paddingTop: 8, paddingBottom: 32 }}
+              message={
+                search || kpiFilter || segment !== 'all'
+                  ? 'Clear a filter to see more.'
+                  : 'Tap + to invite your first driver.'
+              }
             />
-          )}
-        </View>
-
-        <PageSpeedDial
-          primaryLabel="Invite Driver"
-          primaryIcon={UserPlus}
-          primaryColor="#a78bfa"
-          onPrimaryPress={() => router.push('/(owner)/drivers/invite' as any)}
-        />
-      </AnimatedScreen>
-    </SafeAreaView>
+          </View>
+        }
+        contentContainerStyle={{ paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={onRefresh}
+            tintColor={dsColors.accent}
+            colors={[dsColors.accent]}
+          />
+        }
+      />
+    </Screen>
   )
 }

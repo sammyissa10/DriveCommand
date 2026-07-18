@@ -46,14 +46,19 @@ export async function GET(req: NextRequest) {
       const [customers, total] = await Promise.all([
         tx.customer.findMany({
           where,
-          orderBy: { companyName: 'asc' },
+          // "Who is worth my time" — book value first (design: Clients Overview).
+          orderBy: [{ totalRevenue: 'desc' }, { companyName: 'asc' }],
           select: {
             id: true,
             companyName: true,
+            contactName: true,
             status: true,
             priority: true,
             phone: true,
             email: true,
+            totalLoads: true,
+            totalRevenue: true,
+            lastLoadDate: true,
           },
           take: limit,
           skip: (page - 1) * limit,
@@ -62,24 +67,34 @@ export async function GET(req: NextRequest) {
       ]);
 
       // Stats are computed from full-table aggregates, not the paginated subset
-      const [activeCount, vipCount] = await Promise.all([
+      const [activeCount, vipCount, sums] = await Promise.all([
         tx.customer.count({ where: { tenantId, status: 'ACTIVE' } }),
         tx.customer.count({ where: { tenantId, priority: 'VIP' } }),
+        tx.customer.aggregate({
+          where: { tenantId },
+          _sum: { totalRevenue: true, totalLoads: true },
+        }),
       ]);
 
       const stats = {
         total,
         active: activeCount,
         vip: vipCount,
+        revenue: Number(sums._sum.totalRevenue ?? 0),
+        loads: sums._sum.totalLoads ?? 0,
       };
 
       const customerList = customers.map((c) => ({
         id: c.id,
         companyName: c.companyName,
+        contactName: c.contactName,
         status: c.status,
         priority: c.priority,
         phone: c.phone,
         email: c.email,
+        totalLoads: c.totalLoads,
+        totalRevenue: Number(c.totalRevenue),
+        lastLoadDate: c.lastLoadDate ? c.lastLoadDate.toISOString() : null,
       }));
 
       return {

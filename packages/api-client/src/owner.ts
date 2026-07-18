@@ -145,6 +145,31 @@ export interface DriverOption {
   name: string
 }
 
+/** The active assignment context surfaced on a driver row's subline. */
+export interface OwnerDriverActiveLoad {
+  id: string
+  loadNumber: string
+  status: string
+  origin: string
+  destination: string
+}
+
+/** Server-computed HOS clocks for a driver (all math done API-side). */
+export interface OwnerDriverHOS {
+  /** Minutes on duty today (driving counts as on duty). */
+  onDutyMinutes: number
+  /** Minutes of driving left against the 11-hour limit. */
+  driveRemainingMinutes: number
+  /** Minutes left in the 14-hour on-duty window. */
+  dutyWindowRemainingMinutes: number
+  /** Binding constraint = min(drive, window) — what dispatch cares about. */
+  remainingMinutes: number
+  /** True once the driver has started their clocks today. */
+  hasDutyToday: boolean
+  /** remainingMinutes below the low-time threshold. */
+  isLow: boolean
+}
+
 export interface OwnerDriverSummary {
   id: string
   name: string
@@ -152,10 +177,18 @@ export interface OwnerDriverSummary {
   phone: string | null
   status: 'on_duty' | 'off_duty'
   currentLoadNumber: string | null
+  /** Live active assignment, or null when the driver has no active load. */
+  activeLoad: OwnerDriverActiveLoad | null
   hosStatus: string | null
+  /** HOS clocks, or null for invited (not-yet-accepted) drivers. */
+  hos: OwnerDriverHOS | null
   complianceStatus: 'ok' | 'warning' | 'critical'
   expiringDocCount: number
   expiredDocCount: number
+  /** True when this row is a pending invitation, not an accepted driver. */
+  invited: boolean
+  /** ISO timestamp the invitation was created, or null for accepted drivers. */
+  invitedAt: string | null
 }
 
 export interface OwnerDriverDocument {
@@ -187,6 +220,11 @@ export interface OwnerDriverCurrentLoad {
   rate: number | null
 }
 
+/** HOS clocks on the detail payload — includes drivingMinutes for the Hours tab. */
+export interface OwnerDriverDetailHOS extends OwnerDriverHOS {
+  drivingMinutes: number
+}
+
 export interface OwnerDriverDetail {
   id: string
   name: string
@@ -194,6 +232,7 @@ export interface OwnerDriverDetail {
   phone: string | null
   hosStatus: string | null
   hosStartTime: string | null
+  hos: OwnerDriverDetailHOS
   complianceStatus: 'ok' | 'warning' | 'critical'
   currentLoad: OwnerDriverCurrentLoad | null
   documents: OwnerDriverDocument[]
@@ -353,15 +392,24 @@ export interface CRMStats {
   total: number
   active: number
   vip: number
+  /** Sum of every customer's cached totalRevenue (book value). */
+  revenue: number
+  /** Sum of every customer's cached totalLoads. */
+  loads: number
 }
 
 export interface CustomerSummary {
   id: string
   companyName: string
+  contactName: string | null
   status: string
   priority: string
   phone: string | null
   email: string | null
+  totalLoads: number
+  totalRevenue: number
+  /** ISO timestamp of the most recent load, or null. Drives the "Recent" filter. */
+  lastLoadDate: string | null
 }
 
 export interface CRMResponse {

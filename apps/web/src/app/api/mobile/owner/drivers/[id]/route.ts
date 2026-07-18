@@ -3,6 +3,7 @@ import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-aut
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { computeHOSClocks } from '@/lib/hos/compute-hos-clocks';
 
 /**
  * Compute document expiry status.
@@ -62,6 +63,12 @@ export async function GET(
 
   const { tenantId } = auth;
   const { id: driverId } = await params;
+
+  const now = new Date();
+  const startOfDay = new Date(now);
+  startOfDay.setUTCHours(0, 0, 0, 0);
+  const endOfDay = new Date(now);
+  endOfDay.setUTCHours(23, 59, 59, 999);
 
   try {
     /**
@@ -126,12 +133,13 @@ export async function GET(
               reportedAt: true,
             },
           },
-          // Current HOS entry
+          // Today's HOS entries (plus any open overnight entry) for the clocks
           hosEntries: {
-            where: { endTime: null },
-            orderBy: { startTime: 'desc' },
-            take: 1,
-            select: { status: true, startTime: true },
+            where: {
+              OR: [{ startTime: { gte: startOfDay, lte: endOfDay } }, { endTime: null }],
+            },
+            orderBy: { startTime: 'asc' },
+            select: { status: true, startTime: true, endTime: true },
           },
         },
       });
@@ -142,8 +150,21 @@ export async function GET(
     }
 
     const name = [driver.firstName, driver.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
-    const hosStatus = driver.hosEntries[0]?.status ?? null;
-    const hosStartTime = driver.hosEntries[0]?.startTime?.toISOString() ?? null;
+    const openEntry = driver.hosEntries.find((e) => e.endTime == null);
+    const hosStatus = openEntry?.status ?? null;
+    const hosStartTime = openEntry?.startTime?.toISOString() ?? null;
+
+    // HOS clocks for the Hours tab — same shared math as the drivers list.
+    const clocks = computeHOSClocks(driver.hosEntries, now);
+    const hos = {
+      onDutyMinutes: clocks.onDutyMinutesToday,
+      drivingMinutes: clocks.drivingMinutesToday,
+      driveRemainingMinutes: clocks.driveRemainingMinutes,
+      dutyWindowRemainingMinutes: clocks.dutyWindowRemainingMinutes,
+      remainingMinutes: clocks.remainingMinutes,
+      hasDutyToday: clocks.hasDutyToday,
+      isLow: clocks.isLow,
+    };
 
     // Map documents with computed status, sorted EXPIRED → EXPIRING → VALID
     const statusOrder: Record<string, number> = { EXPIRED: 0, EXPIRING: 1, VALID: 2 };
@@ -181,6 +202,7 @@ export async function GET(
       phone: null, // User model has no phone field
       hosStatus,
       hosStartTime,
+      hos,
       complianceStatus,
       currentLoad,
       documents,

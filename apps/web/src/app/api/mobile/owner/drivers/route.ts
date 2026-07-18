@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withMobileAuth } from '@/lib/api/with-mobile-auth'
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
+import { computeHOSClocks } from '@/lib/hos/compute-hos-clocks'
 
 /**
  * Compute compliance status from a driver's documents.
@@ -51,31 +52,45 @@ export const GET = withMobileAuth(
      * SCOPE: Accesses only data belonging to the authenticated user's tenant.
      * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
      */
-    const drivers = await prisma.$transaction(async (tx) => {
+    const now = new Date()
+    const startOfDay = new Date(now)
+    startOfDay.setUTCHours(0, 0, 0, 0)
+    const endOfDay = new Date(now)
+    endOfDay.setUTCHours(23, 59, 59, 999)
+
+    const { drivers, invitations } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
-      return tx.user.findMany({
+      const drivers = await tx.user.findMany({
         where: { tenantId, role: 'DRIVER', isActive: true },
         select: {
           id: true,
           firstName: true,
           lastName: true,
           email: true,
-          // Current active load
+          // Current active load — full context for the dispatch subline
           driverLoads: {
             where: {
               status: { in: ['PENDING', 'DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
             },
             orderBy: { updatedAt: 'desc' },
             take: 1,
-            select: { loadNumber: true },
+            select: {
+              id: true,
+              loadNumber: true,
+              status: true,
+              origin: true,
+              destination: true,
+            },
           },
-          // Latest HOS entry (no endTime = currently active)
+          // Today's HOS entries (plus any still-open overnight entry) — enough
+          // to compute the elapsed/remaining clocks via the shared util.
           hosEntries: {
-            where: { endTime: null },
-            orderBy: { startTime: 'desc' },
-            take: 1,
-            select: { status: true },
+            where: {
+              OR: [{ startTime: { gte: startOfDay, lte: endOfDay } }, { endTime: null }],
+            },
+            orderBy: { startTime: 'asc' },
+            select: { status: true, startTime: true, endTime: true },
           },
           // Compliance documents
           driverDocuments: {
@@ -85,15 +100,54 @@ export const GET = withMobileAuth(
         },
         orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
       })
+
+      // Drivers invited but not yet accepted — shown with a neutral "Invited" pill.
+      const invitations = await tx.driverInvitation.findMany({
+        where: { tenantId, status: 'PENDING' },
+        orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          fullName: true,
+          email: true,
+          createdAt: true,
+        },
+      })
+
+      return { drivers, invitations }
     }, TX_OPTIONS)
 
-    const now = new Date()
     const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-    const result = drivers.map((driver) => {
+    const driverRows = drivers.map((driver) => {
       const name = [driver.firstName, driver.lastName].filter(Boolean).join(' ') || 'Unknown Driver'
-      const currentLoadNumber = driver.driverLoads[0]?.loadNumber ?? null
-      const hosStatus = driver.hosEntries[0]?.status ?? null
+      const load = driver.driverLoads[0] ?? null
+      const currentLoadNumber = load?.loadNumber ?? null
+
+      // Live active-assignment context for the row subline.
+      const activeLoad = load
+        ? {
+            id: load.id,
+            loadNumber: load.loadNumber,
+            status: load.status,
+            origin: load.origin,
+            destination: load.destination,
+          }
+        : null
+
+      // HOS math done server-side (never in the app's JSX).
+      const openEntry = driver.hosEntries.find((e) => e.endTime == null)
+      const hosStatus = openEntry?.status ?? null
+      const clocks = computeHOSClocks(driver.hosEntries, now)
+      const hos = {
+        onDutyMinutes: clocks.onDutyMinutesToday,
+        driveRemainingMinutes: clocks.driveRemainingMinutes,
+        dutyWindowRemainingMinutes: clocks.dutyWindowRemainingMinutes,
+        remainingMinutes: clocks.remainingMinutes,
+        hasDutyToday: clocks.hasDutyToday,
+        isLow: clocks.isLow,
+      }
 
       // Compute compliance counts
       let expiredDocCount = 0
@@ -119,14 +173,42 @@ export const GET = withMobileAuth(
         phone: null, // User model has no phone field
         status,
         currentLoadNumber,
+        activeLoad,
         hosStatus,
+        hos,
         complianceStatus,
         expiringDocCount,
         expiredDocCount,
+        invited: false as const,
+        invitedAt: null,
       }
     })
 
-    return NextResponse.json(result)
+    const invitedRows = invitations.map((inv) => {
+      const name =
+        inv.fullName?.trim() ||
+        [inv.firstName, inv.lastName].filter(Boolean).join(' ') ||
+        inv.email
+      return {
+        id: inv.id,
+        name,
+        email: inv.email,
+        phone: null,
+        status: 'off_duty' as const,
+        currentLoadNumber: null,
+        activeLoad: null,
+        hosStatus: null,
+        hos: null,
+        complianceStatus: 'ok' as const,
+        expiringDocCount: 0,
+        expiredDocCount: 0,
+        invited: true as const,
+        invitedAt: inv.createdAt.toISOString(),
+      }
+    })
+
+    // Active drivers first (alphabetical), pending invitations after.
+    return NextResponse.json([...driverRows, ...invitedRows])
   },
   { allowedRoles: ['OWNER'] }
 )

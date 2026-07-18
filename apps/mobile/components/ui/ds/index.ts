@@ -10,6 +10,7 @@
 
 // Tokens & primitives
 export * from './tokens'
+export { dsColors, type DSColorKey } from './colors'
 export { Icon, type IconProps } from './Icon'
 export { Pressable, type PressableProps } from './Pressable'
 export { Text, type DSTextProps, type TextVariant } from './Text'
@@ -30,7 +31,7 @@ export { SectionHeader, type SectionHeaderProps } from './SectionHeader'
 export { SearchField, type SearchFieldProps } from './SearchField'
 export { SegmentedControl, type SegmentedControlProps, type SegmentOption } from './SegmentedControl'
 export { KPICard, KPIRow, type KPICardProps, type KPIRowProps } from './KPICard'
-export { EntityRow, type EntityRowProps } from './EntityRow'
+export { EntityRow, type EntityRowProps, type MetaTone } from './EntityRow'
 
 // Identity & status
 export { MonogramAvatar, type MonogramAvatarProps } from './MonogramAvatar'

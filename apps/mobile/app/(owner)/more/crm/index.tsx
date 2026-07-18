@@ -1,160 +1,74 @@
-import React, { useCallback } from 'react'
-import {
-  Pressable,
-  RefreshControl,
-  Text,
-  View,
-} from 'react-native'
+import React, { useCallback, useMemo, useState } from 'react'
+import { View, RefreshControl } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, Building2, ChevronLeft, Phone } from 'lucide-react-native'
+import { ChevronLeft, Users } from 'lucide-react-native'
 import { useAuthContext } from '../../../../context/AuthContext'
+import { haptic } from '../../../../lib/haptics'
 import { ownerApi, type CRMResponse, type CustomerSummary } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
-import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
-import { CRMCardSkeleton } from '../../../../components/skeletons/CRMCardSkeleton'
-import { useThemeColors } from '../../../../constants/tokens'
+import {
+  Screen,
+  LargeTitleHeader,
+  KPIRow,
+  KPICard,
+  SearchField,
+  SegmentedControl,
+  EntityRow,
+  MonogramAvatar,
+  VIPTag,
+  EmptyState,
+  Skeleton,
+  EntityListSkeleton,
+  Text,
+  Pressable,
+  Icon,
+  icon as iconSize,
+} from '../../../../components/ui/ds'
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Formatting — compact so a row meta line never wraps
 // ---------------------------------------------------------------------------
 
-function getStatusColor(status: string): string {
-  switch (status) {
-    case 'ACTIVE': return '#22c55e'
-    case 'INACTIVE': return '#64748b'
-    case 'PROSPECT': return '#38bdf8'
-    default: return '#64748b'
-  }
+function moneyCompact(n: number): string {
+  const abs = Math.abs(n)
+  if (abs >= 1_000_000) return `$${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
+  if (abs >= 1_000) return `$${Math.round(n / 1_000)}k`
+  return `$${Math.round(n)}`
 }
 
-function getPriorityColor(priority: string): string {
-  switch (priority) {
-    case 'VIP': return '#f59e0b'
-    case 'HIGH': return '#ef4444'
-    case 'MEDIUM': return '#38bdf8'
-    case 'LOW': return '#64748b'
-    default: return '#64748b'
-  }
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length === 0) return '?'
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+function rowMeta(c: CustomerSummary): string {
+  const loads = `${c.totalLoads} load${c.totalLoads === 1 ? '' : 's'}`
+  return `${loads} · ${moneyCompact(c.totalRevenue)}`
 }
 
 // ---------------------------------------------------------------------------
-// CustomerCard Component
+// Filters
 // ---------------------------------------------------------------------------
 
-function CustomerCard({ customer, onPress }: { customer: CustomerSummary; onPress: () => void }) {
-  const c = useThemeColors()
-  const statusColor = getStatusColor(customer.status)
-  const priorityColor = getPriorityColor(customer.priority)
-  const initials = getInitials(customer.companyName)
-  const isVIP = customer.priority === 'VIP'
+type ClientFilter = 'all' | 'vip' | 'recent'
 
+const FILTER_OPTIONS: { label: string; value: ClientFilter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'VIP', value: 'vip' },
+  { label: 'Recent', value: 'recent' },
+]
+
+function BackRow() {
+  const router = useRouter()
+  if (!router.canGoBack()) return <View className="h-2" />
   return (
-    <Pressable
-      onPress={onPress}
-      className="mx-4 mb-3 rounded-xl px-4 py-3.5 flex-row items-center active:opacity-80"
-      style={{
-        backgroundColor: c.surfaceCard,
-        borderWidth: 1,
-        borderColor: isVIP ? '#f59e0b40' : c.border,
-      }}
-    >
-      {/* Avatar */}
-      <View
-        className="w-[42px] h-[42px] rounded-[10px] items-center justify-center mr-3.5 shrink-0"
-        style={{ backgroundColor: '#0ea5e920' }}
+    <View className="px-5">
+      <Pressable
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+        hitSlop={12}
+        className="h-11 w-11 -ml-2 items-center justify-center"
       >
-        <Text className="text-sky-500 font-bold text-sm">{initials}</Text>
-      </View>
-
-      {/* Info */}
-      <View className="flex-1 min-w-0">
-        <Text
-          className="font-bold text-[15px] mb-1"
-          style={{ color: c.textPrimary }}
-          numberOfLines={1}
-        >
-          {customer.companyName}
-        </Text>
-        <View className="flex-row items-center gap-2 flex-wrap">
-          {/* Status badge */}
-          <View
-            className="px-2 py-0.5 rounded-[10px]"
-            style={{ backgroundColor: statusColor + '22' }}
-          >
-            <Text
-              className="text-[11px] font-semibold"
-              style={{ color: statusColor }}
-            >
-              {customer.status.charAt(0) + customer.status.slice(1).toLowerCase()}
-            </Text>
-          </View>
-
-          {/* VIP / Priority badge */}
-          {customer.priority !== 'MEDIUM' && customer.priority !== 'LOW' && (
-            <View
-              className="px-2 py-0.5 rounded-[10px]"
-              style={{ backgroundColor: priorityColor + '22' }}
-            >
-              <Text
-                className="text-[11px] font-semibold"
-                style={{ color: priorityColor }}
-              >
-                {customer.priority}
-              </Text>
-            </View>
-          )}
-
-          {/* Phone */}
-          {customer.phone && (
-            <View className="flex-row items-center gap-1">
-              <Phone color={c.textTertiary} size={11} />
-              <Text className="text-xs" style={{ color: c.textTertiary }} numberOfLines={1}>
-                {customer.phone}
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
-    </Pressable>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// StatCard
-// ---------------------------------------------------------------------------
-
-function StatCard({
-  value,
-  label,
-  valueColor,
-}: {
-  value: string | number
-  label: string
-  valueColor?: string
-}) {
-  const c = useThemeColors()
-  return (
-    <View
-      className="flex-1 rounded-xl p-3.5 items-center"
-      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
-    >
-      <Text
-        className="text-[22px] font-bold"
-        style={{ color: valueColor ?? c.textPrimary }}
-      >
-        {value}
-      </Text>
-      <Text className="text-xs mt-0.5 text-center" style={{ color: c.textTertiary }}>{label}</Text>
+        <Icon icon={ChevronLeft} size={iconSize.lg} className="text-ds-accent" />
+      </Pressable>
     </View>
   )
 }
@@ -163,130 +77,202 @@ function StatCard({
 // Screen
 // ---------------------------------------------------------------------------
 
-export default function CRMScreen() {
-  const c = useThemeColors()
+export default function ClientsOverviewScreen() {
   const { token } = useAuthContext()
   const router = useRouter()
 
-  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<CRMResponse>({
+  const [query, setQuery] = useState('')
+  const [filter, setFilter] = useState<ClientFilter>('all')
+
+  const { data, isLoading, isError, refetch, isRefetching } = useQuery<CRMResponse>({
     queryKey: ['owner-crm'],
     queryFn: () => ownerApi.getCRM(token!),
     enabled: !!token,
     staleTime: 60_000,
   })
 
-  const onRefresh = useCallback(() => { refetch() }, [refetch])
+  const customers = data?.customers ?? []
+  const stats = data?.stats
 
-  const renderCustomer = useCallback(({ item: cust }: { item: CustomerSummary }) => (
-    <CustomerCard
-      customer={cust}
-      onPress={() => router.push(`/(owner)/more/crm/${cust.id}` as never)}
-    />
-  ), [router])
+  // Filter (segment + KPI) then search — the two compose — then sort.
+  const visible = useMemo(() => {
+    let list = customers
+    if (filter === 'vip') list = list.filter((c) => c.priority === 'VIP')
 
-  return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
-      <AnimatedScreen>
-        {/* Header */}
-        <View
-          className="flex-row items-center px-4 py-3.5"
-          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
-        >
-          <Pressable
-            accessibilityLabel="Go back"
-            accessibilityRole="button"
-            onPress={() => router.back()}
-            className="mr-3"
-            hitSlop={8}
-          >
-            <ChevronLeft color={c.textPrimary} size={24} />
-          </Pressable>
-          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>CRM</Text>
-        </View>
+    const q = query.trim().toLowerCase()
+    if (q) {
+      list = list.filter(
+        (c) =>
+          c.companyName.toLowerCase().includes(q) ||
+          (c.contactName?.toLowerCase().includes(q) ?? false),
+      )
+    }
 
-        {isLoading ? (
-          <View className="pt-3">
-            <CRMCardSkeleton />
-            <CRMCardSkeleton />
-            <CRMCardSkeleton />
+    const sorted = [...list]
+    if (filter === 'recent') {
+      sorted.sort(
+        (a, b) =>
+          (b.lastLoadDate ? Date.parse(b.lastLoadDate) : 0) -
+          (a.lastLoadDate ? Date.parse(a.lastLoadDate) : 0),
+      )
+    } else {
+      // "Who is worth my time" — book value desc.
+      sorted.sort((a, b) => b.totalRevenue - a.totalRevenue)
+    }
+    return sorted
+  }, [customers, filter, query])
+
+  const onRefresh = useCallback(() => {
+    haptic.light()
+    refetch()
+  }, [refetch])
+
+  const openCreate = useCallback(() => {
+    // Quick Create bottom sheet is Prompt 2 — until then, the existing create route.
+    router.push('/(owner)/more/crm/new' as never)
+  }, [router])
+
+  const toggleVip = useCallback(() => {
+    setFilter((f) => (f === 'vip' ? 'all' : 'vip'))
+  }, [])
+
+  const renderItem = useCallback(
+    ({ item }: { item: CustomerSummary }) => (
+      <EntityRow
+        leading={<MonogramAvatar name={item.companyName} />}
+        title={item.companyName}
+        titleAccessory={item.priority === 'VIP' ? <VIPTag /> : undefined}
+        subline={item.contactName ?? item.phone ?? undefined}
+        meta={rowMeta(item)}
+        onPress={() => router.push(`/(owner)/more/crm/${item.id}` as never)}
+        accessibilityLabel={`${item.companyName}, ${rowMeta(item)}`}
+      />
+    ),
+    [router],
+  )
+
+  const countLabel = stats ? `${stats.total} client${stats.total === 1 ? '' : 's'}` : undefined
+
+  // ---- Loading (content-shaped skeleton, never a spinner) ----
+  if (isLoading) {
+    return (
+      <Screen padded={false}>
+        <AnimatedScreen>
+          <BackRow />
+          <View className="gap-3 px-5">
+            <LargeTitleHeader title="Clients" subtitle="Loading…" />
+            <KPIRow>
+              <View className="flex-1">
+                <Skeleton height={74} rounded={18} />
+              </View>
+              <View className="flex-1">
+                <Skeleton height={74} rounded={18} />
+              </View>
+              <View className="flex-1">
+                <Skeleton height={74} rounded={18} />
+              </View>
+            </KPIRow>
+            <Skeleton height={44} rounded={13} />
+            <Skeleton height={36} rounded={11} />
+            <View className="h-2" />
+            <EntityListSkeleton count={6} />
           </View>
-        ) : isError ? (
-          <View className="flex-1 items-center justify-center px-6">
-            <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
-              Failed to load customers
+        </AnimatedScreen>
+      </Screen>
+    )
+  }
+
+  // ---- Error (retry, input preserved by staying on screen) ----
+  if (isError) {
+    return (
+      <Screen padded={false}>
+        <AnimatedScreen>
+          <BackRow />
+          <View className="flex-1 items-center justify-center px-8">
+            <Icon icon={Users} size={40} strokeWidth={1.5} className="text-ds-txt3" />
+            <Text variant="body" className="mt-4 text-center text-[15px]">
+              Couldn’t load clients
             </Text>
-            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
-              {error instanceof Error ? error.message : 'An unexpected error occurred'}
+            <Text variant="caption" className="mt-1 text-center">
+              Check your connection and try again.
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 px-6 py-3 rounded-[10px]"
-              style={{ backgroundColor: c.brand }}
+              accessibilityRole="button"
+              accessibilityLabel="Retry"
+              hitSlop={12}
+              className="mt-4 min-h-[48px] justify-center"
             >
-              <Text className="text-white font-semibold">Retry</Text>
+              <Text variant="rowTitle" className="text-ds-accent">
+                Retry
+              </Text>
             </Pressable>
           </View>
-        ) : (
-          <FlashList
-            data={data?.customers ?? []}
-            renderItem={renderCustomer}
-            keyExtractor={(cust) => cust.id}
+        </AnimatedScreen>
+      </Screen>
+    )
+  }
 
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefetching}
-                onRefresh={onRefresh}
-                tintColor={c.brand}
-                colors={[c.brand]}
+  // ---- Loaded ----
+  const isFiltering = query.trim().length > 0 || filter !== 'all'
+
+  return (
+    <Screen padded={false}>
+      <AnimatedScreen>
+        <BackRow />
+        <FlashList
+          data={visible}
+          renderItem={renderItem}
+          keyExtractor={(c) => c.id}
+          ItemSeparatorComponent={() => <View className="h-3" />}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 120 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />}
+          ListHeaderComponent={
+            <View className="gap-3 pb-3">
+              <LargeTitleHeader
+                title="Clients"
+                subtitle={countLabel}
+                onAdd={openCreate}
+                addLabel="Add client"
               />
-            }
-            contentContainerStyle={{ paddingBottom: 100 }}
-            ListHeaderComponent={
-              <View>
-                {/* Stats — 3 stats in a row */}
-                <View className="px-4 pt-4 pb-2">
-                  <View className="flex-row gap-2.5">
-                    <StatCard value={data?.stats.total ?? 0} label="Total" />
-                    <StatCard
-                      value={data?.stats.active ?? 0}
-                      label="Active"
-                      valueColor="#22c55e"
-                    />
-                    <StatCard
-                      value={data?.stats.vip ?? 0}
-                      label="VIP"
-                      valueColor="#f59e0b"
-                    />
-                  </View>
-                </View>
-
-                {/* Customers section header */}
-                <View className="px-4 pt-4 pb-2.5">
-                  <Text className="text-xs font-semibold tracking-[0.5px] uppercase" style={{ color: c.textSecondary }}>
-                    Customers
-                  </Text>
-                </View>
-              </View>
-            }
-            ListEmptyComponent={
-              <View className="items-center justify-center px-6 pt-10">
-                <Building2 color={c.surfaceElevated} size={48} />
-                <Text className="text-[15px] mt-3 text-center" style={{ color: c.textTertiary }}>
-                  No customers yet
-                </Text>
-              </View>
-            }
-          />
-        )}
-
-        <PageSpeedDial
-          primaryLabel="New Customer"
-          primaryIcon={Building2}
-          primaryColor="#34d399"
-          onPrimaryPress={() => router.push('/(owner)/more/crm/new' as never)}
+              <KPIRow>
+                <KPICard value={moneyCompact(stats?.revenue ?? 0)} label="Revenue" />
+                <KPICard value={stats?.loads ?? 0} label="Loads" />
+                <KPICard
+                  value={stats?.vip ?? 0}
+                  label="VIP"
+                  tone="vip"
+                  active={filter === 'vip'}
+                  onPress={toggleVip}
+                />
+              </KPIRow>
+              <SearchField
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Search company or contact"
+              />
+              <SegmentedControl options={FILTER_OPTIONS} value={filter} onChange={setFilter} />
+            </View>
+          }
+          ListEmptyComponent={
+            isFiltering ? (
+              <EmptyState
+                icon={Users}
+                title="No matching clients"
+                message="Try a different search or filter."
+              />
+            ) : (
+              <EmptyState
+                icon={Users}
+                title="No clients yet"
+                message="Tap + in the top right to add your first client."
+              />
+            )
+          }
         />
       </AnimatedScreen>
-    </SafeAreaView>
+    </Screen>
   )
 }

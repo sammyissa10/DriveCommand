@@ -6,6 +6,15 @@ import { Icon } from './Icon'
 import { Pressable } from './Pressable'
 import { icon } from './tokens'
 
+/** Tint for the meta line — muted by default, warning/danger for at-risk stats. */
+export type MetaTone = 'muted' | 'warning' | 'danger'
+
+const META_TONE: Record<MetaTone, string> = {
+  muted: 'text-ds-txt3',
+  warning: 'text-ds-warning',
+  danger: 'text-ds-danger',
+}
+
 export interface EntityRowProps {
   /** MonogramAvatar (people) or UnitChip (vehicles). */
   leading: React.ReactNode
@@ -14,6 +23,17 @@ export interface EntityRowProps {
   titleAccessory?: React.ReactNode
   subline?: string
   meta?: string
+  /** Tints the meta line (e.g. warning when a driver is low on hours). */
+  metaTone?: MetaTone
+  /** Small node rendered left of the meta text (e.g. a clock icon). */
+  metaIcon?: React.ReactNode
+  /**
+   * Makes the meta region its own tap target (a nested Pressable that wins over
+   * the card press) — used to deep-link the hours line to the Hours tab.
+   */
+  onMetaPress?: () => void
+  /** Accessibility label for the meta tap target when `onMetaPress` is set. */
+  metaAccessibilityLabel?: string
   /** A StatusPill. When present the chevron is dropped (whole card taps). */
   pill?: React.ReactNode
   onPress: () => void
@@ -31,10 +51,24 @@ export function EntityRow({
   titleAccessory,
   subline,
   meta,
+  metaTone = 'muted',
+  metaIcon,
+  onMetaPress,
+  metaAccessibilityLabel,
   pill,
   onPress,
   accessibilityLabel,
 }: EntityRowProps) {
+  const metaTextClass = `${META_TONE[metaTone]} shrink`
+  const metaBody = meta ? (
+    <>
+      {metaIcon}
+      <Text variant="caption" numberOfLines={1} className={metaTextClass}>
+        {meta}
+      </Text>
+    </>
+  ) : null
+
   return (
     <Pressable
       onPress={onPress}
@@ -56,10 +90,21 @@ export function EntityRow({
             {subline}
           </Text>
         ) : null}
-        {meta ? (
-          <Text variant="caption" numberOfLines={1} className="mt-0.5 text-ds-txt3">
-            {meta}
-          </Text>
+        {metaBody ? (
+          onMetaPress ? (
+            <Pressable
+              onPress={onMetaPress}
+              haptic="light"
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={metaAccessibilityLabel ?? meta}
+              className="mt-0.5 flex-row items-center gap-1 self-start"
+            >
+              {metaBody}
+            </Pressable>
+          ) : (
+            <View className="mt-0.5 flex-row items-center gap-1">{metaBody}</View>
+          )
         ) : null}
       </View>
 
