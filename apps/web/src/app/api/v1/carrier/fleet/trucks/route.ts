@@ -23,7 +23,7 @@ const CarrierTruckCreateSchema = z.object({
   truckType: z
     .preprocess(
       (v) => (v === null || v === '' ? undefined : v),
-      z.enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck']).optional()
+      z.enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck', 'cargo_van', 'sprinter_van', 'pickup', 'car']).optional()
     ),
   grossWeightLbs: z.number().int().optional(),
   payloadCapacityLbs: z.number().int().optional(),

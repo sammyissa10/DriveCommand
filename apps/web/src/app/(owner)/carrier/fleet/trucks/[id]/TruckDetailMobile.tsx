@@ -77,6 +77,10 @@ type Tab = 'details' | 'trips' | 'documents';
 // ---------------------------------------------------------------------------
 
 const TRUCK_TYPE_OPTIONS = [
+  { label: 'Cargo Van', value: 'cargo_van' },
+  { label: 'Sprinter Van', value: 'sprinter_van' },
+  { label: 'Pickup Truck', value: 'pickup' },
+  { label: 'Car', value: 'car' },
   { label: 'Semi', value: 'semi' },
   { label: 'Box Truck', value: 'box_truck' },
   { label: 'Flatbed', value: 'flatbed' },

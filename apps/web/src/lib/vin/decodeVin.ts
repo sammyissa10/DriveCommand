@@ -33,6 +33,9 @@ function mapBodyClassToTruckType(bodyClass: string): string | undefined {
   if (bc.includes('tractor')) return 'day_cab';
   if (bc.includes('truck') && bc.includes('box')) return 'box_truck';
   if (bc.includes('truck') && bc.includes('flat')) return 'flatbed';
+  if (bc.includes('van')) return 'cargo_van';
+  if (bc.includes('pickup')) return 'pickup';
+  if (bc.includes('sedan') || bc.includes('coupe') || bc.includes('hatchback') || bc.includes('wagon')) return 'car';
   if (bc.includes('truck')) return 'semi';
   return undefined;
 }

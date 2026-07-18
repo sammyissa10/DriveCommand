@@ -65,6 +65,9 @@ function mapBodyClassToTruckType(bodyClass: string): string | null {
   if (bc.includes('tractor')) return 'day_cab';
   if (bc.includes('truck') && bc.includes('box')) return 'box_truck';
   if (bc.includes('truck') && bc.includes('flat')) return 'flatbed';
+  if (bc.includes('van')) return 'cargo_van';
+  if (bc.includes('pickup')) return 'pickup';
+  if (bc.includes('sedan') || bc.includes('coupe') || bc.includes('hatchback') || bc.includes('wagon')) return 'car';
   if (bc.includes('truck')) return 'semi';
   return null;
 }
@@ -365,6 +368,10 @@ export function CarrierTruckForm({ truck, onSuccess, onCancel }: CarrierTruckFor
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="cargo_van">Cargo Van</SelectItem>
+              <SelectItem value="sprinter_van">Sprinter Van</SelectItem>
+              <SelectItem value="pickup">Pickup Truck</SelectItem>
+              <SelectItem value="car">Car</SelectItem>
               <SelectItem value="semi">Semi</SelectItem>
               <SelectItem value="box_truck">Box Truck</SelectItem>
               <SelectItem value="flatbed">Flatbed</SelectItem>

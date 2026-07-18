@@ -51,6 +51,10 @@ const TRUCK_TYPE_LABELS: Record<string, string> = {
   tanker: 'Tanker',
   day_cab: 'Day Cab',
   straight_truck: 'Straight Truck',
+  cargo_van: 'Cargo Van',
+  sprinter_van: 'Sprinter Van',
+  pickup: 'Pickup Truck',
+  car: 'Car',
 };
 
 const TRUCK_TYPE_VARIANTS: Record<string, 'info' | 'success' | 'purple' | 'warning' | 'neutral'> = {
@@ -61,6 +65,10 @@ const TRUCK_TYPE_VARIANTS: Record<string, 'info' | 'success' | 'purple' | 'warni
   tanker: 'purple',
   day_cab: 'success',
   straight_truck: 'neutral',
+  cargo_van: 'success',
+  sprinter_van: 'info',
+  pickup: 'neutral',
+  car: 'neutral',
 };
 
 const STATUS_VARIANTS: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {

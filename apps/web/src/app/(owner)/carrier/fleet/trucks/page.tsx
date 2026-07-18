@@ -60,6 +60,10 @@ const TRUCK_TYPE_LABELS: Record<string, string> = {
   tanker: 'Tanker',
   day_cab: 'Day Cab',
   straight_truck: 'Straight Truck',
+  cargo_van: 'Cargo Van',
+  sprinter_van: 'Sprinter Van',
+  pickup: 'Pickup Truck',
+  car: 'Car',
 };
 
 /**
