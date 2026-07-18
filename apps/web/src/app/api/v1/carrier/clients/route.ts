@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { listClients, createClient } from '@/lib/carrier/clients';
+import { listClients, createClient, DuplicateClientError } from '@/lib/carrier/clients';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 const ClientCreateSchema = z.object({
@@ -109,6 +109,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data: client }, { status: 201 });
   } catch (err) {
+    if (err instanceof DuplicateClientError) {
+      // `detail` keeps the existing desktop ClientForm's toast friendly too.
+      return NextResponse.json(
+        { error: 'DUPLICATE_NAME', message: err.message, detail: err.message },
+        { status: 409 }
+      );
+    }
     const detail = err instanceof Error ? err.message : String(err);
     logger.error('POST /api/v1/carrier/clients failed', err);
     return NextResponse.json(
