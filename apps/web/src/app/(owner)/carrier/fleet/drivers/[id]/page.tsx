@@ -44,9 +44,10 @@ function formatDate(date: Date | string | null): string {
 
 const PAY_MODEL_LABELS: Record<string, string> = {
   per_mile: 'Per Mile',
-  percentage: 'Percentage',
+  percentage_gross: 'Percentage of Gross',
+  hourly: 'Hourly',
   flat_rate: 'Flat Rate',
-  per_stop: 'Per Stop',
+  team_split: 'Team Split',
 };
 
 const DISPATCH_STATUS_CLASSES: Record<string, string> = {

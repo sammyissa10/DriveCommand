@@ -86,9 +86,10 @@ const EXPIRY_THRESHOLD_DAYS = 90;
 
 const PAY_MODEL_OPTIONS = [
   { label: 'Per mile', value: 'per_mile' },
-  { label: 'Percentage', value: 'percentage' },
+  { label: 'Percentage of gross', value: 'percentage_gross' },
+  { label: 'Hourly', value: 'hourly' },
   { label: 'Flat rate', value: 'flat_rate' },
-  { label: 'Per stop', value: 'per_stop' },
+  { label: 'Team split', value: 'team_split' },
 ];
 const PAY_MODEL_LABEL = Object.fromEntries(PAY_MODEL_OPTIONS.map((o) => [o.value, o.label]));
 const PAY_PERIOD_OPTIONS = [
