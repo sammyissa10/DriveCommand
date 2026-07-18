@@ -104,6 +104,7 @@ interface StopItem {
   contactPhone: string | null;
   specialInstructions: string | null;
   notes: string | null;
+  loadId: string | null;
 }
 
 interface StopTimelineCardProps {
@@ -122,6 +123,7 @@ interface StopTimelineCardProps {
   onStopUpdated?: () => void;
   messageCount?: number;
   docCount?: number;
+  loads?: { id: string; referenceNumber: string | null; clientName: string }[];
 }
 
 // ---------------------------------------------------------------------------
@@ -144,6 +146,7 @@ export function StopTimelineCard({
   onStopUpdated,
   messageCount = 0,
   docCount = 0,
+  loads = [],
 }: StopTimelineCardProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -181,6 +184,8 @@ export function StopTimelineCard({
   const canComplete = isStopArrived && !missingDocs;
 
   const canSkip = (isStopPending || isStopArrived) && canManage;
+
+  const stopLoad = loads.find((l) => l.id === stop.loadId);
 
   function handleArrive() {
     startTransition(async () => {
@@ -268,6 +273,11 @@ export function StopTimelineCard({
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBadgeClass}`}>
               {statusLabel}
             </span>
+            {stopLoad && (
+              <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
+                Load {stopLoad.referenceNumber ?? 'No ref'} · {stopLoad.clientName}
+              </span>
+            )}
           </div>
 
           {/* Action buttons */}
@@ -508,8 +518,10 @@ export function StopTimelineCard({
           appointmentStart: stop.appointmentStart,
           appointmentEnd: stop.appointmentEnd,
           specialInstructions: stop.specialInstructions,
+          loadId: stop.loadId,
         }}
         dispatchStatus={dispatchStatus}
+        loads={loads}
       />
     </div>
   );

@@ -50,6 +50,7 @@ export interface TripStopItem {
   appointmentStart: string | null;
   appointmentEnd: string | null;
   status: string;
+  loadId: string | null;
 }
 
 interface Template {
@@ -216,6 +217,7 @@ export function TripDetailMobile({
   routeTemplateStopMap,
   stopDocCounts,
   canManage,
+  loads = [],
 }: {
   trip: TripDetailData;
   driverName: string;
@@ -230,6 +232,7 @@ export function TripDetailMobile({
   routeTemplateStopMap: Record<number, { bolRequired: boolean; podRequired: boolean }>;
   stopDocCounts: Record<string, { bolCount: number; podCount: number }>;
   canManage: boolean;
+  loads?: { id: string; referenceNumber: string | null; clientName: string }[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -748,6 +751,7 @@ export function TripDetailMobile({
                     const showComplete = canManage && isStopArrived;
                     const showSkip = canManage && (isStopPending || isStopArrived);
                     const hasActions = showArrive || showComplete || showSkip;
+                    const stopLoad = loads.find((l) => l.id === stop.loadId);
 
                     return (
                       <div key={stop.id} className="rounded-[20px] bg-ds-card p-4">
@@ -769,6 +773,11 @@ export function TripDetailMobile({
                               </div>
                             ) : null}
                             {when ? <div className="mt-0.5 text-[13px] text-ds-txt3">{when}</div> : null}
+                            {stopLoad ? (
+                              <div className="mt-0.5 text-[13px] text-ds-txt3">
+                                Load {stopLoad.referenceNumber ?? 'No ref'} · {stopLoad.clientName}
+                              </div>
+                            ) : null}
                           </div>
                         </div>
 

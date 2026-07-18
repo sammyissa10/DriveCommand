@@ -27,6 +27,7 @@ interface StopItem {
   contactPhone: string | null;
   specialInstructions: string | null;
   notes: string | null;
+  loadId: string | null;
 }
 
 interface StopTimelineProps {
@@ -39,6 +40,7 @@ interface StopTimelineProps {
   userRole: string;
   canManage: boolean;
   messageCountMap?: Record<string, number>;
+  loads?: { id: string; referenceNumber: string | null; clientName: string }[];
 }
 
 // ---------------------------------------------------------------------------
@@ -55,6 +57,7 @@ export function StopTimeline({
   userRole,
   canManage,
   messageCountMap,
+  loads = [],
 }: StopTimelineProps) {
   const [addStopOpen, setAddStopOpen] = useState(false);
 
@@ -84,6 +87,7 @@ export function StopTimeline({
               dispatchId={dispatchId}
               dispatchStatus={dispatchStatus}
               currentStopCount={0}
+              loads={loads}
             />
           </>
         )}
@@ -120,6 +124,8 @@ export function StopTimeline({
                 canManage={canManage}
                 messageCount={messageCountMap?.[stop.id] ?? 0}
                 docCount={docCounts.bolCount + docCounts.podCount}
+                loads={loads}
+                loadId={stop.loadId ?? undefined}
               />
             );
           })}

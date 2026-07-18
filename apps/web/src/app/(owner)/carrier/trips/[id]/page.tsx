@@ -249,6 +249,13 @@ export default async function DispatchDetailPage({ params }: Props) {
     updatedAt: dispatch.updatedAt.toISOString(),
   };
 
+  // Load options for the per-stop "For Load" picker + badge — only loads on THIS trip
+  const stopLoads = serializedDispatch.carrierLoads.map((l) => ({
+    id: l.id,
+    referenceNumber: l.referenceNumber,
+    clientName: l.client?.name ?? 'Unknown',
+  }));
+
   // Extract dispatch number from notes
   const dispatchNumberMatch = dispatch.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
   const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : `DC-${id.slice(0, 8)}`;
@@ -286,6 +293,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           routeTemplateStopMap={routeTemplateStopMap}
           stopDocCounts={stopDocCounts}
           canManage={canManage}
+          loads={stopLoads}
         />
       </div>
 
@@ -351,6 +359,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           userRole={session.role}
           canManage={canManage}
           messageCountMap={messageCountMap}
+          loads={stopLoads}
         />
       </div>
 
