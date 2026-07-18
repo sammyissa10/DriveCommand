@@ -932,6 +932,7 @@ None blocking immediate progress.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 470 | Wire Routes create/edit Truck dropdown to carrier fleet (CarrierTruck) via nullable Route.carrierTruckId FK | 2026-07-18 | 8238c761 | [470-wire-routes-truck-dropdown-to-carrier-fl](./quick/470-wire-routes-truck-dropdown-to-carrier-fl/) |
 | 469 | Rebuild carrier Loads Detail on the mobile-web ds (+ fix rate-type Zod save error) | 2026-07-15 | fa2237a7 | [469-rebuild-carrier-loads-detail-on-the-mobi](./quick/469-rebuild-carrier-loads-detail-on-the-mobi/) |
 | 468 | Shorten Active Work Board column height to ~4 cards | 2026-06-17 | dc3065e4 | [468-shorten-active-work-board-column-height-](./quick/468-shorten-active-work-board-column-height-/) |
 | 467 | Contain Active Work Board column overflow on /checklists (spec-compliant) | 2026-06-17 | 57726932 | [467-contain-active-work-board-column-overflo](./quick/467-contain-active-work-board-column-overflo/) |
