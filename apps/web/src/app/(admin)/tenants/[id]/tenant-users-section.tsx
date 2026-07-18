@@ -195,14 +195,14 @@ export function TenantUsersSection({ tenantId }: TenantUsersSectionProps) {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="py-2.5 pr-4 font-medium text-gray-900">
+              <tr key={user.id} className={`hover:bg-gray-50 ${!user.isActive ? 'opacity-60' : ''}`}>
+                <td className={`py-2.5 pr-4 font-medium ${user.isActive ? 'text-gray-900' : 'text-gray-400'}`}>
                   {user.firstName || user.lastName
                     ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
                     : <span className="text-gray-400 italic">No name</span>
                   }
                 </td>
-                <td className="py-2.5 pr-4 text-gray-600">{user.email}</td>
+                <td className={`py-2.5 pr-4 ${user.isActive ? 'text-gray-600' : 'text-gray-400'}`}>{user.email}</td>
                 <td className="py-2.5 pr-4">
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getRoleBadgeClasses(user.role)}`}
@@ -211,14 +211,16 @@ export function TenantUsersSection({ tenantId }: TenantUsersSectionProps) {
                   </span>
                 </td>
                 <td className="py-2.5 pr-4">
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className={`inline-block h-2 w-2 rounded-full ${user.isActive ? 'bg-green-500' : 'bg-gray-400'}`}
-                    />
-                    <span className={user.isActive ? 'text-gray-700' : 'text-gray-400'}>
-                      {user.isActive ? 'Active' : 'Inactive'}
+                  {user.isActive ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+                      <span className="text-gray-700">Active</span>
+                    </div>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">
+                      Inactive
                     </span>
-                  </div>
+                  )}
                 </td>
                 <td className="py-2.5 text-right">
                   <ActionsDropdown
