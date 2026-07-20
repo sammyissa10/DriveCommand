@@ -24,6 +24,15 @@ const SEGMENT_LABELS: Record<string, string> = {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
+/**
+ * Carrier route segments that are grouping folders with NO landing page.tsx.
+ * They exist only to nest children (e.g. /carrier/fleet/{trucks,drivers}), so
+ * linking them in the breadcrumb produced a 404 (TKT-0080). Rendered as plain
+ * text instead of a link. Keep in sync with app/(owner)/carrier/* folders that
+ * have subfolders but no page.tsx of their own.
+ */
+const NON_NAVIGABLE_SEGMENTS = new Set(["fleet", "driver-pay", "reports", "stops"])
+
 function getLabel(segment: string): string {
   if (SEGMENT_LABELS[segment]) return SEGMENT_LABELS[segment]
   if (segment === "new") return "New"
@@ -52,7 +61,10 @@ export function CarrierBreadcrumb() {
 
   segments.forEach((seg, idx) => {
     const isLast = idx === segments.length - 1
-    const href = isLast ? undefined : "/carrier/" + segments.slice(0, idx + 1).join("/")
+    // Only build an href for real pages: not the terminal crumb, and not a
+    // grouping folder that has no page.tsx (which would 404 — TKT-0080).
+    const navigable = !isLast && !NON_NAVIGABLE_SEGMENTS.has(seg)
+    const href = navigable ? "/carrier/" + segments.slice(0, idx + 1).join("/") : undefined
     items.push({ label: getLabel(seg), href })
   })
 
@@ -68,15 +80,18 @@ export function CarrierBreadcrumb() {
         return (
           <span key={idx} className="flex items-center gap-1.5">
             {idx > 0 && <span aria-hidden="true">&gt;</span>}
-            {isLast || !item.href ? (
+            {isLast ? (
               <span className="text-foreground font-medium">{item.label}</span>
-            ) : (
+            ) : item.href ? (
               <Link
                 href={item.href}
                 className="hover:text-foreground transition-colors"
               >
                 {item.label}
               </Link>
+            ) : (
+              // Grouping segment with no page — plain text, not a dead link.
+              <span>{item.label}</span>
             )}
           </span>
         )

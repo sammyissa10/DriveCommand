@@ -186,6 +186,45 @@ test.describe('Carrier Fleet — Trucks', () => {
     expect(verifyBody.data.truckType).toBe('sprinter_van');
   });
 
+  // Regression: TKT-0080 — the carrier breadcrumb linked every intermediate
+  // segment, but "fleet" is a grouping folder with no page.tsx, so clicking the
+  // "Fleet" crumb 404'd. Grouping segments must render as plain text, while real
+  // pages ("Carrier", "Trucks") stay as working links.
+  test('breadcrumb does not 404 on grouping segments (TKT-0080)', async ({ page }, testInfo) => {
+    // The carrier breadcrumb is desktop-only (hidden lg:block in the layout).
+    test.skip(testInfo.project.name === 'mobile', 'Breadcrumb is desktop-only');
+
+    const listRes = await page.request.get('/api/v1/carrier/fleet/trucks?pageSize=1');
+    expect(listRes.ok()).toBeTruthy();
+    const { data } = await listRes.json();
+    const items = data?.items ?? [];
+    test.skip(items.length === 0, 'No trucks to view');
+    const truckId = items[0].id;
+
+    await page.goto(`/carrier/fleet/trucks/${truckId}`);
+    await page.waitForLoadState('domcontentloaded');
+
+    const crumb = page.getByRole('navigation', { name: 'Breadcrumb' }).first();
+    await expect(crumb).toBeVisible();
+
+    // "Fleet" is a grouping folder with no page — must NOT be a link (would 404).
+    await expect(crumb.getByRole('link', { name: 'Fleet' })).toHaveCount(0);
+    await expect(crumb.getByText('Fleet', { exact: true })).toBeVisible();
+
+    // "Carrier" and "Trucks" are real pages — must be working links.
+    await expect(crumb.getByRole('link', { name: 'Carrier' })).toHaveAttribute(
+      'href',
+      '/carrier/dashboard'
+    );
+    const trucksLink = crumb.getByRole('link', { name: 'Trucks' });
+    await expect(trucksLink).toHaveAttribute('href', '/carrier/fleet/trucks');
+
+    // Clicking a real crumb navigates without a 404.
+    await trucksLink.click();
+    await page.waitForURL('**/carrier/fleet/trucks');
+    await expect(page.getByRole('heading', { name: /Trucks/i })).toBeVisible();
+  });
+
   test('truck form validates required Unit Number field', async ({ page }) => {
     await page.goto('/carrier/fleet/trucks/new');
     await page.waitForLoadState('domcontentloaded');
