@@ -225,6 +225,35 @@ test.describe('Carrier Fleet — Trucks', () => {
     await expect(page.getByRole('heading', { name: /Trucks/i })).toBeVisible();
   });
 
+  // TKT-0082 — the audit footer's "Last updated" time appeared frozen because
+  // the underlying save was erroring out (TKT-0081). With saves working, a
+  // successful edit must advance "Last updated" to a fresh relative time. This
+  // guards the audit trail against silently dropping the last-update timestamp.
+  test('audit trail records a fresh Last updated time after edit (TKT-0082)', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Desktop inline edit form + audit footer');
+
+    const listRes = await page.request.get('/api/v1/carrier/fleet/trucks?pageSize=1');
+    expect(listRes.ok()).toBeTruthy();
+    const { data } = await listRes.json();
+    const items = data?.items ?? [];
+    test.skip(items.length === 0, 'No trucks to edit');
+    const truckId = items[0].id;
+
+    // Edit a harmless field (notes) so updatedAt advances.
+    await page.goto(`/carrier/fleet/trucks/${truckId}?mode=edit`);
+    await page.waitForLoadState('domcontentloaded');
+    await page.locator('#truckNotes:visible').fill(`audit check ${Date.now()}`);
+    await page.getByRole('button', { name: /Save Changes/i }).and(page.locator(':visible')).click();
+    await expect(page.getByText(/Truck updated/i)).toBeVisible({ timeout: 10000 });
+
+    // Reload the read view and assert the "Last updated" line shows a fresh time.
+    await page.goto(`/carrier/fleet/trucks/${truckId}`);
+    await page.waitForLoadState('domcontentloaded');
+    const lastUpdated = page.locator('p', { hasText: 'Last updated' }).filter({ has: page.locator(':visible') }).first();
+    await expect(lastUpdated).toBeVisible();
+    await expect(lastUpdated).toContainText(/just now|second|1 minute/i);
+  });
+
   test('truck form validates required Unit Number field', async ({ page }) => {
     await page.goto('/carrier/fleet/trucks/new');
     await page.waitForLoadState('domcontentloaded');
