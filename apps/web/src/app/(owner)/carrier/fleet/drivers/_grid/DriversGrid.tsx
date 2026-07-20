@@ -87,7 +87,7 @@ export function DriversGrid({ drivers }: DriversGridProps) {
         id: 'edit',
         label: 'Edit',
         icon: Pencil,
-        onClick: () => router.push(`/carrier/fleet/drivers/${row.id}`),
+        onClick: () => router.push(`/carrier/fleet/drivers/${row.id}?mode=edit`),
       },
       {
         id: 'delete',

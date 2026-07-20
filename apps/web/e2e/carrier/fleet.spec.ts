@@ -56,24 +56,54 @@ test.describe('Carrier Fleet — Drivers', () => {
     expect(page.url()).toMatch(/\/carrier\/fleet\/drivers/);
   });
 
-  test('view driver detail navigates to edit form', async ({ page }) => {
-    await page.goto('/carrier/fleet/drivers');
-    await page.waitForLoadState('domcontentloaded');
+  // TKT-0073 — "View" (and the driver-name link) previously dropped the user
+  // straight into an editable form. The detail page must open READ-ONLY, with
+  // the form gated behind an Edit toggle (mirrors the truck detail pattern).
+  test('view driver detail opens read-only; Edit toggle reveals form (TKT-0073)', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Desktop view/edit toggle only');
 
-    const firstRow = page.locator('table tbody tr').first();
-    const hasRow = await firstRow.isVisible().catch(() => false);
-    if (!hasRow) {
-      test.skip(true, 'No drivers in list — skipping detail test');
-      return;
-    }
+    const listRes = await page.request.get('/api/v1/carrier/fleet/drivers?pageSize=1');
+    expect(listRes.ok()).toBeTruthy();
+    const { data } = await listRes.json();
+    const items = data?.items ?? [];
+    test.skip(items.length === 0, 'No drivers to view');
+    const driverId = items[0].id;
 
-    // Click driver name link — navigates to /carrier/fleet/drivers/:id which has edit form
-    const editLink = firstRow.getByRole('link').first();
-    await editLink.click();
-    await page.waitForURL(/\/carrier\/fleet\/drivers\/.+/);
+    // Open the detail page in VIEW mode (no ?mode=edit) — as the "View" action does.
+    await page.goto(`/carrier/fleet/drivers/${driverId}`);
     await page.waitForLoadState('networkidle');
-    // Edit form is rendered on the detail page
-    await expect(page.getByLabel(/First Name/i)).toBeVisible();
+
+    // Scope to the desktop page body (excludes the mobile DOM copy + breadcrumb).
+    const desktop = page.locator('div.hidden.lg\\:block.space-y-6').first();
+
+    // View mode: read-only prompt shown, form fields absent.
+    await expect(desktop.getByText(/Review this driver/i)).toBeVisible();
+    await expect(desktop.getByLabel(/First Name/i)).toHaveCount(0);
+
+    // Pressing Edit reveals the form.
+    await desktop.getByRole('button', { name: 'Edit', exact: true }).click();
+    await expect(desktop.getByLabel(/First Name/i)).toBeVisible();
+    await expect(desktop.getByRole('button', { name: /Save Changes/i })).toBeVisible();
+  });
+
+  // TKT-0073 — the grid "Edit" quick action deep-links to ?mode=edit, which
+  // must open the form immediately (no extra click).
+  test('driver detail ?mode=edit opens the form directly (TKT-0073)', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Desktop view/edit toggle only');
+
+    const listRes = await page.request.get('/api/v1/carrier/fleet/drivers?pageSize=1');
+    expect(listRes.ok()).toBeTruthy();
+    const { data } = await listRes.json();
+    const items = data?.items ?? [];
+    test.skip(items.length === 0, 'No drivers');
+    const driverId = items[0].id;
+
+    await page.goto(`/carrier/fleet/drivers/${driverId}?mode=edit`);
+    await page.waitForLoadState('networkidle');
+
+    const desktop = page.locator('div.hidden.lg\\:block.space-y-6').first();
+    await expect(desktop.getByLabel(/First Name/i)).toBeVisible();
+    await expect(desktop.getByRole('button', { name: /Save Changes/i })).toBeVisible();
   });
 
   test('driver form validates required First Name field', async ({ page }) => {

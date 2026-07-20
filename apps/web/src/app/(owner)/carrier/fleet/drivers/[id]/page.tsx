@@ -14,6 +14,7 @@ import { DeductionsTab } from '@/components/driver-pay/deductions/deductions-tab
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import type { HOSDutyStatusLike } from '@/lib/hos/compute-hos-clocks';
 import { DriverDetailMobile } from './DriverDetailMobile';
+import { DriverEditCard } from './DriverEditCard';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -337,9 +338,9 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
         </div>
       </Link>
 
-      {/* Edit form */}
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="text-base font-semibold text-foreground mb-4">Edit Driver</h2>
+      {/* Driver details — read-only by default, opens to edit form via toggle
+          or ?mode=edit (grid "Edit" quick action). Fixes TKT-0073. */}
+      <DriverEditCard>
         <CarrierDriverForm
           driver={{
             id: driver.id,
@@ -361,7 +362,7 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
           }}
           facilities={facilitiesResult.items.map((f) => ({ id: f.id, name: f.name }))}
         />
-      </div>
+      </DriverEditCard>
 
       {/* Bonuses & Deductions tabs */}
       <Tabs defaultValue="bonuses" className="mt-8">
