@@ -148,6 +148,44 @@ test.describe('Carrier Fleet — Trucks', () => {
     await expect(page.locator('#unitNumber')).toBeVisible();
   });
 
+  // Regression: TKT-0081 — editing an existing truck's type to one of the
+  // van/pickup/car options used to 400 ("system error") because the PATCH
+  // schema enum was missing them. Editing to "Sprinter Van" must now succeed.
+  test('@smoke edit truck type to Sprinter Van persists (TKT-0081)', async ({ page }, testInfo) => {
+    // The inline edit form (#truckType) lives in the desktop (lg:block) detail view.
+    test.skip(testInfo.project.name === 'mobile', 'Desktop inline edit form only');
+
+    // Find a truck to edit via the list API.
+    const listRes = await page.request.get('/api/v1/carrier/fleet/trucks?pageSize=1');
+    expect(listRes.ok()).toBeTruthy();
+    const { data } = await listRes.json();
+    const items = data?.items ?? [];
+    test.skip(items.length === 0, 'No trucks in system to edit');
+    const truckId = items[0].id;
+
+    // Open the detail page directly in edit mode.
+    await page.goto(`/carrier/fleet/trucks/${truckId}?mode=edit`);
+    await page.waitForLoadState('domcontentloaded');
+
+    // The page renders both a mobile (lg:hidden) and desktop (hidden lg:block)
+    // copy of the form in the DOM; on the desktop viewport only the desktop copy
+    // is visible. Scope to visible elements to avoid strict-mode ambiguity.
+    // Change truck type to Sprinter Van (the value that previously 400'd on save).
+    await page.locator('#truckType:visible').click();
+    await page.getByRole('option', { name: 'Sprinter Van', exact: true }).click();
+
+    await page.getByRole('button', { name: /Save Changes/i }).and(page.locator(':visible')).click();
+
+    // Success toast — was "Failed to save truck" before the enum fix.
+    await expect(page.getByText(/Truck updated/i)).toBeVisible({ timeout: 10000 });
+
+    // And it must actually persist server-side.
+    const verify = await page.request.get(`/api/v1/carrier/fleet/trucks/${truckId}`);
+    expect(verify.ok()).toBeTruthy();
+    const verifyBody = await verify.json();
+    expect(verifyBody.data.truckType).toBe('sprinter_van');
+  });
+
   test('truck form validates required Unit Number field', async ({ page }) => {
     await page.goto('/carrier/fleet/trucks/new');
     await page.waitForLoadState('domcontentloaded');

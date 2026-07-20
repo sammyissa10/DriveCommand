@@ -13,7 +13,7 @@ const CarrierTruckUpdateSchema = z.object({
   make: z.string().optional(),
   model: z.string().optional(),
   truckType: z
-    .enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck'])
+    .enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck', 'cargo_van', 'sprinter_van', 'pickup', 'car'])
     .optional(),
   grossWeightLbs: z.number().int().optional(),
   payloadCapacityLbs: z.number().int().optional(),
