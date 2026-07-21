@@ -37,7 +37,7 @@ interface RouteEditSectionProps {
       driver: { id: string; firstName: string | null; lastName: string | null; email: string };
     }>;
   };
-  drivers: Array<{ id: string; userId: string | null; firstName: string | null; lastName: string | null }>;
+  drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{ id: string; unitNumber: string; displayName: string | null }>;
   onDirtyChange?: (dirty: boolean) => void;
   onCancel: () => void;

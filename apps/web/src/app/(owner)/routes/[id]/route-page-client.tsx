@@ -77,7 +77,7 @@ interface RoutePageClientProps {
     }>;
   };
   initialEditMode: boolean;
-  drivers: Array<{ id: string; userId: string | null; firstName: string | null; lastName: string | null; email: string }>;
+  drivers: Array<{ id: string; firstName: string | null; lastName: string | null; email: string }>;
   trucks: Array<{ id: string; unitNumber: string; displayName: string | null }>;
   formattedScheduledDate: string;
   formattedCompletedAt?: string;

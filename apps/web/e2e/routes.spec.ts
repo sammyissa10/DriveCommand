@@ -3,11 +3,13 @@ import path from 'path';
 
 test.use({ storageState: path.join(__dirname, '../.playwright/auth/owner.json') });
 
-// TKT-0074 — the New Route primary-driver dropdown listed User login accounts
-// (incl. stray/dummy data) instead of the carrier fleet. It must now list only
-// real fleet drivers; those without a portal login are shown but disabled.
+// quick-477 — the New Route primary-driver dropdown was repointed at the CARRIER
+// fleet (TKT-0074), but Route.driverId is an FK to a DRIVER-role User account.
+// Carrier-driver ids do not map to User ids, so every save failed with "Driver
+// not found" / "not a driver". Restored to DRIVER-role User sourcing — every
+// option in the dropdown must be a selectable (enabled) User account.
 test.describe('New Route — driver dropdown', () => {
-  test('lists carrier fleet drivers, disables no-login, excludes samples (TKT-0074)', async ({ page }, testInfo) => {
+  test('lists DRIVER-role User accounts, all selectable (quick-477)', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === 'mobile', 'Desktop route form');
 
     await page.goto('/routes/new');
@@ -16,17 +18,13 @@ test.describe('New Route — driver dropdown', () => {
     const select = page.locator('#driverId:visible');
     await expect(select).toBeVisible();
 
-    // A real, login-having fleet driver is selectable.
-    const jordan = select.locator('option', { hasText: 'Michael Jordan' });
-    await expect(jordan).toHaveCount(1);
-    await expect(jordan).toBeEnabled();
+    // Placeholder option present.
+    const options = select.locator('option');
+    await expect(options.first()).toHaveText(/Select a driver|No drivers available/);
 
-    // A fleet driver with no login is shown but disabled.
-    const carlos = select.locator('option', { hasText: 'Carlos Rivera' });
-    await expect(carlos).toHaveCount(1);
-    await expect(carlos).toBeDisabled();
-
-    // Seeded sample drivers never appear.
-    await expect(select.locator('option', { hasText: 'Sample Driver 1' })).toHaveCount(0);
+    // No option in the driver picker is ever disabled — every listed driver is a
+    // real DRIVER-role User account and thus a valid Route.driverId FK target.
+    const disabledCount = await select.locator('option[disabled]').count();
+    expect(disabledCount).toBe(0);
   });
 });

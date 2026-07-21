@@ -1,27 +1,27 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { requireTenantId } from '@/lib/context/tenant-context';
+import { listDrivers } from '@/app/(owner)/actions/drivers';
 import { NewRouteClient } from './new-route-client';
 import { RouteCreateMobile } from './RouteCreateMobile';
 import { logger } from '@/lib/logger';
 
 export default async function NewRoutePage() {
   const orgId = await requireTenantId();
-  const tenantPrisma = await getTenantPrisma();
   const [drivers, trucks] = await Promise.all([
-    // Real carrier fleet drivers only — no User login accounts / sample data
-    // (TKT-0074). userId is the portal login used as Route.driverId; drivers
-    // without one are shown but disabled in the form until granted portal access.
-    tenantPrisma.carrierDriver
-      .findMany({
-        where: { orgId, deletedAt: null, isSample: false, status: 'active' },
-        select: { id: true, userId: true, firstName: true, lastName: true },
-        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
-      })
+    // DRIVER-role User accounts — Route.driverId is an FK to User.id, so the
+    // picker must be sourced from listDrivers(), not the CARRIER fleet (that
+    // regression is TKT-0074/quick-477). Sample seed users are filtered out.
+    listDrivers()
+      .then((rows) =>
+        rows
+          .filter((d) => !d.isSample)
+          .map((d) => ({ id: d.id, firstName: d.firstName, lastName: d.lastName }))
+      )
       .catch((err) => {
-        logger.error('Failed to load carrier drivers for route form:', err);
-        return [] as Array<{ id: string; userId: string | null; firstName: string | null; lastName: string | null }>;
+        logger.error('Failed to load drivers for route form:', err);
+        return [] as Array<{ id: string; firstName: string | null; lastName: string | null }>;
       }),
     listCarrierTrucks(orgId)
       .then((r) => r.items)

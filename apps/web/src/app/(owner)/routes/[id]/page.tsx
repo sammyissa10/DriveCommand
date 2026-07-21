@@ -162,12 +162,11 @@ export default async function RouteDetailPage({
     numberOfMiles: d.numberOfMiles == null ? null : Number(d.numberOfMiles),
   }));
 
-  // Edit-flow drivers are already portal logins → userId === id, so they stay
-  // selectable in the shared RouteForm and always include the route's current driver.
+  // listDrivers() already returns DRIVER-role User records whose `id` is the correct
+  // Route.driverId FK value — pass straight through, no userId indirection needed.
   const driversForEdit = drivers.map(
     (d: { id: string; firstName: string | null; lastName: string | null; email: string }) => ({
       id: d.id,
-      userId: d.id,
       firstName: d.firstName,
       lastName: d.lastName,
       email: d.email,
