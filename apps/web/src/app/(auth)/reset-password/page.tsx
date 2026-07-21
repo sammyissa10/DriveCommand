@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -98,6 +99,19 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-sm px-6">
+      <div className="flex flex-row items-center gap-2 mb-2">
+        <Image
+          src="/brand/drivecommand-mark-mono-light.svg"
+          alt="DriveCommand"
+          width={40}
+          height={40}
+          priority
+        />
+        <span className="text-xl font-bold text-white tracking-tight">
+          DriveCommand
+        </span>
+      </div>
+
       <div className="w-full rounded-xl border border-border bg-card shadow-sm p-6">
         <h2 className="text-lg font-semibold text-foreground mb-5">Set new password</h2>
 
