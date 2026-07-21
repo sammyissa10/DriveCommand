@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +20,7 @@ import {
 
 interface Props {
   driverId: string;
+  driverEmail: string | null;
   userId: string | null;
   userIsActive: boolean | null;
   invitationStatus: string | null;
@@ -46,6 +48,7 @@ function computeAccessState(
 
 export function PortalAccessControls({
   driverId,
+  driverEmail,
   userId,
   userIsActive,
   invitationStatus,
@@ -56,17 +59,21 @@ export function PortalAccessControls({
 
   const state = computeAccessState(userId, userIsActive, invitationStatus);
 
-  async function handleRevoke() {
+  async function postAction(path: string, successMsg: string) {
     setIsBusy(true);
     try {
-      const res = await fetch(`/api/v1/carrier/fleet/drivers/${driverId}/revoke-access`, {
+      const res = await fetch(`/api/v1/carrier/fleet/drivers/${driverId}/${path}`, {
         method: 'POST',
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success('Portal access revoked');
+        if ((data as { warning?: string }).warning) {
+          toast.warning((data as { warning: string }).warning);
+        } else {
+          toast.success(successMsg);
+        }
         router.refresh();
       } else {
-        const data = await res.json().catch(() => ({}));
         toast.error((data as { error?: string }).error ?? 'Something went wrong');
       }
     } catch {
@@ -76,25 +83,14 @@ export function PortalAccessControls({
     }
   }
 
-  async function handleRestore() {
-    setIsBusy(true);
-    try {
-      const res = await fetch(`/api/v1/carrier/fleet/drivers/${driverId}/restore-access`, {
-        method: 'POST',
-      });
-      if (res.ok) {
-        toast.success('Portal access restored');
-        router.refresh();
-      } else {
-        const data = await res.json().catch(() => ({}));
-        toast.error((data as { error?: string }).error ?? 'Something went wrong');
-      }
-    } catch {
-      toast.error('Something went wrong');
-    } finally {
-      setIsBusy(false);
-    }
-  }
+  // Grant (first-time) and resend both create + send a fresh invitation.
+  const handleSendInvitation = (isResend: boolean) =>
+    postAction(
+      'resend-invitation',
+      isResend ? `Invitation resent to ${driverEmail}` : `Portal access granted — invitation sent to ${driverEmail}`
+    );
+  const handleRevoke = () => postAction('revoke-access', 'Portal access revoked');
+  const handleRestore = () => postAction('restore-access', 'Portal access restored');
 
   return (
     <div className="flex items-center gap-2">
@@ -119,6 +115,34 @@ export function PortalAccessControls({
         </Badge>
       )}
 
+      {/* Grant (first-time) — no user, no pending invitation yet */}
+      {canManageAccess && state === 'none' && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={isBusy || !driverEmail}
+          title={driverEmail ? undefined : 'Add an email address to this driver to grant portal access'}
+          onClick={() => handleSendInvitation(false)}
+        >
+          <Mail className="mr-2 h-4 w-4" />
+          Grant portal access
+        </Button>
+      )}
+
+      {/* Resend — invitation already pending */}
+      {canManageAccess && state === 'pending' && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={isBusy || !driverEmail}
+          onClick={() => handleSendInvitation(true)}
+        >
+          <Mail className="mr-2 h-4 w-4" />
+          Resend invitation
+        </Button>
+      )}
+
+      {/* Revoke — has an active portal account */}
       {canManageAccess && state === 'active' && (
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -152,13 +176,9 @@ export function PortalAccessControls({
         </AlertDialog>
       )}
 
+      {/* Restore — previously revoked */}
       {canManageAccess && state === 'suspended' && (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isBusy}
-          onClick={handleRestore}
-        >
+        <Button variant="outline" size="sm" disabled={isBusy} onClick={handleRestore}>
           Restore access
         </Button>
       )}
