@@ -12,7 +12,7 @@ interface Coords {
   lng: number;
 }
 
-interface StopDraft {
+interface Waypoint {
   clientId: string; // crypto.randomUUID() for React key
   type: 'PICKUP' | 'DELIVERY';
   address: string;
@@ -62,6 +62,16 @@ function toDatetimeLocalString(date: Date | null | undefined): string {
   return iso.slice(0, 16);
 }
 
+function makeWaypoint(overrides: Partial<Waypoint> & { type: 'PICKUP' | 'DELIVERY' }): Waypoint {
+  return {
+    clientId: crypto.randomUUID(),
+    address: '',
+    scheduledAt: '',
+    notes: '',
+    ...overrides,
+  };
+}
+
 export function RouteForm({
   action,
   initialData,
@@ -77,9 +87,8 @@ export function RouteForm({
     success: false,
   });
 
-  const [originCoords, setOriginCoords] = useState<Coords | null>(null);
-  const [destCoords, setDestCoords] = useState<Coords | null>(null);
-  const [stopCoords, setStopCoords] = useState<Map<string, Coords>>(new Map());
+  // Map of waypoint clientId -> resolved coordinates (facility lookup or manual geocode)
+  const [waypointCoords, setWaypointCoords] = useState<Map<string, Coords>>(new Map());
   const [distance, setDistance] = useState<number | null>(null);
   const [distanceLoading, setDistanceLoading] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>(initialData?.driverId || '');
@@ -110,20 +119,36 @@ export function RouteForm({
     });
   }
 
-  // Initialize stops from initialStops prop (editing existing route) or empty array (new route)
-  const [stops, setStops] = useState<StopDraft[]>(() => {
-    if (!initialStops || initialStops.length === 0) return [];
-    return initialStops
-      .slice()
-      .sort((a, b) => a.position - b.position)
-      .map((s) => ({
-        clientId: crypto.randomUUID(),
-        type: (s.type === 'DELIVERY' ? 'DELIVERY' : 'PICKUP') as 'PICKUP' | 'DELIVERY',
-        address: s.address,
-        scheduledAt: toDatetimeLocalString(s.scheduledAt),
-        notes: s.notes ?? '',
-      }));
+  // ONE ordered waypoint list — first row is origin (Pickup), last row is destination
+  // (Delivery), middle rows are user-typed stops. Minimum 2 rows always maintained.
+  // Init (create): two empty rows. Init (edit): reconstruct from initialData + initialStops.
+  const [waypoints, setWaypoints] = useState<Waypoint[]>(() => {
+    if (initialData) {
+      const middle = (initialStops ?? [])
+        .slice()
+        .sort((a, b) => a.position - b.position)
+        .map((s) =>
+          makeWaypoint({
+            type: s.type === 'DELIVERY' ? 'DELIVERY' : 'PICKUP',
+            address: s.address,
+            scheduledAt: toDatetimeLocalString(s.scheduledAt),
+            notes: s.notes ?? '',
+          })
+        );
+      return [
+        makeWaypoint({ type: 'PICKUP', address: initialData.origin }),
+        ...middle,
+        makeWaypoint({ type: 'DELIVERY', address: initialData.destination }),
+      ];
+    }
+    return [makeWaypoint({ type: 'PICKUP' }), makeWaypoint({ type: 'DELIVERY' })];
   });
+
+  // Origin/destination coords derived from the first/last waypoint rows on every render —
+  // recomputes automatically as rows are reordered, added, or removed.
+  const originCoords = waypoints.length > 0 ? waypointCoords.get(waypoints[0].clientId) ?? null : null;
+  const destCoords =
+    waypoints.length > 0 ? waypointCoords.get(waypoints[waypoints.length - 1].clientId) ?? null : null;
 
   // Fetch road distance via OSRM when both coordinates are available
   useEffect(() => {
@@ -143,50 +168,59 @@ export function RouteForm({
         if (!cancelled) setDistanceLoading(false);
       });
     return () => { cancelled = true; };
-  }, [originCoords, destCoords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [originCoords?.lat, originCoords?.lng, destCoords?.lat, destCoords?.lng]);
 
-  function addStop() {
-    setStops((prev) => [
-      ...prev,
-      {
-        clientId: crypto.randomUUID(),
-        type: 'PICKUP',
-        address: '',
-        scheduledAt: '',
-        notes: '',
-      },
-    ]);
+  function setCoordsFor(clientId: string, c: Coords | null) {
+    setWaypointCoords((prev) => {
+      const next = new Map(prev);
+      if (c) next.set(clientId, c);
+      else next.delete(clientId);
+      return next;
+    });
   }
 
-  function removeStop(clientId: string) {
-    setStops((prev) => prev.filter((s) => s.clientId !== clientId));
+  function addWaypoint() {
+    // Insert a new middle row just before the last row (so destination stays last)
+    setWaypoints((prev) => [...prev.slice(0, -1), makeWaypoint({ type: 'PICKUP' }), prev[prev.length - 1]]);
   }
 
-  function moveStopUp(idx: number) {
-    if (idx === 0) return;
-    setStops((prev) => {
+  function removeWaypoint(clientId: string) {
+    setWaypoints((prev) => {
+      if (prev.length <= 2) return prev; // never drop below 2 rows (origin + destination)
+      return prev.filter((w) => w.clientId !== clientId);
+    });
+  }
+
+  // Reordering is clamped so the first row (origin) and last row (destination) never move —
+  // only middle rows may swap with adjacent middle rows.
+  function moveWaypointUp(idx: number) {
+    if (idx <= 1) return; // idx===1 would swap into the fixed origin slot
+    setWaypoints((prev) => {
       const next = [...prev];
       [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
       return next;
     });
   }
 
-  function moveStopDown(idx: number) {
-    setStops((prev) => {
-      if (idx >= prev.length - 1) return prev;
+  function moveWaypointDown(idx: number) {
+    setWaypoints((prev) => {
+      if (idx >= prev.length - 2) return prev; // would swap into the fixed destination slot
       const next = [...prev];
       [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
       return next;
     });
   }
 
-  function updateStop(clientId: string, field: keyof Omit<StopDraft, 'clientId'>, value: string) {
-    setStops((prev) =>
-      prev.map((s) => (s.clientId === clientId ? { ...s, [field]: value } : s))
+  function updateWaypoint(clientId: string, field: keyof Omit<Waypoint, 'clientId'>, value: string) {
+    setWaypoints((prev) =>
+      prev.map((w) => (w.clientId === clientId ? { ...w, [field]: value } : w))
     );
   }
 
   const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
+  const lastIdx = waypoints.length - 1;
+
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {/* Extra hidden fields (e.g., version for optimistic locking) */}
@@ -212,18 +246,19 @@ export function RouteForm({
       {/* Hidden stops_submitted sentinel — tells server action stops section was rendered */}
       <input type="hidden" name="stops_submitted" value="true" />
 
-      {/* Hidden fields for each stop — index-based for server action parsing */}
-      {stops.map((stop, idx) => (
-        <span key={stop.clientId} style={{ display: 'none' }}>
-          <input type="hidden" name={`stops_${idx}_type`} value={stop.type} />
-          <input type="hidden" name={`stops_${idx}_scheduledAt`} value={stop.scheduledAt} />
-          <input type="hidden" name={`stops_${idx}_notes`} value={stop.notes} />
-          <input type="hidden" name={`stops_${idx}_lat`} value={stopCoords.get(stop.clientId)?.lat ?? ''} />
-          <input type="hidden" name={`stops_${idx}_lng`} value={stopCoords.get(stop.clientId)?.lng ?? ''} />
+      {/* Hidden fields for each MIDDLE waypoint — 0-indexed contiguous, recomputed from
+          current array order every render so stops_<i>_* stays contiguous after reorder. */}
+      {waypoints.slice(1, -1).map((wp, k) => (
+        <span key={wp.clientId} style={{ display: 'none' }}>
+          <input type="hidden" name={`stops_${k}_type`} value={wp.type} />
+          <input type="hidden" name={`stops_${k}_scheduledAt`} value={wp.scheduledAt} />
+          <input type="hidden" name={`stops_${k}_notes`} value={wp.notes} />
+          <input type="hidden" name={`stops_${k}_lat`} value={waypointCoords.get(wp.clientId)?.lat ?? ''} />
+          <input type="hidden" name={`stops_${k}_lng`} value={waypointCoords.get(wp.clientId)?.lng ?? ''} />
         </span>
       ))}
 
-      {/* Origin & Destination */}
+      {/* Route Details */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Route Details</h3>
 
@@ -244,40 +279,39 @@ export function RouteForm({
         </div>
 
         <div>
-          <label htmlFor="origin" className={labelClass}>Origin</label>
-          <FacilityAddressSelect
-            name="origin"
-            facilities={facilities}
-            defaultValue={initialData?.origin || ''}
+          <label htmlFor="scheduledDate" className={labelClass}>Scheduled Date</label>
+          <input
+            type="datetime-local"
+            id="scheduledDate"
+            name="scheduledDate"
+            defaultValue={initialData?.scheduledDate || ''}
             required
             disabled={isPending}
-            placeholder="Enter origin address..."
             className={inputClass}
-            onCoordsChange={setOriginCoords}
           />
-          {fieldErrors?.origin && (
-            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.origin}</p>
+          {fieldErrors?.scheduledDate && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.scheduledDate}</p>
           )}
         </div>
+      </div>
 
-        <div>
-          <label htmlFor="destination" className={labelClass}>Destination</label>
-          <FacilityAddressSelect
-            name="destination"
-            facilities={facilities}
-            defaultValue={initialData?.destination || ''}
-            required
+      {/* Route stops — ONE ordered waypoint list: first = origin (Pickup), last =
+          destination (Delivery), middle = user-typed stops */}
+      <div className="space-y-3 border-t border-border pt-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Route Stops</h3>
+          <button
+            type="button"
+            onClick={addWaypoint}
             disabled={isPending}
-            placeholder="Enter destination address..."
-            className={inputClass}
-            onCoordsChange={setDestCoords}
-          />
-          {fieldErrors?.destination && (
-            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.destination}</p>
-          )}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2.5 text-sm min-h-[44px] font-medium text-foreground shadow-sm hover:bg-muted transition-colors disabled:opacity-50"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add Stop
+          </button>
         </div>
 
-        {/* Distance badge — shown while loading or once both locations are selected */}
+        {/* Distance badge — shown while loading or once both endpoints are selected */}
         {distanceLoading && (
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
             <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0 animate-spin" />
@@ -303,151 +337,129 @@ export function RouteForm({
           </div>
         )}
 
-        <div>
-          <label htmlFor="scheduledDate" className={labelClass}>Scheduled Date</label>
-          <input
-            type="datetime-local"
-            id="scheduledDate"
-            name="scheduledDate"
-            defaultValue={initialData?.scheduledDate || ''}
-            required
-            disabled={isPending}
-            className={inputClass}
-          />
-          {fieldErrors?.scheduledDate && (
-            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.scheduledDate}</p>
-          )}
-        </div>
-      </div>
+        {waypoints.map((wp, idx) => {
+          const isFirst = idx === 0;
+          const isLast = idx === lastIdx;
+          const fieldName = isFirst ? 'origin' : isLast ? 'destination' : `stops_${idx - 1}_address`;
+          const rowError = isFirst ? fieldErrors?.origin : isLast ? fieldErrors?.destination : undefined;
 
-      {/* Stops */}
-      <div className="space-y-3 border-t border-border pt-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Stops</h3>
-          <button
-            type="button"
-            onClick={addStop}
-            disabled={isPending}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2.5 text-sm min-h-[44px] font-medium text-foreground shadow-sm hover:bg-muted transition-colors disabled:opacity-50"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add Stop
-          </button>
-        </div>
+          return (
+            <div
+              key={wp.clientId}
+              className="flex gap-3 items-start rounded-lg border border-border bg-muted/20 p-4"
+            >
+              {/* Position badge — flex child, no absolute positioning */}
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-sm mt-0.5">
+                {idx + 1}
+              </div>
 
-        {stops.length === 0 && (
-          <p className="text-xs text-muted-foreground py-2">
-            No intermediate stops. Click "Add Stop" to define pickup or delivery waypoints.
-          </p>
-        )}
+              <div className="flex-1 min-w-0 space-y-3">
+                {/* Header row: fixed label (endpoints) or type select (middle) + reorder + remove */}
+                <div className="flex items-center gap-2">
+                  {isFirst ? (
+                    <span className="flex-1 min-w-0 text-xs font-semibold text-foreground">Origin (Pickup)</span>
+                  ) : isLast ? (
+                    <span className="flex-1 min-w-0 text-xs font-semibold text-foreground">Destination (Delivery)</span>
+                  ) : (
+                    <select
+                      value={wp.type}
+                      onChange={(e) => updateWaypoint(wp.clientId, 'type', e.target.value)}
+                      disabled={isPending}
+                      className="flex-1 min-w-0 rounded-lg border border-input bg-background px-2 py-1.5 text-xs font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
+                    >
+                      <option value="PICKUP">Pickup</option>
+                      <option value="DELIVERY">Delivery</option>
+                    </select>
+                  )}
 
-        {stops.map((stop, idx) => (
-          <div
-            key={stop.clientId}
-            className="flex gap-3 items-start rounded-lg border border-border bg-muted/20 p-4"
-          >
-            {/* Position badge — flex child, no absolute positioning */}
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-sm mt-0.5">
-              {idx + 1}
-            </div>
-
-            <div className="flex-1 min-w-0 space-y-3">
-              {/* Header row: type select + reorder + remove */}
-              <div className="flex items-center gap-2">
-                <select
-                  value={stop.type}
-                  onChange={(e) => updateStop(stop.clientId, 'type', e.target.value)}
-                  disabled={isPending}
-                  className="flex-1 min-w-0 rounded-lg border border-input bg-background px-2 py-1.5 text-xs font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
-                >
-                  <option value="PICKUP">Pickup</option>
-                  <option value="DELIVERY">Delivery</option>
-                </select>
-
-                <div className="flex items-center gap-0.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => moveStopUp(idx)}
-                    disabled={idx === 0 || isPending}
-                    title="Move stop up"
-                    className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronUp className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveStopDown(idx)}
-                    disabled={idx === stops.length - 1 || isPending}
-                    title="Move stop down"
-                    className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeStop(stop.clientId)}
-                    disabled={isPending}
-                    title="Remove stop"
-                    className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+                  {!isFirst && !isLast && (
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => moveWaypointUp(idx)}
+                        disabled={idx === 1 || isPending}
+                        title="Move stop up"
+                        className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveWaypointDown(idx)}
+                        disabled={idx === lastIdx - 1 || isPending}
+                        title="Move stop down"
+                        className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeWaypoint(wp.clientId)}
+                        disabled={isPending || waypoints.length <= 2}
+                        title="Remove stop"
+                        className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {/* Address — AddressAutocomplete with stops_N_address as name */}
-              <div>
-                <label className={labelClass}>Address</label>
-                <FacilityAddressSelect
-                  name={`stops_${idx}_address`}
-                  facilities={facilities}
-                  defaultValue={stop.address}
-                  disabled={isPending}
-                  placeholder="Enter stop address..."
-                  className={inputClass}
-                  onAddressChange={(addr) => updateStop(stop.clientId, 'address', addr)}
-                  onCoordsChange={(c) =>
-                    setStopCoords((prev) => {
-                      const next = new Map(prev);
-                      if (c) next.set(stop.clientId, c);
-                      else next.delete(stop.clientId);
-                      return next;
-                    })
-                  }
-                />
-              </div>
+                {/* Address — FacilityAddressSelect; name maps to origin/destination/stops_<k>_address */}
+                <div>
+                  <label className={labelClass}>Address</label>
+                  <FacilityAddressSelect
+                    name={fieldName}
+                    facilities={facilities}
+                    defaultValue={wp.address}
+                    required={isFirst || isLast}
+                    disabled={isPending}
+                    placeholder={isFirst ? 'Enter origin address...' : isLast ? 'Enter destination address...' : 'Enter stop address...'}
+                    className={inputClass}
+                    onAddressChange={(addr) => updateWaypoint(wp.clientId, 'address', addr)}
+                    onCoordsChange={(c) => setCoordsFor(wp.clientId, c)}
+                  />
+                  {rowError && (
+                    <p className="mt-1.5 text-sm text-red-600">{rowError}</p>
+                  )}
+                </div>
 
-              {/* Scheduled time */}
-              <div>
-                <label className={labelClass}>
-                  Scheduled Time <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-                </label>
-                <input
-                  type="datetime-local"
-                  value={stop.scheduledAt}
-                  onChange={(e) => updateStop(stop.clientId, 'scheduledAt', e.target.value)}
-                  disabled={isPending}
-                  className={inputClass}
-                />
-              </div>
+                {/* Scheduled time + notes — middle (stop) rows only; origin/destination have
+                    no per-row time field in the server contract (only Route.scheduledDate). */}
+                {!isFirst && !isLast && (
+                  <>
+                    <div>
+                      <label className={labelClass}>
+                        Scheduled Time <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={wp.scheduledAt}
+                        onChange={(e) => updateWaypoint(wp.clientId, 'scheduledAt', e.target.value)}
+                        disabled={isPending}
+                        className={inputClass}
+                      />
+                    </div>
 
-              {/* Notes */}
-              <div>
-                <label className={labelClass}>
-                  Notes <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={stop.notes}
-                  onChange={(e) => updateStop(stop.clientId, 'notes', e.target.value)}
-                  disabled={isPending}
-                  placeholder="Stop-specific instructions..."
-                  className={inputClass}
-                />
+                    <div>
+                      <label className={labelClass}>
+                        Notes <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={wp.notes}
+                        onChange={(e) => updateWaypoint(wp.clientId, 'notes', e.target.value)}
+                        disabled={isPending}
+                        placeholder="Stop-specific instructions..."
+                        className={inputClass}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Assignments */}
