@@ -15,14 +15,17 @@ export default async function NewTripPage() {
 
   const tenantPrisma = await getTenantPrisma();
 
+  // Only real, active, non-deleted fleet records belong in the pickers.
+  // Excluding is_sample keeps seeded demo records out of operational dropdowns
+  // (TKT-0076); deletedAt guards against soft-deleted rows lingering.
   const [drivers, trucks] = await Promise.all([
     tenantPrisma.carrierDriver.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, firstName: true, lastName: true },
       orderBy: { lastName: 'asc' },
     }),
     tenantPrisma.carrierTruck.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, unitNumber: true },
       orderBy: { unitNumber: 'asc' },
     }),

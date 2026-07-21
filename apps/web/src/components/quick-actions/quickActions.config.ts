@@ -65,9 +65,11 @@ const QUICK_CREATE_ITEMS: QuickActionItem[] = [
     id: "create-route",
     label: "New Route",
     icon: Route,
-    href: "/routes/new",
+    // Legacy /routes/new is retired; route creation now funnels to carrier Trips
+    // (carrier fleet drivers + trucks). See TKT-0074/0056/0057.
+    href: "/carrier/trips/new",
     shortcut: "C T", // T for "Trip" since R is taken by driver
-    description: "Create a route blueprint",
+    description: "Assign a driver and truck for a trip",
   },
   // KEYBOARD SHORTCUT: C then L — highest frequency action, easiest shortcut
   {
