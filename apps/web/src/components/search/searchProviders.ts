@@ -273,10 +273,9 @@ export const QUICK_ACTIONS: QuickAction[] = [
     label: "New Route",
     icon: Route,
     section: "quick-create",
-    // Legacy /routes/new retired — funnels to carrier Trips (TKT-0074/0056/0057).
-    href: "/carrier/trips/new",
+    href: "/routes/new",
     shortcut: "C T", // T for "Trip" since R is taken by driver
-    keywords: ["create route", "new route", "add route", "route blueprint", "recurring route", "new trip", "dispatch"],
+    keywords: ["create route", "new route", "add route", "route blueprint", "recurring route"],
   },
   {
     id: "create-load",
