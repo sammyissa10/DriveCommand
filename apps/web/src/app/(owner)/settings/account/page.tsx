@@ -1,25 +1,41 @@
+import { redirect } from "next/navigation"
 import { SettingsHeader } from "@/components/settings/SettingsHeader"
 import { SETTINGS_PAGE_META } from "@/components/settings/settings.config"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getSession } from "@/lib/auth/supabase"
+import { prisma } from "@/lib/db/prisma"
 
 const meta = SETTINGS_PAGE_META.account
 
+function initialsOf(firstName?: string | null, lastName?: string | null, email?: string): string {
+  const f = firstName?.trim()?.[0] ?? ""
+  const l = lastName?.trim()?.[0] ?? ""
+  if (f || l) return (f + l).toUpperCase()
+  return (email?.trim()?.[0] ?? "?").toUpperCase()
+}
+
 /**
- * Account Settings Page
- *
- * STUB: This page will eventually allow users to:
- * - View and edit their profile (name, email, avatar)
- * - Change their password
- * - Enable/disable two-factor authentication
- * - Sign out of all sessions
- *
- * Implementation notes for future development:
- * - Profile: Fetch from Supabase Auth user, update via server action
- * - Password: Use Supabase Auth password update flow
- * - 2FA: Use Supabase Auth MFA with TOTP
- * - Sign out: Clear session cookies, redirect to sign-in
+ * Account Settings Page — shows the signed-in account holder's real profile
+ * (TKT-0078). Password / 2FA / sign-out remain stubs pending Supabase Auth wiring.
  */
-export default function AccountSettingsPage() {
+export default async function AccountSettingsPage() {
+  const session = await getSession()
+  if (!session) redirect("/login")
+
+  // Prefer names from the session (user_metadata); fall back to the User row.
+  let firstName = session.firstName ?? null
+  let lastName = session.lastName ?? null
+  if (!firstName && !lastName) {
+    const user = await prisma.user
+      .findUnique({ where: { id: session.userId }, select: { firstName: true, lastName: true } })
+      .catch(() => null)
+    firstName = user?.firstName ?? null
+    lastName = user?.lastName ?? null
+  }
+
+  const fullName = [firstName, lastName].filter(Boolean).join(" ") || session.email
+  const initials = initialsOf(firstName, lastName, session.email)
+
   return (
     <div>
       <SettingsHeader title={meta.title} subtitle={meta.subtitle} />
@@ -33,22 +49,22 @@ export default function AccountSettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-start gap-4">
-              {/* Avatar placeholder */}
+              {/* Avatar — initials from the signed-in user */}
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center shrink-0">
-                <span className="text-lg font-medium text-muted-foreground">JD</span>
+                <span className="text-lg font-medium text-muted-foreground">{initials}</span>
               </div>
               <div className="space-y-3 flex-1">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Name
                   </label>
-                  <p className="text-sm text-foreground mt-0.5">John Doe</p>
+                  <p className="text-sm text-foreground mt-0.5">{fullName}</p>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Email
                   </label>
-                  <p className="text-sm text-foreground mt-0.5">john@acmetrucking.com</p>
+                  <p className="text-sm text-foreground mt-0.5">{session.email}</p>
                 </div>
               </div>
             </div>
