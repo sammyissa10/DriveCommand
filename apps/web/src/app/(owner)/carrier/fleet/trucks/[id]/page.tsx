@@ -10,6 +10,7 @@ import { CarrierTruckDetailClient } from '@/components/carrier/fleet/CarrierTruc
 import { TruckDetailMobile, type TruckDetailData, type TruckTripRow, type TruckParent } from './TruckDetailMobile';
 import { Badge } from '@/components/ui/badge';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { ConvertSampleRecord } from '@/components/onboarding/convert-sample-record';
 import { prisma } from '@/lib/db/prisma';
 
 interface Props {
@@ -167,6 +168,11 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
           </p>
         )}
       </div>
+
+      {/* Sample record explainer + convert action (TKT-0075) */}
+      {truck.isSample && canEdit && (
+        <ConvertSampleRecord endpoint={`/api/v1/carrier/fleet/trucks/${truck.id}`} recordLabel="truck" />
+      )}
 
       {/* View/Edit card */}
       <Suspense fallback={<div className="rounded-lg border border-border bg-card p-6 h-48 animate-pulse" />}>

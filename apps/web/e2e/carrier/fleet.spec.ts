@@ -284,6 +284,37 @@ test.describe('Carrier Fleet — Trucks', () => {
     await expect(lastUpdated).toContainText(/just now|second|1 minute/i);
   });
 
+  // TKT-0075 — a seeded sample truck showed the SAMPLE badge with no way to make
+  // it real. Its detail page must now explain the sample status and offer a
+  // "Convert to real record" action (which PATCHes is_sample=false). Real trucks
+  // show no such banner. Read-only presence check — clicking convert is exercised
+  // manually since the app's CSRF guard blocks a test-driven restore.
+  test('sample truck shows a convert-to-real action; real trucks do not (TKT-0075)', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'Desktop detail banner');
+
+    const listRes = await page.request.get('/api/v1/carrier/fleet/trucks?pageSize=100');
+    expect(listRes.ok()).toBeTruthy();
+    const { data } = await listRes.json();
+    const items: Array<{ id: string; isSample: boolean }> = data?.items ?? [];
+    const sample = items.find((t) => t.isSample === true);
+    const real = items.find((t) => t.isSample === false);
+    test.skip(!sample, 'no sample truck in tenant');
+
+    // The sample truck explains itself and offers the convert action.
+    await page.goto(`/carrier/fleet/trucks/${sample!.id}`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(
+      page.getByRole('button', { name: /Convert to real record/i }).first()
+    ).toBeVisible();
+
+    // A real truck shows no convert banner.
+    if (real) {
+      await page.goto(`/carrier/fleet/trucks/${real.id}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.getByRole('button', { name: /Convert to real record/i })).toHaveCount(0);
+    }
+  });
+
   test('truck form validates required Unit Number field', async ({ page }) => {
     await page.goto('/carrier/fleet/trucks/new');
     await page.waitForLoadState('domcontentloaded');

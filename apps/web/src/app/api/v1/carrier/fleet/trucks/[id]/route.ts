@@ -26,6 +26,9 @@ const CarrierTruckUpdateSchema = z.object({
   status: z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional(),
   notes: z.string().optional(),
   photoS3Key: z.string().nullable().optional(),
+  // Allow promoting a seeded sample record to a real one (TKT-0075). Only ever
+  // set to false from the UI — records are never re-flagged as sample.
+  isSample: z.boolean().optional(),
 });
 
 export async function GET(

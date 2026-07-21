@@ -33,6 +33,7 @@ export interface CarrierTruckCreateInput {
   status?: string;
   notes?: string;
   photoS3Key?: string | null;
+  isSample?: boolean;
 }
 
 export type CarrierTruckUpdateInput = Partial<CarrierTruckCreateInput>;
