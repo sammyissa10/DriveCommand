@@ -6,7 +6,7 @@ import { useActionState, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronDown, ChevronUp, Loader2, X } from 'lucide-react';
 import { createRoute } from '@/app/(owner)/actions/routes';
-import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 import { MobileScreen, NavHeader, NavTextButton, SectionHeader, PrimaryButton } from '@/components/ui/ds';
 
@@ -65,6 +65,21 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
   const [selectedDriverId, setSelectedDriverId] = useState('');
   const [coDriverIds, setCoDriverIds] = useState<string[]>([]);
   const [stops, setStops] = useState<StopDraft[]>([]);
+  const [facilities, setFacilities] = useState<FacilityOption[]>([]);
+
+  // Fetch tenant facilities once — powers the Origin/Destination/Stop facility dropdowns
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/v1/carrier/facilities?pageSize=200');
+        if (!res.ok) return;
+        const json = await res.json();
+        setFacilities(json?.data?.items ?? []);
+      } catch {
+        // Leave empty — FacilityAddressSelect still works in manual mode
+      }
+    })();
+  }, []);
 
   function toggleCoDriver(driverId: string) {
     setCoDriverIds((prev) =>
@@ -208,14 +223,14 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
               <label htmlFor="origin" className={dsLabelClass}>
                 Origin
               </label>
-              <AddressAutocomplete
-                id="origin"
+              <FacilityAddressSelect
                 name="origin"
+                facilities={facilities}
                 required
                 disabled={isPending}
                 placeholder="Enter origin address..."
                 className={dsFieldClass}
-                onPlaceSelect={(place) => setOriginCoords({ lat: place.lat, lng: place.lng })}
+                onCoordsChange={setOriginCoords}
               />
               {fieldErrors?.origin ? <p className={dsErrorClass}>{fieldErrors.origin}</p> : null}
             </div>
@@ -224,14 +239,14 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
               <label htmlFor="destination" className={dsLabelClass}>
                 Destination
               </label>
-              <AddressAutocomplete
-                id="destination"
+              <FacilityAddressSelect
                 name="destination"
+                facilities={facilities}
                 required
                 disabled={isPending}
                 placeholder="Enter destination address..."
                 className={dsFieldClass}
-                onPlaceSelect={(place) => setDestCoords({ lat: place.lat, lng: place.lng })}
+                onCoordsChange={setDestCoords}
               />
               {fieldErrors?.destination ? (
                 <p className={dsErrorClass}>{fieldErrors.destination}</p>
@@ -332,21 +347,22 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
 
                   <div>
                     <label className={dsLabelClass}>Address</label>
-                    <AddressAutocomplete
-                      id={`stop_${stop.clientId}_address`}
+                    <FacilityAddressSelect
                       name={`stops_${idx}_address`}
+                      facilities={facilities}
                       defaultValue={stop.address}
                       disabled={isPending}
                       placeholder="Enter stop address..."
                       className={dsFieldClass}
-                      onPlaceSelect={(place) => {
-                        updateStop(stop.clientId, 'address', place.displayName);
+                      onAddressChange={(addr) => updateStop(stop.clientId, 'address', addr)}
+                      onCoordsChange={(c) =>
                         setStopCoords((prev) => {
                           const next = new Map(prev);
-                          next.set(stop.clientId, { lat: place.lat, lng: place.lng });
+                          if (c) next.set(stop.clientId, c);
+                          else next.delete(stop.clientId);
                           return next;
-                        });
-                      }}
+                        })
+                      }
                     />
                   </div>
 

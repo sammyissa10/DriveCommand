@@ -3,7 +3,7 @@
 import type { ActionState } from '@drivecommand/types';
 
 import { useActionState, useState, useEffect } from 'react';
-import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 import { Navigation, Plus, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
 
@@ -84,6 +84,21 @@ export function RouteForm({
   const [distanceLoading, setDistanceLoading] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>(initialData?.driverId || '');
   const [coDriverIds, setCoDriverIds] = useState<string[]>(initialCoDriverIds ?? []);
+  const [facilities, setFacilities] = useState<FacilityOption[]>([]);
+
+  // Fetch tenant facilities once — powers the Origin/Destination/Stop facility dropdowns
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/v1/carrier/facilities?pageSize=200');
+        if (!res.ok) return;
+        const json = await res.json();
+        setFacilities(json?.data?.items ?? []);
+      } catch {
+        // Leave empty — FacilityAddressSelect still works in manual mode
+      }
+    })();
+  }, []);
 
   function toggleCoDriver(driverId: string) {
     setCoDriverIds((prev) => {
@@ -230,15 +245,15 @@ export function RouteForm({
 
         <div>
           <label htmlFor="origin" className={labelClass}>Origin</label>
-          <AddressAutocomplete
-            id="origin"
+          <FacilityAddressSelect
             name="origin"
+            facilities={facilities}
             defaultValue={initialData?.origin || ''}
             required
             disabled={isPending}
             placeholder="Enter origin address..."
             className={inputClass}
-            onPlaceSelect={(place) => setOriginCoords({ lat: place.lat, lng: place.lng })}
+            onCoordsChange={setOriginCoords}
           />
           {fieldErrors?.origin && (
             <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.origin}</p>
@@ -247,15 +262,15 @@ export function RouteForm({
 
         <div>
           <label htmlFor="destination" className={labelClass}>Destination</label>
-          <AddressAutocomplete
-            id="destination"
+          <FacilityAddressSelect
             name="destination"
+            facilities={facilities}
             defaultValue={initialData?.destination || ''}
             required
             disabled={isPending}
             placeholder="Enter destination address..."
             className={inputClass}
-            onPlaceSelect={(place) => setDestCoords({ lat: place.lat, lng: place.lng })}
+            onCoordsChange={setDestCoords}
           />
           {fieldErrors?.destination && (
             <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.destination}</p>
@@ -383,21 +398,22 @@ export function RouteForm({
               {/* Address — AddressAutocomplete with stops_N_address as name */}
               <div>
                 <label className={labelClass}>Address</label>
-                <AddressAutocomplete
-                  id={`stop_${stop.clientId}_address`}
+                <FacilityAddressSelect
                   name={`stops_${idx}_address`}
+                  facilities={facilities}
                   defaultValue={stop.address}
                   disabled={isPending}
                   placeholder="Enter stop address..."
                   className={inputClass}
-                  onPlaceSelect={(place) => {
-                    updateStop(stop.clientId, 'address', place.displayName);
+                  onAddressChange={(addr) => updateStop(stop.clientId, 'address', addr)}
+                  onCoordsChange={(c) =>
                     setStopCoords((prev) => {
                       const next = new Map(prev);
-                      next.set(stop.clientId, { lat: place.lat, lng: place.lng });
+                      if (c) next.set(stop.clientId, c);
+                      else next.delete(stop.clientId);
                       return next;
-                    });
-                  }}
+                    })
+                  }
                 />
               </div>
 
