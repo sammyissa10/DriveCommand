@@ -73,7 +73,7 @@ export default async function RouteDetailPage({
     // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
     // so a conditional server fetch would leave the dropdowns empty when the user
     // clicks "Edit Route" without a ?mode=edit in the initial URL.
-    listDrivers().catch((err) => {
+    listDrivers({ activeOnly: true }).catch((err) => {
       logger.error('Failed to load drivers for route edit:', err);
       return [] as any[];
     }),
@@ -162,9 +162,30 @@ export default async function RouteDetailPage({
     numberOfMiles: d.numberOfMiles == null ? null : Number(d.numberOfMiles),
   }));
 
+  // Preserve already-assigned primary/co-drivers even if now deactivated —
+  // the active-only picker source would otherwise drop an existing selection.
+  const assignedIds = new Set<string>();
+  if (route.driverId) assignedIds.add(route.driverId);
+  for (const a of driverAssignments as Array<{ driverId?: string | null; driver?: { id?: string | null } }>) {
+    const cid = a.driverId ?? a.driver?.id;
+    if (cid) assignedIds.add(cid);
+  }
+  const presentIds = new Set(drivers.map((d: { id: string }) => d.id));
+  const missingIds = [...assignedIds].filter((id) => !presentIds.has(id));
+  let mergedDrivers = drivers;
+  if (missingIds.length > 0) {
+    const extra = await prisma.user
+      .findMany({ where: { id: { in: missingIds }, role: 'DRIVER' } })
+      .catch((err) => {
+        logger.error('Failed to load already-assigned inactive drivers for route edit:', err);
+        return [] as typeof drivers;
+      });
+    mergedDrivers = [...drivers, ...extra];
+  }
+
   // listDrivers() already returns DRIVER-role User records whose `id` is the correct
   // Route.driverId FK value — pass straight through, no userId indirection needed.
-  const driversForEdit = drivers.map(
+  const driversForEdit = mergedDrivers.map(
     (d: { id: string; firstName: string | null; lastName: string | null; email: string }) => ({
       id: d.id,
       firstName: d.firstName,

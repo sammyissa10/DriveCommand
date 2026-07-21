@@ -233,7 +233,7 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
  * List all drivers for the current tenant.
  * Requires OWNER or MANAGER role.
  */
-export async function listDrivers() {
+export async function listDrivers(opts?: { activeOnly?: boolean }) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -242,6 +242,7 @@ export async function listDrivers() {
     take: 100,
     where: {
       role: 'DRIVER',
+      ...(opts?.activeOnly ? { isActive: true } : {}),
     },
     orderBy: {
       createdAt: 'desc',
