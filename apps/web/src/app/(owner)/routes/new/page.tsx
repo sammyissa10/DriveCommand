@@ -1,19 +1,28 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { listDrivers } from '@/app/(owner)/actions/drivers';
 import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
-import { requireTenantId } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { NewRouteClient } from './new-route-client';
 import { RouteCreateMobile } from './RouteCreateMobile';
 import { logger } from '@/lib/logger';
 
 export default async function NewRoutePage() {
   const orgId = await requireTenantId();
-  const [allDrivers, trucks] = await Promise.all([
-    listDrivers().catch((err) => {
-      logger.error('Failed to load drivers for route form:', err);
-      return [] as any[];
-    }),
+  const tenantPrisma = await getTenantPrisma();
+  const [drivers, trucks] = await Promise.all([
+    // Real carrier fleet drivers only — no User login accounts / sample data
+    // (TKT-0074). userId is the portal login used as Route.driverId; drivers
+    // without one are shown but disabled in the form until granted portal access.
+    tenantPrisma.carrierDriver
+      .findMany({
+        where: { orgId, deletedAt: null, isSample: false, status: 'active' },
+        select: { id: true, userId: true, firstName: true, lastName: true },
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+      })
+      .catch((err) => {
+        logger.error('Failed to load carrier drivers for route form:', err);
+        return [] as Array<{ id: string; userId: string | null; firstName: string | null; lastName: string | null }>;
+      }),
     listCarrierTrucks(orgId)
       .then((r) => r.items)
       .catch((err) => {
@@ -21,8 +30,6 @@ export default async function NewRoutePage() {
         return [] as any[];
       }),
   ]);
-
-  const drivers = allDrivers;
 
   return (
     <>

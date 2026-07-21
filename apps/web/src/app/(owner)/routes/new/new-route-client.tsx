@@ -5,6 +5,7 @@ import { RouteForm } from '@/components/routes/route-form';
 
 interface Driver {
   id: string;
+  userId: string | null;
   firstName: string | null;
   lastName: string | null;
 }

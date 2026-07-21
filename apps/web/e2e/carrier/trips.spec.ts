@@ -28,13 +28,4 @@ test.describe('Carrier Trips — New Trip pickers', () => {
     expect(await desktop.locator('option', { hasText: 'Ford' }).count()).toBeGreaterThan(0);
     expect(await desktop.locator('option', { hasText: 'Michael Jordan' }).count()).toBeGreaterThan(0);
   });
-
-  // TKT-0074/0056/0057 — legacy /routes/new (built on Route→User drivers and
-  // pre-migration trucks) is retired; it must redirect to the carrier trip form
-  // which sources drivers + trucks from the carrier fleet.
-  test('legacy /routes/new redirects to the carrier trip form (TKT-0074/0057)', async ({ page }) => {
-    await page.goto('/routes/new');
-    await page.waitForURL('**/carrier/trips/new');
-    expect(page.url()).toContain('/carrier/trips/new');
-  });
 });

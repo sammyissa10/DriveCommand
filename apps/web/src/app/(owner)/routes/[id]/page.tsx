@@ -162,12 +162,24 @@ export default async function RouteDetailPage({
     numberOfMiles: d.numberOfMiles == null ? null : Number(d.numberOfMiles),
   }));
 
+  // Edit-flow drivers are already portal logins → userId === id, so they stay
+  // selectable in the shared RouteForm and always include the route's current driver.
+  const driversForEdit = drivers.map(
+    (d: { id: string; firstName: string | null; lastName: string | null; email: string }) => ({
+      id: d.id,
+      userId: d.id,
+      firstName: d.firstName,
+      lastName: d.lastName,
+      email: d.email,
+    })
+  );
+
   return (
     <div className="space-y-6">
       <RoutePageClient
         route={serializedRoute}
         initialEditMode={isEditMode}
-        drivers={drivers}
+        drivers={driversForEdit}
         trucks={trucks}
         formattedScheduledDate={formattedScheduledDate}
         formattedCompletedAt={formattedCompletedAt}
