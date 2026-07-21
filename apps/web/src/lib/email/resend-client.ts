@@ -26,7 +26,11 @@ export const resend = new Proxy({} as Resend, {
   },
 });
 
-export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'DriveCommand <team@drivecommand.io>';
+// Sender must be on a Resend-VERIFIED domain. drivecommand.app is verified;
+// drivecommand.io is not (its DNS is on an inaccessible Vercel account), so
+// sending as @drivecommand.io gets rejected by Resend (550 unverified domain).
+// Replies still go to the real team@drivecommand.io inbox via REPLY_TO_EMAIL.
+export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'DriveCommand <team@drivecommand.app>';
 export const REPLY_TO_EMAIL = process.env.RESEND_REPLY_TO || 'team@drivecommand.io';
 
 export interface SendEmailOptions {
