@@ -2,7 +2,11 @@
 
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { signUpSchema, type SignUpInput } from '@/lib/validations/onboarding.schemas';
+import {
+  signUpSchema,
+  deriveFleetSizeBucket,
+  type SignUpInput,
+} from '@/lib/validations/onboarding.schemas';
 import { provisionTenant } from '@/lib/onboarding/provision-tenant';
 import { prisma } from '@/lib/db/prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -79,13 +83,25 @@ export async function signUpAction(
     return { message: 'Too many signup attempts. Please try again in an hour.' };
   }
 
+  // Derive the segmentation band server-side from the exact truck count. A count
+  // that's missing/invalid falls back to a valid band so the schema surfaces the
+  // error on `truckCount` (not a phantom `fleetSizeBucket` field the UI lacks);
+  // an invalid count then fails validation below and never reaches provisioning.
+  const truckCountValue = (formData.get('truckCount') as string | null) ?? '';
+  const parsedTruckCount = Number.parseInt(truckCountValue, 10);
+  const fleetSizeBucket =
+    Number.isInteger(parsedTruckCount) && parsedTruckCount >= 1
+      ? deriveFleetSizeBucket(parsedTruckCount)
+      : 'OWNER_OPERATOR';
+
   const raw = {
     firstName: formData.get('firstName') as string,
     lastName: formData.get('lastName') as string,
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     companyName: formData.get('companyName') as string,
-    fleetSizeBucket: formData.get('fleetSizeBucket') as string,
+    truckCount: truckCountValue,
+    fleetSizeBucket,
     promoCode: (formData.get('promoCode') as string) || undefined,
   };
 
@@ -196,6 +212,7 @@ export async function signUpAction(
             companyName: input.companyName,
             planKey: result.planKey,
             fleetSizeBucket: input.fleetSizeBucket,
+            truckCount: input.truckCount,
             ...(input.promoCode ? { promoCode: input.promoCode } : {}),
           },
         },

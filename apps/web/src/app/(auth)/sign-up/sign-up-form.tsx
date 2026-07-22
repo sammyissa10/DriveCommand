@@ -214,21 +214,19 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="fleetSizeBucket">Fleet size</Label>
-          <select
-            id="fleetSizeBucket"
-            name="fleetSizeBucket"
+          <Label htmlFor="truckCount">Number of trucks</Label>
+          <Input
+            id="truckCount"
+            name="truckCount"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            step={1}
             required
-            defaultValue="OWNER_OPERATOR"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option value="OWNER_OPERATOR">1–3 trucks (Owner-operator)</option>
-            <option value="SMALL">4–15 trucks (Small fleet)</option>
-            <option value="MEDIUM">16–50 trucks (Medium fleet)</option>
-            <option value="LARGE">50+ trucks (Large fleet)</option>
-          </select>
-          {state.fieldErrors?.fleetSizeBucket && (
-            <p className="text-xs text-destructive">{state.fieldErrors.fleetSizeBucket[0]}</p>
+            placeholder="e.g. 5"
+          />
+          {state.fieldErrors?.truckCount && (
+            <p className="text-xs text-destructive">{state.fieldErrors.truckCount[0]}</p>
           )}
         </div>
 

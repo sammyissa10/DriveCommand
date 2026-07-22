@@ -58,6 +58,7 @@ export async function provisionTenant(
         provisioningPhase: ProvisioningPhase.MINIMAL,
         sampleDataSeeded: false,
         fleetSizeBucket: input.fleetSizeBucket as FleetSizeBucket,
+        truckCount: input.truckCount,
         contactEmail: normalizedEmail,
       },
     });
