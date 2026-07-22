@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getClient, updateClient, softDeleteClient } from '@/lib/carrier/clients';
@@ -80,6 +81,9 @@ export async function PATCH(
 
     const client = await updateClient(orgId, id, parsed.data);
     if (!client) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    revalidatePath('/carrier/clients');
+    revalidatePath(`/carrier/clients/${id}`);
 
     return NextResponse.json({ data: client });
   } catch (err) {

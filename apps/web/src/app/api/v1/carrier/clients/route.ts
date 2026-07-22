@@ -100,6 +100,8 @@ export async function POST(req: NextRequest) {
 
     const client = await createClient(orgId, parsed.data);
 
+    revalidatePath('/carrier/clients');
+
     // Invalidate onboarding welcome cache so activation checklist reflects new client on back-nav.
     // Must be OUTSIDE after() — Next.js does not guarantee revalidation from inside after().
     if (!client.isSample) {

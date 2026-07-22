@@ -41,7 +41,7 @@ export default async function ClientsPage() {
     id: c.id,
     name: c.name,
     status: c.status,
-    email: c.email,
+    email: getMainContact(c.contacts)?.email ?? c.email,
     phone: c.phone,
     primaryContact: c.primaryContact,
     mainContactName: getMainContact(c.contacts)?.name ?? c.primaryContact,
