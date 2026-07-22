@@ -282,8 +282,9 @@ export async function createCarrierDriver(
     }
   }
 
-  // Send invitation email if email is provided AND the caller opted in
-  if (email && sendInvite === true) {
+  // Send invitation email if email is provided AND the caller did not opt out.
+  // Default is ON (quick-494) — explicit `false` opts out; omitted/true sends.
+  if (email && sendInvite !== false) {
     try {
       // Cancel any existing PENDING invitations for the same email + org
       await tenantPrisma.driverInvitation.updateMany({

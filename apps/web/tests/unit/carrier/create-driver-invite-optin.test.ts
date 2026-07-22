@@ -34,7 +34,7 @@ import { prisma } from '@/lib/db/prisma';
 
 const DRIVER = { id: 'd1', email: 'driver@example.com' };
 
-describe('createCarrierDriver — opt-in portal invite (sendInvite gate)', () => {
+describe('createCarrierDriver — default-on portal invite (sendInvite gate)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     tenantPrisma.carrierDriver.create.mockResolvedValue(DRIVER);
@@ -60,16 +60,18 @@ describe('createCarrierDriver — opt-in portal invite (sendInvite gate)', () =>
     expect(result).toEqual({ driver: DRIVER, emailSent: false });
   });
 
-  it('Test B: sendInvite omitted → default off, no email sent', async () => {
+  it('Test B: sendInvite omitted → default on, invitation created and email sent once', async () => {
+    (prisma.tenant.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ name: 'Acme' });
+
     const result = await createCarrierDriver('org-1', {
       firstName: 'A',
       lastName: 'B',
       email: 'driver@example.com',
     });
 
-    expect(sendDriverInvitation).not.toHaveBeenCalled();
-    expect(tenantPrisma.driverInvitation.create).not.toHaveBeenCalled();
-    expect(result).toEqual({ driver: DRIVER, emailSent: false });
+    expect(tenantPrisma.driverInvitation.create).toHaveBeenCalledTimes(1);
+    expect(sendDriverInvitation).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ driver: DRIVER, emailSent: true });
   });
 
   it('Test C: sendInvite=true → invitation created and email sent once', async () => {

@@ -90,7 +90,7 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [sendInvite, setSendInvite] = useState(false);
+  const [sendInvite, setSendInvite] = useState(true);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -424,7 +424,8 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
             </label>
           </div>
           <p className="text-xs text-muted-foreground pl-6">
-            Off by default. You can send it later from the driver&apos;s profile.
+            On by default — the driver gets an email invite to the portal. Uncheck to add
+            them without inviting yet.
           </p>
         </div>
       )}

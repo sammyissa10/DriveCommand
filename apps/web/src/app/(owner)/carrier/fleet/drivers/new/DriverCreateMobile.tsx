@@ -94,7 +94,7 @@ export function DriverCreateMobile({ facilities }: { facilities: FacilityOption[
   const [payPeriod, setPayPeriod] = useState('weekly');
 
   const [notes, setNotes] = useState('');
-  const [sendInvite, setSendInvite] = useState(false);
+  const [sendInvite, setSendInvite] = useState(true);
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
@@ -239,7 +239,8 @@ export function DriverCreateMobile({ facilities }: { facilities: FacilityOption[
             <Toggle label="Send portal invite email now" on={sendInvite} onChange={setSendInvite} />
           </div>
           <p className="px-1 pt-2 text-[13px] text-ds-txt3">
-            Off by default. You can send it later from the driver&apos;s profile.
+            On by default — the driver gets an email invite to the portal. Uncheck to add
+            them without inviting yet.
           </p>
         </div>
 
