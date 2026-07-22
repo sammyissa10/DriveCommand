@@ -287,8 +287,16 @@ function MovingPoint({ from, to, delay, prefersReducedMotion }: MovingPointProps
  */
 function FreightMapComponent() {
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion() ?? false;
+
+  // Render the SVG client-only. The d3-geo Albers projection uses trigonometric
+  // Math (sin/cos/sqrt) whose last-ULP results differ between Node's V8 (server)
+  // and the browser's V8, so SSR-ing the path `d` strings causes a hydration
+  // mismatch. This map is purely decorative (aria-hidden) and fades in anyway,
+  // so we skip SSR entirely and mount it after hydration.
+  useEffect(() => setMounted(true), []);
 
   // Handle resize
   useEffect(() => {
@@ -334,6 +342,7 @@ function FreightMapComponent() {
 
   return (
     <div ref={containerRef} className="absolute inset-0 w-full h-full">
+      {mounted && (
       <svg
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         className="w-full h-full"
@@ -412,6 +421,7 @@ function FreightMapComponent() {
           );
         })}
       </svg>
+      )}
     </div>
   );
 }
