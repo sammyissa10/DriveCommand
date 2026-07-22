@@ -23,6 +23,7 @@ const CarrierDriverCreateSchema = z.object({
   payPeriod: z.enum(['weekly', 'biweekly', 'monthly']).optional(),
   userId: z.string().uuid().optional(),
   notes: z.string().optional(),
+  sendInvite: z.boolean().optional(),
 });
 
 export async function GET(req: NextRequest) {

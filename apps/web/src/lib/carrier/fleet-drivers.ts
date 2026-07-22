@@ -35,6 +35,7 @@ export interface CarrierDriverCreateInput {
   payPeriod?: string;
   userId?: string;
   notes?: string;
+  sendInvite?: boolean;
 }
 
 export type CarrierDriverUpdateInput = Partial<CarrierDriverCreateInput>;
@@ -217,7 +218,7 @@ export async function createCarrierDriver(
   data: CarrierDriverCreateInput
 ): Promise<CreateCarrierDriverResult> {
   const tenantPrisma = await getTenantPrisma();
-  const { userId, cdlExpiry, payRate, email: rawEmail, ...rest } = data;
+  const { userId, cdlExpiry, payRate, email: rawEmail, sendInvite, ...rest } = data;
   // Normalize the email once. Acceptance links carrier_drivers.userId on the
   // lower-cased email, so the stored value MUST be normalized too or the link
   // silently fails and the portal-access UI mis-reports state.
@@ -281,8 +282,8 @@ export async function createCarrierDriver(
     }
   }
 
-  // Send invitation email if email is provided
-  if (email) {
+  // Send invitation email if email is provided AND the caller opted in
+  if (email && sendInvite === true) {
     try {
       // Cancel any existing PENDING invitations for the same email + org
       await tenantPrisma.driverInvitation.updateMany({
