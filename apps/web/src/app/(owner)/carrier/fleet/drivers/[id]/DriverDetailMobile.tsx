@@ -16,6 +16,7 @@ import {
   SegmentedControl,
   FieldGroup,
   SectionHeader,
+  PrimaryButton,
   EmptyState,
   Skeleton,
   type StatusTone,
@@ -62,6 +63,25 @@ export interface DriverTripRow {
 export interface DriverParent {
   trip: { id: string; label: string } | null;
   truck: { id: string; label: string } | null;
+}
+
+/** Portal-access facts, read straight from props (never folded into `data`) so
+ *  they stay fresh after router.refresh() following a send/resend. */
+export interface DriverPortalAccess {
+  userId: string | null;
+  userIsActive: boolean | null;
+  invitationStatus: string | null;
+  invitationSentAt: string | null; // ISO
+}
+
+type AccessState = 'active' | 'suspended' | 'pending' | 'none';
+
+/** Mirrors desktop PortalAccessControls.computeAccessState. */
+function computePortalState(p: DriverPortalAccess): AccessState {
+  if (p.userId && p.userIsActive === false) return 'suspended';
+  if (p.userId && p.userIsActive !== false) return 'active';
+  if (!p.userId && p.invitationStatus === 'PENDING') return 'pending';
+  return 'none';
 }
 
 interface CarrierDocRow {
@@ -214,6 +234,8 @@ export function DriverDetailMobile({
   timezone,
   nowMs,
   canEdit,
+  canManageAccess,
+  portal,
   initialEdit = false,
 }: {
   driver: DriverDetailData;
@@ -224,6 +246,8 @@ export function DriverDetailMobile({
   timezone: string;
   nowMs: number;
   canEdit: boolean;
+  canManageAccess: boolean;
+  portal: DriverPortalAccess;
   initialEdit?: boolean;
 }) {
   const router = useRouter();
@@ -274,6 +298,62 @@ export function DriverDetailMobile({
 
   const duty = dutyPillMeta(data.dutyStatus, data.invited);
   const name = `${data.firstName} ${data.lastName}`.trim();
+
+  // ---- portal access (read from fresh `portal` prop, not `data`) ----
+  const [invLoading, setInvLoading] = useState(false);
+  const portalState = computePortalState(portal);
+  const invitePill: Record<AccessState, { tone: StatusTone; label: string }> = {
+    none: { tone: 'neutral', label: 'Not invited' },
+    pending: { tone: 'warning', label: 'Invited' },
+    active: { tone: 'success', label: 'Active' },
+    suspended: { tone: 'danger', label: 'Suspended' },
+  };
+  const inviteStatusText =
+    portalState === 'active'
+      ? 'Portal active'
+      : portalState === 'suspended'
+        ? 'Access suspended'
+        : portalState === 'pending'
+          ? portal.invitationSentAt
+            ? `Invite sent ${fmtDate(portal.invitationSentAt)}`
+            : 'Invite sent'
+          : 'Invite not sent';
+  const inviteSubtext =
+    portalState === 'none'
+      ? 'No invite email has been sent yet.'
+      : portalState === 'pending'
+        ? 'Waiting for the driver to accept.'
+        : portalState === 'active'
+          ? 'Driver can sign in to the portal.'
+          : 'Portal access is revoked.';
+
+  // Send (first-time) and resend share one endpoint; the resend route handles both.
+  async function sendPortalInvite() {
+    setInvLoading(true);
+    try {
+      const res = await fetch(`/api/v1/carrier/fleet/drivers/${data.id}/resend-invitation`, {
+        method: 'POST',
+      });
+      const json = (await res.json().catch(() => ({}))) as {
+        alreadyProvisioned?: boolean;
+        warning?: string;
+        error?: string;
+      };
+      if (res.ok) {
+        if (json.alreadyProvisioned) toast.info('This driver already has portal access.');
+        else if (json.warning) toast.warning(json.warning);
+        else toast.success(portalState === 'pending' ? `Invite resent to ${data.email}` : `Invite sent to ${data.email}`);
+        navigator.vibrate?.(10);
+        router.refresh();
+      } else {
+        toast.error(json.error ?? 'Something went wrong');
+      }
+    } catch {
+      toast.error('Something went wrong');
+    } finally {
+      setInvLoading(false);
+    }
+  }
 
   // ---- field groups (one definition drives both view and edit) ----
   const identityFields: FieldDef[] = [
@@ -522,6 +602,33 @@ export function DriverDetailMobile({
           {tab === 'profile' ? (
             <div className="space-y-6">
               <div><SectionHeader title="Contact" /><FieldGroup fields={contactFields} isEditing={false} /></div>
+              <div>
+                <SectionHeader title="Portal Access" />
+                <div className="rounded-[20px] bg-ds-card p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-[15px] font-semibold text-ds-txt">{inviteStatusText}</div>
+                      <div className="text-[13px] text-ds-txt3">{inviteSubtext}</div>
+                    </div>
+                    <StatusPill label={invitePill[portalState].label} tone={invitePill[portalState].tone} />
+                  </div>
+                  {canManageAccess && (portalState === 'none' || portalState === 'pending') ? (
+                    <div className="pt-4">
+                      <PrimaryButton
+                        label={invLoading ? 'Sending…' : portalState === 'pending' ? 'Resend invite' : 'Send invite'}
+                        onClick={sendPortalInvite}
+                        disabled={invLoading || !data.email}
+                        loading={invLoading}
+                      />
+                      {!data.email ? (
+                        <p className="pt-2 text-center text-[13px] text-ds-txt3">
+                          Add an email address to invite this driver.
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
               <div><SectionHeader title="License" /><FieldGroup fields={licenseFields} isEditing={false} /></div>
               <div><SectionHeader title="Pay" /><FieldGroup fields={payFields} isEditing={false} /></div>
               <div><SectionHeader title="Notes" /><FieldGroup fields={notesFields} isEditing={false} /></div>

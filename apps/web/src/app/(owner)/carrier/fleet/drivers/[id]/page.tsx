@@ -211,6 +211,13 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
           timezone={timezone}
           nowMs={nowMs}
           canEdit={canEdit}
+          canManageAccess={canManageAccess}
+          portal={{
+            userId: driver.userId ?? null,
+            userIsActive: driver.user?.isActive ?? null,
+            invitationStatus,
+            invitationSentAt: invitationInfo?.sentAt ? invitationInfo.sentAt.toISOString() : null,
+          }}
         />
       </div>
 
