@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -89,6 +90,7 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sendInvite, setSendInvite] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -124,6 +126,7 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
         payPeriod: values.payPeriod,
         ...(isEdit ? { status: values.status } : {}),
         ...(values.notes ? { notes: values.notes } : {}),
+        ...(!isEdit ? { sendInvite } : {}),
       };
 
       const url = isEdit
@@ -403,6 +406,28 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
           rows={3}
         />
       </div>
+
+      {/* Portal invite opt-in (create only) */}
+      {!isEdit && (
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="sendInvite"
+              checked={sendInvite}
+              onCheckedChange={(v) => setSendInvite(v === true)}
+            />
+            <label
+              htmlFor="sendInvite"
+              className="text-sm font-medium text-foreground cursor-pointer"
+            >
+              Send portal invite email now
+            </label>
+          </div>
+          <p className="text-xs text-muted-foreground pl-6">
+            Off by default. You can send it later from the driver&apos;s profile.
+          </p>
+        </div>
+      )}
 
       {/* Submit */}
       <div className="flex justify-end gap-3 pt-2">

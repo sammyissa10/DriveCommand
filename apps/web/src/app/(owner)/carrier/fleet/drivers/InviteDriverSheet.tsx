@@ -158,6 +158,7 @@ export function InviteDriverSheet({ open, onClose }: { open: boolean; onClose: (
           lastName: values.lastName.trim(),
           email,
           ...(phone ? { phone } : {}),
+          sendInvite: true,
         }),
       });
       const data = (await res.json().catch(() => ({}))) as {

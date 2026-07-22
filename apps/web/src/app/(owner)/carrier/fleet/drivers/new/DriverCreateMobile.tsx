@@ -10,6 +10,7 @@ import {
   SectionHeader,
   FieldGroup,
   PrimaryButton,
+  Toggle,
   type FieldDef,
 } from '@/components/ui/ds';
 
@@ -93,6 +94,7 @@ export function DriverCreateMobile({ facilities }: { facilities: FacilityOption[
   const [payPeriod, setPayPeriod] = useState('weekly');
 
   const [notes, setNotes] = useState('');
+  const [sendInvite, setSendInvite] = useState(false);
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
@@ -131,6 +133,7 @@ export function DriverCreateMobile({ facilities }: { facilities: FacilityOption[
         ...(payRate ? { payRate: Number(payRate) } : {}),
         payPeriod,
         ...(notes ? { notes } : {}),
+        sendInvite,
       };
       const res = await fetch('/api/v1/carrier/fleet/drivers', {
         method: 'POST',
@@ -228,6 +231,16 @@ export function DriverCreateMobile({ facilities }: { facilities: FacilityOption[
         <div>
           <SectionHeader title="Notes" />
           <FieldGroup fields={notesFields} isEditing />
+        </div>
+
+        <div>
+          <SectionHeader title="Portal Access" />
+          <div className="flex">
+            <Toggle label="Send portal invite email now" on={sendInvite} onChange={setSendInvite} />
+          </div>
+          <p className="px-1 pt-2 text-[13px] text-ds-txt3">
+            Off by default. You can send it later from the driver&apos;s profile.
+          </p>
         </div>
 
         <PrimaryButton
