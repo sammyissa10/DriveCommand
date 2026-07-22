@@ -11,6 +11,7 @@ interface Props {
   driverName: string;
   driverEmail: string | null;
   invitationStatus: string | null;
+  invitationSentAt: string | null;
   userId: string | null;
   userIsActive: boolean | null;
   canManageAccess: boolean;
@@ -21,6 +22,7 @@ export function DriverDetailActions({
   driverName,
   driverEmail,
   invitationStatus,
+  invitationSentAt,
   userId,
   userIsActive,
   canManageAccess,
@@ -35,6 +37,7 @@ export function DriverDetailActions({
         userId={userId}
         userIsActive={userIsActive}
         invitationStatus={invitationStatus}
+        invitationSentAt={invitationSentAt}
         canManageAccess={canManageAccess}
       />
       <Button

@@ -539,6 +539,19 @@ export async function getLatestInvitationStatus(
   return invitation?.status ?? null;
 }
 
+export async function getLatestInvitationInfo(
+  orgId: string,
+  email: string
+): Promise<{ status: string; sentAt: Date } | null> {
+  const tenantPrisma = await getTenantPrisma();
+  const invitation = await tenantPrisma.driverInvitation.findFirst({
+    where: { email, tenantId: orgId },
+    orderBy: { createdAt: 'desc' },
+    select: { status: true, createdAt: true },
+  });
+  return invitation ? { status: invitation.status, sentAt: invitation.createdAt } : null;
+}
+
 /**
  * Lower-cased emails with a PENDING invitation for this org. Used to flag drivers
  * as "Invited" (not yet onboarded) on the Overview in a single batched query

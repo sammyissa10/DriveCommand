@@ -24,6 +24,7 @@ interface Props {
   userId: string | null;
   userIsActive: boolean | null;
   invitationStatus: string | null;
+  invitationSentAt: string | null;
   canManageAccess: boolean;
 }
 
@@ -52,12 +53,21 @@ export function PortalAccessControls({
   userId,
   userIsActive,
   invitationStatus,
+  invitationSentAt,
   canManageAccess,
 }: Props) {
   const router = useRouter();
   const [isBusy, setIsBusy] = useState(false);
 
   const state = computeAccessState(userId, userIsActive, invitationStatus);
+
+  const sentDateLabel = invitationSentAt
+    ? new Date(invitationSentAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null;
 
   async function postAction(path: string, successMsg: string) {
     setIsBusy(true);
@@ -89,7 +99,7 @@ export function PortalAccessControls({
   const handleSendInvitation = (isResend: boolean) =>
     postAction(
       'resend-invitation',
-      isResend ? `Invitation resent to ${driverEmail}` : `Portal access granted — invitation sent to ${driverEmail}`
+      isResend ? `Invite resent to ${driverEmail}` : `Invite sent to ${driverEmail}`
     );
   const handleRevoke = () => postAction('revoke-access', 'Portal access revoked');
   const handleRestore = () => postAction('restore-access', 'Portal access restored');
@@ -98,7 +108,7 @@ export function PortalAccessControls({
     <div className="flex items-center gap-2">
       {state === 'active' && (
         <Badge variant="outline" className="border-green-500 text-green-600 dark:text-green-400">
-          Portal access active
+          Portal active
         </Badge>
       )}
       {state === 'suspended' && (
@@ -108,12 +118,12 @@ export function PortalAccessControls({
       )}
       {state === 'pending' && (
         <Badge variant="outline" className="border-amber-500 text-amber-600 dark:text-amber-400">
-          Invitation pending
+          {sentDateLabel ? `Invite sent ${sentDateLabel}` : 'Invite sent'}
         </Badge>
       )}
       {state === 'none' && (
         <Badge variant="outline" className="border-border text-muted-foreground">
-          No portal access
+          Invite not sent
         </Badge>
       )}
 
@@ -127,7 +137,7 @@ export function PortalAccessControls({
           onClick={() => handleSendInvitation(false)}
         >
           <Mail className="mr-2 h-4 w-4" />
-          Grant portal access
+          Send invite
         </Button>
       )}
 
@@ -140,7 +150,7 @@ export function PortalAccessControls({
           onClick={() => handleSendInvitation(true)}
         >
           <Mail className="mr-2 h-4 w-4" />
-          Resend invitation
+          Resend invite
         </Button>
       )}
 

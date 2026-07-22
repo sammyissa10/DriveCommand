@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
-import { getCarrierDriver, getLatestInvitationStatus } from '@/lib/carrier/fleet-drivers';
+import { getCarrierDriver, getLatestInvitationInfo } from '@/lib/carrier/fleet-drivers';
 import { listFacilities } from '@/lib/carrier/facilities';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { CarrierDriverForm } from '@/components/carrier/fleet/CarrierDriverForm';
@@ -100,9 +100,10 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
     name: `${d.firstName} ${d.lastName}`,
   }));
 
-  const invitationStatus = driver.email
-    ? await getLatestInvitationStatus(orgId, driver.email)
+  const invitationInfo = driver.email
+    ? await getLatestInvitationInfo(orgId, driver.email)
     : null;
+  const invitationStatus = invitationInfo?.status ?? null;
 
   const cdlDays = daysUntil(driver.cdlExpiry);
 
@@ -238,6 +239,7 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
             driverName={`${driver.firstName} ${driver.lastName}`}
             driverEmail={driver.email ?? null}
             invitationStatus={invitationStatus}
+            invitationSentAt={invitationInfo?.sentAt ? invitationInfo.sentAt.toISOString() : null}
             userId={driver.userId ?? null}
             userIsActive={driver.user?.isActive ?? null}
             canManageAccess={canManageAccess}
