@@ -139,6 +139,8 @@ model Tenant {
   updatedAt             DateTime          @updatedAt @db.Timestamptz
   fleetSizeBucket       FleetSizeBucket   @default(OWNER_OPERATOR)
   truckCount            Int?
+  heardAbout            String?
+  heardAboutOther       String?
   status                TenantStatus      @default(ACTIVE)
   manualTrial           Boolean           @default(false)
   emailConfirmedAt      DateTime?         @db.Timestamptz
