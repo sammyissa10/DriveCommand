@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, MapPin, Trash2 } from 'lucide-react';
 import {
   SectionHeader,
@@ -11,7 +11,11 @@ import {
   Toggle,
   type FieldDef,
 } from '@/components/ui/ds';
+import { FacilityForm } from '@/components/carrier/facilities/FacilityForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
+
+/** Sentinel value for the "Add new facility" option in the facility picker. */
+const ADD_NEW_FACILITY = '__add_new_facility__';
 
 export interface FacilityOption {
   id: string;
@@ -88,8 +92,39 @@ export function MobileStopsEditor({
 }) {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
+  // Facilities created inline this session, merged on top of the server-provided
+  // list so a new facility is instantly pickable without leaving the load form.
+  const [createdFacilities, setCreatedFacilities] = useState<FacilityOption[]>([]);
+  const [facilityModalOpen, setFacilityModalOpen] = useState(false);
+
+  const allFacilities = useMemo(
+    () => [...facilities, ...createdFacilities],
+    [facilities, createdFacilities],
+  );
 
   const noun = mode === 'load' ? 'load' : 'route';
+
+  /**
+   * A facility was created inline: keep it available, auto-select it for the
+   * stop being added, close the create modal, and make sure the Add Stop sheet
+   * is open so the user lands right back where they were. The parent load form
+   * state is never touched.
+   */
+  function handleFacilityCreated(created: {
+    id: string;
+    name: string;
+    city: string | null;
+    state: string | null;
+  }) {
+    setCreatedFacilities((prev) =>
+      prev.some((f) => f.id === created.id)
+        ? prev
+        : [...prev, { id: created.id, name: created.name, city: created.city, state: created.state }],
+    );
+    setForm((p) => ({ ...p, facilityId: created.id }));
+    setFacilityModalOpen(false);
+    setAddOpen(true);
+  }
 
   function setStopType(value: string) {
     const v = value as StopType;
@@ -103,7 +138,7 @@ export function MobileStopsEditor({
   }
 
   function addStop() {
-    const facility = facilities.find((f) => f.id === form.facilityId);
+    const facility = allFacilities.find((f) => f.id === form.facilityId);
     if (!facility) return;
     const stop: StopBuilderStop = {
       id: crypto.randomUUID(),
@@ -149,13 +184,22 @@ export function MobileStopsEditor({
       label: 'Facility *',
       input: {
         value: form.facilityId,
-        onChange: (v) => setForm((p) => ({ ...p, facilityId: v })),
+        onChange: (v) => {
+          // Picking "+ Add new facility" opens the create form instead of
+          // selecting a sentinel value.
+          if (v === ADD_NEW_FACILITY) {
+            setFacilityModalOpen(true);
+            return;
+          }
+          setForm((p) => ({ ...p, facilityId: v }));
+        },
         options: [
           { label: 'Select facility…', value: '' },
-          ...facilities.map((f) => ({
+          ...allFacilities.map((f) => ({
             label: [f.name, [f.city, f.state].filter(Boolean).join(', ')].filter(Boolean).join(' — '),
             value: f.id,
           })),
+          { label: '+ Add new facility', value: ADD_NEW_FACILITY },
         ],
       },
     },
@@ -211,16 +255,19 @@ export function MobileStopsEditor({
     <div>
       <SectionHeader
         title={stops.length > 0 ? `${stops.length} stop${stops.length === 1 ? '' : 's'}` : 'Stops'}
-        action={facilities.length > 0 ? { label: 'Add', onClick: () => setAddOpen(true) } : undefined}
+        action={allFacilities.length > 0 ? { label: 'Add', onClick: () => setAddOpen(true) } : undefined}
       />
 
       {stops.length === 0 ? (
-        facilities.length === 0 ? (
-          <div className="rounded-[20px] bg-ds-warning/[0.14] p-4">
-            <p className="text-[15px] font-semibold text-ds-warning">No facilities yet</p>
-            <p className="mt-0.5 text-[13px] text-ds-txt2">
-              Stops happen at facilities. Add one first, then come back.
-            </p>
+        allFacilities.length === 0 ? (
+          <div className="space-y-3">
+            <div className="rounded-[20px] bg-ds-warning/[0.14] p-4">
+              <p className="text-[15px] font-semibold text-ds-warning">No facilities yet</p>
+              <p className="mt-0.5 text-[13px] text-ds-txt2">
+                Stops happen at facilities. Add your first one right here.
+              </p>
+            </div>
+            <PrimaryButton label="Add new facility" onClick={() => setFacilityModalOpen(true)} />
           </div>
         ) : (
           <EmptyState
@@ -342,6 +389,22 @@ export function MobileStopsEditor({
 
           <PrimaryButton label="Add Stop" onClick={addStop} disabled={!form.facilityId} />
         </div>
+      </SheetContainer>
+
+      {/* Create a facility inline — reuses the shared FacilityForm. Rendered after
+          the Add Stop sheet so it layers above it; on save it auto-selects the new
+          facility and returns to the Add Stop sheet with the load intact. */}
+      <SheetContainer
+        open={facilityModalOpen}
+        onCancel={() => setFacilityModalOpen(false)}
+        title="New facility"
+        subtitle="It’ll be selected for this stop once saved."
+        cancelLabel="Close"
+      >
+        <FacilityForm
+          onSuccess={handleFacilityCreated}
+          onCancel={() => setFacilityModalOpen(false)}
+        />
       </SheetContainer>
     </div>
   );
