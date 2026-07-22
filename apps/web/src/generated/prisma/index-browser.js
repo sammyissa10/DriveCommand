@@ -154,7 +154,8 @@ exports.Prisma.UserScalarFieldEnum = {
   isDispatchReady: 'isDispatchReady',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  isSample: 'isSample'
+  isSample: 'isSample',
+  onboardingTourSeen: 'onboardingTourSeen'
 };
 
 exports.Prisma.TruckScalarFieldEnum = {

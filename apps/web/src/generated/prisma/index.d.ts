@@ -16649,6 +16649,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     isSample: boolean | null
+    onboardingTourSeen: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -16666,6 +16667,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     isSample: boolean | null
+    onboardingTourSeen: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -16684,6 +16686,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     isSample: number
+    onboardingTourSeen: number
     _all: number
   }
 
@@ -16703,6 +16706,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isSample?: true
+    onboardingTourSeen?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -16720,6 +16724,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isSample?: true
+    onboardingTourSeen?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -16738,6 +16743,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isSample?: true
+    onboardingTourSeen?: true
     _all?: true
   }
 
@@ -16829,6 +16835,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     isSample: boolean
+    onboardingTourSeen: boolean
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -16864,6 +16871,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     assignedRoutes?: boolean | User$assignedRoutesArgs<ExtArgs>
     uploadedDocuments?: boolean | User$uploadedDocumentsArgs<ExtArgs>
@@ -17014,6 +17022,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -17033,6 +17042,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -17052,9 +17062,10 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSample?: boolean
+    onboardingTourSeen?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "email" | "passwordHash" | "role" | "isSystemAdmin" | "firstName" | "lastName" | "licenseNumber" | "isActive" | "permissions" | "isDispatchReady" | "createdAt" | "updatedAt" | "isSample", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "email" | "passwordHash" | "role" | "isSystemAdmin" | "firstName" | "lastName" | "licenseNumber" | "isActive" | "permissions" | "isDispatchReady" | "createdAt" | "updatedAt" | "isSample" | "onboardingTourSeen", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     assignedRoutes?: boolean | User$assignedRoutesArgs<ExtArgs>
@@ -17347,6 +17358,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       isSample: boolean
+      onboardingTourSeen: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -17916,6 +17928,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly isSample: FieldRef<"User", 'Boolean'>
+    readonly onboardingTourSeen: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -136171,7 +136184,8 @@ export namespace Prisma {
     isDispatchReady: 'isDispatchReady',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    isSample: 'isSample'
+    isSample: 'isSample',
+    onboardingTourSeen: 'onboardingTourSeen'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -139561,6 +139575,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isSample?: BoolFilter<"User"> | boolean
+    onboardingTourSeen?: BoolFilter<"User"> | boolean
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     assignedRoutes?: RouteListRelationFilter
     uploadedDocuments?: DocumentListRelationFilter
@@ -139710,6 +139725,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSample?: SortOrder
+    onboardingTourSeen?: SortOrder
     tenant?: TenantOrderByWithRelationInput
     assignedRoutes?: RouteOrderByRelationAggregateInput
     uploadedDocuments?: DocumentOrderByRelationAggregateInput
@@ -139863,6 +139879,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isSample?: BoolFilter<"User"> | boolean
+    onboardingTourSeen?: BoolFilter<"User"> | boolean
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     assignedRoutes?: RouteListRelationFilter
     uploadedDocuments?: DocumentListRelationFilter
@@ -140012,6 +140029,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSample?: SortOrder
+    onboardingTourSeen?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -140036,6 +140054,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     isSample?: BoolWithAggregatesFilter<"User"> | boolean
+    onboardingTourSeen?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type TruckWhereInput = {
@@ -151154,6 +151173,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -151303,6 +151323,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -151450,6 +151471,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -151599,6 +151621,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -151747,6 +151770,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -151764,6 +151788,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -151782,6 +151807,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TruckCreateInput = {
@@ -164645,6 +164671,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSample?: SortOrder
+    onboardingTourSeen?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -164662,6 +164689,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSample?: SortOrder
+    onboardingTourSeen?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -164679,6 +164707,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSample?: SortOrder
+    onboardingTourSeen?: SortOrder
   }
 
   export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -191282,6 +191311,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
@@ -191429,6 +191459,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -195195,6 +195226,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isSample?: BoolFilter<"User"> | boolean
+    onboardingTourSeen?: BoolFilter<"User"> | boolean
   }
 
   export type TruckUpsertWithWhereUniqueWithoutTenantInput = {
@@ -208315,6 +208347,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -208463,6 +208496,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -208614,6 +208648,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -208762,6 +208797,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -209571,6 +209607,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -209719,6 +209756,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -209876,6 +209914,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -210024,6 +210063,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -210503,6 +210543,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -210651,6 +210692,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -210802,6 +210844,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -210950,6 +210993,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -211307,6 +211351,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -211455,6 +211500,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -211612,6 +211658,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -211760,6 +211807,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -212095,6 +212143,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
@@ -212243,6 +212292,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
     safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
@@ -212532,6 +212582,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -212680,6 +212731,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -212831,6 +212883,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -212979,6 +213032,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -213130,6 +213184,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -213278,6 +213333,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -214033,6 +214089,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
@@ -214181,6 +214238,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
     safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
@@ -214488,6 +214546,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -214636,6 +214695,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -214793,6 +214853,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -214941,6 +215002,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -215098,6 +215160,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -215246,6 +215309,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -215591,6 +215655,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -215739,6 +215804,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -216079,6 +216145,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -216227,6 +216294,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -216466,6 +216534,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -216614,6 +216683,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -216966,6 +217036,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -217114,6 +217185,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -217581,6 +217653,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -217729,6 +217802,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
@@ -217957,6 +218031,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
@@ -218105,6 +218180,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
     safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
@@ -218256,6 +218332,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -218404,6 +218481,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -218555,6 +218633,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -218703,6 +218782,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -219204,6 +219284,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -219352,6 +219433,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
@@ -219592,6 +219674,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
@@ -219740,6 +219823,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
     safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
@@ -219897,6 +219981,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -220045,6 +220130,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -220202,6 +220288,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -220350,6 +220437,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -220746,6 +220834,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -220894,6 +220983,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -221045,6 +221135,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -221193,6 +221284,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -221617,6 +221709,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -221765,6 +221858,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -221922,6 +222016,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -222070,6 +222165,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -222466,6 +222562,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -222614,6 +222711,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -222765,6 +222863,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -222913,6 +223012,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -223337,6 +223437,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -223485,6 +223586,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -223642,6 +223744,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -223790,6 +223893,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -225242,6 +225346,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -225390,6 +225495,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -225885,6 +225991,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -226033,6 +226140,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -226506,6 +226614,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -226654,6 +226763,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -227078,6 +227188,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -227226,6 +227337,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -227561,6 +227673,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -227709,6 +227822,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -227860,6 +227974,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -228008,6 +228123,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -228391,6 +228507,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -228539,6 +228656,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -228696,6 +228814,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -228844,6 +228963,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -229283,6 +229403,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -229431,6 +229552,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -229888,6 +230010,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -230036,6 +230159,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -230371,6 +230495,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -230519,6 +230644,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -230670,6 +230796,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -230818,6 +230945,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -231239,6 +231367,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -231387,6 +231516,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -231544,6 +231674,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -231692,6 +231823,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -232159,6 +232291,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -232307,6 +232440,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -232458,6 +232592,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -232606,6 +232741,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -233075,6 +233211,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -233223,6 +233360,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -233380,6 +233518,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -233528,6 +233667,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -233889,6 +234029,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -234037,6 +234178,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -234188,6 +234330,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -234336,6 +234479,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -234709,6 +234853,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -234857,6 +235002,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -235014,6 +235160,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -235162,6 +235309,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -236072,6 +236220,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -236220,6 +236369,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -236371,6 +236521,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -236519,6 +236670,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -236953,6 +237105,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -237101,6 +237254,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -237258,6 +237412,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -237406,6 +237561,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -237859,6 +238015,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -238007,6 +238164,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -238158,6 +238316,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -238306,6 +238465,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -238695,6 +238855,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -238843,6 +239004,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -239000,6 +239162,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -239148,6 +239311,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -239540,6 +239704,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -239688,6 +239853,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -239839,6 +240005,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -239987,6 +240154,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -240407,6 +240575,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -240555,6 +240724,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -240712,6 +240882,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -240860,6 +241031,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -241195,6 +241367,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -241343,6 +241516,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -241494,6 +241668,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -241642,6 +241817,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -242116,6 +242292,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -242264,6 +242441,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -242421,6 +242599,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -242569,6 +242748,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -243066,6 +243246,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -243214,6 +243395,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -243365,6 +243547,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -243513,6 +243696,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -243939,6 +244123,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -244087,6 +244272,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -244244,6 +244430,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -244392,6 +244579,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -244769,6 +244957,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -244917,6 +245106,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -245068,6 +245258,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -245216,6 +245407,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -245589,6 +245781,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -245737,6 +245930,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -245894,6 +246088,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -246042,6 +246237,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -246424,6 +246620,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -246572,6 +246769,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -246723,6 +246921,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -246871,6 +247070,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -247281,6 +247481,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -247429,6 +247630,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -247586,6 +247788,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -247734,6 +247937,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -248069,6 +248273,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -248217,6 +248422,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -248368,6 +248574,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -248516,6 +248723,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -248667,6 +248875,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -248815,6 +249024,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -249172,6 +249382,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -249320,6 +249531,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -249477,6 +249689,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -249625,6 +249838,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -249782,6 +249996,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -249930,6 +250145,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -250393,6 +250609,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -250541,6 +250758,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -250753,6 +250971,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -250901,6 +251120,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -251052,6 +251272,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -251200,6 +251421,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -252003,6 +252225,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -252151,6 +252374,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -252375,6 +252599,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -252523,6 +252748,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -252680,6 +252906,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -252828,6 +253055,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -253341,6 +253569,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -253489,6 +253718,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -253640,6 +253870,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -253788,6 +254019,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -254145,6 +254377,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -254293,6 +254526,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -254450,6 +254684,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -254598,6 +254833,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -254744,6 +254980,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -254892,6 +255129,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -255043,6 +255281,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -255191,6 +255430,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -255353,6 +255593,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -255501,6 +255742,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -255658,6 +255900,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -255806,6 +256049,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -256453,6 +256697,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -256601,6 +256846,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -256752,6 +256998,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -256900,6 +257147,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -257449,6 +257697,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -257597,6 +257846,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -257754,6 +258004,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -257902,6 +258153,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -258308,6 +258560,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -258456,6 +258709,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -258890,6 +259144,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -259038,6 +259293,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -259336,6 +259592,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -259484,6 +259741,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -259810,6 +260068,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -259958,6 +260217,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -260104,6 +260364,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -260252,6 +260513,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -260592,6 +260854,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -260740,6 +261003,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -260902,6 +261166,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -261050,6 +261315,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -261402,6 +261668,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -261550,6 +261817,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -261885,6 +262153,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -262033,6 +262302,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -262184,6 +262454,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -262332,6 +262603,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -262483,6 +262755,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -262631,6 +262904,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -262988,6 +263262,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -263136,6 +263411,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -263293,6 +263569,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -263441,6 +263718,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -263598,6 +263876,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -263746,6 +264025,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -264081,6 +264361,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -264229,6 +264510,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -264380,6 +264662,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -264528,6 +264811,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -264679,6 +264963,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -264827,6 +265112,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -265184,6 +265470,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -265332,6 +265619,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -265489,6 +265777,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -265637,6 +265926,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -265794,6 +266084,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -265942,6 +266233,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -266277,6 +266569,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -266425,6 +266718,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -266576,6 +266870,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -266724,6 +267019,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -266875,6 +267171,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -267023,6 +267320,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -267892,6 +268190,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -268040,6 +268339,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -268197,6 +268497,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -268345,6 +268646,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -268502,6 +268804,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -268650,6 +268953,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -269097,6 +269401,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -269245,6 +269550,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -269396,6 +269702,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -269544,6 +269851,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -269695,6 +270003,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -269843,6 +270152,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -270507,6 +270817,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -270655,6 +270966,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -270812,6 +271124,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -270960,6 +271273,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -271117,6 +271431,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -271265,6 +271580,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -271737,6 +272053,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -271885,6 +272202,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -272036,6 +272354,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -272184,6 +272503,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -272771,6 +273091,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -272919,6 +273240,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -273076,6 +273398,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -273224,6 +273547,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -273607,6 +273931,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -273755,6 +274080,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -273906,6 +274232,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -274054,6 +274381,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -274205,6 +274533,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -274353,6 +274682,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -274504,6 +274834,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -274652,6 +274983,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -275842,6 +276174,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -275990,6 +276323,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -276147,6 +276481,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -276295,6 +276630,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -276452,6 +276788,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -276600,6 +276937,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -276757,6 +277095,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -276905,6 +277244,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -277499,6 +277839,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -277647,6 +277988,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -277798,6 +278140,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -277946,6 +278289,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -278097,6 +278441,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -278245,6 +278590,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -278930,6 +279276,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -279078,6 +279425,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -279235,6 +279583,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -279383,6 +279732,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -279540,6 +279890,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -279688,6 +280039,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -280543,6 +280895,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -280691,6 +281044,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -280842,6 +281196,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -280990,6 +281345,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -281723,6 +282079,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -281871,6 +282228,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -282028,6 +282386,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -282176,6 +282535,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -282444,6 +282804,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -282592,6 +282953,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -282888,6 +283250,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -283036,6 +283399,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -283371,6 +283735,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -283519,6 +283884,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -283670,6 +284036,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -283818,6 +284185,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -283969,6 +284337,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -284117,6 +284486,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -284665,6 +285035,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -284813,6 +285184,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -285586,6 +285958,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -285734,6 +286107,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -285891,6 +286265,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -286039,6 +286414,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -286196,6 +286572,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -286344,6 +286721,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -286928,6 +287306,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -287076,6 +287455,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -287507,6 +287887,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -287655,6 +288036,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -287806,6 +288188,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -287954,6 +288337,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -288105,6 +288489,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -288253,6 +288638,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -289253,6 +289639,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -289401,6 +289788,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -289558,6 +289946,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -289706,6 +290095,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -289863,6 +290253,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -290011,6 +290402,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -290561,6 +290953,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -290709,6 +291102,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -290860,6 +291254,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -291008,6 +291403,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -291640,6 +292036,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -291788,6 +292185,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -291945,6 +292343,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -292093,6 +292492,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -292548,6 +292948,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -292696,6 +293097,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -292847,6 +293249,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -292995,6 +293398,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -293639,6 +294043,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -293787,6 +294192,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -293944,6 +294350,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -294092,6 +294499,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -295361,6 +295769,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -295509,6 +295918,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -295660,6 +296070,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -295808,6 +296219,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -296433,6 +296845,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -296581,6 +296994,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -296938,6 +297352,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -297086,6 +297501,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -297243,6 +297659,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -297391,6 +297808,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -298058,6 +298476,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -298206,6 +298625,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -298883,6 +299303,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -299031,6 +299452,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -299754,6 +300176,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -299902,6 +300325,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -300237,6 +300661,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -300385,6 +300810,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -300742,6 +301168,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -300890,6 +301317,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -301333,6 +301761,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -301481,6 +301910,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -301632,6 +302062,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -301780,6 +302211,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -302169,6 +302601,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -302317,6 +302750,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -302474,6 +302908,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -302622,6 +303057,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -303099,6 +303535,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -303247,6 +303684,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -303398,6 +303836,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -303546,6 +303985,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -303951,6 +304391,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -304099,6 +304540,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -304256,6 +304698,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -304404,6 +304847,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -304819,6 +305263,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -304967,6 +305412,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -305416,6 +305862,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -305564,6 +306011,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -306032,6 +306480,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -306180,6 +306629,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -306331,6 +306781,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -306479,6 +306930,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -306915,6 +307367,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -307063,6 +307516,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -307220,6 +307674,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -307368,6 +307823,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -307791,6 +308247,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -307939,6 +308396,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -308396,6 +308854,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -308544,6 +309003,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -309408,6 +309868,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -309556,6 +310017,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -309707,6 +310169,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -309855,6 +310318,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -310259,6 +310723,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -310407,6 +310872,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -310564,6 +311030,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -310712,6 +311179,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -314734,6 +315202,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -314882,6 +315351,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -315033,6 +315503,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -315181,6 +315652,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -315651,6 +316123,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -315799,6 +316272,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -315956,6 +316430,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -316104,6 +316579,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -316859,6 +317335,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -317007,6 +317484,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -317158,6 +317636,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -317306,6 +317785,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -318027,6 +318507,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -318175,6 +318656,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -318332,6 +318814,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -318480,6 +318963,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -319218,6 +319702,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -319366,6 +319851,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -319517,6 +320003,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -319665,6 +320152,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -320331,6 +320819,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -320479,6 +320968,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -320636,6 +321126,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -320784,6 +321275,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -321473,6 +321965,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -321621,6 +322114,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -321772,6 +322266,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -321920,6 +322415,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -322611,6 +323107,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -322759,6 +323256,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -322916,6 +323414,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -323064,6 +323563,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -323490,6 +323990,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -323638,6 +324139,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -323789,6 +324291,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -323937,6 +324440,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -324391,6 +324895,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -324539,6 +325044,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -324696,6 +325202,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -324844,6 +325351,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -325414,6 +325922,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -325562,6 +326071,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -325713,6 +326223,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -325861,6 +326372,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -326347,6 +326859,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -326495,6 +327008,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -326652,6 +327166,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -326800,6 +327315,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -327279,6 +327795,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -327427,6 +327944,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -327578,6 +328096,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -327726,6 +328245,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -328239,6 +328759,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -328387,6 +328908,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -328544,6 +329066,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -328692,6 +329215,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -329183,6 +329707,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -329331,6 +329856,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -329482,6 +330008,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -329630,6 +330157,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -330155,6 +330683,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -330303,6 +330832,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -330460,6 +330990,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -330608,6 +331139,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -332095,6 +332627,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -332243,6 +332776,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -332600,6 +333134,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -332748,6 +333283,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -332894,6 +333430,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -333042,6 +333579,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -333382,6 +333920,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -333530,6 +334069,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -333692,6 +334232,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -333840,6 +334381,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -334192,6 +334734,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -334340,6 +334883,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -334675,6 +335219,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -334823,6 +335368,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -335180,6 +335726,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -335328,6 +335875,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -335474,6 +336022,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     tenant: TenantCreateNestedOneWithoutUsersInput
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
@@ -335622,6 +336171,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
     driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
@@ -335784,6 +336334,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
@@ -335932,6 +336483,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -336078,6 +336630,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSample?: boolean
+    onboardingTourSeen?: boolean
   }
 
   export type TruckCreateManyTenantInput = {
@@ -337401,6 +337954,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
@@ -337548,6 +338102,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
     driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
@@ -337695,6 +338250,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSample?: BoolFieldUpdateOperationsInput | boolean
+    onboardingTourSeen?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TruckUpdateWithoutTenantInput = {

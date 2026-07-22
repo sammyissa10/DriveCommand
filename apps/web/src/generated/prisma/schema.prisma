@@ -235,21 +235,22 @@ model Tenant {
 }
 
 model User {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId        String   @db.Uuid
-  email           String
-  passwordHash    String?
-  role            UserRole
-  isSystemAdmin   Boolean  @default(false)
-  firstName       String?
-  lastName        String?
-  licenseNumber   String?
-  isActive        Boolean  @default(true)
-  permissions     Json?
-  isDispatchReady Boolean  @default(false)
-  createdAt       DateTime @default(now()) @db.Timestamptz
-  updatedAt       DateTime @updatedAt @db.Timestamptz
-  isSample        Boolean  @default(false)
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String   @db.Uuid
+  email              String
+  passwordHash       String?
+  role               UserRole
+  isSystemAdmin      Boolean  @default(false)
+  firstName          String?
+  lastName           String?
+  licenseNumber      String?
+  isActive           Boolean  @default(true)
+  permissions        Json?
+  isDispatchReady    Boolean  @default(false)
+  createdAt          DateTime @default(now()) @db.Timestamptz
+  updatedAt          DateTime @updatedAt @db.Timestamptz
+  isSample           Boolean  @default(false)
+  onboardingTourSeen Boolean  @default(false)
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
