@@ -24,6 +24,10 @@ interface TourContextValue {
 
 const TourContext = createContext<TourContextValue>({ start: () => {} });
 
+/** Session guard so the auto-start can't re-fire after a skip/finish within the
+ *  same session (before the persisted flag round-trips). Replay ignores this. */
+const SEEN_KEY = 'dc_onboarding_tour_seen';
+
 export function useOnboardingTour(): TourContextValue {
   return useContext(TourContext);
 }
@@ -75,9 +79,13 @@ export function OnboardingTourProvider({
   }, []);
 
   // Auto-start exactly once for first-run users, mobile only. A short delay lets
-  // the sticky header / bottom nav lay out before we measure them.
+  // the sticky header / bottom nav lay out before we measure them. The
+  // sessionStorage guard covers the race where the user finishes/skips and
+  // navigates before markTourSeen() commits — the flag re-reads false, but this
+  // session already saw it.
   useEffect(() => {
     if (tourSeen || autoStartedRef.current || !isMobileViewport()) return;
+    if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(SEEN_KEY)) return;
     autoStartedRef.current = true;
     const t = setTimeout(begin, 600);
     return () => clearTimeout(t);
@@ -85,6 +93,11 @@ export function OnboardingTourProvider({
 
   const finish = useCallback(() => {
     setActive(false);
+    try {
+      sessionStorage.setItem(SEEN_KEY, '1');
+    } catch {
+      // sessionStorage unavailable (private mode edge) — non-fatal.
+    }
     void markTourSeen();
   }, []);
 
