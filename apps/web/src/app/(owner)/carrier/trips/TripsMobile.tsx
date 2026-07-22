@@ -13,6 +13,7 @@ import {
   EntityRow,
   StatusPill,
   EmptyState,
+  PrimaryButton,
   Skeleton,
   type StatusTone,
 } from '@/components/ui/ds';
@@ -97,10 +98,13 @@ export function TripsMobile({
   driverMap,
   truckMap,
   canCreate,
+  hasLoads,
 }: {
   driverMap: Record<string, string>;
   truckMap: Record<string, string>;
   canCreate: boolean;
+  /** Whether the tenant has any real load to assign — drives the empty state. */
+  hasLoads: boolean;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState<TripRow[] | null>(null);
@@ -215,12 +219,36 @@ export function TripsMobile({
       ) : visible.length === 0 ? (
         isFiltering ? (
           <EmptyState icon={Route} title="No matching trips" message="Try a different search or filter." />
-        ) : (
+        ) : !canCreate ? (
           <EmptyState
             icon={Route}
             title="No trips yet"
-            message={canCreate ? 'Tap + in the top right to plan your first trip.' : 'Trips assigned to your fleet will appear here.'}
+            message="Trips assigned to your fleet will appear here."
           />
+        ) : !hasLoads ? (
+          // Guided empty state — a trip needs a load first.
+          <div>
+            <EmptyState
+              icon={Route}
+              title="Create a load first"
+              message="Before you can plan a trip, create a load and assign it here."
+            />
+            <div className="mx-4">
+              <PrimaryButton label="New load" onClick={() => router.push('/carrier/loads/new')} />
+            </div>
+          </div>
+        ) : (
+          // Loads exist — nudge the user to put one on a trip.
+          <div>
+            <EmptyState
+              icon={Route}
+              title="Assign a load to start a trip"
+              message="Pick a load, add a truck and driver, then dispatch."
+            />
+            <div className="mx-4">
+              <PrimaryButton label="Assign a load" onClick={() => router.push('/carrier/trips/new')} />
+            </div>
+          </div>
         )
       ) : (
         <div className="mt-3 space-y-3">

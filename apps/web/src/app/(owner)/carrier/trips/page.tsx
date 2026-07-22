@@ -11,7 +11,7 @@ export default async function TripsPage() {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
-  const [drivers, trucks] = await Promise.all([
+  const [drivers, trucks, realLoadCount] = await Promise.all([
     prisma.carrierDriver.findMany({
       where: { orgId, status: 'active' },
       select: { id: true, firstName: true, lastName: true },
@@ -22,7 +22,12 @@ export default async function TripsPage() {
       select: { id: true, unitNumber: true },
       orderBy: { unitNumber: 'asc' },
     }),
+    // Real (non-sample, non-deleted) loads exist? Drives the guided empty state:
+    // you can't plan a trip until there's a load to assign.
+    prisma.carrierLoad.count({ where: { orgId, isSample: false, deletedAt: null } }),
   ]);
+
+  const hasLoads = realLoadCount > 0;
 
   const driverMap: Record<string, string> = {};
   for (const d of drivers) driverMap[d.id] = `${d.firstName} ${d.lastName}`;
@@ -36,7 +41,7 @@ export default async function TripsPage() {
     <>
       {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
       <div className="lg:hidden -m-4">
-        <TripsMobile driverMap={driverMap} truckMap={truckMap} canCreate={canCreate} />
+        <TripsMobile driverMap={driverMap} truckMap={truckMap} canCreate={canCreate} hasLoads={hasLoads} />
       </div>
 
       {/* Desktop */}
