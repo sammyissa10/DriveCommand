@@ -67,7 +67,9 @@ export function PortalAccessControls({
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        if ((data as { warning?: string }).warning) {
+        if ((data as { alreadyProvisioned?: boolean }).alreadyProvisioned) {
+          toast.info('This driver already has portal access.');
+        } else if ((data as { warning?: string }).warning) {
           toast.warning((data as { warning: string }).warning);
         } else {
           toast.success(successMsg);

@@ -23,6 +23,12 @@ export async function POST(
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
+    // Already-provisioned is a benign state, not an error — return 200 so the
+    // client shows an info message rather than a red error toast.
+    if ('alreadyProvisioned' in result) {
+      return NextResponse.json({ alreadyProvisioned: true, email: result.email });
+    }
+
     return NextResponse.json({
       sent: result.sent,
       email: result.email,

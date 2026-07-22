@@ -191,6 +191,33 @@ export async function POST(req: NextRequest) {
     });
 
     if (authError || !authData.user) {
+      // A login identity is a GLOBALLY unique Supabase Auth user (auth.users.email
+      // is unique across all tenants), whereas the existingUser check above is
+      // tenant-scoped. So an email that already belongs to any DriveCommand account
+      // (e.g. an owner/driver in another tenant, or an orphaned auth user from a
+      // prior failed acceptance) reaches here with an "email already registered"
+      // error. Surface that as a specific, actionable message instead of a generic
+      // 500 that repeats identically on every retry.
+      const authErrCode = (authError as { code?: string; status?: number } | null)?.code;
+      const authErrStatus = (authError as { code?: string; status?: number } | null)?.status;
+      const emailAlreadyRegistered =
+        authErrCode === 'email_exists' ||
+        authErrStatus === 422 ||
+        /already.*(registered|been registered|exists)|email_exists/i.test(authError?.message ?? '');
+
+      if (emailAlreadyRegistered) {
+        logger.warn('[accept-invitation] email already has a Supabase auth identity', {
+          email: userEmail,
+        });
+        return NextResponse.json(
+          {
+            error:
+              'This email address is already associated with a DriveCommand account. Please sign in instead.',
+          },
+          { status: 409 }
+        );
+      }
+
       logger.error('Supabase Auth user creation failed:', authError);
       return NextResponse.json(
         { error: 'An error occurred while creating your account. Please try again.' },

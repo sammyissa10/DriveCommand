@@ -217,7 +217,11 @@ export async function createCarrierDriver(
   data: CarrierDriverCreateInput
 ): Promise<CreateCarrierDriverResult> {
   const tenantPrisma = await getTenantPrisma();
-  const { userId, cdlExpiry, payRate, ...rest } = data;
+  const { userId, cdlExpiry, payRate, email: rawEmail, ...rest } = data;
+  // Normalize the email once. Acceptance links carrier_drivers.userId on the
+  // lower-cased email, so the stored value MUST be normalized too or the link
+  // silently fails and the portal-access UI mis-reports state.
+  const email = rawEmail?.toLowerCase().trim() || undefined;
 
   // If userId is provided, check for existing link and verify org membership
   if (userId) {
@@ -247,6 +251,7 @@ export async function createCarrierDriver(
     data: {
       ...rest,
       orgId,
+      ...(email ? { email } : {}),
       ...(userId ? { userId } : {}),
       ...(cdlExpiry ? { cdlExpiry: new Date(cdlExpiry) } : {}),
       ...(payRate != null ? { payRate } : {}),
@@ -256,11 +261,11 @@ export async function createCarrierDriver(
   });
 
   // Link to existing User if one exists for this email in the same org
-  if (data.email && !userId) {
+  if (email && !userId) {
     try {
       const existingUser = await prisma.user.findFirst({
         where: {
-          email: data.email.toLowerCase().trim(),
+          email,
           tenantId: orgId,
         },
       });
@@ -277,11 +282,11 @@ export async function createCarrierDriver(
   }
 
   // Send invitation email if email is provided
-  if (data.email) {
+  if (email) {
     try {
       // Cancel any existing PENDING invitations for the same email + org
       await tenantPrisma.driverInvitation.updateMany({
-        where: { email: data.email, tenantId: orgId, status: 'PENDING' },
+        where: { email, tenantId: orgId, status: 'PENDING' },
         data: { status: 'CANCELLED' },
       });
 
@@ -289,7 +294,7 @@ export async function createCarrierDriver(
       const invitation = await tenantPrisma.driverInvitation.create({
         data: {
           tenantId: orgId,
-          email: data.email,
+          email,
           firstName: data.firstName,
           lastName: data.lastName,
           licenseNumber: data.cdlNumber || null,
@@ -314,7 +319,7 @@ export async function createCarrierDriver(
       const acceptUrl = `${getAppBaseUrl()}/accept-invitation?id=${invitation.id}`;
 
       try {
-        await sendDriverInvitation(data.email, {
+        await sendDriverInvitation(email, {
           // NOTE: orgId and tenantId are the same value in this codebase (carrier scope === tenant scope).
           tenantId: orgId,
           firstName: data.firstName,
@@ -420,12 +425,24 @@ export async function deleteCarrierDriver(
 export async function resendCarrierDriverInvitation(
   orgId: string,
   driverId: string
-): Promise<{ sent: true; email: string; warning?: string } | { error: string }> {
+): Promise<
+  | { sent: true; email: string; warning?: string }
+  | { alreadyProvisioned: true; email: string }
+  | { error: string }
+> {
   const tenantPrisma = await getTenantPrisma();
   const driver = await tenantPrisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
   if (!driver) return { error: 'Not found' };
 
   if (!driver.email) return { error: 'Driver has no email address on file.' };
+
+  // Idempotency: if this driver already has a linked login, provisioning portal
+  // access is a no-op — report the existing state instead of erroring. This also
+  // covers the mislinked case (User exists but carrier_drivers.userId is NULL):
+  // we self-heal the link below so the UI resolves to the active state.
+  if (driver.userId) {
+    return { alreadyProvisioned: true, email: driver.email };
+  }
 
   // Find the most recent invitation
   const latestInvitation = await tenantPrisma.driverInvitation.findFirst({
@@ -434,9 +451,17 @@ export async function resendCarrierDriverInvitation(
   });
 
   if (latestInvitation && latestInvitation.status === 'ACCEPTED') {
-    return {
-      error: 'This driver has already accepted their invitation and has an active account.',
-    };
+    // The driver already accepted (a login exists) but the carrier_drivers row was
+    // never linked — self-heal the link so the portal-access UI reflects reality,
+    // and report it as already-provisioned rather than a hard error.
+    if (latestInvitation.userId) {
+      await tenantPrisma.carrierDriver
+        .update({ where: { id: driverId }, data: { userId: latestInvitation.userId } })
+        .catch((err) => {
+          logger.error('[resendCarrierDriverInvitation] failed to self-heal userId link:', err);
+        });
+    }
+    return { alreadyProvisioned: true, email: driver.email };
   }
 
   // Cancel any existing PENDING or EXPIRED invitations
