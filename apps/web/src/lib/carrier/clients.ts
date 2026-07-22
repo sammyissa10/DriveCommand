@@ -2,6 +2,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import type { GridFilter } from '@/components/data-grid/core/types';
 import type { Prisma } from '@/generated/prisma';
+import { normalizeContacts, getMainContact, type ContactInput } from '@/lib/carrier/client-contacts';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,9 +42,15 @@ export interface ClientCreateInput {
   paymentTerms?: number;
   creditLimit?: string | number | null;
   notes?: string;
+  contacts?: ContactInput[];
 }
 
 export type ClientUpdateInput = Partial<ClientCreateInput>;
+
+const CONTACTS_ORDER_BY: Prisma.CarrierClientContactOrderByWithRelationInput[] = [
+  { isMain: 'desc' },
+  { createdAt: 'asc' },
+];
 
 // ---------------------------------------------------------------------------
 // Functions
@@ -177,6 +184,12 @@ export async function listClients(orgId: string, filters: ListClientsFilters = {
       skip,
       take: pageSize,
       orderBy,
+      include: {
+        contacts: {
+          orderBy: CONTACTS_ORDER_BY,
+          select: { id: true, name: true, role: true, phone: true, email: true, isMain: true },
+        },
+      },
     }),
     tenantPrisma.carrierClient.count({ where }),
   ]);
@@ -220,6 +233,12 @@ export async function getClient(orgId: string, id: string) {
   const tenantPrisma = await getTenantPrisma();
   const client = await tenantPrisma.carrierClient.findFirst({
     where: { id, orgId },
+    include: {
+      contacts: {
+        orderBy: CONTACTS_ORDER_BY,
+        select: { id: true, name: true, role: true, phone: true, email: true, isMain: true },
+      },
+    },
   });
 
   if (!client) return null;
@@ -242,6 +261,7 @@ export async function getClient(orgId: string, id: string) {
     ...client,
     openLoadsCount,
     outstandingAR: decStr(arResult._sum.totalRevenue),
+    mainContact: getMainContact(client.contacts),
   };
 }
 
@@ -257,7 +277,7 @@ export class DuplicateClientError extends Error {
 
 export async function createClient(orgId: string, data: ClientCreateInput) {
   const tenantPrisma = await getTenantPrisma();
-  const { creditLimit, ...rest } = data;
+  const { creditLimit, contacts, ...rest } = data;
   const name = rest.name.trim();
 
   // Enforce unique client name per org (case-insensitive, excluding soft-deleted).
@@ -267,6 +287,8 @@ export async function createClient(orgId: string, data: ClientCreateInput) {
   });
   if (existing) throw new DuplicateClientError(name);
 
+  const normalizedContacts = contacts !== undefined ? normalizeContacts(contacts) : [];
+
   return tenantPrisma.carrierClient.create({
     data: {
       ...rest,
@@ -275,6 +297,19 @@ export async function createClient(orgId: string, data: ClientCreateInput) {
       ...(creditLimit !== undefined
         ? { creditLimit: creditLimit !== null ? Number(creditLimit) : null }
         : {}),
+      ...(normalizedContacts.length > 0
+        ? {
+            contacts: {
+              create: normalizedContacts.map(({ id: _id, ...c }) => ({ ...c, orgId })),
+            },
+          }
+        : {}),
+    },
+    include: {
+      contacts: {
+        orderBy: CONTACTS_ORDER_BY,
+        select: { id: true, name: true, role: true, phone: true, email: true, isMain: true },
+      },
     },
   });
 }
@@ -284,15 +319,35 @@ export async function updateClient(orgId: string, id: string, data: ClientUpdate
   const existing = await tenantPrisma.carrierClient.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const { creditLimit, ...rest } = data;
-  return tenantPrisma.carrierClient.update({
-    where: { id },
-    data: {
-      ...rest,
-      ...(creditLimit !== undefined
-        ? { creditLimit: creditLimit !== null ? Number(creditLimit) : null }
-        : {}),
-    },
+  const { creditLimit, contacts, ...rest } = data;
+
+  return tenantPrisma.$transaction(async (tx) => {
+    if (contacts !== undefined) {
+      const normalizedContacts = normalizeContacts(contacts);
+      // Replace-all: delete existing contacts for this client, re-insert normalized.
+      await tx.carrierClientContact.deleteMany({ where: { clientId: id, orgId } });
+      if (normalizedContacts.length > 0) {
+        await tx.carrierClientContact.createMany({
+          data: normalizedContacts.map(({ id: _id, ...c }) => ({ ...c, orgId, clientId: id })),
+        });
+      }
+    }
+
+    return tx.carrierClient.update({
+      where: { id },
+      data: {
+        ...rest,
+        ...(creditLimit !== undefined
+          ? { creditLimit: creditLimit !== null ? Number(creditLimit) : null }
+          : {}),
+      },
+      include: {
+        contacts: {
+          orderBy: CONTACTS_ORDER_BY,
+          select: { id: true, name: true, role: true, phone: true, email: true, isMain: true },
+        },
+      },
+    });
   });
 }
 

@@ -204,6 +204,11 @@ export type DriverIncident = $Result.DefaultSelection<Prisma.$DriverIncidentPayl
  */
 export type CarrierClient = $Result.DefaultSelection<Prisma.$CarrierClientPayload>
 /**
+ * Model CarrierClientContact
+ * 
+ */
+export type CarrierClientContact = $Result.DefaultSelection<Prisma.$CarrierClientContactPayload>
+/**
  * Model CarrierContract
  * 
  */
@@ -2001,6 +2006,16 @@ export class PrismaClient<
   get carrierClient(): Prisma.CarrierClientDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.carrierClientContact`: Exposes CRUD operations for the **CarrierClientContact** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CarrierClientContacts
+    * const carrierClientContacts = await prisma.carrierClientContact.findMany()
+    * ```
+    */
+  get carrierClientContact(): Prisma.CarrierClientContactDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.carrierContract`: Exposes CRUD operations for the **CarrierContract** model.
     * Example usage:
     * ```ts
@@ -2981,6 +2996,7 @@ export namespace Prisma {
     DriverHOSEntry: 'DriverHOSEntry',
     DriverIncident: 'DriverIncident',
     CarrierClient: 'CarrierClient',
+    CarrierClientContact: 'CarrierClientContact',
     CarrierContract: 'CarrierContract',
     CarrierFacility: 'CarrierFacility',
     CarrierDriver: 'CarrierDriver',
@@ -3047,7 +3063,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "trip" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog" | "gridPreference" | "gridView"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierClientContact" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "trip" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit" | "plan" | "promo" | "subscription" | "activationProgress" | "automationRule" | "automationRun" | "appEvent" | "tenantMetricsDaily" | "tenantHealthScore" | "driverCompensationTemplate" | "loadDriverAssignment" | "loadPayComponent" | "driverBonus" | "driverDeduction" | "driverSettlement" | "payComponentAttachment" | "driverDispute" | "driverPayAuditLog" | "docFeedback" | "notificationTemplate" | "tenantNotificationSettings" | "notificationSubscription" | "userNotificationPreference" | "notificationSendLog" | "notificationEmailConfig" | "auditLog" | "gridPreference" | "gridView"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5860,6 +5876,80 @@ export namespace Prisma {
           count: {
             args: Prisma.CarrierClientCountArgs<ExtArgs>
             result: $Utils.Optional<CarrierClientCountAggregateOutputType> | number
+          }
+        }
+      }
+      CarrierClientContact: {
+        payload: Prisma.$CarrierClientContactPayload<ExtArgs>
+        fields: Prisma.CarrierClientContactFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CarrierClientContactFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CarrierClientContactFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>
+          }
+          findFirst: {
+            args: Prisma.CarrierClientContactFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CarrierClientContactFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>
+          }
+          findMany: {
+            args: Prisma.CarrierClientContactFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>[]
+          }
+          create: {
+            args: Prisma.CarrierClientContactCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>
+          }
+          createMany: {
+            args: Prisma.CarrierClientContactCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CarrierClientContactCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>[]
+          }
+          delete: {
+            args: Prisma.CarrierClientContactDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>
+          }
+          update: {
+            args: Prisma.CarrierClientContactUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>
+          }
+          deleteMany: {
+            args: Prisma.CarrierClientContactDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CarrierClientContactUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CarrierClientContactUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>[]
+          }
+          upsert: {
+            args: Prisma.CarrierClientContactUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierClientContactPayload>
+          }
+          aggregate: {
+            args: Prisma.CarrierClientContactAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCarrierClientContact>
+          }
+          groupBy: {
+            args: Prisma.CarrierClientContactGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CarrierClientContactGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CarrierClientContactCountArgs<ExtArgs>
+            result: $Utils.Optional<CarrierClientContactCountAggregateOutputType> | number
           }
         }
       }
@@ -9783,6 +9873,7 @@ export namespace Prisma {
     driverHOSEntry?: DriverHOSEntryOmit
     driverIncident?: DriverIncidentOmit
     carrierClient?: CarrierClientOmit
+    carrierClientContact?: CarrierClientContactOmit
     carrierContract?: CarrierContractOmit
     carrierFacility?: CarrierFacilityOmit
     carrierDriver?: CarrierDriverOmit
@@ -9945,6 +10036,7 @@ export namespace Prisma {
     driverHOSEntries: number
     driverIncidents: number
     carrierClients: number
+    carrierClientContacts: number
     carrierContracts: number
     carrierFacilities: number
     carrierDrivers: number
@@ -10019,6 +10111,7 @@ export namespace Prisma {
     driverHOSEntries?: boolean | TenantCountOutputTypeCountDriverHOSEntriesArgs
     driverIncidents?: boolean | TenantCountOutputTypeCountDriverIncidentsArgs
     carrierClients?: boolean | TenantCountOutputTypeCountCarrierClientsArgs
+    carrierClientContacts?: boolean | TenantCountOutputTypeCountCarrierClientContactsArgs
     carrierContracts?: boolean | TenantCountOutputTypeCountCarrierContractsArgs
     carrierFacilities?: boolean | TenantCountOutputTypeCountCarrierFacilitiesArgs
     carrierDrivers?: boolean | TenantCountOutputTypeCountCarrierDriversArgs
@@ -10287,6 +10380,13 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountCarrierClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CarrierClientWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountCarrierClientContactsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierClientContactWhereInput
   }
 
   /**
@@ -12255,6 +12355,7 @@ export namespace Prisma {
     expenses: number
     driverPayRecords: number
     carrierLoads: number
+    contacts: number
   }
 
   export type CarrierClientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12265,6 +12366,7 @@ export namespace Prisma {
     expenses?: boolean | CarrierClientCountOutputTypeCountExpensesArgs
     driverPayRecords?: boolean | CarrierClientCountOutputTypeCountDriverPayRecordsArgs
     carrierLoads?: boolean | CarrierClientCountOutputTypeCountCarrierLoadsArgs
+    contacts?: boolean | CarrierClientCountOutputTypeCountContactsArgs
   }
 
   // Custom InputTypes
@@ -12325,6 +12427,13 @@ export namespace Prisma {
    */
   export type CarrierClientCountOutputTypeCountCarrierLoadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CarrierLoadWhereInput
+  }
+
+  /**
+   * CarrierClientCountOutputType without action
+   */
+  export type CarrierClientCountOutputTypeCountContactsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierClientContactWhereInput
   }
 
 
@@ -13688,6 +13797,7 @@ export namespace Prisma {
     driverHOSEntries?: boolean | Tenant$driverHOSEntriesArgs<ExtArgs>
     driverIncidents?: boolean | Tenant$driverIncidentsArgs<ExtArgs>
     carrierClients?: boolean | Tenant$carrierClientsArgs<ExtArgs>
+    carrierClientContacts?: boolean | Tenant$carrierClientContactsArgs<ExtArgs>
     carrierContracts?: boolean | Tenant$carrierContractsArgs<ExtArgs>
     carrierFacilities?: boolean | Tenant$carrierFacilitiesArgs<ExtArgs>
     carrierDrivers?: boolean | Tenant$carrierDriversArgs<ExtArgs>
@@ -13833,6 +13943,7 @@ export namespace Prisma {
     driverHOSEntries?: boolean | Tenant$driverHOSEntriesArgs<ExtArgs>
     driverIncidents?: boolean | Tenant$driverIncidentsArgs<ExtArgs>
     carrierClients?: boolean | Tenant$carrierClientsArgs<ExtArgs>
+    carrierClientContacts?: boolean | Tenant$carrierClientContactsArgs<ExtArgs>
     carrierContracts?: boolean | Tenant$carrierContractsArgs<ExtArgs>
     carrierFacilities?: boolean | Tenant$carrierFacilitiesArgs<ExtArgs>
     carrierDrivers?: boolean | Tenant$carrierDriversArgs<ExtArgs>
@@ -13915,6 +14026,7 @@ export namespace Prisma {
       driverHOSEntries: Prisma.$DriverHOSEntryPayload<ExtArgs>[]
       driverIncidents: Prisma.$DriverIncidentPayload<ExtArgs>[]
       carrierClients: Prisma.$CarrierClientPayload<ExtArgs>[]
+      carrierClientContacts: Prisma.$CarrierClientContactPayload<ExtArgs>[]
       carrierContracts: Prisma.$CarrierContractPayload<ExtArgs>[]
       carrierFacilities: Prisma.$CarrierFacilityPayload<ExtArgs>[]
       carrierDrivers: Prisma.$CarrierDriverPayload<ExtArgs>[]
@@ -14404,6 +14516,7 @@ export namespace Prisma {
     driverHOSEntries<T extends Tenant$driverHOSEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverHOSEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverIncidents<T extends Tenant$driverIncidentsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverIncidentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierClients<T extends Tenant$carrierClientsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierClientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    carrierClientContacts<T extends Tenant$carrierClientContactsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierClientContactsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierContracts<T extends Tenant$carrierContractsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierContractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierFacilities<T extends Tenant$carrierFacilitiesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierFacilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierFacilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierDrivers<T extends Tenant$carrierDriversArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierDriversArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDriverPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -15629,6 +15742,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CarrierClientScalarFieldEnum | CarrierClientScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.carrierClientContacts
+   */
+  export type Tenant$carrierClientContactsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    where?: CarrierClientContactWhereInput
+    orderBy?: CarrierClientContactOrderByWithRelationInput | CarrierClientContactOrderByWithRelationInput[]
+    cursor?: CarrierClientContactWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierClientContactScalarFieldEnum | CarrierClientContactScalarFieldEnum[]
   }
 
   /**
@@ -67620,6 +67757,7 @@ export namespace Prisma {
     expenses?: boolean | CarrierClient$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierClient$driverPayRecordsArgs<ExtArgs>
     carrierLoads?: boolean | CarrierClient$carrierLoadsArgs<ExtArgs>
+    contacts?: boolean | CarrierClient$contactsArgs<ExtArgs>
     _count?: boolean | CarrierClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierClient"]>
 
@@ -67743,6 +67881,7 @@ export namespace Prisma {
     expenses?: boolean | CarrierClient$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierClient$driverPayRecordsArgs<ExtArgs>
     carrierLoads?: boolean | CarrierClient$carrierLoadsArgs<ExtArgs>
+    contacts?: boolean | CarrierClient$contactsArgs<ExtArgs>
     _count?: boolean | CarrierClientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierClientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -67772,6 +67911,7 @@ export namespace Prisma {
       expenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
       carrierLoads: Prisma.$CarrierLoadPayload<ExtArgs>[]
+      contacts: Prisma.$CarrierClientContactPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -68209,6 +68349,7 @@ export namespace Prisma {
     expenses<T extends CarrierClient$expensesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierClient$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayRecords<T extends CarrierClient$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierClient$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierLoads<T extends CarrierClient$carrierLoadsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierClient$carrierLoadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierLoadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contacts<T extends CarrierClient$contactsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierClient$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -68894,6 +69035,30 @@ export namespace Prisma {
   }
 
   /**
+   * CarrierClient.contacts
+   */
+  export type CarrierClient$contactsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    where?: CarrierClientContactWhereInput
+    orderBy?: CarrierClientContactOrderByWithRelationInput | CarrierClientContactOrderByWithRelationInput[]
+    cursor?: CarrierClientContactWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierClientContactScalarFieldEnum | CarrierClientContactScalarFieldEnum[]
+  }
+
+  /**
    * CarrierClient without action
    */
   export type CarrierClientDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -68909,6 +69074,1142 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CarrierClientInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CarrierClientContact
+   */
+
+  export type AggregateCarrierClientContact = {
+    _count: CarrierClientContactCountAggregateOutputType | null
+    _min: CarrierClientContactMinAggregateOutputType | null
+    _max: CarrierClientContactMaxAggregateOutputType | null
+  }
+
+  export type CarrierClientContactMinAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    clientId: string | null
+    name: string | null
+    role: string | null
+    phone: string | null
+    email: string | null
+    isMain: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CarrierClientContactMaxAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    clientId: string | null
+    name: string | null
+    role: string | null
+    phone: string | null
+    email: string | null
+    isMain: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CarrierClientContactCountAggregateOutputType = {
+    id: number
+    orgId: number
+    clientId: number
+    name: number
+    role: number
+    phone: number
+    email: number
+    isMain: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CarrierClientContactMinAggregateInputType = {
+    id?: true
+    orgId?: true
+    clientId?: true
+    name?: true
+    role?: true
+    phone?: true
+    email?: true
+    isMain?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CarrierClientContactMaxAggregateInputType = {
+    id?: true
+    orgId?: true
+    clientId?: true
+    name?: true
+    role?: true
+    phone?: true
+    email?: true
+    isMain?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CarrierClientContactCountAggregateInputType = {
+    id?: true
+    orgId?: true
+    clientId?: true
+    name?: true
+    role?: true
+    phone?: true
+    email?: true
+    isMain?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CarrierClientContactAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CarrierClientContact to aggregate.
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierClientContacts to fetch.
+     */
+    orderBy?: CarrierClientContactOrderByWithRelationInput | CarrierClientContactOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CarrierClientContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierClientContacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierClientContacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CarrierClientContacts
+    **/
+    _count?: true | CarrierClientContactCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CarrierClientContactMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CarrierClientContactMaxAggregateInputType
+  }
+
+  export type GetCarrierClientContactAggregateType<T extends CarrierClientContactAggregateArgs> = {
+        [P in keyof T & keyof AggregateCarrierClientContact]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCarrierClientContact[P]>
+      : GetScalarType<T[P], AggregateCarrierClientContact[P]>
+  }
+
+
+
+
+  export type CarrierClientContactGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierClientContactWhereInput
+    orderBy?: CarrierClientContactOrderByWithAggregationInput | CarrierClientContactOrderByWithAggregationInput[]
+    by: CarrierClientContactScalarFieldEnum[] | CarrierClientContactScalarFieldEnum
+    having?: CarrierClientContactScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CarrierClientContactCountAggregateInputType | true
+    _min?: CarrierClientContactMinAggregateInputType
+    _max?: CarrierClientContactMaxAggregateInputType
+  }
+
+  export type CarrierClientContactGroupByOutputType = {
+    id: string
+    orgId: string
+    clientId: string
+    name: string
+    role: string | null
+    phone: string | null
+    email: string | null
+    isMain: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: CarrierClientContactCountAggregateOutputType | null
+    _min: CarrierClientContactMinAggregateOutputType | null
+    _max: CarrierClientContactMaxAggregateOutputType | null
+  }
+
+  type GetCarrierClientContactGroupByPayload<T extends CarrierClientContactGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CarrierClientContactGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CarrierClientContactGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CarrierClientContactGroupByOutputType[P]>
+            : GetScalarType<T[P], CarrierClientContactGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CarrierClientContactSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    clientId?: boolean
+    name?: boolean
+    role?: boolean
+    phone?: boolean
+    email?: boolean
+    isMain?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    client?: boolean | CarrierClientDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["carrierClientContact"]>
+
+  export type CarrierClientContactSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    clientId?: boolean
+    name?: boolean
+    role?: boolean
+    phone?: boolean
+    email?: boolean
+    isMain?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    client?: boolean | CarrierClientDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["carrierClientContact"]>
+
+  export type CarrierClientContactSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    clientId?: boolean
+    name?: boolean
+    role?: boolean
+    phone?: boolean
+    email?: boolean
+    isMain?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    client?: boolean | CarrierClientDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["carrierClientContact"]>
+
+  export type CarrierClientContactSelectScalar = {
+    id?: boolean
+    orgId?: boolean
+    clientId?: boolean
+    name?: boolean
+    role?: boolean
+    phone?: boolean
+    email?: boolean
+    isMain?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CarrierClientContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "clientId" | "name" | "role" | "phone" | "email" | "isMain" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierClientContact"]>
+  export type CarrierClientContactInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    client?: boolean | CarrierClientDefaultArgs<ExtArgs>
+  }
+  export type CarrierClientContactIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    client?: boolean | CarrierClientDefaultArgs<ExtArgs>
+  }
+  export type CarrierClientContactIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    client?: boolean | CarrierClientDefaultArgs<ExtArgs>
+  }
+
+  export type $CarrierClientContactPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CarrierClientContact"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      client: Prisma.$CarrierClientPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orgId: string
+      clientId: string
+      name: string
+      role: string | null
+      phone: string | null
+      email: string | null
+      isMain: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["carrierClientContact"]>
+    composites: {}
+  }
+
+  type CarrierClientContactGetPayload<S extends boolean | null | undefined | CarrierClientContactDefaultArgs> = $Result.GetResult<Prisma.$CarrierClientContactPayload, S>
+
+  type CarrierClientContactCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CarrierClientContactFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CarrierClientContactCountAggregateInputType | true
+    }
+
+  export interface CarrierClientContactDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CarrierClientContact'], meta: { name: 'CarrierClientContact' } }
+    /**
+     * Find zero or one CarrierClientContact that matches the filter.
+     * @param {CarrierClientContactFindUniqueArgs} args - Arguments to find a CarrierClientContact
+     * @example
+     * // Get one CarrierClientContact
+     * const carrierClientContact = await prisma.carrierClientContact.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CarrierClientContactFindUniqueArgs>(args: SelectSubset<T, CarrierClientContactFindUniqueArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CarrierClientContact that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CarrierClientContactFindUniqueOrThrowArgs} args - Arguments to find a CarrierClientContact
+     * @example
+     * // Get one CarrierClientContact
+     * const carrierClientContact = await prisma.carrierClientContact.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CarrierClientContactFindUniqueOrThrowArgs>(args: SelectSubset<T, CarrierClientContactFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CarrierClientContact that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactFindFirstArgs} args - Arguments to find a CarrierClientContact
+     * @example
+     * // Get one CarrierClientContact
+     * const carrierClientContact = await prisma.carrierClientContact.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CarrierClientContactFindFirstArgs>(args?: SelectSubset<T, CarrierClientContactFindFirstArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CarrierClientContact that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactFindFirstOrThrowArgs} args - Arguments to find a CarrierClientContact
+     * @example
+     * // Get one CarrierClientContact
+     * const carrierClientContact = await prisma.carrierClientContact.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CarrierClientContactFindFirstOrThrowArgs>(args?: SelectSubset<T, CarrierClientContactFindFirstOrThrowArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CarrierClientContacts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CarrierClientContacts
+     * const carrierClientContacts = await prisma.carrierClientContact.findMany()
+     * 
+     * // Get first 10 CarrierClientContacts
+     * const carrierClientContacts = await prisma.carrierClientContact.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const carrierClientContactWithIdOnly = await prisma.carrierClientContact.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CarrierClientContactFindManyArgs>(args?: SelectSubset<T, CarrierClientContactFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CarrierClientContact.
+     * @param {CarrierClientContactCreateArgs} args - Arguments to create a CarrierClientContact.
+     * @example
+     * // Create one CarrierClientContact
+     * const CarrierClientContact = await prisma.carrierClientContact.create({
+     *   data: {
+     *     // ... data to create a CarrierClientContact
+     *   }
+     * })
+     * 
+     */
+    create<T extends CarrierClientContactCreateArgs>(args: SelectSubset<T, CarrierClientContactCreateArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CarrierClientContacts.
+     * @param {CarrierClientContactCreateManyArgs} args - Arguments to create many CarrierClientContacts.
+     * @example
+     * // Create many CarrierClientContacts
+     * const carrierClientContact = await prisma.carrierClientContact.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CarrierClientContactCreateManyArgs>(args?: SelectSubset<T, CarrierClientContactCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CarrierClientContacts and returns the data saved in the database.
+     * @param {CarrierClientContactCreateManyAndReturnArgs} args - Arguments to create many CarrierClientContacts.
+     * @example
+     * // Create many CarrierClientContacts
+     * const carrierClientContact = await prisma.carrierClientContact.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CarrierClientContacts and only return the `id`
+     * const carrierClientContactWithIdOnly = await prisma.carrierClientContact.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CarrierClientContactCreateManyAndReturnArgs>(args?: SelectSubset<T, CarrierClientContactCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CarrierClientContact.
+     * @param {CarrierClientContactDeleteArgs} args - Arguments to delete one CarrierClientContact.
+     * @example
+     * // Delete one CarrierClientContact
+     * const CarrierClientContact = await prisma.carrierClientContact.delete({
+     *   where: {
+     *     // ... filter to delete one CarrierClientContact
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CarrierClientContactDeleteArgs>(args: SelectSubset<T, CarrierClientContactDeleteArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CarrierClientContact.
+     * @param {CarrierClientContactUpdateArgs} args - Arguments to update one CarrierClientContact.
+     * @example
+     * // Update one CarrierClientContact
+     * const carrierClientContact = await prisma.carrierClientContact.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CarrierClientContactUpdateArgs>(args: SelectSubset<T, CarrierClientContactUpdateArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CarrierClientContacts.
+     * @param {CarrierClientContactDeleteManyArgs} args - Arguments to filter CarrierClientContacts to delete.
+     * @example
+     * // Delete a few CarrierClientContacts
+     * const { count } = await prisma.carrierClientContact.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CarrierClientContactDeleteManyArgs>(args?: SelectSubset<T, CarrierClientContactDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CarrierClientContacts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CarrierClientContacts
+     * const carrierClientContact = await prisma.carrierClientContact.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CarrierClientContactUpdateManyArgs>(args: SelectSubset<T, CarrierClientContactUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CarrierClientContacts and returns the data updated in the database.
+     * @param {CarrierClientContactUpdateManyAndReturnArgs} args - Arguments to update many CarrierClientContacts.
+     * @example
+     * // Update many CarrierClientContacts
+     * const carrierClientContact = await prisma.carrierClientContact.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CarrierClientContacts and only return the `id`
+     * const carrierClientContactWithIdOnly = await prisma.carrierClientContact.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CarrierClientContactUpdateManyAndReturnArgs>(args: SelectSubset<T, CarrierClientContactUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CarrierClientContact.
+     * @param {CarrierClientContactUpsertArgs} args - Arguments to update or create a CarrierClientContact.
+     * @example
+     * // Update or create a CarrierClientContact
+     * const carrierClientContact = await prisma.carrierClientContact.upsert({
+     *   create: {
+     *     // ... data to create a CarrierClientContact
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CarrierClientContact we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CarrierClientContactUpsertArgs>(args: SelectSubset<T, CarrierClientContactUpsertArgs<ExtArgs>>): Prisma__CarrierClientContactClient<$Result.GetResult<Prisma.$CarrierClientContactPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CarrierClientContacts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactCountArgs} args - Arguments to filter CarrierClientContacts to count.
+     * @example
+     * // Count the number of CarrierClientContacts
+     * const count = await prisma.carrierClientContact.count({
+     *   where: {
+     *     // ... the filter for the CarrierClientContacts we want to count
+     *   }
+     * })
+    **/
+    count<T extends CarrierClientContactCountArgs>(
+      args?: Subset<T, CarrierClientContactCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CarrierClientContactCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CarrierClientContact.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CarrierClientContactAggregateArgs>(args: Subset<T, CarrierClientContactAggregateArgs>): Prisma.PrismaPromise<GetCarrierClientContactAggregateType<T>>
+
+    /**
+     * Group by CarrierClientContact.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierClientContactGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CarrierClientContactGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CarrierClientContactGroupByArgs['orderBy'] }
+        : { orderBy?: CarrierClientContactGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CarrierClientContactGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCarrierClientContactGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CarrierClientContact model
+   */
+  readonly fields: CarrierClientContactFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CarrierClientContact.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CarrierClientContactClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    client<T extends CarrierClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CarrierClientDefaultArgs<ExtArgs>>): Prisma__CarrierClientClient<$Result.GetResult<Prisma.$CarrierClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CarrierClientContact model
+   */
+  interface CarrierClientContactFieldRefs {
+    readonly id: FieldRef<"CarrierClientContact", 'String'>
+    readonly orgId: FieldRef<"CarrierClientContact", 'String'>
+    readonly clientId: FieldRef<"CarrierClientContact", 'String'>
+    readonly name: FieldRef<"CarrierClientContact", 'String'>
+    readonly role: FieldRef<"CarrierClientContact", 'String'>
+    readonly phone: FieldRef<"CarrierClientContact", 'String'>
+    readonly email: FieldRef<"CarrierClientContact", 'String'>
+    readonly isMain: FieldRef<"CarrierClientContact", 'Boolean'>
+    readonly createdAt: FieldRef<"CarrierClientContact", 'DateTime'>
+    readonly updatedAt: FieldRef<"CarrierClientContact", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CarrierClientContact findUnique
+   */
+  export type CarrierClientContactFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierClientContact to fetch.
+     */
+    where: CarrierClientContactWhereUniqueInput
+  }
+
+  /**
+   * CarrierClientContact findUniqueOrThrow
+   */
+  export type CarrierClientContactFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierClientContact to fetch.
+     */
+    where: CarrierClientContactWhereUniqueInput
+  }
+
+  /**
+   * CarrierClientContact findFirst
+   */
+  export type CarrierClientContactFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierClientContact to fetch.
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierClientContacts to fetch.
+     */
+    orderBy?: CarrierClientContactOrderByWithRelationInput | CarrierClientContactOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CarrierClientContacts.
+     */
+    cursor?: CarrierClientContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierClientContacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierClientContacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CarrierClientContacts.
+     */
+    distinct?: CarrierClientContactScalarFieldEnum | CarrierClientContactScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierClientContact findFirstOrThrow
+   */
+  export type CarrierClientContactFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierClientContact to fetch.
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierClientContacts to fetch.
+     */
+    orderBy?: CarrierClientContactOrderByWithRelationInput | CarrierClientContactOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CarrierClientContacts.
+     */
+    cursor?: CarrierClientContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierClientContacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierClientContacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CarrierClientContacts.
+     */
+    distinct?: CarrierClientContactScalarFieldEnum | CarrierClientContactScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierClientContact findMany
+   */
+  export type CarrierClientContactFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierClientContacts to fetch.
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierClientContacts to fetch.
+     */
+    orderBy?: CarrierClientContactOrderByWithRelationInput | CarrierClientContactOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CarrierClientContacts.
+     */
+    cursor?: CarrierClientContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierClientContacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierClientContacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CarrierClientContacts.
+     */
+    distinct?: CarrierClientContactScalarFieldEnum | CarrierClientContactScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierClientContact create
+   */
+  export type CarrierClientContactCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CarrierClientContact.
+     */
+    data: XOR<CarrierClientContactCreateInput, CarrierClientContactUncheckedCreateInput>
+  }
+
+  /**
+   * CarrierClientContact createMany
+   */
+  export type CarrierClientContactCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CarrierClientContacts.
+     */
+    data: CarrierClientContactCreateManyInput | CarrierClientContactCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CarrierClientContact createManyAndReturn
+   */
+  export type CarrierClientContactCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * The data used to create many CarrierClientContacts.
+     */
+    data: CarrierClientContactCreateManyInput | CarrierClientContactCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CarrierClientContact update
+   */
+  export type CarrierClientContactUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CarrierClientContact.
+     */
+    data: XOR<CarrierClientContactUpdateInput, CarrierClientContactUncheckedUpdateInput>
+    /**
+     * Choose, which CarrierClientContact to update.
+     */
+    where: CarrierClientContactWhereUniqueInput
+  }
+
+  /**
+   * CarrierClientContact updateMany
+   */
+  export type CarrierClientContactUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CarrierClientContacts.
+     */
+    data: XOR<CarrierClientContactUpdateManyMutationInput, CarrierClientContactUncheckedUpdateManyInput>
+    /**
+     * Filter which CarrierClientContacts to update
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * Limit how many CarrierClientContacts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CarrierClientContact updateManyAndReturn
+   */
+  export type CarrierClientContactUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * The data used to update CarrierClientContacts.
+     */
+    data: XOR<CarrierClientContactUpdateManyMutationInput, CarrierClientContactUncheckedUpdateManyInput>
+    /**
+     * Filter which CarrierClientContacts to update
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * Limit how many CarrierClientContacts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CarrierClientContact upsert
+   */
+  export type CarrierClientContactUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CarrierClientContact to update in case it exists.
+     */
+    where: CarrierClientContactWhereUniqueInput
+    /**
+     * In case the CarrierClientContact found by the `where` argument doesn't exist, create a new CarrierClientContact with this data.
+     */
+    create: XOR<CarrierClientContactCreateInput, CarrierClientContactUncheckedCreateInput>
+    /**
+     * In case the CarrierClientContact was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CarrierClientContactUpdateInput, CarrierClientContactUncheckedUpdateInput>
+  }
+
+  /**
+   * CarrierClientContact delete
+   */
+  export type CarrierClientContactDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
+    /**
+     * Filter which CarrierClientContact to delete.
+     */
+    where: CarrierClientContactWhereUniqueInput
+  }
+
+  /**
+   * CarrierClientContact deleteMany
+   */
+  export type CarrierClientContactDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CarrierClientContacts to delete
+     */
+    where?: CarrierClientContactWhereInput
+    /**
+     * Limit how many CarrierClientContacts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CarrierClientContact without action
+   */
+  export type CarrierClientContactDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierClientContact
+     */
+    select?: CarrierClientContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierClientContact
+     */
+    omit?: CarrierClientContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierClientContactInclude<ExtArgs> | null
   }
 
 
@@ -137011,6 +138312,22 @@ export namespace Prisma {
   export type CarrierClientScalarFieldEnum = (typeof CarrierClientScalarFieldEnum)[keyof typeof CarrierClientScalarFieldEnum]
 
 
+  export const CarrierClientContactScalarFieldEnum: {
+    id: 'id',
+    orgId: 'orgId',
+    clientId: 'clientId',
+    name: 'name',
+    role: 'role',
+    phone: 'phone',
+    email: 'email',
+    isMain: 'isMain',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CarrierClientContactScalarFieldEnum = (typeof CarrierClientContactScalarFieldEnum)[keyof typeof CarrierClientContactScalarFieldEnum]
+
+
   export const CarrierContractScalarFieldEnum: {
     id: 'id',
     orgId: 'orgId',
@@ -139325,6 +140642,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryListRelationFilter
     driverIncidents?: DriverIncidentListRelationFilter
     carrierClients?: CarrierClientListRelationFilter
+    carrierClientContacts?: CarrierClientContactListRelationFilter
     carrierContracts?: CarrierContractListRelationFilter
     carrierFacilities?: CarrierFacilityListRelationFilter
     carrierDrivers?: CarrierDriverListRelationFilter
@@ -139421,6 +140739,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryOrderByRelationAggregateInput
     driverIncidents?: DriverIncidentOrderByRelationAggregateInput
     carrierClients?: CarrierClientOrderByRelationAggregateInput
+    carrierClientContacts?: CarrierClientContactOrderByRelationAggregateInput
     carrierContracts?: CarrierContractOrderByRelationAggregateInput
     carrierFacilities?: CarrierFacilityOrderByRelationAggregateInput
     carrierDrivers?: CarrierDriverOrderByRelationAggregateInput
@@ -139520,6 +140839,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryListRelationFilter
     driverIncidents?: DriverIncidentListRelationFilter
     carrierClients?: CarrierClientListRelationFilter
+    carrierClientContacts?: CarrierClientContactListRelationFilter
     carrierContracts?: CarrierContractListRelationFilter
     carrierFacilities?: CarrierFacilityListRelationFilter
     carrierDrivers?: CarrierDriverListRelationFilter
@@ -144288,6 +145608,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
     carrierLoads?: CarrierLoadListRelationFilter
+    contacts?: CarrierClientContactListRelationFilter
   }
 
   export type CarrierClientOrderByWithRelationInput = {
@@ -144332,6 +145653,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseOrderByRelationAggregateInput
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
     carrierLoads?: CarrierLoadOrderByRelationAggregateInput
+    contacts?: CarrierClientContactOrderByRelationAggregateInput
   }
 
   export type CarrierClientWhereUniqueInput = Prisma.AtLeast<{
@@ -144379,6 +145701,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
     carrierLoads?: CarrierLoadListRelationFilter
+    contacts?: CarrierClientContactListRelationFilter
   }, "id">
 
   export type CarrierClientOrderByWithAggregationInput = {
@@ -144453,6 +145776,89 @@ export namespace Prisma {
     deletedById?: UuidNullableWithAggregatesFilter<"CarrierClient"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierClient"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CarrierClient"> | Date | string
+  }
+
+  export type CarrierClientContactWhereInput = {
+    AND?: CarrierClientContactWhereInput | CarrierClientContactWhereInput[]
+    OR?: CarrierClientContactWhereInput[]
+    NOT?: CarrierClientContactWhereInput | CarrierClientContactWhereInput[]
+    id?: UuidFilter<"CarrierClientContact"> | string
+    orgId?: UuidFilter<"CarrierClientContact"> | string
+    clientId?: UuidFilter<"CarrierClientContact"> | string
+    name?: StringFilter<"CarrierClientContact"> | string
+    role?: StringNullableFilter<"CarrierClientContact"> | string | null
+    phone?: StringNullableFilter<"CarrierClientContact"> | string | null
+    email?: StringNullableFilter<"CarrierClientContact"> | string | null
+    isMain?: BoolFilter<"CarrierClientContact"> | boolean
+    createdAt?: DateTimeFilter<"CarrierClientContact"> | Date | string
+    updatedAt?: DateTimeFilter<"CarrierClientContact"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    client?: XOR<CarrierClientScalarRelationFilter, CarrierClientWhereInput>
+  }
+
+  export type CarrierClientContactOrderByWithRelationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    clientId?: SortOrder
+    name?: SortOrder
+    role?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    isMain?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    client?: CarrierClientOrderByWithRelationInput
+  }
+
+  export type CarrierClientContactWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CarrierClientContactWhereInput | CarrierClientContactWhereInput[]
+    OR?: CarrierClientContactWhereInput[]
+    NOT?: CarrierClientContactWhereInput | CarrierClientContactWhereInput[]
+    orgId?: UuidFilter<"CarrierClientContact"> | string
+    clientId?: UuidFilter<"CarrierClientContact"> | string
+    name?: StringFilter<"CarrierClientContact"> | string
+    role?: StringNullableFilter<"CarrierClientContact"> | string | null
+    phone?: StringNullableFilter<"CarrierClientContact"> | string | null
+    email?: StringNullableFilter<"CarrierClientContact"> | string | null
+    isMain?: BoolFilter<"CarrierClientContact"> | boolean
+    createdAt?: DateTimeFilter<"CarrierClientContact"> | Date | string
+    updatedAt?: DateTimeFilter<"CarrierClientContact"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    client?: XOR<CarrierClientScalarRelationFilter, CarrierClientWhereInput>
+  }, "id">
+
+  export type CarrierClientContactOrderByWithAggregationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    clientId?: SortOrder
+    name?: SortOrder
+    role?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    isMain?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CarrierClientContactCountOrderByAggregateInput
+    _max?: CarrierClientContactMaxOrderByAggregateInput
+    _min?: CarrierClientContactMinOrderByAggregateInput
+  }
+
+  export type CarrierClientContactScalarWhereWithAggregatesInput = {
+    AND?: CarrierClientContactScalarWhereWithAggregatesInput | CarrierClientContactScalarWhereWithAggregatesInput[]
+    OR?: CarrierClientContactScalarWhereWithAggregatesInput[]
+    NOT?: CarrierClientContactScalarWhereWithAggregatesInput | CarrierClientContactScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"CarrierClientContact"> | string
+    orgId?: UuidWithAggregatesFilter<"CarrierClientContact"> | string
+    clientId?: UuidWithAggregatesFilter<"CarrierClientContact"> | string
+    name?: StringWithAggregatesFilter<"CarrierClientContact"> | string
+    role?: StringNullableWithAggregatesFilter<"CarrierClientContact"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"CarrierClientContact"> | string | null
+    email?: StringNullableWithAggregatesFilter<"CarrierClientContact"> | string | null
+    isMain?: BoolWithAggregatesFilter<"CarrierClientContact"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"CarrierClientContact"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CarrierClientContact"> | Date | string
   }
 
   export type CarrierContractWhereInput = {
@@ -150841,6 +152247,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -150937,6 +152344,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -151033,6 +152441,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -151129,6 +152538,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -156350,6 +157760,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateInput = {
@@ -156390,6 +157801,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUpdateInput = {
@@ -156430,6 +157842,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateInput = {
@@ -156470,6 +157883,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientCreateManyInput = {
@@ -156563,6 +157977,95 @@ export namespace Prisma {
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactCreateInput = {
+    id?: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierClientContactsInput
+    client: CarrierClientCreateNestedOneWithoutContactsInput
+  }
+
+  export type CarrierClientContactUncheckedCreateInput = {
+    id?: string
+    orgId: string
+    clientId: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CarrierClientContactUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierClientContactsNestedInput
+    client?: CarrierClientUpdateOneRequiredWithoutContactsNestedInput
+  }
+
+  export type CarrierClientContactUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactCreateManyInput = {
+    id?: string
+    orgId: string
+    clientId: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CarrierClientContactUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -163901,6 +165404,12 @@ export namespace Prisma {
     none?: CarrierClientWhereInput
   }
 
+  export type CarrierClientContactListRelationFilter = {
+    every?: CarrierClientContactWhereInput
+    some?: CarrierClientContactWhereInput
+    none?: CarrierClientContactWhereInput
+  }
+
   export type CarrierContractListRelationFilter = {
     every?: CarrierContractWhereInput
     some?: CarrierContractWhereInput
@@ -164282,6 +165791,10 @@ export namespace Prisma {
   }
 
   export type CarrierClientOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CarrierClientContactOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -167911,6 +169424,45 @@ export namespace Prisma {
   export type CarrierClientScalarRelationFilter = {
     is?: CarrierClientWhereInput
     isNot?: CarrierClientWhereInput
+  }
+
+  export type CarrierClientContactCountOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    clientId?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    isMain?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CarrierClientContactMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    clientId?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    isMain?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CarrierClientContactMinOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    clientId?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    isMain?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CarrierContractCountOrderByAggregateInput = {
@@ -172409,6 +173961,13 @@ export namespace Prisma {
     connect?: CarrierClientWhereUniqueInput | CarrierClientWhereUniqueInput[]
   }
 
+  export type CarrierClientContactCreateNestedManyWithoutTenantInput = {
+    create?: XOR<CarrierClientContactCreateWithoutTenantInput, CarrierClientContactUncheckedCreateWithoutTenantInput> | CarrierClientContactCreateWithoutTenantInput[] | CarrierClientContactUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutTenantInput | CarrierClientContactCreateOrConnectWithoutTenantInput[]
+    createMany?: CarrierClientContactCreateManyTenantInputEnvelope
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+  }
+
   export type CarrierContractCreateNestedManyWithoutTenantInput = {
     create?: XOR<CarrierContractCreateWithoutTenantInput, CarrierContractUncheckedCreateWithoutTenantInput> | CarrierContractCreateWithoutTenantInput[] | CarrierContractUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: CarrierContractCreateOrConnectWithoutTenantInput | CarrierContractCreateOrConnectWithoutTenantInput[]
@@ -172922,6 +174481,13 @@ export namespace Prisma {
     connectOrCreate?: CarrierClientCreateOrConnectWithoutTenantInput | CarrierClientCreateOrConnectWithoutTenantInput[]
     createMany?: CarrierClientCreateManyTenantInputEnvelope
     connect?: CarrierClientWhereUniqueInput | CarrierClientWhereUniqueInput[]
+  }
+
+  export type CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<CarrierClientContactCreateWithoutTenantInput, CarrierClientContactUncheckedCreateWithoutTenantInput> | CarrierClientContactCreateWithoutTenantInput[] | CarrierClientContactUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutTenantInput | CarrierClientContactCreateOrConnectWithoutTenantInput[]
+    createMany?: CarrierClientContactCreateManyTenantInputEnvelope
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
   }
 
   export type CarrierContractUncheckedCreateNestedManyWithoutTenantInput = {
@@ -173702,6 +175268,20 @@ export namespace Prisma {
     update?: CarrierClientUpdateWithWhereUniqueWithoutTenantInput | CarrierClientUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: CarrierClientUpdateManyWithWhereWithoutTenantInput | CarrierClientUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: CarrierClientScalarWhereInput | CarrierClientScalarWhereInput[]
+  }
+
+  export type CarrierClientContactUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<CarrierClientContactCreateWithoutTenantInput, CarrierClientContactUncheckedCreateWithoutTenantInput> | CarrierClientContactCreateWithoutTenantInput[] | CarrierClientContactUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutTenantInput | CarrierClientContactCreateOrConnectWithoutTenantInput[]
+    upsert?: CarrierClientContactUpsertWithWhereUniqueWithoutTenantInput | CarrierClientContactUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: CarrierClientContactCreateManyTenantInputEnvelope
+    set?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    disconnect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    delete?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    update?: CarrierClientContactUpdateWithWhereUniqueWithoutTenantInput | CarrierClientContactUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: CarrierClientContactUpdateManyWithWhereWithoutTenantInput | CarrierClientContactUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: CarrierClientContactScalarWhereInput | CarrierClientContactScalarWhereInput[]
   }
 
   export type CarrierContractUpdateManyWithoutTenantNestedInput = {
@@ -174726,6 +176306,20 @@ export namespace Prisma {
     update?: CarrierClientUpdateWithWhereUniqueWithoutTenantInput | CarrierClientUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: CarrierClientUpdateManyWithWhereWithoutTenantInput | CarrierClientUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: CarrierClientScalarWhereInput | CarrierClientScalarWhereInput[]
+  }
+
+  export type CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<CarrierClientContactCreateWithoutTenantInput, CarrierClientContactUncheckedCreateWithoutTenantInput> | CarrierClientContactCreateWithoutTenantInput[] | CarrierClientContactUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutTenantInput | CarrierClientContactCreateOrConnectWithoutTenantInput[]
+    upsert?: CarrierClientContactUpsertWithWhereUniqueWithoutTenantInput | CarrierClientContactUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: CarrierClientContactCreateManyTenantInputEnvelope
+    set?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    disconnect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    delete?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    update?: CarrierClientContactUpdateWithWhereUniqueWithoutTenantInput | CarrierClientContactUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: CarrierClientContactUpdateManyWithWhereWithoutTenantInput | CarrierClientContactUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: CarrierClientContactScalarWhereInput | CarrierClientContactScalarWhereInput[]
   }
 
   export type CarrierContractUncheckedUpdateManyWithoutTenantNestedInput = {
@@ -184245,6 +185839,13 @@ export namespace Prisma {
     connect?: CarrierLoadWhereUniqueInput | CarrierLoadWhereUniqueInput[]
   }
 
+  export type CarrierClientContactCreateNestedManyWithoutClientInput = {
+    create?: XOR<CarrierClientContactCreateWithoutClientInput, CarrierClientContactUncheckedCreateWithoutClientInput> | CarrierClientContactCreateWithoutClientInput[] | CarrierClientContactUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutClientInput | CarrierClientContactCreateOrConnectWithoutClientInput[]
+    createMany?: CarrierClientContactCreateManyClientInputEnvelope
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+  }
+
   export type CarrierContractUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<CarrierContractCreateWithoutClientInput, CarrierContractUncheckedCreateWithoutClientInput> | CarrierContractCreateWithoutClientInput[] | CarrierContractUncheckedCreateWithoutClientInput[]
     connectOrCreate?: CarrierContractCreateOrConnectWithoutClientInput | CarrierContractCreateOrConnectWithoutClientInput[]
@@ -184292,6 +185893,13 @@ export namespace Prisma {
     connectOrCreate?: CarrierLoadCreateOrConnectWithoutClientInput | CarrierLoadCreateOrConnectWithoutClientInput[]
     createMany?: CarrierLoadCreateManyClientInputEnvelope
     connect?: CarrierLoadWhereUniqueInput | CarrierLoadWhereUniqueInput[]
+  }
+
+  export type CarrierClientContactUncheckedCreateNestedManyWithoutClientInput = {
+    create?: XOR<CarrierClientContactCreateWithoutClientInput, CarrierClientContactUncheckedCreateWithoutClientInput> | CarrierClientContactCreateWithoutClientInput[] | CarrierClientContactUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutClientInput | CarrierClientContactCreateOrConnectWithoutClientInput[]
+    createMany?: CarrierClientContactCreateManyClientInputEnvelope
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierClientsNestedInput = {
@@ -184430,6 +186038,20 @@ export namespace Prisma {
     deleteMany?: CarrierLoadScalarWhereInput | CarrierLoadScalarWhereInput[]
   }
 
+  export type CarrierClientContactUpdateManyWithoutClientNestedInput = {
+    create?: XOR<CarrierClientContactCreateWithoutClientInput, CarrierClientContactUncheckedCreateWithoutClientInput> | CarrierClientContactCreateWithoutClientInput[] | CarrierClientContactUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutClientInput | CarrierClientContactCreateOrConnectWithoutClientInput[]
+    upsert?: CarrierClientContactUpsertWithWhereUniqueWithoutClientInput | CarrierClientContactUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: CarrierClientContactCreateManyClientInputEnvelope
+    set?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    disconnect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    delete?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    update?: CarrierClientContactUpdateWithWhereUniqueWithoutClientInput | CarrierClientContactUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: CarrierClientContactUpdateManyWithWhereWithoutClientInput | CarrierClientContactUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: CarrierClientContactScalarWhereInput | CarrierClientContactScalarWhereInput[]
+  }
+
   export type CarrierContractUncheckedUpdateManyWithoutClientNestedInput = {
     create?: XOR<CarrierContractCreateWithoutClientInput, CarrierContractUncheckedCreateWithoutClientInput> | CarrierContractCreateWithoutClientInput[] | CarrierContractUncheckedCreateWithoutClientInput[]
     connectOrCreate?: CarrierContractCreateOrConnectWithoutClientInput | CarrierContractCreateOrConnectWithoutClientInput[]
@@ -184526,6 +186148,48 @@ export namespace Prisma {
     update?: CarrierLoadUpdateWithWhereUniqueWithoutClientInput | CarrierLoadUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: CarrierLoadUpdateManyWithWhereWithoutClientInput | CarrierLoadUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: CarrierLoadScalarWhereInput | CarrierLoadScalarWhereInput[]
+  }
+
+  export type CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<CarrierClientContactCreateWithoutClientInput, CarrierClientContactUncheckedCreateWithoutClientInput> | CarrierClientContactCreateWithoutClientInput[] | CarrierClientContactUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: CarrierClientContactCreateOrConnectWithoutClientInput | CarrierClientContactCreateOrConnectWithoutClientInput[]
+    upsert?: CarrierClientContactUpsertWithWhereUniqueWithoutClientInput | CarrierClientContactUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: CarrierClientContactCreateManyClientInputEnvelope
+    set?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    disconnect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    delete?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    connect?: CarrierClientContactWhereUniqueInput | CarrierClientContactWhereUniqueInput[]
+    update?: CarrierClientContactUpdateWithWhereUniqueWithoutClientInput | CarrierClientContactUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: CarrierClientContactUpdateManyWithWhereWithoutClientInput | CarrierClientContactUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: CarrierClientContactScalarWhereInput | CarrierClientContactScalarWhereInput[]
+  }
+
+  export type TenantCreateNestedOneWithoutCarrierClientContactsInput = {
+    create?: XOR<TenantCreateWithoutCarrierClientContactsInput, TenantUncheckedCreateWithoutCarrierClientContactsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutCarrierClientContactsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type CarrierClientCreateNestedOneWithoutContactsInput = {
+    create?: XOR<CarrierClientCreateWithoutContactsInput, CarrierClientUncheckedCreateWithoutContactsInput>
+    connectOrCreate?: CarrierClientCreateOrConnectWithoutContactsInput
+    connect?: CarrierClientWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutCarrierClientContactsNestedInput = {
+    create?: XOR<TenantCreateWithoutCarrierClientContactsInput, TenantUncheckedCreateWithoutCarrierClientContactsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutCarrierClientContactsInput
+    upsert?: TenantUpsertWithoutCarrierClientContactsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutCarrierClientContactsInput, TenantUpdateWithoutCarrierClientContactsInput>, TenantUncheckedUpdateWithoutCarrierClientContactsInput>
+  }
+
+  export type CarrierClientUpdateOneRequiredWithoutContactsNestedInput = {
+    create?: XOR<CarrierClientCreateWithoutContactsInput, CarrierClientUncheckedCreateWithoutContactsInput>
+    connectOrCreate?: CarrierClientCreateOrConnectWithoutContactsInput
+    upsert?: CarrierClientUpsertWithoutContactsInput
+    connect?: CarrierClientWhereUniqueInput
+    update?: XOR<XOR<CarrierClientUpdateToOneWithWhereWithoutContactsInput, CarrierClientUpdateWithoutContactsInput>, CarrierClientUncheckedUpdateWithoutContactsInput>
   }
 
   export type TenantCreateNestedOneWithoutCarrierContractsInput = {
@@ -193100,6 +194764,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutTenantInput = {
@@ -193139,6 +194804,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutTenantInput = {
@@ -193148,6 +194814,40 @@ export namespace Prisma {
 
   export type CarrierClientCreateManyTenantInputEnvelope = {
     data: CarrierClientCreateManyTenantInput | CarrierClientCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CarrierClientContactCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: CarrierClientCreateNestedOneWithoutContactsInput
+  }
+
+  export type CarrierClientContactUncheckedCreateWithoutTenantInput = {
+    id?: string
+    clientId: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CarrierClientContactCreateOrConnectWithoutTenantInput = {
+    where: CarrierClientContactWhereUniqueInput
+    create: XOR<CarrierClientContactCreateWithoutTenantInput, CarrierClientContactUncheckedCreateWithoutTenantInput>
+  }
+
+  export type CarrierClientContactCreateManyTenantInputEnvelope = {
+    data: CarrierClientContactCreateManyTenantInput | CarrierClientContactCreateManyTenantInput[]
     skipDuplicates?: boolean
   }
 
@@ -196463,6 +198163,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CarrierClient"> | Date | string
   }
 
+  export type CarrierClientContactUpsertWithWhereUniqueWithoutTenantInput = {
+    where: CarrierClientContactWhereUniqueInput
+    update: XOR<CarrierClientContactUpdateWithoutTenantInput, CarrierClientContactUncheckedUpdateWithoutTenantInput>
+    create: XOR<CarrierClientContactCreateWithoutTenantInput, CarrierClientContactUncheckedCreateWithoutTenantInput>
+  }
+
+  export type CarrierClientContactUpdateWithWhereUniqueWithoutTenantInput = {
+    where: CarrierClientContactWhereUniqueInput
+    data: XOR<CarrierClientContactUpdateWithoutTenantInput, CarrierClientContactUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type CarrierClientContactUpdateManyWithWhereWithoutTenantInput = {
+    where: CarrierClientContactScalarWhereInput
+    data: XOR<CarrierClientContactUpdateManyMutationInput, CarrierClientContactUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type CarrierClientContactScalarWhereInput = {
+    AND?: CarrierClientContactScalarWhereInput | CarrierClientContactScalarWhereInput[]
+    OR?: CarrierClientContactScalarWhereInput[]
+    NOT?: CarrierClientContactScalarWhereInput | CarrierClientContactScalarWhereInput[]
+    id?: UuidFilter<"CarrierClientContact"> | string
+    orgId?: UuidFilter<"CarrierClientContact"> | string
+    clientId?: UuidFilter<"CarrierClientContact"> | string
+    name?: StringFilter<"CarrierClientContact"> | string
+    role?: StringNullableFilter<"CarrierClientContact"> | string | null
+    phone?: StringNullableFilter<"CarrierClientContact"> | string | null
+    email?: StringNullableFilter<"CarrierClientContact"> | string | null
+    isMain?: BoolFilter<"CarrierClientContact"> | boolean
+    createdAt?: DateTimeFilter<"CarrierClientContact"> | Date | string
+    updatedAt?: DateTimeFilter<"CarrierClientContact"> | Date | string
+  }
+
   export type CarrierContractUpsertWithWhereUniqueWithoutTenantInput = {
     where: CarrierContractWhereUniqueInput
     update: XOR<CarrierContractUpdateWithoutTenantInput, CarrierContractUncheckedUpdateWithoutTenantInput>
@@ -198189,6 +199921,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -198284,6 +200017,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -201200,6 +202934,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutCreatedByInput = {
@@ -201239,6 +202974,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutCreatedByInput = {
@@ -201288,6 +203024,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutUpdatedByInput = {
@@ -201327,6 +203064,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutUpdatedByInput = {
@@ -201376,6 +203114,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutDeletedByInput = {
@@ -201415,6 +203154,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutDeletedByInput = {
@@ -205798,6 +207538,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -205893,6 +207634,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -208298,6 +210040,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -208393,6 +210136,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -209558,6 +211302,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -209653,6 +211398,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -210506,6 +212252,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -210601,6 +212348,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -211314,6 +213062,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -211409,6 +213158,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -212118,6 +213868,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -212213,6 +213964,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -214064,6 +215816,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -214159,6 +215912,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -216133,6 +217887,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -216228,6 +217983,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -217024,6 +218780,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -217119,6 +218876,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -217520,6 +219278,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -217615,6 +219374,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -219139,6 +220899,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -219234,6 +220995,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -220784,6 +222546,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -220879,6 +222642,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -221653,6 +223417,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -221748,6 +223513,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -222524,6 +224290,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -222619,6 +224386,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -223393,6 +225161,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -223488,6 +225257,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -224264,6 +226034,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -224359,6 +226130,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -224470,6 +226242,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -224565,6 +226338,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -224660,6 +226434,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -224755,6 +226530,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -225004,6 +226780,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -225099,6 +226876,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -225344,6 +227122,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -225439,6 +227218,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -225983,6 +227763,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -226078,6 +227859,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -226624,6 +228406,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -226719,6 +228502,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -227192,6 +228976,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -227287,6 +229072,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -227756,6 +229542,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -227851,6 +229638,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -228590,6 +230378,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -228685,6 +230474,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -229410,6 +231200,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -229505,6 +231296,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -230005,6 +231797,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -230100,6 +231893,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -230602,6 +232396,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -230697,6 +232492,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -231474,6 +233270,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -231569,6 +233366,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -232310,6 +234108,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -232405,6 +234204,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -233218,6 +235018,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -233313,6 +235114,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -234134,6 +235936,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -234229,6 +236032,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -234968,6 +236772,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -235063,6 +236868,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -235842,6 +237648,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -235937,6 +237744,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -236114,6 +237922,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -236209,6 +238018,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -236304,6 +238114,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -236399,6 +238210,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -237183,6 +238995,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -237278,6 +239091,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -238064,6 +239878,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -238159,6 +239974,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -238990,6 +240806,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -239085,6 +240902,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -239826,6 +241644,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -239921,6 +241740,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -240691,6 +242511,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -240786,6 +242607,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -241558,6 +243380,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -241653,6 +243476,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -242483,6 +244307,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -242578,6 +244403,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -243449,6 +245275,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -243544,6 +245371,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -244326,6 +246154,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -244421,6 +246250,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -245130,6 +246960,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -245225,6 +247056,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -245980,6 +247812,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -246075,6 +247908,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -246848,6 +248682,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -246943,6 +248778,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -247709,6 +249545,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -247804,6 +249641,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -248512,6 +250350,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -248607,6 +250446,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -249621,6 +251461,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -249716,6 +251557,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -250732,6 +252574,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -250827,6 +252670,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -252336,6 +254180,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -252431,6 +254276,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -253832,6 +255678,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -253927,6 +255774,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -254640,6 +256488,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -254735,6 +256584,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -256731,6 +258581,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -256826,6 +258677,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -257857,6 +259709,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -257952,6 +259805,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -258776,6 +260630,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -258871,6 +260726,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -259354,6 +261210,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -259449,6 +261306,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -261154,6 +263012,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -261249,6 +263108,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -261968,6 +263828,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -262063,6 +263924,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -262464,6 +264326,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -262559,6 +264422,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -263573,6 +265437,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -263668,6 +265533,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -264684,6 +266550,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -264779,6 +266646,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -265793,6 +267661,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -265888,6 +267757,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -266904,6 +268774,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -266999,6 +268870,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -268464,6 +270336,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CarrierClientContactCreateWithoutClientInput = {
+    id?: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierClientContactsInput
+  }
+
+  export type CarrierClientContactUncheckedCreateWithoutClientInput = {
+    id?: string
+    orgId: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CarrierClientContactCreateOrConnectWithoutClientInput = {
+    where: CarrierClientContactWhereUniqueInput
+    create: XOR<CarrierClientContactCreateWithoutClientInput, CarrierClientContactUncheckedCreateWithoutClientInput>
+  }
+
+  export type CarrierClientContactCreateManyClientInputEnvelope = {
+    data: CarrierClientContactCreateManyClientInput | CarrierClientContactCreateManyClientInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutCarrierClientsInput = {
     update: XOR<TenantUpdateWithoutCarrierClientsInput, TenantUncheckedUpdateWithoutCarrierClientsInput>
     create: XOR<TenantCreateWithoutCarrierClientsInput, TenantUncheckedCreateWithoutCarrierClientsInput>
@@ -268525,6 +270431,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -268620,6 +270527,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -269698,6 +271606,598 @@ export namespace Prisma {
     data: XOR<CarrierLoadUpdateManyMutationInput, CarrierLoadUncheckedUpdateManyWithoutClientInput>
   }
 
+  export type CarrierClientContactUpsertWithWhereUniqueWithoutClientInput = {
+    where: CarrierClientContactWhereUniqueInput
+    update: XOR<CarrierClientContactUpdateWithoutClientInput, CarrierClientContactUncheckedUpdateWithoutClientInput>
+    create: XOR<CarrierClientContactCreateWithoutClientInput, CarrierClientContactUncheckedCreateWithoutClientInput>
+  }
+
+  export type CarrierClientContactUpdateWithWhereUniqueWithoutClientInput = {
+    where: CarrierClientContactWhereUniqueInput
+    data: XOR<CarrierClientContactUpdateWithoutClientInput, CarrierClientContactUncheckedUpdateWithoutClientInput>
+  }
+
+  export type CarrierClientContactUpdateManyWithWhereWithoutClientInput = {
+    where: CarrierClientContactScalarWhereInput
+    data: XOR<CarrierClientContactUpdateManyMutationInput, CarrierClientContactUncheckedUpdateManyWithoutClientInput>
+  }
+
+  export type TenantCreateWithoutCarrierClientContactsInput = {
+    id?: string
+    name: string
+    slug: string
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
+    heardAbout?: string | null
+    heardAboutOther?: string | null
+    status?: $Enums.TenantStatus
+    manualTrial?: boolean
+    emailConfirmedAt?: Date | string | null
+    sampleDataSeeded?: boolean
+    provisioningPhase?: $Enums.ProvisioningPhase
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    trips?: TripCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
+    subscription?: SubscriptionCreateNestedOneWithoutTenantInput
+    activationProgress?: ActivationProgressCreateNestedOneWithoutTenantInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutTenantInput
+    automationRuns?: AutomationRunCreateNestedManyWithoutTenantInput
+    appEvents?: AppEventCreateNestedManyWithoutTenantInput
+    tenantMetrics?: TenantMetricsDailyCreateNestedManyWithoutTenantInput
+    tenantHealthScore?: TenantHealthScoreCreateNestedOneWithoutTenantInput
+    driverCompTemplates?: DriverCompensationTemplateCreateNestedManyWithoutTenantInput
+    loadDriverAssignments?: LoadDriverAssignmentCreateNestedManyWithoutTenantInput
+    loadPayComponents?: LoadPayComponentCreateNestedManyWithoutTenantInput
+    driverBonuses?: DriverBonusCreateNestedManyWithoutTenantInput
+    driverDeductions?: DriverDeductionCreateNestedManyWithoutTenantInput
+    driverSettlements?: DriverSettlementCreateNestedManyWithoutTenantInput
+    payComponentAttachments?: PayComponentAttachmentCreateNestedManyWithoutTenantInput
+    driverDisputes?: DriverDisputeCreateNestedManyWithoutTenantInput
+    driverPayAuditLogs?: DriverPayAuditLogCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackCreateNestedManyWithoutTenantInput
+    notificationSettings?: TenantNotificationSettingsCreateNestedManyWithoutTenantInput
+    notificationSubscriptions?: NotificationSubscriptionCreateNestedManyWithoutTenantInput
+    playbookSteps?: PlaybookStepCreateNestedManyWithoutTenantInput
+    pushTokens?: PushTokenCreateNestedManyWithoutTenantInput
+    routeDrivers?: RouteDriverCreateNestedManyWithoutTenantInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogCreateNestedManyWithoutTenantInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemCreateNestedManyWithoutTenantInput
+    userNotificationPreferences?: UserNotificationPreferenceCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutCarrierClientContactsInput = {
+    id?: string
+    name: string
+    slug: string
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
+    heardAbout?: string | null
+    heardAboutOther?: string | null
+    status?: $Enums.TenantStatus
+    manualTrial?: boolean
+    emailConfirmedAt?: Date | string | null
+    sampleDataSeeded?: boolean
+    provisioningPhase?: $Enums.ProvisioningPhase
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    trips?: TripUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    activationProgress?: ActivationProgressUncheckedCreateNestedOneWithoutTenantInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutTenantInput
+    automationRuns?: AutomationRunUncheckedCreateNestedManyWithoutTenantInput
+    appEvents?: AppEventUncheckedCreateNestedManyWithoutTenantInput
+    tenantMetrics?: TenantMetricsDailyUncheckedCreateNestedManyWithoutTenantInput
+    tenantHealthScore?: TenantHealthScoreUncheckedCreateNestedOneWithoutTenantInput
+    driverCompTemplates?: DriverCompensationTemplateUncheckedCreateNestedManyWithoutTenantInput
+    loadDriverAssignments?: LoadDriverAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    loadPayComponents?: LoadPayComponentUncheckedCreateNestedManyWithoutTenantInput
+    driverBonuses?: DriverBonusUncheckedCreateNestedManyWithoutTenantInput
+    driverDeductions?: DriverDeductionUncheckedCreateNestedManyWithoutTenantInput
+    driverSettlements?: DriverSettlementUncheckedCreateNestedManyWithoutTenantInput
+    payComponentAttachments?: PayComponentAttachmentUncheckedCreateNestedManyWithoutTenantInput
+    driverDisputes?: DriverDisputeUncheckedCreateNestedManyWithoutTenantInput
+    driverPayAuditLogs?: DriverPayAuditLogUncheckedCreateNestedManyWithoutTenantInput
+    docFeedback?: DocFeedbackUncheckedCreateNestedManyWithoutTenantInput
+    notificationSettings?: TenantNotificationSettingsUncheckedCreateNestedManyWithoutTenantInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedCreateNestedManyWithoutTenantInput
+    playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutTenantInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutTenantInput
+    routeDrivers?: RouteDriverUncheckedCreateNestedManyWithoutTenantInput
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutTenantInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    userNotificationPreferences?: UserNotificationPreferenceUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutCarrierClientContactsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutCarrierClientContactsInput, TenantUncheckedCreateWithoutCarrierClientContactsInput>
+  }
+
+  export type CarrierClientCreateWithoutContactsInput = {
+    id?: string
+    name: string
+    dbaName?: string | null
+    mcNumber?: string | null
+    dotNumber?: string | null
+    taxId?: string | null
+    primaryContact?: string | null
+    email?: string | null
+    phone?: string | null
+    website?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    city?: string | null
+    state?: string | null
+    zip?: string | null
+    country?: string
+    status?: string
+    isSample?: boolean
+    portalAccess?: boolean
+    portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
+    notes?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierClientsInput
+    createdBy?: UserCreateNestedOneWithoutCarrierClientsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutCarrierClientsUpdatedInput
+    deletedBy?: UserCreateNestedOneWithoutCarrierClientsDeletedInput
+    contracts?: CarrierContractCreateNestedManyWithoutClientInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutClientInput
+    stops?: CarrierStopCreateNestedManyWithoutClientInput
+    carrierDocuments?: CarrierDocumentCreateNestedManyWithoutClientInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+  }
+
+  export type CarrierClientUncheckedCreateWithoutContactsInput = {
+    id?: string
+    orgId: string
+    name: string
+    dbaName?: string | null
+    mcNumber?: string | null
+    dotNumber?: string | null
+    taxId?: string | null
+    primaryContact?: string | null
+    email?: string | null
+    phone?: string | null
+    website?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    city?: string | null
+    state?: string | null
+    zip?: string | null
+    country?: string
+    status?: string
+    isSample?: boolean
+    portalAccess?: boolean
+    portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
+    notes?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    deletedAt?: Date | string | null
+    deletedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contracts?: CarrierContractUncheckedCreateNestedManyWithoutClientInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutClientInput
+    stops?: CarrierStopUncheckedCreateNestedManyWithoutClientInput
+    carrierDocuments?: CarrierDocumentUncheckedCreateNestedManyWithoutClientInput
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type CarrierClientCreateOrConnectWithoutContactsInput = {
+    where: CarrierClientWhereUniqueInput
+    create: XOR<CarrierClientCreateWithoutContactsInput, CarrierClientUncheckedCreateWithoutContactsInput>
+  }
+
+  export type TenantUpsertWithoutCarrierClientContactsInput = {
+    update: XOR<TenantUpdateWithoutCarrierClientContactsInput, TenantUncheckedUpdateWithoutCarrierClientContactsInput>
+    create: XOR<TenantCreateWithoutCarrierClientContactsInput, TenantUncheckedCreateWithoutCarrierClientContactsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutCarrierClientContactsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutCarrierClientContactsInput, TenantUncheckedUpdateWithoutCarrierClientContactsInput>
+  }
+
+  export type TenantUpdateWithoutCarrierClientContactsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
+    heardAbout?: NullableStringFieldUpdateOperationsInput | string | null
+    heardAboutOther?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+    manualTrial?: BoolFieldUpdateOperationsInput | boolean
+    emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sampleDataSeeded?: BoolFieldUpdateOperationsInput | boolean
+    provisioningPhase?: EnumProvisioningPhaseFieldUpdateOperationsInput | $Enums.ProvisioningPhase
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    trips?: TripUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
+    subscription?: SubscriptionUpdateOneWithoutTenantNestedInput
+    activationProgress?: ActivationProgressUpdateOneWithoutTenantNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutTenantNestedInput
+    automationRuns?: AutomationRunUpdateManyWithoutTenantNestedInput
+    appEvents?: AppEventUpdateManyWithoutTenantNestedInput
+    tenantMetrics?: TenantMetricsDailyUpdateManyWithoutTenantNestedInput
+    tenantHealthScore?: TenantHealthScoreUpdateOneWithoutTenantNestedInput
+    driverCompTemplates?: DriverCompensationTemplateUpdateManyWithoutTenantNestedInput
+    loadDriverAssignments?: LoadDriverAssignmentUpdateManyWithoutTenantNestedInput
+    loadPayComponents?: LoadPayComponentUpdateManyWithoutTenantNestedInput
+    driverBonuses?: DriverBonusUpdateManyWithoutTenantNestedInput
+    driverDeductions?: DriverDeductionUpdateManyWithoutTenantNestedInput
+    driverSettlements?: DriverSettlementUpdateManyWithoutTenantNestedInput
+    payComponentAttachments?: PayComponentAttachmentUpdateManyWithoutTenantNestedInput
+    driverDisputes?: DriverDisputeUpdateManyWithoutTenantNestedInput
+    driverPayAuditLogs?: DriverPayAuditLogUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUpdateManyWithoutTenantNestedInput
+    notificationSettings?: TenantNotificationSettingsUpdateManyWithoutTenantNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUpdateManyWithoutTenantNestedInput
+    playbookSteps?: PlaybookStepUpdateManyWithoutTenantNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutTenantNestedInput
+    routeDrivers?: RouteDriverUpdateManyWithoutTenantNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutTenantNestedInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemUpdateManyWithoutTenantNestedInput
+    userNotificationPreferences?: UserNotificationPreferenceUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutCarrierClientContactsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
+    heardAbout?: NullableStringFieldUpdateOperationsInput | string | null
+    heardAboutOther?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
+    manualTrial?: BoolFieldUpdateOperationsInput | boolean
+    emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sampleDataSeeded?: BoolFieldUpdateOperationsInput | boolean
+    provisioningPhase?: EnumProvisioningPhaseFieldUpdateOperationsInput | $Enums.ProvisioningPhase
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    trips?: TripUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    activationProgress?: ActivationProgressUncheckedUpdateOneWithoutTenantNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutTenantNestedInput
+    automationRuns?: AutomationRunUncheckedUpdateManyWithoutTenantNestedInput
+    appEvents?: AppEventUncheckedUpdateManyWithoutTenantNestedInput
+    tenantMetrics?: TenantMetricsDailyUncheckedUpdateManyWithoutTenantNestedInput
+    tenantHealthScore?: TenantHealthScoreUncheckedUpdateOneWithoutTenantNestedInput
+    driverCompTemplates?: DriverCompensationTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    loadDriverAssignments?: LoadDriverAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    loadPayComponents?: LoadPayComponentUncheckedUpdateManyWithoutTenantNestedInput
+    driverBonuses?: DriverBonusUncheckedUpdateManyWithoutTenantNestedInput
+    driverDeductions?: DriverDeductionUncheckedUpdateManyWithoutTenantNestedInput
+    driverSettlements?: DriverSettlementUncheckedUpdateManyWithoutTenantNestedInput
+    payComponentAttachments?: PayComponentAttachmentUncheckedUpdateManyWithoutTenantNestedInput
+    driverDisputes?: DriverDisputeUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayAuditLogs?: DriverPayAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    docFeedback?: DocFeedbackUncheckedUpdateManyWithoutTenantNestedInput
+    notificationSettings?: TenantNotificationSettingsUncheckedUpdateManyWithoutTenantNestedInput
+    notificationSubscriptions?: NotificationSubscriptionUncheckedUpdateManyWithoutTenantNestedInput
+    playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutTenantNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutTenantNestedInput
+    routeDrivers?: RouteDriverUncheckedUpdateManyWithoutTenantNestedInput
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoiceItems?: SysAdminInvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    userNotificationPreferences?: UserNotificationPreferenceUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type CarrierClientUpsertWithoutContactsInput = {
+    update: XOR<CarrierClientUpdateWithoutContactsInput, CarrierClientUncheckedUpdateWithoutContactsInput>
+    create: XOR<CarrierClientCreateWithoutContactsInput, CarrierClientUncheckedCreateWithoutContactsInput>
+    where?: CarrierClientWhereInput
+  }
+
+  export type CarrierClientUpdateToOneWithWhereWithoutContactsInput = {
+    where?: CarrierClientWhereInput
+    data: XOR<CarrierClientUpdateWithoutContactsInput, CarrierClientUncheckedUpdateWithoutContactsInput>
+  }
+
+  export type CarrierClientUpdateWithoutContactsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    dbaName?: NullableStringFieldUpdateOperationsInput | string | null
+    mcNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dotNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    taxId?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    portalAccess?: BoolFieldUpdateOperationsInput | boolean
+    portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierClientsNestedInput
+    createdBy?: UserUpdateOneWithoutCarrierClientsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutCarrierClientsUpdatedNestedInput
+    deletedBy?: UserUpdateOneWithoutCarrierClientsDeletedNestedInput
+    contracts?: CarrierContractUpdateManyWithoutClientNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutClientNestedInput
+    stops?: CarrierStopUpdateManyWithoutClientNestedInput
+    carrierDocuments?: CarrierDocumentUpdateManyWithoutClientNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+  }
+
+  export type CarrierClientUncheckedUpdateWithoutContactsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    dbaName?: NullableStringFieldUpdateOperationsInput | string | null
+    mcNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dotNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    taxId?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryContact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
+    portalAccess?: BoolFieldUpdateOperationsInput | boolean
+    portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contracts?: CarrierContractUncheckedUpdateManyWithoutClientNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutClientNestedInput
+    stops?: CarrierStopUncheckedUpdateManyWithoutClientNestedInput
+    carrierDocuments?: CarrierDocumentUncheckedUpdateManyWithoutClientNestedInput
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+  }
+
   export type TenantCreateWithoutCarrierContractsInput = {
     id?: string
     name: string
@@ -269749,6 +272249,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
     carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
@@ -269844,6 +272345,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
     carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
@@ -270833,6 +273335,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutContractsInput = {
@@ -270872,6 +273375,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutContractsInput = {
@@ -271165,6 +273669,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
     carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
@@ -271260,6 +273765,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
     carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
@@ -272273,6 +274779,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutContractsInput = {
@@ -272312,6 +274819,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type RouteTemplateUpsertWithWhereUniqueWithoutContractInput = {
@@ -272413,6 +274921,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
     carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
@@ -272508,6 +275017,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
     carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
@@ -273451,6 +275961,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
     carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
@@ -273546,6 +276057,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
     carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
@@ -274303,6 +276815,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
@@ -274398,6 +276911,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
@@ -276546,6 +279060,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
@@ -276641,6 +279156,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
@@ -278223,6 +280739,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -278318,6 +280835,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -279660,6 +282178,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -279755,6 +282274,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -280851,6 +283371,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -280946,6 +283467,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -281032,6 +283554,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutRouteTemplatesInput = {
@@ -281071,6 +283594,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutRouteTemplatesInput = {
@@ -282099,6 +284623,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -282194,6 +284719,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -282286,6 +284812,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -282325,6 +284852,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierContractUpsertWithoutRouteTemplatesInput = {
@@ -284143,6 +286671,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -284238,6 +286767,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -286366,6 +288896,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -286461,6 +288992,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -288307,6 +290839,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -288402,6 +290935,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -289529,6 +292063,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentCreateNestedManyWithoutClientInput
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutCarrierLoadsInput = {
@@ -289568,6 +292103,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUncheckedCreateNestedManyWithoutClientInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutCarrierLoadsInput = {
@@ -290059,6 +292595,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -290154,6 +292691,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -291317,6 +293855,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUpdateManyWithoutClientNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -291356,6 +293895,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUncheckedUpdateManyWithoutClientNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierStopUpsertWithWhereUniqueWithoutLoadInput = {
@@ -292322,6 +294862,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutStopsInput = {
@@ -292361,6 +294902,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutStopsInput = {
@@ -293429,6 +295971,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutStopsInput = {
@@ -293468,6 +296011,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierDocumentUpsertWithWhereUniqueWithoutStopInput = {
@@ -294240,6 +296784,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutCarrierDocumentsInput = {
@@ -294279,6 +296824,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutCarrierDocumentsInput = {
@@ -295353,6 +297899,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutCarrierDocumentsInput = {
@@ -295392,6 +297939,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierDocumentTypeUpsertWithoutDocumentsInput = {
@@ -295747,6 +298295,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -295842,6 +298391,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -296007,6 +298557,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -296102,6 +298653,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -296213,6 +298765,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -296308,6 +298861,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -297247,6 +299801,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutExpensesInput = {
@@ -297286,6 +299841,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUncheckedCreateNestedManyWithoutClientInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutExpensesInput = {
@@ -297796,6 +300352,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -297891,6 +300448,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -298866,6 +301424,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutExpensesInput = {
@@ -298905,6 +301464,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierDriverUpsertWithoutExpensesInput = {
@@ -299417,6 +301977,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -299512,6 +302073,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -299857,6 +302419,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentCreateNestedManyWithoutClientInput
     expenses?: CarrierExpenseCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -299896,6 +302459,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUncheckedCreateNestedManyWithoutClientInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutClientInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutClientInput
+    contacts?: CarrierClientContactUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type CarrierClientCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -300266,6 +302830,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -300361,6 +302926,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -300730,6 +303296,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUpdateManyWithoutClientNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -300769,6 +303336,7 @@ export namespace Prisma {
     carrierDocuments?: CarrierDocumentUncheckedUpdateManyWithoutClientNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type UserUpsertWithoutApprovedPayRecordsInput = {
@@ -301129,6 +303697,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -301224,6 +303793,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -301636,6 +304206,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -301731,6 +304302,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -302133,6 +304705,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -302228,6 +304801,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -303049,6 +305623,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -303144,6 +305719,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -303885,6 +306461,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -303980,6 +306557,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -304835,6 +307413,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -304930,6 +307509,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -305767,6 +308347,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -305862,6 +308443,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -306366,6 +308948,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -306461,6 +309044,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -306863,6 +309447,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -306958,6 +309543,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -307804,6 +310390,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -307899,6 +310486,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -308775,6 +311363,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -308870,6 +311459,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -309382,6 +311972,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -309477,6 +312068,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -309879,6 +312471,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -309974,6 +312567,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -310134,6 +312728,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -310229,6 +312824,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -310420,6 +313016,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -310515,6 +313112,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -311275,6 +313873,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -311370,6 +313969,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -312079,6 +314679,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -312174,6 +314775,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -312285,6 +314887,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -312380,6 +314983,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -312611,6 +315215,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -312706,6 +315311,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -312895,6 +315501,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -312990,6 +315597,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -313175,6 +315783,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -313270,6 +315879,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -313381,6 +315991,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -313476,6 +316087,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -313571,6 +316183,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -313666,6 +316279,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -313813,6 +316427,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -313908,6 +316523,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -314058,6 +316674,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -314153,6 +316770,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -314309,6 +316927,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -314404,6 +317023,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -314499,6 +317119,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -314594,6 +317215,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -314705,6 +317327,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -314800,6 +317423,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -314895,6 +317519,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -314990,6 +317615,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -315101,6 +317727,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -315196,6 +317823,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -315291,6 +317919,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -315386,6 +318015,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -315497,6 +318127,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -315592,6 +318223,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -315687,6 +318319,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -315782,6 +318415,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -316670,6 +319304,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -316765,6 +319400,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -317587,6 +320223,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -317682,6 +320319,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -318815,6 +321453,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -318910,6 +321549,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -319983,6 +322623,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -320078,6 +322719,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -321194,6 +323836,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -321289,6 +323932,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -322307,6 +324951,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -322402,6 +325047,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -323469,6 +326115,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -323564,6 +326211,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -324607,6 +327255,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -324702,6 +327351,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -325506,6 +328156,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -325601,6 +328252,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -326407,6 +329059,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -326502,6 +329155,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -327450,6 +330104,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -327545,6 +330200,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -328383,6 +331039,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -328478,6 +331135,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -329335,6 +331993,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -329430,6 +332089,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -330295,6 +332955,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -330390,6 +333051,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -331259,6 +333921,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -331354,6 +334017,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -332231,6 +334895,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -332326,6 +334991,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -332437,6 +335103,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -332532,6 +335199,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -332627,6 +335295,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -332722,6 +335391,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -332833,6 +335503,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -332928,6 +335599,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -333023,6 +335695,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -333118,6 +335791,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -333229,6 +335903,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -333324,6 +335999,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -333419,6 +336095,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -333514,6 +336191,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -333926,6 +336604,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -334021,6 +336700,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -334724,6 +337404,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -334819,6 +337500,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -335538,6 +338220,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -335633,6 +338316,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -336035,6 +338719,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
@@ -336130,6 +338815,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
     driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
     carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierClientContacts?: CarrierClientContactUncheckedCreateNestedManyWithoutTenantInput
     carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
     carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
     carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
@@ -336542,6 +339228,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
@@ -336637,6 +339324,7 @@ export namespace Prisma {
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
     carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClientContacts?: CarrierClientContactUncheckedUpdateManyWithoutTenantNestedInput
     carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
     carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
     carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
@@ -338151,6 +340839,18 @@ export namespace Prisma {
     updatedById?: string | null
     deletedAt?: Date | string | null
     deletedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CarrierClientContactCreateManyTenantInput = {
+    id?: string
+    clientId: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -340858,6 +343558,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutTenantInput = {
@@ -340897,6 +343598,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateManyWithoutTenantInput = {
@@ -340927,6 +343629,42 @@ export namespace Prisma {
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: CarrierClientUpdateOneRequiredWithoutContactsNestedInput
+  }
+
+  export type CarrierClientContactUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -349375,6 +352113,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutCreatedByInput = {
@@ -349414,6 +352153,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateManyWithoutCreatedByInput = {
@@ -349485,6 +352225,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutUpdatedByInput = {
@@ -349524,6 +352265,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateManyWithoutUpdatedByInput = {
@@ -349595,6 +352337,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateWithoutDeletedByInput = {
@@ -349634,6 +352377,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutClientNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutClientNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
+    contacts?: CarrierClientContactUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type CarrierClientUncheckedUpdateManyWithoutDeletedByInput = {
@@ -357462,6 +360206,18 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type CarrierClientContactCreateManyClientInput = {
+    id?: string
+    orgId: string
+    name: string
+    role?: string | null
+    phone?: string | null
+    email?: string | null
+    isMain?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type CarrierContractUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
@@ -358106,6 +360862,42 @@ export namespace Prisma {
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierClientContactsNestedInput
+  }
+
+  export type CarrierClientContactUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierClientContactUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

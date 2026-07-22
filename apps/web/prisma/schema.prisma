@@ -180,6 +180,7 @@ model Tenant {
 
   // Carrier Operations reverse relations
   carrierClients       CarrierClient[]
+  carrierClientContacts CarrierClientContact[]
   carrierContracts     CarrierContract[]
   carrierFacilities    CarrierFacility[]
   carrierDrivers       CarrierDriver[]
@@ -1932,11 +1933,32 @@ model CarrierClient {
   expenses         CarrierExpense[]
   driverPayRecords DriverPayRecord[]
   carrierLoads     CarrierLoad[]
+  contacts         CarrierClientContact[]
 
   @@index([orgId])
   @@index([status])
   @@index([deletedAt])
   @@map("clients")
+}
+
+model CarrierClientContact {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId     String   @map("org_id") @db.Uuid
+  clientId  String   @map("client_id") @db.Uuid
+  name      String
+  role      String?
+  phone     String?
+  email     String?
+  isMain    Boolean  @default(false) @map("is_main")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant        @relation(fields: [orgId], references: [id])
+  client CarrierClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([clientId])
+  @@map("client_contacts")
 }
 
 model CarrierContract {

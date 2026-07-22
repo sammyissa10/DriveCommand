@@ -87,6 +87,7 @@ const EXEMPT_MODELS = new Set([
   'CarrierDocumentType', // uses orgId instead of tenantId
   'CarrierCatalogMeta', // global lookup table — no org/tenant scoping
   'Trip', // uses orgId, not tenantId — code in trips.ts handles isolation manually
+  'CarrierClientContact', // uses orgId instead of tenantId (quick-492)
   // RouteDriver — removed: now has tenantId (quick-327)
   // SysAdminInvoiceItem — removed: now has tenantId (quick-327)
   // PushToken — removed: now has tenantId (quick-327)

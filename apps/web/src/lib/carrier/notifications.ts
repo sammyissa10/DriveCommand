@@ -38,6 +38,7 @@ import { InvoiceGeneratedEmail } from '@/emails/carrier/invoice-generated';
 import { ComplianceAlertEmail } from '@/emails/carrier/compliance-alert';
 import { ClientShipmentUpdateEmail } from '@/emails/carrier/client-shipment-update';
 import { ClientInvoiceReadyEmail } from '@/emails/carrier/client-invoice-ready';
+import { getMainContact } from '@/lib/carrier/client-contacts';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -572,6 +573,7 @@ export async function sendInvoiceGeneratedNotification(
             email: true,
             portalAccess: true,
             paymentTerms: true,
+            contacts: { select: { name: true, email: true, phone: true, isMain: true } },
           },
         },
         contract: {
@@ -589,7 +591,7 @@ export async function sendInvoiceGeneratedNotification(
       return;
     }
 
-    const clientEmail = load.client.email;
+    const clientEmail = getMainContact(load.client.contacts)?.email ?? load.client.email;
     if (!clientEmail) {
       logger.warn('sendInvoiceGeneratedNotification: client has no email', {
         orgId,
@@ -786,6 +788,7 @@ async function getClientEmailForLoad(orgId: string, loadId: string) {
           portalAccess: true,
           portalEmail: true,
           paymentTerms: true,
+          contacts: { select: { name: true, email: true, phone: true, isMain: true } },
         },
       },
       contract: {
@@ -841,7 +844,7 @@ export async function sendClientPickupNotification(
     // Only send to clients with portal access
     if (!load.client.portalAccess) return;
 
-    const recipientEmail = load.client.email;
+    const recipientEmail = getMainContact(load.client.contacts)?.email ?? load.client.email;
     if (!recipientEmail) {
       logger.warn('sendClientPickupNotification: client has no email', { orgId, loadId });
       const logId = await recordNotification(prisma, {
@@ -973,7 +976,7 @@ export async function sendClientDeliveredNotification(
     // Only send to clients with portal access
     if (!load.client.portalAccess) return;
 
-    const recipientEmail = load.client.email;
+    const recipientEmail = getMainContact(load.client.contacts)?.email ?? load.client.email;
     if (!recipientEmail) {
       logger.warn('sendClientDeliveredNotification: client has no email', { orgId, loadId });
       const logId = await recordNotification(prisma, {
@@ -1110,7 +1113,7 @@ export async function sendClientInvoiceReadyNotification(
     }
 
     // Invoice notifications always send — do NOT check portalAccess
-    const recipientEmail = load.client.email;
+    const recipientEmail = getMainContact(load.client.contacts)?.email ?? load.client.email;
     if (!recipientEmail) {
       logger.warn('sendClientInvoiceReadyNotification: client has no email', { orgId, loadId });
       const logId = await recordNotification(prisma, {

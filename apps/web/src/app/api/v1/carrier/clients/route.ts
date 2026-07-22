@@ -6,6 +6,15 @@ import { logger } from '@/lib/logger';
 import { listClients, createClient, DuplicateClientError } from '@/lib/carrier/clients';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
+const ContactSchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+  role: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  isMain: z.boolean(),
+});
+
 const ClientCreateSchema = z.object({
   name: z.string().min(1),
   dbaName: z.string().optional(),
@@ -27,6 +36,7 @@ const ClientCreateSchema = z.object({
   paymentTerms: z.number().int().optional(),
   creditLimit: z.union([z.string(), z.number()]).optional().nullable(),
   notes: z.string().optional(),
+  contacts: z.array(ContactSchema).optional(),
 });
 
 export async function GET(req: NextRequest) {

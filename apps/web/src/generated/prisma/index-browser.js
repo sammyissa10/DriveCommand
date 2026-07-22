@@ -827,6 +827,19 @@ exports.Prisma.CarrierClientScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CarrierClientContactScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  clientId: 'clientId',
+  name: 'name',
+  role: 'role',
+  phone: 'phone',
+  email: 'email',
+  isMain: 'isMain',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CarrierContractScalarFieldEnum = {
   id: 'id',
   orgId: 'orgId',
@@ -2447,6 +2460,7 @@ exports.Prisma.ModelName = {
   DriverHOSEntry: 'DriverHOSEntry',
   DriverIncident: 'DriverIncident',
   CarrierClient: 'CarrierClient',
+  CarrierClientContact: 'CarrierClientContact',
   CarrierContract: 'CarrierContract',
   CarrierFacility: 'CarrierFacility',
   CarrierDriver: 'CarrierDriver',
