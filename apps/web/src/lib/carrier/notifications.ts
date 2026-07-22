@@ -30,6 +30,7 @@ import type { ComplianceAlert } from '@/lib/carrier/compliance';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { DispatchAssignedEmail } from '@/emails/carrier/dispatch-assigned';
+import { buildDispatchAssignedEmailData } from '@/lib/carrier/dispatch-assigned-email';
 import { LoadDeliveredEmail } from '@/emails/carrier/load-delivered';
 import { StopCompletedEmail } from '@/emails/carrier/stop-completed';
 import { PayRecordReadyEmail } from '@/emails/carrier/pay-record-ready';
@@ -84,12 +85,26 @@ export async function sendDispatchAssignedNotification(
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
     if (alreadySent) return;
 
-    // Resolve the dispatch number from notes for use in the subject/log
+    // Resolve the dispatch number from notes for use in the subject/log.
+    // Stops belong to the assigned load(s) (carrier_stops.load_id), so pull them
+    // through carrierLoads — NOT the trip._count.stops relation, which is 0 until
+    // the load's stops are wired to the dispatch and gives the wrong count here.
     const dispatchRaw = await tenantPrisma.trip.findFirst({
       where: { id: dispatchId, orgId },
       include: {
         truck: { select: { unitNumber: true } },
-        _count: { select: { stops: true } },
+        carrierLoads: {
+          select: {
+            stops: {
+              orderBy: { sequenceOrder: 'asc' },
+              select: {
+                sequenceOrder: true,
+                stopType: true,
+                facility: { select: { name: true, city: true } },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -132,35 +147,30 @@ export async function sendDispatchAssignedNotification(
 
     const tenant = await prisma.tenant.findFirst({
       where: { id: orgId },
-      select: { name: true },
+      select: { name: true, timezone: true },
     });
 
     const baseUrl = getAppBaseUrl();
     const driverPortalUrl = `${baseUrl}/driver/dispatches/${dispatchId}`;
     const companyName = tenant?.name ?? 'Your Company';
 
-    const scheduledDeparture = dispatchRaw.scheduledDeparture
-      ? new Date(dispatchRaw.scheduledDeparture).toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        })
-      : 'TBD';
+    // Build the email payload: Total Stops + itinerary come from the assigned
+    // load(s); the departure instant (UTC in DB) is rendered in the tenant's
+    // timezone with a zone abbreviation. Storage is unchanged.
+    const emailData = buildDispatchAssignedEmailData({
+      dispatchNumber,
+      scheduledDeparture: dispatchRaw.scheduledDeparture,
+      timezone: tenant?.timezone ?? 'UTC',
+      loads: dispatchRaw.carrierLoads,
+      truckUnitNumber: dispatchRaw.truck.unitNumber,
+      driverPortalUrl,
+      companyName,
+    });
 
     const result = await sendEmail({
       to: driverEmail,
       subject,
-      react: React.createElement(DispatchAssignedEmail, {
-        dispatchNumber,
-        scheduledDeparture,
-        stopCount: dispatchRaw._count.stops,
-        truckUnitNumber: dispatchRaw.truck.unitNumber,
-        driverPortalUrl,
-        companyName,
-      }),
+      react: React.createElement(DispatchAssignedEmail, emailData),
     });
 
     await markNotificationSent(prisma, logId, result.id);
@@ -189,7 +199,7 @@ export async function sendDispatchAssignedNotification(
     if (driverRecord?.userId) {
       await sendPushToUser(driverRecord.userId, {
         title: 'New Dispatch Assigned',
-        body: `${dispatchNumber} — ${dispatchRaw._count.stops} stops — Departs ${scheduledDeparture}`,
+        body: `${dispatchNumber} — ${emailData.stopCount} stops — Departs ${emailData.scheduledDeparture}`,
         data: { type: 'dispatch_assigned', dispatchId },
       });
     }

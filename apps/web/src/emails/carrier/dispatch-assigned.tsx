@@ -9,19 +9,37 @@ import {
   Hr,
 } from '@react-email/components';
 
+/** A single stop line rendered in the dispatch itinerary. */
+export interface DispatchStopLine {
+  /** 1-based position within the dispatch. */
+  sequence: number;
+  /** Raw stop type from the DB, e.g. 'pickup' | 'delivery'. */
+  type: string;
+  facilityName: string;
+  city: string | null;
+}
+
 export interface DispatchAssignedEmailProps {
   dispatchNumber: string;
   scheduledDeparture: string;
   stopCount: number;
+  /** Ordered stop itinerary for the assigned load(s). */
+  stops: DispatchStopLine[];
   truckUnitNumber: string;
   driverPortalUrl: string;
   companyName: string;
+}
+
+function stopTypeLabel(type: string): string {
+  if (!type) return 'Stop';
+  return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 }
 
 export function DispatchAssignedEmail({
   dispatchNumber,
   scheduledDeparture,
   stopCount,
+  stops,
   truckUnitNumber,
   driverPortalUrl,
   companyName,
@@ -56,6 +74,21 @@ export function DispatchAssignedEmail({
                 <strong>Truck Unit:</strong> {truckUnitNumber}
               </Text>
             </Section>
+
+            {stops.length > 0 && (
+              <Section style={styles.detailsBox}>
+                <Text style={styles.stopsHeading}>Itinerary</Text>
+                {stops.map((stop) => (
+                  <Text key={stop.sequence} style={styles.detailRow}>
+                    <strong>
+                      {stop.sequence}. {stopTypeLabel(stop.type)}
+                    </strong>{' '}
+                    — {stop.facilityName}
+                    {stop.city ? `, ${stop.city}` : ''}
+                  </Text>
+                ))}
+              </Section>
+            )}
 
             <Section style={styles.ctaSection}>
               <Button href={driverPortalUrl} style={styles.button}>
@@ -128,6 +161,12 @@ const styles = {
     lineHeight: '22px',
     margin: '4px 0',
     color: '#374151',
+  },
+  stopsHeading: {
+    fontSize: '14px',
+    fontWeight: 'bold',
+    margin: '0 0 8px',
+    color: '#111827',
   },
   ctaSection: {
     textAlign: 'center' as const,
