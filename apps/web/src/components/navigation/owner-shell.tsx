@@ -11,6 +11,7 @@ import { CommandPalette, SearchTrigger, CommandPaletteProvider } from "@/compone
 import { QuickActionsMenu } from "@/components/quick-actions"
 import { OnboardingReminderRibbon } from "@/components/onboarding/OnboardingReminderRibbon"
 import { CongratsDialog } from "@/components/onboarding/CongratsDialog"
+import { OnboardingTourProvider } from "@/components/onboarding/tour/OnboardingTour"
 import { markCongratsShown } from "@/app/(owner)/actions/activation-congrats"
 import { toast } from "sonner"
 
@@ -19,6 +20,7 @@ interface OwnerShellProps {
   tenantName?: string | null;
   onboardingComplete?: boolean;
   congratsShownAt?: string | null;
+  tourSeen?: boolean;
 }
 
 /**
@@ -38,7 +40,7 @@ interface OwnerShellProps {
  *
  * Mobile layout uses standard stacked layout with bottom nav.
  */
-export function OwnerShell({ children, tenantName, onboardingComplete = false, congratsShownAt = null }: OwnerShellProps) {
+export function OwnerShell({ children, tenantName, onboardingComplete = false, congratsShownAt = null, tourSeen = true }: OwnerShellProps) {
   const [congratsOpen, setCongratsOpen] = useState(false);
   const firedRef = useRef(false);
 
@@ -53,6 +55,7 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
 
   return (
     <CommandPaletteProvider>
+      <OnboardingTourProvider tourSeen={tourSeen}>
       {/* Command Palette - renders as dialog overlay */}
       <CommandPalette />
 
@@ -123,21 +126,28 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
             <AppLogo size={28} variant="light" />
           )}
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <QuickActionsMenu variant="mobile" />
-            <TopBarHelpButton />
+            <span data-tour="create" className="flex items-center">
+              <QuickActionsMenu variant="mobile" />
+            </span>
+            <span data-tour="help" className="flex items-center">
+              <TopBarHelpButton />
+            </span>
             <NotificationBell variant="mobile" />
             <UserMenu compactOnMobile />
           </div>
         </header>
         {/* Mobile content panel with subtle inset */}
         <main className="flex-1 m-2 mb-[72px] bg-card rounded-lg overflow-auto">
-          <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
+          <div data-tour="checklist">
+            <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
+          </div>
           <div className="p-4">
             {children}
           </div>
         </main>
         <OwnerBottomNav />
       </div>
+      </OnboardingTourProvider>
     </CommandPaletteProvider>
   )
 }

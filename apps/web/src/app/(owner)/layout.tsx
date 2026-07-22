@@ -63,9 +63,26 @@ export default async function OwnerLayout({
     congratsShownAt = null;
   }
 
+  // Per-user first-run tour flag. Fail-safe to `true` (do NOT auto-show) if the
+  // read errors — a nagging tour is worse than a missing one.
+  let tourSeen = true;
+  try {
+    const rows = await prisma.$queryRaw<{ onboardingTourSeen: boolean }[]>`
+      SELECT "onboardingTourSeen" FROM "User" WHERE id = ${session.userId}::uuid LIMIT 1
+    `;
+    tourSeen = rows[0]?.onboardingTourSeen ?? false;
+  } catch {
+    tourSeen = true;
+  }
+
   return (
     <TRPCReactProvider>
-      <OwnerShell tenantName={tenantName} onboardingComplete={onboardingComplete} congratsShownAt={congratsShownAt}>
+      <OwnerShell
+        tenantName={tenantName}
+        onboardingComplete={onboardingComplete}
+        congratsShownAt={congratsShownAt}
+        tourSeen={tourSeen}
+      >
         {children}
       </OwnerShell>
     </TRPCReactProvider>

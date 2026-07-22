@@ -64,6 +64,7 @@ export function OwnerBottomNav() {
       <OwnerMoreMenu isOpen={isMoreOpen} onClose={() => setIsMoreOpen(false)} />
 
       <nav
+        data-tour="tabs"
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-slate-900 shadow-[0_-2px_10px_rgba(0,0,0,0.3)] pb-[env(safe-area-inset-bottom)]"
         aria-label="Owner navigation"
       >
