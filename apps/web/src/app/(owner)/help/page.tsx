@@ -2,6 +2,7 @@ import { HelpHeader } from "@/components/help/HelpHeader"
 import { HelpSearchInline } from "@/components/help/HelpSearchInline"
 import { HelpCategoryGrid } from "@/components/help/HelpCategoryGrid"
 import { ContactSupportCard } from "@/components/help/ContactSupportCard"
+import { ReplayTourButton } from "@/components/onboarding/tour/ReplayTourButton"
 
 /**
  * Help Center Home Page
@@ -22,6 +23,11 @@ export default function HelpPage() {
     <div>
       {/* Header: "How can we help?" */}
       <HelpHeader />
+
+      {/* Replay the first-run navigational tour on demand */}
+      <div className="mt-4">
+        <ReplayTourButton />
+      </div>
 
       {/* Inline search (visual stub) */}
       <HelpSearchInline />
