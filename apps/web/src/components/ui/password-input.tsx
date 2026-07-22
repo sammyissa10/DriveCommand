@@ -17,13 +17,20 @@ import { Input, type InputProps } from "./input";
 export type PasswordInputProps = Omit<InputProps, "type">;
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, tone, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false);
+
+    // Match the eye-toggle contrast to the field tone (dark auth surface vs light).
+    const toggleColor =
+      tone === "dark"
+        ? "text-n-400 hover:text-n-200"
+        : "text-muted-foreground hover:text-foreground";
 
     return (
       <div className="relative">
         <Input
           ref={ref}
+          tone={tone}
           type={showPassword ? "text" : "password"}
           className={cn("pr-12", className)}
           {...props}
@@ -31,7 +38,10 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         <button
           type="button"
           onClick={() => setShowPassword((v) => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-75"
+          className={cn(
+            "absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-75",
+            toggleColor,
+          )}
           tabIndex={-1}
           aria-label={showPassword ? "Hide password" : "Show password"}
         >

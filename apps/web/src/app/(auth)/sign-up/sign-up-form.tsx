@@ -3,15 +3,14 @@
 import React, { use, useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { signUpAction, type SignUpActionState } from './actions';
 import { signUpSchema } from '@/lib/validations/onboarding.schemas';
 import { HEARD_ABOUT_OPTIONS, HEARD_ABOUT_OTHER } from '@/lib/onboarding/heard-about';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Step 1 reuses the exact server rules so client + server never disagree.
 const step1Schema = signUpSchema.pick({
@@ -24,12 +23,27 @@ type Step1Field = 'firstName' | 'lastName' | 'email' | 'password';
 type Step1Errors = Partial<Record<Step1Field, string>>;
 const STEP1_FIELDS: Step1Field[] = ['firstName', 'lastName', 'email', 'password'];
 
+// Shared class fragments — matched to the Sign in screen (sign-in-card.tsx).
+const LABEL = 'text-label text-n-300 mb-2 block uppercase tracking-wider';
+const FIELD_ERROR = 'mt-1.5 text-small text-brand-critical';
+const HELPER = 'mt-1.5 text-small text-n-500';
+const PRIMARY_BTN =
+  'w-full h-11 bg-gradient-to-b from-b-500 to-b-600 hover:from-b-400 hover:to-b-500 active:scale-[0.98] transition-all duration-75 text-white';
+const SELECT =
+  'w-full h-11 rounded-brand-sm border border-[#1C2536] bg-[#070B14] px-4 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-b-500';
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      {pending ? 'Creating account…' : 'Create free account'}
+    <Button type="submit" disabled={pending} className={PRIMARY_BTN}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Creating account…
+        </>
+      ) : (
+        'Create free account'
+      )}
     </Button>
   );
 }
@@ -41,12 +55,12 @@ interface SignUpFormProps {
 }
 
 /**
- * Two-step signup wizard. Both step field-groups stay mounted (toggled with the
- * `hidden` class) so uncontrolled values persist across Back/Continue and the
- * submitted FormData is identical to the original single-screen form — the
- * server action and its validation are unchanged. Step 1 is gated client-side;
- * the server is only hit by the final "Create free account" submit (step 2 is
- * the only step that renders a submit button).
+ * Two-step signup wizard, styled to match the dark Sign in screen. Both step
+ * field-groups stay mounted (toggled with the `hidden` class) so uncontrolled
+ * values persist across Back/Continue and the submitted FormData is identical to
+ * the original form — the server action and its validation are unchanged. Step 1
+ * is gated client-side; the server is only hit by the final "Create free
+ * account" submit (step 2 is the only step that renders a submit button).
  */
 export function SignUpForm({ searchParams }: SignUpFormProps) {
   const { promo } = use(searchParams);
@@ -56,8 +70,7 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
   const [heardAbout, setHeardAbout] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
 
-  // If the server ever returns a step-1 field error after final submit, surface
-  // step 1 so the message is visible (step-1 inputs are hidden on step 2).
+  // If the server returns a step-1 field error after final submit, surface step 1.
   useEffect(() => {
     const fe = state.fieldErrors;
     if (fe && (fe.firstName || fe.lastName || fe.email || fe.password)) {
@@ -103,8 +116,7 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
     formRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
 
-  // On step 1 there is no submit button, so Enter would do nothing — make it
-  // advance instead (keyboard + mobile "Go" parity).
+  // On step 1 there is no submit button, so Enter would do nothing — advance instead.
   function handleKeyDown(e: React.KeyboardEvent<HTMLFormElement>) {
     if (step === 1 && e.key === 'Enter') {
       const target = e.target as HTMLElement;
@@ -115,20 +127,15 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
     }
   }
 
-  // First error message on step 1, to show a short prompt above the fields.
   const step1ErrorText = STEP1_FIELDS.map((k) => clientErrors[k]).find(Boolean);
 
   return (
     <form ref={formRef} action={action} onKeyDown={handleKeyDown} className="space-y-6">
       {/* Progress indicator */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-medium">
-          <span className={step >= 1 ? 'text-foreground' : 'text-muted-foreground'}>
-            About you
-          </span>
-          <span className={step >= 2 ? 'text-foreground' : 'text-muted-foreground'}>
-            Your company
-          </span>
+        <div className="flex items-center justify-between text-label uppercase tracking-wider">
+          <span className={step >= 1 ? 'text-white' : 'text-n-500'}>About you</span>
+          <span className={step >= 2 ? 'text-white' : 'text-n-500'}>Your company</span>
         </div>
         <div
           className="flex gap-1.5"
@@ -139,88 +146,130 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
           aria-label={`Step ${step} of 2`}
         >
           <div
-            className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 1 ? 'bg-primary' : 'bg-muted'}`}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 1 ? 'bg-b-500' : 'bg-[#1C2536]'}`}
           />
           <div
-            className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 2 ? 'bg-primary' : 'bg-muted'}`}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 2 ? 'bg-b-500' : 'bg-[#1C2536]'}`}
           />
         </div>
-        <p className="text-xs text-muted-foreground">Step {step} of 2</p>
+        <p className="text-small text-n-500">Step {step} of 2</p>
       </div>
 
       {state.message && (
-        <Alert variant={state.success ? 'default' : 'destructive'}>
-          <AlertDescription>{state.message}</AlertDescription>
-        </Alert>
+        <div
+          className={cn(
+            'rounded-brand-sm border px-4 py-3',
+            state.success
+              ? 'bg-b-500/10 border-b-500/20'
+              : 'bg-brand-critical/10 border-brand-critical/20',
+          )}
+        >
+          <p className={cn('text-small', state.success ? 'text-b-300' : 'text-brand-critical')}>
+            {state.message}
+          </p>
+        </div>
       )}
 
       {step === 1 && step1ErrorText && (
-        <Alert variant="destructive">
-          <AlertDescription>{step1ErrorText}</AlertDescription>
-        </Alert>
+        <div className="rounded-brand-sm bg-brand-critical/10 border border-brand-critical/20 px-4 py-3">
+          <p className="text-small text-brand-critical">{step1ErrorText}</p>
+        </div>
       )}
 
       {/* ── Step 1: About you ─────────────────────────────────────────────── */}
-      <div className={step === 1 ? 'space-y-4' : 'hidden'}>
+      <div className={step === 1 ? 'space-y-5' : 'hidden'}>
         <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="firstName">First name</Label>
-            <Input id="firstName" name="firstName" autoComplete="given-name" required />
+          <div>
+            <label htmlFor="firstName" className={LABEL}>
+              First name
+            </label>
+            <Input id="firstName" name="firstName" tone="dark" autoComplete="given-name" required />
             {(clientErrors.firstName || state.fieldErrors?.firstName) && (
-              <p className="text-xs text-destructive">
+              <p className={FIELD_ERROR}>
                 {clientErrors.firstName ?? state.fieldErrors?.firstName?.[0]}
               </p>
             )}
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="lastName">Last name</Label>
-            <Input id="lastName" name="lastName" autoComplete="family-name" required />
+          <div>
+            <label htmlFor="lastName" className={LABEL}>
+              Last name
+            </label>
+            <Input id="lastName" name="lastName" tone="dark" autoComplete="family-name" required />
             {(clientErrors.lastName || state.fieldErrors?.lastName) && (
-              <p className="text-xs text-destructive">
+              <p className={FIELD_ERROR}>
                 {clientErrors.lastName ?? state.fieldErrors?.lastName?.[0]}
               </p>
             )}
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="email">Work email</Label>
-          <Input id="email" name="email" type="email" autoComplete="email" required />
+        <div>
+          <label htmlFor="email" className={LABEL}>
+            Work email
+          </label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            tone="dark"
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            required
+          />
           {(clientErrors.email || state.fieldErrors?.email) && (
-            <p className="text-xs text-destructive">
-              {clientErrors.email ?? state.fieldErrors?.email?.[0]}
-            </p>
+            <p className={FIELD_ERROR}>{clientErrors.email ?? state.fieldErrors?.email?.[0]}</p>
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
-          <PasswordInput id="password" name="password" autoComplete="new-password" required />
+        <div>
+          <label htmlFor="password" className={LABEL}>
+            Password
+          </label>
+          <PasswordInput
+            id="password"
+            name="password"
+            tone="dark"
+            autoComplete="new-password"
+            required
+          />
           {(clientErrors.password || state.fieldErrors?.password) && (
-            <p className="text-xs text-destructive">
+            <p className={FIELD_ERROR}>
               {clientErrors.password ?? state.fieldErrors?.password?.[0]}
             </p>
           )}
-          <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
+          <p className={HELPER}>Minimum 8 characters</p>
         </div>
       </div>
 
       {/* ── Step 2: Your company ──────────────────────────────────────────── */}
-      <div className={step === 2 ? 'space-y-4' : 'hidden'}>
-        <div className="space-y-1.5">
-          <Label htmlFor="companyName">Company name</Label>
-          <Input id="companyName" name="companyName" autoComplete="organization" required />
+      <div className={step === 2 ? 'space-y-5' : 'hidden'}>
+        <div>
+          <label htmlFor="companyName" className={LABEL}>
+            Company name
+          </label>
+          <Input
+            id="companyName"
+            name="companyName"
+            tone="dark"
+            autoComplete="organization"
+            required
+          />
           {state.fieldErrors?.companyName && (
-            <p className="text-xs text-destructive">{state.fieldErrors.companyName[0]}</p>
+            <p className={FIELD_ERROR}>{state.fieldErrors.companyName[0]}</p>
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="truckCount">Number of trucks</Label>
+        <div>
+          <label htmlFor="truckCount" className={LABEL}>
+            Number of trucks
+          </label>
           <Input
             id="truckCount"
             name="truckCount"
             type="number"
+            tone="dark"
             inputMode="numeric"
             min={1}
             step={1}
@@ -228,34 +277,34 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
             placeholder="e.g. 5"
           />
           {state.fieldErrors?.truckCount && (
-            <p className="text-xs text-destructive">{state.fieldErrors.truckCount[0]}</p>
+            <p className={FIELD_ERROR}>{state.fieldErrors.truckCount[0]}</p>
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="promoCode">
-            Promo code{' '}
-            <span className="text-muted-foreground font-normal">(optional)</span>
-          </Label>
+        <div>
+          <label htmlFor="promoCode" className={LABEL}>
+            Promo code <span className="text-n-500 font-normal normal-case tracking-normal">(optional)</span>
+          </label>
           <Input
             id="promoCode"
             name="promoCode"
+            tone="dark"
             defaultValue={promo ?? ''}
             placeholder="e.g. LAUNCH30"
           />
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="heardAbout">
+        <div>
+          <label htmlFor="heardAbout" className={LABEL}>
             How did you hear about us?{' '}
-            <span className="text-muted-foreground font-normal">(optional)</span>
-          </Label>
+            <span className="text-n-500 font-normal normal-case tracking-normal">(optional)</span>
+          </label>
           <select
             id="heardAbout"
             name="heardAbout"
             value={heardAbout}
             onChange={(e) => setHeardAbout(e.target.value)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+            className={SELECT}
           >
             <option value="">Select an option…</option>
             {HEARD_ABOUT_OPTIONS.map((o) => (
@@ -265,34 +314,46 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
             ))}
           </select>
           {heardAbout === HEARD_ABOUT_OTHER && (
-            <Input
-              id="heardAboutOther"
-              name="heardAboutOther"
-              maxLength={200}
-              placeholder="How did you find us?"
-              aria-label="How did you hear about us — please specify"
-            />
+            <div className="mt-3">
+              <Input
+                id="heardAboutOther"
+                name="heardAboutOther"
+                tone="dark"
+                maxLength={200}
+                placeholder="How did you find us?"
+                aria-label="How did you hear about us — please specify"
+              />
+            </div>
           )}
         </div>
       </div>
 
       {/* ── Footer: step-specific actions ─────────────────────────────────── */}
       {step === 1 ? (
-        <Button type="button" className="w-full" onClick={goNext}>
+        <Button type="button" className={PRIMARY_BTN} onClick={goNext}>
           Continue
+          <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.6} strokeLinecap="square" />
         </Button>
       ) : (
         <div className="space-y-2">
           <SubmitButton />
-          <Button type="button" variant="ghost" className="w-full" onClick={goBack}>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full h-11 text-n-300 hover:text-white hover:bg-white/5"
+            onClick={goBack}
+          >
             Back
           </Button>
         </div>
       )}
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-small text-n-400 text-center">
         Already have an account?{' '}
-        <Link href="/sign-in" className="font-medium text-primary hover:underline">
+        <Link
+          href="/sign-in"
+          className="text-b-300 hover:text-b-400 font-medium transition-colors duration-instant"
+        >
           Sign in
         </Link>
       </p>
