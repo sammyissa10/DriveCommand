@@ -138,6 +138,7 @@ model Tenant {
   createdAt             DateTime          @default(now()) @db.Timestamptz
   updatedAt             DateTime          @updatedAt @db.Timestamptz
   fleetSizeBucket       FleetSizeBucket   @default(OWNER_OPERATOR)
+  truckCount            Int?
   status                TenantStatus      @default(ACTIVE)
   manualTrial           Boolean           @default(false)
   emailConfirmedAt      DateTime?         @db.Timestamptz

@@ -13357,10 +13357,12 @@ export namespace Prisma {
 
   export type TenantAvgAggregateOutputType = {
     profitMarginThreshold: Decimal | null
+    truckCount: number | null
   }
 
   export type TenantSumAggregateOutputType = {
     profitMarginThreshold: Decimal | null
+    truckCount: number | null
   }
 
   export type TenantMinAggregateOutputType = {
@@ -13375,6 +13377,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     fleetSizeBucket: $Enums.FleetSizeBucket | null
+    truckCount: number | null
     status: $Enums.TenantStatus | null
     manualTrial: boolean | null
     emailConfirmedAt: Date | null
@@ -13394,6 +13397,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     fleetSizeBucket: $Enums.FleetSizeBucket | null
+    truckCount: number | null
     status: $Enums.TenantStatus | null
     manualTrial: boolean | null
     emailConfirmedAt: Date | null
@@ -13413,6 +13417,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     fleetSizeBucket: number
+    truckCount: number
     status: number
     manualTrial: number
     emailConfirmedAt: number
@@ -13424,10 +13429,12 @@ export namespace Prisma {
 
   export type TenantAvgAggregateInputType = {
     profitMarginThreshold?: true
+    truckCount?: true
   }
 
   export type TenantSumAggregateInputType = {
     profitMarginThreshold?: true
+    truckCount?: true
   }
 
   export type TenantMinAggregateInputType = {
@@ -13442,6 +13449,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     fleetSizeBucket?: true
+    truckCount?: true
     status?: true
     manualTrial?: true
     emailConfirmedAt?: true
@@ -13461,6 +13469,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     fleetSizeBucket?: true
+    truckCount?: true
     status?: true
     manualTrial?: true
     emailConfirmedAt?: true
@@ -13480,6 +13489,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     fleetSizeBucket?: true
+    truckCount?: true
     status?: true
     manualTrial?: true
     emailConfirmedAt?: true
@@ -13586,6 +13596,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     fleetSizeBucket: $Enums.FleetSizeBucket
+    truckCount: number | null
     status: $Enums.TenantStatus
     manualTrial: boolean
     emailConfirmedAt: Date | null
@@ -13624,6 +13635,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     fleetSizeBucket?: boolean
+    truckCount?: boolean
     status?: boolean
     manualTrial?: boolean
     emailConfirmedAt?: boolean
@@ -13718,6 +13730,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     fleetSizeBucket?: boolean
+    truckCount?: boolean
     status?: boolean
     manualTrial?: boolean
     emailConfirmedAt?: boolean
@@ -13737,6 +13750,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     fleetSizeBucket?: boolean
+    truckCount?: boolean
     status?: boolean
     manualTrial?: boolean
     emailConfirmedAt?: boolean
@@ -13756,6 +13770,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     fleetSizeBucket?: boolean
+    truckCount?: boolean
     status?: boolean
     manualTrial?: boolean
     emailConfirmedAt?: boolean
@@ -13763,7 +13778,7 @@ export namespace Prisma {
     provisioningPhase?: boolean
   }
 
-  export type TenantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "timezone" | "contactEmail" | "plan" | "isActive" | "profitMarginThreshold" | "createdAt" | "updatedAt" | "fleetSizeBucket" | "status" | "manualTrial" | "emailConfirmedAt" | "sampleDataSeeded" | "provisioningPhase", ExtArgs["result"]["tenant"]>
+  export type TenantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "timezone" | "contactEmail" | "plan" | "isActive" | "profitMarginThreshold" | "createdAt" | "updatedAt" | "fleetSizeBucket" | "truckCount" | "status" | "manualTrial" | "emailConfirmedAt" | "sampleDataSeeded" | "provisioningPhase", ExtArgs["result"]["tenant"]>
   export type TenantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Tenant$usersArgs<ExtArgs>
     trucks?: boolean | Tenant$trucksArgs<ExtArgs>
@@ -13934,6 +13949,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       fleetSizeBucket: $Enums.FleetSizeBucket
+      truckCount: number | null
       status: $Enums.TenantStatus
       manualTrial: boolean
       emailConfirmedAt: Date | null
@@ -14447,6 +14463,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Tenant", 'DateTime'>
     readonly updatedAt: FieldRef<"Tenant", 'DateTime'>
     readonly fleetSizeBucket: FieldRef<"Tenant", 'FleetSizeBucket'>
+    readonly truckCount: FieldRef<"Tenant", 'Int'>
     readonly status: FieldRef<"Tenant", 'TenantStatus'>
     readonly manualTrial: FieldRef<"Tenant", 'Boolean'>
     readonly emailConfirmedAt: FieldRef<"Tenant", 'DateTime'>
@@ -136159,6 +136176,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     fleetSizeBucket: 'fleetSizeBucket',
+    truckCount: 'truckCount',
     status: 'status',
     manualTrial: 'manualTrial',
     emailConfirmedAt: 'emailConfirmedAt',
@@ -138229,6 +138247,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'TenantStatus'
    */
   export type EnumTenantStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TenantStatus'>
@@ -138281,20 +138313,6 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -139240,6 +139258,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeFilter<"Tenant"> | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFilter<"Tenant"> | $Enums.FleetSizeBucket
+    truckCount?: IntNullableFilter<"Tenant"> | number | null
     status?: EnumTenantStatusFilter<"Tenant"> | $Enums.TenantStatus
     manualTrial?: BoolFilter<"Tenant"> | boolean
     emailConfirmedAt?: DateTimeNullableFilter<"Tenant"> | Date | string | null
@@ -139333,6 +139352,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fleetSizeBucket?: SortOrder
+    truckCount?: SortOrderInput | SortOrder
     status?: SortOrder
     manualTrial?: SortOrder
     emailConfirmedAt?: SortOrderInput | SortOrder
@@ -139429,6 +139449,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeFilter<"Tenant"> | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFilter<"Tenant"> | $Enums.FleetSizeBucket
+    truckCount?: IntNullableFilter<"Tenant"> | number | null
     status?: EnumTenantStatusFilter<"Tenant"> | $Enums.TenantStatus
     manualTrial?: BoolFilter<"Tenant"> | boolean
     emailConfirmedAt?: DateTimeNullableFilter<"Tenant"> | Date | string | null
@@ -139522,6 +139543,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fleetSizeBucket?: SortOrder
+    truckCount?: SortOrderInput | SortOrder
     status?: SortOrder
     manualTrial?: SortOrder
     emailConfirmedAt?: SortOrderInput | SortOrder
@@ -139549,6 +139571,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketWithAggregatesFilter<"Tenant"> | $Enums.FleetSizeBucket
+    truckCount?: IntNullableWithAggregatesFilter<"Tenant"> | number | null
     status?: EnumTenantStatusWithAggregatesFilter<"Tenant"> | $Enums.TenantStatus
     manualTrial?: BoolWithAggregatesFilter<"Tenant"> | boolean
     emailConfirmedAt?: DateTimeNullableWithAggregatesFilter<"Tenant"> | Date | string | null
@@ -150741,6 +150764,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -150834,6 +150858,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -150927,6 +150952,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -151020,6 +151046,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -151113,6 +151140,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -151132,6 +151160,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -151151,6 +151180,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -163597,6 +163627,17 @@ export namespace Prisma {
     not?: NestedEnumFleetSizeBucketFilter<$PrismaModel> | $Enums.FleetSizeBucket
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type EnumTenantStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.TenantStatus | EnumTenantStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TenantStatus[] | ListEnumTenantStatusFieldRefInput<$PrismaModel>
@@ -164364,6 +164405,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fleetSizeBucket?: SortOrder
+    truckCount?: SortOrder
     status?: SortOrder
     manualTrial?: SortOrder
     emailConfirmedAt?: SortOrder
@@ -164373,6 +164415,7 @@ export namespace Prisma {
 
   export type TenantAvgOrderByAggregateInput = {
     profitMarginThreshold?: SortOrder
+    truckCount?: SortOrder
   }
 
   export type TenantMaxOrderByAggregateInput = {
@@ -164387,6 +164430,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fleetSizeBucket?: SortOrder
+    truckCount?: SortOrder
     status?: SortOrder
     manualTrial?: SortOrder
     emailConfirmedAt?: SortOrder
@@ -164406,6 +164450,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fleetSizeBucket?: SortOrder
+    truckCount?: SortOrder
     status?: SortOrder
     manualTrial?: SortOrder
     emailConfirmedAt?: SortOrder
@@ -164415,6 +164460,7 @@ export namespace Prisma {
 
   export type TenantSumOrderByAggregateInput = {
     profitMarginThreshold?: SortOrder
+    truckCount?: SortOrder
   }
 
   export type UuidWithAggregatesFilter<$PrismaModel = never> = {
@@ -164514,6 +164560,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumFleetSizeBucketFilter<$PrismaModel>
     _max?: NestedEnumFleetSizeBucketFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type EnumTenantStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -165022,17 +165084,6 @@ export namespace Prisma {
     not?: NestedEnumRouteStatusFilter<$PrismaModel> | $Enums.RouteStatus
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -165159,22 +165210,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRouteStatusFilter<$PrismaModel>
     _max?: NestedEnumRouteStatusFilter<$PrismaModel>
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -173155,6 +173190,14 @@ export namespace Prisma {
 
   export type EnumFleetSizeBucketFieldUpdateOperationsInput = {
     set?: $Enums.FleetSizeBucket
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type EnumTenantStatusFieldUpdateOperationsInput = {
@@ -181327,14 +181370,6 @@ export namespace Prisma {
 
   export type EnumRouteStatusFieldUpdateOperationsInput = {
     set?: $Enums.RouteStatus
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -189769,6 +189804,17 @@ export namespace Prisma {
     not?: NestedEnumFleetSizeBucketFilter<$PrismaModel> | $Enums.FleetSizeBucket
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumTenantStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.TenantStatus | EnumTenantStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TenantStatus[] | ListEnumTenantStatusFieldRefInput<$PrismaModel>
@@ -189853,17 +189899,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -189910,6 +189945,33 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumFleetSizeBucketFilter<$PrismaModel>
     _max?: NestedEnumFleetSizeBucketFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumTenantStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -190079,17 +190141,6 @@ export namespace Prisma {
     not?: NestedEnumRouteStatusFilter<$PrismaModel> | $Enums.RouteStatus
   }
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumRouteStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.RouteStatus | EnumRouteStatusFieldRefInput<$PrismaModel>
     in?: $Enums.RouteStatus[] | ListEnumRouteStatusFieldRefInput<$PrismaModel>
@@ -190098,22 +190149,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRouteStatusFilter<$PrismaModel>
     _max?: NestedEnumRouteStatusFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -198058,6 +198093,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -198150,6 +198186,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -205661,6 +205698,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -205753,6 +205791,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -208155,6 +208194,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -208247,6 +208287,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -209409,6 +209450,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209501,6 +209543,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -210351,6 +210394,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -210443,6 +210487,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -211153,6 +211198,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -211245,6 +211291,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -211951,6 +211998,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -212043,6 +212091,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -213891,6 +213940,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -213983,6 +214033,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -215953,6 +216004,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -216045,6 +216097,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -216838,6 +216891,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -216930,6 +216984,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -217329,6 +217384,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -217421,6 +217477,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -218942,6 +218999,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -219034,6 +219092,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -220581,6 +220640,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -220673,6 +220733,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -221444,6 +221505,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -221536,6 +221598,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -222309,6 +222372,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -222401,6 +222465,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -223172,6 +223237,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -223264,6 +223330,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224037,6 +224104,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -224129,6 +224197,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -224237,6 +224306,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224329,6 +224399,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224421,6 +224492,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -224513,6 +224585,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -224759,6 +224832,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224851,6 +224925,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -225093,6 +225168,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -225185,6 +225261,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -225726,6 +225803,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -225818,6 +225896,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -226361,6 +226440,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -226453,6 +226533,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -226923,6 +227004,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227015,6 +227097,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227481,6 +227564,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -227573,6 +227657,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -228309,6 +228394,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -228401,6 +228487,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -229123,6 +229210,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -229215,6 +229303,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -229712,6 +229801,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -229804,6 +229894,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -230303,6 +230394,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -230395,6 +230487,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -231169,6 +231262,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -231261,6 +231355,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -231999,6 +232094,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -232091,6 +232187,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -232901,6 +232998,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -232993,6 +233091,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -233811,6 +233910,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -233903,6 +234003,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -234639,6 +234740,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -234731,6 +234833,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -235507,6 +235610,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -235599,6 +235703,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -235773,6 +235878,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -235865,6 +235971,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -235957,6 +236064,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -236049,6 +236157,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -236830,6 +236939,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -236922,6 +237032,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237705,6 +237816,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -237797,6 +237909,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -238625,6 +238738,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -238717,6 +238831,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -239455,6 +239570,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -239547,6 +239663,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -240314,6 +240431,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -240406,6 +240524,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -241175,6 +241294,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -241267,6 +241387,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -242094,6 +242215,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -242186,6 +242308,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -243054,6 +243177,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -243146,6 +243270,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -243925,6 +244050,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -244017,6 +244143,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -244723,6 +244850,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -244815,6 +244943,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -245567,6 +245696,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -245659,6 +245789,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -246428,6 +246559,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -246520,6 +246652,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -247283,6 +247416,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -247375,6 +247509,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -248081,6 +248216,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -248173,6 +248309,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -249184,6 +249321,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -249276,6 +249414,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -250289,6 +250428,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -250381,6 +250521,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -251887,6 +252028,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -251979,6 +252121,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -253377,6 +253520,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -253469,6 +253613,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -254179,6 +254324,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -254271,6 +254417,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -256264,6 +256411,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -256356,6 +256504,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -257384,6 +257533,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -257476,6 +257626,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -258297,6 +258448,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -258389,6 +258541,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -258869,6 +259022,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -258961,6 +259115,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -260662,6 +260817,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -260754,6 +260910,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -261470,6 +261627,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -261562,6 +261720,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -261961,6 +262120,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -262053,6 +262213,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -263064,6 +263225,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -263156,6 +263318,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -264169,6 +264332,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -264261,6 +264425,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -265272,6 +265437,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -265364,6 +265530,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -266377,6 +266544,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -266469,6 +266637,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -267992,6 +268161,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -268084,6 +268254,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -269209,6 +269380,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -269301,6 +269473,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -270619,6 +270792,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -270711,6 +270885,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -271861,6 +272036,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -271953,6 +272129,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -272893,6 +273070,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -272985,6 +273163,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -273739,6 +273918,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -273831,6 +274011,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -275976,6 +276157,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -276068,6 +276250,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -277647,6 +277830,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -277739,6 +277923,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -279078,6 +279263,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -279170,6 +279356,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -280263,6 +280450,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -280355,6 +280543,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -281505,6 +281694,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -281597,6 +281787,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -283543,6 +283734,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -283635,6 +283827,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -285760,6 +285953,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -285852,6 +286046,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -287695,6 +287890,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -287787,6 +287983,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -289441,6 +289638,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -289533,6 +289731,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -295123,6 +295322,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -295215,6 +295415,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -295377,6 +295578,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -295469,6 +295671,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -295577,6 +295780,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -295669,6 +295873,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -297154,6 +297359,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -297246,6 +297452,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -298769,6 +298976,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -298861,6 +299069,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -299612,6 +299821,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -299704,6 +299914,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -300469,6 +300680,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -300561,6 +300773,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -300970,6 +301183,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -301062,6 +301276,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -301461,6 +301676,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -301553,6 +301769,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -302371,6 +302588,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -302463,6 +302681,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -303201,6 +303420,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -303293,6 +303513,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -304145,6 +304366,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -304237,6 +304459,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -305071,6 +305294,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -305163,6 +305387,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -305664,6 +305889,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -305756,6 +305982,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -306155,6 +306382,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -306247,6 +306475,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -307090,6 +307319,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -307182,6 +307412,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -308055,6 +308286,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -308147,6 +308379,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -308656,6 +308889,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -308748,6 +308982,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -309147,6 +309382,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -309239,6 +309475,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -309396,6 +309633,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -309488,6 +309726,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -309676,6 +309915,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -309768,6 +310008,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -310525,6 +310766,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -310617,6 +310859,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -311323,6 +311566,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -311415,6 +311659,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -311523,6 +311768,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -311615,6 +311861,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -311843,6 +312090,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -311935,6 +312183,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -312121,6 +312370,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -312213,6 +312463,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -312395,6 +312646,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -312487,6 +312739,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -312595,6 +312848,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -312687,6 +312941,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -312779,6 +313034,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -312871,6 +313127,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -313015,6 +313272,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -313107,6 +313365,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -313254,6 +313513,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -313346,6 +313606,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -313499,6 +313760,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -313591,6 +313853,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -313683,6 +313946,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -313775,6 +314039,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -313883,6 +314148,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -313975,6 +314241,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -314067,6 +314334,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -314159,6 +314427,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -314267,6 +314536,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -314359,6 +314629,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -314451,6 +314722,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -314543,6 +314815,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -314651,6 +314924,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -314743,6 +315017,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -314835,6 +315110,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -314927,6 +315203,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -315812,6 +316089,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -315904,6 +316182,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -316723,6 +317002,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -316815,6 +317095,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -317945,6 +318226,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -318037,6 +318319,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -319107,6 +319390,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -319199,6 +319483,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -320312,6 +320597,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -320404,6 +320690,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -321419,6 +321706,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -321511,6 +321799,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -322575,6 +322864,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -322667,6 +322957,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -323707,6 +323998,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -323799,6 +324091,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -324600,6 +324893,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -324692,6 +324986,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -325495,6 +325790,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -325587,6 +325883,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -326532,6 +326829,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -326624,6 +326922,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -327459,6 +327758,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -327551,6 +327851,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -328405,6 +328706,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -328497,6 +328799,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -329359,6 +329662,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -329451,6 +329755,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -330317,6 +330622,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -330409,6 +330715,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -331283,6 +331590,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -331375,6 +331683,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -331483,6 +331792,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -331575,6 +331885,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -331667,6 +331978,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -331759,6 +332071,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -331867,6 +332180,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -331959,6 +332273,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -332051,6 +332366,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -332143,6 +332459,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -332251,6 +332568,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -332343,6 +332661,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -332435,6 +332754,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -332527,6 +332847,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -332936,6 +333257,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -333028,6 +333350,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -333728,6 +334051,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -333820,6 +334144,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -334536,6 +334861,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -334628,6 +334954,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -335027,6 +335354,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -335119,6 +335447,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fleetSizeBucket?: $Enums.FleetSizeBucket
+    truckCount?: number | null
     status?: $Enums.TenantStatus
     manualTrial?: boolean
     emailConfirmedAt?: Date | string | null
@@ -335528,6 +335857,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -335620,6 +335950,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fleetSizeBucket?: EnumFleetSizeBucketFieldUpdateOperationsInput | $Enums.FleetSizeBucket
+    truckCount?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTenantStatusFieldUpdateOperationsInput | $Enums.TenantStatus
     manualTrial?: BoolFieldUpdateOperationsInput | boolean
     emailConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

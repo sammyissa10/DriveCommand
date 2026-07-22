@@ -132,6 +132,7 @@ exports.Prisma.TenantScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   fleetSizeBucket: 'fleetSizeBucket',
+  truckCount: 'truckCount',
   status: 'status',
   manualTrial: 'manualTrial',
   emailConfirmedAt: 'emailConfirmedAt',
