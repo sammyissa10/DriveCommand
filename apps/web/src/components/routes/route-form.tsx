@@ -3,6 +3,7 @@
 import type { ActionState } from '@drivecommand/types';
 
 import { useActionState, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 import { Navigation, Plus, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
@@ -489,7 +490,11 @@ export function RouteForm({
             </select>
             {drivers.length === 0 && (
               <p className="mt-1.5 text-sm text-amber-600">
-                Invite drivers first before creating routes.
+                No drivers can be assigned yet. Add a driver with an email to invite
+                them, then assign once they accept.{' '}
+                <Link href="/carrier/fleet/drivers/new" className="font-semibold underline">
+                  Add a driver
+                </Link>
               </p>
             )}
             {fieldErrors?.driverId && (

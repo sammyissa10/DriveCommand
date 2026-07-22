@@ -5,6 +5,7 @@ import type { ActionState } from '@drivecommand/types';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronDown, ChevronUp, Loader2, X } from 'lucide-react';
+import Link from 'next/link';
 import { createRoute } from '@/app/(owner)/actions/routes';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
@@ -188,7 +189,9 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
           <NavTextButton
             label={isPending ? 'Creating…' : 'Create'}
             emphasized
-            onClick={() => formRef.current?.requestSubmit()}
+            onClick={() => {
+              if (formRef.current?.reportValidity()) formRef.current.requestSubmit();
+            }}
             disabled={isPending}
           />
         }
@@ -437,7 +440,11 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
               </select>
               {drivers.length === 0 ? (
                 <p className="mt-1.5 text-[13px] text-ds-warning">
-                  Invite drivers first before creating routes.
+                  No drivers can be assigned yet. Add a driver with an email to invite
+                  them, then assign once they accept.{' '}
+                  <Link href="/carrier/fleet/drivers/new" className="font-semibold underline">
+                    Add a driver
+                  </Link>
                 </p>
               ) : null}
               {fieldErrors?.driverId ? <p className={dsErrorClass}>{fieldErrors.driverId}</p> : null}
