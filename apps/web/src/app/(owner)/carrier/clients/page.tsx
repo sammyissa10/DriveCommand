@@ -3,6 +3,7 @@ import { Users } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { listClients, getClientLoadStats } from '@/lib/carrier/clients';
 import { hasPermission } from '@/lib/auth/permissions';
+import { getMainContact } from '@/lib/carrier/client-contacts';
 import { ClientsGrid } from './_grid/ClientsGrid';
 import { ClientsMobile } from './ClientsMobile';
 
@@ -43,6 +44,8 @@ export default async function ClientsPage() {
     email: c.email,
     phone: c.phone,
     primaryContact: c.primaryContact,
+    mainContactName: getMainContact(c.contacts)?.name ?? c.primaryContact,
+    contacts: c.contacts,
     city: c.city,
     state: c.state,
     portalAccess: c.portalAccess,

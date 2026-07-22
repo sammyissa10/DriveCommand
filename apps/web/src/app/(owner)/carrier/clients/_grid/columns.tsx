@@ -73,14 +73,14 @@ export const clientsColumns: ColumnDef<ClientRow, unknown>[] = [
   },
   {
     id: 'primaryContact',
-    accessorKey: 'primaryContact',
+    accessorKey: 'mainContactName',
     header: 'Primary Contact',
     meta: {
       dataType: 'text',
       minWidth: 150,
     },
     cell: ({ row }) => {
-      const contact = row.original.primaryContact;
+      const contact = row.original.mainContactName;
       return contact ? (
         <span className="text-foreground">{contact}</span>
       ) : (

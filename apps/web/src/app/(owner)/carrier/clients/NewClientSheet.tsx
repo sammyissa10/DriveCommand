@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { SheetContainer, SheetInput, PrimaryButton } from '@/components/ui/ds';
+import { ContactsEditor, fromContactRows, type ContactRow } from '@/components/carrier/clients/ContactsEditor';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,6 +27,7 @@ export function NewClientSheet({ open, onClose }: { open: boolean; onClose: () =
   const [values, setValues] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [submitting, setSubmitting] = useState(false);
+  const [contactRows, setContactRows] = useState<ContactRow[]>([]);
 
   const contactRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
@@ -44,6 +46,7 @@ export function NewClientSheet({ open, onClose }: { open: boolean; onClose: () =
   function reset() {
     setValues(EMPTY);
     setErrors({});
+    setContactRows([]);
     setSubmitting(false);
   }
 
@@ -71,6 +74,7 @@ export function NewClientSheet({ open, onClose }: { open: boolean; onClose: () =
       if (values.primaryContact.trim()) body.primaryContact = values.primaryContact.trim();
       if (values.phone.trim()) body.phone = values.phone.trim();
       if (values.email.trim()) body.email = values.email.trim();
+      if (contactRows.length > 0) body.contacts = fromContactRows(contactRows);
 
       const res = await fetch('/api/v1/carrier/clients', {
         method: 'POST',
@@ -186,6 +190,13 @@ export function NewClientSheet({ open, onClose }: { open: boolean; onClose: () =
             }
           }}
         />
+
+        <div className="space-y-2 pt-1">
+          <p className="text-[13px] font-medium text-ds-txt2">Additional contacts (optional)</p>
+          <div className="rounded-[20px] bg-ds-card p-4">
+            <ContactsEditor rows={contactRows} onChange={setContactRows} />
+          </div>
+        </div>
 
         <div className="pt-1">
           <PrimaryButton

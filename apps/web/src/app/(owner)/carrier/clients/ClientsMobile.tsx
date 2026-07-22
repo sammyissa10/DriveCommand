@@ -106,7 +106,7 @@ export function ClientsMobile({
       list = list.filter(
         (c) =>
           c.name.toLowerCase().includes(q) ||
-          (c.primaryContact?.toLowerCase().includes(q) ?? false) ||
+          (c.mainContactName?.toLowerCase().includes(q) ?? false) ||
           (c.email?.toLowerCase().includes(q) ?? false),
       );
     }
@@ -171,7 +171,7 @@ export function ClientsMobile({
                 key={c.id}
                 leading={<MonogramAvatar name={c.name} />}
                 title={c.name}
-                subline={c.primaryContact ?? c.email ?? c.phone ?? undefined}
+                subline={c.mainContactName ?? c.email ?? c.phone ?? undefined}
                 meta={rowMeta(c)}
                 pill={<StatusPill label={s.label} tone={s.tone} />}
                 onClick={() => router.push(`/carrier/clients/${c.id}`)}

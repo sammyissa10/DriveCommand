@@ -59,6 +59,14 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
     notes: client.notes,
     openLoadsCount: client.openLoadsCount,
     outstandingAR: client.outstandingAR,
+    contacts: client.contacts.map((c) => ({
+      id: c.id,
+      name: c.name,
+      role: c.role,
+      phone: c.phone,
+      email: c.email,
+      isMain: c.isMain,
+    })),
   };
 
   return (

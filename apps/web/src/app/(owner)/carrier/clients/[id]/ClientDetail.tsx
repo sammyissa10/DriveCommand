@@ -9,6 +9,7 @@ import { ClientForm, ClientData } from '@/components/carrier/clients/ClientForm'
 import { ClientFinancials } from '@/components/carrier/clients/ClientFinancials';
 import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 import { toast } from 'sonner';
+import type { ContactInput } from '@/lib/carrier/client-contacts';
 
 interface ContractRow {
   id: string;
@@ -72,6 +73,7 @@ interface ClientSerialized {
   notes: string | null;
   openLoadsCount: number;
   outstandingAR: string | null;
+  contacts?: ContactInput[];
 }
 
 type Tab = 'overview' | 'contracts' | 'loads' | 'financials' | 'documents';
@@ -284,6 +286,7 @@ export function ClientDetail({
     paymentTerms: client.paymentTerms ?? null,
     creditLimit: client.creditLimit ?? null,
     notes: client.notes,
+    contacts: client.contacts,
   };
 
   const TABS: { key: Tab; label: string }[] = [
@@ -419,17 +422,44 @@ export function ClientDetail({
                 </div>
               </div>
 
-              {/* Contact */}
+              {/* Contacts */}
               <div className="rounded-lg border border-border bg-card p-6 space-y-4">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  Contact
+                  Contacts
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  <Field label="Primary Contact" value={client.primaryContact} />
-                  <Field label="Email" value={client.email} />
-                  <Field label="Phone" value={client.phone} />
-                  <Field label="Website" value={client.website} />
-                </div>
+                {client.contacts && client.contacts.length > 0 ? (
+                  <div className="space-y-3">
+                    {client.contacts.map((c, i) => (
+                      <div
+                        key={c.id ?? i}
+                        className="rounded-lg border border-border/60 p-3 flex flex-wrap items-start justify-between gap-2"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-foreground">{c.name}</span>
+                            {c.isMain && (
+                              <Badge variant="outline" className="border-primary text-primary text-[10px]">
+                                Main
+                              </Badge>
+                            )}
+                          </div>
+                          {c.role && <p className="text-xs text-muted-foreground">{c.role}</p>}
+                        </div>
+                        <div className="text-right text-sm text-muted-foreground">
+                          {c.phone && <p>{c.phone}</p>}
+                          {c.email && <p>{c.email}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <Field label="Primary Contact" value={client.primaryContact} />
+                    <Field label="Email" value={client.email} />
+                    <Field label="Phone" value={client.phone} />
+                    <Field label="Website" value={client.website} />
+                  </div>
+                )}
               </div>
 
               {/* Billing */}

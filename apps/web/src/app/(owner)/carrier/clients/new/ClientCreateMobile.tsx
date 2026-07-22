@@ -13,6 +13,7 @@ import {
   Toggle,
   type FieldDef,
 } from '@/components/ui/ds';
+import { ContactsEditor, fromContactRows, type ContactRow } from '@/components/carrier/clients/ContactsEditor';
 
 interface FormErrors {
   name?: string;
@@ -63,6 +64,7 @@ export function ClientCreateMobile() {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
+  const [contactRows, setContactRows] = useState<ContactRow[]>([]);
 
   function validate(): boolean {
     const e: FormErrors = {};
@@ -111,6 +113,7 @@ export function ClientCreateMobile() {
         paymentTerms: parseInt(paymentTerms) || 30,
         ...(creditLimit ? { creditLimit } : {}),
         ...(notes ? { notes } : {}),
+        ...(contactRows.length > 0 ? { contacts: fromContactRows(contactRows) } : {}),
       };
       const res = await fetch('/api/v1/carrier/clients', {
         method: 'POST',
@@ -245,6 +248,13 @@ export function ClientCreateMobile() {
         <div>
           <SectionHeader title="Contact" />
           <FieldGroup fields={contactFields} isEditing />
+        </div>
+
+        <div>
+          <SectionHeader title="Contacts" />
+          <div className="rounded-[20px] bg-ds-card p-4">
+            <ContactsEditor rows={contactRows} onChange={setContactRows} />
+          </div>
         </div>
 
         <div>

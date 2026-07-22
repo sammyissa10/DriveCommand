@@ -19,6 +19,13 @@ import {
   type StatusTone,
   type FieldDef,
 } from '@/components/ui/ds';
+import type { ContactInput } from '@/lib/carrier/client-contacts';
+import {
+  ContactsEditor,
+  toContactRows,
+  fromContactRows,
+  type ContactRow,
+} from '@/components/carrier/clients/ContactsEditor';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -49,6 +56,7 @@ export interface ClientDetailData {
   notes: string | null;
   openLoadsCount: number;
   outstandingAR: string | null;
+  contacts?: ContactInput[];
 }
 
 interface LoadRow {
@@ -210,6 +218,7 @@ export function ClientDetailMobile({
   type Form = ReturnType<typeof makeForm>;
   const [form, setForm] = useState<Form>(() => makeForm(client));
   const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
+  const [contactRows, setContactRows] = useState<ContactRow[]>(() => toContactRows(client.contacts));
 
   // Child records
   const [loads, setLoads] = useState<LoadRow[] | null>(null);
@@ -294,6 +303,7 @@ export function ClientDetailMobile({
   function startEdit() {
     setForm(makeForm(data));
     setErrors({});
+    setContactRows(toContactRows(data.contacts));
     setIsEditing(true);
   }
 
@@ -301,6 +311,7 @@ export function ClientDetailMobile({
     if (dirty && !window.confirm('Discard your changes?')) return;
     setForm(makeForm(data));
     setErrors({});
+    setContactRows(toContactRows(data.contacts));
     setIsEditing(false);
   }
 
@@ -346,6 +357,7 @@ export function ClientDetailMobile({
         paymentTerms: parseInt(form.paymentTerms || '0', 10) || 0,
         creditLimit: form.creditLimit ? form.creditLimit : null,
         notes: t(form.notes),
+        contacts: fromContactRows(contactRows),
       };
       // Email-format fields: only send when non-empty (schema rejects '').
       if (t(form.email)) body.email = t(form.email);
@@ -357,7 +369,10 @@ export function ClientDetailMobile({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      const json = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        data?: { contacts?: ContactInput[] };
+      };
 
       if (!res.ok) {
         setSaving(false);
@@ -392,8 +407,10 @@ export function ClientDetailMobile({
         paymentTerms: parseInt(form.paymentTerms || '0', 10) || 0,
         creditLimit: form.creditLimit || null,
         notes: t(form.notes) || null,
+        contacts: json.data?.contacts ?? fromContactRows(contactRows),
       };
       setData(next);
+      setContactRows(toContactRows(next.contacts));
       setIsEditing(false);
       setSaving(false);
       navigator.vibrate?.(10);
@@ -472,6 +489,33 @@ export function ClientDetailMobile({
           <div>
             <SectionHeader title="Contact" />
             <FieldGroup fields={contactFields} isEditing={isEditing} />
+          </div>
+          <div>
+            <SectionHeader title="Contacts" />
+            {isEditing ? (
+              <div className="rounded-[20px] bg-ds-card p-4">
+                <ContactsEditor rows={contactRows} onChange={setContactRows} />
+              </div>
+            ) : data.contacts && data.contacts.length > 0 ? (
+              <div className="space-y-3">
+                {data.contacts.map((c, i) => (
+                  <div key={c.id ?? i} className="rounded-[20px] bg-ds-card p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[16px] font-medium text-ds-txt">{c.name}</span>
+                      {c.isMain ? <StatusPill label="Main" tone="accent" /> : null}
+                    </div>
+                    {c.role ? <div className="mt-0.5 text-[13px] text-ds-txt3">{c.role}</div> : null}
+                    <div className="mt-1 text-[13px] text-ds-txt3">
+                      {[c.phone, c.email].filter(Boolean).join(' · ') || '—'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[20px] bg-ds-card p-4 text-[15px] text-ds-txt3">
+                No contacts added yet.
+              </div>
+            )}
           </div>
           <div>
             <SectionHeader title="Company" />

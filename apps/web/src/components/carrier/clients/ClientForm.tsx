@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { ContactsEditor, toContactRows, fromContactRows, type ContactRow } from '@/components/carrier/clients/ContactsEditor';
+import type { ContactInput } from '@/lib/carrier/client-contacts';
 
 const US_STATES: Record<string, string> = {
   'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
@@ -61,6 +63,7 @@ export interface ClientData {
   paymentTerms?: number | null;
   creditLimit?: string | null;
   notes: string | null;
+  contacts?: ContactInput[];
 }
 
 interface ClientFormProps {
@@ -124,6 +127,9 @@ export function ClientForm({ initialData }: ClientFormProps) {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactRows, setContactRows] = useState<ContactRow[]>(() =>
+    toContactRows(initialData?.contacts),
+  );
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
@@ -165,6 +171,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
         paymentTerms: parseInt(values.paymentTerms) || 30,
         ...(values.creditLimit ? { creditLimit: values.creditLimit } : {}),
         ...(values.notes ? { notes: values.notes } : {}),
+        contacts: fromContactRows(contactRows),
       };
 
       const url = isEdit
@@ -417,6 +424,14 @@ export function ClientForm({ initialData }: ClientFormProps) {
             />
           </div>
         </div>
+      </div>
+
+      {/* Contacts */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Contacts
+        </h3>
+        <ContactsEditor rows={contactRows} onChange={setContactRows} />
       </div>
 
       {/* Billing */}
