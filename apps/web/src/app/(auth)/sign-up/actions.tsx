@@ -103,6 +103,8 @@ export async function signUpAction(
     truckCount: truckCountValue,
     fleetSizeBucket,
     promoCode: (formData.get('promoCode') as string) || undefined,
+    heardAbout: (formData.get('heardAbout') as string) || undefined,
+    heardAboutOther: (formData.get('heardAboutOther') as string) || undefined,
   };
 
   const parsed = signUpSchema.safeParse(raw);
@@ -213,6 +215,7 @@ export async function signUpAction(
             planKey: result.planKey,
             fleetSizeBucket: input.fleetSizeBucket,
             truckCount: input.truckCount,
+            ...(input.heardAbout ? { heardAbout: input.heardAbout } : {}),
             ...(input.promoCode ? { promoCode: input.promoCode } : {}),
           },
         },

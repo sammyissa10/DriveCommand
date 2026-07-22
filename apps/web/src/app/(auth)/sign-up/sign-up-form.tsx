@@ -5,6 +5,7 @@ import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { signUpAction, type SignUpActionState } from './actions';
 import { signUpSchema } from '@/lib/validations/onboarding.schemas';
+import { HEARD_ABOUT_OPTIONS, HEARD_ABOUT_OTHER } from '@/lib/onboarding/heard-about';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
@@ -52,6 +53,7 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
   const [state, action] = useActionState(signUpAction, initial);
   const [step, setStep] = useState<1 | 2>(1);
   const [clientErrors, setClientErrors] = useState<Step1Errors>({});
+  const [heardAbout, setHeardAbout] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
 
   // If the server ever returns a step-1 field error after final submit, surface
@@ -241,6 +243,36 @@ export function SignUpForm({ searchParams }: SignUpFormProps) {
             defaultValue={promo ?? ''}
             placeholder="e.g. LAUNCH30"
           />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="heardAbout">
+            How did you hear about us?{' '}
+            <span className="text-muted-foreground font-normal">(optional)</span>
+          </Label>
+          <select
+            id="heardAbout"
+            name="heardAbout"
+            value={heardAbout}
+            onChange={(e) => setHeardAbout(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="">Select an option…</option>
+            {HEARD_ABOUT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          {heardAbout === HEARD_ABOUT_OTHER && (
+            <Input
+              id="heardAboutOther"
+              name="heardAboutOther"
+              maxLength={200}
+              placeholder="How did you find us?"
+              aria-label="How did you hear about us — please specify"
+            />
+          )}
         </div>
       </div>
 

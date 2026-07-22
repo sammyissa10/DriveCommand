@@ -14,6 +14,7 @@ import { CopyTenantIdButton } from './copy-tenant-id-button';
 import { ResetPasswordButton } from './reset-password-button';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/db/prisma';
+import { heardAboutLabel } from '@/lib/onboarding/heard-about';
 import { AutomationRunsSection } from './automation-runs-section';
 import { ActivationProgressSection } from './activation-progress-section';
 import { ExtendTrialButton } from './extend-trial-button';
@@ -219,6 +220,26 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                   <p className="text-xs text-gray-500">Routes</p>
                 </div>
               </div>
+            </div>
+
+            {/* Acquisition — how the tenant found us (from signup) */}
+            <div className="border-t pt-4">
+              <p className="mb-1 text-sm font-medium text-gray-700">Acquisition</p>
+              {heardAboutLabel(tenant.heardAbout) ? (
+                <div className="text-sm">
+                  <p className="text-gray-900">
+                    Heard about us: {heardAboutLabel(tenant.heardAbout)}
+                  </p>
+                  {tenant.heardAboutOther && (
+                    <p className="mt-0.5 text-xs text-gray-500">“{tenant.heardAboutOther}”</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">Not provided</p>
+              )}
+              {tenant.truckCount != null && (
+                <p className="mt-1 text-xs text-gray-500">Trucks at signup: {tenant.truckCount}</p>
+              )}
             </div>
           </CardContent>
         </Card>

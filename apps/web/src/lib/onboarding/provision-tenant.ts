@@ -25,6 +25,12 @@ export async function provisionTenant(
   const { firstName, lastName, email, password, companyName, promoCode } = input;
   const normalizedEmail = email.toLowerCase().trim();
 
+  // Acquisition channel (optional). Keep the free-text detail only when "Other"
+  // is selected; ignore stray text for the fixed options.
+  const heardAbout = input.heardAbout?.trim() || null;
+  const heardAboutOther =
+    heardAbout === 'other' ? input.heardAboutOther?.trim() || null : null;
+
   return prisma.$transaction(async (tx) => {
     // bypass_rls for the entire transaction (scoped to this transaction session only)
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -59,6 +65,8 @@ export async function provisionTenant(
         sampleDataSeeded: false,
         fleetSizeBucket: input.fleetSizeBucket as FleetSizeBucket,
         truckCount: input.truckCount,
+        heardAbout,
+        heardAboutOther,
         contactEmail: normalizedEmail,
       },
     });

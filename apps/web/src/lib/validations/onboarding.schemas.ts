@@ -32,6 +32,10 @@ export const signUpSchema = z.object({
   // consumers (Tenant.fleetSizeBucket, admin, hydrate/seed) are unchanged.
   fleetSizeBucket: FleetSizeBucketEnum,
   promoCode:       z.string().optional(),
+  // Acquisition channel — strictly optional; never blocks signup. Loosely typed
+  // (any string) so an unexpected value can never fail account creation.
+  heardAbout:      z.string().max(50).optional(),
+  heardAboutOther: z.string().max(200).optional(),
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
