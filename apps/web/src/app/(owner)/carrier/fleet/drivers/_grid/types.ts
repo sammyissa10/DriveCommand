@@ -13,4 +13,6 @@ export interface DriverRow {
   payModel: string;
   status: string;
   isSample: boolean;
+  /** Portal access derived server-side from the linked User + pending DriverInvitation set. */
+  portalStatus: 'active' | 'invited' | 'none';
 }

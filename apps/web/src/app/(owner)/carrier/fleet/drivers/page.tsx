@@ -189,16 +189,21 @@ export default async function CarrierDriversPage() {
         )}
 
         <DriversGrid
-          drivers={items.map((d) => ({
-            id: d.id,
-            firstName: d.firstName,
-            lastName: d.lastName,
-            cdlClass: d.cdlClass,
-            cdlExpiry: d.cdlExpiry,
-            payModel: d.payModel,
-            status: d.status,
-            isSample: d.isSample,
-          }))}
+          drivers={items.map((d) => {
+            const accountActive = d.user?.isActive === true;
+            const invited = !accountActive && !!d.email && pendingEmails.has(d.email.toLowerCase());
+            return {
+              id: d.id,
+              firstName: d.firstName,
+              lastName: d.lastName,
+              cdlClass: d.cdlClass,
+              cdlExpiry: d.cdlExpiry,
+              payModel: d.payModel,
+              status: d.status,
+              isSample: d.isSample,
+              portalStatus: accountActive ? 'active' : invited ? 'invited' : 'none',
+            };
+          })}
         />
       </div>
     </>

@@ -182,4 +182,19 @@ export const driversColumns: ColumnDef<DriverRow, unknown>[] = [
       return <StatusBadge variant={variant}>{label}</StatusBadge>;
     },
   },
+  {
+    id: 'portalStatus',
+    accessorKey: 'portalStatus',
+    header: 'Portal Access',
+    meta: {
+      dataType: 'text',
+      minWidth: 130,
+    },
+    cell: ({ row }) => {
+      const portalStatus = row.original.portalStatus;
+      if (portalStatus === 'active') return <StatusBadge variant="success">Active</StatusBadge>;
+      if (portalStatus === 'invited') return <StatusBadge variant="warning">Invited · pending</StatusBadge>;
+      return <span className="text-muted-foreground">—</span>;
+    },
+  },
 ];
