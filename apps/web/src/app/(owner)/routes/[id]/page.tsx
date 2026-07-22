@@ -73,7 +73,7 @@ export default async function RouteDetailPage({
     // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
     // so a conditional server fetch would leave the dropdowns empty when the user
     // clicks "Edit Route" without a ?mode=edit in the initial URL.
-    listDrivers({ activeOnly: true }).catch((err) => {
+    listDrivers({ activeOnly: true, excludeSamples: true }).catch((err) => {
       logger.error('Failed to load drivers for route edit:', err);
       return [] as any[];
     }),

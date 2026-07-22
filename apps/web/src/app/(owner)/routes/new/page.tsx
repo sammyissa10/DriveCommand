@@ -13,7 +13,7 @@ export default async function NewRoutePage() {
     // DRIVER-role User accounts — Route.driverId is an FK to User.id, so the
     // picker must be sourced from listDrivers(), not the CARRIER fleet (that
     // regression is TKT-0074/quick-477). Sample seed users are filtered out.
-    listDrivers({ activeOnly: true })
+    listDrivers({ activeOnly: true, excludeSamples: true })
       .then((rows) =>
         rows
           .filter((d) => !d.isSample)
