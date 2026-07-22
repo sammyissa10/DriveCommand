@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 interface ChecklistProps {
-  completionPct: number;
-  firstRealTruckAt: Date | null;
-  firstRealDriverAt: Date | null;
-  firstRealClientAt: Date | null;
-  firstLoadInTransitAt: Date | null;
+  /** True once a real (non-sample) record of each type exists for the tenant. */
+  hasClient: boolean;
+  hasContract: boolean;
+  hasLoad: boolean;
+  hasTrip: boolean;
 }
 
 interface ChecklistItem {
@@ -20,12 +20,44 @@ interface ChecklistItem {
 }
 
 export function ActivationChecklist({
-  completionPct,
-  firstRealTruckAt,
-  firstRealDriverAt,
-  firstRealClientAt,
-  firstLoadInTransitAt,
+  hasClient,
+  hasContract,
+  hasLoad,
+  hasTrip,
 }: ChecklistProps) {
+  // Steps follow the data dependency chain: client → contract → load → trip.
+  // A step is complete when the underlying record actually exists (not on click).
+  const items: ChecklistItem[] = [
+    { label: 'Account created', complete: true },
+    {
+      label: 'Add your first client',
+      description: 'The company you haul for.',
+      complete: hasClient,
+      href: '/carrier/clients/new',
+    },
+    {
+      label: 'Create a contract for that client',
+      description: 'Sets the rates and terms for their loads.',
+      complete: hasContract,
+      href: '/carrier/contracts/new',
+    },
+    {
+      label: 'Create your first load',
+      description: 'The shipment to move, on that contract.',
+      complete: hasLoad,
+      href: '/carrier/loads/new',
+    },
+    {
+      label: 'Assign the load to a trip and dispatch',
+      description: 'Put the load on a truck and send it.',
+      complete: hasTrip,
+      href: '/carrier/trips/new',
+    },
+  ];
+
+  const completeCount = items.filter((i) => i.complete).length;
+  const completionPct = Math.round((completeCount / items.length) * 100);
+
   if (completionPct === 100) {
     return (
       <div className="flex flex-col items-center justify-center space-y-3 py-6 animate-in fade-in duration-500">
@@ -38,14 +70,6 @@ export function ActivationChecklist({
       </div>
     );
   }
-
-  const items: ChecklistItem[] = [
-    { label: 'Account created', complete: true },
-    { label: 'Add your first truck', complete: firstRealTruckAt !== null, href: '/carrier/fleet/trucks/new' },
-    { label: 'Add your first driver', complete: firstRealDriverAt !== null, href: '/carrier/fleet/drivers/new' },
-    { label: 'Add your first customer', complete: firstRealClientAt !== null, href: '/carrier/clients/new' },
-    { label: 'Send your first load in transit', description: 'Assign a load to a trip and mark it In Transit.', complete: firstLoadInTransitAt !== null, href: '/carrier/dispatches' },
-  ];
 
   return (
     <div>

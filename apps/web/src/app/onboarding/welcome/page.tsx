@@ -11,6 +11,35 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Welcome to DriveCommand' };
 
+/**
+ * Onboarding step completion, derived from real records (not click-tracking).
+ * Sample/seeded rows and soft-deleted rows are excluded so demo data never
+ * marks a step done. bypass_rls: this page runs before the tenant has an
+ * interactive session context set for RLS.
+ */
+async function getOnboardingFlags(tenantId: string): Promise<{
+  hasClient: boolean;
+  hasContract: boolean;
+  hasLoad: boolean;
+  hasTrip: boolean;
+}> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const [clients, contracts, loads, trips] = await Promise.all([
+      tx.carrierClient.count({ where: { orgId: tenantId, isSample: false, deletedAt: null } }),
+      tx.carrierContract.count({ where: { orgId: tenantId, deletedAt: null } }),
+      tx.carrierLoad.count({ where: { orgId: tenantId, isSample: false, deletedAt: null } }),
+      tx.trip.count({ where: { orgId: tenantId, deletedAt: null } }),
+    ]);
+    return {
+      hasClient: clients > 0,
+      hasContract: contracts > 0,
+      hasLoad: loads > 0,
+      hasTrip: trips > 0,
+    };
+  }, TX_OPTIONS);
+}
+
 export default async function WelcomePage() {
   const session = await getSession();
 
@@ -34,13 +63,7 @@ export default async function WelcomePage() {
 
       // Check actual DB state — hydrateTenant may have completed before the client-side timeout
       let shouldShowError = true;
-      let catchActivation: {
-        completionPct: number;
-        firstRealTruckAt: Date | null;
-        firstRealDriverAt: Date | null;
-        firstRealClientAt: Date | null;
-        firstLoadInTransitAt: Date | null;
-      } | null = null;
+      let catchFlags: Awaited<ReturnType<typeof getOnboardingFlags>> | null = null;
 
       try {
         const tenantState = await prisma.$transaction(async (tx) => {
@@ -56,20 +79,8 @@ export default async function WelcomePage() {
           console.warn('[welcome] hydrateTenant threw but tenant is HYDRATED — ignoring error');
           shouldShowError = false;
 
-          // Fetch ActivationProgress for the normal render path
-          catchActivation = await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-            return tx.activationProgress.findUnique({
-              where: { tenantId },
-              select: {
-                completionPct: true,
-                firstRealTruckAt: true,
-                firstRealDriverAt: true,
-                firstRealClientAt: true,
-                firstLoadInTransitAt: true,
-              },
-            });
-          }, TX_OPTIONS);
+          // Derive checklist state from real records for the normal render path
+          catchFlags = await getOnboardingFlags(tenantId);
         }
         // Case (c): provisioningPhase is still MINIMAL (or null) — genuine failure, show error UI
       } catch (stateCheckErr) {
@@ -117,11 +128,10 @@ export default async function WelcomePage() {
                 <div className="rounded-xl border border-border bg-card shadow-sm p-6">
                   <h2 className="text-lg font-semibold text-foreground mb-4">Get started checklist</h2>
                   <ActivationChecklist
-                    completionPct={catchActivation?.completionPct ?? 20}
-                    firstRealTruckAt={catchActivation?.firstRealTruckAt ?? null}
-                    firstRealDriverAt={catchActivation?.firstRealDriverAt ?? null}
-                    firstRealClientAt={catchActivation?.firstRealClientAt ?? null}
-                    firstLoadInTransitAt={catchActivation?.firstLoadInTransitAt ?? null}
+                    hasClient={catchFlags?.hasClient ?? false}
+                    hasContract={catchFlags?.hasContract ?? false}
+                    hasLoad={catchFlags?.hasLoad ?? false}
+                    hasTrip={catchFlags?.hasTrip ?? false}
                   />
                 </div>
               </div>
@@ -172,20 +182,8 @@ export default async function WelcomePage() {
       );
     }
 
-    // Fetch ActivationProgress for authenticated tenant
-    const activation = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.activationProgress.findUnique({
-        where: { tenantId },
-        select: {
-          completionPct: true,
-          firstRealTruckAt: true,
-          firstRealDriverAt: true,
-          firstRealClientAt: true,
-          firstLoadInTransitAt: true,
-        },
-      });
-    }, TX_OPTIONS);
+    // Derive checklist step completion from real records for this tenant
+    const flags = await getOnboardingFlags(tenantId);
 
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
@@ -225,11 +223,10 @@ export default async function WelcomePage() {
             <div className="rounded-xl border border-border bg-card shadow-sm p-6">
               <h2 className="text-lg font-semibold text-foreground mb-4">Get started checklist</h2>
               <ActivationChecklist
-                completionPct={activation?.completionPct ?? 20}
-                firstRealTruckAt={activation?.firstRealTruckAt ?? null}
-                firstRealDriverAt={activation?.firstRealDriverAt ?? null}
-                firstRealClientAt={activation?.firstRealClientAt ?? null}
-                firstLoadInTransitAt={activation?.firstLoadInTransitAt ?? null}
+                hasClient={flags.hasClient}
+                hasContract={flags.hasContract}
+                hasLoad={flags.hasLoad}
+                hasTrip={flags.hasTrip}
               />
             </div>
           </div>
@@ -272,11 +269,10 @@ export default async function WelcomePage() {
           <div className="rounded-xl border border-border bg-card shadow-sm p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Get started checklist</h2>
             <ActivationChecklist
-              completionPct={20}
-              firstRealTruckAt={null}
-              firstRealDriverAt={null}
-              firstRealClientAt={null}
-              firstLoadInTransitAt={null}
+              hasClient={false}
+              hasContract={false}
+              hasLoad={false}
+              hasTrip={false}
             />
           </div>
         </div>
