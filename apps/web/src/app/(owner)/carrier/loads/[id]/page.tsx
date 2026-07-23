@@ -7,6 +7,7 @@ import { LoadForm } from '@/components/carrier/loads/LoadForm';
 import type { LoadData } from '@/components/carrier/loads/LoadForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
 import { LoadDetailActions } from '@/components/carrier/loads/LoadDetailActions';
+import { DispatchFailedBanner } from '@/components/carrier/loads/DispatchFailedBanner';
 import { DriverAssignmentSection } from '@/components/driver-pay/assignment-section';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { listAssignmentsForLoad } from '@/app/(owner)/actions/load-driver-assignments';
@@ -35,7 +36,13 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     }),
     prisma.carrierDriver.findMany({
       where: { orgId, status: 'active' },
-      select: { id: true, firstName: true, lastName: true, status: true },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        status: true,
+        user: { select: { isDispatchReady: true } },
+      },
       orderBy: { lastName: 'asc' },
     }),
     prisma.carrierTruck.findMany({
@@ -184,6 +191,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     id: d.id,
     name: `${d.firstName} ${d.lastName}`,
     status: d.status,
+    isDispatchReady: d.user?.isDispatchReady ?? false,
   }));
   const truckOptions = rawTrucks.map((t) => ({
     id: t.id,
@@ -236,8 +244,10 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   };
 
   return (
-    <ResponsiveSwitch
-      mobile={
+    <>
+      <DispatchFailedBanner />
+      <ResponsiveSwitch
+        mobile={
         <div className="-m-4">
           <LoadDetailMobile
             load={{
@@ -349,6 +359,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
           )}
         </div>
       }
-    />
+      />
+    </>
   );
 }
