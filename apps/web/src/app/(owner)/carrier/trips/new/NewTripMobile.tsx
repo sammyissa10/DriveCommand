@@ -16,6 +16,7 @@ import {
   SheetContainer,
   type FieldDef,
 } from '@/components/ui/ds';
+import { driverReadinessLabel, canDispatchClientSide } from '@/lib/dispatch/driver-readiness-label';
 
 // ---------------------------------------------------------------------------
 // Types — same route-template shape the desktop NewDispatchForm uses
@@ -106,7 +107,7 @@ export function NewTripMobile({
     ...trpc.workflows.instance.getDriverReadiness.queryOptions({ carrierDriverId: primaryDriverId }),
     enabled: Boolean(primaryDriverId),
   });
-  const isDispatchReady = driverReadiness?.isReady ?? true;
+  const label = driverReadiness ? driverReadinessLabel(driverReadiness) : null;
 
   function handleTemplateChange(id: string) {
     setSelectedTemplateId(id);
@@ -236,7 +237,9 @@ export function NewTripMobile({
   }
 
   function handleSubmit() {
-    if (primaryDriverId && !isDispatchReady) {
+    // Agrees with the server gate — also catches NO_ONBOARDING_INSTANCE,
+    // which the server treats as not ready.
+    if (primaryDriverId && !canDispatchClientSide(driverReadiness)) {
       setBlockModalOpen(true);
       return;
     }
@@ -350,24 +353,52 @@ export function NewTripMobile({
         <div>
           <SectionHeader title="Assignment" />
           <FieldGroup fields={assignmentFields} isEditing />
-          {primaryDriverId && driverReadiness ? (
-            <div className={`mt-2 flex items-center gap-1.5 px-1 text-[13px] ${isDispatchReady ? 'text-ds-success' : 'text-ds-danger'}`}>
-              {isDispatchReady ? (
-                <>
+          {primaryDriverId && driverReadiness && label ? (
+            <>
+              {label.tone === 'ready' && (
+                <div className="mt-2 flex items-center gap-1.5 px-1 text-[13px] text-ds-success">
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
                   <span>Dispatch ready</span>
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-4 w-4 shrink-0" />
-                  <span>
-                    {driverReadiness.blockerStepNames.length > 0
-                      ? `Not ready — ${driverReadiness.blockerStepNames.length} incomplete step${driverReadiness.blockerStepNames.length === 1 ? '' : 's'}`
-                      : 'Not ready — failed inspection steps'}
-                  </span>
-                </>
+                </div>
               )}
-            </div>
+
+              {label.tone === 'not_started' && (
+                <div className="mt-2 px-1">
+                  <div className="flex items-center gap-1.5 text-[13px] text-ds-warning">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>{label.title}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { window.location.href = '/checklists'; }}
+                    className="mt-0.5 text-[13px] font-medium text-ds-warning underline"
+                  >
+                    Start onboarding
+                  </button>
+                </div>
+              )}
+
+              {label.tone === 'incomplete' && (
+                <div className="mt-2 px-1">
+                  <div className="flex items-center gap-1.5 text-[13px] text-ds-danger">
+                    <XCircle className="h-4 w-4 shrink-0" />
+                    <span>{label.title}</span>
+                  </div>
+                  {label.detail ? (
+                    <p className="mt-0.5 text-[13px] text-ds-txt2">{label.detail}</p>
+                  ) : null}
+                  {driverReadiness.openInstanceId ? (
+                    <button
+                      type="button"
+                      onClick={() => { window.location.href = `/checklists/instances/${driverReadiness.openInstanceId}`; }}
+                      className="mt-0.5 text-[13px] font-medium text-ds-danger underline"
+                    >
+                      View checklist
+                    </button>
+                  ) : null}
+                </div>
+              )}
+            </>
           ) : null}
         </div>
 
@@ -399,14 +430,23 @@ export function NewTripMobile({
       </div>
 
       {/* Readiness block sheet */}
-      <SheetContainer open={blockModalOpen} onCancel={closeBlock} title="Driver not ready" cancelLabel="Cancel">
+      <SheetContainer
+        open={blockModalOpen}
+        onCancel={closeBlock}
+        title={label?.tone === 'not_started' ? 'Driver has not started onboarding' : 'Driver not ready'}
+        cancelLabel="Cancel"
+      >
         <div className="space-y-4">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-ds-danger" />
-            <p className="text-[15px] text-ds-txt">This driver has incomplete required steps.</p>
+            <AlertTriangle className={`mt-0.5 h-5 w-5 shrink-0 ${label?.tone === 'not_started' ? 'text-ds-warning' : 'text-ds-danger'}`} />
+            <p className="text-[15px] text-ds-txt">
+              {label?.tone === 'not_started'
+                ? 'Onboarding must be completed - or overridden by an admin - before this driver can be dispatched.'
+                : 'This driver has incomplete onboarding steps.'}
+            </p>
           </div>
 
-          {driverReadiness && driverReadiness.blockerStepNames.length > 0 ? (
+          {label?.tone !== 'not_started' && driverReadiness && driverReadiness.blockerStepNames.length > 0 ? (
             <div className="space-y-2 rounded-[20px] bg-ds-card p-4">
               {driverReadiness.blockerStepNames.map((name, i) => (
                 <div key={i} className="flex items-center gap-2 text-[14px] text-ds-txt2">
@@ -444,7 +484,18 @@ export function NewTripMobile({
               />
             ) : null}
 
-            {driverReadiness?.openInstanceId ? (
+            {label?.tone === 'not_started' ? (
+              <button
+                type="button"
+                onClick={() => {
+                  closeBlock();
+                  window.location.href = '/checklists';
+                }}
+                className="h-[50px] w-full rounded-[15px] bg-ds-card text-[17px] font-semibold text-ds-txt transition active:opacity-75"
+              >
+                Start onboarding
+              </button>
+            ) : driverReadiness?.openInstanceId ? (
               <button
                 type="button"
                 onClick={() => {
