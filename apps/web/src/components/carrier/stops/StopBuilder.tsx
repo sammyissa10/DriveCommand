@@ -66,6 +66,10 @@ export function StopBuilder({ stops, onChange, mode, stopErrors }: StopBuilderPr
     onChange(resequence(reordered));
   }
 
+  function handleDragCancel() {
+    setActiveId(null);
+  }
+
   function handleUpdate(id: string, updated: StopBuilderStop) {
     onChange(stops.map((s) => (s.id === id ? updated : s)));
   }
@@ -89,6 +93,7 @@ export function StopBuilder({ stops, onChange, mode, stopErrors }: StopBuilderPr
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
       >
         <div className="space-y-2">
           {stops.length === 0 ? (
