@@ -13,6 +13,7 @@ import { OnboardingReminderRibbon } from "@/components/onboarding/OnboardingRemi
 import { CongratsDialog } from "@/components/onboarding/CongratsDialog"
 import { OnboardingTourProvider } from "@/components/onboarding/tour/OnboardingTour"
 import { markCongratsShown } from "@/app/(owner)/actions/activation-congrats"
+import { useIsDesktop } from "@/hooks/useIsDesktop"
 import { toast } from "sonner"
 
 interface OwnerShellProps {
@@ -43,6 +44,21 @@ interface OwnerShellProps {
 export function OwnerShell({ children, tenantName, onboardingComplete = false, congratsShownAt = null, tourSeen = true }: OwnerShellProps) {
   const [congratsOpen, setCongratsOpen] = useState(false);
   const firedRef = useRef(false);
+
+  // Both chrome frames below are always mounted and CSS-toggled (hidden lg:flex /
+  // lg:hidden). Rendering {children} into BOTH duplicated every page's content —
+  // two <form> trees, doubled dropdowns, submit clicks binding to the wrong copy.
+  // Gate children into exactly ONE frame so page content mounts once.
+  //
+  // `useIsDesktop` returns undefined until mounted (SSR-safe). The desktop frame
+  // uses `!== false` (so it holds children during SSR + hydration, matching the
+  // server HTML — no mismatch, and desktop keeps its server-rendered content); the
+  // mobile frame uses `=== false`. The two conditions are mutually exclusive at
+  // every instant, so children are never in both frames at once. The 1024px
+  // breakpoint matches the `lg` visibility classes, so once resolved the populated
+  // frame is the visible one. On mobile the content briefly lives in the hidden
+  // desktop frame pre-mount, then moves to the mobile frame — never visible twice.
+  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     if (onboardingComplete && congratsShownAt == null && !firedRef.current) {
@@ -102,7 +118,7 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
           <main className="flex-1 overflow-y-auto bg-white rounded-2xl m-3">
             <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
             <div className="p-6">
-              {children}
+              {isDesktop !== false ? children : null}
             </div>
           </main>
         </div>
@@ -142,7 +158,7 @@ export function OwnerShell({ children, tenantName, onboardingComplete = false, c
             <OnboardingReminderRibbon onboardingComplete={onboardingComplete} />
           </div>
           <div className="p-4">
-            {children}
+            {isDesktop === false ? children : null}
           </div>
         </main>
         <OwnerBottomNav />
