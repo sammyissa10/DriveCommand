@@ -16,13 +16,23 @@ import { prisma } from '@/lib/db/prisma'; // platform table (user.update) kept b
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { sendDispatchReady, sendInstanceBlocked } from './notifications';
-import type { PlaybookEntityType } from '@/generated/prisma';
+import type { PlaybookEntityType, PrismaClient } from '@/generated/prisma';
 
-export async function computeDispatchReadiness(instanceId: string): Promise<{
+/**
+ * @param instanceId
+ * @param explicitTenantPrisma - Optional pre-resolved tenant client for header-less contexts
+ *   (the backfill script) where header-based getTenantPrisma() would throw. Default (omitted)
+ *   path resolves via getTenantPrisma() exactly as before — unchanged behavior for all existing
+ *   call sites (skipStep, failInspectionItem, completeStep, stepInstance router, instance router).
+ */
+export async function computeDispatchReadiness(
+  instanceId: string,
+  explicitTenantPrisma?: PrismaClient
+): Promise<{
   isReady: boolean;
   blockers: { id: string; status: string }[];
 }> {
-  const tenantPrisma = await getTenantPrisma();
+  const tenantPrisma = explicitTenantPrisma ?? (await getTenantPrisma());
   const instance = await tenantPrisma.playbookInstance.findUniqueOrThrow({
     where: { id: instanceId },
     include: { stepInstances: true },
@@ -86,7 +96,7 @@ export async function computeDispatchReadiness(instanceId: string): Promise<{
   }
 
   // Aggregate entity-level readiness
-  await updateEntityReadiness(instance.entityType, instance.entityId, instance.tenantId);
+  await updateEntityReadiness(instance.entityType, instance.entityId, instance.tenantId, tenantPrisma);
 
   return { isReady, blockers: openBlockers.map((s) => ({ id: s.id, status: s.status })) };
 }
@@ -94,10 +104,10 @@ export async function computeDispatchReadiness(instanceId: string): Promise<{
 async function updateEntityReadiness(
   entityType: PlaybookEntityType,
   entityId: string,
-  tenantId: string
+  tenantId: string,
+  tenantPrisma: PrismaClient
 ) {
   // An entity is ready only when every non-completed active instance is ready
-  const tenantPrisma = await getTenantPrisma();
   const activeInstances = await tenantPrisma.playbookInstance.findMany({
     where: { entityId, tenantId, status: { not: 'COMPLETED' } },
     select: { isDispatchReady: true },
