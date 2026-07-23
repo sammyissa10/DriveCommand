@@ -23,6 +23,7 @@ import {
 } from '@drivecommand/validation';
 import { generatePlaybookInstance } from '@/server/services/workflows/generatePlaybookInstance';
 import { computeDispatchReadiness } from '@/server/services/workflows/computeDispatchReadiness';
+import { deriveDriverReadiness } from '@/server/services/workflows/deriveDriverReadiness';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma'; // kept for $transaction (bypass_rls) + user platform table
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 
@@ -147,12 +148,20 @@ const computeReadiness = adminProcedure
 
 /**
  * getDriverReadiness — given a CarrierDriver.id, returns:
- *   isReady: boolean (from User.isDispatchReady)
- *   blockerStepNames: string[] — names of open blocker steps across all non-completed instances
- *   openInstanceId: string | null — first non-completed instance ID (for "View Checklist" link)
+ *   isReady: boolean — derived LIVE from open step instances (see deriveDriverReadiness),
+ *     NOT from the stale User.isDispatchReady column. This makes the "unactionable
+ *     dead-end" (isReady:false with zero blocker names) impossible by construction.
+ *   blockerStepNames: string[] — names of open blocker steps across all active instances
+ *   openInstanceId: string | null — an active instance ID (for "View Checklist" link)
+ *   warning?: 'NO_ONBOARDING_INSTANCE' — set when the driver has zero active DRIVER
+ *     instances at all (e.g. onboarding never fired). isReady is still true in this
+ *     case (nothing to block on) but the caller can surface the warning as a nudge.
  *
  * This powers the dispatch enforcement modal in NewDispatchForm.
  * SCOPE: only DRIVER entity instances are checked (per Phase 45 scope, no truck enforcement).
+ * This resolver is READ-ONLY — it never creates PlaybookInstances (that would be a side
+ * effect inside a tRPC query). Auto-start wiring (quick-497 Task 2) + the backfill script
+ * (Task 3) are responsible for instances existing before this resolver ever runs.
  */
 const getDriverReadiness = tenantMemberProcedure
   .input(z.object({ carrierDriverId: z.string().uuid() }))
@@ -161,6 +170,7 @@ const getDriverReadiness = tenantMemberProcedure
     blockerStepNames: string[];
     openInstanceId: string | null;
     userId: string | null;
+    warning?: 'NO_ONBOARDING_INSTANCE';
   }> => {
     const tenantPrisma = await getTenantPrisma();
 
@@ -177,19 +187,9 @@ const getDriverReadiness = tenantMemberProcedure
 
     const userId = carrierDriver.userId;
 
-    // Check User.isDispatchReady (updated by computeDispatchReadiness service) — platform table
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { isDispatchReady: true },
-    });
-
-    const isReady = user?.isDispatchReady ?? true;
-
-    if (isReady) {
-      return { isReady: true, blockerStepNames: [], openInstanceId: null, userId };
-    }
-
-    // Collect open blocker step names from all active (non-completed) DRIVER instances for this user
+    // Load active (non-completed) DRIVER instances for this user, including step status +
+    // snapshot so the pure helper can classify open blockers. No status filter on
+    // stepInstances here — deriveDriverReadiness classifies open vs. complete itself.
     const activeInstances = await tenantPrisma.playbookInstance.findMany({
       where: {
         tenantId: ctx.tenantId,
@@ -199,27 +199,26 @@ const getDriverReadiness = tenantMemberProcedure
       },
       include: {
         stepInstances: {
-          where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS', 'FAILED'] } },
           select: { stepSnapshot: true, status: true },
         },
       },
       orderBy: { createdAt: 'asc' },
     });
 
-    const blockerStepNames: string[] = [];
-    let openInstanceId: string | null = null;
-
-    for (const inst of activeInstances) {
-      if (!openInstanceId) openInstanceId = inst.id;
-      for (const step of inst.stepInstances) {
-        const snap = step.stepSnapshot as { isDispatchBlocker?: boolean; title?: string; name?: string };
-        if (snap.isDispatchBlocker === true) {
-          blockerStepNames.push(snap.title ?? snap.name ?? 'Required step');
-        }
-      }
+    if (activeInstances.length === 0) {
+      // No onboarding checklist exists for this driver at all — nothing to gate on.
+      // Read-only resolver: do NOT create an instance here.
+      return {
+        isReady: true,
+        blockerStepNames: [],
+        openInstanceId: null,
+        userId,
+        warning: 'NO_ONBOARDING_INSTANCE',
+      };
     }
 
-    return { isReady: false, blockerStepNames, openInstanceId, userId };
+    const result = deriveDriverReadiness(activeInstances);
+    return { ...result, userId };
   });
 
 export const instanceRouter = router({
