@@ -11,6 +11,7 @@ import { DriverAssignmentSection } from '@/components/driver-pay/assignment-sect
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { listAssignmentsForLoad } from '@/app/(owner)/actions/load-driver-assignments';
 import { LoadDetailMobile } from './LoadDetailMobile';
+import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -235,118 +236,119 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   };
 
   return (
-    <>
-      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
-      <div className="lg:hidden -m-4">
-        <LoadDetailMobile
-          load={{
-            id: load.id,
-            referenceNumber: load.referenceNumber ?? id.slice(0, 8),
-            status: load.status,
-            clientId: load.clientId,
-            contractId: load.contractId ?? null,
-            dispatchId: load.dispatchId ?? null,
-            loadType: load.loadType,
-            bolNumber: load.bolNumber ?? null,
-            poNumber: load.poNumber ?? null,
-            commodityDescription: load.commodityDescription ?? null,
-            commodityWeightLbs: load.commodityWeightLbs != null ? Number(load.commodityWeightLbs) : null,
-            commodityPieces: load.commodityPieces != null ? Number(load.commodityPieces) : null,
-            hazmat: load.hazmat,
-            rateType: load.rateType,
-            rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
-            otherCharges: load.financials.otherCharges != null ? Number(load.financials.otherCharges) : null,
-            brokerFlag: load.brokerFlag,
-            carrierCost: load.financials.carrierCost != null ? Number(load.financials.carrierCost) : null,
-            specialInstructions: load.specialInstructions ?? null,
-          }}
-          clients={clients}
-          contracts={mobileContractsSerialized}
-          facilities={mobileFacilities}
-          driverOptions={driverOptions}
-          truckOptions={truckOptions}
-          stops={mappedStops}
-          stopStatusMap={stopStatusMap}
-          dispatchNumber={parsedDispatchNumber}
-          pendingStopCount={pendingStopCount}
-          initialAssignments={mobileInitialAssignments}
-          loadAudit={
-            loadAudit
-              ? {
-                  createdAt: loadAudit.createdAt.toISOString(),
-                  createdByName: loadAudit.createdBy
-                    ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null
-                    : null,
-                  createdByEmail: loadAudit.createdBy?.email ?? null,
-                  updatedAt: loadAudit.updatedAt.toISOString(),
-                  updatedByName: loadAudit.updatedBy
-                    ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null
-                    : null,
-                  updatedByEmail: loadAudit.updatedBy?.email ?? null,
-                }
-              : null
-          }
-        />
-      </div>
-
-      {/* Desktop */}
-      <div className="hidden lg:block space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              Load {load.referenceNumber}
-            </h1>
-            <p className="mt-1 text-muted-foreground text-sm">
-              Edit load details, rate, and freight information.
-            </p>
-          </div>
-          <LoadDetailActions
-            loadId={id}
-            loadRefNumber={load.referenceNumber ?? id.slice(0, 8)}
-            loadStatus={load.status}
-            dispatchId={load.dispatchId}
+    <ResponsiveSwitch
+      mobile={
+        <div className="-m-4">
+          <LoadDetailMobile
+            load={{
+              id: load.id,
+              referenceNumber: load.referenceNumber ?? id.slice(0, 8),
+              status: load.status,
+              clientId: load.clientId,
+              contractId: load.contractId ?? null,
+              dispatchId: load.dispatchId ?? null,
+              loadType: load.loadType,
+              bolNumber: load.bolNumber ?? null,
+              poNumber: load.poNumber ?? null,
+              commodityDescription: load.commodityDescription ?? null,
+              commodityWeightLbs: load.commodityWeightLbs != null ? Number(load.commodityWeightLbs) : null,
+              commodityPieces: load.commodityPieces != null ? Number(load.commodityPieces) : null,
+              hazmat: load.hazmat,
+              rateType: load.rateType,
+              rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
+              otherCharges: load.financials.otherCharges != null ? Number(load.financials.otherCharges) : null,
+              brokerFlag: load.brokerFlag,
+              carrierCost: load.financials.carrierCost != null ? Number(load.financials.carrierCost) : null,
+              specialInstructions: load.specialInstructions ?? null,
+            }}
+            clients={clients}
+            contracts={mobileContractsSerialized}
+            facilities={mobileFacilities}
+            driverOptions={driverOptions}
+            truckOptions={truckOptions}
+            stops={mappedStops}
+            stopStatusMap={stopStatusMap}
             dispatchNumber={parsedDispatchNumber}
             pendingStopCount={pendingStopCount}
-            drivers={driverOptions}
-            trucks={truckOptions}
+            initialAssignments={mobileInitialAssignments}
+            loadAudit={
+              loadAudit
+                ? {
+                    createdAt: loadAudit.createdAt.toISOString(),
+                    createdByName: loadAudit.createdBy
+                      ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null
+                      : null,
+                    createdByEmail: loadAudit.createdBy?.email ?? null,
+                    updatedAt: loadAudit.updatedAt.toISOString(),
+                    updatedByName: loadAudit.updatedBy
+                      ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null
+                      : null,
+                    updatedByEmail: loadAudit.updatedBy?.email ?? null,
+                  }
+                : null
+            }
           />
         </div>
+      }
+      desktop={
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                Load {load.referenceNumber}
+              </h1>
+              <p className="mt-1 text-muted-foreground text-sm">
+                Edit load details, rate, and freight information.
+              </p>
+            </div>
+            <LoadDetailActions
+              loadId={id}
+              loadRefNumber={load.referenceNumber ?? id.slice(0, 8)}
+              loadStatus={load.status}
+              dispatchId={load.dispatchId}
+              dispatchNumber={parsedDispatchNumber}
+              pendingStopCount={pendingStopCount}
+              drivers={driverOptions}
+              trucks={truckOptions}
+            />
+          </div>
 
-        <LoadForm
-          mode="edit"
-          initialData={initialData}
-          clients={clients}
-          loadId={id}
-        />
-
-        <DriverAssignmentSection
-          loadId={id}
-          load={{
-            id: load.id,
-            hazmat: load.hazmat,
-            referenceNumber: load.referenceNumber ?? null,
-            rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
-            createdAt: (load.createdAt as Date).toISOString(),
-          }}
-          drivers={rawDrivers}
-          stops={mappedStops.map((s) => ({
-            id: s.id,
-            facilityName: s.facility_name,
-            stopType: s.stop_type,
-          }))}
-        />
-
-        {loadAudit && (
-          <AuditTrailFooter
-            createdAt={loadAudit.createdAt}
-            createdByName={loadAudit.createdBy ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null : null}
-            createdByEmail={loadAudit.createdBy?.email ?? null}
-            updatedAt={loadAudit.updatedAt}
-            updatedByName={loadAudit.updatedBy ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
-            updatedByEmail={loadAudit.updatedBy?.email ?? null}
+          <LoadForm
+            mode="edit"
+            initialData={initialData}
+            clients={clients}
+            loadId={id}
           />
-        )}
-      </div>
-    </>
+
+          <DriverAssignmentSection
+            loadId={id}
+            load={{
+              id: load.id,
+              hazmat: load.hazmat,
+              referenceNumber: load.referenceNumber ?? null,
+              rateAmount: load.rateAmount != null ? Number(load.rateAmount) : null,
+              createdAt: (load.createdAt as Date).toISOString(),
+            }}
+            drivers={rawDrivers}
+            stops={mappedStops.map((s) => ({
+              id: s.id,
+              facilityName: s.facility_name,
+              stopType: s.stop_type,
+            }))}
+          />
+
+          {loadAudit && (
+            <AuditTrailFooter
+              createdAt={loadAudit.createdAt}
+              createdByName={loadAudit.createdBy ? `${loadAudit.createdBy.firstName ?? ''} ${loadAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+              createdByEmail={loadAudit.createdBy?.email ?? null}
+              updatedAt={loadAudit.updatedAt}
+              updatedByName={loadAudit.updatedBy ? `${loadAudit.updatedBy.firstName ?? ''} ${loadAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+              updatedByEmail={loadAudit.updatedBy?.email ?? null}
+            />
+          )}
+        </div>
+      }
+    />
   );
 }

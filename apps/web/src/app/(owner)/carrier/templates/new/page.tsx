@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { RouteTemplateForm } from '@/components/carrier/templates/RouteTemplateForm';
 import { NewTemplateMobile } from './NewTemplateMobile';
+import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 export default async function NewRouteTemplatePage() {
   const session = await getSession();
@@ -38,34 +39,35 @@ export default async function NewRouteTemplatePage() {
   ]);
 
   return (
-    <>
-      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
-      <div className="lg:hidden -m-4">
-        <NewTemplateMobile clients={clients} drivers={drivers} trucks={trucks} facilities={facilities} />
-      </div>
-
-      {/* Desktop */}
-      <div className="hidden lg:block space-y-6">
-        <div>
-          <Link
-            href="/carrier/templates"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Route Templates
-          </Link>
-          <h1 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            New Route Template
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Define a recurring route with stops for automated dispatch generation.
-          </p>
+    <ResponsiveSwitch
+      mobile={
+        <div className="-m-4">
+          <NewTemplateMobile clients={clients} drivers={drivers} trucks={trucks} facilities={facilities} />
         </div>
+      }
+      desktop={
+        <div className="space-y-6">
+          <div>
+            <Link
+              href="/carrier/templates"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Route Templates
+            </Link>
+            <h1 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              New Route Template
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Define a recurring route with stops for automated dispatch generation.
+            </p>
+          </div>
 
-        <div className="rounded-lg border border-border bg-card p-6">
-          <RouteTemplateForm />
+          <div className="rounded-lg border border-border bg-card p-6">
+            <RouteTemplateForm />
+          </div>
         </div>
-      </div>
-    </>
+      }
+    />
   );
 }

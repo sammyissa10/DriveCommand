@@ -6,6 +6,7 @@ import { ClientDetailMobile } from './ClientDetailMobile';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
 import { hasPermission } from '@/lib/auth/permissions';
+import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -70,26 +71,27 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
   };
 
   return (
-    <>
-      {/* Mobile-web design system view (phone widths only) */}
-      <div className="lg:hidden -m-4">
-        <ClientDetailMobile client={serialized} initialEdit={edit === 'true'} />
-      </div>
-
-      {/* Desktop view (lg and up) — unchanged */}
-      <div className="hidden lg:block">
-      <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} canCreateContract={canCreateContract} />
-      {clientAudit && (
-        <AuditTrailFooter
-          createdAt={clientAudit.createdAt}
-          createdByName={clientAudit.createdBy ? `${clientAudit.createdBy.firstName ?? ''} ${clientAudit.createdBy.lastName ?? ''}`.trim() || null : null}
-          createdByEmail={clientAudit.createdBy?.email ?? null}
-          updatedAt={clientAudit.updatedAt}
-          updatedByName={clientAudit.updatedBy ? `${clientAudit.updatedBy.firstName ?? ''} ${clientAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
-          updatedByEmail={clientAudit.updatedBy?.email ?? null}
-        />
-      )}
-      </div>
-    </>
+    <ResponsiveSwitch
+      mobile={
+        <div className="-m-4">
+          <ClientDetailMobile client={serialized} initialEdit={edit === 'true'} />
+        </div>
+      }
+      desktop={
+        <div>
+          <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} canCreateContract={canCreateContract} />
+          {clientAudit && (
+            <AuditTrailFooter
+              createdAt={clientAudit.createdAt}
+              createdByName={clientAudit.createdBy ? `${clientAudit.createdBy.firstName ?? ''} ${clientAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+              createdByEmail={clientAudit.createdBy?.email ?? null}
+              updatedAt={clientAudit.updatedAt}
+              updatedByName={clientAudit.updatedBy ? `${clientAudit.updatedBy.firstName ?? ''} ${clientAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+              updatedByEmail={clientAudit.updatedBy?.email ?? null}
+            />
+          )}
+        </div>
+      }
+    />
   );
 }

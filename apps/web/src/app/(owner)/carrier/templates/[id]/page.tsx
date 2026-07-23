@@ -10,6 +10,7 @@ import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
 import { TemplateEditMobile } from './TemplateEditMobile';
+import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -113,59 +114,60 @@ export default async function EditRouteTemplatePage({ params }: Props) {
   };
 
   return (
-    <>
-      {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
-      <div className="lg:hidden -m-4">
-        <TemplateEditMobile
-          initialData={formData}
-          templateId={id}
-          initialActive={template.active}
-          clients={clients}
-          drivers={drivers}
-          trucks={trucks}
-          facilities={facilities}
-          initialContracts={contracts}
-        />
-      </div>
-
-      {/* Desktop */}
-      <div className="hidden lg:block space-y-6">
-      <div>
-        <Link
-          href="/carrier/templates"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Route Templates
-        </Link>
-        <h1 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Edit Route Template
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{template.templateName}</p>
-        <div className="mt-3">
-          <TemplateStatusToggle templateId={id} initialActive={template.active} />
+    <ResponsiveSwitch
+      mobile={
+        <div className="-m-4">
+          <TemplateEditMobile
+            initialData={formData}
+            templateId={id}
+            initialActive={template.active}
+            clients={clients}
+            drivers={drivers}
+            trucks={trucks}
+            facilities={facilities}
+            initialContracts={contracts}
+          />
         </div>
-      </div>
+      }
+      desktop={
+        <div className="space-y-6">
+          <div>
+            <Link
+              href="/carrier/templates"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Route Templates
+            </Link>
+            <h1 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Edit Route Template
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">{template.templateName}</p>
+            <div className="mt-3">
+              <TemplateStatusToggle templateId={id} initialActive={template.active} />
+            </div>
+          </div>
 
-      <div className="rounded-lg border border-border bg-card p-6">
-        <RouteTemplateForm initialData={formData} templateId={id} />
-      </div>
+          <div className="rounded-lg border border-border bg-card p-6">
+            <RouteTemplateForm initialData={formData} templateId={id} />
+          </div>
 
-      <div className="rounded-lg border border-border bg-card p-6">
-        <DispatchPreview templateId={id} />
-      </div>
+          <div className="rounded-lg border border-border bg-card p-6">
+            <DispatchPreview templateId={id} />
+          </div>
 
-      {templateAudit && (
-        <AuditTrailFooter
-          createdAt={templateAudit.createdAt}
-          createdByName={templateAudit.createdBy ? `${templateAudit.createdBy.firstName ?? ''} ${templateAudit.createdBy.lastName ?? ''}`.trim() || null : null}
-          createdByEmail={templateAudit.createdBy?.email ?? null}
-          updatedAt={templateAudit.updatedAt}
-          updatedByName={templateAudit.updatedBy ? `${templateAudit.updatedBy.firstName ?? ''} ${templateAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
-          updatedByEmail={templateAudit.updatedBy?.email ?? null}
-        />
-      )}
-      </div>
-    </>
+          {templateAudit && (
+            <AuditTrailFooter
+              createdAt={templateAudit.createdAt}
+              createdByName={templateAudit.createdBy ? `${templateAudit.createdBy.firstName ?? ''} ${templateAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+              createdByEmail={templateAudit.createdBy?.email ?? null}
+              updatedAt={templateAudit.updatedAt}
+              updatedByName={templateAudit.updatedBy ? `${templateAudit.updatedBy.firstName ?? ''} ${templateAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+              updatedByEmail={templateAudit.updatedBy?.email ?? null}
+            />
+          )}
+        </div>
+      }
+    />
   );
 }

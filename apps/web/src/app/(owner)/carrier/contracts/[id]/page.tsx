@@ -5,6 +5,7 @@ import { ContractDetail } from './ContractDetail';
 import { ContractDetailMobile } from './ContractDetailMobile';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
+import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -76,31 +77,32 @@ export default async function ContractDetailPage({ params, searchParams }: Props
     : null;
 
   return (
-    <>
-      {/* Mobile-web design system — rendered below lg; desktop keeps its layout */}
-      <div className="lg:hidden -m-4">
-        <ContractDetailMobile
-          contract={serialized}
-          loadsSummary={summary}
-          clients={clients}
-          initialEdit={edit === 'true'}
-        />
-      </div>
-
-      {/* Desktop */}
-      <div className="hidden lg:block">
-        <ContractDetail contract={serialized} loadsSummary={summary} initialEdit={edit === 'true'} />
-        {contractAudit && (
-          <AuditTrailFooter
-            createdAt={contractAudit.createdAt}
-            createdByName={contractAudit.createdBy ? `${contractAudit.createdBy.firstName ?? ''} ${contractAudit.createdBy.lastName ?? ''}`.trim() || null : null}
-            createdByEmail={contractAudit.createdBy?.email ?? null}
-            updatedAt={contractAudit.updatedAt}
-            updatedByName={contractAudit.updatedBy ? `${contractAudit.updatedBy.firstName ?? ''} ${contractAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
-            updatedByEmail={contractAudit.updatedBy?.email ?? null}
+    <ResponsiveSwitch
+      mobile={
+        <div className="-m-4">
+          <ContractDetailMobile
+            contract={serialized}
+            loadsSummary={summary}
+            clients={clients}
+            initialEdit={edit === 'true'}
           />
-        )}
-      </div>
-    </>
+        </div>
+      }
+      desktop={
+        <div>
+          <ContractDetail contract={serialized} loadsSummary={summary} initialEdit={edit === 'true'} />
+          {contractAudit && (
+            <AuditTrailFooter
+              createdAt={contractAudit.createdAt}
+              createdByName={contractAudit.createdBy ? `${contractAudit.createdBy.firstName ?? ''} ${contractAudit.createdBy.lastName ?? ''}`.trim() || null : null}
+              createdByEmail={contractAudit.createdBy?.email ?? null}
+              updatedAt={contractAudit.updatedAt}
+              updatedByName={contractAudit.updatedBy ? `${contractAudit.updatedBy.firstName ?? ''} ${contractAudit.updatedBy.lastName ?? ''}`.trim() || null : null}
+              updatedByEmail={contractAudit.updatedBy?.email ?? null}
+            />
+          )}
+        </div>
+      }
+    />
   );
 }
