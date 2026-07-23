@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { RefreshCw } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
@@ -39,6 +40,7 @@ interface DriverOption {
   id: string;
   name: string;
   status: string;
+  isDispatchReady?: boolean;
 }
 
 interface TruckOption {
@@ -488,10 +490,12 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
           const dispatchJson = await dispatchRes.json().catch(() => ({}));
           if (dispatchJson.error === 'DRIVER_NOT_DISPATCH_READY') {
             toast.error("Load saved. Driver isn't dispatch-ready yet, so the trip wasn't started — assign it to a trip later.", { duration: 6000 });
+            const driverName = drivers?.find((d) => d.id === primaryDriverId)?.name ?? '';
+            router.push(`/carrier/loads/${savedId}?dispatch_failed=not_ready&driver=${encodeURIComponent(driverName)}`);
           } else {
             toast.error('The load was created, but the trip could not be started. You can assign it to a trip later.');
+            router.push(`/carrier/loads/${savedId}?dispatch_failed=other`);
           }
-          router.push('/carrier/loads');
           return;
         }
 
@@ -551,6 +555,7 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
     'flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
   const sectionClass = 'space-y-4 rounded-lg border bg-card p-4';
   const sectionTitleClass = 'text-sm font-semibold text-foreground mb-3';
+  const selectedPrimaryDriver = drivers?.find((d) => d.id === primaryDriverId);
 
   const fromContractLabel = (
     <span className="text-xs text-muted-foreground ml-2">from contract</span>
@@ -780,9 +785,24 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
                   >
                     <option value="">Select driver…</option>
                     {drivers.map((d) => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
+                      <option key={d.id} value={d.id}>
+                        {d.name}{d.isDispatchReady === false ? ' - Not dispatch-ready' : ''}
+                      </option>
                     ))}
                   </select>
+                  {selectedPrimaryDriver && selectedPrimaryDriver.isDispatchReady === false && (
+                    <div className="mt-2 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800 px-3 py-2">
+                      <p className="text-xs text-amber-800 dark:text-amber-300">
+                        This driver hasn&apos;t completed onboarding requirements yet. The load will be saved, but the trip can&apos;t start until they&apos;re ready.{' '}
+                        <Link
+                          href={`/carrier/fleet/drivers/${selectedPrimaryDriver.id}`}
+                          className="font-medium underline underline-offset-2"
+                        >
+                          View driver
+                        </Link>
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Truck */}
@@ -833,7 +853,9 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
                     {drivers
                       .filter((d) => d.id !== primaryDriverId)
                       .map((d) => (
-                        <option key={d.id} value={d.id}>{d.name}</option>
+                        <option key={d.id} value={d.id}>
+                          {d.name}{d.isDispatchReady === false ? ' - Not dispatch-ready' : ''}
+                        </option>
                       ))}
                   </select>
                   {coDriverError && (

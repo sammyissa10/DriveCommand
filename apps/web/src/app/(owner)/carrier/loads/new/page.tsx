@@ -20,7 +20,12 @@ export default async function NewLoadPage() {
     }),
     prisma.carrierDriver.findMany({
       where: { orgId, status: 'active' },
-      select: { id: true, firstName: true, lastName: true },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        user: { select: { isDispatchReady: true } },
+      },
       orderBy: { firstName: 'asc' },
     }),
     prisma.carrierTruck.findMany({
@@ -40,6 +45,7 @@ export default async function NewLoadPage() {
     id: d.id,
     name: `${d.firstName} ${d.lastName}`,
     status: 'active',
+    isDispatchReady: d.user?.isDispatchReady ?? false,
   }));
 
   return (
