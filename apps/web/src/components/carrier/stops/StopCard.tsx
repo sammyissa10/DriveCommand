@@ -97,9 +97,7 @@ export function StopCard({
 
   function handleRemove(e: React.MouseEvent) {
     e.stopPropagation();
-    if (window.confirm('Remove this stop?')) {
-      onRemove();
-    }
+    onRemove();
   }
 
   function handleCardBodyClick() {
