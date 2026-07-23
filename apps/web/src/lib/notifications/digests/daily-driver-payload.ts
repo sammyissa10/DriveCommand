@@ -50,7 +50,7 @@ export async function buildDailyDriverPayload(
     }),
     tenantPrisma.driverHOSEntry.findMany({
       where: {
-        userId: driverUserId,
+        driverId: driverUserId,
         startTime: { gte: dayStart, lt: dayEnd },
       },
       select: { id: true, status: true },

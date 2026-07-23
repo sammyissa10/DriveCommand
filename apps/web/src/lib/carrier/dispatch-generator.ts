@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -214,7 +214,7 @@ export async function generateDispatches(
     notifications: [],
   };
 
-  const tenantPrisma = await getTenantPrisma();
+  const tenantPrisma = await getTenantPrismaForOrg(orgId);
   // 1. Load template
   const template = await tenantPrisma.routeTemplate.findFirst({
     where: { id: templateId, orgId, active: true },

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { Prisma } from '@/generated/prisma';
 
@@ -34,7 +34,7 @@ export async function GET() {
 
   try {
     // Fetch active drivers with their user info and current in-progress dispatch
-    const tenantPrisma = await getTenantPrisma();
+    const tenantPrisma = await getTenantPrismaForOrg(orgId, session.userId);
     const drivers = await tenantPrisma.carrierDriver.findMany({
       where: { orgId, status: 'active' },
       include: {

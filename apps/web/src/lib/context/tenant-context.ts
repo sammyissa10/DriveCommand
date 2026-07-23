@@ -60,6 +60,31 @@ export async function getTenantPrisma(): Promise<PrismaClient> {
 }
 
 /**
+ * Get a tenant-scoped Prisma client for an EXPLICIT tenant/org id.
+ *
+ * Use this in contexts that already know the tenant and have NO request header to
+ * read: cron jobs, background tasks, and API routes that resolved the org from the
+ * session (e.g. `session.tenantId`). Unlike getTenantPrisma(), it never reads the
+ * x-tenant-id request header, so it cannot throw "Tenant context is required"
+ * outside a middleware-processed request.
+ *
+ * It sets the app.current_tenant_id GUC (session scope) exactly like getTenantPrisma()
+ * so DB-level RLS policies resolve correctly, and applies the same withTenantRLS +
+ * audit-column extensions via createTenantClient. Pass userId to populate audit
+ * columns on writes (omit/null for pure system contexts).
+ */
+export async function getTenantPrismaForOrg(
+  tenantId: string,
+  userId?: string | null,
+): Promise<PrismaClient> {
+  await prisma.$executeRawUnsafe(
+    "SELECT set_config('app.current_tenant_id', $1, false)",
+    tenantId,
+  );
+  return createTenantClient(tenantId, userId ?? null);
+}
+
+/**
  * Execute a callback containing raw SQL queries ($queryRaw / $executeRaw)
  * within a transaction that has the tenant RLS context set.
  *

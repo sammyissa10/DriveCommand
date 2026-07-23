@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 interface ActivityItem {
@@ -31,7 +31,7 @@ export async function GET() {
   try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const tenantPrisma = await getTenantPrisma();
+    const tenantPrisma = await getTenantPrismaForOrg(orgId, session.userId);
     const [
       updatedDispatches,
       completedStops,

@@ -1,4 +1,4 @@
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
@@ -42,7 +42,7 @@ function severity(daysLeft: number, criticalThreshold: number): AlertSeverity {
 // ---------------------------------------------------------------------------
 
 export async function getComplianceAlerts(orgId: string): Promise<ComplianceAlert[]> {
-  const tenantPrisma = await getTenantPrisma();
+  const tenantPrisma = await getTenantPrismaForOrg(orgId);
   const now = new Date();
   const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const in60Days = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);

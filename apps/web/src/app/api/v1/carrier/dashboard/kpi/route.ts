@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 /**
@@ -28,7 +28,7 @@ export async function GET() {
     monday.setUTCDate(now.getUTCDate() + daysToMonday);
     monday.setUTCHours(0, 0, 0, 0);
 
-    const tenantPrisma = await getTenantPrisma();
+    const tenantPrisma = await getTenantPrismaForOrg(orgId, session.userId);
     const [loadsThisWeek, pendingPayApprovals, openInvoiceGroups, revenueRows] = await Promise.all([
       tenantPrisma.carrierLoad.count({
         where: {

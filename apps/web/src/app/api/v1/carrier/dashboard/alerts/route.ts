@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 interface AlertItem {
@@ -31,7 +31,7 @@ export async function GET() {
     const endOfToday = new Date(now);
     endOfToday.setHours(23, 59, 59, 999);
 
-    const tenantPrisma = await getTenantPrisma();
+    const tenantPrisma = await getTenantPrismaForOrg(orgId, session.userId);
     const [
       pendingPayCount,
       expiringCdlCount,
