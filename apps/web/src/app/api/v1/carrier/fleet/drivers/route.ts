@@ -72,15 +72,27 @@ export async function POST(req: NextRequest) {
     revalidatePath('/onboarding/welcome');
 
     // After response: spawn any ON_DRIVER_CREATE playbooks for this tenant
-    // Prefer userId (linked User FK) over CarrierDriver.id as entity identifier per research Pitfall 2
+    // entityId MUST be the linked User.id — the workflow backend contract keys
+    // DRIVER entityId on User.id (verifyEntity/generatePlaybookInstance), never
+    // CarrierDriver.id. A driver created without a linked User (no accepted
+    // invite yet) has no valid entity to fire against; invite acceptance is
+    // the creation path that fires ON_DRIVER_CREATE for those drivers instead.
     after(async () => {
+      if (!carrierDriver.userId) {
+        logger.info(
+          '[carrier/fleet/drivers] skipping ON_DRIVER_CREATE — driver not yet linked to a User; invite acceptance will fire it',
+          { driverId: carrierDriver.id },
+        );
+        return;
+      }
+
       try {
         // after() runs post-response, where request headers() may be unavailable —
         // pass an explicit tenant client rather than relying on header-based getTenantPrisma().
         await fireEvent({
           event: 'ON_DRIVER_CREATE',
           entityData: {
-            id: carrierDriver.userId ?? carrierDriver.id,
+            id: carrierDriver.userId,
             email: carrierDriver.email,
           },
           tenantId: orgId, // carrier module uses orgId for tenant scoping
