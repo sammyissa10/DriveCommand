@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { driverReadinessLabel, canDispatchClientSide } from '@/lib/dispatch/driver-readiness-label';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -132,7 +133,7 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel, user
     enabled: Boolean(primaryDriverId),
   });
 
-  const isDispatchReady = driverReadiness?.isReady ?? true; // default true when no readiness data
+  const label = driverReadiness ? driverReadinessLabel(driverReadiness) : null;
 
   function handleTemplateChange(newTemplateId: string) {
     setSelectedTemplateId(newTemplateId);
@@ -224,8 +225,9 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel, user
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Preflight: block if driver is not ready
-    if (primaryDriverId && !isDispatchReady) {
+    // Preflight: block if driver is not ready (agrees with server gate — also
+    // catches NO_ONBOARDING_INSTANCE, which the server treats as not ready)
+    if (primaryDriverId && !canDispatchClientSide(driverReadiness)) {
       setBlockModalOpen(true);
       return;
     }
@@ -315,30 +317,44 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel, user
           </select>
 
           {/* Readiness badge — shown once a driver is selected */}
-          {primaryDriverId && driverReadiness && (
-            <div
-              className={`mt-1.5 flex items-center gap-1.5 text-xs ${
-                isDispatchReady
-                  ? 'text-green-700 dark:text-green-400'
-                  : 'text-destructive'
-              }`}
-            >
-              {isDispatchReady ? (
-                <>
+          {primaryDriverId && driverReadiness && label && (
+            <>
+              {label.tone === 'ready' && (
+                <div className="mt-1.5 flex items-center gap-1.5 text-xs text-green-700 dark:text-green-400">
                   <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>Dispatch Ready</span>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>
-                    {driverReadiness.blockerStepNames.length > 0
-                      ? `Not ready — ${driverReadiness.blockerStepNames.length} incomplete step${driverReadiness.blockerStepNames.length !== 1 ? 's' : ''}`
-                      : 'Not ready — failed inspection steps'}
-                  </span>
-                </>
+                  <span>{label.title}</span>
+                </div>
               )}
-            </div>
+
+              {label.tone === 'not_started' && (
+                <div className="mt-1.5 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800 p-2">
+                  <div className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-300">
+                    <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{label.title}</span>
+                  </div>
+                  <a href="/checklists" className="mt-0.5 inline-block text-xs font-medium underline text-amber-700 dark:text-amber-300">
+                    Start onboarding
+                  </a>
+                </div>
+              )}
+
+              {label.tone === 'incomplete' && (
+                <div className="mt-1.5 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800 p-2">
+                  <div className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-300">
+                    <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{label.title}</span>
+                  </div>
+                  {label.detail && (
+                    <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-300">{label.detail}</p>
+                  )}
+                  {label.href && (
+                    <a href={label.href} className="mt-0.5 inline-block text-xs font-medium underline text-amber-700 dark:text-amber-300">
+                      View checklist
+                    </a>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -460,20 +476,28 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel, user
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0" />
-              This driver has incomplete required steps
+              {label?.tone === 'not_started'
+                ? "This driver hasn't started onboarding"
+                : 'This driver has incomplete onboarding steps'}
             </DialogTitle>
           </DialogHeader>
 
-          {/* List of open blocker step names */}
-          {driverReadiness && driverReadiness.blockerStepNames.length > 0 && (
-            <ul className="space-y-1.5 mt-1">
-              {driverReadiness.blockerStepNames.map((name, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm">
-                  <XCircle className="w-4 h-4 text-destructive flex-shrink-0" />
-                  <span>{name}</span>
-                </li>
-              ))}
-            </ul>
+          {label?.tone === 'not_started' ? (
+            <p className="text-sm text-muted-foreground mt-1">
+              Onboarding must be completed - or overridden by an admin - before this driver can be dispatched.
+            </p>
+          ) : (
+            /* List of open blocker step names */
+            driverReadiness && driverReadiness.blockerStepNames.length > 0 && (
+              <ul className="space-y-1.5 mt-1">
+                {driverReadiness.blockerStepNames.map((name, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm">
+                    <XCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+                    <span>{name}</span>
+                  </li>
+                ))}
+              </ul>
+            )
           )}
 
           {/* Override reason textarea — admin only */}
@@ -502,8 +526,21 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel, user
               Cancel
             </Button>
 
-            {/* View Checklist */}
-            {driverReadiness?.openInstanceId && (
+            {/* Start onboarding — not_started case */}
+            {label?.tone === 'not_started' && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setBlockModalOpen(false);
+                  window.location.href = '/checklists';
+                }}
+              >
+                Start onboarding
+              </Button>
+            )}
+
+            {/* View Checklist — incomplete case */}
+            {label?.tone !== 'not_started' && driverReadiness?.openInstanceId && (
               <Button
                 variant="secondary"
                 onClick={() => {
