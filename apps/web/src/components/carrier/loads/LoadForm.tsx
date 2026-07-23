@@ -185,7 +185,6 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
   const [dispatchTruckId, setDispatchTruckId] = useState('');
   const [coDriverId, setCoDriverId] = useState('');
   const [scheduledDeparture, setScheduledDeparture] = useState(getDefaultDeparture());
-  const [dispatchPlannedMiles, setDispatchPlannedMiles] = useState('');
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [templates, setTemplates] = useState<RouteTemplate[]>([]);
   const [templatesFetched, setTemplatesFetched] = useState(false);
@@ -290,8 +289,8 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
     if (!newTemplateId) return;
     const template = templates.find((t) => t.id === newTemplateId);
     if (!template) return;
-    if (dispatchPlannedMiles === '' && template.estimatedMiles != null) {
-      setDispatchPlannedMiles(String(template.estimatedMiles));
+    if (plannedMiles === '' && template.estimatedMiles != null) {
+      setPlannedMiles(String(template.estimatedMiles));
     }
     if (!primaryDriverId && template.defaultDriverId) {
       const driverExists = (drivers ?? []).some((d) => d.id === template.defaultDriverId);
@@ -476,7 +475,7 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
           scheduledDeparture: new Date(scheduledDeparture).toISOString(),
         };
         if (coDriverId) dispatchBody.coDriverId = coDriverId;
-        if (dispatchPlannedMiles) dispatchBody.plannedMiles = parseFloat(dispatchPlannedMiles);
+        if (plannedMiles) dispatchBody.plannedMiles = parseFloat(plannedMiles);
         if (selectedTemplateId) dispatchBody.routeTemplateId = selectedTemplateId;
 
         const dispatchRes = await fetch('/api/v1/carrier/dispatches', {
@@ -851,8 +850,8 @@ export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }
                     type="number"
                     min="0"
                     step="0.01"
-                    value={dispatchPlannedMiles}
-                    onChange={(e) => setDispatchPlannedMiles(e.target.value)}
+                    value={plannedMiles}
+                    onChange={(e) => setPlannedMiles(e.target.value)}
                     placeholder="e.g. 350"
                     className={inputClass}
                     disabled={submitting}
