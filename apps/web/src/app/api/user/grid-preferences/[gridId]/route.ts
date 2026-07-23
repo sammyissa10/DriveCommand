@@ -3,7 +3,8 @@
  *
  * GET /api/user/grid-preferences/[gridId]
  *   Returns the user's saved preferences for a specific grid.
- *   Returns 401 if not authenticated, 404 if no preferences exist.
+ *   Returns 401 if not authenticated. Returns 200 with { preferences: null }
+ *   when authenticated but no saved preferences exist yet.
  *
  * PUT /api/user/grid-preferences/[gridId]
  *   Creates or updates the user's preferences for a specific grid.
@@ -55,7 +56,7 @@ export async function GET(
   });
 
   if (!preference) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    return NextResponse.json({ preferences: null }, { status: 200 });
   }
 
   return NextResponse.json({

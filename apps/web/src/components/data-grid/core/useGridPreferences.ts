@@ -91,11 +91,16 @@ function clearLocalStorage(gridId: string): void {
 // API Helpers
 // ---------------------------------------------------------------------------
 
-async function fetchPreferencesFromApi(gridId: string): Promise<GridPreferences | null> {
+type FetchPreferencesResult =
+  | { authed: true; prefs: GridPreferences | null }
+  | { authed: false };
+
+async function fetchPreferencesFromApi(gridId: string): Promise<FetchPreferencesResult> {
   try {
     const res = await fetch(`/api/user/grid-preferences/${encodeURIComponent(gridId)}`);
     if (res.ok) {
       const data = (await res.json()) as {
+        preferences?: null;
         columnOrder?: string[];
         columnWidths?: Record<string, number>;
         hiddenColumns?: string[];
@@ -103,20 +108,27 @@ async function fetchPreferencesFromApi(gridId: string): Promise<GridPreferences 
         density?: DensityMode;
         pageSize?: number;
       };
+      // Authenticated with no saved prefs yet — route returns { preferences: null }.
+      if (data.preferences === null) {
+        return { authed: true, prefs: null };
+      }
       return {
-        columnOrder: data.columnOrder ?? DEFAULT_GRID_PREFERENCES.columnOrder,
-        columnWidths: data.columnWidths ?? DEFAULT_GRID_PREFERENCES.columnWidths,
-        hiddenColumns: data.hiddenColumns ?? DEFAULT_GRID_PREFERENCES.hiddenColumns,
-        frozenColumns: data.frozenColumns ?? DEFAULT_GRID_PREFERENCES.frozenColumns,
-        density: data.density ?? DEFAULT_GRID_PREFERENCES.density,
-        pageSize: data.pageSize ?? DEFAULT_GRID_PREFERENCES.pageSize,
+        authed: true,
+        prefs: {
+          columnOrder: data.columnOrder ?? DEFAULT_GRID_PREFERENCES.columnOrder,
+          columnWidths: data.columnWidths ?? DEFAULT_GRID_PREFERENCES.columnWidths,
+          hiddenColumns: data.hiddenColumns ?? DEFAULT_GRID_PREFERENCES.hiddenColumns,
+          frozenColumns: data.frozenColumns ?? DEFAULT_GRID_PREFERENCES.frozenColumns,
+          density: data.density ?? DEFAULT_GRID_PREFERENCES.density,
+          pageSize: data.pageSize ?? DEFAULT_GRID_PREFERENCES.pageSize,
+        },
       };
     }
-    // 401 (not authenticated) or 404 (no prefs) — fall back to localStorage
-    return null;
+    // 401 (not authenticated) or other non-ok status — fall back to localStorage
+    return { authed: false };
   } catch {
     // Network error — fall back to localStorage
-    return null;
+    return { authed: false };
   }
 }
 
@@ -160,17 +172,20 @@ export function useGridPreferences(
 
     async function load() {
       // Try API first
-      const apiPrefs = await fetchPreferencesFromApi(gridId);
+      const result = await fetchPreferencesFromApi(gridId);
       if (!isMounted) return;
 
-      if (apiPrefs) {
+      if (result.authed) {
         isAuthenticatedRef.current = true;
-        setPreferences(apiPrefs);
+        if (result.prefs) {
+          setPreferences(result.prefs);
+        }
+        // else: leave DEFAULT_GRID_PREFERENCES; future saves go to DB (PUT upserts the row)
         setLocalIsLoading(false);
         return;
       }
 
-      // Fall back to localStorage
+      // Unauthenticated — fall back to localStorage (existing behavior)
       isAuthenticatedRef.current = false;
       const localPrefs = loadFromLocalStorage(gridId);
       if (localPrefs && isMounted) {
