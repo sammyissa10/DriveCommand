@@ -32,10 +32,14 @@
  *
  * Run from apps/web:
  *   npx tsx --env-file=.env.local scripts/backfill-driver-onboarding-instances.ts
+ *   npx tsx --env-file=.env.local scripts/backfill-driver-onboarding-instances.ts --dry   (preview, zero writes)
  *
  * IMPORTANT: this mutates data (creates PlaybookInstance/StepInstance/PlaybookTrigger
  * rows and updates User.isDispatchReady). The executor of quick-497 does NOT run
  * this — it is the USER's call, against their own DB.
+ *
+ * quick-502: added --dry (read-only preview, zero writes) and skipped-no-user
+ * accounting (CarrierDriver rows with no linked User — invite not yet accepted).
  */
 import { prisma } from '../src/lib/db/prisma';
 import { getTenantPrismaForOrg } from '../src/lib/context/tenant-context';
@@ -50,10 +54,17 @@ interface TenantSummary {
   instancesCreated: number;
   alreadyHadInstance: number;
   driversProcessed: number;
+  skippedNoUser: number;
   errors: number;
 }
 
 async function main() {
+  const isDry = process.argv.includes('--dry');
+
+  if (isDry) {
+    console.log('[backfill-driver-onboarding] DRY RUN — no writes');
+  }
+
   const tenants = await prisma.tenant.findMany({
     where: { isActive: true },
     select: { id: true, name: true },
@@ -71,6 +82,7 @@ async function main() {
       instancesCreated: 0,
       alreadyHadInstance: 0,
       driversProcessed: 0,
+      skippedNoUser: 0,
       errors: 0,
     };
 
@@ -78,7 +90,11 @@ async function main() {
       // 1. Ensure the CDL Driver Onboarding playbook exists (no-op if already seeded;
       //    for a freshly-seeded tenant this ALSO seeds the default trigger — step 2 below
       //    only needs to backfill the trigger for tenants seeded before quick-497).
-      await seedStarterPlaybooks(tenant.id);
+      // Dry mode: this is a WRITE (creates the playbook + trigger for a never-seeded
+      // tenant), so it's skipped — the playbook lookup below can't resolve without it.
+      if (!isDry) {
+        await seedStarterPlaybooks(tenant.id);
+      }
 
       const tenantPrisma = await getTenantPrismaForOrg(tenant.id);
 
@@ -89,6 +105,11 @@ async function main() {
       });
 
       if (!cdlPlaybook) {
+        if (isDry) {
+          console.log(`  [DRY][${tenant.name}] WOULD seed CDL Driver Onboarding playbook + trigger`);
+          summaries.push(summary);
+          continue;
+        }
         console.error(`  [${tenant.name}] CDL Driver Onboarding playbook not found after seed — skipping`);
         summary.errors++;
         summaries.push(summary);
@@ -103,24 +124,35 @@ async function main() {
       });
 
       if (!existingTrigger) {
-        await tenantPrisma.playbookTrigger.create({
-          data: {
-            tenantId: tenant.id,
-            playbookId: cdlPlaybook.id,
-            triggerEvent: 'ON_DRIVER_CREATE',
-            conditions: {},
-            recurringConfig: { _custom: true },
-            isActive: true,
-          },
-        });
+        if (isDry) {
+          console.log(`  [DRY][${tenant.name}] WOULD seed trigger`);
+        } else {
+          await tenantPrisma.playbookTrigger.create({
+            data: {
+              tenantId: tenant.id,
+              playbookId: cdlPlaybook.id,
+              triggerEvent: 'ON_DRIVER_CREATE',
+              conditions: {},
+              recurringConfig: { _custom: true },
+              isActive: true,
+            },
+          });
+        }
         summary.triggerCreated = true;
       }
+
+      // skipped-no-user accounting (quick-502): CarrierDriver rows with no linked
+      // User yet (invite not accepted). Counted separately so the main processing
+      // loop's filter below stays untouched.
+      summary.skippedNoUser = await tenantPrisma.carrierDriver.count({
+        where: { orgId: tenant.id, userId: null, deletedAt: null },
+      });
 
       // 4. For each linked (userId != null) carrier driver whose User has role DRIVER,
       //    ensure an active DRIVER PlaybookInstance exists.
       const carrierDrivers = await tenantPrisma.carrierDriver.findMany({
         where: { orgId: tenant.id, userId: { not: null }, deletedAt: null },
-        select: { userId: true },
+        select: { userId: true, id: true, firstName: true, lastName: true },
       });
 
       for (const cd of carrierDrivers) {
@@ -148,26 +180,34 @@ async function main() {
         let instanceId = existingInstance?.id ?? null;
 
         if (!instanceId) {
-          try {
-            const newInstance = await generatePlaybookInstance({
-              playbookId: cdlPlaybook.id,
-              entityType: 'DRIVER',
-              entityId: userId,
-              tenantId: tenant.id,
-              triggeredBy: 'trigger',
-              triggeredEvent: 'ON_DRIVER_CREATE',
-              tenantPrisma,
-            });
-            instanceId = newInstance.id;
+          if (isDry) {
+            const driverName = `${cd.firstName ?? ''} ${cd.lastName ?? ''}`.trim() || userId;
+            console.log(
+              `  [DRY][${tenant.name}] WOULD create instance: playbook='CDL Driver Onboarding' userId=${userId} driver=${driverName}`,
+            );
             summary.instancesCreated++;
-          } catch (err) {
-            // CONFLICT (duplicate active instance) is a benign race with the
-            // pre-check above — anything else is a real error.
-            const isConflict = (err as { code?: string })?.code === 'CONFLICT';
-            if (!isConflict) {
-              console.error(`  [${tenant.name}] generatePlaybookInstance failed for user ${userId}:`, err);
-              summary.errors++;
-              continue;
+          } else {
+            try {
+              const newInstance = await generatePlaybookInstance({
+                playbookId: cdlPlaybook.id,
+                entityType: 'DRIVER',
+                entityId: userId,
+                tenantId: tenant.id,
+                triggeredBy: 'trigger',
+                triggeredEvent: 'ON_DRIVER_CREATE',
+                tenantPrisma,
+              });
+              instanceId = newInstance.id;
+              summary.instancesCreated++;
+            } catch (err) {
+              // CONFLICT (duplicate active instance) is a benign race with the
+              // pre-check above — anything else is a real error.
+              const isConflict = (err as { code?: string })?.code === 'CONFLICT';
+              if (!isConflict) {
+                console.error(`  [${tenant.name}] generatePlaybookInstance failed for user ${userId}:`, err);
+                summary.errors++;
+                continue;
+              }
             }
           }
         } else {
@@ -177,7 +217,9 @@ async function main() {
         // 5. Recompute readiness so User.isDispatchReady stays coherent (trips.ts
         //    server enforcement path). Uses the same optional-tenantPrisma-refactored
         //    computeDispatchReadiness as the rest of the request-scoped codebase.
-        if (instanceId) {
+        // Dry mode: no instance was actually created/mutated above, so there is
+        // nothing to recompute — skip the write entirely.
+        if (instanceId && !isDry) {
           try {
             await computeDispatchReadiness(instanceId, tenantPrisma);
           } catch (err) {
@@ -190,7 +232,8 @@ async function main() {
       console.log(
         `  [${tenant.name}] trigger=${summary.triggerCreated ? 'created' : 'ok'}, ` +
         `drivers=${summary.driversProcessed}, instances_created=${summary.instancesCreated}, ` +
-        `already_had_instance=${summary.alreadyHadInstance}, errors=${summary.errors}`
+        `already_had_instance=${summary.alreadyHadInstance}, skipped_no_user=${summary.skippedNoUser}, ` +
+        `errors=${summary.errors}`
       );
     } catch (err) {
       console.error(`  [${tenant.name}] tenant-level failure:`, err);
@@ -207,17 +250,27 @@ async function main() {
       instancesCreated: acc.instancesCreated + s.instancesCreated,
       alreadyHadInstance: acc.alreadyHadInstance + s.alreadyHadInstance,
       driversProcessed: acc.driversProcessed + s.driversProcessed,
+      skippedNoUser: acc.skippedNoUser + s.skippedNoUser,
       errors: acc.errors + s.errors,
     }),
-    { tenants: 0, triggersCreated: 0, instancesCreated: 0, alreadyHadInstance: 0, driversProcessed: 0, errors: 0 }
+    {
+      tenants: 0,
+      triggersCreated: 0,
+      instancesCreated: 0,
+      alreadyHadInstance: 0,
+      driversProcessed: 0,
+      skippedNoUser: 0,
+      errors: 0,
+    }
   );
 
-  console.log('\n[backfill-driver-onboarding] Summary:');
+  console.log(isDry ? '\n[backfill-driver-onboarding] DRY RUN Summary (no writes made):' : '\n[backfill-driver-onboarding] Summary:');
   console.log(`  Tenants processed:        ${totals.tenants}`);
   console.log(`  Triggers created:         ${totals.triggersCreated}`);
   console.log(`  Drivers processed:        ${totals.driversProcessed}`);
   console.log(`  Instances created:        ${totals.instancesCreated}`);
   console.log(`  Already had instance:     ${totals.alreadyHadInstance}`);
+  console.log(`  Skipped (no linked user): ${totals.skippedNoUser}`);
   console.log(`  Errors:                   ${totals.errors}`);
 
   await prisma.$disconnect();
