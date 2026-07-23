@@ -8,12 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -63,18 +57,16 @@ export function StopBuilderAddModal({
   onAdd,
   mode,
 }: StopBuilderAddModalProps) {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [view, setView] = useState<'search' | 'create' | 'details'>('search');
   const [selectedFacility, setSelectedFacility] = useState<FacilitySearchResult | null>(null);
   const [form, setForm] = useState<QuickAddForm>(DEFAULT_FORM);
-  const [showFacilitySheet, setShowFacilitySheet] = useState(false);
 
   // Reset state when modal closes
   useEffect(() => {
     if (!open) {
-      setStep(1);
+      setView('search');
       setSelectedFacility(null);
       setForm(DEFAULT_FORM);
-      setShowFacilitySheet(false);
     }
   }, [open]);
 
@@ -90,7 +82,7 @@ export function StopBuilderAddModal({
 
   function handleFacilitySelect(facility: FacilitySearchResult) {
     setSelectedFacility(facility);
-    setStep(2);
+    setView('details');
   }
 
   function handleAdd() {
@@ -121,165 +113,173 @@ export function StopBuilderAddModal({
     onOpenChange(false);
   }
 
-  // Step 1 — Facility Search
-  // We show FacilitySearchModal directly when open + step===1
-  if (step === 1) {
-    return (
-      <>
-        <FacilitySearchModal
-          open={open}
-          onOpenChange={onOpenChange}
-          onSelect={handleFacilitySelect}
-          onCreateNew={() => {
-            setShowFacilitySheet(true);
-          }}
-        />
-
-        {/* Create new facility side sheet */}
-        <Sheet open={showFacilitySheet} onOpenChange={setShowFacilitySheet}>
-          <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Create New Facility</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4">
-              <FacilityForm
-                onSuccess={(created) => {
-                  setShowFacilitySheet(false);
-                  handleFacilitySelect(created);
-                }}
-                onCancel={() => setShowFacilitySheet(false)}
-              />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </>
-    );
-  }
-
-  // Step 2 — Quick-add form
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Add Stop</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+        {view === 'search' && (
+          <>
+            <DialogHeader>
+              <DialogTitle>Search Facilities</DialogTitle>
+            </DialogHeader>
 
-        {/* Selected facility header */}
-        {selectedFacility && (
-          <div className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-3 py-2">
-            <div>
-              <p className="font-medium text-sm">{selectedFacility.name}</p>
-              {(selectedFacility.city || selectedFacility.state) && (
-                <p className="text-xs text-muted-foreground">
-                  {selectedFacility.city && selectedFacility.state
-                    ? `${selectedFacility.city}, ${selectedFacility.state}`
-                    : selectedFacility.city ?? selectedFacility.state}
-                </p>
-              )}
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="text-xs text-muted-foreground"
-              onClick={() => setStep(1)}
-            >
-              <ArrowLeft className="mr-1 h-3 w-3" />
-              Change
-            </Button>
-          </div>
+            <FacilitySearchModal
+              bodyOnly
+              open={open}
+              onOpenChange={onOpenChange}
+              onSelect={handleFacilitySelect}
+              onCreateNew={() => setView('create')}
+            />
+          </>
         )}
 
-        {/* Quick-add form */}
-        <div className="space-y-4">
-          {/* stop_type */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Stop Type</label>
-            <Select
-              value={form.stop_type}
-              onValueChange={(v) => handleStopTypeChange(v as StopType)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pickup">Pickup</SelectItem>
-                <SelectItem value="delivery">Delivery</SelectItem>
-                <SelectItem value="fuel_stop">Fuel Stop</SelectItem>
-                <SelectItem value="layover">Layover</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {view === 'create' && (
+          <>
+            <DialogHeader>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setView('search')}
+                >
+                  <ArrowLeft className="mr-1 h-3 w-3" />
+                  Back
+                </Button>
+                <DialogTitle>Create New Facility</DialogTitle>
+              </div>
+            </DialogHeader>
 
-          {/* bol_required + pod_required */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={form.bol_required}
-                onCheckedChange={(checked) =>
-                  setForm((prev) => ({ ...prev, bol_required: checked }))
-                }
-                id="add-bol-required"
-              />
-              <label htmlFor="add-bol-required" className="text-sm font-medium cursor-pointer">
-                BOL Required
-              </label>
-            </div>
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={form.pod_required}
-                onCheckedChange={(checked) =>
-                  setForm((prev) => ({ ...prev, pod_required: checked }))
-                }
-                id="add-pod-required"
-              />
-              <label htmlFor="add-pod-required" className="text-sm font-medium cursor-pointer">
-                POD Required
-              </label>
-            </div>
-          </div>
-
-          {/* commodity_description */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              Commodity Description{' '}
-              <span className="text-muted-foreground font-normal">(optional)</span>
-            </label>
-            <Input
-              value={form.commodity_description}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, commodity_description: e.target.value }))
-              }
-              placeholder="e.g. Dry goods, frozen freight…"
+            <FacilityForm
+              onSuccess={(created) => handleFacilitySelect(created)}
+              onCancel={() => setView('search')}
             />
-          </div>
+          </>
+        )}
 
-          {/* special_instructions */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              Special Instructions{' '}
-              <span className="text-muted-foreground font-normal">(optional)</span>
-            </label>
-            <Textarea
-              value={form.special_instructions}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, special_instructions: e.target.value }))
-              }
-              placeholder="Any special handling notes…"
-              rows={2}
-              className="resize-none"
-            />
-          </div>
-        </div>
+        {view === 'details' && (
+          <>
+            <DialogHeader>
+              <DialogTitle>Add Stop</DialogTitle>
+            </DialogHeader>
 
-        <div className="flex gap-2 pt-2">
-          <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button type="button" className="flex-1" onClick={handleAdd}>
-            Add Stop
-          </Button>
-        </div>
+            {/* Selected facility header */}
+            {selectedFacility && (
+              <div className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-3 py-2">
+                <div>
+                  <p className="font-medium text-sm">{selectedFacility.name}</p>
+                  {(selectedFacility.city || selectedFacility.state) && (
+                    <p className="text-xs text-muted-foreground">
+                      {selectedFacility.city && selectedFacility.state
+                        ? `${selectedFacility.city}, ${selectedFacility.state}`
+                        : selectedFacility.city ?? selectedFacility.state}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-muted-foreground"
+                  onClick={() => setView('search')}
+                >
+                  <ArrowLeft className="mr-1 h-3 w-3" />
+                  Change
+                </Button>
+              </div>
+            )}
+
+            {/* Quick-add form */}
+            <div className="space-y-4">
+              {/* stop_type */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Stop Type</label>
+                <Select
+                  value={form.stop_type}
+                  onValueChange={(v) => handleStopTypeChange(v as StopType)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pickup">Pickup</SelectItem>
+                    <SelectItem value="delivery">Delivery</SelectItem>
+                    <SelectItem value="fuel_stop">Fuel Stop</SelectItem>
+                    <SelectItem value="layover">Layover</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* bol_required + pod_required */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    checked={form.bol_required}
+                    onCheckedChange={(checked) =>
+                      setForm((prev) => ({ ...prev, bol_required: checked }))
+                    }
+                    id="add-bol-required"
+                  />
+                  <label htmlFor="add-bol-required" className="text-sm font-medium cursor-pointer">
+                    BOL Required
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Switch
+                    checked={form.pod_required}
+                    onCheckedChange={(checked) =>
+                      setForm((prev) => ({ ...prev, pod_required: checked }))
+                    }
+                    id="add-pod-required"
+                  />
+                  <label htmlFor="add-pod-required" className="text-sm font-medium cursor-pointer">
+                    POD Required
+                  </label>
+                </div>
+              </div>
+
+              {/* commodity_description */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">
+                  Commodity Description{' '}
+                  <span className="text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <Input
+                  value={form.commodity_description}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, commodity_description: e.target.value }))
+                  }
+                  placeholder="e.g. Dry goods, frozen freight…"
+                />
+              </div>
+
+              {/* special_instructions */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">
+                  Special Instructions{' '}
+                  <span className="text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <Textarea
+                  value={form.special_instructions}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, special_instructions: e.target.value }))
+                  }
+                  placeholder="Any special handling notes…"
+                  rows={2}
+                  className="resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="button" className="flex-1" onClick={handleAdd}>
+                Add Stop
+              </Button>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
