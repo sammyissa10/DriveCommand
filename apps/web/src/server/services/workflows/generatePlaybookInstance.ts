@@ -13,7 +13,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { sendStepAssigned } from './notifications';
 import type { PlaybookEntityType, TriggerEvent } from '@/generated/prisma';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, type PrismaClient } from '@/generated/prisma';
 
 export async function generatePlaybookInstance(args: {
   playbookId: string;
@@ -22,10 +22,14 @@ export async function generatePlaybookInstance(args: {
   tenantId: string;
   triggeredBy: 'manual' | 'trigger';
   triggeredEvent?: TriggerEvent;   // Only set when triggeredBy='trigger'
+  // Optional pre-resolved tenant client for header-less contexts (invite acceptance,
+  // the backfill script) where header-based getTenantPrisma() would throw. Default
+  // (omitted) path resolves via getTenantPrisma() exactly as before — unchanged behavior.
+  tenantPrisma?: PrismaClient;
 }) {
   const { playbookId, entityType, entityId, tenantId, triggeredBy, triggeredEvent } = args;
 
-  const tenantPrisma = await getTenantPrisma();
+  const tenantPrisma = args.tenantPrisma ?? (await getTenantPrisma());
   // 1. Load Playbook with steps ordered by (playbookPhase ASC, sequence ASC)
   const playbook = await tenantPrisma.playbook.findFirst({
     where: { id: playbookId, tenantId, deletedAt: null },
@@ -41,7 +45,7 @@ export async function generatePlaybookInstance(args: {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Playbook is not active' });
 
   // 2. Verify entity exists (User for DRIVER, CarrierTruck for VEHICLE, Customer for PARTNER)
-  await verifyEntity(entityType, entityId, tenantId);
+  await verifyEntity(entityType, entityId, tenantId, tenantPrisma);
 
   // 3. Check for duplicate active instance
   const existing = await tenantPrisma.playbookInstance.findFirst({
@@ -220,16 +224,16 @@ function buildStepSnapshot(step: {
 async function verifyEntity(
   entityType: PlaybookEntityType,
   entityId: string,
-  tenantId: string
+  tenantId: string,
+  tenantPrisma: PrismaClient
 ) {
   if (entityType === 'DRIVER') {
     const user = await prisma.user.findFirst({
       where: { id: entityId, tenantId, role: 'DRIVER' },
-    }); // platform table — bare prisma kept
+    }); // platform table — bare prisma kept (User has no RLS tenant client of its own)
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'Driver not found' });
     return user;
   }
-  const tenantPrisma = await getTenantPrisma();
   if (entityType === 'VEHICLE') {
     const truck = await tenantPrisma.carrierTruck.findFirst({
       where: { id: entityId, orgId: tenantId },

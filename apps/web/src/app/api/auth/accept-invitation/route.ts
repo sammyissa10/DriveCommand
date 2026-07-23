@@ -5,6 +5,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { applyRateLimit, authLimiter } from '@/lib/rate-limit';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 if (!process.env.NEXT_PUBLIC_APP_URL) {
   logger.warn(
@@ -282,6 +284,24 @@ export async function POST(req: NextRequest) {
         await recordActivationEvent(invitation.tenantId, 'first_real_driver');
       } catch (err) {
         console.error('[accept-invitation] activation tracker failed', err);
+      }
+    }
+
+    // Spawn ON_DRIVER_CREATE playbooks (e.g. CDL Driver Onboarding) now that the DRIVER
+    // User exists — this is the first point in the driver lifecycle where entityId=User.id
+    // is valid. Best-effort: never let a fireEvent failure fail invite acceptance.
+    // No session/x-tenant-id exists yet (pre-auth-cookie), so header-based getTenantPrisma()
+    // would throw — pass an explicit tenant client via getTenantPrismaForOrg instead.
+    if (userRole === 'DRIVER') {
+      try {
+        await fireEvent({
+          event: 'ON_DRIVER_CREATE',
+          entityData: { id: user.id, email: userEmail },
+          tenantId: invitation.tenantId,
+          tenantPrisma: await getTenantPrismaForOrg(invitation.tenantId, user.id),
+        });
+      } catch (err) {
+        logger.error('[accept-invitation] fireEvent(ON_DRIVER_CREATE) failed', err);
       }
     }
 

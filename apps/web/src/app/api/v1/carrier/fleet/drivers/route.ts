@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 import { listCarrierDrivers, createCarrierDriver } from '@/lib/carrier/fleet-drivers';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 const CarrierDriverCreateSchema = z.object({
   firstName: z.string().min(1),
@@ -74,6 +75,8 @@ export async function POST(req: NextRequest) {
     // Prefer userId (linked User FK) over CarrierDriver.id as entity identifier per research Pitfall 2
     after(async () => {
       try {
+        // after() runs post-response, where request headers() may be unavailable —
+        // pass an explicit tenant client rather than relying on header-based getTenantPrisma().
         await fireEvent({
           event: 'ON_DRIVER_CREATE',
           entityData: {
@@ -81,6 +84,7 @@ export async function POST(req: NextRequest) {
             email: carrierDriver.email,
           },
           tenantId: orgId, // carrier module uses orgId for tenant scoping
+          tenantPrisma: await getTenantPrismaForOrg(orgId),
         });
       } catch (err) {
         logger.error('[carrier/fleet/drivers] fireEvent failed', { driverId: carrierDriver.id, err });

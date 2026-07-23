@@ -14,6 +14,7 @@ vi.mock('@/lib/db/prisma', () => {
     stepTemplate: { create: vi.fn() },
     playbook: { create: vi.fn() },
     playbookStep: { createMany: vi.fn() },
+    playbookTrigger: { create: vi.fn() },
   });
 
   const tx = makeTx();
@@ -26,6 +27,7 @@ vi.mock('@/lib/db/prisma', () => {
         tx.stepTemplate.create.mockClear();
         tx.playbook.create.mockClear();
         tx.playbookStep.createMany.mockClear();
+        tx.playbookTrigger.create.mockClear();
         return cb(tx);
       }),
       _tx: tx, // expose for assertions
@@ -42,7 +44,14 @@ const TENANT_ID = 'test-tenant-seed-123';
 
 function getTx() {
   // Access the internal tx mock exposed via prisma._tx
-  return (prisma as typeof prisma & { _tx: { stepTemplate: { create: ReturnType<typeof vi.fn> }; playbook: { create: ReturnType<typeof vi.fn> }; playbookStep: { createMany: ReturnType<typeof vi.fn> } } })._tx;
+  return (prisma as typeof prisma & {
+    _tx: {
+      stepTemplate: { create: ReturnType<typeof vi.fn> };
+      playbook: { create: ReturnType<typeof vi.fn> };
+      playbookStep: { createMany: ReturnType<typeof vi.fn> };
+      playbookTrigger: { create: ReturnType<typeof vi.fn> };
+    };
+  })._tx;
 }
 
 describe('seedStarterPlaybooks', () => {
@@ -56,6 +65,7 @@ describe('seedStarterPlaybooks', () => {
     tx.stepTemplate.create.mockResolvedValue({ id: 'step-tmpl-id' });
     tx.playbook.create.mockResolvedValue({ id: 'playbook-id' });
     tx.playbookStep.createMany.mockResolvedValue({ count: 1 });
+    tx.playbookTrigger.create.mockResolvedValue({ id: 'trigger-id' });
 
     const { seedStarterPlaybooks } = await import(
       '@/server/services/workflows/seedStarterPlaybooks'
@@ -71,6 +81,7 @@ describe('seedStarterPlaybooks', () => {
     tx.stepTemplate.create.mockResolvedValue({ id: 'step-tmpl-id' });
     tx.playbook.create.mockResolvedValue({ id: 'playbook-id' });
     tx.playbookStep.createMany.mockResolvedValue({ count: 1 });
+    tx.playbookTrigger.create.mockResolvedValue({ id: 'trigger-id' });
 
     const { seedStarterPlaybooks } = await import(
       '@/server/services/workflows/seedStarterPlaybooks'
@@ -89,6 +100,7 @@ describe('seedStarterPlaybooks', () => {
     tx.stepTemplate.create.mockResolvedValue({ id: 'step-tmpl-id' });
     tx.playbook.create.mockResolvedValue({ id: 'playbook-id' });
     tx.playbookStep.createMany.mockResolvedValue({ count: 1 });
+    tx.playbookTrigger.create.mockResolvedValue({ id: 'trigger-id' });
 
     const { seedStarterPlaybooks } = await import(
       '@/server/services/workflows/seedStarterPlaybooks'
@@ -107,6 +119,7 @@ describe('seedStarterPlaybooks', () => {
     tx.stepTemplate.create.mockResolvedValue({ id: 'step-tmpl-id' });
     tx.playbook.create.mockResolvedValue({ id: 'playbook-id' });
     tx.playbookStep.createMany.mockResolvedValue({ count: 1 });
+    tx.playbookTrigger.create.mockResolvedValue({ id: 'trigger-id' });
 
     const { seedStarterPlaybooks } = await import(
       '@/server/services/workflows/seedStarterPlaybooks'
@@ -117,6 +130,36 @@ describe('seedStarterPlaybooks', () => {
     // Third createMany call is Partner Setup
     const partner = createManyCalls[2][0].data as unknown[];
     expect(partner).toHaveLength(6);
+  });
+
+  it('creates a default-on ON_DRIVER_CREATE PlaybookTrigger linked to the CDL Onboarding playbook', async () => {
+    vi.mocked(prisma.playbook.findFirst).mockResolvedValue(null);
+    const tx = getTx();
+    tx.stepTemplate.create.mockResolvedValue({ id: 'step-tmpl-id' });
+    tx.playbookStep.createMany.mockResolvedValue({ count: 1 });
+    tx.playbookTrigger.create.mockResolvedValue({ id: 'trigger-id' });
+    // Distinct ids per playbook.create call: 1st=CDL, 2nd=DVIR, 3rd=Partner
+    tx.playbook.create
+      .mockResolvedValueOnce({ id: 'cdl-playbook-id' })
+      .mockResolvedValueOnce({ id: 'dvir-playbook-id' })
+      .mockResolvedValueOnce({ id: 'partner-playbook-id' });
+
+    const { seedStarterPlaybooks } = await import(
+      '@/server/services/workflows/seedStarterPlaybooks'
+    );
+    await seedStarterPlaybooks(TENANT_ID);
+
+    expect(tx.playbookTrigger.create).toHaveBeenCalledTimes(1);
+    expect(tx.playbookTrigger.create).toHaveBeenCalledWith({
+      data: {
+        tenantId: TENANT_ID,
+        playbookId: 'cdl-playbook-id',
+        triggerEvent: 'ON_DRIVER_CREATE',
+        conditions: {},
+        recurringConfig: { _custom: true },
+        isActive: true,
+      },
+    });
   });
 
   it('is idempotent — skips seeding when CDL Onboarding already exists', async () => {
@@ -130,5 +173,7 @@ describe('seedStarterPlaybooks', () => {
 
     // $transaction should never be called — early return
     expect(prisma.$transaction).not.toHaveBeenCalled();
+    // Idempotent path must make ZERO trigger creates
+    expect(getTx().playbookTrigger.create).not.toHaveBeenCalled();
   });
 });

@@ -12,7 +12,7 @@
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { generatePlaybookInstance } from './generatePlaybookInstance';
 import { logger } from '@/lib/logger';
-import type { PlaybookEntityType, TriggerEvent } from '@/generated/prisma';
+import type { PlaybookEntityType, TriggerEvent, PrismaClient } from '@/generated/prisma';
 
 const EVENT_TO_ENTITY_TYPE: Partial<Record<TriggerEvent, PlaybookEntityType>> = {
   ON_DRIVER_CREATE: 'DRIVER',
@@ -27,6 +27,10 @@ export async function fireEvent(args: {
   event: TriggerEvent;
   entityData: Record<string, unknown>;
   tenantId: string;
+  // Optional pre-resolved tenant client for header-less contexts (invite acceptance,
+  // the backfill script) where header-based getTenantPrisma() would throw. Default
+  // (omitted) path resolves via getTenantPrisma() exactly as before — unchanged behavior.
+  tenantPrisma?: PrismaClient;
 }): Promise<void> {
   const { event, entityData, tenantId } = args;
 
@@ -46,7 +50,7 @@ export async function fireEvent(args: {
 
   let triggers;
   try {
-    const tenantPrisma = await getTenantPrisma();
+    const tenantPrisma = args.tenantPrisma ?? (await getTenantPrisma());
     triggers = await tenantPrisma.playbookTrigger.findMany({
       where: { tenantId, triggerEvent: event, isActive: true },
     });
@@ -70,6 +74,7 @@ export async function fireEvent(args: {
         tenantId,
         triggeredBy: 'trigger',
         triggeredEvent: event,
+        tenantPrisma: args.tenantPrisma,
       });
     } catch (err) {
       // Per-trigger best-effort — one failing trigger must not block other triggers

@@ -7,7 +7,7 @@ type TxClient = Prisma.TransactionClient;
  * Creates the CDL Driver Onboarding playbook with 9 steps (spec Section 12, Starter 1).
  * entityType=DRIVER, category=ONBOARDING
  */
-async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promise<void> {
+async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promise<string> {
   const [
     uploadLicense,
     uploadMedical,
@@ -199,6 +199,8 @@ async function createCDLDriverOnboarding(tx: TxClient, tenantId: string): Promis
       },
     ],
   });
+
+  return playbook.id;
 }
 
 /**
@@ -471,8 +473,26 @@ export async function seedStarterPlaybooks(tenantId: string): Promise<void> {
   }
 
   await prisma.$transaction(async (tx) => {
-    await createCDLDriverOnboarding(tx, tenantId);
+    const cdlPlaybookId = await createCDLDriverOnboarding(tx, tenantId);
     await createPreTripInspection(tx, tenantId);
     await createPartnerSetup(tx, tenantId);
+
+    // Default-on ON_DRIVER_CREATE Auto-Start Rule (quick-497 Task 2B).
+    // Empty conditions = match-all — a robust default that never mismatches
+    // on missing entityData fields (e.g. driverType, which fireEvent callers
+    // don't currently populate). recurringConfig:{_custom:true} is the existing
+    // sentinel that surfaces this in the Auto-Start Rules custom-rules table
+    // (trigger.ts listCustomRules) so the owner can toggle/delete it — it is
+    // NOT a locked, invisible rule.
+    await tx.playbookTrigger.create({
+      data: {
+        tenantId,
+        playbookId: cdlPlaybookId,
+        triggerEvent: 'ON_DRIVER_CREATE',
+        conditions: {},
+        recurringConfig: { _custom: true },
+        isActive: true,
+      },
+    });
   });
 }
