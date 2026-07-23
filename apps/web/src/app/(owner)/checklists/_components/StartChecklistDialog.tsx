@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
+import { mapDriverOptions } from './mapDriverOptions';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +28,7 @@ interface StartChecklistDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type EntityOption = { id: string; label: string };
+type EntityOption = { id: string; label: string; disabled?: boolean; hint?: string };
 
 const ENTITY_TYPE_OPTIONS: Array<{ value: PlaybookEntityType; label: string }> = [
   { value: 'DRIVER', label: 'Driver' },
@@ -68,12 +70,7 @@ export function StartChecklistDialog({ open, onOpenChange }: StartChecklistDialo
           if (res.ok) {
             const json = await res.json();
             const drivers = json.data?.drivers ?? json.data?.items ?? [];
-            setEntityOptions(
-              drivers.map((d: { id: string; firstName?: string; lastName?: string; name?: string }) => ({
-                id: d.id,
-                label: (d.name ?? `${d.firstName ?? ''} ${d.lastName ?? ''}`.trim()) || d.id,
-              })),
-            );
+            setEntityOptions(mapDriverOptions(drivers));
           }
         } else if (entityType === 'VEHICLE') {
           const res = await fetch('/api/v1/carrier/fleet/trucks?pageSize=100');
@@ -108,6 +105,9 @@ export function StartChecklistDialog({ open, onOpenChange }: StartChecklistDialo
           queryKey: trpc.workflows.instance.list.queryKey(),
         });
         handleClose();
+      },
+      onError: (error) => {
+        toast.error(error.message ?? 'Failed to start checklist');
       },
     }),
   );
@@ -225,8 +225,11 @@ export function StartChecklistDialog({ open, onOpenChange }: StartChecklistDialo
               </SelectTrigger>
               <SelectContent>
                 {entityOptions.map((opt) => (
-                  <SelectItem key={opt.id} value={opt.id}>
-                    {opt.label}
+                  <SelectItem key={opt.id} value={opt.id} disabled={opt.disabled}>
+                    <span>{opt.label}</span>
+                    {opt.hint && (
+                      <span className="block text-xs text-muted-foreground">{opt.hint}</span>
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -236,7 +239,7 @@ export function StartChecklistDialog({ open, onOpenChange }: StartChecklistDialo
 
           {/* Mutation error */}
           {generateMutation.isError && (
-            <p className="text-xs text-destructive">
+            <p className="text-sm text-destructive">
               {generateMutation.error?.message ?? 'Something went wrong. Please try again.'}
             </p>
           )}
