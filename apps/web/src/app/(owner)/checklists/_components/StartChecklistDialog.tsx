@@ -106,9 +106,6 @@ export function StartChecklistDialog({ open, onOpenChange }: StartChecklistDialo
         });
         handleClose();
       },
-      onError: (error) => {
-        toast.error(error.message ?? 'Failed to start checklist');
-      },
     }),
   );
 
@@ -124,11 +121,14 @@ export function StartChecklistDialog({ open, onOpenChange }: StartChecklistDialo
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    generateMutation.mutate({
-      playbookId,
-      entityType: entityType as PlaybookEntityType,
-      entityId,
-    });
+    generateMutation.mutate(
+      {
+        playbookId,
+        entityType: entityType as PlaybookEntityType,
+        entityId,
+      },
+      { onError: (error) => toast.error(error.message ?? 'Failed to start checklist') },
+    );
   }
 
   function handleClose() {
