@@ -39,6 +39,7 @@ const LoadCreateSchema = z.object({
   hazmatClass: z.string().optional(),
   rateType: z.enum(RATE_TYPES).optional(),
   rateAmount: z.number().optional(),
+  plannedMiles: z.number().int().positive().optional(),
   brokerFlag: z.boolean().optional(),
   carrierCost: z.number().optional(),
   otherCharges: z.number().optional(),

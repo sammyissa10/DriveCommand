@@ -156,6 +156,82 @@ export async function getLoad(orgId: string, id: string) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Shared money-math path: apply a submitted plannedMiles as a per_mile revenue
+// override. CarrierLoad has no planned_miles column, so the value is never
+// persisted on the load itself — it's used purely as a calculateRevenue input
+// (preferring dispatch actual/planned miles when the load already has a Trip)
+// and, when the Trip has no plannedMiles yet, written back to the Trip so
+// future recalculations (pay records, dispatch-attach, etc.) can resolve
+// miles without needing the load form context again.
+// ---------------------------------------------------------------------------
+async function applyPlannedMilesRevenue(
+  tenantPrisma: PrismaClient,
+  orgId: string,
+  loadId: string,
+  plannedMiles: number
+) {
+  const loadForCalc = await tenantPrisma.carrierLoad.findFirst({
+    where: { id: loadId, orgId },
+    include: { dispatch: true, contract: true },
+  });
+  if (!loadForCalc) return null;
+
+  const dispatchMiles = {
+    actualMiles:
+      loadForCalc.dispatch?.actualMiles != null ? Number(loadForCalc.dispatch.actualMiles) : null,
+    plannedMiles:
+      loadForCalc.dispatch?.plannedMiles != null
+        ? Number(loadForCalc.dispatch.plannedMiles)
+        : plannedMiles,
+  };
+  const contractForRevenue = loadForCalc.contract
+    ? {
+        fuelSurchargeMethod: loadForCalc.contract.fuelSurchargeMethod,
+        fuelSurchargeRate:
+          loadForCalc.contract.fuelSurchargeRate != null
+            ? Number(loadForCalc.contract.fuelSurchargeRate)
+            : null,
+      }
+    : null;
+  const result = calculateRevenue(
+    {
+      rateType: loadForCalc.rateType,
+      rateAmount: loadForCalc.rateAmount != null ? Number(loadForCalc.rateAmount) : null,
+      commodityWeightLbs:
+        loadForCalc.commodityWeightLbs != null ? Number(loadForCalc.commodityWeightLbs) : null,
+      commodityPallets: loadForCalc.commodityPallets,
+      otherCharges: loadForCalc.otherCharges != null ? Number(loadForCalc.otherCharges) : null,
+      brokerFlag: loadForCalc.brokerFlag,
+      carrierCost: loadForCalc.carrierCost != null ? Number(loadForCalc.carrierCost) : null,
+    },
+    dispatchMiles,
+    contractForRevenue
+  );
+  const fresh = await tenantPrisma.carrierLoad.update({
+    where: { id: loadId },
+    data: { totalRevenue: result.totalRevenue, fuelSurcharge: result.fuelSurcharge },
+  });
+
+  // Write plannedMiles back to the dispatch so pay record recalculation
+  // can resolve miles without needing the load form context.
+  if (loadForCalc.dispatchId && !loadForCalc.dispatch?.plannedMiles) {
+    await tenantPrisma.trip.update({
+      where: { id: loadForCalc.dispatchId },
+      data: { plannedMiles },
+    });
+  }
+
+  logger.info('applyPlannedMilesRevenue: revenue recalculated with plannedMiles override', {
+    orgId,
+    loadId,
+    plannedMiles,
+    totalRevenue: result.totalRevenue,
+  });
+
+  return fresh;
+}
+
 export async function createLoad(orgId: string, data: LoadCreateInput) {
   const tenantPrisma = await getTenantPrisma();
 
@@ -250,8 +326,14 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
     }
   }
 
-  // Compute initial revenue
-  await recalculateAndStore(orgId, load.id);
+  // Compute initial revenue — a submitted plannedMiles overrides per_mile
+  // revenue via the shared calculateRevenue path so create banks the same
+  // revenue the client-side preview showed.
+  if (data.plannedMiles !== undefined) {
+    await applyPlannedMilesRevenue(tenantPrisma, orgId, load.id, data.plannedMiles);
+  } else {
+    await recalculateAndStore(orgId, load.id);
+  }
 
   // Return updated load
   const updated = await tenantPrisma.carrierLoad.findFirst({ where: { id: load.id, orgId } });
@@ -547,79 +629,25 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     'otherCharges',
     'brokerFlag',
     'carrierCost',
+    'dispatchId',
   ];
   const needsRecalc = rateFields.some((f) => f in data);
   if (needsRecalc) {
     // When plannedMiles is supplied by the caller, CarrierLoad has no planned_miles
     // column so we can't store it. Instead, use it as a miles override for the
-    // per_mile calculation: prefer dispatch actual/planned miles if available,
-    // otherwise fall back to the submitted value.
+    // per_mile calculation via the shared applyPlannedMilesRevenue helper (same
+    // money-math path createLoad uses): prefer dispatch actual/planned miles if
+    // available, otherwise fall back to the submitted value.
     if (data.plannedMiles !== undefined) {
-      const loadForCalc = await tenantPrisma.carrierLoad.findFirst({
-        where: { id, orgId },
-        include: { dispatch: true, contract: true },
-      });
-      if (loadForCalc) {
-        const dispatchMiles = {
-          actualMiles:
-            loadForCalc.dispatch?.actualMiles != null
-              ? Number(loadForCalc.dispatch.actualMiles)
-              : null,
-          plannedMiles:
-            loadForCalc.dispatch?.plannedMiles != null
-              ? Number(loadForCalc.dispatch.plannedMiles)
-              : data.plannedMiles,
-        };
-        const contractForRevenue = loadForCalc.contract
-          ? {
-              fuelSurchargeMethod: loadForCalc.contract.fuelSurchargeMethod,
-              fuelSurchargeRate:
-                loadForCalc.contract.fuelSurchargeRate != null
-                  ? Number(loadForCalc.contract.fuelSurchargeRate)
-                  : null,
-            }
-          : null;
-        const result = calculateRevenue(
-          {
-            rateType: loadForCalc.rateType,
-            rateAmount:
-              loadForCalc.rateAmount != null ? Number(loadForCalc.rateAmount) : null,
-            commodityWeightLbs:
-              loadForCalc.commodityWeightLbs != null
-                ? Number(loadForCalc.commodityWeightLbs)
-                : null,
-            commodityPallets: loadForCalc.commodityPallets,
-            otherCharges:
-              loadForCalc.otherCharges != null ? Number(loadForCalc.otherCharges) : null,
-            brokerFlag: loadForCalc.brokerFlag,
-            carrierCost:
-              loadForCalc.carrierCost != null ? Number(loadForCalc.carrierCost) : null,
-          },
-          dispatchMiles,
-          contractForRevenue
-        );
-        const fresh = await tenantPrisma.carrierLoad.update({
-          where: { id },
-          data: { totalRevenue: result.totalRevenue, fuelSurcharge: result.fuelSurcharge },
-        });
-        // Write plannedMiles back to the dispatch so pay record recalculation
-        // can resolve miles without needing the load form context.
-        if (loadForCalc.dispatchId && !loadForCalc.dispatch?.plannedMiles) {
-          await tenantPrisma.trip.update({
-            where: { id: loadForCalc.dispatchId },
-            data: { plannedMiles: data.plannedMiles },
-          });
-        }
-        logger.info('updateLoad: revenue recalculated with plannedMiles override', {
-          orgId,
-          id,
-          plannedMiles: data.plannedMiles,
-          totalRevenue: result.totalRevenue,
-        });
-        return fresh;
-      }
+      const fresh = await applyPlannedMilesRevenue(tenantPrisma, orgId, id, data.plannedMiles);
+      if (fresh) return fresh;
     }
 
+    // No plannedMiles override supplied — e.g. a dispatchId-only attach.
+    // recalculateAndStore re-reads the load with its (now current) dispatch
+    // and runs calculateRevenue, which sources miles from the Trip's
+    // actualMiles/plannedMiles — so a dispatch attach recomputes revenue
+    // from the Trip's plannedMiles without needing an explicit override.
     await recalculateAndStore(orgId, id);
     const fresh = await tenantPrisma.carrierLoad.findFirst({ where: { id, orgId } });
     return fresh ?? updated;
