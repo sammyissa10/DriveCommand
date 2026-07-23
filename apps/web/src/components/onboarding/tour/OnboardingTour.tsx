@@ -102,14 +102,12 @@ export function OnboardingTourProvider({
   }, []);
 
   const next = useCallback(() => {
-    setIndex((i) => {
-      if (i + 1 >= steps.length) {
-        finish();
-        return i;
-      }
-      return i + 1;
-    });
-  }, [steps.length, finish]);
+    if (index + 1 >= steps.length) {
+      finish();
+    } else {
+      setIndex((i) => i + 1);
+    }
+  }, [index, steps.length, finish]);
 
   const prev = useCallback(() => setIndex((i) => Math.max(0, i - 1)), []);
 
