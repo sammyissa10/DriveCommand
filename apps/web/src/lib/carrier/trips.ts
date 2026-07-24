@@ -9,6 +9,7 @@ import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { computeNextOccurrence } from '@/lib/carrier/route-templates';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { dispatchFieldEditability, lockedDispatchUpdateFields } from '@/lib/dispatch/dispatch-field-editability';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -384,8 +385,9 @@ export async function updateTrip(
   const existing = await tenantPrisma.trip.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  if (existing.status === 'completed') {
-    return { error: 'Cannot update completed dispatch' };
+  const editability = dispatchFieldEditability(existing.status);
+  if (!editability.canEdit) {
+    return { error: editability.lockReason ?? 'This trip can no longer be edited' };
   }
 
   // Tenant isolation: validate driver/truck belong to this org
@@ -415,15 +417,14 @@ export async function updateTrip(
     if (!truck) return { error: 'Invalid truck' };
   }
 
-  // Strip locked fields when in_progress
+  // Drop any field that isn't editable at this status (in_progress: routeTemplateId only).
   const updateData = { ...data };
-  if (existing.status === 'in_progress') {
-    delete updateData.primaryDriverId;
-    delete updateData.truckId;
+  for (const field of lockedDispatchUpdateFields(existing.status)) {
+    delete updateData[field];
   }
 
-  // Only allow template changes when status is planned
-  const routeTemplateId = existing.status === 'planned' ? updateData.routeTemplateId : undefined;
+  // Only allow template changes when the helper says routeTemplateId is editable (planned only).
+  const routeTemplateId = editability.fields.routeTemplateId.editable ? data.routeTemplateId : undefined;
   delete updateData.routeTemplateId;
 
   // If template is being changed on a planned dispatch, look up estimatedMiles
@@ -524,10 +525,12 @@ export async function updateTrip(
     });
   }
 
-  // Notify new driver if primaryDriverId changed
-  if (data.primaryDriverId && data.primaryDriverId !== existing.primaryDriverId) {
+  // Notify new driver if primaryDriverId changed — compare against updateData (what was
+  // actually persisted), not the raw request body, so a stripped/locked field never
+  // triggers a false "you've been assigned" notification.
+  if (updateData.primaryDriverId && updateData.primaryDriverId !== existing.primaryDriverId) {
     after(() =>
-      sendDispatchAssignedNotification(orgId, id, data.primaryDriverId!)
+      sendDispatchAssignedNotification(orgId, id, updateData.primaryDriverId!)
     );
   }
 
