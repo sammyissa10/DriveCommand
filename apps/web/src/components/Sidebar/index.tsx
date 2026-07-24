@@ -35,6 +35,7 @@ import {
   Route,
   Building2,
   ListChecks,
+  CalendarDays,
 } from "lucide-react"
 import { DispatchBadge } from "@/components/navigation/dispatch-badge"
 import { MessagesBadge } from "@/components/navigation/messages-badge"
@@ -282,7 +283,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
     }
 
     // Routes — route blueprints for recurring trips (e.g., Wisconsin route, NW Indiana route)
-    // Renamed from "Templates" which was confusing (Rate Sheets are at /carrier/templates)
+    // Legacy route system (/routes) — SEPARATE from carrier Route Templates (/carrier/templates)
     // Permission: currently ungated (TODO: add 'routes' permission key if needed)
     operationsItems.push({
       label: "Routes",
@@ -356,6 +357,14 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       label: "Checklists",
       href: "/checklists",
       icon: ListChecks,
+    })
+
+    // Route Templates — reusable carrier route blueprints that feed the Trip "Route Template" picker
+    // Permission: currently ungated (matches Routes/Checklists; TODO: add a permission key if needed)
+    resourcesItems.push({
+      label: "Route Templates",
+      href: "/carrier/templates",
+      icon: CalendarDays,
     })
 
     if (resourcesItems.length > 0) {
