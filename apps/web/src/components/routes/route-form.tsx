@@ -6,6 +6,7 @@ import { useActionState, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
+import { routeDriverBlockedLabel } from '@/lib/routes/assignable-drivers';
 import { Navigation, Plus, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
 
 interface Coords {
@@ -43,7 +44,14 @@ interface RouteFormProps {
   }>;
   initialCoDriverIds?: string[];
   onCoDriversChange?: (ids: string[]) => void;
-  drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
+  drivers: Array<{
+    id: string | null;
+    carrierDriverId?: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    assignable?: boolean;
+    blockedReason?: 'INVITE_PENDING' | 'ACCESS_REVOKED' | null;
+  }>;
   trucks: Array<{
     id: string;
     unitNumber: string;
@@ -482,11 +490,21 @@ export function RouteForm({
               <option value="">
                 {drivers.length === 0 ? 'No drivers available' : 'Select a driver...'}
               </option>
-              {drivers.map((driver) => (
-                <option key={driver.id} value={driver.id}>
-                  {driver.firstName || ''} {driver.lastName || ''}
-                </option>
-              ))}
+              {drivers.map((driver) => {
+                const blocked = driver.assignable === false;
+                const label = `${driver.firstName || ''} ${driver.lastName || ''}`.trim();
+                return (
+                  <option
+                    key={driver.carrierDriverId ?? driver.id}
+                    value={driver.id ?? ''}
+                    disabled={blocked}
+                  >
+                    {blocked
+                      ? `${label} — ${routeDriverBlockedLabel(driver.blockedReason ?? null)}`
+                      : label}
+                  </option>
+                );
+              })}
             </select>
             {drivers.length === 0 && (
               <p className="mt-1.5 text-sm text-amber-600">
@@ -494,6 +512,15 @@ export function RouteForm({
                 them, then assign once they accept.{' '}
                 <Link href="/carrier/fleet/drivers/new" className="font-semibold underline">
                   Add a driver
+                </Link>
+              </p>
+            )}
+            {drivers.length > 0 && drivers.some((d) => d.assignable === false) && (
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                Drivers with a pending invitation can&apos;t be assigned until they accept their
+                portal invite.{' '}
+                <Link href="/carrier/fleet/drivers" className="font-semibold underline">
+                  Manage drivers
                 </Link>
               </p>
             )}
@@ -532,21 +559,22 @@ export function RouteForm({
           </div>
         </div>
 
-        {/* Co-Drivers */}
-        {drivers.filter((d) => d.id !== selectedDriverId).length > 0 && (
+        {/* Co-Drivers — RouteDriver.driverId is also a User FK, so blocked (unassignable)
+            drivers must never appear as checkable options here. */}
+        {drivers.filter((d) => d.assignable !== false && d.id && d.id !== selectedDriverId).length > 0 && (
           <div>
             <p className={labelClass}>
               Co-Drivers <span className="text-xs text-muted-foreground font-normal">(optional)</span>
             </p>
             <div className="mt-2 space-y-2 rounded-lg border border-input bg-background px-3 py-3">
               {drivers
-                .filter((d) => d.id !== selectedDriverId)
+                .filter((d) => d.assignable !== false && d.id && d.id !== selectedDriverId)
                 .map((driver) => (
                   <label key={driver.id} className="flex items-center gap-3 cursor-pointer select-none">
                     <input
                       type="checkbox"
-                      checked={coDriverIds.includes(driver.id)}
-                      onChange={() => toggleCoDriver(driver.id)}
+                      checked={coDriverIds.includes(driver.id as string)}
+                      onChange={() => toggleCoDriver(driver.id as string)}
                       disabled={isPending}
                       className="h-4 w-4 rounded border-input text-primary focus:ring-ring/20"
                     />

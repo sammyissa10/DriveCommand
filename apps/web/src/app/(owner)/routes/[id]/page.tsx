@@ -6,7 +6,7 @@ import { listPayments } from '@/app/(owner)/actions/payments';
 import { listTemplates } from '@/app/(owner)/actions/expense-templates';
 import { getRouteFinancialAnalytics } from '@/app/(owner)/actions/route-analytics';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
-import { listDrivers } from '@/app/(owner)/actions/drivers';
+import { listRouteAssignableDrivers } from '@/lib/routes/assignable-drivers';
 import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
 import { listDriverRouteJoinsByRoute } from '@/app/(owner)/actions/driver-route-joins';
 import { getRouteMessages } from '@/app/(owner)/actions/fleet-messages';
@@ -73,10 +73,25 @@ export default async function RouteDetailPage({
     // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
     // so a conditional server fetch would leave the dropdowns empty when the user
     // clicks "Edit Route" without a ?mode=edit in the initial URL.
-    listDrivers({ activeOnly: true, excludeSamples: true }).catch((err) => {
-      logger.error('Failed to load drivers for route edit:', err);
-      return [] as any[];
-    }),
+    //
+    // TKT-0084: sourced from the same full-roster helper as /routes/new so this list is
+    // never narrower. `route` isn't resolved yet inside this Promise.all, so the
+    // currently-assigned driver is preserved via the existing post-fetch merge below
+    // (assignedIds/missingIds) rather than via listRouteAssignableDrivers' includeUserIds.
+    // Only assignable rows are kept here — the edit form doesn't render blocked/pending
+    // options, it only needs to guarantee the already-assigned driver is never dropped.
+    listRouteAssignableDrivers(orgId)
+      .then((rows) =>
+        rows
+          .filter((d) => d.assignable && d.id)
+          // assignable implies a linked User, and User.email is non-nullable in schema —
+          // safe to narrow here rather than propagate `string | null` downstream.
+          .map((d) => ({ id: d.id as string, firstName: d.firstName, lastName: d.lastName, email: d.email as string }))
+      )
+      .catch((err) => {
+        logger.error('Failed to load drivers for route edit:', err);
+        return [] as any[];
+      }),
     listCarrierTrucks(orgId)
       .then((r) => r.items)
       .catch((err) => {
@@ -183,8 +198,9 @@ export default async function RouteDetailPage({
     mergedDrivers = [...drivers, ...extra];
   }
 
-  // listDrivers() already returns DRIVER-role User records whose `id` is the correct
-  // Route.driverId FK value — pass straight through, no userId indirection needed.
+  // listRouteAssignableDrivers() (assignable rows only) already returns DRIVER-role
+  // User records whose `id` is the correct Route.driverId FK value — pass straight
+  // through, no userId indirection needed.
   const driversForEdit = mergedDrivers.map(
     (d: { id: string; firstName: string | null; lastName: string | null; email: string }) => ({
       id: d.id,

@@ -20,6 +20,8 @@ export interface RouteAssignableDriver {
   carrierDriverId: string | null;
   firstName: string | null;
   lastName: string | null;
+  /** Linked User's email, when a User is linked — null for INVITE_PENDING rows. */
+  email: string | null;
   assignable: boolean;
   blockedReason: 'INVITE_PENDING' | 'ACCESS_REVOKED' | null;
 }
@@ -65,7 +67,7 @@ export async function listRouteAssignableDrivers(
         firstName: true,
         lastName: true,
         userId: true,
-        user: { select: { id: true, role: true, isActive: true, isSample: true } },
+        user: { select: { id: true, role: true, isActive: true, isSample: true, email: true } },
       },
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     }),
@@ -74,7 +76,14 @@ export async function listRouteAssignableDrivers(
     // Prisma relation-filter shape for an optional 1:1 back-relation.
     tenantPrisma.user.findMany({
       where: { role: 'DRIVER', isSample: false },
-      select: { id: true, firstName: true, lastName: true, isActive: true, carrierDriverProfile: { select: { id: true } } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        isActive: true,
+        carrierDriverProfile: { select: { id: true } },
+      },
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     }),
   ]);
@@ -96,6 +105,7 @@ export async function listRouteAssignableDrivers(
       carrierDriverId: cd.id,
       firstName: cd.firstName,
       lastName: cd.lastName,
+      email: user?.email ?? null,
       assignable,
       blockedReason,
     });
@@ -111,6 +121,7 @@ export async function listRouteAssignableDrivers(
       carrierDriverId: null,
       firstName: u.firstName,
       lastName: u.lastName,
+      email: u.email,
       assignable: u.isActive,
       blockedReason: u.isActive ? null : 'ACCESS_REVOKED',
     });
@@ -124,7 +135,7 @@ export async function listRouteAssignableDrivers(
   if (missingIds.length > 0) {
     const extraUsers = await tenantPrisma.user.findMany({
       where: { id: { in: missingIds }, role: 'DRIVER' },
-      select: { id: true, firstName: true, lastName: true },
+      select: { id: true, firstName: true, lastName: true, email: true },
     });
     for (const u of extraUsers) {
       merged.push({
@@ -132,6 +143,7 @@ export async function listRouteAssignableDrivers(
         carrierDriverId: null,
         firstName: u.firstName,
         lastName: u.lastName,
+        email: u.email,
         assignable: true,
         blockedReason: null,
       });

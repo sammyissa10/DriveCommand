@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { createRoute } from '@/app/(owner)/actions/routes';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
+import { routeDriverBlockedLabel } from '@/lib/routes/assignable-drivers';
 import { MobileScreen, NavHeader, NavTextButton, SectionHeader, PrimaryButton } from '@/components/ui/ds';
 
 interface Coords {
@@ -25,9 +26,12 @@ interface Waypoint {
 }
 
 interface Driver {
-  id: string;
+  id: string | null;
+  carrierDriverId?: string | null;
   firstName: string | null;
   lastName: string | null;
+  assignable?: boolean;
+  blockedReason?: 'INVITE_PENDING' | 'ACCESS_REVOKED' | null;
 }
 
 interface Truck {
@@ -432,11 +436,21 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
                 <option value="">
                   {drivers.length === 0 ? 'No drivers available' : 'Select…'}
                 </option>
-                {drivers.map((driver) => (
-                  <option key={driver.id} value={driver.id}>
-                    {driver.firstName || ''} {driver.lastName || ''}
-                  </option>
-                ))}
+                {drivers.map((driver) => {
+                  const blocked = driver.assignable === false;
+                  const label = `${driver.firstName || ''} ${driver.lastName || ''}`.trim();
+                  return (
+                    <option
+                      key={driver.carrierDriverId ?? driver.id}
+                      value={driver.id ?? ''}
+                      disabled={blocked}
+                    >
+                      {blocked
+                        ? `${label} — ${routeDriverBlockedLabel(driver.blockedReason ?? null)}`
+                        : label}
+                    </option>
+                  );
+                })}
               </select>
               {drivers.length === 0 ? (
                 <p className="mt-1.5 text-[13px] text-ds-warning">
@@ -444,6 +458,15 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
                   them, then assign once they accept.{' '}
                   <Link href="/carrier/fleet/drivers/new" className="font-semibold underline">
                     Add a driver
+                  </Link>
+                </p>
+              ) : null}
+              {drivers.length > 0 && drivers.some((d) => d.assignable === false) ? (
+                <p className="mt-1.5 text-[13px] text-ds-txt3">
+                  Drivers with a pending invitation can&apos;t be assigned until they accept
+                  their portal invite.{' '}
+                  <Link href="/carrier/fleet/drivers" className="font-semibold underline">
+                    Manage drivers
                   </Link>
                 </p>
               ) : null}
@@ -479,22 +502,23 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
               ) : null}
             </div>
 
-            {/* Co-Drivers */}
-            {drivers.filter((d) => d.id !== selectedDriverId).length > 0 ? (
+            {/* Co-Drivers — RouteDriver.driverId is also a User FK, so blocked (unassignable)
+                drivers must never appear as checkable options here. */}
+            {drivers.filter((d) => d.assignable !== false && d.id && d.id !== selectedDriverId).length > 0 ? (
               <div>
                 <p className={dsLabelClass}>
                   Co-Drivers <span className="text-ds-txt3">(optional)</span>
                 </p>
                 <div className="space-y-1 overflow-hidden rounded-[12px] bg-ds-bg">
                   {drivers
-                    .filter((d) => d.id !== selectedDriverId)
+                    .filter((d) => d.assignable !== false && d.id && d.id !== selectedDriverId)
                     .map((driver) => {
-                      const checked = coDriverIds.includes(driver.id);
+                      const checked = coDriverIds.includes(driver.id as string);
                       return (
                         <button
                           key={driver.id}
                           type="button"
-                          onClick={() => toggleCoDriver(driver.id)}
+                          onClick={() => toggleCoDriver(driver.id as string)}
                           disabled={isPending}
                           className="flex min-h-[48px] w-full items-center justify-between px-3 py-2 text-left transition active:opacity-75 disabled:opacity-50"
                         >

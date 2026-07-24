@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { listCarrierTrucks } from '@/lib/carrier/fleet-trucks';
 import { requireTenantId } from '@/lib/context/tenant-context';
-import { listDrivers } from '@/app/(owner)/actions/drivers';
+import { listRouteAssignableDrivers, type RouteAssignableDriver } from '@/lib/routes/assignable-drivers';
 import { NewRouteClient } from './new-route-client';
 import { RouteCreateMobile } from './RouteCreateMobile';
 import { logger } from '@/lib/logger';
@@ -10,19 +10,15 @@ import { logger } from '@/lib/logger';
 export default async function NewRoutePage() {
   const orgId = await requireTenantId();
   const [drivers, trucks] = await Promise.all([
-    // DRIVER-role User accounts — Route.driverId is an FK to User.id, so the
-    // picker must be sourced from listDrivers(), not the CARRIER fleet (that
-    // regression is TKT-0074/quick-477). Sample seed users are filtered out.
-    listDrivers({ activeOnly: true, excludeSamples: true })
-      .then((rows) =>
-        rows
-          .filter((d) => !d.isSample)
-          .map((d) => ({ id: d.id, firstName: d.firstName, lastName: d.lastName }))
-      )
-      .catch((err) => {
-        logger.error('Failed to load drivers for route form:', err);
-        return [] as Array<{ id: string; firstName: string | null; lastName: string | null }>;
-      }),
+    // TKT-0084: the picker must show the FULL carrier roster, but Route.driverId is a
+    // NOT NULL FK to User.id (quick-477), so only rows with a linked DRIVER-role User.id
+    // are selectable. Drivers who haven't accepted their portal invite (or whose access
+    // was revoked) still render, disabled, with an explanatory reason instead of being
+    // silently dropped — that silent drop was the TKT-0084 bug.
+    listRouteAssignableDrivers(orgId).catch((err) => {
+      logger.error('Failed to load drivers for route form:', err);
+      return [] as RouteAssignableDriver[];
+    }),
     listCarrierTrucks(orgId)
       .then((r) => r.items)
       .catch((err) => {
