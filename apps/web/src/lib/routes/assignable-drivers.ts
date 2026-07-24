@@ -54,9 +54,9 @@ export async function listRouteAssignableDrivers(
       },
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     }),
-    // DRIVER-role Users with no carrier record — legacy drivers invited via /drivers/invite.
-    // Filtered in JS rather than `carrierDriverProfile: null` to stay resilient to the exact
-    // Prisma relation-filter shape for an optional 1:1 back-relation.
+    // DRIVER-role Users not represented by an ACTIVE carrier record — legacy drivers invited
+    // via /drivers/invite, plus drivers whose carrier record was soft-deleted or deactivated
+    // while their portal account stayed live. Deduped below against `seenUserIds` only.
     tenantPrisma.user.findMany({
       where: { role: 'DRIVER', isSample: false },
       select: {
@@ -65,7 +65,6 @@ export async function listRouteAssignableDrivers(
         lastName: true,
         email: true,
         isActive: true,
-        carrierDriverProfile: { select: { id: true } },
       },
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     }),
@@ -97,7 +96,11 @@ export async function listRouteAssignableDrivers(
   }
 
   for (const u of orphanUsers) {
-    if (u.carrierDriverProfile) continue; // already represented via the roster loop above
+    // Dedupe ONLY against users already emitted by the roster loop. Do NOT skip on "has a
+    // carrierDriverProfile row" — a soft-deleted/inactive carrier record is filtered out of
+    // `roster`, so skipping on its mere existence silently drops a live DRIVER-role User
+    // that listDrivers() used to return. That is the exact TKT-0084 failure mode; this list
+    // must never shrink versus the old behavior.
     if (seenUserIds.has(u.id)) continue;
     merged.push({
       id: u.id,
