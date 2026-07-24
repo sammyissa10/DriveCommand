@@ -226,6 +226,10 @@ export function FacilityAddressSelect({
           disabled={disabled}
           placeholder={placeholder}
           className={className}
+          onQueryChange={(val) => {
+            setManualAddress(val);
+            onAddressChange?.(val);
+          }}
           onPlaceSelect={(place) => {
             setManualAddress(place.displayName);
             onAddressChange?.(place.displayName);

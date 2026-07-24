@@ -18,6 +18,8 @@ interface AddressAutocompleteProps {
   placeholder?: string;
   className?: string;
   onPlaceSelect?: (place: Place) => void;
+  /** Fired on every keystroke (and on select) so the parent can observe raw typed text. */
+  onQueryChange?: (value: string) => void;
 }
 
 function haversineDistanceMiles(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -43,6 +45,7 @@ export function AddressAutocomplete({
   placeholder = 'Enter address...',
   className = '',
   onPlaceSelect,
+  onQueryChange,
 }: AddressAutocompleteProps) {
   const [query, setQuery] = useState(defaultValue);
   const [suggestions, setSuggestions] = useState<Place[]>([]);
@@ -65,6 +68,7 @@ export function AddressAutocomplete({
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
     setQuery(val);
+    onQueryChange?.(val);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -107,6 +111,7 @@ export function AddressAutocomplete({
 
   function handleSelect(place: Place) {
     setQuery(place.displayName);
+    onQueryChange?.(place.displayName);
     setSuggestions([]);
     setIsOpen(false);
     onPlaceSelect?.(place);
