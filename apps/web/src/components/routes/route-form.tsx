@@ -441,38 +441,11 @@ export function RouteForm({
                   )}
                 </div>
 
-                {/* Scheduled time + notes — middle (stop) rows only; origin/destination have
-                    no per-row time field in the server contract (only Route.scheduledDate). */}
-                {!isFirst && !isLast && (
-                  <>
-                    <div>
-                      <label className={labelClass}>
-                        Scheduled Time <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={wp.scheduledAt}
-                        onChange={(e) => updateWaypoint(wp.clientId, 'scheduledAt', e.target.value)}
-                        disabled={isPending}
-                        className={inputClass}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={labelClass}>
-                        Notes <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={wp.notes}
-                        onChange={(e) => updateWaypoint(wp.clientId, 'notes', e.target.value)}
-                        disabled={isPending}
-                        placeholder="Stop-specific instructions..."
-                        className={inputClass}
-                      />
-                    </div>
-                  </>
-                )}
+                {/* Per-stop Scheduled Time + Notes intentionally removed from the UI: route
+                    timing lives in Route.scheduledDate at the top, and per-stop appointment
+                    windows belong to the carrier trip flow (stops table), not legacy routes.
+                    Hidden stops_<k>_scheduledAt / _notes fields above still submit (empty) so
+                    the server contract is unchanged. */}
               </div>
             </div>
           );

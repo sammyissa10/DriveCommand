@@ -388,36 +388,8 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
                     {rowError ? <p className={dsErrorClass}>{rowError}</p> : null}
                   </div>
 
-                  {!isFirst && !isLast ? (
-                    <>
-                      <div>
-                        <label className={dsLabelClass}>
-                          Scheduled Time <span className="text-ds-txt3">(optional)</span>
-                        </label>
-                        <input
-                          type="datetime-local"
-                          value={wp.scheduledAt}
-                          onChange={(e) => updateWaypoint(wp.clientId, 'scheduledAt', e.target.value)}
-                          disabled={isPending}
-                          className={dsFieldClass}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={dsLabelClass}>
-                          Notes <span className="text-ds-txt3">(optional)</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={wp.notes}
-                          onChange={(e) => updateWaypoint(wp.clientId, 'notes', e.target.value)}
-                          disabled={isPending}
-                          placeholder="Stop-specific instructions..."
-                          className={dsFieldClass}
-                        />
-                      </div>
-                    </>
-                  ) : null}
+                  {/* Per-stop Scheduled Time + Notes intentionally removed (see route-form.tsx):
+                      hidden stops_<k>_scheduledAt / _notes still submit empty, contract unchanged. */}
                 </div>
               );
             })}
