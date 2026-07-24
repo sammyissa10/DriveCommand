@@ -128,3 +128,24 @@ None - no external service configuration required.
 ## Self-Check: PASSED
 
 All 5 files-modified paths exist on disk (2 created, 3 modified) and all 3 task commit hashes (`d5f45b95`, `0dd070df`, `45709338`) resolve in `git log --oneline --all`.
+
+---
+
+## Post-verification addition (2026-07-24)
+
+While confirming TKT-0086 the reporter (via Sammy) hit a related defect: the `/carrier/trips` list
+showed only 1 of 13 trips. Root cause in `listTrips` (`lib/carrier/trips.ts`): the default view
+filtered `scheduledDeparture BETWEEN today 00:00 AND tomorrow 23:59` for **all** statuses, so an
+actively-running trip dropped out of view the moment its scheduled departure day passed — on the
+demo org all 12 `in_progress` trips were invisible (latest departure 2026-07-16).
+
+Fix: the default window now pins in-progress trips in via
+`OR: [dateWindowClause, { status: 'in_progress' }]`, while planned/completed/cancelled stay
+date-bounded so the daily view stays manageable. Scoped to the DEFAULT window only
+(`usingDefaultWindow = !dateFrom && !dateTo`) so explicit-date callers — notably the dashboard
+"Today's Dispatches" widget — keep strict filtering and aren't polluted with stale active trips.
+Subtitle copy updated. Verified against prod data: default view **1 → 13**. `tsc --noEmit` 0 errors.
+
+- `12843bbc` fix(quick-506): keep in-progress trips in default Trips view regardless of date
+
+Not deployed, not pushed.

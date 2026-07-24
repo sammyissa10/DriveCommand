@@ -102,3 +102,20 @@ N/A - quick task. No blockers. The reporter's exact repro (Add Stop once on `/ro
 ## Self-Check: PASSED
 
 All 7 files confirmed present on disk; all 3 task commits (8ba08160, d68f3b8d, 3f498251) confirmed in git log.
+
+---
+
+## Post-verification addition (2026-07-24)
+
+During live browser verification the reporter (via Sammy) flagged that an *added* stop row
+also rendered redundant **Scheduled Time** and **Notes** fields — route timing already lives in
+`Route.scheduledDate` at the top of the form, and real per-stop appointment windows belong to the
+carrier trip flow (`stops` table), not legacy routes. Removed the visible per-stop Scheduled Time +
+Notes inputs on both desktop (`route-form.tsx`) and mobile (`RouteCreateMobile.tsx`). The hidden
+`stops_<k>_scheduledAt` / `_notes` fields still submit (empty), so the createRoute/updateRoute
+FormData contract is unchanged. `tsc --noEmit` 0 errors. Verified in browser: added stop now shows
+only Type + Address.
+
+- `4b730410` fix(quick-505): drop per-stop Scheduled Time + Notes from New Route stop rows
+
+Not deployed, not pushed.
