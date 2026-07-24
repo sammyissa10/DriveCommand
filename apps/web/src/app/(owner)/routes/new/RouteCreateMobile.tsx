@@ -10,6 +10,7 @@ import { createRoute } from '@/app/(owner)/actions/routes';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 import { routeDriverBlockedLabel } from '@/lib/routes/assignable-drivers';
+import { canRemoveWaypoint, removeWaypointById } from '@/lib/routes/waypoint-list';
 import { MobileScreen, NavHeader, NavTextButton, SectionHeader, PrimaryButton } from '@/components/ui/ds';
 
 interface Coords {
@@ -150,10 +151,7 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
   }
 
   function removeWaypoint(clientId: string) {
-    setWaypoints((prev) => {
-      if (prev.length <= 2) return prev; // never drop below 2 rows (origin + destination)
-      return prev.filter((w) => w.clientId !== clientId);
-    });
+    setWaypoints((prev) => removeWaypointById(prev, clientId));
   }
 
   // Reordering is clamped so the first row (origin) and last row (destination) never move —
@@ -309,6 +307,13 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
               const isLast = idx === lastIdx;
               const fieldName = isFirst ? 'origin' : isLast ? 'destination' : `stops_${idx - 1}_address`;
               const rowError = isFirst ? fieldErrors?.origin : isLast ? fieldErrors?.destination : undefined;
+              const removeTitle = !canRemoveWaypoint(waypoints)
+                ? 'A route needs at least an origin and a destination'
+                : isFirst
+                  ? 'Remove origin — the next stop becomes the origin'
+                  : isLast
+                    ? 'Remove destination — the previous stop becomes the destination'
+                    : `Remove stop ${idx + 1}`;
 
               return (
                 <div key={wp.clientId} className="space-y-3 rounded-[20px] bg-ds-card p-4">
@@ -317,9 +322,9 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
                       {idx + 1}
                     </div>
                     {isFirst ? (
-                      <span className="flex-1 text-[13px] font-medium text-ds-txt">Origin (Pickup)</span>
+                      <span className="flex-1 min-w-0 text-[13px] font-medium text-ds-txt">Origin (Pickup)</span>
                     ) : isLast ? (
-                      <span className="flex-1 text-[13px] font-medium text-ds-txt">Destination (Delivery)</span>
+                      <span className="flex-1 min-w-0 text-[13px] font-medium text-ds-txt">Destination (Delivery)</span>
                     ) : (
                       <select
                         value={wp.type}
@@ -331,37 +336,40 @@ export function RouteCreateMobile({ drivers, trucks }: { drivers: Driver[]; truc
                         <option value="DELIVERY">Delivery</option>
                       </select>
                     )}
-                    {!isFirst && !isLast ? (
-                      <div className="flex items-center gap-0.5">
-                        <button
-                          type="button"
-                          onClick={() => moveWaypointUp(idx)}
-                          disabled={idx === 1 || isPending}
-                          aria-label="Move stop up"
-                          className="flex h-12 w-12 items-center justify-center rounded-full text-ds-txt3 transition active:opacity-75 disabled:opacity-30"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveWaypointDown(idx)}
-                          disabled={idx === lastIdx - 1 || isPending}
-                          aria-label="Move stop down"
-                          className="flex h-12 w-12 items-center justify-center rounded-full text-ds-txt3 transition active:opacity-75 disabled:opacity-30"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeWaypoint(wp.clientId)}
-                          disabled={isPending || waypoints.length <= 2}
-                          aria-label={`Remove stop ${idx + 1}`}
-                          className="flex h-12 w-12 items-center justify-center rounded-full text-ds-txt3 transition active:opacity-75 disabled:opacity-30"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ) : null}
+                    <div className="flex items-center gap-0.5">
+                      {!isFirst && !isLast ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => moveWaypointUp(idx)}
+                            disabled={idx === 1 || isPending}
+                            aria-label="Move stop up"
+                            className="flex h-12 w-12 items-center justify-center rounded-full text-ds-txt3 transition active:opacity-75 disabled:opacity-30"
+                          >
+                            <ChevronUp className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveWaypointDown(idx)}
+                            disabled={idx === lastIdx - 1 || isPending}
+                            aria-label="Move stop down"
+                            className="flex h-12 w-12 items-center justify-center rounded-full text-ds-txt3 transition active:opacity-75 disabled:opacity-30"
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => removeWaypoint(wp.clientId)}
+                        disabled={isPending || !canRemoveWaypoint(waypoints)}
+                        title={removeTitle}
+                        aria-label={removeTitle}
+                        className="flex h-12 w-12 items-center justify-center rounded-full text-ds-txt3 transition active:opacity-75 disabled:opacity-30"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <div>

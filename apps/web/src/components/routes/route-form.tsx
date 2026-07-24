@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 import { routeDriverBlockedLabel } from '@/lib/routes/assignable-drivers';
+import { canRemoveWaypoint, removeWaypointById } from '@/lib/routes/waypoint-list';
 import { Navigation, Plus, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
 
 interface Coords {
@@ -195,10 +196,7 @@ export function RouteForm({
   }
 
   function removeWaypoint(clientId: string) {
-    setWaypoints((prev) => {
-      if (prev.length <= 2) return prev; // never drop below 2 rows (origin + destination)
-      return prev.filter((w) => w.clientId !== clientId);
-    });
+    setWaypoints((prev) => removeWaypointById(prev, clientId));
   }
 
   // Reordering is clamped so the first row (origin) and last row (destination) never move —
@@ -351,6 +349,13 @@ export function RouteForm({
           const isLast = idx === lastIdx;
           const fieldName = isFirst ? 'origin' : isLast ? 'destination' : `stops_${idx - 1}_address`;
           const rowError = isFirst ? fieldErrors?.origin : isLast ? fieldErrors?.destination : undefined;
+          const removeTitle = !canRemoveWaypoint(waypoints)
+            ? 'A route needs at least an origin and a destination'
+            : isFirst
+              ? 'Remove origin — the next stop becomes the origin'
+              : isLast
+                ? 'Remove destination — the previous stop becomes the destination'
+                : `Remove stop ${idx + 1}`;
 
           return (
             <div
@@ -381,37 +386,40 @@ export function RouteForm({
                     </select>
                   )}
 
-                  {!isFirst && !isLast && (
-                    <div className="flex items-center gap-0.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => moveWaypointUp(idx)}
-                        disabled={idx === 1 || isPending}
-                        title="Move stop up"
-                        className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveWaypointDown(idx)}
-                        disabled={idx === lastIdx - 1 || isPending}
-                        title="Move stop down"
-                        className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeWaypoint(wp.clientId)}
-                        disabled={isPending || waypoints.length <= 2}
-                        title="Remove stop"
-                        className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-0.5 shrink-0">
+                    {!isFirst && !isLast ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => moveWaypointUp(idx)}
+                          disabled={idx === 1 || isPending}
+                          title="Move stop up"
+                          className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveWaypointDown(idx)}
+                          disabled={idx === lastIdx - 1 || isPending}
+                          title="Move stop down"
+                          className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      </>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => removeWaypoint(wp.clientId)}
+                      disabled={isPending || !canRemoveWaypoint(waypoints)}
+                      title={removeTitle}
+                      aria-label={removeTitle}
+                      className="inline-flex items-center justify-center rounded p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Address — FacilityAddressSelect; name maps to origin/destination/stops_<k>_address */}
