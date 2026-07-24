@@ -52,7 +52,7 @@ export default async function TripsPage() {
               Trips
             </h1>
             <p className="mt-1 text-muted-foreground text-sm">
-              Daily trips view &mdash; showing today and tomorrow by default.
+              Daily trips view &mdash; showing today and tomorrow, plus any in-progress trips.
             </p>
           </div>
         </div>

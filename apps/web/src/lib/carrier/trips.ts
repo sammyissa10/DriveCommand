@@ -98,13 +98,22 @@ export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
     dateToResolved.setHours(23, 59, 59, 999);
   }
 
+  // Only the DEFAULT window (no explicit date range from the caller) pins in-progress trips
+  // in regardless of date: an actively-running trip must never fall out of the Trips list
+  // just because its scheduled departure day has passed. Callers that pass an explicit
+  // date range (e.g. the dashboard "Today's Dispatches" widget) keep strict date filtering.
+  const usingDefaultWindow = !dateFrom && !dateTo;
+  const dateWindowClause = { scheduledDeparture: { gte: dateFromResolved, lte: dateToResolved } };
+
   const where: Record<string, unknown> = {
     orgId,
     deletedAt: null,
-    // When filtering by routeTemplateId, skip the default date filter so all related dispatches are returned
+    // When filtering by routeTemplateId, skip the date filter so all related dispatches are returned.
     ...(routeTemplateId
       ? {}
-      : { scheduledDeparture: { gte: dateFromResolved, lte: dateToResolved } }),
+      : usingDefaultWindow
+        ? { OR: [dateWindowClause, { status: 'in_progress' }] }
+        : dateWindowClause),
     ...(status ? { status } : {}),
     ...(driverId ? { primaryDriverId: driverId } : {}),
     ...(routeTemplateId ? { routeTemplateId } : {}),
