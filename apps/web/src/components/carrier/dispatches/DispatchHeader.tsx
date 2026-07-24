@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { dispatchFieldEditability } from '@/lib/dispatch/dispatch-field-editability';
 
 // ---------------------------------------------------------------------------
 // Helpers (copied from DispatchCard — NOT imported to keep files independent)
@@ -245,7 +246,8 @@ export function DispatchHeader({
   const [templatesLoaded, setTemplatesLoaded] = useState(false);
 
   const isLocked = dispatch.status === 'completed' || dispatch.status === 'cancelled' || dispatch.status === 'tonu';
-  const isInProgress = dispatch.status === 'in_progress';
+  // Single source of truth for status -> per-field edit permissions (TKT-0086).
+  const editability = dispatchFieldEditability(dispatch.status);
 
   async function patchDispatch(data: Record<string, unknown>) {
     const res = await fetch(`/api/v1/carrier/dispatches/${dispatch.id}`, {
@@ -296,7 +298,7 @@ export function DispatchHeader({
     });
 
     // Load templates lazily when edit dialog first opens
-    if (!templatesLoaded && dispatch.status === 'planned') {
+    if (!templatesLoaded && editability.fields.routeTemplateId.editable) {
       fetch('/api/v1/carrier/route-templates/active')
         .then((r) => r.json())
         .then((body) => {
@@ -314,7 +316,7 @@ export function DispatchHeader({
       try {
         // Validate co-driver is not same as primary driver
         if (
-          dispatch.status === 'planned' &&
+          editability.fields.coDriverId.editable &&
           editForm.coDriverId &&
           editForm.coDriverId === editForm.primaryDriverId
         ) {
@@ -354,15 +356,22 @@ export function DispatchHeader({
           if (!isNaN(val)) payload.actualMiles = val;
         }
 
-        // Include assignment fields only when status is planned
-        if (dispatch.status === 'planned') {
+        // Include assignment fields only when the helper says they're editable at this status
+        if (editability.fields.primaryDriverId.editable) {
           payload.primaryDriverId = editForm.primaryDriverId;
+        }
+        if (editability.fields.truckId.editable) {
           payload.truckId = editForm.truckId;
+        }
+        if (editability.fields.coDriverId.editable) {
           payload.coDriverId = editForm.coDriverId || null;
-          // Include template if changed
-          if (editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '')) {
-            payload.routeTemplateId = editForm.routeTemplateId || undefined;
-          }
+        }
+        // Include template only when editable AND it changed
+        if (
+          editability.fields.routeTemplateId.editable &&
+          editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '')
+        ) {
+          payload.routeTemplateId = editForm.routeTemplateId || undefined;
         }
 
         await patchDispatch(payload);
@@ -494,11 +503,11 @@ export function DispatchHeader({
 
         {/* Edit button + status actions */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Edit button — disabled when in_progress or completed/cancelled/tonu */}
-          {isInProgress || isLocked ? (
+          {/* Edit button — disabled only for completed/cancelled/tonu */}
+          {!editability.canEdit ? (
             <span
               className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium border bg-background text-muted-foreground cursor-not-allowed opacity-50"
-              title="Cannot edit an active or completed dispatch"
+              title={editability.lockReason ?? undefined}
             >
               <Edit2 className="h-3.5 w-3.5" />
               Edit
@@ -618,14 +627,16 @@ export function DispatchHeader({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            {dispatch.status === 'planned' && (
+            {editability.canEdit && (
               <>
-                {/* Route Template */}
+                {/* Route Template — always rendered, disabled with a reason when not editable */}
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Route Template</label>
                   <select
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
                     value={editForm.routeTemplateId}
+                    disabled={!editability.fields.routeTemplateId.editable}
+                    title={editability.fields.routeTemplateId.reason ?? undefined}
                     onChange={(e) =>
                       setEditForm((f) => ({ ...f, routeTemplateId: e.target.value }))
                     }
@@ -637,15 +648,22 @@ export function DispatchHeader({
                       </option>
                     ))}
                   </select>
+                  {!editability.fields.routeTemplateId.editable && editability.fields.routeTemplateId.reason && (
+                    <p className="text-xs text-muted-foreground">
+                      {editability.fields.routeTemplateId.reason}
+                    </p>
+                  )}
                   {/* Warning when changing template */}
-                  {editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '') && editForm.routeTemplateId && (
+                  {editability.fields.routeTemplateId.editable &&
+                    editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '') && editForm.routeTemplateId && (
                     <p className="text-xs text-amber-600 dark:text-amber-400 flex items-start gap-1 pt-0.5">
                       <span className="shrink-0 mt-0.5">⚠</span>
                       Changing the template will replace all existing stops on this dispatch.
                     </p>
                   )}
                   {/* Stop preview for newly selected template */}
-                  {editSelectedTemplate && editSelectedTemplate.stops.length > 0 &&
+                  {editability.fields.routeTemplateId.editable &&
+                    editSelectedTemplate && editSelectedTemplate.stops.length > 0 &&
                     editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '') && (
                     <div className="rounded-md bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 p-2.5 space-y-1">
                       {editSelectedTemplate.stops.map((stop) => (

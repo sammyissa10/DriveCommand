@@ -20,6 +20,7 @@ import {
   type FieldDef,
   type ParentChip,
 } from '@/components/ui/ds';
+import { dispatchFieldEditability } from '@/lib/dispatch/dispatch-field-editability';
 
 // ---------------------------------------------------------------------------
 // Types — mirror the server page's serialized trip
@@ -270,11 +271,11 @@ export function TripDetailMobile({
   const isLocked = trip.status === 'completed' || trip.status === 'cancelled' || trip.status === 'tonu';
   const isInProgress = trip.status === 'in_progress';
   const isPlanned = trip.status === 'planned';
-  // The server (updateTrip) only hard-blocks edits on a completed trip, and strips
-  // driver/truck itself while in_progress — so a running trip's schedule, odometer
-  // and notes are editable. The desktop hides Edit whenever in_progress, which is
-  // stricter than the rule requires; mobile follows the server instead.
-  const canEdit = canManage && !isLocked;
+  // Single source of truth for status -> per-field edit permissions (TKT-0086).
+  // planned and in_progress are both editable; only routeTemplateId locks mid-trip
+  // (changing it would delete + recreate every stop on a running trip).
+  const editability = dispatchFieldEditability(trip.status);
+  const canEdit = canManage && editability.canEdit;
   // Stops can be added while a trip is planned or running (matches the desktop).
   const canAddStop = canManage && (isPlanned || isInProgress);
 
@@ -334,7 +335,7 @@ export function TripDetailMobile({
     setEditForm(makeEditForm());
     setTab('details');
     setIsEditing(true);
-    if (!templatesLoaded && isPlanned) {
+    if (!templatesLoaded && editability.fields.routeTemplateId.editable) {
       fetch('/api/v1/carrier/route-templates/active')
         .then((r) => r.json())
         .then((body) => {
@@ -353,7 +354,7 @@ export function TripDetailMobile({
   function saveEdit() {
     startTransition(async () => {
       try {
-        if (isPlanned && editForm.coDriverId && editForm.coDriverId === editForm.primaryDriverId) {
+        if (editability.fields.coDriverId.editable && editForm.coDriverId && editForm.coDriverId === editForm.primaryDriverId) {
           toast.error('Co-driver cannot be the same as primary driver');
           return;
         }
@@ -376,13 +377,20 @@ export function TripDetailMobile({
           const v = parseFloat(editForm.actualMiles);
           if (!isNaN(v)) payload.actualMiles = v;
         }
-        if (isPlanned) {
+        if (editability.fields.primaryDriverId.editable) {
           payload.primaryDriverId = editForm.primaryDriverId;
+        }
+        if (editability.fields.truckId.editable) {
           payload.truckId = editForm.truckId;
+        }
+        if (editability.fields.coDriverId.editable) {
           payload.coDriverId = editForm.coDriverId || null;
-          if (editForm.routeTemplateId !== (trip.routeTemplateId ?? '')) {
-            payload.routeTemplateId = editForm.routeTemplateId || undefined;
-          }
+        }
+        if (
+          editability.fields.routeTemplateId.editable &&
+          editForm.routeTemplateId !== (trip.routeTemplateId ?? '')
+        ) {
+          payload.routeTemplateId = editForm.routeTemplateId || undefined;
         }
 
         await patchTrip(payload);
@@ -539,14 +547,19 @@ export function TripDetailMobile({
     {
       key: 'routeTemplateId',
       label: 'Route template',
-      input: {
-        value: editForm.routeTemplateId,
-        onChange: (v) => setField('routeTemplateId', v),
-        options: [
-          { label: 'No template', value: '' },
-          ...templates.map((t) => ({ label: `${t.templateName}${t.client ? ` — ${t.client.name}` : ''}`, value: t.id })),
-        ],
-      },
+      editable: editability.fields.routeTemplateId.editable,
+      lockReason: editability.fields.routeTemplateId.reason ?? undefined,
+      value: trip.routeTemplateName ?? 'No template',
+      input: editability.fields.routeTemplateId.editable
+        ? {
+            value: editForm.routeTemplateId,
+            onChange: (v) => setField('routeTemplateId', v),
+            options: [
+              { label: 'No template', value: '' },
+              ...templates.map((t) => ({ label: `${t.templateName}${t.client ? ` — ${t.client.name}` : ''}`, value: t.id })),
+            ],
+          }
+        : undefined,
     },
     {
       key: 'primaryDriverId',
@@ -610,20 +623,10 @@ export function TripDetailMobile({
             <h1 className="text-[22px] font-bold text-ds-txt">{dispatchNumber}</h1>
             <p className="mt-1 text-[13px] text-ds-txt3">Editing trip</p>
           </div>
-          {isPlanned ? (
-            <div>
-              <SectionHeader title="Assignment" />
-              <FieldGroup fields={editAssignment} isEditing />
-            </div>
-          ) : (
-            /* Say why the assignment fields aren't here, rather than just omitting them. */
-            <div className="rounded-[20px] bg-ds-card p-4">
-              <p className="text-[13px] text-ds-txt2">
-                Driver, truck and route template are locked once a trip is running. Schedule, odometer
-                and notes can still be changed.
-              </p>
-            </div>
-          )}
+          <div>
+            <SectionHeader title="Assignment" />
+            <FieldGroup fields={editAssignment} isEditing />
+          </div>
           <div>
             <SectionHeader title="Schedule" />
             <FieldGroup fields={editSchedule} isEditing />
