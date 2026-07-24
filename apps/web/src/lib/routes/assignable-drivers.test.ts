@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routeDriverBlockedLabel } from './assignable-drivers';
+import { routeDriverBlockedLabel } from './driver-blocked-label';
 
 describe('routeDriverBlockedLabel', () => {
   it("maps 'INVITE_PENDING' -> 'Invitation pending'", () => {

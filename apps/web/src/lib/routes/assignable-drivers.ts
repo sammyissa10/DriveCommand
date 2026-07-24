@@ -12,31 +12,14 @@
 // carrier roster, but only rows with a linked DRIVER-role User.id are `assignable` — the id
 // submitted to the form is always a real User.id, never a CarrierDriver.id (that regression
 // is TKT-0074, fixed in quick-477).
+//
+// SERVER-ONLY. This module imports getTenantPrisma (-> prisma -> pg -> tls/net/dns), so it
+// must never be imported by a client component. The pure, client-safe half of this contract
+// lives in ./driver-blocked-label — import from there in `'use client'` files.
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import type { RouteAssignableDriver } from './driver-blocked-label';
 
-export interface RouteAssignableDriver {
-  /** DRIVER-role User.id — the ONLY value that may be submitted as Route.driverId. */
-  id: string | null;
-  carrierDriverId: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  /** Linked User's email, when a User is linked — null for INVITE_PENDING rows. */
-  email: string | null;
-  assignable: boolean;
-  blockedReason: 'INVITE_PENDING' | 'ACCESS_REVOKED' | null;
-}
-
-/**
- * Pure mapper — no imports, framework-free, testable in isolation (mirrors
- * apps/web/src/lib/dispatch/driver-readiness-label.ts).
- */
-export function routeDriverBlockedLabel(
-  reason: RouteAssignableDriver['blockedReason']
-): string | null {
-  if (reason === 'INVITE_PENDING') return 'Invitation pending';
-  if (reason === 'ACCESS_REVOKED') return 'Portal access revoked';
-  return null;
-}
+export type { RouteAssignableDriver } from './driver-blocked-label';
 
 /**
  * Full carrier-roster + orphan-DRIVER-User source for route driver pickers.

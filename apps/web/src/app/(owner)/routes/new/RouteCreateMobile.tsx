@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { createRoute } from '@/app/(owner)/actions/routes';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
-import { routeDriverBlockedLabel } from '@/lib/routes/assignable-drivers';
+import { routeDriverBlockedLabel } from '@/lib/routes/driver-blocked-label';
 import { canRemoveWaypoint, removeWaypointById } from '@/lib/routes/waypoint-list';
 import { MobileScreen, NavHeader, NavTextButton, SectionHeader, PrimaryButton } from '@/components/ui/ds';
 

@@ -6,7 +6,7 @@ import { useActionState, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FacilityAddressSelect, type FacilityOption } from '@/components/routes/FacilityAddressSelect';
 import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
-import { routeDriverBlockedLabel } from '@/lib/routes/assignable-drivers';
+import { routeDriverBlockedLabel } from '@/lib/routes/driver-blocked-label';
 import { canRemoveWaypoint, removeWaypointById } from '@/lib/routes/waypoint-list';
 import { Navigation, Plus, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
 
