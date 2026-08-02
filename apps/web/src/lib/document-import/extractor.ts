@@ -70,6 +70,15 @@ export interface PageExtractionFailure {
   model?: string;
 }
 
+/**
+ * How much raw model text to keep on a failure.
+ *
+ * A truncated reply is still diagnosable — the shape of what went wrong is
+ * almost always visible in the first few KB — and 20KB bounds what a bad run
+ * can write into the page record.
+ */
+export const RAW_RESPONSE_LIMIT = 20_000;
+
 export type PageExtractionResult = PageExtractionSuccess | PageExtractionFailure;
 
 // ---------------------------------------------------------------------------
@@ -153,12 +162,56 @@ Return only the JSON. No markdown fences, no explanation.`;
 // Response handling
 // ---------------------------------------------------------------------------
 
-/** Models occasionally wrap JSON in fences despite instructions. Strip them. */
+/**
+ * Models occasionally wrap JSON in fences despite instructions, and sometimes
+ * put a sentence in front of the fence as well. Handle both.
+ */
 export function stripJsonFences(text: string): string {
   const trimmed = text.trim();
-  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed);
-  if (fenced) return fenced[1].trim();
+
+  // The whole reply is one fenced block.
+  const whole = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed);
+  if (whole) return whole[1].trim();
+
+  // A fenced block somewhere inside prose ("Here is the JSON:\n```json ...").
+  const embedded = /```(?:json)?\s*([\s\S]*?)\s*```/i.exec(trimmed);
+  if (embedded) return embedded[1].trim();
+
   return trimmed;
+}
+
+/**
+ * Pull a JSON value out of model text without being fussy about what surrounds
+ * it.
+ *
+ * Two passes, cheapest first: parse the de-fenced text as-is, and only if that
+ * fails fall back to the widest brace span in it. The brace span is what
+ * survives leading prose ("Here is the extraction:") and trailing commentary
+ * ("Note: page 3 was blurry") — both of which a model will emit despite the
+ * prompt, especially when it has been thinking first.
+ *
+ * Returns a tagged result rather than `undefined` so a reply of literal `null`
+ * is not confused with a failure to parse.
+ */
+export function extractJsonValue(text: string): { ok: true; value: unknown } | { ok: false } {
+  const cleaned = stripJsonFences(text);
+  if (!cleaned) return { ok: false };
+
+  try {
+    return { ok: true, value: JSON.parse(cleaned) };
+  } catch {
+    /* fall through to the brace span */
+  }
+
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start === -1 || end <= start) return { ok: false };
+
+  try {
+    return { ok: true, value: JSON.parse(cleaned.slice(start, end + 1)) };
+  } catch {
+    return { ok: false };
+  }
 }
 
 /**
@@ -169,17 +222,10 @@ export function stripJsonFences(text: string): string {
  * human, and only `name` is genuinely required per spec Section 5.
  */
 export function parsePageReply(text: string): PageExtraction | null {
-  const cleaned = stripJsonFences(text);
-  if (!cleaned) return null;
+  const json = extractJsonValue(text);
+  if (!json.ok) return null;
 
-  let json: unknown;
-  try {
-    json = JSON.parse(cleaned);
-  } catch {
-    return null;
-  }
-
-  const result = pageExtractionSchema.safeParse(json);
+  const result = pageExtractionSchema.safeParse(json.value);
   if (!result.success) return null;
   return result.data;
 }
@@ -211,18 +257,44 @@ export interface AnthropicLike {
   };
 }
 
-function readReply(response: unknown): {
+/**
+ * Pull the assistant's text out of a Messages API reply.
+ *
+ * Never `content[0]`, never an assumption about ordering. A model with thinking
+ * enabled — which Sonnet 5 has on adaptively, always — returns a `thinking`
+ * block *before* its `text` block, so indexing position zero reads the reasoning
+ * and then fails to parse it as JSON. That is exactly the intermittent
+ * UNPARSEABLE_RESPONSE seen in live testing.
+ *
+ * Selecting every `type === 'text'` block and joining them is model-agnostic:
+ * thinking, redacted_thinking, and tool_use blocks are ignored wherever they
+ * appear, and a reply split across several text blocks still reassembles.
+ */
+export function readReply(response: unknown): {
   text: string;
   inputTokens: number;
   outputTokens: number;
 } {
   const r = response as {
-    content?: Array<{ type?: string; text?: string }>;
+    content?: unknown;
     usage?: { input_tokens?: number; output_tokens?: number };
   };
-  const first = r?.content?.[0];
+
+  const blocks = Array.isArray(r?.content) ? (r.content as Array<unknown>) : [];
+  const text = blocks
+    .filter(
+      (b): b is { type: string; text: string } =>
+        typeof b === 'object' &&
+        b !== null &&
+        (b as { type?: unknown }).type === 'text' &&
+        typeof (b as { text?: unknown }).text === 'string',
+    )
+    .map((b) => b.text)
+    .join('\n')
+    .trim();
+
   return {
-    text: first?.type === 'text' ? (first.text ?? '') : '',
+    text,
     inputTokens: r?.usage?.input_tokens ?? 0,
     outputTokens: r?.usage?.output_tokens ?? 0,
   };
@@ -313,7 +385,9 @@ export async function extractPage(
       ok: false,
       code: 'UNPARSEABLE_RESPONSE',
       message: 'The model reply was not valid JSON in the expected shape.',
-      raw: text.slice(0, 2000),
+      // Kept so a failed page is diagnosable after the fact. Discarding this is
+      // what made the live UNPARSEABLE_RESPONSE failures impossible to explain.
+      raw: text.slice(0, RAW_RESPONSE_LIMIT),
       inputTokens,
       outputTokens,
       model,

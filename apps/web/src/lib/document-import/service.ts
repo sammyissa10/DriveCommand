@@ -74,6 +74,18 @@ export interface PageOutcome {
   wasCached: boolean;
   failureCode?: ExtractionFailureCode;
   failureMessage?: string;
+  /**
+   * What the model actually sent, when the reply could not be parsed — capped at
+   * `RAW_RESPONSE_LIMIT` (20KB) by the extractor.
+   *
+   * `document_import_pages` has no column for this today; the row carries only
+   * `failure_code` and `failure_message`, and nothing writes those rows yet
+   * (the persistence layer lands in Phase 2). Carrying it on the outcome means
+   * the diagnostic survives to whoever calls the service now, and gives that
+   * layer something to persist into failure details when it is built. Do not
+   * fold it into `failureMessage` — that string is user-facing.
+   */
+  rawResponse?: string;
   inputTokens: number;
   outputTokens: number;
   model?: string;
@@ -125,6 +137,56 @@ export interface ExtractOptions {
   model?: string;
   concurrency?: number;
   extractionHints?: Record<string, unknown>;
+}
+
+// ---------------------------------------------------------------------------
+// Failure classification
+// ---------------------------------------------------------------------------
+
+/**
+ * Failures that have nothing to do with the photograph.
+ *
+ * A missing API key, a model call that threw, or a reply we could not parse are
+ * all our problem. Telling a dispatcher at 5:30am to "take clearer photos"
+ * because our API key expired sends them out to re-shoot sixteen pages that were
+ * fine, and they will do it, because we told them to.
+ */
+const SERVICE_FAILURE_CODES: ReadonlySet<ExtractionFailureCode> = new Set([
+  'NO_API_KEY',
+  'MODEL_ERROR',
+  'UNPARSEABLE_RESPONSE',
+]);
+
+/**
+ * The all-pages-failed message, chosen by what actually failed.
+ *
+ * Only a page-level unreadable-image failure earns a "re-shoot it" instruction.
+ * A mix of both keeps the photo advice — at least one page genuinely was
+ * unreadable — but says the rest was on us.
+ */
+export function allPagesFailedMessage(failed: PageOutcome[], pageCount: number): string {
+  const singular = pageCount === 1;
+  const allService =
+    failed.length > 0 &&
+    failed.every((o) => o.failureCode !== undefined && SERVICE_FAILURE_CODES.has(o.failureCode));
+
+  if (allService) {
+    return singular
+      ? 'The document reader could not process that page. This is a problem with the reading service, not with your photo — try again in a few minutes, and contact support if it keeps happening.'
+      : 'The document reader could not process any of those pages. This is a problem with the reading service, not with your photos — try again in a few minutes, and contact support if it keeps happening.';
+  }
+
+  const someService = failed.some(
+    (o) => o.failureCode !== undefined && SERVICE_FAILURE_CODES.has(o.failureCode),
+  );
+
+  if (someService) {
+    return 'Some pages could not be read, and the reading service failed on the rest. Re-shoot any page that was blurred or cropped, then try again — and contact support if it keeps happening.';
+  }
+
+  return singular
+    ? 'That page could not be read. Take a clearer photo and try again.'
+    : 'None of those pages could be read. Take clearer photos and try again.';
 }
 
 // ---------------------------------------------------------------------------
@@ -208,6 +270,7 @@ export async function extractDocument(opts: ExtractOptions): Promise<ExtractionS
           wasCached: false,
           failureCode: result.code,
           failureMessage: result.message,
+          rawResponse: result.raw,
           inputTokens: result.inputTokens ?? 0,
           outputTokens: result.outputTokens ?? 0,
           model: result.model,
@@ -279,10 +342,10 @@ export async function extractDocument(opts: ExtractOptions): Promise<ExtractionS
     return {
       ok: false,
       code: 'ALL_PAGES_FAILED',
-      message:
-        pages.length === 1
-          ? 'That page could not be read. Take a clearer photo and try again.'
-          : 'None of those pages could be read. Take clearer photos and try again.',
+      message: allPagesFailedMessage(
+        outcomes.filter((o) => !o.ok),
+        pages.length,
+      ),
       contentHash,
       usage,
       pages: outcomes,
