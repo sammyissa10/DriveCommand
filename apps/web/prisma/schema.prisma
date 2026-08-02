@@ -3629,6 +3629,10 @@ enum NotificationCategory {
 enum NotificationChannel {
   EMAIL
   IN_APP
+  // Added 20260802174618_add_push_notification_channel. Nothing sends on PUSH
+  // until Phase 10 wires the dispatcher — see DEC-2 in
+  // .planning/document-import/DECISIONS.md.
+  PUSH
 }
 
 enum NotificationSendStatus {

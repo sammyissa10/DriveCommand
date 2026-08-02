@@ -2521,7 +2521,8 @@ exports.NotificationCategory = exports.$Enums.NotificationCategory = {
 
 exports.NotificationChannel = exports.$Enums.NotificationChannel = {
   EMAIL: 'EMAIL',
-  IN_APP: 'IN_APP'
+  IN_APP: 'IN_APP',
+  PUSH: 'PUSH'
 };
 
 exports.NotificationSendStatus = exports.$Enums.NotificationSendStatus = {

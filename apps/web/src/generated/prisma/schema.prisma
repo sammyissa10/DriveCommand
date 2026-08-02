@@ -2043,6 +2043,11 @@ model CarrierFacility {
   id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orgId               String   @map("org_id") @db.Uuid
   name                String
+  // Allowed values: 'terminal' | 'yard' | 'warehouse' | 'drop_yard' | 'customer_site' | 'driver_residence'
+  // Not a Prisma enum — enforcement lives in the SQL CHECK constraint
+  // `facilities_facility_type_check`. Widened to admit 'driver_residence' by
+  // migration 20260802173535_widen_facility_type_check. Any new value must be
+  // added to that constraint in a migration or the write fails at the database.
   facilityType        String   @default("terminal") @map("facility_type")
   addressLine1        String?  @map("address_line1")
   addressLine2        String?  @map("address_line2")
@@ -2444,7 +2449,8 @@ model CarrierStop {
   // JSONB rather than three child tables: this data is never queried relationally,
   // and the scalar bolNumber/podNumber/pieces/weightLbs fields above stay populated
   // in parallel so invoicing and reports keep working unchanged (audit B6).
-  references           Json      @default("[]") // [{ type: SHIPMENT|PRO|ORDER|PO|BOL|LOAD|SEAL|OTHER, value }]
+  // Mapped to stop_references: `references` is a reserved word in Postgres.
+  references           Json      @default("[]") @map("stop_references") // [{ type: SHIPMENT|PRO|ORDER|PO|BOL|LOAD|SEAL|OTHER, value }]
   lineItems            Json      @default("[]") @map("line_items") // [{ sku, description, quantity, uom, weight, hazmat }]
   pageNumbers          Json      @default("[]") @map("page_numbers") // source pages, so stop 5 opens page 4 not a 16-page scan
   /// True for the pinned final stop of the day (spec Section 9). Modelled as a flag
@@ -3623,6 +3629,10 @@ enum NotificationCategory {
 enum NotificationChannel {
   EMAIL
   IN_APP
+  // Added 20260802174618_add_push_notification_channel. Nothing sends on PUSH
+  // until Phase 10 wires the dispatcher — see DEC-2 in
+  // .planning/document-import/DECISIONS.md.
+  PUSH
 }
 
 enum NotificationSendStatus {

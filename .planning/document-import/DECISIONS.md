@@ -45,29 +45,24 @@ and that is enforced server-side, never as a UI hide. Do not infer privacy from
 
 ---
 
-## DEC-2 — Push notifications for dispatcher wiring ⚠️ PREMISE UNVERIFIED
+## DEC-2 — PUSH notification channel
 
-**Decision:** dispatcher push wiring is deferred to Phase 10, and when built it
-reuses the existing `transitionTripStatus` push mechanism rather than growing a
-second delivery path.
+`PUSH` added to the `NotificationChannel` enum (applied to prod via Supabase MCP
+2026-08-02, repo synced in follow-up migration
+`20260802174618_add_push_notification_channel`).
 
-**Correction, recorded 2026-08-02.** This entry was originally to be written as
-"PUSH added to NotificationChannel enum in Phase 1 migration." That is **not true
-of the current repo or of production**, verified three ways:
+**Phase 1 was instructed to do this and silently omitted it — the same omission
+pattern as the `facility_type` CHECK in DEC-1.** In both cases Phase 1 shipped the
+surrounding scaffolding while leaving out the one database change that made the
+value usable, and in both cases the omission surfaced only when someone checked the
+live schema against the instructions. Worth treating as a review item for later
+phases, not a one-off.
 
-- `enum NotificationChannel` in `schema.prisma` contains exactly `EMAIL, IN_APP`.
-- The production enum contains exactly `EMAIL, IN_APP` (queried live via `pg_enum`).
-- The Phase 1 migration `20260802120000_document_import_phase1` does not mention
-  `NotificationChannel` at all. The only migration that does is the original
-  `20260514200001_add_notification_system`.
+Dispatcher wiring is deferred to Phase 10, reusing the `transitionTripStatus` push
+mechanism in `lib/carrier/trips.ts` rather than growing a second delivery path.
 
-So `PUSH` does **not** exist as a `NotificationChannel` value. Phase 10 must add it
-in its own migration before it can wire dispatcher notifications through that enum.
-Treat this as an open prerequisite, not as done work.
-
-The `transitionTripStatus` half of the decision is real —
-it exists in `apps/web/src/lib/carrier/trips.ts` and is called from the dispatch
-start/status routes.
+**Nothing may send on PUSH before Phase 10.** The enum value exists so the schema is
+honest about the target state; no code path emits on it yet.
 
 ---
 
