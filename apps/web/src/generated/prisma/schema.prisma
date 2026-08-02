@@ -147,6 +147,15 @@ model Tenant {
   sampleDataSeeded      Boolean           @default(false)
   provisioningPhase     ProvisioningPhase @default(MINIMAL)
 
+  // ─── Document Import tenant settings (Phase 1, spec Section 6) ────────────
+  // No TenantSettings table exists; these follow the precedent set by
+  // truckCount / heardAbout (audit B3).
+  autoCreateRouteTemplatesFromImports Boolean @default(false)
+  defaultEndStopPolicy                String  @default("NONE")
+  homeBaseFacilityId                  String? @db.Uuid
+  requirePreTripInspection            Boolean @default(false)
+  blockTripStartOnFailedInspection    Boolean @default(true)
+
   users                User[]
   trucks               Truck[]
   driverInvitations    DriverInvitation[]
@@ -236,6 +245,13 @@ model Tenant {
   auditLogs                   AuditLog[]
   sysAdminInvoiceItems        SysAdminInvoiceItem[]
   userNotificationPreferences UserNotificationPreference[]
+
+  // Document Import reverse relations (Phase 1)
+  documentImports            DocumentImport[]
+  documentImportPages        DocumentImportPage[]
+  facilityExternalReferences FacilityExternalReference[]
+  documentProfiles           DocumentProfile[]
+  homeBaseFacility           CarrierFacility?            @relation(name: "TenantHomeBase", fields: [homeBaseFacilityId], references: [id], onDelete: SetNull)
 }
 
 model User {
@@ -382,6 +398,13 @@ model User {
   driverHOSEntriesUpdated     DriverHOSEntry[]      @relation(name: "DriverHOSEntryUpdatedBy")
   driverIncidentsCreated      DriverIncident[]      @relation(name: "DriverIncidentCreatedBy")
   driverIncidentsUpdated      DriverIncident[]      @relation(name: "DriverIncidentUpdatedBy")
+
+  // Document Import reverse relations (Phase 1)
+  documentImportsCreated        DocumentImport[]            @relation(name: "DocumentImportCreatedBy")
+  documentImportsUpdated        DocumentImport[]            @relation(name: "DocumentImportUpdatedBy")
+  documentImportsDeleted        DocumentImport[]            @relation(name: "DocumentImportDeletedBy")
+  facilityExternalRefsConfirmed FacilityExternalReference[] @relation(name: "FacilityExternalRefConfirmedBy")
+  tripInspectionsOverridden     Trip[]                      @relation(name: "TripInspectionOverriddenBy")
 
   // TKT-0015 Prompt 2b — Wave 4 reverse relations (driver pay + workflow + templates)
   driverInvitationsCreated           DriverInvitation[]           @relation(name: "DriverInvitationCreatedBy")
@@ -1935,6 +1958,11 @@ model CarrierClient {
   carrierLoads     CarrierLoad[]
   contacts         CarrierClientContact[]
 
+  // Document Import (Phase 1)
+  documentImports    DocumentImport[]
+  externalReferences FacilityExternalReference[]
+  documentProfiles   DocumentProfile[]
+
   @@index([orgId])
   @@index([status])
   @@index([deletedAt])
@@ -2000,6 +2028,10 @@ model CarrierContract {
   carrierLoads   CarrierLoad[]
   documents      CarrierDocument[]
 
+  // Document Import (Phase 1)
+  documentImports          DocumentImport[]
+  pinnedByDocumentProfiles DocumentProfile[] @relation(name: "DocumentProfilePinnedContract")
+
   @@index([clientId])
   @@index([status])
   @@index([orgId])
@@ -2027,6 +2059,11 @@ model CarrierFacility {
   appointmentRequired Boolean  @default(false) @map("appointment_required")
   contacts            Json     @default("[]")
   notes               String?
+  // ─── Document Import (Phase 1, spec Sections 6 + 9) ───────────────────────
+  // A driver residence is visible only to that driver, the owner, and dispatchers
+  // with explicit permission — enforced server-side, never as a UI hide (Section 9).
+  isDriverResidence   Boolean  @default(false) @map("is_driver_residence")
+  residentDriverId    String?  @map("resident_driver_id") @db.Uuid
   createdById         String?  @map("created_by_id") @db.Uuid // NEW (Wave 2)
   updatedById         String?  @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -2035,12 +2072,17 @@ model CarrierFacility {
   tenant             Tenant              @relation(fields: [orgId], references: [id])
   createdBy          User?               @relation(name: "CarrierFacilityCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
   updatedBy          User?               @relation(name: "CarrierFacilityUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
+  residentDriver     CarrierDriver?      @relation(name: "FacilityResidentDriver", fields: [residentDriverId], references: [id], onDelete: SetNull)
   carrierDrivers     CarrierDriver[]
   routeTemplateStops RouteTemplateStop[]
   stops              CarrierStop[]
 
+  externalReferences FacilityExternalReference[]
+  homeBaseForTenants Tenant[]                    @relation(name: "TenantHomeBase")
+
   @@index([orgId])
   @@index([facilityType])
+  @@index([orgId, isDriverResidence])
   @@map("facilities")
 }
 
@@ -2096,6 +2138,9 @@ model CarrierDriver {
   driverSettlements     DriverSettlement[]
   driverDisputes        DriverDispute[]
 
+  // Document Import (Phase 1) — driver residence facility, spec Section 9
+  residenceFacilities CarrierFacility[] @relation(name: "FacilityResidentDriver")
+
   @@index([orgId])
   @@index([status])
   @@index([deletedAt])
@@ -2150,30 +2195,39 @@ model CarrierTruck {
 }
 
 model RouteTemplate {
-  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId                  String   @map("org_id") @db.Uuid
-  templateName           String   @map("template_name")
-  clientId               String   @map("client_id") @db.Uuid
-  contractId             String?  @map("contract_id") @db.Uuid
-  scheduleType           String   @map("schedule_type")
-  recurrenceRule         String?  @map("recurrence_rule")
-  recurrenceTimezone     String   @default("America/Chicago") @map("recurrence_timezone")
-  scheduledDepartureTime String?  @map("scheduled_departure_time")
-  equipmentType          String   @map("equipment_type")
-  tempMinF               Int?     @map("temp_min_f")
-  tempMaxF               Int?     @map("temp_max_f")
-  maxWeightLbs           Int?     @map("max_weight_lbs")
-  commodityDescription   String?  @map("commodity_description")
-  estimatedMiles         Int?     @map("estimated_miles")
-  defaultDriverId        String?  @map("default_driver_id") @db.Uuid
-  defaultTruckId         String?  @map("default_truck_id") @db.Uuid
-  autoGenerateDaysAhead  Int      @default(7) @map("auto_generate_days_ahead")
-  active                 Boolean  @default(true)
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId                  String    @map("org_id") @db.Uuid
+  templateName           String    @map("template_name")
+  clientId               String    @map("client_id") @db.Uuid
+  contractId             String?   @map("contract_id") @db.Uuid
+  scheduleType           String    @map("schedule_type")
+  recurrenceRule         String?   @map("recurrence_rule")
+  recurrenceTimezone     String    @default("America/Chicago") @map("recurrence_timezone")
+  scheduledDepartureTime String?   @map("scheduled_departure_time")
+  equipmentType          String    @map("equipment_type")
+  tempMinF               Int?      @map("temp_min_f")
+  tempMaxF               Int?      @map("temp_max_f")
+  maxWeightLbs           Int?      @map("max_weight_lbs")
+  commodityDescription   String?   @map("commodity_description")
+  estimatedMiles         Int?      @map("estimated_miles")
+  defaultDriverId        String?   @map("default_driver_id") @db.Uuid
+  defaultTruckId         String?   @map("default_truck_id") @db.Uuid
+  autoGenerateDaysAhead  Int       @default(7) @map("auto_generate_days_ahead")
+  active                 Boolean   @default(true)
   notes                  String?
-  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz
-  createdById            String?  @map("created_by_id") @db.Uuid
-  updatedById            String?  @map("updated_by_id") @db.Uuid
+  // ─── Document Import (Phase 1, spec Sections 6 + 8 + 9) ───────────────────
+  // Overrides the tenant default; per-trip choice still wins over this.
+  endStopPolicy          String?   @map("end_stop_policy")
+  /// Set when a template was auto-created from a committed import. Such templates
+  /// land in "Suggested templates" until a human confirms (spec Section 8).
+  sourceImportId         String?   @map("source_import_id") @db.Uuid
+  isSuggested            Boolean   @default(false) @map("is_suggested")
+  lastAppliedAt          DateTime? @map("last_applied_at") @db.Timestamptz
+  applicationCount       Int       @default(0) @map("application_count")
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt              DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  createdById            String?   @map("created_by_id") @db.Uuid
+  updatedById            String?   @map("updated_by_id") @db.Uuid
 
   tenant        Tenant              @relation(fields: [orgId], references: [id])
   client        CarrierClient       @relation(fields: [clientId], references: [id])
@@ -2184,11 +2238,15 @@ model RouteTemplate {
   dispatches    Trip[]
   createdBy     User?               @relation(name: "RouteTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   updatedBy     User?               @relation(name: "RouteTemplateUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  sourceImport  DocumentImport?     @relation(name: "RouteTemplateSourceImport", fields: [sourceImportId], references: [id], onDelete: SetNull)
+
+  matchedImports DocumentImport[]
 
   @@index([clientId])
   @@index([contractId])
   @@index([active])
   @@index([orgId])
+  @@index([orgId, isSuggested])
   @@map("route_templates")
 }
 
@@ -2220,48 +2278,58 @@ model RouteTemplateStop {
 }
 
 model Trip {
-  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId              String    @map("org_id") @db.Uuid
-  routeTemplateId    String?   @map("route_template_id") @db.Uuid
-  primaryDriverId    String    @map("primary_driver_id") @db.Uuid
-  coDriverId         String?   @map("co_driver_id") @db.Uuid
-  truckId            String    @map("truck_id") @db.Uuid
-  trailerId          String?   @map("trailer_id") @db.Uuid
-  dispatcherId       String?   @map("dispatcher_id") @db.Uuid
-  scheduledDeparture DateTime  @map("scheduled_departure") @db.Timestamptz
-  actualDeparture    DateTime? @map("actual_departure") @db.Timestamptz
-  scheduledArrival   DateTime? @map("scheduled_arrival") @db.Timestamptz
-  actualArrival      DateTime? @map("actual_arrival") @db.Timestamptz
-  status             String    @default("planned")
+  id                         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId                      String    @map("org_id") @db.Uuid
+  routeTemplateId            String?   @map("route_template_id") @db.Uuid
+  primaryDriverId            String    @map("primary_driver_id") @db.Uuid
+  coDriverId                 String?   @map("co_driver_id") @db.Uuid
+  truckId                    String    @map("truck_id") @db.Uuid
+  trailerId                  String?   @map("trailer_id") @db.Uuid
+  dispatcherId               String?   @map("dispatcher_id") @db.Uuid
+  scheduledDeparture         DateTime  @map("scheduled_departure") @db.Timestamptz
+  actualDeparture            DateTime? @map("actual_departure") @db.Timestamptz
+  scheduledArrival           DateTime? @map("scheduled_arrival") @db.Timestamptz
+  actualArrival              DateTime? @map("actual_arrival") @db.Timestamptz
+  status                     String    @default("planned")
   // relay_handoff_stop_id is a plain UUID — NO FK (intentional: avoids circular reference dispatches→stops→dispatches)
-  relayHandoffStopId String?   @map("relay_handoff_stop_id") @db.Uuid
-  plannedMiles       Decimal?  @map("planned_miles") @db.Decimal(10, 2)
-  actualMiles        Decimal?  @map("actual_miles") @db.Decimal(10, 2)
-  hosCycle           String    @default("us_70") @map("hos_cycle")
-  notes              String?
-  createdById        String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
-  updatedById        String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
-  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
-  deletedById        String?   @map("deleted_by_id") @db.Uuid
-  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  relayHandoffStopId         String?   @map("relay_handoff_stop_id") @db.Uuid
+  plannedMiles               Decimal?  @map("planned_miles") @db.Decimal(10, 2)
+  actualMiles                Decimal?  @map("actual_miles") @db.Decimal(10, 2)
+  hosCycle                   String    @default("us_70") @map("hos_cycle")
+  notes                      String?
+  // ─── Document Import (Phase 1, spec Sections 6 + 9 + 12) ──────────────────
+  sourceImportId             String?   @map("source_import_id") @db.Uuid
+  endStopPolicy              String?   @map("end_stop_policy")
+  /// Null means "fall back to the tenant setting"; a value is a per-trip override.
+  inspectionRequired         Boolean?  @map("inspection_required")
+  inspectionOverriddenById   String?   @map("inspection_overridden_by_id") @db.Uuid
+  inspectionOverriddenReason String?   @map("inspection_overridden_reason")
+  inspectionOverriddenAt     DateTime? @map("inspection_overridden_at") @db.Timestamptz
+  createdById                String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById                String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
+  deletedAt                  DateTime? @map("deleted_at") @db.Timestamptz
+  deletedById                String?   @map("deleted_by_id") @db.Uuid
+  createdAt                  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant           Tenant            @relation(fields: [orgId], references: [id])
-  createdBy        User?             @relation(name: "TripCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  updatedBy        User?             @relation(name: "TripUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  deletedBy        User?             @relation(name: "TripDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
-  routeTemplate    RouteTemplate?    @relation(fields: [routeTemplateId], references: [id])
-  primaryDriver    CarrierDriver     @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
-  coDriver         CarrierDriver?    @relation(name: "CoDriver", fields: [coDriverId], references: [id])
-  truck            CarrierTruck      @relation(name: "PrimaryTruck", fields: [truckId], references: [id])
-  trailer          CarrierTruck?     @relation(name: "TrailerTruck", fields: [trailerId], references: [id])
-  dispatcher       User?             @relation(name: "TripDispatcher", fields: [dispatcherId], references: [id])
-  stops            CarrierStop[]
-  carrierLoads     CarrierLoad[]
-  expenses         CarrierExpense[]
-  driverPayRecords DriverPayRecord[]
-  messages         FleetMessage[]
-  documents        CarrierDocument[]
+  tenant                 Tenant            @relation(fields: [orgId], references: [id])
+  createdBy              User?             @relation(name: "TripCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy              User?             @relation(name: "TripUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedBy              User?             @relation(name: "TripDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+  routeTemplate          RouteTemplate?    @relation(fields: [routeTemplateId], references: [id])
+  primaryDriver          CarrierDriver     @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
+  coDriver               CarrierDriver?    @relation(name: "CoDriver", fields: [coDriverId], references: [id])
+  truck                  CarrierTruck      @relation(name: "PrimaryTruck", fields: [truckId], references: [id])
+  trailer                CarrierTruck?     @relation(name: "TrailerTruck", fields: [trailerId], references: [id])
+  dispatcher             User?             @relation(name: "TripDispatcher", fields: [dispatcherId], references: [id])
+  sourceImport           DocumentImport?   @relation(name: "TripSourceImport", fields: [sourceImportId], references: [id], onDelete: SetNull)
+  inspectionOverriddenBy User?             @relation(name: "TripInspectionOverriddenBy", fields: [inspectionOverriddenById], references: [id], onDelete: SetNull)
+  stops                  CarrierStop[]
+  carrierLoads           CarrierLoad[]
+  expenses               CarrierExpense[]
+  driverPayRecords       DriverPayRecord[]
+  messages               FleetMessage[]
+  documents              CarrierDocument[]
 
   @@index([primaryDriverId])
   @@index([truckId])
@@ -2372,6 +2440,19 @@ model CarrierStop {
   checklistStatus      String?   @map("checklist_status") // pending | in_progress | completed | deferred
   deferredReason       String?   @map("deferred_reason") // Why stop completion was deferred
   checklistEntityId    String?   @map("checklist_entity_id") @db.Uuid // FK to PlaybookInstance when workflow engine supports stops
+  // ─── Document Import (Phase 1, spec Sections 6 + 10) ──────────────────────
+  // JSONB rather than three child tables: this data is never queried relationally,
+  // and the scalar bolNumber/podNumber/pieces/weightLbs fields above stay populated
+  // in parallel so invoicing and reports keep working unchanged (audit B6).
+  references           Json      @default("[]") // [{ type: SHIPMENT|PRO|ORDER|PO|BOL|LOAD|SEAL|OTHER, value }]
+  lineItems            Json      @default("[]") @map("line_items") // [{ sku, description, quantity, uom, weight, hazmat }]
+  pageNumbers          Json      @default("[]") @map("page_numbers") // source pages, so stop 5 opens page 4 not a 16-page scan
+  /// True for the pinned final stop of the day (spec Section 9). Modelled as a flag
+  /// because stops.stop_type is CHECK-constrained and has no "end" value (audit B5).
+  isEndStop            Boolean   @default(false) @map("is_end_stop")
+  /// Set when a rollup was hand-edited away from the computed line-item total,
+  /// so the UI can mark it as overridden (spec Section 10).
+  rollupOverridden     Boolean   @default(false) @map("rollup_overridden")
   createdById          String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
   updatedById          String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
@@ -2452,6 +2533,198 @@ model CarrierDocumentType {
   @@unique([orgId, slug])
   @@index([orgId])
   @@map("carrier_document_types")
+}
+
+// ─── Document Import Models (Phase 1) ────────────────────────────────────────
+// Spec: docs/specs/DocumentImport_TechnicalSpec_v1.md Sections 5, 6, 14, 15
+// Audit: .planning/document-import/00-AUDIT.md
+// Tenant column follows the carrier sibling convention: org_id (NOT tenantId).
+
+/// One row per upload session. `reviewedExtraction` is what commits — edits live
+/// there rather than in a normalised staging table, so resume-after-close works
+/// for free (spec Section 6).
+model DocumentImport {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId  String @map("org_id") @db.Uuid
+  status String @default("UPLOADED")
+
+  /// Ordered tenant-prefixed storage keys for the source files, as uploaded.
+  sourceFileKeys String[] @default([]) @map("source_file_keys")
+  sourceMimeType String?  @map("source_mime_type")
+  originalName   String?  @map("original_name")
+
+  /// SHA-256 over the concatenated source bytes. Half of the dedupe key.
+  contentHash    String    @map("content_hash")
+  documentNumber String?   @map("document_number")
+  /// Date parsed out of the document, not the upload date. Spec 1.2 callout (3):
+  /// a date can sit in a field labelled "Number", so this is deliberately separate.
+  documentDate   DateTime? @map("document_date") @db.Date
+
+  documentType String? @map("document_type")
+
+  clientId          String? @map("client_id") @db.Uuid
+  contractId        String? @map("contract_id") @db.Uuid
+  routeTemplateId   String? @map("route_template_id") @db.Uuid
+  documentProfileId String? @map("document_profile_id") @db.Uuid
+
+  /// Model output, untouched. Holds third-party PII — subject to a retention
+  /// window (spec Section 15); committed entities are the record of truth.
+  rawExtraction      Json? @map("raw_extraction")
+  /// Human-reviewed shape. THIS is what commits.
+  reviewedExtraction Json? @map("reviewed_extraction")
+  extractionWarnings Json  @default("[]") @map("extraction_warnings")
+
+  modelIdentifier String?  @map("model_identifier")
+  inputTokens     Int?     @map("input_tokens")
+  outputTokens    Int?     @map("output_tokens")
+  /// Money as Decimal, never float (spec Section 15).
+  costUsd         Decimal? @map("cost_usd") @db.Decimal(10, 6)
+
+  pageCount      Int?    @map("page_count")
+  cachedPages    Int     @default(0) @map("cached_pages")
+  failureCode    String? @map("failure_code")
+  failureMessage String? @map("failure_message")
+
+  /// Entity ids written by the commit transaction, for audit and rollback proof.
+  createdTripId    String?   @map("created_trip_id") @db.Uuid
+  createdEntityIds Json      @default("{}") @map("created_entity_ids")
+  committedAt      DateTime? @map("committed_at") @db.Timestamptz
+
+  createdById String?   @map("created_by_id") @db.Uuid
+  updatedById String?   @map("updated_by_id") @db.Uuid
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+  deletedById String?   @map("deleted_by_id") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant          Tenant           @relation(fields: [orgId], references: [id])
+  createdBy       User?            @relation(name: "DocumentImportCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy       User?            @relation(name: "DocumentImportUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedBy       User?            @relation(name: "DocumentImportDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+  client          CarrierClient?   @relation(fields: [clientId], references: [id])
+  contract        CarrierContract? @relation(fields: [contractId], references: [id])
+  routeTemplate   RouteTemplate?   @relation(fields: [routeTemplateId], references: [id])
+  documentProfile DocumentProfile? @relation(fields: [documentProfileId], references: [id])
+
+  extractedPages     DocumentImportPage[]
+  externalReferences FacilityExternalReference[]
+  sourcedTemplates   RouteTemplate[]             @relation(name: "RouteTemplateSourceImport")
+  trips              Trip[]                      @relation(name: "TripSourceImport")
+
+  @@index([orgId])
+  @@index([status])
+  @@index([clientId])
+  @@index([deletedAt])
+  @@index([orgId, createdAt(sort: Desc)])
+  @@map("document_imports")
+}
+
+/// Per-page extraction cache. Hashing each page independently means re-running a
+/// 16-page manifest where one page was re-shot bills for one page (spec Section 14).
+model DocumentImportPage {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId    String @map("org_id") @db.Uuid
+  importId String @map("import_id") @db.Uuid
+
+  pageNumber Int     @map("page_number")
+  pageHash   String  @map("page_hash")
+  storageKey String? @map("storage_key")
+
+  /// Null while pending; populated by the extractor or copied from a cache hit.
+  extraction Json?
+  wasCached  Boolean @default(false) @map("was_cached")
+
+  modelIdentifier String? @map("model_identifier")
+  inputTokens     Int?    @map("input_tokens")
+  outputTokens    Int?    @map("output_tokens")
+
+  failureCode    String? @map("failure_code")
+  failureMessage String? @map("failure_message")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant         @relation(fields: [orgId], references: [id])
+  import DocumentImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  @@unique([importId, pageNumber])
+  @@index([orgId])
+  @@index([importId])
+  @@index([orgId, pageHash])
+  @@map("document_import_pages")
+}
+
+/// The highest-value table in the module. "43775" is Dealer Tire's permanent id for
+/// a dealership — confirm once, resolve silently forever (spec Sections 1.5, 7).
+model FacilityExternalReference {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId      String @map("org_id") @db.Uuid
+  clientId   String @map("client_id") @db.Uuid
+  sourceCode String @map("source_code")
+  facilityId String @map("facility_id") @db.Uuid
+
+  /// How this link came to exist: T1/T2/T3/T4 of the resolution ladder.
+  resolvedVia    String? @map("resolved_via")
+  sourceImportId String? @map("source_import_id") @db.Uuid
+  /// Name as it appeared on the document when confirmed — evidence for the "why"
+  /// affordance (spec Section 4.2).
+  sourceName     String? @map("source_name")
+
+  confirmedById String?  @map("confirmed_by_id") @db.Uuid
+  createdById   String?  @map("created_by_id") @db.Uuid
+  updatedById   String?  @map("updated_by_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant       Tenant          @relation(fields: [orgId], references: [id])
+  client       CarrierClient   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  facility     CarrierFacility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  sourceImport DocumentImport? @relation(fields: [sourceImportId], references: [id], onDelete: SetNull)
+  confirmedBy  User?           @relation(name: "FacilityExternalRefConfirmedBy", fields: [confirmedById], references: [id], onDelete: SetNull)
+
+  @@unique([orgId, clientId, sourceCode])
+  @@index([orgId])
+  @@index([clientId])
+  @@index([facilityId])
+  @@map("facility_external_references")
+}
+
+/// Per tenant + client + document type. Holds extraction hints, the saved
+/// spreadsheet column mapping, and commit defaults (spec Section 6).
+model DocumentProfile {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId        String @map("org_id") @db.Uuid
+  clientId     String @map("client_id") @db.Uuid
+  documentType String @map("document_type")
+
+  name String?
+
+  /// Free-form hints fed into the extraction prompt for this client's layout.
+  extractionHints Json @default("{}") @map("extraction_hints")
+  /// Saved header→canonical-path mapping for the spreadsheet path. Map once,
+  /// reuse silently (spec Section 5).
+  columnMapping   Json @default("{}") @map("column_mapping")
+
+  commitStrategy       String? @map("commit_strategy")
+  defaultEndStopPolicy String? @map("default_end_stop_policy")
+  pinnedContractId     String? @map("pinned_contract_id") @db.Uuid
+
+  createdById String?   @map("created_by_id") @db.Uuid
+  updatedById String?   @map("updated_by_id") @db.Uuid
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant         Tenant           @relation(fields: [orgId], references: [id])
+  client         CarrierClient    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pinnedContract CarrierContract? @relation(name: "DocumentProfilePinnedContract", fields: [pinnedContractId], references: [id], onDelete: SetNull)
+
+  imports DocumentImport[]
+
+  @@unique([orgId, clientId, documentType])
+  @@index([orgId])
+  @@index([clientId])
+  @@map("document_profiles")
 }
 
 model CarrierExpense {

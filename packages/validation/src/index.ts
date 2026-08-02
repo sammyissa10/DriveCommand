@@ -1,6 +1,7 @@
 export * from './customer'
 export * from './driver-compensation'
 export * from './document'
+export * from './document-import'
 export * from './driver'
 export * from './driver-route-join'
 export * from './expense'
