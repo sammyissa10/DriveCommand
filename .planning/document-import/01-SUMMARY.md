@@ -228,3 +228,32 @@ Phase 2 — upload and intake. It needs from this phase: `extractDocument()`, th
 lifecycle guard, `document_imports` persistence (including writing the
 `document_import_pages` rows the cache reads), and widening
 `DocumentCategory` in `lib/storage/presigned.ts` with `'imports'` (audit C10).
+
+---
+
+## Follow-ups shipped after this phase
+
+**The `facility_type` CHECK widening shipped as a follow-up migration.** Phase 1
+added `facilities.is_driver_residence`, `resident_driver_id`, the FK, and the
+`facilities_org_driver_residence_idx` index — but left the
+`facilities_facility_type_check` constraint at its original five values. The flag
+existed while the value it implied (`'driver_residence'`) was still rejected by the
+database, so any write using it would have failed at the constraint.
+
+Closed by `20260802173535_widen_facility_type_check`, which drops and recreates the
+constraint with a sixth value, `'driver_residence'`. It was applied to production
+2026-08-02 via Supabase MCP and then mirrored into the repo and marked applied with
+`prisma migrate resolve --applied` rather than re-run — see **DEC-1** and **DEC-3**
+in `DECISIONS.md`. Widening a CHECK only admits values, so no rows were affected.
+
+**Parser fix.** Commit `1b027ef3` ("fix: model-agnostic response parsing and failure
+message discrimination") reworked `extractor.ts` and `service.ts` so response
+parsing does not depend on one model's response shape, and so failure codes are
+discriminated rather than collapsed into a generic error. It also added
+`__tests__/extractor.test.ts`. Recorded as **DEC-5** / **DEC-6**.
+
+**Decisions record added.** `DECISIONS.md` now holds DEC-1 through DEC-7. Note the
+`DEC-` prefix is deliberate — `00-AUDIT.md` already uses bare `D1`–`D5` for
+capability-gap findings, which are a different thing. One entry, **DEC-2**, carries
+a correction: the claim that `PUSH` was added to `NotificationChannel` in the Phase
+1 migration is not true of either the repo or production.

@@ -2043,6 +2043,11 @@ model CarrierFacility {
   id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orgId               String   @map("org_id") @db.Uuid
   name                String
+  // Allowed values: 'terminal' | 'yard' | 'warehouse' | 'drop_yard' | 'customer_site' | 'driver_residence'
+  // Not a Prisma enum — enforcement lives in the SQL CHECK constraint
+  // `facilities_facility_type_check`. Widened to admit 'driver_residence' by
+  // migration 20260802173535_widen_facility_type_check. Any new value must be
+  // added to that constraint in a migration or the write fails at the database.
   facilityType        String   @default("terminal") @map("facility_type")
   addressLine1        String?  @map("address_line1")
   addressLine2        String?  @map("address_line2")
