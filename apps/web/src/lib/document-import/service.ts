@@ -78,12 +78,9 @@ export interface PageOutcome {
    * What the model actually sent, when the reply could not be parsed — capped at
    * `RAW_RESPONSE_LIMIT` (20KB) by the extractor.
    *
-   * `document_import_pages` has no column for this today; the row carries only
-   * `failure_code` and `failure_message`, and nothing writes those rows yet
-   * (the persistence layer lands in Phase 2). Carrying it on the outcome means
-   * the diagnostic survives to whoever calls the service now, and gives that
-   * layer something to persist into failure details when it is built. Do not
-   * fold it into `failureMessage` — that string is user-facing.
+   * Persisted to `document_import_pages.raw_response` by `writePageOutcome`
+   * (Phase 2, migration `20260803115314_add_raw_response`). Do not fold it into
+   * `failureMessage` — that string is user-facing and this one is model output.
    */
   rawResponse?: string;
   inputTokens: number;

@@ -2650,6 +2650,10 @@ model DocumentImportPage {
 
   failureCode    String? @map("failure_code")
   failureMessage String? @map("failure_message")
+  /// What the model actually sent when the reply could not be parsed, truncated
+  /// at RAW_RESPONSE_LIMIT (20KB) by the extractor. Diagnostic only — never
+  /// shown to a user. `failure_message` stays human-readable.
+  rawResponse String? @map("raw_response")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

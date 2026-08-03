@@ -22,6 +22,7 @@ import { logger } from '@/lib/logger';
 import { assertTenantKey } from '@/lib/storage/tenant-key';
 import { assertTransition, type ImportStatus } from './lifecycle';
 import { isDedupeViolation } from './hashing';
+import { RAW_RESPONSE_LIMIT } from './extractor';
 import type { ExtractionUsage, PageOutcome } from './service';
 
 // ---------------------------------------------------------------------------
@@ -410,10 +411,14 @@ export async function writePageOutcome(
     inputTokens: outcome.inputTokens,
     outputTokens: outcome.outputTokens,
     failureCode: outcome.failureCode ?? null,
-    // `rawResponse` is diagnostic and can be 20KB of model output; the row has
-    // no column for it and `failure_message` is user-facing, so it is logged
-    // rather than persisted (Phase 1 PageOutcome doc comment).
+    // Human-readable ONLY. This string is shown to a dispatcher; it never
+    // carries model output.
     failureMessage: outcome.failureMessage ?? null,
+    // The diagnostic. Separate column precisely so the user-facing message
+    // above stays clean. The extractor already caps this at
+    // RAW_RESPONSE_LIMIT; re-applied here so the column is bounded by this
+    // function rather than by trust in its caller.
+    rawResponse: outcome.rawResponse ? outcome.rawResponse.slice(0, RAW_RESPONSE_LIMIT) : null,
   };
 
   await db.documentImportPage.upsert({
@@ -423,10 +428,10 @@ export async function writePageOutcome(
   });
 
   if (outcome.rawResponse) {
-    logger.warn('[document-import] unparseable page response', {
+    logger.warn('[document-import] unparseable page response persisted', {
       importId,
       pageNumber: outcome.pageNumber,
-      preview: outcome.rawResponse.slice(0, 500),
+      bytes: outcome.rawResponse.length,
     });
   }
 }

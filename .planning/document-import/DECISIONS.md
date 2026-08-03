@@ -164,3 +164,72 @@ to add, so it cannot catch an omission. Only a comparison against the spec can.
 required step at every phase close.** Not a review of the migration file — a diff of
 what the database actually contains against what the spec says it should. Three
 misses in one phase is a process failure, not three coincidences.
+
+---
+
+## DEC-9 — `document_import_pages.raw_response`, and the fourth silent omission
+
+`raw_response TEXT NULL` added to `document_import_pages`. Applied to production by
+Ayaz via Supabase MCP on 2026-08-03 (migration name
+`add_raw_response_to_document_import_pages`), repo synced afterwards as
+`20260803115314_add_raw_response` and marked applied with
+`prisma migrate resolve --applied` rather than re-run, per DEC-3 rule 4.
+
+`writePageOutcome` now writes `PageOutcome.rawResponse` into it, re-truncated at
+`RAW_RESPONSE_LIMIT`. `failure_message` stays human-readable and never carries model
+output — that separation is the whole reason the column exists.
+
+### What actually went wrong
+
+Phase 2 shipped with the per-page `rawResponse` **dropped**. It was not written to
+`failure_message` or anywhere else; a 500-character preview went to a log line and
+the rest was discarded. **DEC-6 had explicitly assigned "`rawResponse` persistence"
+to Phase 2**, and 02-SUMMARY.md claimed that item closed while closing only the
+import-row half (`raw_extraction`).
+
+The code carried its own justification:
+
+```ts
+// `rawResponse` is diagnostic and can be 20KB of model output; the row has
+// no column for it and `failure_message` is user-facing, so it is logged
+// rather than persisted.
+```
+
+"The row has no column for it" was written as a fact about the world. It was a gap
+that a four-line additive migration would have closed. **Once an omission is written
+down as a justification it stops being a question**, and that is the mechanism by
+which this one survived.
+
+### This is the fourth, and the first to survive a self-audit
+
+| | Omitted | Found by |
+|---|---|---|
+| DEC-1 | `facility_type` CHECK widening | live-schema check |
+| DEC-2 | `PUSH` enum value | live-schema check |
+| DEC-8 | `appointment_is_firm` | spec-vs-schema diff |
+| **DEC-9** | `raw_response` + its migration | **Ayaz, against production, after a phase close that reported itself clean** |
+
+DEC-8 already named the mechanism: *"the migration's own `DO $$` assertion block only
+checks what its author remembered to add, so it cannot catch an omission."* Phase 2
+reproduced that defect in a different medium. 02-SUMMARY.md was a **narrative**, not
+an audit — organised around what was built and which decisions the author liked. A
+narrative can only contain what its author remembered, so it has exactly the blind
+spot DEC-8 described, and its "Not done, and why" section listed only the deferrals
+that were already conscious choices.
+
+Worse, the report's closing line — *"no DDL was written or applied"* — was true and
+was presented as **compliance with DEC-3**. It is precisely the sentence that should
+have triggered "…and should any have been?" It did not, and it read as a virtue while
+covering a gap.
+
+### Standing rule (extends DEC-8)
+
+**A phase close must include a per-item audit of the phase prompt itself**, every
+numbered step and every constraint marked IMPLEMENTED with a file path / PARTIALLY
+with what is missing / NOT DONE with why. Prose summaries do not satisfy this. The
+audit is written against the prompt text, item by item, not from memory of the work
+— for the same reason DEC-8 requires diffing the database rather than reading the
+migration.
+
+**And: "no DDL was needed" is a claim requiring the same evidence as "this DDL was
+applied."** Both are assertions about the schema. Only one of them was ever checked.

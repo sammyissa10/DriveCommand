@@ -141,12 +141,19 @@ A concurrent upload of the same bytes loses the race at the **index**, not the
 pre-check — `DuplicateImportError` is caught and re-reported as the duplicate it
 is. Only the database sees that race.
 
-### DEC-6 closed — both items
+### DEC-6 — closed, but only after a correction (see DEC-9)
 
-**`rawResponse` persistence.** The raw model output is stored on the import row
-(`raw_extraction`) by `finishExtraction`. The per-page unparseable-reply blob is
-*logged*, not persisted — `document_import_pages` has no column for it and
-`failure_message` is user-facing, which is what Phase 1's own doc comment said.
+**`rawResponse` persistence.** The import-row half (`raw_extraction`, written by
+`finishExtraction`) shipped in the first commit. **The per-page half did not** —
+`PageOutcome.rawResponse` was dropped, with a code comment asserting that
+"the row has no column for it" as though that were a fact rather than a gap. It
+was found by Ayaz against production, not by this phase's own reporting.
+
+Closed by `20260803115314_add_raw_response` (`raw_response TEXT NULL`, applied to
+production via Supabase MCP, repo synced and marked applied per DEC-3 rule 4).
+`writePageOutcome` now writes it, re-truncated at `RAW_RESPONSE_LIMIT`;
+`failure_message` stays human-readable and never carries model output. Full
+account in **DEC-9**.
 
 **The ZERO_CONSIGNMENTS wording.** Now chosen by what was actually read:
 
@@ -196,11 +203,124 @@ interrupts.
 
 ---
 
+## Per-item audit of the Phase 2 prompt
+
+Written against the prompt text item by item, not from memory of the work. This
+section replaces the narrative "Not done" list that let DEC-9 through.
+
+**Preamble — "intake only, no client resolution, no stop review, no commit":**
+IMPLEMENTED. Nothing writes `client_id`, `contract_id`, `route_template_id`, or
+creates a Trip. `Review stops` is disabled on both summary cards.
+
+| # | Item | Verdict |
+|---|---|---|
+| 1 | Single primary action "Import Document", top-right, tinted circle, no FAB | **PARTIALLY** — see below |
+| 2 | Sources: photos / file / recent; multi-image, multi-page PDF, XLSX, CSV | **PARTIALLY** — XLSX not accepted |
+| 3 | Staging: thumbnails, drag reorder, delete, add more, retake one page | **PARTIALLY** — mobile reorder is buttons |
+| 4 | Upload through existing storage layer, tenant prefixing, **multipart path**, do not reimplement | **PARTIALLY** — multipart not used; mobile PUT logic copied |
+| 5 | Progress: page counter, cancellable, backgrounding-resilient, → summary placeholder | IMPLEMENTED |
+| 6 | Duplicate detection, both actions | **PARTIALLY** — "open the trip" is web-only |
+| 7 | Failure states: per-page re-shoot, clearer-photo, upload retry | IMPLEMENTED |
+| 8 | Resume: NEEDS_REVIEW banner on Trips, restores exact state | IMPLEMENTED (limit noted) |
+
+### 1 — PARTIALLY
+
+Tinted circle on the mobile-web `ds` Trips header
+(`TripsMobile.tsx`, `ActionButton` accent) and on the native owner home
+(`(owner)/index.tsx`, 44px circle, `FileUp`). **Web desktop is a labelled
+rectangular `Button`, not a tinted circle** (`carrier/trips/page.tsx`) — the
+prompt asked for both "labelled Import Document" and "tinted circle", and on
+desktop I resolved that toward the label. Declared here rather than claimed.
+
+Also: the `ds` Trips header now carries **two** controls, not one — New trip
+(neutral tint) beside Import Document (accent, rightmost). "One accent colour on
+one primary action" holds, but "a single primary action" was interpreted as "one
+*primary*", not "one control". Removing New trip would have been a regression.
+
+### 2 — PARTIALLY
+
+- Take photos / Upload file / Choose recent: IMPLEMENTED both surfaces.
+- Multi-page PDF: IMPLEMENTED (whole-PDF to the model, audit D5 option A).
+- CSV: IMPLEMENTED, with the auto-mapping caveat below.
+- **Multi-image capture: PARTIALLY on native.** `launchCameraAsync` returns one
+  shot per launch, so a 16-page manifest is 16 taps of "Take photos". The library
+  picker is multi-select and web accepts `multiple`. Not a workaround I built —
+  a limit of the installed picker.
+- **XLSX: NOT DONE.** Rejected with a save-as-CSV message (DEC-4, inherited from
+  Phase 1 — no spreadsheet library is installed and this phase installs nothing).
+  The prompt lists XLSX in item 2; this is a carried deferral, not a new decision,
+  but it is a numbered item that is not met.
+
+### 3 — PARTIALLY
+
+Thumbnails, delete, add more, retake-one-page: IMPLEMENTED both surfaces. Drag
+reorder is real on web (dnd-kit). **Mobile is 44px up/down arrows, not drag** —
+`react-native-gesture-handler` is not installed and nothing was (audit D4
+option A).
+
+### 4 — PARTIALLY
+
+Tenant key prefixing and `generateUploadUrl` are reused verbatim; `'imports'` is
+the only storage change. Two gaps:
+
+- **The multipart path is not used.** The prompt names it explicitly. I chose a
+  single presigned PUT with a 25MB ceiling because the server reads these files
+  back into memory to hash and extract, and reasoned that out in `upload.ts` —
+  but it is an instructed element I declined, not one I satisfied.
+- **`apps/mobile/lib/document-import.ts` copies the base64 → `Uint8Array` → PUT
+  body out of `lib/upload.ts`** rather than reusing it. `uploadPhotoToS3` is
+  hardcoded to the incidents endpoint so it could not be called as-is, but the
+  right move was to parameterise that function, not to duplicate it. This is
+  literally the phase's second stated drift risk — *"watch for a second upload
+  utility next to the existing one"* — and the first commit shipped one.
+
+### 6 — PARTIALLY
+
+Detection, the 409, and "import as a correction" work on both surfaces. **"Open
+the existing trip" is web-only**: the mobile owner portal has no carrier trip
+screen to navigate to, so the mobile duplicate notice says a trip exists and
+offers "Open the existing import" instead. A deliberate choice, but it is one of
+the two required actions being unavailable on one surface.
+
+### 8 — IMPLEMENTED, with a limit
+
+NEEDS_REVIEW imports raise the banner on both surfaces and resuming restores
+status, pages, per-page state and the summary — that is what item 8 asks for.
+UPLOADED / EXTRACTING / FAILED imports also appear (deliberately — that is what a
+killed run leaves behind), but those can only be read or cancelled, not re-staged:
+pages cannot be added, removed or reordered after the row exists.
+
+### Constraints
+
+| Constraint | Verdict |
+|---|---|
+| Install nothing | IMPLEMENTED — dependency diff empty |
+| Existing component library | IMPLEMENTED — shadcn on web, `ds` kit, RN tokens |
+| Existing upload code | **PARTIALLY** — see item 4 |
+| Existing mobile camera integration | IMPLEMENTED — `expo-image-picker` / `expo-document-picker` as used elsewhere |
+| Web light brand tokens | IMPLEMENTED for desktop and the new wizard. The `ds` mobile-web Trips view is dark — that is the repo's existing system for that breakpoint, not a choice made here |
+| 44px touch targets on mobile | IMPLEMENTED |
+| No modal interruptions for warnings | IMPLEMENTED — every warning, failure and duplicate is an inline strip |
+
+### Process items
+
+| Item | Verdict |
+|---|---|
+| Three-sentence approach before code | IMPLEMENTED |
+| Real `tsc` output, both apps | IMPLEMENTED |
+| `02-SUMMARY.md` | IMPLEMENTED, then **corrected** — the first version was a narrative, not an audit |
+| DEC-6 (`rawResponse`) | Half-closed on the first pass, **corrected** — see DEC-9 |
+
+---
+
 ## Not done, and why
 
-**No schema change.** Phase 2 needed none — verified against the live database,
-not assumed (see below). No migration was written and no DDL was applied, per
-DEC-3.
+**One schema change, added as a correction.** The first commit claimed *"no
+migration was written and no DDL was applied, per DEC-3"* and presented that as
+compliance. It was true and it was covering a gap: `raw_response` on
+`document_import_pages` was needed and was not there. See **DEC-9**. "No DDL was
+needed" is a claim about the schema and requires the same evidence as "this DDL
+was applied"; only the second was ever checked.
 
 **No multipart upload.** `initiateMultipartUpload` exists and is the right tool
 above 5MB, but an import source file is a phone photo, a scanned PDF, or a CSV,
@@ -290,13 +410,22 @@ Nothing installed.
 
 ### Live-schema diff (DEC-8 standing rule)
 
-Phase 2 writes no DDL, so the check is that everything it *writes to* already
-exists in production. Queried against `oqdhberkghtnszrkdvfm` via Supabase MCP:
+**This check as first run was insufficient, and it is worth saying how.** It
+asked "does every column this code writes to exist?" — and everything the code
+wrote to did exist, because the code had been written to fit the schema rather
+than the schema to fit the requirement. It could not have caught `raw_response`:
+a column that nothing writes to is invisible to a query driven by what the code
+writes. The DEC-8 rule says to diff the live schema **against the spec**, and
+what was actually run was a diff against the implementation. See DEC-9.
+
+Below is the original check, still valid as far as it goes, plus `raw_response`:
 
 | Check | Result |
 |---|---|
 | `document_imports` — all 33 columns persistence.ts touches | present |
 | `document_import_pages` — all 15 columns | present |
+| `document_import_pages.raw_response TEXT NULL` | present (DEC-9; **absent on the first pass**) |
+| `_prisma_migrations` row for `20260803115314_add_raw_response` | present, `applied_steps_count = 0` — marked, not executed |
 | `document_import_pages_import_page_key` UNIQUE `(import_id, page_number)` | present — the upsert depends on it |
 | `document_imports_dedupe_key` UNIQUE partial `WHERE deleted_at IS NULL` | present, COALESCE sentinels match `hashing.ts` |
 | `document_imports_status_check` admits all 8 lifecycle values | yes |

@@ -1219,6 +1219,7 @@ exports.Prisma.DocumentImportPageScalarFieldEnum = {
   outputTokens: 'outputTokens',
   failureCode: 'failureCode',
   failureMessage: 'failureMessage',
+  rawResponse: 'rawResponse',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
