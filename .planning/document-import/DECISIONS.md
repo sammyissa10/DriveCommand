@@ -143,3 +143,24 @@ ended in `|| true` so any failure was swallowed:
 
 This is the enforcement half of DEC-3 rule 2: a database or deploy action must be
 something a human chose, not something a file write triggered.
+
+---
+
+## DEC-8 — `appointment_is_firm` on stops, and full-diff verification at phase close
+
+`appointment_is_firm` added to `stops` — `BOOLEAN NOT NULL DEFAULT false`, where
+`false` means a soft window. Applied to prod via Supabase MCP 2026-08-02, repo
+synced in follow-up migration `20260802230853_add_appointment_is_firm`. Per spec
+Section 9, optimisation treats a firm window as a hard constraint.
+
+**This is the third instructed-or-specified schema item omitted by Phase 1**, after
+the `facility_type` CHECK widening (DEC-1) and the `PUSH` enum value (DEC-2). It was
+found by diffing spec Section 6 against the live schema — not by reading the Phase 1
+migration, which looks internally complete and self-validating. That is the point:
+the migration's own `DO $$` assertion block only checks what its author remembered
+to add, so it cannot catch an omission. Only a comparison against the spec can.
+
+**Standing rule: full-diff verification of the live schema against the spec is now a
+required step at every phase close.** Not a review of the migration file — a diff of
+what the database actually contains against what the spec says it should. Three
+misses in one phase is a process failure, not three coincidences.

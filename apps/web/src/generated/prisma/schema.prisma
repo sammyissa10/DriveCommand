@@ -2422,6 +2422,10 @@ model CarrierStop {
   clientId             String?   @map("client_id") @db.Uuid
   appointmentStart     DateTime? @map("appointment_start") @db.Timestamptz
   appointmentEnd       DateTime? @map("appointment_end") @db.Timestamptz
+  // Firm-vs-soft appointment window (spec Section 9). false = soft; optimisation
+  // treats a firm window as a hard constraint. Migration
+  // 20260802230853_add_appointment_is_firm — see DEC-8.
+  appointmentIsFirm    Boolean   @default(false) @map("appointment_is_firm")
   arrivedAt            DateTime? @map("arrived_at") @db.Timestamptz
   departedAt           DateTime? @map("departed_at") @db.Timestamptz
   status               String    @default("pending")

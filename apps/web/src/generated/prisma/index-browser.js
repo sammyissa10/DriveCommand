@@ -1103,6 +1103,7 @@ exports.Prisma.CarrierStopScalarFieldEnum = {
   clientId: 'clientId',
   appointmentStart: 'appointmentStart',
   appointmentEnd: 'appointmentEnd',
+  appointmentIsFirm: 'appointmentIsFirm',
   arrivedAt: 'arrivedAt',
   departedAt: 'departedAt',
   status: 'status',
