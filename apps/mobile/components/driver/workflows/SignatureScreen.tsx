@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useThemeColors } from '../../../constants/tokens'
 import { haptic } from '../../../lib/haptics'
+import { putToPresignedUrl } from '../../../lib/upload'
 import type { StepInstance } from './MyTasksScreen'
 
 // ---------------------------------------------------------------------------
@@ -151,14 +152,11 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
           if (presignedRes.ok) {
             const { uploadUrl, s3Key: key } = await presignedRes.json() as { uploadUrl: string; s3Key: string }
             const imageBlob = await fetch(imageUri).then((r) => r.blob())
-            const uploadRes = await fetch(uploadUrl, {
-              method: 'PUT',
-              body: imageBlob,
-              headers: { 'Content-Type': 'image/png' },
-            })
-            if (uploadRes.ok) {
-              s3Key = key
-            }
+            // A throw here is caught by the enclosing try and falls through to
+            // the path-data fallback below — the same outcome as the previous
+            // `if (uploadRes.ok)` check.
+            await putToPresignedUrl(uploadUrl, imageBlob, 'image/png')
+            s3Key = key
           }
         } catch {
           // Fallback to path data if capture fails
@@ -185,11 +183,16 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
         if (presignedRes.ok) {
           const { uploadUrl, s3Key: key } = await presignedRes.json() as { uploadUrl: string; s3Key: string }
           const blob = new Blob([pathData], { type: 'application/json' })
-          await fetch(uploadUrl, {
-            method: 'PUT',
-            body: blob,
-            headers: { 'Content-Type': 'application/json' },
-          })
+          // NOTE: this path has always ignored the PUT result and set s3Key
+          // regardless, so a failed upload completes the step with a key whose
+          // object was never written. Behaviour preserved deliberately — fixing
+          // it changes driver signature submission, which is Phase 9's flow and
+          // not this cleanup's business. Raised in 02-SUMMARY.
+          try {
+            await putToPresignedUrl(uploadUrl, blob, 'application/json')
+          } catch {
+            /* swallowed, as before */
+          }
           s3Key = key
         }
       }

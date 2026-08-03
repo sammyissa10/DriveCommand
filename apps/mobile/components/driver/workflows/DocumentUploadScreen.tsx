@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useThemeColors } from '../../../constants/tokens'
 import { haptic } from '../../../lib/haptics'
+import { putToPresignedUrl } from '../../../lib/upload'
 import type { StepInstance } from './MyTasksScreen'
 
 // ---------------------------------------------------------------------------
@@ -115,14 +116,11 @@ export function DocumentUploadScreen({ stepInstance }: DocumentUploadScreenProps
 
       // 2. Upload file to S3
       const fileBlob = await fetch(selectedFile.uri).then((r) => r.blob())
-      const uploadRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: fileBlob,
-        headers: {
-          'Content-Type': selectedFile.mimeType ?? 'application/octet-stream',
-        },
-      })
-      if (!uploadRes.ok) throw new Error('File upload failed')
+      await putToPresignedUrl(
+        uploadUrl,
+        fileBlob,
+        selectedFile.mimeType ?? 'application/octet-stream'
+      )
 
       // 3. Complete step
       const completeRes = await fetch(

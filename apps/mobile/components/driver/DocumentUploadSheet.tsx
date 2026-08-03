@@ -14,7 +14,8 @@ import {
   View,
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
-import { getInfoAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
+import { getInfoAsync } from 'expo-file-system/legacy'
+import { putToPresignedUrl, readFileAsBytes } from '../../lib/upload'
 import Toast from 'react-native-toast-message'
 import { ChevronLeft, Image, X, File } from 'lucide-react-native'
 import { driverApi, type DocumentType } from '@drivecommand/api-client'
@@ -210,22 +211,10 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
       setProgressLabel('Uploading file...')
       setProgress(30)
 
-      const base64 = await readAsStringAsync(selectedFile.uri, { encoding: EncodingType.Base64 })
+      const bytes = await readFileAsBytes(selectedFile.uri)
       setProgress(55)
 
-      const binaryString = atob(base64)
-      const bytes = new Uint8Array(binaryString.length)
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i)
-      }
-
-      const uploadRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': selectedFile.mimeType },
-        body: bytes,
-      })
-
-      if (!uploadRes.ok) throw new Error(`Upload failed: HTTP ${uploadRes.status}`)
+      await putToPresignedUrl(uploadUrl, bytes, selectedFile.mimeType)
 
       setProgress(80)
       setProgressLabel('Saving document...')

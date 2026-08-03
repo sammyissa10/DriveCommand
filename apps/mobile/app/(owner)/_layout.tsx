@@ -75,6 +75,14 @@ export default function OwnerLayout() {
             tabBarItemStyle: { display: 'none', width: 0 },
           }}
         />
+        {/* Carrier trip detail — reached from a duplicate import, not a tab. */}
+        <Tabs.Screen
+          name="trips"
+          options={{
+            tabBarButton: () => null,
+            tabBarItemStyle: { display: 'none', width: 0 },
+          }}
+        />
         <Tabs.Screen
           name="drivers"
           options={{

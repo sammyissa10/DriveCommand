@@ -26,6 +26,7 @@ import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useThemeColors } from '../../../constants/tokens'
 import { haptic } from '../../../lib/haptics'
+import { putToPresignedUrl } from '../../../lib/upload'
 import type { StepInstance } from './MyTasksScreen'
 
 // ---------------------------------------------------------------------------
@@ -90,12 +91,7 @@ async function uploadInspectionPhoto(
     s3Key: string
   }
   const blob = await fetch(uri).then((r) => r.blob())
-  const putRes = await fetch(uploadUrl, {
-    method: 'PUT',
-    body: blob,
-    headers: { 'Content-Type': 'image/jpeg' },
-  })
-  if (!putRes.ok) throw new Error('Photo upload to storage failed')
+  await putToPresignedUrl(uploadUrl, blob, 'image/jpeg')
   return s3Key
 }
 

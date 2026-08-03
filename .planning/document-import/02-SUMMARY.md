@@ -462,3 +462,160 @@ session, so claiming them green would be a guess. Check 6 was run and is real.
 - The CSV `COLUMNS_AUTO_MATCHED` warning is the hook for saving a confirmed
   mapping onto the client's `DocumentProfile`.
 - `Review stops` on both summary cards is disabled and says why.
+
+---
+---
+
+# Phase 2 cleanup (follow-up commit)
+
+Four items from the corrected self-audit, resolved. No schema changes.
+
+## 1 — Single upload path
+
+**Before:** six presigned-PUT bodies in `apps/mobile`. Three used base64 →
+`atob` → `Uint8Array` (`lib/upload.ts`, `lib/document-import.ts`,
+`components/driver/DocumentUploadSheet.tsx`); three used `fetch(uri).blob()`
+(`DocumentUploadScreen`, `InspectionModeScreen`, `SignatureScreen` ×2). Phase 2
+added one of them.
+
+**After:** `apps/mobile/lib/upload.ts` owns the only one.
+
+| Export | Role |
+|---|---|
+| `putToPresignedUrl(url, body, contentType)` | **THE** PUT. Accepts `Uint8Array \| Blob`, so both prior techniques converge on it. |
+| `readFileAsBytes(uri)` | base64 → bytes, Hermes-safe. One copy. |
+| `uploadFileToPresignedUrl(uri, url, contentType)` | read + put |
+| `requestPresignedUpload(endpoint, token, body)` | grant request — **the endpoint is now an argument**. Hardcoding it to the incidents route is precisely why the import path could not reuse this file and copied it instead. |
+| `fileSizeBytes(uri)` | shared `getInfoAsync` wrapper |
+| `uploadPhotoToS3(uri, token, onProgress?)` | unchanged public API, now built on the above |
+
+All six call sites rewritten. `lib/document-import.ts` keeps only staging
+concerns and delegates the transfer.
+
+**Proof — every PUT and every base64 conversion in `apps/mobile`:**
+
+```
+$ grep -rn "method: 'PUT'" apps/mobile --include=*.ts --include=*.tsx
+apps/mobile/lib/upload.ts:9:   * own `fetch(uploadUrl, { method: 'PUT' })`. Six copies ...   <- comment
+apps/mobile/lib/upload.ts:46:    method: 'PUT',                                              <- the one
+
+$ grep -rn "atob(" apps/mobile --include=*.ts --include=*.tsx
+apps/mobile/lib/upload.ts:67:  const binary = atob(base64)
+```
+
+**One thing deliberately not folded in:** `lib/driver-pay/uploadReceipt.ts` uses
+`FileSystem.uploadAsync` (`httpMethod: 'PUT'`) — a native upload that never goes
+through `fetch`. Different mechanism, not a duplicate. Named in the header of
+`upload.ts` so nobody has to rediscover why it is exempt.
+
+**Found, not fixed:** the `SignatureScreen` JSON fallback has always ignored its
+PUT result and set `s3Key` regardless, so a failed upload completes the step with
+a key whose object was never written. Behaviour preserved exactly (the throw is
+swallowed, with a comment saying why) — fixing it changes driver signature
+submission, which is Phase 9's flow, not this cleanup's. Raised rather than
+silently corrected or silently kept.
+
+## 2 — Multipart: decided, recorded as DEC-10
+
+Not wired, and the reason is concrete rather than stylistic. The first pass
+declined it with a plausible paragraph and never checked whether the existing
+path *could* carry an import. It cannot:
+
+- **`api/documents/multipart/initiate/route.ts` rejects `entityType !== 'driver'`
+  outright**, and gates content type on PDF/JPEG/PNG — it would refuse
+  `image/webp` and `text/csv`, both of which intake accepts. Using "the existing
+  multipart path" would mean widening a driver-document endpoint or writing six
+  parallel routes.
+- **The repo's own threshold is 5MB** (`driver-document-upload.tsx`), which is
+  S3's minimum part size; below it multipart is one part wrapped in three extra
+  round trips. Import sources are ~1–3MB photos, scanned manifests, and CSVs.
+- **The 25MB ceiling comes from extraction, not upload** — the server reads every
+  file back into memory to hash it. An import can never reach a size where
+  multipart pays.
+- React Native has no `Blob.slice` over a file URI and no proven ETag header
+  read, so the mobile half would be new unproven code serving a size that cannot
+  occur.
+
+DEC-10 records this, names the condition under which it should be revisited
+(raising the cap by streaming the hash), and says what the honest first step
+would then be.
+
+## 3 — Web Import Document is a tinted circle
+
+`components/carrier/imports/ImportDocumentAction.tsx` — 40px
+`rounded-full bg-primary/10 text-primary`, top-right on `/carrier/trips`
+desktop, `aria-label` plus a tooltip because a circle carries no visible label.
+The labelled `Button` is gone.
+
+**Stated plainly, because the instruction said "matching the add-action pattern
+used elsewhere in the portal":** there is no pre-existing *desktop* tinted-circle
+add action to match. Carrier list pages have no top-right primary action at all —
+creation runs through the global `QuickActionsMenu`, a labelled pill in the top
+bar. The tinted circle lives in the `ds` mobile-web kit (`AddButton`, dark
+tokens), and `rounded-full bg-primary/10` is the portal's tinted-circle idiom in
+about ten places. This component is the `ds` geometry expressed in the light
+brand tokens desktop actually uses — not an invented style, and not `ds.*` dark
+tokens leaking onto a light surface.
+
+## 4 — "Open the existing trip" on mobile
+
+Mobile could not offer it because the owner portal had **no carrier trip surface
+at all** — its `loads` and `routes` screens belong to the legacy universe, not to
+`dispatches`. Three additions:
+
+- `api/mobile/carrier/owner/dispatches/[id]/route.ts` — read-only trip detail,
+  Bearer + OWNER, `getTenantPrismaForOrg` with `orgId` in the where clause.
+- `packages/api-client/src/owner-trips.ts` — `ownerTripsApi.get`.
+- `apps/mobile/app/(owner)/trips/[id].tsx` + `_layout.tsx`, hidden tab — trip
+  number, status, driver, truck, times, stop list. Read-only.
+
+The duplicate notice in `(owner)/imports/new.tsx` now routes to the trip when
+`createdTripId` is set and to the import otherwise, matching web.
+
+**Honest scope note:** `createdTripId` is only ever written by Phase 8's commit,
+so this action cannot fire yet. It was built because "both platforms offer both
+actions" is not satisfiable without a destination, and Phase 8 and Phase 11 both
+need one. It is a minimum viable trip screen, not the owner board.
+
+## Per-item audit of the cleanup prompt
+
+| # | Item | Verdict |
+|---|---|---|
+| 1 | Eliminate the duplicated upload utility; grep proves one implementation | **IMPLEMENTED** — `apps/mobile/lib/upload.ts:46` is the only `fetch` PUT, `:67` the only `atob`. Six call sites converged. `uploadReceipt.ts` (`FileSystem.uploadAsync`) exempt and declared. |
+| 2 | Multipart: wire it, or record a concrete reason as DEC-10 | **IMPLEMENTED** — DEC-10 in `DECISIONS.md`, grounded in the `entityType !== 'driver'` gate, the 5MB threshold, and the extraction-imposed 25MB cap. Simple path retained. |
+| 3 | Web action → top-right tinted circle | **IMPLEMENTED** — `components/carrier/imports/ImportDocumentAction.tsx`, used in `app/(owner)/carrier/trips/page.tsx`. Absence of a desktop precedent stated rather than glossed. |
+| 4 | Mobile duplicate: add "open the existing trip" | **IMPLEMENTED** — `app/(owner)/trips/[id].tsx`, `api/mobile/carrier/owner/dispatches/[id]/route.ts`, `packages/api-client/src/owner-trips.ts`, wired in `app/(owner)/imports/new.tsx`. Not exercisable until Phase 8 sets `createdTripId`. |
+
+### Constraints
+
+| Constraint | Verdict |
+|---|---|
+| Install nothing | IMPLEMENTED — dependency diff empty |
+| No worktrees / junctions / symlinks / recursive deletes | IMPLEMENTED — none used |
+| No `vercel` commands | IMPLEMENTED — none run |
+| Tenant isolation unchanged | IMPLEMENTED — the new route uses `getTenantPrismaForOrg(auth.tenantId, …)` with `orgId` in the where clause, as its carrier siblings do; no storage-key or RLS behaviour touched |
+| No schema changes | IMPLEMENTED — none made, none needed; the DEC-3 stop condition was not reached |
+
+### Verification
+
+```
+$ cd packages/api-client && npx tsc
+api-client build EXIT: 0
+
+$ cd apps/web && npx tsc --noEmit
+WEB EXIT: 0
+
+$ cd apps/mobile && npx tsc --noEmit
+MOBILE EXIT: 0
+
+$ cd apps/web && npx vitest run src/lib/document-import src/lib/storage/__tests__/tenant-key.test.ts
+ Test Files  8 passed (8)
+      Tests  150 passed (150)
+```
+
+The four mobile screens touched by item 1 have no unit tests in this repo —
+`apps/mobile` uses jest-expo and none of these files are covered — so the
+refactor is verified by `tsc` and by the greps above, not by tests. Behaviour
+preservation in `SignatureScreen` and `DocumentUploadSheet` was reasoned through
+call site by call site and is documented inline; it has not been exercised on a
+device in this session.

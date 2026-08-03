@@ -1,5 +1,7 @@
 export { apiClient, apiRequest, setUnauthorizedHandler, configureApiClient, getApiBaseUrl } from './client'
 export { ownerImportsApi } from './owner-imports'
+export { ownerTripsApi } from './owner-trips'
+export type { OwnerTripDetail, OwnerTripStop } from './owner-trips'
 export type {
   ImportStatus,
   ImportView,

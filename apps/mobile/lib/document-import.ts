@@ -1,14 +1,14 @@
-import { getInfoAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
 import { ownerImportsApi } from '@drivecommand/api-client'
+import { fileSizeBytes, uploadFileToPresignedUrl } from './upload'
 
 /**
- * Upload one staged import page.
+ * Staging helpers for the document import screens.
  *
- * Same shape as `lib/upload.ts` — presigned PUT straight to storage, bytes read
- * through `expo-file-system` and converted with `atob`, exactly as the incident
- * photo and driver document paths already do. The only difference is which
- * endpoint mints the URL, so the tenant key prefixing and the storage layer are
- * the existing ones rather than a second implementation.
+ * The upload itself is NOT implemented here — it delegates to `lib/upload.ts`,
+ * which owns the single presigned PUT. The first Phase 2 commit copied that
+ * body into this file, which is the "second upload utility next to the existing
+ * one" the phase prompt warned about; this file now holds only what is specific
+ * to import staging.
  */
 
 export interface StagedPage {
@@ -51,12 +51,15 @@ export function mimeFromUri(uri: string, fallback = 'image/jpeg'): string {
   }
 }
 
-export async function sizeOf(uri: string): Promise<number> {
-  const info = await getInfoAsync(uri)
-  return info.exists ? (info.size ?? 0) : 0
-}
+/** Re-exported so the import screens have one import line, not two. */
+export const sizeOf = fileSizeBytes
 
-/** Upload one page and return its tenant-prefixed storage key. */
+/**
+ * Upload one staged page and return its tenant-prefixed storage key.
+ *
+ * The grant comes from the typed api-client (which knows the import endpoint
+ * and its response shape); the transfer goes through the shared PUT.
+ */
 export async function uploadImportPage(token: string, page: StagedPage): Promise<string> {
   if (page.storageKey) return page.storageKey
 
@@ -66,19 +69,7 @@ export async function uploadImportPage(token: string, page: StagedPage): Promise
     sizeBytes: page.sizeBytes,
   })
 
-  const base64 = await readAsStringAsync(page.uri, { encoding: EncodingType.Base64 })
-
-  // atob is available in Hermes; this is the same conversion lib/upload.ts uses.
-  const binary = atob(base64)
-  const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-
-  const res = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': page.mimeType },
-    body: bytes,
-  })
-  if (!res.ok) throw new Error(`Upload failed: HTTP ${res.status}`)
+  await uploadFileToPresignedUrl(page.uri, uploadUrl, page.mimeType)
 
   return storageKey
 }

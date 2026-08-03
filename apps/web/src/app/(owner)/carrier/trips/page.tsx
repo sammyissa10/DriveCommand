@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { FileUp } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
-import { Button } from '@/components/ui/button';
+import { ImportDocumentAction } from '@/components/carrier/imports/ImportDocumentAction';
 import { ResumeImportBanner } from '@/components/carrier/imports/ResumeImportBanner';
 import { getResumableImports } from '@/lib/document-import/intake';
 import { DispatchesGrid } from './_grid/DispatchesGrid';
@@ -70,15 +68,9 @@ export default async function TripsPage() {
             </p>
           </div>
 
-          {/* The one primary action, top right (spec Phase 2 item 1). */}
-          {canCreate ? (
-            <Button asChild className="shrink-0">
-              <Link href="/carrier/imports/new">
-                <FileUp className="mr-2 h-4 w-4" />
-                Import Document
-              </Link>
-            </Button>
-          ) : null}
+          {/* The one primary action, top right, as a tinted circle — spec
+              Section 15 ("no FABs, add is the top-right tinted circle"). */}
+          {canCreate ? <ImportDocumentAction /> : null}
         </div>
 
         <ResumeImportBanner items={resumableImports} />

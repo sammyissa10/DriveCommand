@@ -6,13 +6,14 @@
  * only storage change this module makes anywhere is the `'imports'` category
  * added to `DocumentCategory` (audit C10). There is no second upload utility.
  *
- * Multipart is deliberately NOT used here. `initiateMultipartUpload` exists and
- * is the right tool above 5MB, but an import source file is a phone photo, a
- * scanned PDF, or a CSV — all comfortably inside a single PUT, and all capped
- * at `MAX_IMPORT_FILE_BYTES` below because the server reads them back into
- * memory to hash and extract. A file too large for that ceiling would fail
- * downstream regardless of how it was uploaded, so it is refused up front with
- * a reason rather than accepted and dropped later.
+ * Multipart is deliberately NOT used — see **DEC-10** for the full reasoning,
+ * which is not a preference. In short: the existing multipart route rejects
+ * anything with `entityType !== 'driver'` and allows only PDF/JPEG/PNG, so it
+ * cannot carry an import at all; the repo's own strategy threshold is 5MB and
+ * import sources sit well under it; and `MAX_IMPORT_FILE_BYTES` exists because
+ * the server reads each file back into memory to hash and extract, so an import
+ * can never reach a size where multipart pays. A file above the ceiling is
+ * refused up front with a reason rather than accepted and dropped later.
  */
 
 import { nanoid } from 'nanoid';

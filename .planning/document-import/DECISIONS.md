@@ -233,3 +233,69 @@ migration.
 
 **And: "no DDL was needed" is a claim requiring the same evidence as "this DDL was
 applied."** Both are assertions about the schema. Only one of them was ever checked.
+
+---
+
+## DEC-10 — Import uploads use the single presigned PUT, not the multipart path
+
+The Phase 2 prompt required uploads to go "through the existing storage layer with
+its existing tenant key prefixing **and multipart path**". Tenant key prefixing is
+reused verbatim (`generateUploadUrl`). **The multipart path is not, and this is why.**
+
+The first Phase 2 commit declined it with a plausible-sounding paragraph in
+`upload.ts` and never checked whether the existing path could actually carry an
+import. It cannot. Three concrete findings, all read from the repo:
+
+**1. The existing multipart route is hard-scoped to driver documents.**
+`apps/web/src/app/api/documents/multipart/initiate/route.ts` rejects everything else
+outright:
+
+```ts
+if (entityType !== 'driver') {
+  return NextResponse.json(
+    { error: 'Entity type must be "driver" for multipart uploads' }, { status: 400 });
+}
+```
+
+It also gates content type on `ALLOWED_TYPES` + `EXTENSION_MIME_MAP`, which are
+PDF/JPEG/PNG only — so it would reject `image/webp` and `text/csv`, two formats
+intake accepts. "Use the existing multipart path" is not available as written; it
+would mean widening a driver-document endpoint to carry imports, or writing a
+parallel set of initiate/part-url/complete routes on **both** surfaces. The second
+is the "second upload utility" the phase prompt warns against, at six files.
+
+**2. The repo's own threshold puts every import file on the single-PUT side.**
+`components/documents/driver-document-upload.tsx` picks its strategy at 5MB:
+
+```ts
+if (selectedFile.size < 5 * 1024 * 1024) { await uploadSmallFile(); }
+else { await uploadLargeFile(); }
+```
+
+5MB is not arbitrary — it is S3's minimum part size, so below it multipart is a
+single part wrapped in three extra round trips. Import sources are phone photos at
+`quality: 0.8` (~1–3MB), scanned manifests, and CSVs measured in kilobytes. By the
+repo's own rule, these belong on the single PUT.
+
+**3. The 25MB ceiling is imposed by extraction, not by the upload.**
+`MAX_IMPORT_FILE_BYTES` exists because the server reads every source file back into
+memory (`getObjectBytes`) to hash it and hand it to the model. An import file
+therefore can never reach the size at which multipart earns its complexity — a file
+too big for multipart to matter is a file the pipeline refuses anyway, up front,
+with a reason.
+
+**Also worth stating:** multipart requires the client to read the `ETag` header off
+every part response. The web client does this with `XMLHttpRequest` +
+`Blob.slice`. React Native has neither over a file URI — it would need positional
+base64 reads and untested ETag header access, i.e. new unproven code on the 5:30am
+path, to serve a file size that cannot occur.
+
+**Decision:** import uploads use one presigned PUT per source file, capped at 25MB
+and refused above it with a plain-language reason. If a later phase raises that cap
+— by streaming the hash instead of buffering — multipart becomes worth revisiting,
+and the honest first step then is a general multipart route that is not scoped to
+`entityType === 'driver'`.
+
+**Not recorded here as a preference. Recorded because the first pass declined an
+explicit instruction without saying so, which DEC-9 established is the failure mode
+of this build.**

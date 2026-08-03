@@ -397,11 +397,19 @@ export default function NewImportScreen() {
               </Text>
               <Text style={{ ...typography.footnote, color: c.textSecondary }}>
                 {duplicate.createdTripId
-                  ? 'A trip was already created from it. Open the import to see that trip, or import this again as a correction — the earlier import steps aside and this one takes its place.'
+                  ? 'A trip was already created from it. Open that trip, or import this again as a correction — the earlier import steps aside and this one takes its place.'
                   : 'Open what is already there, or import this again as a correction — the earlier import steps aside and this one takes its place.'}
               </Text>
+              {/* Both actions the spec requires, on this platform too: open the
+                  trip when one exists (else the import), or correct it. */}
               <Pressable
-                onPress={() => router.replace(`/(owner)/imports/${duplicate.importId}` as never)}
+                onPress={() =>
+                  router.replace(
+                    (duplicate.createdTripId
+                      ? `/(owner)/trips/${duplicate.createdTripId}`
+                      : `/(owner)/imports/${duplicate.importId}`) as never,
+                  )
+                }
                 style={{
                   minHeight: TOUCH,
                   borderRadius: radii.md,
@@ -411,7 +419,7 @@ export default function NewImportScreen() {
                 }}
               >
                 <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }}>
-                  Open the existing import
+                  {duplicate.createdTripId ? 'Open the trip' : 'Open the existing import'}
                 </Text>
               </Pressable>
               <Pressable
