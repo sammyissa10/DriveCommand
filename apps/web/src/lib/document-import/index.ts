@@ -19,3 +19,10 @@ export * from './concurrency';
 export * from './extractor';
 export * from './service';
 export * from './spreadsheet';
+
+/**
+ * `upload.ts`, `persistence.ts` and `intake.ts` are NOT re-exported here, for
+ * the same reason `cache.ts` is not: they reach for the tenant Prisma client
+ * and the storage layer, which would drag server context into every unit test
+ * that only wants the merge logic. Import them directly where they are needed.
+ */

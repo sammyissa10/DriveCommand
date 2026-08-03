@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Route } from 'lucide-react';
+import { ArrowRight, FileClock, FileUp, Plus, Route } from 'lucide-react';
 import {
   MobileScreen,
   LargeTitleHeader,
+  ActionButton,
   KPIRow,
   KPICard,
   SearchField,
@@ -17,6 +18,7 @@ import {
   Skeleton,
   type StatusTone,
 } from '@/components/ui/ds';
+import type { ImportListItem } from '@/lib/document-import/intake';
 
 // ---------------------------------------------------------------------------
 // Data — same endpoint + shape the desktop DispatchesGrid uses
@@ -94,17 +96,60 @@ function TripTile() {
 // Trips overview — mobile-web design system view (carrier)
 // ---------------------------------------------------------------------------
 
+/**
+ * "You left an import open" strip, in the dark ds palette.
+ *
+ * A strip and not a modal — spec Section 15 forbids modal interruptions for
+ * warnings, and this is a warning.
+ */
+function ResumeImportStrip({ items, onOpen }: { items: ImportListItem[]; onOpen: (id: string) => void }) {
+  if (items.length === 0) return null;
+  const [first, ...rest] = items;
+
+  const detail =
+    first.status === 'NEEDS_REVIEW' && first.consignmentCount != null
+      ? `${first.consignmentCount} stop${first.consignmentCount === 1 ? '' : 's'} waiting for review`
+      : first.status === 'EXTRACTING'
+        ? 'Still being read'
+        : first.status === 'FAILED'
+          ? (first.failureMessage ?? 'Could not be read')
+          : `${first.pageCount} page${first.pageCount === 1 ? '' : 's'} uploaded, not read yet`;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(first.id)}
+      className="mb-3 flex w-full min-h-[64px] items-center gap-3 rounded-[18px] bg-ds-accent/[0.12] px-4 py-3 text-left transition active:opacity-75"
+    >
+      <FileClock className="h-5 w-5 shrink-0 text-ds-accent" />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[15px] font-semibold text-ds-txt">
+          {first.originalName ?? 'An imported document'} is unfinished
+        </span>
+        <span className="block truncate text-[13px] text-ds-txt2">
+          {detail}
+          {rest.length > 0 ? ` · ${rest.length} more` : ''}
+        </span>
+      </span>
+      <ArrowRight className="h-4 w-4 shrink-0 text-ds-accent" />
+    </button>
+  );
+}
+
 export function TripsMobile({
   driverMap,
   truckMap,
   canCreate,
   hasLoads,
+  resumableImports = [],
 }: {
   driverMap: Record<string, string>;
   truckMap: Record<string, string>;
   canCreate: boolean;
   /** Whether the tenant has any real load to assign — drives the empty state. */
   hasLoads: boolean;
+  /** Unfinished imports, newest first. Drives the resume strip. */
+  resumableImports?: ImportListItem[];
 }) {
   const router = useRouter();
   const [rows, setRows] = useState<TripRow[] | null>(null);
@@ -184,11 +229,36 @@ export function TripsMobile({
 
   return (
     <MobileScreen className="pb-6 pt-2">
+      {/* Import Document is THE primary action and takes the accent circle in
+          the rightmost, thumb-nearest slot (spec Phase 2 item 1 + Section 15:
+          one accent colour on one primary action). New trip keeps its place
+          beside it in a neutral tint. */}
       <LargeTitleHeader
         title="Trips"
         subtitle={countLabel}
-        onAdd={canCreate ? () => router.push('/carrier/trips/new') : undefined}
-        addLabel="New trip"
+        trailing={
+          canCreate ? (
+            <>
+              <ActionButton
+                icon={Plus}
+                tone="neutral"
+                label="New trip"
+                onClick={() => router.push('/carrier/trips/new')}
+              />
+              <ActionButton
+                icon={FileUp}
+                tone="accent"
+                label="Import Document"
+                onClick={() => router.push('/carrier/imports/new')}
+              />
+            </>
+          ) : undefined
+        }
+      />
+
+      <ResumeImportStrip
+        items={resumableImports}
+        onOpen={(id) => router.push(`/carrier/imports/${id}`)}
       />
 
       {/* Glance + filters earn their place only once there's something to filter. */}

@@ -13,6 +13,13 @@ const getBaseUrl = () => {
   return 'http://localhost:3000'
 }
 
+/**
+ * The resolved API base, for the few calls that must use plain `fetch` rather
+ * than `apiRequest` — a 409 with a meaningful body, for instance, which
+ * `apiRequest` would collapse into a thrown Error.
+ */
+export const getApiBaseUrl = getBaseUrl
+
 // 401 handler — set by the app's auth context so any unauthorized response triggers logout
 let unauthorizedHandler: (() => void) | null = null
 

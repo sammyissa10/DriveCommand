@@ -12,13 +12,17 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
+  ArrowRight,
   Building2,
+  FileClock,
   FileText,
+  FileUp,
   Package,
   Truck,
   UserPlus,
   Users,
 } from 'lucide-react-native'
+import { ownerImportsApi, type ImportListItem } from '@drivecommand/api-client'
 import { CreateLoadSheet } from '../../components/owner/CreateLoadSheet'
 import { useAuthContext } from '../../context/AuthContext'
 import { useSupportTicket } from '../../context/SupportTicketContext'
@@ -101,6 +105,15 @@ export default function OwnerDashboard() {
     refetchInterval: 60_000,
   })
 
+  // Unfinished imports — the resume banner (spec Phase 2 item 8). Refetched on
+  // focus so an import left mid-read on the web shows up here too.
+  const { data: resumableImports } = useQuery<ImportListItem[]>({
+    queryKey: ['owner-resumable-imports'],
+    queryFn: () => ownerImportsApi.listResumable(token!),
+    enabled: !!token,
+    refetchInterval: 60_000,
+  })
+
   const onRefresh = useCallback(() => {
     haptic.light()
     refetch()
@@ -149,11 +162,42 @@ export default function OwnerDashboard() {
             />
           }
         >
-          {/* Header */}
+          {/* Header — Import Document is the one primary action and sits in the
+              top-right tinted circle (spec Phase 2 item 1, Section 15: no FAB). */}
           <View style={styles.header}>
-            <Text style={[styles.headerTitle, { color: c.textPrimary }]}>Dashboard</Text>
-            <Text style={[styles.headerSubtitle, { color: c.textMuted }]}>Fleet overview</Text>
+            <View style={styles.headerRow}>
+              <View style={styles.headerText}>
+                <Text style={[styles.headerTitle, { color: c.textPrimary }]}>Dashboard</Text>
+                <Text style={[styles.headerSubtitle, { color: c.textMuted }]}>Fleet overview</Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  haptic.light()
+                  router.push('/(owner)/imports/new' as any)
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Import Document"
+                style={({ pressed }) => [
+                  styles.importButton,
+                  { backgroundColor: c.brand + '29' },
+                  pressed && { opacity: 0.7 },
+                ]}
+              >
+                <FileUp color={c.brand} size={20} />
+              </Pressable>
+            </View>
           </View>
+
+          {/* Resume banner — a strip, never a modal (spec Section 15) */}
+          {resumableImports && resumableImports.length > 0 ? (
+            <ResumeImportStrip
+              items={resumableImports}
+              onOpen={(importId) => {
+                haptic.light()
+                router.push(`/(owner)/imports/${importId}` as any)
+              }}
+            />
+          ) : null}
 
           {/* 2x2 KPI Grid */}
           <KPIGrid
@@ -257,9 +301,98 @@ export default function OwnerDashboard() {
   )
 }
 
+/**
+ * "You left an import open" strip.
+ *
+ * One tap back to exactly where the import was — spec Phase 2 item 8.
+ */
+function ResumeImportStrip({
+  items,
+  onOpen,
+}: {
+  items: ImportListItem[]
+  onOpen: (importId: string) => void
+}) {
+  const c = useThemeColors()
+  const [first, ...rest] = items
+
+  const detail =
+    first.status === 'NEEDS_REVIEW' && first.consignmentCount != null
+      ? `${first.consignmentCount} stop${first.consignmentCount === 1 ? '' : 's'} waiting for review`
+      : first.status === 'EXTRACTING'
+        ? 'Still being read'
+        : first.status === 'FAILED'
+          ? (first.failureMessage ?? 'Could not be read')
+          : `${first.pageCount} page${first.pageCount === 1 ? '' : 's'} uploaded, not read yet`
+
+  return (
+    <Pressable
+      onPress={() => onOpen(first.id)}
+      accessibilityRole="button"
+      accessibilityLabel="Resume unfinished import"
+      style={({ pressed }) => [
+        styles.resumeStrip,
+        { backgroundColor: c.brand + '1F' },
+        pressed && { opacity: 0.75 },
+      ]}
+    >
+      <FileClock color={c.brand} size={20} />
+      <View style={styles.resumeText}>
+        <Text numberOfLines={1} style={[styles.resumeTitle, { color: c.textPrimary }]}>
+          {first.originalName ?? 'An imported document'} is unfinished
+        </Text>
+        <Text numberOfLines={1} style={[styles.resumeDetail, { color: c.textSecondary }]}>
+          {detail}
+          {rest.length > 0 ? ` · ${rest.length} more` : ''}
+        </Text>
+      </View>
+      <ArrowRight color={c.brand} size={18} />
+    </Pressable>
+  )
+}
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  headerText: {
+    flex: 1,
+    minWidth: 0,
+  },
+  importButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radii.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resumeStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: 64,
+    borderRadius: radii.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  resumeText: {
+    flex: 1,
+    minWidth: 0,
+  },
+  resumeTitle: {
+    ...typography.subhead,
+    fontWeight: '600',
+  },
+  resumeDetail: {
+    ...typography.caption1,
+    marginTop: 2,
   },
   scroll: {
     flex: 1,

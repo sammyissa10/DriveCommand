@@ -1,5 +1,6 @@
 'use client';
 
+import type { ComponentType, ReactNode } from 'react';
 import { ChevronLeft, Plus } from 'lucide-react';
 
 /** Top-right tinted circle that opens Quick Create. Never a FAB. */
@@ -12,6 +13,41 @@ export function AddButton({ onClick, label }: { onClick: () => void; label: stri
       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ds-accent/[0.16] transition active:opacity-75"
     >
       <Plus className="h-5 w-5 text-ds-accent" />
+    </button>
+  );
+}
+
+/**
+ * Same circle, any icon, and a tone.
+ *
+ * A screen with two top-right actions must still have only ONE in the accent
+ * colour (Section 15: "one accent colour on one primary action"). The second
+ * takes `tone="neutral"` and reads as available rather than as the thing to do.
+ */
+export function ActionButton({
+  onClick,
+  label,
+  icon: Icon,
+  tone = 'accent',
+}: {
+  onClick: () => void;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+  tone?: 'accent' | 'neutral';
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={
+        tone === 'accent'
+          ? 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ds-accent/[0.16] transition active:opacity-75'
+          : 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ds-avatar transition active:opacity-75'
+      }
+    >
+      <Icon className={tone === 'accent' ? 'h-[18px] w-[18px] text-ds-accent' : 'h-[18px] w-[18px] text-ds-txt2'} />
     </button>
   );
 }
@@ -30,6 +66,7 @@ export function LargeTitleHeader({
   addLabel,
   onBack,
   backLabel = 'Back',
+  trailing,
 }: {
   title: string;
   subtitle?: string;
@@ -37,6 +74,12 @@ export function LargeTitleHeader({
   addLabel?: string;
   onBack?: () => void;
   backLabel?: string;
+  /**
+   * Extra top-right controls, rendered to the LEFT of the add button so the
+   * primary action keeps the rightmost, thumb-nearest position. Use
+   * `ActionButton` with `tone="neutral"` for these.
+   */
+  trailing?: ReactNode;
 }) {
   return (
     <>
@@ -57,7 +100,10 @@ export function LargeTitleHeader({
           <h1 className="text-[34px] font-bold leading-tight text-ds-txt">{title}</h1>
           {subtitle ? <p className="mt-1 text-[13px] text-ds-txt2">{subtitle}</p> : null}
         </div>
-        {onAdd ? <AddButton onClick={onAdd} label={addLabel ?? `Add ${title}`} /> : null}
+        <div className="flex shrink-0 items-center gap-2">
+          {trailing}
+          {onAdd ? <AddButton onClick={onAdd} label={addLabel ?? `Add ${title}`} /> : null}
+        </div>
       </div>
     </>
   );

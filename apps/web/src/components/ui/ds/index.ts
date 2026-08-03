@@ -6,7 +6,7 @@
  * desktop UI keeps its own layout. Contract: .planning/mobile-design-system.md
  */
 export { MobileScreen } from './MobileScreen';
-export { LargeTitleHeader, AddButton } from './Header';
+export { LargeTitleHeader, AddButton, ActionButton } from './Header';
 export { KPICard, KPIRow } from './KPICard';
 export { SearchField } from './SearchField';
 export { SegmentedControl, type SegmentOption } from './SegmentedControl';

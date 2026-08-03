@@ -221,7 +221,41 @@ describe('extractDocument', () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.code).toBe('ZERO_CONSIGNMENTS');
-    expect(result.message).toMatch(/clearer photo/i);
+    // DEC-6: the wording tells the user what to DO, and "take the photo again"
+    // is only correct advice when the source actually was a photo — see the
+    // PDF case below.
+    expect(result.message).toMatch(/take the photo again/i);
+    expect(result.message).toMatch(/whole page in frame/i);
+  });
+
+  it('does not tell the user to re-shoot a PDF that had no stops in it (DEC-6)', async () => {
+    const client = fakeClient(() => reply([]));
+    const result = await extractDocument({
+      tenantId: 't1',
+      sources: [
+        { ordinal: 1, filename: 'manifest.pdf', mimeType: 'application/pdf', bytes: Buffer.from('%PDF-') },
+      ],
+      client,
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.code).toBe('ZERO_CONSIGNMENTS');
+    expect(result.message).not.toMatch(/photo/i);
+    expect(result.message).toMatch(/PDF/);
+  });
+
+  it('uses plural wording when several photos came back empty', async () => {
+    const client = fakeClient(() => reply([]));
+    const result = await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b')],
+      client,
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.message).toMatch(/take the photos again/i);
   });
 
   it('returns a typed failure when every page fails', async () => {
@@ -276,6 +310,118 @@ describe('extractDocument', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.pages.map((p) => p.pageNumber)).toEqual([1, 2, 3]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 2 — progress reporting and cancellation
+// ---------------------------------------------------------------------------
+
+describe('extractDocument progress hooks', () => {
+  it('reports every page as it settles, before the run returns', async () => {
+    const client = fakeClient(() => reply([RUSS]));
+    const seen: Array<{ page: number; ok: boolean; hasExtraction: boolean }> = [];
+
+    const result = await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b'), photo(3, 'c')],
+      client,
+      concurrency: 1,
+      onPageSettled: (outcome, extraction) => {
+        seen.push({ page: outcome.pageNumber, ok: outcome.ok, hasExtraction: extraction !== null });
+      },
+    });
+
+    expect(result.ok).toBe(true);
+    expect(seen).toHaveLength(3);
+    expect(seen.map((s) => s.page).sort()).toEqual([1, 2, 3]);
+    expect(seen.every((s) => s.ok && s.hasExtraction)).toBe(true);
+  });
+
+  it('reports a failed page too, so the UI can offer to re-shoot just that one', async () => {
+    const client = fakeClient((n) =>
+      n === 2 ? { content: [{ type: 'text', text: 'not json' }], usage: {} } : reply([RUSS]),
+    );
+    const failed: number[] = [];
+
+    await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b'), photo(3, 'c')],
+      client,
+      concurrency: 1,
+      onPageSettled: (outcome) => {
+        if (!outcome.ok) failed.push(outcome.pageNumber);
+      },
+    });
+
+    expect(failed).toEqual([2]);
+  });
+
+  it('a throwing progress callback never loses a page that was already paid for', async () => {
+    const client = fakeClient(() => reply([RUSS]));
+    const result = await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b')],
+      client,
+      onPageSettled: () => {
+        throw new Error('database is on fire');
+      },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.pages).toHaveLength(2);
+  });
+
+  it('stops cleanly when shouldContinue turns false, and says so', async () => {
+    const client = fakeClient(() => reply([RUSS]));
+    let allowed = 2;
+
+    const result = await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b'), photo(3, 'c'), photo(4, 'd')],
+      client,
+      concurrency: 1,
+      shouldContinue: () => allowed-- > 0,
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.code).toBe('CANCELLED');
+    // Two pages were read and billed; the other two were never sent.
+    expect(client.calls).toBe(2);
+    expect(result.pages).toHaveLength(2);
+    expect(result.message).toMatch(/pick up where this left off/i);
+  });
+
+  it('a cancelled run leaves its finished pages in the cache, so resuming is free', async () => {
+    const cache = memoryCache();
+    const client = fakeClient(() => reply([RUSS]));
+    let allowed = 1;
+
+    await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b'), photo(3, 'c')],
+      client,
+      cache,
+      concurrency: 1,
+      shouldContinue: () => allowed-- > 0,
+    });
+    expect(client.calls).toBe(1);
+
+    // Resume: page 1 comes from the cache, only 2 and 3 reach the model.
+    const resumed = await extractDocument({
+      tenantId: 't1',
+      sources: [photo(1, 'a'), photo(2, 'b'), photo(3, 'c')],
+      client,
+      cache,
+      concurrency: 1,
+    });
+
+    expect(resumed.ok).toBe(true);
+    if (!resumed.ok) return;
+    expect(resumed.usage.cachedPages).toBe(1);
+    expect(client.calls).toBe(3); // 1 before + 2 after
   });
 });
 

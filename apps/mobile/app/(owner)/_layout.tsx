@@ -67,6 +67,14 @@ export default function OwnerLayout() {
             tabBarItemStyle: { display: 'none', width: 0 },
           }}
         />
+        {/* Document import — reached from the Dashboard header, not a tab. */}
+        <Tabs.Screen
+          name="imports"
+          options={{
+            tabBarButton: () => null,
+            tabBarItemStyle: { display: 'none', width: 0 },
+          }}
+        />
         <Tabs.Screen
           name="drivers"
           options={{

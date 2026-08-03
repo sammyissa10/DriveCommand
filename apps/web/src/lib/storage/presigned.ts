@@ -22,7 +22,17 @@ import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sd
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client, getBucketName } from './s3-client';
 
-export type DocumentCategory = 'trucks' | 'routes' | 'drivers' | 'support' | 'messages' | 'inspections';
+export type DocumentCategory =
+  | 'trucks'
+  | 'routes'
+  | 'drivers'
+  | 'support'
+  | 'messages'
+  | 'inspections'
+  // Document Import source files (manifests, rate confirmations, delivery
+  // schedules). Audit C10 — widening the union is the only storage change the
+  // import module needs.
+  | 'imports';
 
 /**
  * Generate presigned upload URL for direct-to-S3 upload.

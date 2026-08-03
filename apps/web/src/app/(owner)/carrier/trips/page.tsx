@@ -1,6 +1,11 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { FileUp } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { Button } from '@/components/ui/button';
+import { ResumeImportBanner } from '@/components/carrier/imports/ResumeImportBanner';
+import { getResumableImports } from '@/lib/document-import/intake';
 import { DispatchesGrid } from './_grid/DispatchesGrid';
 import { TripsMobile } from './TripsMobile';
 
@@ -11,7 +16,9 @@ export default async function TripsPage() {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
-  const [drivers, trucks, realLoadCount] = await Promise.all([
+  const canCreate = session.role !== 'MANAGER';
+
+  const [drivers, trucks, realLoadCount, resumableImports] = await Promise.all([
     prisma.carrierDriver.findMany({
       where: { orgId, status: 'active' },
       select: { id: true, firstName: true, lastName: true },
@@ -25,6 +32,9 @@ export default async function TripsPage() {
     // Real (non-sample, non-deleted) loads exist? Drives the guided empty state:
     // you can't plan a trip until there's a load to assign.
     prisma.carrierLoad.count({ where: { orgId, isSample: false, deletedAt: null } }),
+    // Unfinished imports — the resume banner (spec Phase 2 item 8). Only the
+    // people who could act on it are asked about it.
+    canCreate ? getResumableImports(orgId, session.userId) : Promise.resolve([]),
   ]);
 
   const hasLoads = realLoadCount > 0;
@@ -35,13 +45,17 @@ export default async function TripsPage() {
   const truckMap: Record<string, string> = {};
   for (const t of trucks) truckMap[t.id] = t.unitNumber;
 
-  const canCreate = session.role !== 'MANAGER';
-
   return (
     <>
       {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
       <div className="lg:hidden -m-4">
-        <TripsMobile driverMap={driverMap} truckMap={truckMap} canCreate={canCreate} hasLoads={hasLoads} />
+        <TripsMobile
+          driverMap={driverMap}
+          truckMap={truckMap}
+          canCreate={canCreate}
+          hasLoads={hasLoads}
+          resumableImports={resumableImports}
+        />
       </div>
 
       {/* Desktop */}
@@ -55,7 +69,19 @@ export default async function TripsPage() {
               Daily trips view &mdash; showing today and tomorrow, plus any in-progress trips.
             </p>
           </div>
+
+          {/* The one primary action, top right (spec Phase 2 item 1). */}
+          {canCreate ? (
+            <Button asChild className="shrink-0">
+              <Link href="/carrier/imports/new">
+                <FileUp className="mr-2 h-4 w-4" />
+                Import Document
+              </Link>
+            </Button>
+          ) : null}
         </div>
+
+        <ResumeImportBanner items={resumableImports} />
 
         <DispatchesGrid driverMap={driverMap} truckMap={truckMap} userRole={session.role} />
       </div>
