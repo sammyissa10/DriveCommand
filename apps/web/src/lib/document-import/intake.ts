@@ -15,7 +15,7 @@
  */
 
 import type { CanonicalExtraction } from '@drivecommand/validation';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { getObjectBytes, ObjectTooLargeError } from '@/lib/storage/object-bytes';
@@ -213,6 +213,27 @@ export async function startImport(input: StartImportInput): Promise<StartImportR
     throw err;
   }
 
+  return beginImport({ orgId, userId, files, contentHash, mode });
+}
+
+/**
+ * Everything `startImport` does AFTER the bytes have been hashed: duplicate
+ * check, supersede-on-correction, insert.
+ *
+ * Split out so a caller that already holds the bytes — a terminal script, a
+ * future ingestion path — runs this exact logic rather than a lookalike. The
+ * only thing above this line is "where did the bytes come from", which is the
+ * one part that genuinely differs between storage and a local folder.
+ */
+export async function beginImport(input: {
+  orgId: string;
+  userId: string;
+  files: StagedFile[];
+  contentHash: string;
+  mode?: StartImportMode;
+}): Promise<StartImportResult> {
+  const { orgId, userId, files, contentHash, mode = 'new' } = input;
+
   const existing = await findActiveDuplicate(orgId, contentHash, userId);
 
   if (existing && mode === 'new') {
@@ -311,17 +332,74 @@ export async function runExtraction(
   userId: string,
   importId: string,
 ): Promise<RunExtractionResult> {
+  const opened = await openExtractionRun(orgId, userId, importId);
+  if ('short' in opened) return opened.short;
+
+  const files = stagedFilesFromRecord(opened.record);
+  const spreadsheet = files.find((f) => classify(f.mimeType) === 'spreadsheet');
+
+  return guardExtractionRun(orgId, userId, importId, async () =>
+    spreadsheet
+      ? runSpreadsheetExtraction(orgId, userId, importId, spreadsheet)
+      : extractIntoImport(orgId, userId, importId, await loadSources(orgId, files)),
+  );
+}
+
+/**
+ * `runExtraction` for a caller that already holds the bytes.
+ *
+ * Same guards, same UPLOADED→EXTRACTING transition, same failure handling — the
+ * only difference is that the sources are supplied rather than fetched from
+ * storage. This is the documented entry point for a terminal script that needs
+ * to exercise the real cache and persistence path; `scripts/test-extraction.ts`
+ * uses it.
+ *
+ * It is NOT a test-only shim: skipping `openExtractionRun` is what made the
+ * first attempt at that script report CANCELLED, because `shouldContinue`
+ * correctly refuses to run against an import that is not in EXTRACTING. A test
+ * path that goes around the guards proves nothing about the path that does not.
+ */
+export async function runExtractionWithSources(
+  orgId: string,
+  userId: string,
+  importId: string,
+  sources: SourceFile[],
+): Promise<RunExtractionResult> {
+  const opened = await openExtractionRun(orgId, userId, importId);
+  if ('short' in opened) return opened.short;
+
+  return guardExtractionRun(orgId, userId, importId, () =>
+    extractIntoImport(orgId, userId, importId, sources),
+  );
+}
+
+/**
+ * Status guards plus the move to EXTRACTING.
+ *
+ * Returns `{ short }` when the caller should stop and report that instead, or
+ * `{ record }` — the row as it was BEFORE the transition — when the run may
+ * proceed.
+ */
+async function openExtractionRun(
+  orgId: string,
+  userId: string,
+  importId: string,
+): Promise<{ short: RunExtractionResult } | { record: ImportRecord }> {
   const record = await getImportRecord(orgId, importId, userId);
-  if (!record) return { ok: false, status: 'FAILED', message: 'Import not found.' };
+  if (!record) {
+    return { short: { ok: false, status: 'FAILED', message: 'Import not found.' } };
+  }
 
   // Only these four have a legal edge to EXTRACTING. Anything else — READY,
   // COMMITTING, COMMITTED, CANCELLED — would make `assertTransition` throw, and
   // a 500 is the wrong way to say "that import has moved on".
   if (!(['UPLOADED', 'EXTRACTING', 'NEEDS_REVIEW', 'FAILED'] as ImportStatus[]).includes(record.status)) {
     return {
-      ok: false,
-      status: record.status,
-      message: `This import is ${record.status.replace(/_/g, ' ').toLowerCase()} and cannot be read again.`,
+      short: {
+        ok: false,
+        status: record.status,
+        message: `This import is ${record.status.replace(/_/g, ' ').toLowerCase()} and cannot be read again.`,
+      },
     };
   }
 
@@ -329,22 +407,27 @@ export async function runExtraction(
     record.status === 'EXTRACTING' &&
     Date.now() - record.updatedAt.getTime() < STALE_EXTRACTION_MS
   ) {
-    return { ok: true, status: 'EXTRACTING', message: 'Already reading this document.' };
+    return { short: { ok: true, status: 'EXTRACTING', message: 'Already reading this document.' } };
   }
 
-  const from = record.status;
-  await transitionImport(orgId, userId, importId, from, 'EXTRACTING');
+  await transitionImport(orgId, userId, importId, record.status, 'EXTRACTING');
+  return { record };
+}
 
-  const files = stagedFilesFromRecord(record);
-  const spreadsheet = files.find((f) => classify(f.mimeType) === 'spreadsheet');
-
+/** Shared failure handling for a run that has already been opened. */
+async function guardExtractionRun(
+  orgId: string,
+  userId: string,
+  importId: string,
+  run: () => Promise<RunExtractionResult>,
+): Promise<RunExtractionResult> {
   try {
-    const result = spreadsheet
-      ? await runSpreadsheetExtraction(orgId, userId, importId, spreadsheet)
-      : await runVisionExtraction(orgId, userId, importId, files);
-    return result;
+    return await run();
   } catch (err) {
-    logger.error('[document-import] extraction threw', err, { importId });
+    logger.error('[document-import] extraction threw', err, {
+      importId,
+      err: serializeError(err),
+    });
     const message =
       err instanceof ObjectTooLargeError
         ? err.message
@@ -354,22 +437,46 @@ export async function runExtraction(
   }
 }
 
-async function runVisionExtraction(
+/**
+ * The extraction half of the vision path, from bytes onward.
+ *
+ * Split from `runVisionExtraction` so that anything already holding the bytes —
+ * a terminal script exercising the cache, for instance — runs the real cache
+ * wiring, the real per-page persistence, and the real finish/fail transitions,
+ * rather than a reimplementation that can drift from them. The only thing
+ * above this line is `loadSources`, i.e. "fetch from storage", which is the one
+ * step a local-file caller legitimately replaces.
+ */
+export async function extractIntoImport(
   orgId: string,
   userId: string,
   importId: string,
-  files: StagedFile[],
+  sources: SourceFile[],
 ): Promise<RunExtractionResult> {
-  const sources = await loadSources(orgId, files);
-
   const result = await extractDocument({
     tenantId: orgId,
     sources,
     cache: prismaPageCache,
     // Each settled page is written before the run finishes. This is the
     // progress counter, the resume point, and the cache row, all at once.
-    onPageSettled: (outcome, extraction) =>
-      writePageOutcome(orgId, userId, importId, outcome, extraction),
+    //
+    // `extractDocument`'s `report()` swallows whatever this throws — on purpose,
+    // so a page that was extracted and paid for is never lost to a failed write.
+    // That swallow is why a broken write was invisible: no row, no log, and a
+    // cache that stayed cold with nothing to explain it. Log first, then let it
+    // throw and keep that guarantee.
+    onPageSettled: async (outcome, extraction) => {
+      try {
+        await writePageOutcome(orgId, userId, importId, outcome, extraction);
+      } catch (err) {
+        logger.warn('[document-import] page row write failed; page will not be cached', {
+          importId,
+          pageNumber: outcome.pageNumber,
+          err: serializeError(err),
+        });
+        throw err;
+      }
+    },
     // Cancel is a status write from another request; the running extraction
     // notices it between pages and stops without billing for the rest.
     shouldContinue: async () => {

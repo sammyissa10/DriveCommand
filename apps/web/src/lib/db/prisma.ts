@@ -48,7 +48,13 @@ if (globalForPrisma.pool) {
     // instances don't permanently hold one of the 15 pool slots between
     // the dashboard's 60-second polling cycles.
     idleTimeoutMillis: 10000,
-    connectionTimeoutMillis: 5000,
+    // 5s is right for Vercel, which sits next to Supabase. It is marginal from a
+    // developer machine on 5432, where the TLS handshake to us-west-1 can take
+    // longer and a terminal script dies with "connection terminated due to
+    // connection timeout" before it has run a single query. Overridable by env
+    // so scripts can raise it WITHOUT changing what production uses — the
+    // default is unchanged and no deployed code sets this variable.
+    connectionTimeoutMillis: Number(process.env.PG_CONNECT_TIMEOUT_MS ?? 5000),
   });
   // Initialise the tenant GUC on every new physical connection so a stale value
   // from a prior process/worker can never bleed into the first query of a fresh

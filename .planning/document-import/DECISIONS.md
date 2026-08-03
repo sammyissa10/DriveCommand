@@ -299,3 +299,56 @@ and the honest first step then is a general multipart route that is not scoped t
 **Not recorded here as a preference. Recorded because the first pass declined an
 explicit instruction without saying so, which DEC-9 established is the failure mode
 of this build.**
+
+---
+
+## DEC-11 — The page cache never worked, and why nobody could tell
+
+Diagnosed 2026-08-03 from a symptom that looked like one bug and was four.
+`cachedPages` stayed 0 on every re-run and `document_import_pages` stayed empty.
+
+**1. The cache resolved its tenant from a request header.** `prismaPageCache` used
+`getTenantPrisma()`, which reads the `x-tenant-id` header injected by
+`middleware.ts`. That header does not exist on `/api/mobile/*` — Bearer auth means
+no Supabase cookie, so middleware sees `user === null` and returns
+`NextResponse.next()` early for `/api/*` — and it does not exist in a script at all
+(`headers()` throws outside a request). **Every mobile import re-read every page at
+full price**, silently, breaking the "re-shoot one page, bill for one page"
+guarantee. Fixed by `getTenantPrismaForOrg(tenantId)`: the `PageCache` contract
+already carries the org, and it comes from verified auth rather than a header.
+
+**2. Four models were missing from `EXEMPT_MODELS`.** `DocumentImport`,
+`DocumentImportPage`, `FacilityExternalReference` and `DocumentProfile` use `orgId`
+like their carrier siblings and have no `tenantId` column — but were never added to
+the exemption set in `lib/db/extensions/tenant-rls.ts`. The extension therefore
+injected `{ tenantId }` into every query against them, which Prisma rejects.
+**No document-import query could ever have succeeded**, on any surface. Phase 1
+added the models; nothing exercised them until now, so it stayed invisible.
+
+**Standing rule: a new model that scopes by `orgId` must be added to
+`EXEMPT_MODELS` in the same change that adds it to `schema.prisma`.** The list is
+not documentation — it is load-bearing, and omission is a runtime error rather than
+a compile error.
+
+**3. Errors serialized to `{}`.** `logger.warn(msg, { err })` stringifies its
+context, and `JSON.stringify(new Error(...))` is `{}` because `message`, `stack` and
+`name` are non-enumerable. Every failure above logged, correctly, and said nothing.
+`serializeError()` (`lib/logger.ts`) now sweeps own property names.
+
+**4. The one genuinely silent path was not `cache.put`.** `put` is a documented
+no-op — `writePageOutcome` owns the row. The silence was in `extractDocument`'s
+`report()`, which swallows anything `onPageSettled` throws so a paid-for page is
+never lost. Correct, but it meant a failed row write produced no row, no log, and a
+permanently cold cache. The call site now logs before rethrowing, and the swallow
+keeps its guarantee.
+
+### What tenant isolation actually rests on here
+
+Worth stating plainly, because it was checked rather than assumed. The connecting
+role `postgres.<project>` has **`rolbypassrls = true`** — so for these tables, RLS
+policies are currently inert regardless of the GUC, and `withTenantRLS` does not
+inject for `orgId` models by design. Isolation therefore rests on the **explicit
+`orgId` filter present in every query** in `cache.ts` and `persistence.ts`. That is
+pre-existing (the `app_user` cutover is outstanding — see
+`project_rls_phase1_grants_2026_06_02`), was not changed by this fix, and is the
+reason those filters must never be dropped as "redundant with RLS".

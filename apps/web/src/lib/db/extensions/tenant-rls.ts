@@ -88,6 +88,16 @@ const EXEMPT_MODELS = new Set([
   'CarrierCatalogMeta', // global lookup table — no org/tenant scoping
   'Trip', // uses orgId, not tenantId — code in trips.ts handles isolation manually
   'CarrierClientContact', // uses orgId instead of tenantId (quick-492)
+  // Document Import (Phase 1) — all four use orgId, matching their carrier
+  // siblings above. They were added to the schema without being added here, so
+  // every query against them had `{ tenantId }` injected into a model that has
+  // no such column, which Prisma rejects outright. Isolation for these is the
+  // explicit `orgId` filter that persistence.ts / cache.ts apply on every
+  // query, plus the table's RLS policy once DATABASE_URL moves to app_user.
+  'DocumentImport', // uses orgId instead of tenantId
+  'DocumentImportPage', // uses orgId instead of tenantId
+  'FacilityExternalReference', // uses orgId instead of tenantId
+  'DocumentProfile', // uses orgId instead of tenantId
   // RouteDriver — removed: now has tenantId (quick-327)
   // SysAdminInvoiceItem — removed: now has tenantId (quick-327)
   // PushToken — removed: now has tenantId (quick-327)

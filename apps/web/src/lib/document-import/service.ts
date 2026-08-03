@@ -154,6 +154,11 @@ export interface ExtractOptions {
    *
    * A throw is swallowed. Progress reporting must never lose a page that was
    * successfully extracted and paid for.
+   *
+   * BUT: the swallow is not permission to fail quietly. A callback that cannot
+   * write its row must LOG before it throws — otherwise a failed write produces
+   * no row, no log, and a cache that is cold forever with nothing to explain it.
+   * See `intake.ts`, which wraps `writePageOutcome` for exactly this reason.
    */
   onPageSettled?: (
     outcome: PageOutcome,
