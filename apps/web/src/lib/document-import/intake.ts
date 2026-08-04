@@ -21,6 +21,7 @@ import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { getObjectBytes, ObjectTooLargeError } from '@/lib/storage/object-bytes';
 import { assertTenantKey } from '@/lib/storage/tenant-key';
 import { hashDocument } from './hashing';
+import { materialisePages, PdfPageLimitError } from './materialise';
 import { classify, isUnsupportedSpreadsheet, type SourceFile } from './pages';
 import { extractDocument, type ExtractionUsage } from './service';
 import { parseSpreadsheet } from './spreadsheet';
@@ -163,7 +164,7 @@ export interface StartImportSuccess {
 
 export interface StartImportRejected {
   ok: false;
-  reason: 'UNSUPPORTED_XLSX' | 'UNSUPPORTED_TYPE' | 'NO_FILES' | 'TOO_LARGE';
+  reason: 'UNSUPPORTED_XLSX' | 'UNSUPPORTED_TYPE' | 'NO_FILES' | 'TOO_LARGE' | 'PDF_TOO_MANY_PAGES';
   message: string;
 }
 
@@ -202,18 +203,52 @@ export async function startImport(input: StartImportInput): Promise<StartImportR
     };
   }
 
+  // The user's own description of what they uploaded, captured BEFORE a PDF is
+  // split into pages — after that the file list is rendered PNGs and no longer
+  // describes anything the user has seen.
+  const originalName = files[0]?.filename ?? null;
+  const sourceMimeType = files.length === 1 ? files[0].mimeType : null;
+
   let contentHash: string;
+  let pageFiles = files;
   try {
     const sources = await loadSources(orgId, files);
-    contentHash = hashDocument(sources.map((s) => s.bytes));
+
+    // A PDF becomes one image source per page here. Everything after this line
+    // — the hash, the row, the page count, extraction — is page-wise and knows
+    // nothing about PDFs. See `materialise.ts`.
+    const { sources: pages } = await materialisePages(orgId, sources);
+
+    pageFiles = pages.map((s) => ({
+      storageKey: s.storageKey!,
+      filename: s.filename,
+      mimeType: s.mimeType,
+      sizeBytes: s.bytes.length,
+    }));
+
+    // Hashed over the PAGE bytes, not the original file bytes. Rendering is
+    // deterministic, so re-uploading the same PDF still produces the same
+    // document hash and is still caught as a duplicate.
+    contentHash = hashDocument(pages.map((s) => s.bytes));
   } catch (err) {
     if (err instanceof ObjectTooLargeError) {
       return { ok: false, reason: 'TOO_LARGE', message: err.message };
     }
+    if (err instanceof PdfPageLimitError) {
+      return { ok: false, reason: 'PDF_TOO_MANY_PAGES', message: err.message };
+    }
     throw err;
   }
 
-  return beginImport({ orgId, userId, files, contentHash, mode });
+  return beginImport({
+    orgId,
+    userId,
+    files: pageFiles,
+    contentHash,
+    mode,
+    originalName,
+    sourceMimeType,
+  });
 }
 
 /**
@@ -231,6 +266,9 @@ export async function beginImport(input: {
   files: StagedFile[];
   contentHash: string;
   mode?: StartImportMode;
+  /** See `CreateImportInput` — set when a PDF was split into rendered pages. */
+  originalName?: string | null;
+  sourceMimeType?: string | null;
 }): Promise<StartImportResult> {
   const { orgId, userId, files, contentHash, mode = 'new' } = input;
 
@@ -265,7 +303,14 @@ export async function beginImport(input: {
   }
 
   try {
-    const record = await createImport({ orgId, userId, files, contentHash });
+    const record = await createImport({
+      orgId,
+      userId,
+      files,
+      contentHash,
+      originalName: input.originalName,
+      sourceMimeType: input.sourceMimeType,
+    });
     return { ok: true, importId: record.id };
   } catch (err) {
     // Lost the race to a concurrent upload of the same bytes. Re-read and
@@ -635,7 +680,29 @@ export async function reshootPage(
     return { ok: false, message: `This import is ${record.status.toLowerCase()} and cannot be changed.` };
   }
 
-  const nextKeys = await replaceSourceFile(orgId, userId, importId, pageNumber, file);
+  // Every entry in `sourceFileKeys` is exactly one page, which is what lets the
+  // array index BE the page number. A PDF replacement has to be rendered to
+  // hold that invariant, and a multi-page one cannot fit a single slot — that is
+  // a different document, not a re-shoot of one page.
+  let replacement = file;
+  if (classify(file.mimeType) === 'pdf') {
+    const [rendered] = await loadSources(orgId, [file]);
+    const { sources: pages } = await materialisePages(orgId, [rendered]);
+    if (pages.length !== 1) {
+      return {
+        ok: false,
+        message: `That PDF has ${pages.length} pages and page ${pageNumber} is a single page. Upload a one-page file, or start a new import for the whole document.`,
+      };
+    }
+    replacement = {
+      storageKey: pages[0].storageKey!,
+      filename: pages[0].filename,
+      mimeType: pages[0].mimeType,
+      sizeBytes: pages[0].bytes.length,
+    };
+  }
+
+  const nextKeys = await replaceSourceFile(orgId, userId, importId, pageNumber, replacement);
 
   // The bytes changed, so the document hash changed with them.
   const files: StagedFile[] = nextKeys.map((key) => ({

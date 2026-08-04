@@ -3,20 +3,25 @@
  *
  * Spec: docs/specs/DocumentImport_TechnicalSpec_v1.md Section 14, Phase 1 item 3.
  *
- * PDF STRATEGY (audit D5, option A).
- * A PDF is handed to the model whole, as one "page" unit, using the `document`
- * content block that `ai-documents.ts` already proves works. It is NOT
- * rasterised into per-page images.
+ * PDF STRATEGY — superseded.
  *
- * Why: `pdfjs-dist` is present but the repo only uses it inside a try/catch with
- * a documented "pdfjs-dist has Next.js compatibility issues" comment
- * (lib/storage/validate.ts:171-195). Putting it on the extraction hot path would
- * be the single least-proven thing in this phase.
+ * Phase 1 handed a PDF to the model whole, as a single "page" unit, on the
+ * grounds that `pdfjs-dist` was unproven on this hot path. That worked, because
+ * the model reads PDFs natively — and it is precisely why the gap stayed hidden:
+ * a three-page PDF extracted correctly while producing ONE page row, ONE generic
+ * "1 page" thumbnail, and no per-page cache entries at all. The spec requirement
+ * — split, normalise, hash each page independently, cache per page hash — was
+ * met for photos and quietly unmet for every PDF.
  *
- * The cost: per-PAGE caching does not apply to PDFs — the whole PDF is one cache
- * unit. Per-page caching does apply to photos, where each photo genuinely is one
- * page, and photos are the 5:30am flow the module exists for. Revisit if
- * per-page PDF caching turns out to matter (see 01-SUMMARY.md).
+ * PDFs are now rasterised to one PNG per page BEFORE they reach this function,
+ * by `materialise.ts`. By the time `toPages` runs, a three-page PDF has already
+ * become three `image/png` sources, so this function does not special-case PDFs
+ * at all — it just numbers and hashes whatever it is given. One path for photos
+ * and PDF pages alike, which is the point.
+ *
+ * `isMultiPage` survives for the fallback case only: if the renderer is
+ * unavailable at runtime, `materialise.ts` degrades to passing the PDF through
+ * whole rather than failing the import, and that unit is still flagged here.
  */
 
 import { hashPage } from './hashing';
@@ -36,17 +41,32 @@ export interface SourceFile {
   bytes: Buffer;
   /** Tenant-prefixed storage key, when already uploaded. */
   storageKey?: string | null;
+  /**
+   * True when this source is a page rendered out of a PDF rather than something
+   * the user photographed.
+   *
+   * Carried purely so the failure copy stays honest (DEC-6): a rendered page is
+   * an `image/png` and therefore indistinguishable from a photo by MIME type,
+   * and telling a dispatcher to "take a clearer photo" of a PDF they were
+   * emailed is an instruction they cannot follow.
+   */
+  fromPdf?: boolean;
 }
 
-/** One unit of extraction work. For photos, one page. For a PDF, the whole file. */
+/** One unit of extraction work — one page, whether photographed or rendered. */
 export interface SourcePage {
   pageNumber: number;
   mimeType: string;
   bytes: Buffer;
   hash: string;
   storageKey?: string | null;
-  /** True when this unit is a multi-page PDF rather than a single page. */
+  /**
+   * True only for a whole PDF passed through unsplit, which happens solely on
+   * the renderer-unavailable fallback path in `materialise.ts`.
+   */
   isMultiPage: boolean;
+  /** True when this page was rendered from a PDF. See `SourceFile.fromPdf`. */
+  fromPdf: boolean;
 }
 
 export function classify(mimeType: string): SourceKind {
@@ -95,6 +115,8 @@ export function toPages(sources: SourceFile[]): SourcePage[] {
       hash: hashPage(src.bytes),
       storageKey: src.storageKey ?? null,
       isMultiPage: kind === 'pdf',
+      // A whole PDF is trivially PDF-derived; a rendered page says so itself.
+      fromPdf: kind === 'pdf' || src.fromPdf === true,
     });
   }
 

@@ -11,7 +11,7 @@
  * lambda's heap at once is how a function dies with no useful error.
  */
 
-import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client, getBucketName } from './s3-client';
 
 /** Per-object ceiling. Above this we refuse rather than risk the heap. */
@@ -60,4 +60,35 @@ export async function getObjectBytes(s3Key: string): Promise<Buffer> {
     chunks.push(Buffer.from(chunk));
   }
   return Buffer.concat(chunks);
+}
+
+/**
+ * Write bytes the server produced itself, rather than bytes a client uploaded.
+ *
+ * The presigned flow in `presigned.ts` exists so a browser or a phone can PUT
+ * straight to storage without the file passing through a lambda. That is the
+ * right shape for a user's upload and the wrong shape for an object the server
+ * just generated in memory — a rendered PDF page — where round-tripping through
+ * a presigned URL would mean signing a URL and then calling it from the same
+ * process that already holds the bytes.
+ *
+ * Same bucket, same tenant-prefixed key convention, same size ceiling. The
+ * caller must have built the key with the tenant prefix and validated it with
+ * `assertTenantKey`; this function does not know who is asking.
+ */
+export async function putObjectBytes(
+  s3Key: string,
+  bytes: Buffer,
+  contentType: string,
+): Promise<void> {
+  if (bytes.byteLength > MAX_OBJECT_BYTES) throw new ObjectTooLargeError(bytes.byteLength);
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: getBucketName(),
+      Key: s3Key,
+      Body: bytes,
+      ContentType: contentType,
+    }),
+  );
 }

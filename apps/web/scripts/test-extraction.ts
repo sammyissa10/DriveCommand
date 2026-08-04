@@ -10,10 +10,16 @@
  *                                wiring, per-page persistence and finish/fail
  *                                handling that `runExtraction` uses from a route
  *
- * The ONE thing it replaces is `loadSources()`, i.e. "fetch the bytes from R2".
- * There are no S3 credentials in `.env` or `.env.local`, so the storage read
- * cannot run here — the bytes are read from a local folder instead. That step
- * is not part of the cache mechanism, so the cache result below is real.
+ * The ONE thing it replaces is `loadSources()`, i.e. "fetch the bytes from R2" —
+ * the bytes are read from a local folder instead. That step is not part of the
+ * cache mechanism, so the cache result below is real.
+ *
+ * This used to say the storage read "cannot run here" because there were no S3
+ * credentials. There are: they live in `apps/web/.env.local`, which
+ * `_bootstrap-env` did not load until it was taught to. A script that needs the
+ * real storage path can now take it — see `test-pdf-import.ts`, which uploads to
+ * R2 and drives `startImport` end to end. This script stays local-folder-based
+ * because a folder of loose photos is what it is for.
  *
  * WHY THE CACHE USED TO MISS EVERY TIME. `prismaPageCache` acquired its client
  * through `getTenantPrisma()`, which resolves the tenant from the `x-tenant-id`

@@ -27,9 +27,24 @@ import { config as loadEnv } from 'dotenv';
 import { resolve } from 'path';
 
 const REPO_ROOT = resolve(__dirname, '../../..');
+const APP_ROOT = resolve(__dirname, '..');
 
 loadEnv({ path: resolve(REPO_ROOT, '.env') });
 loadEnv({ path: resolve(REPO_ROOT, '.env.local') });
+
+// THREE files, not two. The repo-root pair carries DATABASE_URL / DIRECT_URL /
+// ANTHROPIC_API_KEY; the S3 credentials live only in `apps/web/.env.local`,
+// because that is the file Next.js itself loads and storage is a web-app
+// concern. Without this a script can reach the database and the model but not
+// R2 — which is why an earlier script documented "there are no S3 credentials
+// in .env or .env.local" and read its bytes off the local disk instead. There
+// are; they were simply in the file it did not load.
+//
+// Loaded LAST and non-overriding: dotenv leaves an already-set variable alone,
+// so the repo-root DATABASE_URL still wins. That matters — `apps/web/.env.local`
+// may point DATABASE_URL at the RLS-enforced `app_user` role, and silently
+// switching a script onto it would make every query return zero rows.
+loadEnv({ path: resolve(APP_ROOT, '.env.local') });
 
 if (process.env.DIRECT_URL) {
   process.env.DATABASE_URL = process.env.DIRECT_URL;

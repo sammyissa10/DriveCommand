@@ -282,6 +282,17 @@ export interface CreateImportInput {
   files: StagedFile[];
   contentHash: string;
   documentType?: string | null;
+  /**
+   * What the user actually uploaded, when that differs from `files`.
+   *
+   * A PDF is split into one rendered PNG per page before it reaches here
+   * (`materialise.ts`), so `files` is three pages while the user uploaded one
+   * document called `manifest-3page.pdf`. Deriving the name and type from
+   * `files` in that case would label the import `manifest-3page-p1.png`, which
+   * is not a file the user has ever seen. Passed explicitly rather than guessed.
+   */
+  originalName?: string | null;
+  sourceMimeType?: string | null;
 }
 
 /**
@@ -303,8 +314,8 @@ export async function createImport(input: CreateImportInput): Promise<ImportReco
         orgId,
         status: 'UPLOADED',
         sourceFileKeys: files.map((f) => f.storageKey),
-        sourceMimeType: dominantMimeType(files),
-        originalName: files[0]?.filename ?? null,
+        sourceMimeType: input.sourceMimeType ?? dominantMimeType(files),
+        originalName: input.originalName ?? files[0]?.filename ?? null,
         contentHash,
         documentType: documentType ?? null,
         pageCount: files.length,

@@ -63,6 +63,16 @@ interface StagedItem {
   /** Set once uploaded. */
   storageKey?: string;
   error?: string;
+  /**
+   * How many pages this file contributes. 1 for a photo; for a PDF it is read
+   * out of the document itself.
+   *
+   * `undefined` means "not counted yet, or could not be counted" and is
+   * deliberately NOT defaulted to 1 — a three-page PDF shown as "1 page" is the
+   * exact defect this staging screen had, and guessing low is worse than saying
+   * nothing. The label falls back to counting files when any count is unknown.
+   */
+  pageCount?: number;
 }
 
 const ACCEPT = 'image/jpeg,image/png,image/webp,application/pdf,text/csv,.csv';
@@ -75,7 +85,45 @@ function stage(file: File): StagedItem {
     id: `staged-${seq}`,
     file,
     previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+    // A photo is one page by definition. A PDF's count has to be read out of
+    // the file, which happens asynchronously — see `countPdfPages` below.
+    pageCount: file.type === 'application/pdf' ? undefined : 1,
   };
+}
+
+/**
+ * Page count of a PDF, read in the browser.
+ *
+ * The server splits PDFs into per-page images at intake, so the import row and
+ * every screen after this one already show the true count. This exists purely so
+ * the staging screen — which runs before anything is uploaded — does not claim
+ * "1 page" for a document with ten.
+ *
+ * `pdfjs-dist` is already a dependency and is imported dynamically, so the
+ * ~350KB reader is fetched only when someone actually picks a PDF. Returns null
+ * rather than throwing: an uncounted PDF degrades the label, and a wizard that
+ * breaks because a page count failed would be far worse than one that says
+ * "2 files".
+ */
+async function countPdfPages(file: File): Promise<number | null> {
+  try {
+    const pdfjs = await import('pdfjs-dist');
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.mjs',
+      import.meta.url,
+    ).toString();
+
+    const doc = await pdfjs.getDocument({
+      data: new Uint8Array(await file.arrayBuffer()),
+    }).promise;
+    try {
+      return doc.numPages;
+    } finally {
+      await doc.destroy();
+    }
+  } catch {
+    return null;
+  }
 }
 
 function kindIcon(file: File) {
@@ -94,15 +142,30 @@ function formatBytes(n: number): string {
 // One thumbnail row
 // ---------------------------------------------------------------------------
 
+/**
+ * Label for one staged row.
+ *
+ * A photo is "Page 4". A PDF that contributes three pages starting at 4 is
+ * "Pages 4–6", because the row is one file but three pages, and the strip is
+ * numbered in pages. An uncounted PDF says so rather than inventing a number.
+ */
+function rowLabel(item: StagedItem, startPage: number): string {
+  if (item.pageCount === undefined) return 'PDF · counting pages…';
+  if (item.pageCount === 1) return `Page ${startPage}`;
+  return `Pages ${startPage}–${startPage + item.pageCount - 1}`;
+}
+
 function PageRow({
   item,
   index,
+  startPage,
   disabled,
   onDelete,
   onRetake,
 }: {
   item: StagedItem;
   index: number;
+  startPage: number;
   disabled: boolean;
   onDelete: () => void;
   onRetake: () => void;
@@ -144,7 +207,7 @@ function PageRow({
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-foreground">
-          Page {index + 1}
+          {rowLabel(item, startPage)}
           <span className="ml-2 font-normal text-muted-foreground">{item.file.name}</span>
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">
@@ -208,6 +271,43 @@ export function ImportWizard({ recent }: { recent: ImportListItem[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- cleanup only, on unmount
     [],
   );
+
+  /**
+   * Resolve the page count of any newly-added PDF.
+   *
+   * Keyed on the item id, so a file that has already been counted — or that
+   * failed to count — is never read twice, and a reorder does not re-trigger
+   * anything. Results are written back by id rather than by index because the
+   * user can drag or delete rows while a large PDF is still being read.
+   */
+  const counting = useRef(new Set<string>());
+  useEffect(() => {
+    for (const item of items) {
+      if (item.pageCount !== undefined || counting.current.has(item.id)) continue;
+      counting.current.add(item.id);
+
+      void countPdfPages(item.file).then((count) => {
+        if (count === null) return; // stays unknown; the label degrades honestly
+        setItems((prev) =>
+          prev.map((i) => (i.id === item.id ? { ...i, pageCount: count } : i)),
+        );
+      });
+    }
+  }, [items]);
+
+  /**
+   * What the heading says.
+   *
+   * Only claims a page total once every file's contribution is known. While a
+   * PDF is still being read, or if it could not be read at all, it counts files
+   * instead — which is vague but true, where "1 page" for a three-page PDF was
+   * precise and false.
+   */
+  const allCounted = items.every((i) => i.pageCount !== undefined);
+  const totalPages = items.reduce((n, i) => n + (i.pageCount ?? 0), 0);
+  const stagedLabel = allCounted
+    ? `${totalPages} page${totalPages === 1 ? '' : 's'}`
+    : `${items.length} file${items.length === 1 ? '' : 's'}`;
 
   const addFiles = useCallback((fileList: FileList | null) => {
     if (!fileList?.length) return;
@@ -467,9 +567,7 @@ export function ImportWizard({ recent }: { recent: ImportListItem[] }) {
       {hasItems ? (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">
-              {items.length} page{items.length === 1 ? '' : 's'}
-            </h2>
+            <h2 className="text-sm font-semibold text-foreground">{stagedLabel}</h2>
             <span className="text-xs text-muted-foreground">Drag to reorder</span>
           </div>
 
@@ -481,6 +579,12 @@ export function ImportWizard({ recent }: { recent: ImportListItem[] }) {
                     key={item.id}
                     item={item}
                     index={index}
+                    // Pages contributed by everything above this row, so a PDF
+                    // in the middle of the list pushes the photos after it down
+                    // by its own page count rather than by one.
+                    startPage={
+                      items.slice(0, index).reduce((n, i) => n + (i.pageCount ?? 1), 0) + 1
+                    }
                     disabled={busy}
                     onDelete={() => removeAt(index)}
                     onRetake={() => startRetake(index)}

@@ -2,6 +2,15 @@ import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
+  // Document import renders PDF pages to images server-side (see
+  // `lib/document-import/pdf-render.ts`). `pdfjs-dist` is ESM-only and
+  // `@napi-rs/canvas` — which pdfjs ships as its own optional dependency for
+  // Node rendering — resolves a platform-specific `.node` binary at runtime.
+  // Left to itself the bundler tries to trace and inline both and fails on the
+  // native binary, which is the "pdfjs-dist has Next.js compatibility issues"
+  // that earlier code worked around with a try/catch. Externalising them is the
+  // supported fix: they are required from node_modules at runtime instead.
+  serverExternalPackages: ['pdfjs-dist', '@napi-rs/canvas'],
   experimental: {
     serverActions: {
       bodySizeLimit: '1mb',

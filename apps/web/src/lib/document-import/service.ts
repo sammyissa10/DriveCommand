@@ -236,9 +236,15 @@ export function allPagesFailedMessage(failed: PageOutcome[], pageCount: number):
  * - a mix       → name both, because either could be the cause
  */
 export function zeroConsignmentsMessage(pages: SourcePage[]): string {
-  const hasPdf = pages.some((p) => p.isMultiPage);
-  const hasPhotos = pages.some((p) => !p.isMultiPage);
-  const many = pages.filter((p) => !p.isMultiPage).length > 1;
+  // PDF-derived means "the user cannot re-shoot this", which is the only thing
+  // the wording turns on. A page rendered out of a PDF is an `image/png` and is
+  // otherwise indistinguishable from a photo, so it must be asked, not inferred
+  // from the MIME type — getting this wrong sends a dispatcher out to re-shoot
+  // a document that arrived by email.
+  const isPdfDerived = (p: SourcePage) => p.isMultiPage || p.fromPdf;
+  const hasPdf = pages.some(isPdfDerived);
+  const hasPhotos = pages.some((p) => !isPdfDerived(p));
+  const many = pages.filter((p) => !isPdfDerived(p)).length > 1;
 
   if (hasPdf && !hasPhotos) {
     return 'That PDF was read, but no delivery stops were found in it. Check it is the delivery schedule or manifest rather than a cover sheet, then try again.';

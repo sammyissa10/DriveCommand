@@ -78,6 +78,7 @@ function page(bytes = 'page-bytes'): SourcePage {
     hash: hashPage(buf),
     storageKey: null,
     isMultiPage: false,
+    fromPdf: false,
   };
 }
 
