@@ -4,9 +4,16 @@
  * "Which contract?" — the unresolved-contract step (spec Section 4.2: "Picker.
  * Rate cons offer one-time contract").
  *
- * Two things on this screen and no more: the client's active contracts, and —
- * only for a rate confirmation — the offer to make a one-time contract from the
- * rate printed on the document.
+ * Three things on this screen and no more: the client's active contracts; for a
+ * rate confirmation, the offer to make a one-time contract from the rate
+ * printed on the document; and, when there is nothing to pick and no rate to
+ * make one from, the offer to create the client's first contract here. Which of
+ * the three appears is decided server-side (`slot.spotOffer`,
+ * `slot.createOffer`), so this surface and the mobile one cannot disagree.
+ *
+ * THERE IS ALWAYS AN ACTION. A client created inline a moment ago has no
+ * contracts, so an empty picker is the ordinary state for a new client, not a
+ * rare one; a screen that only said so left the wizard with no way forward.
  *
  * THE ONE-TIME CONTRACT IS LABELLED BEFORE IT EXISTS. The proposed name, the
  * rate, and the single-day term are all on screen before the button is pressed,
@@ -15,7 +22,7 @@
  */
 
 import { useState } from 'react';
-import { FileText, Loader2, Sparkles } from 'lucide-react';
+import { Check, FileText, Loader2, Plus, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +71,7 @@ export function ContractDecision({ importId, slot, clientName, onResolved, compa
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rate, setRate] = useState(slot.spotOffer?.totalRate ?? '');
+  const [newName, setNewName] = useState('');
 
   async function post(url: string, body: unknown) {
     setSaving(true);
@@ -92,6 +100,15 @@ export function ContractDecision({ importId, slot, clientName, onResolved, compa
       baseRate: rate.trim(),
     });
 
+  // The same request the spot offer makes, minus everything the document does
+  // not say. `spot: false` is what separates a standing contract from a
+  // one-trip agreement, and it is the only difference the server sees.
+  const createContract = () =>
+    post(`/api/v1/carrier/document-imports/${importId}/resolution/contract`, {
+      spot: false,
+      ...(newName.trim() ? { contractName: newName.trim() } : {}),
+    });
+
   return (
     <div className={cn('space-y-4', !compact && 'rounded-xl bg-muted/40 p-5')}>
       {!compact ? (
@@ -100,7 +117,7 @@ export function ContractDecision({ importId, slot, clientName, onResolved, compa
           <p className="mt-1 text-sm text-muted-foreground">
             {slot.candidates.length > 0
               ? `${clientName} has ${slot.candidates.length} active contracts.`
-              : `${clientName} has no active contract.`}
+              : `${clientName} has no active contract yet.`}
           </p>
         </div>
       ) : null}
@@ -199,11 +216,52 @@ export function ContractDecision({ importId, slot, clientName, onResolved, compa
         </div>
       ) : null}
 
-      {slot.candidates.length === 0 && !slot.spotOffer ? (
-        <p className="text-sm text-muted-foreground">
-          {slot.blockedReason ??
-            'There is no active contract for this client. Add one on the client’s page, then come back — this import will be waiting.'}
-        </p>
+      {/* ---- The client's first contract, created without leaving the import ----
+          Same shape as the client step's "Create and use": one optional field,
+          one button, and the row it produces is selected on the way back. */}
+      {slot.createOffer ? (
+        <div className="space-y-3 rounded-lg border border-dashed border-border p-4">
+          <div className="flex items-start gap-2">
+            <Plus className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground">
+                Create a contract for {slot.createOffer.clientName}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">{slot.createOffer.detail}</p>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="new-contract-name">Name it (optional)</Label>
+            <Input
+              id="new-contract-name"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Standard freight"
+              className="h-11"
+            />
+            {/* The document carries no contract rate — a manifest states what
+                moved, not what was agreed — so nothing here is pre-filled and
+                no rate is asked for. It is set on the contract itself. */}
+            <p className="text-xs text-muted-foreground">
+              Left blank, it takes its contract number as its name.
+            </p>
+          </div>
+
+          <Button className="min-h-[44px] w-full" onClick={() => void createContract()} disabled={saving}>
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Check className="mr-2 h-4 w-4" />
+            )}
+            Create and use
+          </Button>
+        </div>
+      ) : null}
+
+      {/* Left for the one state this component cannot act on: no client yet. */}
+      {slot.blockedReason ? (
+        <p className="text-sm text-muted-foreground">{slot.blockedReason}</p>
       ) : null}
 
       {onCancel ? (

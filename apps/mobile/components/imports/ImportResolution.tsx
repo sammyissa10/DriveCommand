@@ -637,6 +637,7 @@ function ContractDecision({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [rate, setRate] = useState(slot.spotOffer?.totalRate ?? '')
+  const [newName, setNewName] = useState('')
 
   async function run(fn: () => Promise<ImportResolutionView>) {
     setSaving(true)
@@ -663,7 +664,7 @@ function ContractDecision({
           <Text style={{ ...typography.footnote, color: c.textSecondary, marginTop: spacing.xs }}>
             {slot.candidates.length > 0
               ? `${clientName} has ${slot.candidates.length} active contracts.`
-              : `${clientName} has no active contract.`}
+              : `${clientName} has no active contract yet.`}
           </Text>
         </View>
       ) : null}
@@ -758,11 +759,49 @@ function ContractDecision({
         </View>
       ) : null}
 
-      {slot.candidates.length === 0 && !slot.spotOffer ? (
-        <Text style={{ ...typography.footnote, color: c.textSecondary }}>
-          {slot.blockedReason ??
-            'There is no active contract for this client. Add one on the web portal, then come back — this import will be waiting.'}
-        </Text>
+      {/* The client's first contract, created here rather than on the web
+          portal. A client added inline a moment ago has none by definition, so
+          sending the user to another surface at this point ended the flow. */}
+      {slot.createOffer ? (
+        <View style={{ borderWidth: 1, borderStyle: 'dashed', borderColor: c.border, borderRadius: radii.md, padding: spacing.md, gap: spacing.md }}>
+          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            <Plus color={c.brand} size={16} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }}>
+                Create a contract for {slot.createOffer.clientName}
+              </Text>
+              <Text style={{ ...typography.caption1, color: c.textTertiary, marginTop: 2 }}>
+                {slot.createOffer.detail}
+              </Text>
+            </View>
+          </View>
+
+          {/* Nothing is pre-filled and no rate is asked for: the document that
+              reaches this branch carries none. It is set on the contract. */}
+          <Field
+            value={newName}
+            onChangeText={setNewName}
+            label="Name it (optional)"
+            placeholder="Standard freight"
+            c={c}
+          />
+          <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+            Left blank, it takes its contract number as its name.
+          </Text>
+
+          <PrimaryAction
+            label="Create and use"
+            icon={Check}
+            onPress={() => run(() => ownerImportsApi.createContract(token, importId, newName.trim() || undefined))}
+            busy={saving}
+            c={c}
+          />
+        </View>
+      ) : null}
+
+      {/* Left for the one state this component cannot act on: no client yet. */}
+      {slot.blockedReason ? (
+        <Text style={{ ...typography.footnote, color: c.textSecondary }}>{slot.blockedReason}</Text>
       ) : null}
 
       {onCancel ? <SecondaryAction label="Cancel" onPress={onCancel} c={c} /> : null}

@@ -34,6 +34,7 @@ import { logger } from '@/lib/logger';
 import { createClient, DuplicateClientError, type ClientCreateInput } from '@/lib/carrier/clients';
 import { createContract } from '@/lib/carrier/contracts';
 import { isOneTimeContract } from '@/lib/carrier/one-time-contract';
+import { RATE_TYPES } from '@/lib/carrier/rate-types';
 import {
   bestClientMatch,
   CANDIDATE_FLOOR,
@@ -160,6 +161,30 @@ export interface SpotOffer {
   detail: string;
 }
 
+/**
+ * The offer to create this client's first contract, without leaving the import.
+ *
+ * WHY IT EXISTS. A client created inline a moment earlier has no contracts by
+ * definition, so "no active contract" is the *default* state for every new
+ * client rather than an edge case. Before this offer, that state rendered a
+ * sentence and no action — the step told the user to go and add a contract
+ * somewhere else, which is a dead end and breaks the rule that an unresolved
+ * step presents an explicit choice (spec 4.2).
+ *
+ * WHAT IT CARRIES. The client, and nothing else. Everything a contract could be
+ * pre-filled with — a rate, a term, a start date — is absent because no
+ * manifest states the terms of a standing agreement, and putting numbers on a
+ * contract that no document supports is worse than leaving them for the
+ * contract's own page. The rate confirmation, which *does* carry a rate, is
+ * served by `spotOffer` instead and never by this.
+ */
+export interface ContractCreateOffer {
+  /** Whose contract this will be. Fixed by the client row — not a field. */
+  clientName: string;
+  /** Why this is being offered, in one sentence. */
+  detail: string;
+}
+
 export interface ContractSlotView {
   state: Extract<SlotState, 'RESOLVED' | 'UNRESOLVED' | 'AWAITING_CLIENT'>;
   value: ContractOption | null;
@@ -167,6 +192,8 @@ export interface ContractSlotView {
   candidates: ContractOption[];
   /** Non-null only for a rate confirmation with an unresolved contract (item 3). */
   spotOffer: SpotOffer | null;
+  /** Non-null when there is nothing to pick, so there is something to create. */
+  createOffer: ContractCreateOffer | null;
   /** Set when the row cannot be decided yet, e.g. no client. */
   blockedReason: string | null;
 }
@@ -563,6 +590,13 @@ function rankCandidates(
 /** Spec Section 5: rate confirmations are the type that carries a flat rate. */
 const RATE_CONFIRMATION = 'RATE_CONFIRMATION';
 
+/**
+ * What a contract created from the import gets when the caller names no rate
+ * type. It is the column's own default, so this changes nothing about the row
+ * — it exists so the value is stated here rather than implied by the schema.
+ */
+const DEFAULT_RATE_TYPE = 'per_mile';
+
 function spotContractName(record: ImportRecord, date: string): string {
   const number = record.documentNumber?.trim();
   return number ? `One-time — RC ${number} (${date})` : `One-time — rate confirmation (${date})`;
@@ -589,6 +623,7 @@ async function buildContractSlot(
       why: null,
       candidates: [],
       spotOffer: null,
+      createOffer: null,
       blockedReason: 'Pick the client first — contracts belong to a client.',
     };
   }
@@ -632,6 +667,7 @@ async function buildContractSlot(
         },
         candidates,
         spotOffer: null,
+        createOffer: null,
         blockedReason: null,
       };
     }
@@ -653,6 +689,7 @@ async function buildContractSlot(
         },
         candidates,
         spotOffer: null,
+        createOffer: null,
         blockedReason: null,
       };
     }
@@ -673,20 +710,38 @@ async function buildContractSlot(
       },
       candidates,
       spotOffer: null,
+      createOffer: null,
       blockedReason: null,
     };
   }
+
+  const spotOffer = offerSpot();
+  const clientName = clientSlot.value?.name ?? 'This client';
 
   return {
     state: 'UNRESOLVED',
     value: null,
     why: null,
     candidates,
-    spotOffer: offerSpot(),
-    blockedReason:
-      candidates.length === 0 && record.documentType !== RATE_CONFIRMATION
-        ? 'This client has no active contract.'
+    spotOffer,
+    // Nothing to pick and no spot offer is exactly the case that used to end in
+    // a sentence and no action. The spot offer stays exclusive to rate
+    // confirmations (spec 4.2), so where it is absent this takes its place —
+    // the step always has one thing the user can do.
+    createOffer:
+      candidates.length === 0 && !spotOffer
+        ? {
+            clientName,
+            // Deliberately does not restate "has no active contract" — the step
+            // above says that once, and saying it twice was half the original
+            // defect. This sentence is about the action, not the situation.
+            detail:
+              'A trip is billed against a contract. Create one here and the import carries on with it — its rate and terms can be filled in on the contract afterwards.',
+          }
         : null,
+    // The row is no longer blocked in any case it can reach: it either has
+    // contracts to choose from, a spot offer, or the create offer above.
+    blockedReason: null,
   };
 }
 
@@ -1029,6 +1084,13 @@ function parseMoney(raw: string | null | undefined): Prisma.Decimal | null {
 /**
  * Create a contract for this import's client and select it.
  *
+ * Two paths. The plain one — `spot: false`, behind `contract.createOffer` — is
+ * an ordinary standing contract for a client that has none: nothing on it but a
+ * name and the client, because nothing else is on the document. The rate type
+ * is checked against `RATE_TYPES` rather than passed through, since the column
+ * carries a CHECK constraint and an unknown value would surface as a 500 from
+ * Postgres rather than as the sentence below.
+ *
  * The spot path is item 3 in full: typed `spot`, a flat rate taken from the
  * document, effective and expiring on the same day so its term is one trip, the
  * source document attached to it, and a name that says "One-time" before
@@ -1059,6 +1121,11 @@ export async function createAndAssignContract(
     );
   }
 
+  const rateType = input.rateType?.trim() || DEFAULT_RATE_TYPE;
+  if (!input.spot && !(RATE_TYPES as readonly string[]).includes(rateType)) {
+    throw new ResolutionError(`“${rateType}” is not a rate type this system uses.`, 'INVALID_CONTRACT');
+  }
+
   const date = input.effectiveDate ?? tripDate(record);
 
   const created = await createContract(
@@ -1084,7 +1151,7 @@ export async function createAndAssignContract(
       : {
           contractType: 'contract',
           contractName: input.contractName?.trim() || undefined,
-          rateType: input.rateType ?? 'per_mile',
+          rateType,
           ...(rate ? { baseRate: rate.toString() } : {}),
           ...(input.effectiveDate ? { effectiveDate: input.effectiveDate } : {}),
           ...(input.expirationDate ? { expirationDate: input.expirationDate } : {}),

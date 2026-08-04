@@ -124,12 +124,26 @@ export interface SpotOffer {
   detail: string
 }
 
+/**
+ * The offer to create the client's first contract inline.
+ *
+ * Non-null only when the picker is empty AND there is no spot offer — i.e. the
+ * state that used to be a dead end. It carries the client and nothing else: a
+ * manifest states what moved, not the terms of a standing agreement, so there
+ * is nothing honest to pre-fill a rate or a term from.
+ */
+export interface ContractCreateOffer {
+  clientName: string
+  detail: string
+}
+
 export interface ContractSlotView {
   state: 'RESOLVED' | 'UNRESOLVED' | 'AWAITING_CLIENT'
   value: ContractOption | null
   why: WhyView | null
   candidates: ContractOption[]
   spotOffer: SpotOffer | null
+  createOffer: ContractCreateOffer | null
   blockedReason: string | null
 }
 
@@ -318,5 +332,17 @@ export const ownerImportsApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ spot: true, baseRate }),
+    }).then((r) => r.data),
+
+  /**
+   * A standing contract for a client that has none — the way out of the empty
+   * picker. `spot: false` is the whole difference the server sees; the rate and
+   * the term are left unset because the document does not state them.
+   */
+  createContract: (token: string, importId: string, contractName?: string) =>
+    apiRequest<{ data: ImportResolutionView }>(`${BASE}/${importId}/resolution/contract`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ spot: false, ...(contractName ? { contractName } : {}) }),
     }).then((r) => r.data),
 }

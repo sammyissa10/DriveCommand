@@ -316,11 +316,20 @@ followed literally.
 **Template matching.** Phase 6. The row is a declared stub.
 
 **No spot contract for non-rate-confirmations.** The offer appears only when
-`document_type = 'RATE_CONFIRMATION'`, per Section 5's table. A manifest with no
-contract shows "This client has no active contract" and points at the client
-page. `createAndAssignContract` accepts `{spot: false}` for a standing contract
-and is wired end to end, but no UI calls it — the card would need a full contract
-form, which is the client page's job.
+`document_type = 'RATE_CONFIRMATION'`, per Section 5's table. That part stands.
+
+What did not stand was what a manifest with no contract got instead: the step
+stated "This client has no active contract" — twice, once from the heading and
+once from `blockedReason` — and pointed at the client page, with no action on
+screen. A client created inline moments earlier has no contracts by definition,
+so that was the ordinary path for every new client, and it left the wizard with
+nowhere to go. Fixed after the walkthrough: `contract.createOffer` is non-null
+exactly when the picker is empty and there is no spot offer, and both surfaces
+render a "Create and use" for a standing contract from it. It carries the client
+and nothing else — a manifest states what moved, not the terms of an agreement,
+so the rate and the term are left for the contract's own page. The reasoning for
+not building it (a full contract form) was wrong about what was needed: the
+contract only has to exist and be selected.
 
 **The date picker on mobile is a typed `YYYY-MM-DD` field.** No date-picker
 package is installed and this phase installs nothing. Web uses `<input

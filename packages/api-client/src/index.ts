@@ -20,6 +20,7 @@ export type {
   ClientSlotView,
   ContractSlotView,
   SpotOffer,
+  ContractCreateOffer,
   ImportResolutionView,
 } from './owner-imports'
 export { driverApi } from './driver'
