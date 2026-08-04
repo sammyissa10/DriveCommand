@@ -7,7 +7,6 @@ import * as ImagePicker from 'expo-image-picker'
 import Toast from 'react-native-toast-message'
 import {
   AlertTriangle,
-  ArrowRight,
   Camera,
   CheckCircle2,
   ChevronLeft,
@@ -18,6 +17,7 @@ import {
 import { ownerImportsApi, type ImportView } from '@drivecommand/api-client'
 import { useAuthContext } from '../../../context/AuthContext'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { ImportResolutionCard } from '../../../components/imports/ImportResolution'
 import { haptic } from '../../../lib/haptics'
 import {
   mimeFromUri,
@@ -306,59 +306,38 @@ export default function ImportDetailScreen() {
             </View>
           ) : null}
 
-          {/* Summary card placeholder — Phase 3 adds the resolution rows */}
-          {view.status === 'NEEDS_REVIEW' && view.summary ? (
-            <View style={{ marginTop: spacing.lg, padding: spacing.lg, borderRadius: radii.lg, backgroundColor: c.surfaceCard, gap: spacing.md }}>
-              <SummaryRow label="Stops found" value={String(view.summary.consignmentCount)} c={c} />
-              <SummaryRow
-                label="Document"
-                value={view.summary.documentType?.replace(/_/g, ' ').toLowerCase() ?? '—'}
-                c={c}
-              />
-              <SummaryRow label="Number" value={view.summary.documentNumber ?? '—'} c={c} />
-              <SummaryRow label="Date" value={view.summary.documentDate ?? '—'} c={c} />
-              {view.summary.totalPieces != null ? (
-                <SummaryRow label="Pieces" value={String(view.summary.totalPieces)} c={c} />
-              ) : null}
-              {view.summary.originName ? (
-                <SummaryRow label="Named on document" value={view.summary.originName} c={c} />
-              ) : null}
+          {/* The summary card, or the one question standing in its way.
+              `ImportResolutionCard` decides which: an unresolved client or
+              contract takes the screen to itself, and the card is drawn once
+              neither does (spec Section 4.2). */}
+          {view.status === 'NEEDS_REVIEW' && view.summary && token ? (
+            <>
+              <ImportResolutionCard token={token} view={view} onChange={setView} />
 
-              {view.summary.warnings.length > 0 ? (
-                <View style={{ borderTopWidth: 1, borderTopColor: c.divider, paddingTop: spacing.md, gap: spacing.sm }}>
-                  {view.summary.warnings.map((w, i) => (
-                    <View key={`${w.code}-${i}`} style={{ flexDirection: 'row', gap: spacing.sm }}>
-                      <Info color={c.textTertiary} size={14} />
-                      <Text style={{ ...typography.caption1, color: c.textSecondary, flex: 1 }}>
-                        {w.message}
-                      </Text>
-                    </View>
-                  ))}
+              {/* What the document said, underneath the card that says what it
+                  means — and only once the card is what is on screen. While a
+                  decision step is up, the rule is one question and nothing else
+                  competing with it. */}
+              {view.resolution?.resolved ? (
+                <View style={{ marginTop: spacing.lg, padding: spacing.lg, borderRadius: radii.lg, borderWidth: 1, borderColor: c.divider, gap: spacing.sm }}>
+                  <Text style={{ ...typography.caption1, color: c.textTertiary, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    On the document
+                  </Text>
+                  <SummaryRow
+                    label="Type"
+                    value={view.summary.documentType?.replace(/_/g, ' ').toLowerCase() ?? '—'}
+                    c={c}
+                  />
+                  <SummaryRow label="Number" value={view.summary.documentNumber ?? '—'} c={c} />
+                  {view.summary.totalPieces != null ? (
+                    <SummaryRow label="Pieces" value={String(view.summary.totalPieces)} c={c} />
+                  ) : null}
+                  {view.summary.originName ? (
+                    <SummaryRow label="Named on it" value={view.summary.originName} c={c} />
+                  ) : null}
                 </View>
               ) : null}
-
-              <View style={{ borderTopWidth: 1, borderTopColor: c.divider, paddingTop: spacing.md }}>
-                <View
-                  style={{
-                    minHeight: 52,
-                    borderRadius: radii.md,
-                    backgroundColor: c.brandDark,
-                    opacity: 0.5,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                    gap: spacing.sm,
-                  }}
-                >
-                  <Text style={{ color: '#ffffff', fontWeight: '700', fontSize: 16 }}>Review stops</Text>
-                  <ArrowRight color="#ffffff" size={17} />
-                </View>
-                <Text style={{ ...typography.caption1, color: c.textTertiary, textAlign: 'center', marginTop: spacing.sm }}>
-                  Client, contract and template matching arrive in the next phase. This import is
-                  saved and will be waiting.
-                </Text>
-              </View>
-            </View>
+            </>
           ) : null}
 
           {/* Pages */}

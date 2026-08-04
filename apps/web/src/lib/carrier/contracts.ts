@@ -1,5 +1,6 @@
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
+import type { PrismaClient } from '@/generated/prisma';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,12 +110,20 @@ export async function getContract(orgId: string, id: string) {
   };
 }
 
+/**
+ * @param db Optional pre-resolved tenant client — see the note on
+ * `createClient` in `clients.ts`. `getTenantPrisma()` reads a request header
+ * that does not exist on `/api/mobile/*` (DEC-11), so a caller holding a client
+ * from `getTenantPrismaForOrg(orgId)` passes it here rather than reimplementing
+ * contract-number generation. Omitting it is the existing behaviour.
+ */
 export async function createContract(
   orgId: string,
   clientId: string,
-  data: ContractCreateInput
+  data: ContractCreateInput,
+  db?: PrismaClient
 ) {
-  const tenantPrisma = await getTenantPrisma();
+  const tenantPrisma = db ?? (await getTenantPrisma());
   const year = new Date().getFullYear();
 
   const {

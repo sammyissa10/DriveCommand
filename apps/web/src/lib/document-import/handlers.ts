@@ -22,6 +22,16 @@ import {
   type StartImportMode,
 } from './intake';
 import { filenameFromKey, mimeTypeFromKey, type StagedFile } from './persistence';
+import {
+  assignClient,
+  assignContract,
+  createAndAssignClient,
+  createAndAssignContract,
+  resolveImportById,
+  setDocumentDate,
+  ResolutionError,
+} from './resolution';
+import type { ClientCreateInput } from '@/lib/carrier/clients';
 import { TenantKeyError } from '@/lib/storage/tenant-key';
 import { logger } from '@/lib/logger';
 
@@ -143,6 +153,155 @@ export async function handleCancel(
   if (!result.ok) return err(result.message ?? 'Could not cancel.', 400);
   return ok({ cancelled: true });
 }
+
+// ---------------------------------------------------------------------------
+// Resolution — client, contract, summary card (Phase 3)
+// ---------------------------------------------------------------------------
+
+/**
+ * A `ResolutionError` carries a code that maps to a status; anything else is a
+ * 500. Kept in one place so both surfaces answer identically — the same reason
+ * this whole module exists.
+ */
+const RESOLUTION_STATUS: Record<ResolutionError['code'], number> = {
+  NOT_FOUND: 404,
+  BAD_STATUS: 409,
+  INVALID_CLIENT: 400,
+  INVALID_CONTRACT: 400,
+  INVALID_DATE: 400,
+  NO_CLIENT: 400,
+  NO_RATE: 400,
+  DUPLICATE_CLIENT: 409,
+  DUPLICATE_DOCUMENT: 409,
+};
+
+async function resolutionCall(
+  what: string,
+  context: Record<string, unknown>,
+  run: () => Promise<unknown>,
+): Promise<HandlerResult> {
+  try {
+    return ok(await run());
+  } catch (e) {
+    if (e instanceof ResolutionError) {
+      return err(e.message, RESOLUTION_STATUS[e.code], { reason: e.code });
+    }
+    logger.error(`[document-import] ${what} failed`, e, context);
+    return err('Something went wrong. Try again.', 500);
+  }
+}
+
+/**
+ * GET the resolution view on its own.
+ *
+ * `handleGetImport` already embeds it, so this exists for the one case that
+ * needs a second read: the client picker searching as the user types. Passing
+ * the query through the server keeps the picker honest for a tenant with more
+ * clients than a single payload should carry.
+ */
+export async function handleGetResolution(
+  orgId: string,
+  userId: string,
+  importId: string,
+  clientQuery: string | null,
+): Promise<HandlerResult> {
+  const view = await resolveImportById(orgId, userId, importId, { clientQuery });
+  if (!view) return err('Import not found.', 404);
+  return ok(view);
+}
+
+/** PATCH — select an existing client or contract, or correct the document date. */
+export async function handleSetResolution(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: { clientId?: unknown; contractId?: unknown; documentDate?: unknown },
+): Promise<HandlerResult> {
+  const clientId = typeof body.clientId === 'string' ? body.clientId : null;
+  const contractId = typeof body.contractId === 'string' ? body.contractId : null;
+  const hasDate = 'documentDate' in body;
+  const documentDate =
+    typeof body.documentDate === 'string' && body.documentDate.trim()
+      ? body.documentDate.trim()
+      : null;
+
+  const asked = [clientId, contractId, hasDate ? 'date' : null].filter(Boolean).length;
+  if (asked === 0) return err('Send clientId, contractId, or documentDate.', 400);
+  // One decision per request. Sending several would hide which one failed, and
+  // the card never asks for two at once anyway.
+  if (asked > 1) return err('Change one thing per request.', 400);
+
+  return resolutionCall('set resolution', { orgId, importId }, () => {
+    if (clientId) return assignClient(orgId, userId, importId, clientId);
+    if (contractId) return assignContract(orgId, userId, importId, contractId);
+    return setDocumentDate(orgId, userId, importId, documentDate);
+  });
+}
+
+/** POST — create a client from the pre-filled form and select it. */
+export async function handleCreateResolutionClient(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  if (!name) return err('A client name is required.', 400);
+
+  const str = (key: string): string | undefined => {
+    const v = body[key];
+    return typeof v === 'string' && v.trim() ? v.trim() : undefined;
+  };
+
+  const input: ClientCreateInput = {
+    name,
+    primaryContact: str('primaryContact'),
+    phone: str('phone'),
+    email: str('email'),
+    addressLine1: str('addressLine1'),
+    addressLine2: str('addressLine2'),
+    city: str('city'),
+    state: str('state'),
+    zip: str('zip'),
+    country: str('country'),
+  };
+
+  return resolutionCall('create client', { orgId, importId }, () =>
+    createAndAssignClient(orgId, userId, importId, input),
+  );
+}
+
+/** POST — create a contract (spot or standing) and select it. */
+export async function handleCreateResolutionContract(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  const spot = body.spot !== false; // the offered path, unless explicitly not
+  const baseRate =
+    typeof body.baseRate === 'string'
+      ? body.baseRate
+      : typeof body.baseRate === 'number'
+        ? // Accepted because a JSON client may send a number, but it is turned
+          // straight back into a string and only ever becomes a Prisma.Decimal.
+          String(body.baseRate)
+        : null;
+
+  return resolutionCall('create contract', { orgId, importId }, () =>
+    createAndAssignContract(orgId, userId, importId, {
+      spot,
+      baseRate,
+      rateType: typeof body.rateType === 'string' ? body.rateType : undefined,
+      contractName: typeof body.contractName === 'string' ? body.contractName : undefined,
+      effectiveDate: typeof body.effectiveDate === 'string' ? body.effectiveDate : undefined,
+      expirationDate: typeof body.expirationDate === 'string' ? body.expirationDate : undefined,
+      notes: typeof body.notes === 'string' ? body.notes : undefined,
+    }),
+  );
+}
+
+// ---------------------------------------------------------------------------
 
 export async function handleReshoot(
   orgId: string,

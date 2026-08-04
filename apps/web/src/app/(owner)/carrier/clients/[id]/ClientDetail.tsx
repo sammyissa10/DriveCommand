@@ -10,6 +10,7 @@ import { ClientFinancials } from '@/components/carrier/clients/ClientFinancials'
 import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 import { toast } from 'sonner';
 import type { ContactInput } from '@/lib/carrier/client-contacts';
+import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
 
 interface ContractRow {
   id: string;
@@ -569,7 +570,18 @@ export function ClientDetail({
                               </Link>
                             </td>
                             <td className="px-4 py-3 text-muted-foreground capitalize">
-                              {c.contractType?.replace(/_/g, ' ') ?? '—'}
+                              <span className="flex items-center gap-2">
+                                {c.contractType?.replace(/_/g, ' ') ?? '—'}
+                                {/* A one-time contract created from a rate
+                                    confirmation must never read as a standing
+                                    agreement in this list. The test is the
+                                    contract's own single-day term. */}
+                                {isOneTimeContract(c) ? (
+                                  <Badge variant="warning" className="shrink-0 normal-case">
+                                    {ONE_TIME_LABEL}
+                                  </Badge>
+                                ) : null}
+                              </span>
                             </td>
                             <td className="px-4 py-3 text-muted-foreground">
                               {formatRateDisplay(c.rateType, c.baseRate)}

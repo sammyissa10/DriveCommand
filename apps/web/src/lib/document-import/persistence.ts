@@ -90,7 +90,11 @@ export interface ImportRecord {
   documentNumber: string | null;
   documentDate: Date | null;
   documentType: string | null;
+  /** Resolution (Phase 3). All four are written by `resolution.ts`, not here. */
   clientId: string | null;
+  contractId: string | null;
+  routeTemplateId: string | null;
+  documentProfileId: string | null;
   rawExtraction: unknown;
   reviewedExtraction: unknown;
   extractionWarnings: unknown;
@@ -118,6 +122,9 @@ const IMPORT_SELECT = {
   documentDate: true,
   documentType: true,
   clientId: true,
+  contractId: true,
+  routeTemplateId: true,
+  documentProfileId: true,
   rawExtraction: true,
   reviewedExtraction: true,
   extractionWarnings: true,

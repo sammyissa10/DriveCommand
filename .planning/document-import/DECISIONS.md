@@ -342,7 +342,7 @@ never lost. Correct, but it meant a failed row write produced no row, no log, an
 permanently cold cache. The call site now logs before rethrowing, and the swallow
 keeps its guarantee.
 
-### What tenant isolation actually rests on here
+### What tenant isolation actually rests on here (DEC-11)
 
 Worth stating plainly, because it was checked rather than assumed. The connecting
 role `postgres.<project>` has **`rolbypassrls = true`** — so for these tables, RLS
@@ -352,3 +352,94 @@ inject for `orgId` models by design. Isolation therefore rests on the **explicit
 pre-existing (the `app_user` cutover is outstanding — see
 `project_rls_phase1_grants_2026_06_02`), was not changed by this fix, and is the
 reason those filters must never be dropped as "redundant with RLS".
+
+---
+
+## DEC-12 — The one-time spot contract needs no schema change, and here is the evidence
+
+Phase 3 item 3 requires a spot contract "flagged as spot, flat rate from the
+document, effective for that trip only, source document attached, and clearly
+labelled in the client's contract list so it is never mistaken for a standing
+agreement." **No DDL was written.** Per DEC-9 that is a claim requiring the same
+evidence as "this DDL was applied", so:
+
+| Requirement | Where it lives | Checked against production |
+|---|---|---|
+| flagged as spot | `contracts.contract_type = 'spot'` | `contracts_contract_type_check` admits `spot` |
+| flat rate | `contracts.rate_type = 'flat'` | `contracts_rate_type_check` admits `flat` |
+| the rate itself | `contracts.base_rate` | `numeric(10,4)` — a Decimal column |
+| effective for that trip only | `effective_date = expiration_date = the document's date` | both `date`, both nullable |
+| source document attached | `carrier_documents` row, `parent_type='contract'`, `contract_id` set | all columns present |
+| clearly labelled | derived, `isOneTimeContract()` | — |
+
+**The label is derived from the term, not from a name or from provenance.**
+`lib/carrier/one-time-contract.ts` answers `contract_type = 'spot' AND
+effective_date = expiration_date AND both non-null`. Two alternatives were
+rejected:
+
+- **A naming convention** (`contractName` starting "One-time —"). Breaks the
+  moment someone renames the row, which is the one edit most likely to happen to
+  a contract with an auto-generated name.
+- **Provenance** ("was it created by an import"). Wrong question. A standing
+  contract *selected* during an import is equally import-adjacent, and a
+  one-day contract typed in by hand is equally one-time. Provenance describes
+  where a row came from; the label has to describe what was agreed.
+
+A contract effective for exactly one day **is** an agreement for one trip. That
+is true of a hand-typed one too, and labelling it is correct rather than a false
+positive. Shown in four places: the contracts grid, the client's contracts tab,
+the `ds` mobile-web contracts list, and the contract's own detail header.
+
+**Where a column would become the right answer:** if a later phase needs to
+distinguish "spot, one day, created from a document" from "spot, one day, typed
+by a human" — for reporting, or to auto-expire imported spot contracts. Nothing
+in v1 does.
+
+---
+
+## DEC-13 — `carrier_documents` has RLS enabled and FORCED with ZERO policies
+
+Found by the DEC-8 live-schema diff while checking what Phase 3 writes to.
+**Not caused by this phase, not fixed by this phase, and recorded because it is
+load-bearing for the outstanding `app_user` cutover.**
+
+```
+carrier_documents : rls_enabled = true, rls_forced = true, policies = (none)
+clients           : tenant_isolation_policy, bypass_rls_policy
+contracts         : tenant_isolation_policy, bypass_rls_policy
+document_imports  : tenant_isolation_policy, bypass_rls_policy
+document_profiles : tenant_isolation_policy, bypass_rls_policy
+```
+
+`pg_policies WHERE tablename = 'carrier_documents'` returns zero rows.
+
+**What this means.** A table with RLS forced and no policies denies everything
+to any role that does not bypass RLS. It works today only because the connecting
+role `postgres.<project>` has `rolbypassrls = true` (established in DEC-11). The
+moment `DATABASE_URL` is flipped to `app_user` — RLS Phase 2, still outstanding —
+**every read and write to `carrier_documents` returns zero rows or fails**, on
+every surface: driver stop documents, contract documents, client documents, and
+the spot-contract attachment Phase 3 adds.
+
+**Scope check, so this is not mistaken for a document-import problem.** It is
+not. `carrier_documents` predates this module by many phases and is written by
+at least four unrelated routes. Phase 3 is the messenger.
+
+**Why it was not fixed here.** DEC-3: DDL is applied deliberately by a human who
+has read the SQL, and DEC-7 removed the hooks that made schema changes a side
+effect of editing. Adding policies to a table on the read path of the driver app
+is not a change to slip into a phase commit. The SQL a reviewer would want is the
+same shape as its siblings — `tenant_isolation_policy` + `bypass_rls_policy` —
+but `carrier_documents` has **no `org_id` column** (it is scoped through
+`parent_type`/`parent_id`), so the policy is a join rather than a column compare
+and genuinely needs designing, not copying.
+
+**Containment in the meantime.** `attachSourceDocument` in `resolution.ts`
+catches and logs rather than throwing: under the cutover the spot contract is
+still created and still selected, and only the attachment is lost, with a warning
+naming the import and contract. That is a deliberate trade, not an oversight —
+losing a created contract because its receipt could not be filed would be the
+worse failure. It is also not a fix, and this entry exists so it is not mistaken
+for one.
+
+**Owner:** the RLS Phase 2 cutover, alongside the GUC pool-leak from DEC-11.

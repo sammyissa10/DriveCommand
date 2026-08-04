@@ -11,6 +11,16 @@ export type {
   ImportUploadGrant,
   ImportDuplicate,
   CreateImportResult,
+  // Resolution (Phase 3)
+  ResolvedVia,
+  WhyView,
+  ClientOption,
+  ContractOption,
+  ClientPrefill,
+  ClientSlotView,
+  ContractSlotView,
+  SpotOffer,
+  ImportResolutionView,
 } from './owner-imports'
 export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, DirectionsResult, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType, DriverRoute, DriverRouteLoad, DriverRouteTruck } from './driver'

@@ -1,7 +1,7 @@
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import type { GridFilter } from '@/components/data-grid/core/types';
-import type { Prisma } from '@/generated/prisma';
+import type { Prisma, PrismaClient } from '@/generated/prisma';
 import { normalizeContacts, getMainContact, type ContactInput } from '@/lib/carrier/client-contacts';
 
 // Helper: convert Prisma Decimal | null to string | null
@@ -275,8 +275,23 @@ export class DuplicateClientError extends Error {
   }
 }
 
-export async function createClient(orgId: string, data: ClientCreateInput) {
-  const tenantPrisma = await getTenantPrisma();
+/**
+ * @param db Optional pre-resolved tenant client.
+ *
+ * `getTenantPrisma()` reads the `x-tenant-id` request header, which middleware
+ * does not inject on `/api/mobile/*` — Bearer auth means no Supabase cookie, so
+ * middleware returns early and the header never exists (DEC-11). A caller that
+ * already holds a tenant-scoped client from `getTenantPrismaForOrg(orgId)` must
+ * be able to pass it in, otherwise the only way to create a client from the
+ * mobile surface is a second implementation of this function. Omitting it keeps
+ * the existing behaviour exactly, so every current call site is unchanged.
+ */
+export async function createClient(
+  orgId: string,
+  data: ClientCreateInput,
+  db?: PrismaClient,
+) {
+  const tenantPrisma = db ?? (await getTenantPrisma());
   const { creditLimit, contacts, ...rest } = data;
   const name = rest.name.trim();
 

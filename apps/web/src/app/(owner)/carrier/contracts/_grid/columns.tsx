@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { ColumnDef } from '@tanstack/react-table';
 import { StatusBadge } from '@/components/data-grid/shell';
 import { AlertTriangle } from 'lucide-react';
+import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
 import type { ContractRow } from './types';
 
 function formatRateDisplay(rateType: string | null, baseRate: string | null): string {
@@ -76,11 +77,18 @@ export const contractsColumns: ColumnDef<ContractRow, unknown>[] = [
       dataType: 'text',
       minWidth: 100,
     },
-    cell: ({ getValue }) => {
+    cell: ({ row, getValue }) => {
       const type = getValue() as string | null;
       return (
-        <span className="text-sm capitalize">
+        <span className="flex items-center gap-2 text-sm capitalize">
           {type ? (CONTRACT_TYPE_LABELS[type] || type) : '—'}
+          {/* A contract effective for a single day is an agreement for one
+              trip. Labelled here so it cannot be read as a standing one. */}
+          {isOneTimeContract(row.original) ? (
+            <span className="shrink-0 rounded-full bg-brand-warning/10 px-2 py-0.5 text-[11px] font-medium normal-case text-brand-warning">
+              {ONE_TIME_LABEL}
+            </span>
+          ) : null}
         </span>
       );
     },

@@ -16,6 +16,7 @@ import {
   type StatusTone,
   type SegmentOption,
 } from '@/components/ui/ds';
+import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
 import type { ContractRow } from './_grid/types';
 
 // ---------------------------------------------------------------------------
@@ -184,7 +185,14 @@ export function ContractsMobile({
             const s = statusMeta(c.status);
             const rate = formatRate(c.rateType, c.baseRate);
             const exp = formatDate(c.expirationDate);
-            const metaParts = [rate, exp ? `exp ${exp}` : null].filter(Boolean) as string[];
+            // A single-day spot contract is an agreement for one trip. Named
+            // first in the meta line so it cannot be read as a standing one
+            // (document-import Phase 3, item 3).
+            const metaParts = [
+              isOneTimeContract(c) ? ONE_TIME_LABEL : null,
+              rate,
+              exp ? `exp ${exp}` : null,
+            ].filter(Boolean) as string[];
             return (
               <EntityRow
                 key={c.id}

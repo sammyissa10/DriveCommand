@@ -9,9 +9,9 @@
  * (`/api/mobile/carrier/owner/document-imports/*`, Bearer token). There is one
  * implementation of "start an import", not two that drift.
  *
- * WHAT THIS PHASE DOES NOT DO: no client resolution, no contract, no template
- * matching, no stop review, no commit. `summariseImport` returns the counts the
- * summary card placeholder shows and nothing more.
+ * SCOPE. Phase 2 built intake. Phase 3 added the `resolution` block on
+ * `ImportView` — client and contract, computed in `resolution.ts`. Template
+ * matching, stop review and commit are still later phases.
  */
 
 import type { CanonicalExtraction } from '@drivecommand/validation';
@@ -26,6 +26,7 @@ import { classify, isUnsupportedSpreadsheet, type SourceFile } from './pages';
 import { extractDocument, type ExtractionUsage } from './service';
 import { parseSpreadsheet } from './spreadsheet';
 import { prismaPageCache } from './cache';
+import { resolveImport, type ImportResolutionView, type ResolveOptions } from './resolution';
 import type { ImportStatus } from './lifecycle';
 import {
   createImport,
@@ -87,7 +88,24 @@ export interface ImportView {
   updatedAt: string;
   pages: ImportPageView[];
   summary: ImportSummaryView | null;
+  /**
+   * Client / contract / template resolution (Phase 3).
+   *
+   * Null while there is nothing to resolve — before extraction finishes there
+   * is no document name to match against, and computing it on every 1.5-second
+   * progress poll would run two table scans per tick for a card that is not on
+   * screen yet.
+   */
+  resolution: ImportResolutionView | null;
 }
+
+/** Statuses in which resolution is worth computing. */
+const RESOLVABLE_STATUSES: readonly ImportStatus[] = [
+  'NEEDS_REVIEW',
+  'READY',
+  'COMMITTING',
+  'COMMITTED',
+];
 
 const IMAGE_PREVIEWABLE = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -731,6 +749,7 @@ export async function summariseImport(
   orgId: string,
   importId: string,
   userId?: string | null,
+  options: ResolveOptions = {},
 ): Promise<ImportView | null> {
   const record = await getImportRecord(orgId, importId, userId);
   if (!record) return null;
@@ -755,6 +774,8 @@ export async function summariseImport(
     }),
   );
 
+  const summary = buildSummary(record);
+
   return {
     id: record.id,
     status: record.status,
@@ -768,7 +789,11 @@ export async function summariseImport(
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),
     pages,
-    summary: buildSummary(record),
+    summary,
+    resolution:
+      summary && RESOLVABLE_STATUSES.includes(record.status)
+        ? await resolveImport(orgId, userId ?? null, record, options)
+        : null,
   };
 }
 
@@ -789,8 +814,9 @@ function buildSummary(record: ImportRecord): ImportSummaryView | null {
     documentNumber: record.documentNumber,
     documentDate: record.documentDate ? record.documentDate.toISOString().slice(0, 10) : null,
     originName: raw.header?.originName ?? null,
-    // Phase 3 resolves this to a real client. Until then it is only what the
-    // document says, and it is labelled as such in the UI.
+    // Still only what the document says. `resolution.client` is where this
+    // becomes a real client; this field stays the raw string so the "why"
+    // affordance has something to quote.
     clientNameOnDocument: raw.header?.originName ?? null,
     warnings: (raw.extractionWarnings ?? []).map((w) => ({
       code: w.code,

@@ -15,7 +15,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
-  ArrowRight,
   Camera,
   CheckCircle2,
   FileText,
@@ -27,6 +26,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { ImportSummaryCard } from '@/components/carrier/imports/ImportSummaryCard';
 import type { ImportView } from '@/lib/document-import/intake';
 
 const POLL_MS = 1500;
@@ -295,9 +295,18 @@ export function ImportProgress({ initial, autoStart }: Props) {
         </div>
       ) : null}
 
-      {/* ---- Summary card (Phase 3 fills the resolution rows) ---- */}
+      {/* ---- Summary card, or the one question standing in its way ----
+          `ImportSummaryCard` decides which: an unresolved client or contract
+          takes the screen to itself, and the card is drawn once neither does
+          (spec Section 4.2). */}
       {view.status === 'NEEDS_REVIEW' && view.summary ? (
-        <SummaryCard view={view} />
+        <>
+          <ImportSummaryCard view={view} onChange={setView} />
+          {/* Secondary facts, and only once the card is what is on screen —
+              while a decision step is up, the rule is one question and nothing
+              else competing with it. */}
+          {view.resolution?.resolved ? <DocumentFacts view={view} /> : null}
+        </>
       ) : null}
 
       {/* ---- Pages ---- */}
@@ -343,48 +352,27 @@ export function ImportProgress({ initial, autoStart }: Props) {
 }
 
 /**
- * Screen 3 placeholder.
+ * What the document said, underneath the card that says what it means.
  *
- * Client, Contract and Template are Phase 3's confidence-collapse rows and are
- * deliberately absent rather than faked — a row that looks resolved but is not
- * would be worse than no row. What is shown is only what extraction actually
- * knows.
+ * Deliberately not part of the summary card: Section 4.1 draws five rows, and
+ * adding "Pieces" and "Number" to them would turn a card a dispatcher reads in
+ * two seconds into a table they read in ten. These are here for the moment
+ * something looks wrong and someone wants to check the source.
  */
-function SummaryCard({ view }: { view: ImportView }) {
+function DocumentFacts({ view }: { view: ImportView }) {
   const s = view.summary!;
   return (
-    <div className="space-y-4 rounded-xl bg-muted/40 p-5">
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-        <Row label="Stops found" value={String(s.consignmentCount)} />
-        <Row label="Document" value={s.documentType?.replace(/_/g, ' ').toLowerCase() ?? '—'} />
+    <section className="space-y-2 rounded-xl border border-border p-4">
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        On the document
+      </h2>
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+        <Row label="Type" value={s.documentType?.replace(/_/g, ' ').toLowerCase() ?? '—'} />
         <Row label="Number" value={s.documentNumber ?? '—'} />
-        <Row label="Date" value={s.documentDate ?? '—'} />
         {s.totalPieces != null ? <Row label="Pieces" value={String(s.totalPieces)} /> : null}
-        {s.originName ? <Row label="Named on document" value={s.originName} /> : null}
+        {s.originName ? <Row label="Named on it" value={s.originName} /> : null}
       </dl>
-
-      {s.warnings.length > 0 ? (
-        <ul className="space-y-1.5 border-t border-border pt-3">
-          {s.warnings.map((w, i) => (
-            <li key={`${w.code}-${i}`} className="flex items-start gap-2 text-xs text-muted-foreground">
-              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <span>{w.message}</span>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      <div className="border-t border-border pt-4">
-        <Button className="h-12 w-full text-base" disabled>
-          Review stops
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          Client, contract and template matching arrive in the next phase. This import is saved and
-          will be waiting.
-        </p>
-      </div>
-    </div>
+    </section>
   );
 }
 

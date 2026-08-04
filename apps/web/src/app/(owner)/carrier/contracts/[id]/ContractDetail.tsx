@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ContractForm, ContractData } from '@/components/carrier/contracts/ContractForm';
 import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 import { toast } from 'sonner';
+import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
 
 interface ContractSerialized {
   id: string;
@@ -221,6 +222,11 @@ export function ContractDetail({
             >
               {contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
             </Badge>
+            {/* An agreement for one trip, not a standing one. Derived from the
+                contract's single-day term, so a rename cannot lose it. */}
+            {isOneTimeContract(contract) ? (
+              <Badge variant="warning">{ONE_TIME_LABEL}</Badge>
+            ) : null}
           </div>
           {contract.contractName && (
             <p className="mt-0.5 text-sm text-muted-foreground font-mono">{contract.contractNumber}</p>
