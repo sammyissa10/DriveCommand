@@ -188,8 +188,9 @@ export default function ImportDetailScreen() {
           <Text style={{ ...typography.largeTitle, color: c.textPrimary }}>
             {inFlight ? 'Reading document' : view.status === 'NEEDS_REVIEW' ? 'We found this' : 'Import'}
           </Text>
+          {/* What the document is, not what the camera called the file. */}
           <Text numberOfLines={1} style={{ ...typography.footnote, color: c.textSecondary, marginTop: spacing.xs }}>
-            {view.originalName ?? 'Untitled document'}
+            {view.summary?.title ?? view.originalName ?? 'Untitled document'}
           </Text>
 
           {notice ? (

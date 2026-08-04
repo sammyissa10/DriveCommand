@@ -103,6 +103,9 @@ Return ONLY a JSON object with this exact shape (use null for anything absent):
     "originName": string|null,
     "originAddress": { "line1":string|null, "line2":string|null, "city":string|null, "state":string|null, "postalCode":string|null, "country":string|null }|null,
     "originContact": { "name":string|null, "phone":string|null, "email":string|null }|null,
+    "issuerName": string|null,
+    "issuerAddress": { "line1":string|null, "line2":string|null, "city":string|null, "state":string|null, "postalCode":string|null, "country":string|null }|null,
+    "issuerContact": { "name":string|null, "phone":string|null, "email":string|null }|null,
     "currency": string|null,
     "totalRate": string|null
   },
@@ -126,6 +129,23 @@ RULES — each of these comes from a real document:
 
 1. A field LABELLED "number" may contain a DATE. Read the value, not the label.
    "Manifest Number: 07/27/26" is a date. Put it in documentDate, not documentNumber.
+
+1b. documentDate MUST be returned as ISO "YYYY-MM-DD", whatever the page prints.
+   "07/27/26" -> "2026-07-27". "Aug 3, 2026" -> "2026-08-03". A two-digit year
+   00-79 is 20xx, 80-99 is 19xx. If you genuinely cannot tell what date it is,
+   return null — never a half-converted string.
+
+1c. WHO ISSUED IT vs WHERE IT LOADS. These are two different companies on a
+   rate confirmation and you must fill both:
+   - issuerName: the company whose letterhead this is — the broker or shipper
+     who is hiring the carrier and who pays the invoice. Look for the logo
+     block, "Broker:", "Remit to", "Bill to", an MC number, the signature line.
+     On a rate confirmation this is REQUIRED if it is printed anywhere.
+   - originName: the facility the freight is PICKED UP from — "Pickup",
+     "Shipper", "Origin". A warehouse or distribution centre, usually.
+   On a manifest or packing list there is normally no separate issuer: put the
+   shipper in originName and leave issuerName null. Never copy the pickup
+   facility into issuerName to fill the field.
 
 2. The consignee CODE is the most important value on the page. It is a stable
    customer id (e.g. "Consignee: 43775"). Always capture it as externalCode.

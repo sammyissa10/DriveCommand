@@ -38,8 +38,12 @@ export interface ImportSummaryView {
   documentType: string | null
   documentNumber: string | null
   documentDate: string | null
+  /** Where the freight loads. On a rate confirmation this is NOT the client. */
   originName: string | null
+  /** The party being matched to a client — the issuer on a rate confirmation. */
   clientNameOnDocument: string | null
+  /** "Dealer Tire manifest". Null when extraction produced neither part. */
+  title: string | null
   warnings: Array<{ code: string; message: string; pageNumbers: number[] }>
 }
 
@@ -178,6 +182,8 @@ export interface ImportListItem {
   id: string
   status: ImportStatus
   originalName: string | null
+  /** What the document is, when extraction knows. Null before it does. */
+  title: string | null
   pageCount: number
   consignmentCount: number | null
   createdAt: string

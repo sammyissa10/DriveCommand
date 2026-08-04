@@ -174,8 +174,11 @@ export function ImportProgress({ initial, autoStart }: Props) {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             {inFlight ? 'Reading document' : view.status === 'NEEDS_REVIEW' ? 'We found this' : 'Import'}
           </h1>
+          {/* What the document IS, not what the phone called the file. The
+              filename survives only until extraction knows better — "page-2.jpg"
+              tells a dispatcher with three imports open nothing at all. */}
           <p className="mt-1 truncate text-sm text-muted-foreground">
-            {view.originalName ?? 'Untitled document'}
+            {view.summary?.title ?? view.originalName ?? 'Untitled document'}
           </p>
         </div>
         <Link
@@ -370,7 +373,13 @@ function DocumentFacts({ view }: { view: ImportView }) {
         <Row label="Type" value={s.documentType?.replace(/_/g, ' ').toLowerCase() ?? '—'} />
         <Row label="Number" value={s.documentNumber ?? '—'} />
         {s.totalPieces != null ? <Row label="Pieces" value={String(s.totalPieces)} /> : null}
-        {s.originName ? <Row label="Named on it" value={s.originName} /> : null}
+        {/* The name client resolution actually matched against — the issuer on
+            a rate confirmation, where the origin block is the pickup facility
+            and belongs to the stop, not the client. */}
+        {s.clientNameOnDocument ? <Row label="Named on it" value={s.clientNameOnDocument} /> : null}
+        {s.originName && s.originName !== s.clientNameOnDocument ? (
+          <Row label="Loads at" value={s.originName} />
+        ) : null}
       </dl>
     </section>
   );

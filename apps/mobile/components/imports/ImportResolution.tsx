@@ -759,16 +759,19 @@ function ContractDecision({
         </View>
       ) : null}
 
-      {/* The client's first contract, created here rather than on the web
-          portal. A client added inline a moment ago has none by definition, so
-          sending the user to another surface at this point ended the flow. */}
+      {/* A contract created here rather than on the web portal, below the
+          options because when there are options they are the likely answer.
+          A client added inline a moment ago has none at all, and a picker whose
+          every row is the wrong agreement is the same dead end wearing a list. */}
       {slot.createOffer ? (
         <View style={{ borderWidth: 1, borderStyle: 'dashed', borderColor: c.border, borderRadius: radii.md, padding: spacing.md, gap: spacing.md }}>
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             <Plus color={c.brand} size={16} />
             <View style={{ flex: 1 }}>
               <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }}>
-                Create a contract for {slot.createOffer.clientName}
+                {slot.candidates.length > 0
+                  ? `None of these? Create a contract for ${slot.createOffer.clientName}`
+                  : `Create a contract for ${slot.createOffer.clientName}`}
               </Text>
               <Text style={{ ...typography.caption1, color: c.textTertiary, marginTop: 2 }}>
                 {slot.createOffer.detail}

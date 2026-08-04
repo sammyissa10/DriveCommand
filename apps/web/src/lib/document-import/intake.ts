@@ -40,6 +40,7 @@ import {
   listRecentImports,
   listResumableImports,
   mimeTypeFromKey,
+  parseDocumentDate,
   replaceSourceFile,
   supersedeImport,
   transitionImport,
@@ -69,8 +70,16 @@ export interface ImportSummaryView {
   documentType: string | null;
   documentNumber: string | null;
   documentDate: string | null;
+  /** Where the freight loads. On a rate confirmation this is NOT the client. */
   originName: string | null;
+  /** The party being matched to a client — the issuer on a rate confirmation. */
   clientNameOnDocument: string | null;
+  /**
+   * What to call this import: the party and the document type, e.g. "Dealer
+   * Tire manifest". Null when extraction produced neither, and the filename is
+   * then the only honest thing left to show.
+   */
+  title: string | null;
   warnings: Array<{ code: string; message: string; pageNumbers: number[] }>;
 }
 
@@ -797,7 +806,67 @@ export async function summariseImport(
   };
 }
 
-function buildSummary(record: ImportRecord): ImportSummaryView | null {
+/**
+ * The document's date for display: the column, or the extraction when the
+ * column never got one. Mirrors `documentDateOf` in `resolution.ts` — see the
+ * note there for why the fallback exists.
+ */
+function documentDateOf(record: ImportRecord, raw: CanonicalExtraction | null): string | null {
+  if (record.documentDate) return record.documentDate.toISOString().slice(0, 10);
+  const parsed = parseDocumentDate(raw?.header?.documentDate);
+  return parsed ? parsed.toISOString().slice(0, 10) : null;
+}
+
+/** Words that stay as they are printed when a shouted name is title-cased. */
+const KEEP_UPPER = new Set([
+  'LLC', 'INC', 'LTD', 'LP', 'LLP', 'PLC', 'CO', 'CORP', 'DBA',
+  'DC', 'WHSE', 'HQ', 'USA', 'US', 'NA', 'MC', 'DOT', 'II', 'III',
+]);
+
+/**
+ * "DEALER TIRE - CHICAGO WHSE" -> "Dealer Tire - Chicago WHSE".
+ *
+ * Display only, and only for names printed in full caps — freight documents
+ * shout, and a card titled in block capitals reads like an error message. A
+ * name with any lowercase in it is left exactly as the document printed it.
+ */
+export function titleCaseDocumentName(name: string): string {
+  if (name !== name.toUpperCase()) return name;
+  return name
+    .split(/(\s+)/)
+    .map((token) => {
+      if (!token.trim()) return token;
+      const bare = token.replace(/[^A-Za-z]/g, '');
+      if (bare && KEEP_UPPER.has(bare.toUpperCase())) return token.toUpperCase();
+      return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
+    })
+    .join('');
+}
+
+/**
+ * What the wizard calls this import.
+ *
+ * The filename is what the phone chose ("page-2.jpg"), not what the document
+ * is, and a dispatcher with three imports open cannot tell them apart by it.
+ * The party plus the document type is what they would say out loud — "the
+ * Dealer Tire manifest". Null when extraction produced neither, and the caller
+ * falls back to the filename because that is then the only honest thing left.
+ */
+export function documentTitle(
+  partyName: string | null,
+  documentType: string | null,
+): string | null {
+  const party = partyName?.trim() ? titleCaseDocumentName(partyName.trim()) : null;
+  const type =
+    documentType && documentType !== 'UNKNOWN'
+      ? documentType.replace(/_/g, ' ').toLowerCase()
+      : null;
+
+  if (party && type) return `${party} ${type}`;
+  return party ?? type ?? null;
+}
+
+export function buildSummary(record: ImportRecord): ImportSummaryView | null {
   const raw = (record.reviewedExtraction ?? record.rawExtraction) as CanonicalExtraction | null;
   if (!raw || !Array.isArray(raw.consignments)) return null;
 
@@ -807,17 +876,27 @@ function buildSummary(record: ImportRecord): ImportSummaryView | null {
     if (typeof pieces === 'number') totalPieces = (totalPieces ?? 0) + pieces;
   }
 
+  const documentType = record.documentType || null;
+  // The party that becomes the client — the issuer on a rate confirmation, the
+  // origin everywhere else. Same rule as `resolution.ts`, and it has to be, or
+  // the evidence row would quote a different name than the one being matched.
+  const partyName =
+    (documentType === 'RATE_CONFIRMATION' ? raw.header?.issuerName?.trim() : null) ||
+    raw.header?.originName?.trim() ||
+    null;
+
   return {
     consignmentCount: raw.consignments.length,
     totalPieces,
-    documentType: record.documentType,
+    documentType,
     documentNumber: record.documentNumber,
-    documentDate: record.documentDate ? record.documentDate.toISOString().slice(0, 10) : null,
+    documentDate: documentDateOf(record, raw),
     originName: raw.header?.originName ?? null,
     // Still only what the document says. `resolution.client` is where this
     // becomes a real client; this field stays the raw string so the "why"
     // affordance has something to quote.
-    clientNameOnDocument: raw.header?.originName ?? null,
+    clientNameOnDocument: partyName,
+    title: documentTitle(partyName, documentType),
     warnings: (raw.extractionWarnings ?? []).map((w) => ({
       code: w.code,
       message: w.message,
@@ -830,6 +909,8 @@ export interface ImportListItem {
   id: string;
   status: ImportStatus;
   originalName: string | null;
+  /** What the document is, when extraction knows. Null before it does. */
+  title: string | null;
   pageCount: number;
   consignmentCount: number | null;
   createdAt: string;
@@ -837,12 +918,21 @@ export interface ImportListItem {
   failureMessage: string | null;
 }
 
-function toListItem(record: ImportRecord): ImportListItem {
+export function toListItem(record: ImportRecord): ImportListItem {
   const raw = (record.reviewedExtraction ?? record.rawExtraction) as CanonicalExtraction | null;
+  const documentType = record.documentType || null;
+  const partyName =
+    (documentType === 'RATE_CONFIRMATION' ? raw?.header?.issuerName?.trim() : null) ||
+    raw?.header?.originName?.trim() ||
+    null;
+
   return {
     id: record.id,
     status: record.status,
     originalName: record.originalName,
+    // Same title the import's own screen uses, so a row in "Choose recent" and
+    // the page it opens are recognisably the same document.
+    title: documentTitle(partyName, documentType),
     pageCount: record.sourceFileKeys.length,
     consignmentCount: Array.isArray(raw?.consignments) ? raw.consignments.length : null,
     createdAt: record.createdAt.toISOString(),

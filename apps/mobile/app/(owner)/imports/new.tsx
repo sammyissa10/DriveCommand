@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Trash2,
   Upload,
+  X,
 } from 'lucide-react-native'
 import { ownerImportsApi, type ImportListItem } from '@drivecommand/api-client'
 import { useAuthContext } from '../../../context/AuthContext'
@@ -68,7 +69,22 @@ export default function NewImportScreen() {
 
   const [recent, setRecent] = useState<ImportListItem[] | null>(null)
   const [showRecent, setShowRecent] = useState(false)
+  const [dismissing, setDismissing] = useState<string | null>(null)
   const retakeIndex = useRef<number | null>(null)
+
+  /** Cancel a failed import and drop it from the list. */
+  async function dismissImport(importId: string) {
+    if (!token) return
+    setDismissing(importId)
+    try {
+      await ownerImportsApi.cancel(token, importId)
+      setRecent((prev) => prev?.filter((r) => r.id !== importId) ?? null)
+    } catch {
+      Toast.show({ type: 'error', text1: 'Could not dismiss that import' })
+    } finally {
+      setDismissing(null)
+    }
+  }
 
   useEffect(() => {
     if (!token) return
@@ -310,28 +326,50 @@ export default function NewImportScreen() {
           {showRecent && recent?.length ? (
             <View style={{ marginTop: spacing.md, borderRadius: radii.lg, backgroundColor: c.surfaceCard, overflow: 'hidden' }}>
               {recent.map((r, i) => (
-                <Pressable
+                <View
                   key={r.id}
-                  onPress={() => router.push(`/(owner)/imports/${r.id}` as never)}
                   style={{
-                    minHeight: 56,
-                    paddingHorizontal: spacing.lg,
-                    paddingVertical: spacing.md,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: spacing.md,
                     borderTopWidth: i === 0 ? 0 : 1,
                     borderTopColor: c.divider,
                   }}
                 >
-                  <FileText color={c.textSecondary} size={16} />
-                  <Text numberOfLines={1} style={{ ...typography.subhead, color: c.textPrimary, flex: 1 }}>
-                    {r.originalName ?? 'Untitled document'}
-                  </Text>
-                  <Text style={{ ...typography.caption1, color: c.textTertiary }}>
-                    {r.status.replace(/_/g, ' ').toLowerCase()}
-                  </Text>
-                </Pressable>
+                  <Pressable
+                    onPress={() => router.push(`/(owner)/imports/${r.id}` as never)}
+                    style={{
+                      minHeight: 56,
+                      paddingHorizontal: spacing.lg,
+                      paddingVertical: spacing.md,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: spacing.md,
+                      flex: 1,
+                    }}
+                  >
+                    <FileText color={r.status === 'FAILED' ? c.danger : c.textSecondary} size={16} />
+                    <Text numberOfLines={1} style={{ ...typography.subhead, color: c.textPrimary, flex: 1 }}>
+                      {r.title ?? r.originalName ?? 'Untitled document'}
+                    </Text>
+                    <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+                      {r.status.replace(/_/g, ' ').toLowerCase()}
+                    </Text>
+                  </Pressable>
+                  {/* A failed import stays openable — a re-shoot lives on that
+                      page — but it is also the one row here that is usually
+                      just rubbish, and it had no way to be got rid of. */}
+                  {r.status === 'FAILED' ? (
+                    <Pressable
+                      onPress={() => void dismissImport(r.id)}
+                      disabled={dismissing === r.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Dismiss ${r.originalName ?? 'failed import'}`}
+                      style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center', opacity: dismissing === r.id ? 0.5 : 1 }}
+                    >
+                      <X color={c.textTertiary} size={16} />
+                    </Pressable>
+                  ) : null}
+                </View>
               ))}
             </View>
           ) : null}

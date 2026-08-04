@@ -12,6 +12,11 @@ import Link from 'next/link';
 import { ArrowRight, FileClock } from 'lucide-react';
 import type { ImportListItem } from '@/lib/document-import/intake';
 
+/**
+ * FAILED is deliberately absent: the server no longer offers one here
+ * (`RESUMABLE_STATUSES`), because "pick up where you left off" leading to a
+ * document that could not be read is not somewhere to be picked up.
+ */
 function describe(item: ImportListItem): string {
   const pages = `${item.pageCount} page${item.pageCount === 1 ? '' : 's'}`;
   switch (item.status) {
@@ -23,8 +28,6 @@ function describe(item: ImportListItem): string {
       return `Still being read · ${pages}`;
     case 'UPLOADED':
       return `Uploaded but not read yet · ${pages}`;
-    case 'FAILED':
-      return item.failureMessage ?? 'Could not be read';
     default:
       return pages;
   }
@@ -40,7 +43,7 @@ export function ResumeImportBanner({ items }: { items: ImportListItem[] }) {
       <FileClock className="h-5 w-5 shrink-0 text-primary" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-foreground">
-          {first.originalName ?? 'An imported document'} is unfinished
+          {first.title ?? first.originalName ?? 'An imported document'} is unfinished
         </p>
         <p className="truncate text-xs text-muted-foreground">
           {describe(first)}

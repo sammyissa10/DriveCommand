@@ -257,6 +257,23 @@ export function ImportWizard({ recent }: { recent: ImportListItem[] }) {
   const [error, setError] = useState<string | null>(null);
   const [duplicate, setDuplicate] = useState<DuplicateNotice | null>(null);
   const [showRecent, setShowRecent] = useState(false);
+  // Held in state rather than read straight off the prop so a dismissed row
+  // leaves the list at once — the server prop only refreshes on navigation.
+  const [recentItems, setRecentItems] = useState<ImportListItem[]>(recent);
+  const [dismissing, setDismissing] = useState<string | null>(null);
+
+  /** Cancel a failed import and drop it from the list. */
+  async function dismissImport(importId: string) {
+    setDismissing(importId);
+    try {
+      const res = await fetch(`/api/v1/carrier/document-imports/${importId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) setRecentItems((prev) => prev.filter((r) => r.id !== importId));
+    } finally {
+      setDismissing(null);
+    }
+  }
 
   const pickRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -534,30 +551,53 @@ export function ImportWizard({ recent }: { recent: ImportListItem[] }) {
         <SourceButton
           icon={Clock}
           label="Choose recent"
-          hint={recent.length ? `${recent.length} recent` : 'Nothing yet'}
+          hint={recentItems.length ? `${recentItems.length} recent` : 'Nothing yet'}
           onClick={() => setShowRecent((v) => !v)}
-          disabled={busy || recent.length === 0}
+          disabled={busy || recentItems.length === 0}
           active={showRecent}
         />
       </div>
 
-      {showRecent && recent.length > 0 ? (
+      {showRecent && recentItems.length > 0 ? (
         <ul className="divide-y divide-border overflow-hidden rounded-xl bg-muted/40">
-          {recent.map((r) => (
-            <li key={r.id}>
+          {recentItems.map((r) => (
+            <li key={r.id} className="flex items-center">
               <Link
                 href={`/carrier/imports/${r.id}`}
-                className="flex min-h-[56px] items-center gap-3 px-4 py-3 hover:bg-muted"
+                className="flex min-h-[56px] min-w-0 flex-1 items-center gap-3 px-4 py-3 hover:bg-muted"
               >
-                <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <FileText
+                  className={cn(
+                    'h-4 w-4 shrink-0',
+                    r.status === 'FAILED' ? 'text-destructive' : 'text-muted-foreground',
+                  )}
+                />
                 <span className="min-w-0 flex-1 truncate text-sm text-foreground">
-                  {r.originalName ?? 'Untitled document'}
+                  {r.title ?? r.originalName ?? 'Untitled document'}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground">
                   {r.consignmentCount != null ? `${r.consignmentCount} stops · ` : ''}
                   {r.status.replace(/_/g, ' ').toLowerCase()}
                 </span>
               </Link>
+              {/* A failed import is still worth opening — a re-shoot lives on
+                  that page — but it is also the one thing in this list that is
+                  usually just rubbish, and it had no way to be got rid of. */}
+              {r.status === 'FAILED' ? (
+                <button
+                  type="button"
+                  onClick={() => void dismissImport(r.id)}
+                  disabled={dismissing === r.id}
+                  aria-label={`Dismiss ${r.originalName ?? 'failed import'}`}
+                  className="mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
+                >
+                  {dismissing === r.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
+                </button>
+              ) : null}
             </li>
           ))}
         </ul>

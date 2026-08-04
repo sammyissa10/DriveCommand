@@ -316,14 +316,14 @@ function ResumeImportStrip({
   const c = useThemeColors()
   const [first, ...rest] = items
 
+  // No FAILED branch: the server stopped offering failed imports here, because
+  // "pick up where you left off" must lead somewhere there is work to do.
   const detail =
     first.status === 'NEEDS_REVIEW' && first.consignmentCount != null
       ? `${first.consignmentCount} stop${first.consignmentCount === 1 ? '' : 's'} waiting for review`
       : first.status === 'EXTRACTING'
         ? 'Still being read'
-        : first.status === 'FAILED'
-          ? (first.failureMessage ?? 'Could not be read')
-          : `${first.pageCount} page${first.pageCount === 1 ? '' : 's'} uploaded, not read yet`
+        : `${first.pageCount} page${first.pageCount === 1 ? '' : 's'} uploaded, not read yet`
 
   return (
     <Pressable
@@ -339,7 +339,7 @@ function ResumeImportStrip({
       <FileClock color={c.brand} size={20} />
       <View style={styles.resumeText}>
         <Text numberOfLines={1} style={[styles.resumeTitle, { color: c.textPrimary }]}>
-          {first.originalName ?? 'An imported document'} is unfinished
+          {first.title ?? first.originalName ?? 'An imported document'} is unfinished
         </Text>
         <Text numberOfLines={1} style={[styles.resumeDetail, { color: c.textSecondary }]}>
           {detail}

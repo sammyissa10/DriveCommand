@@ -231,13 +231,32 @@ RLS cutover** — see DEC-13. It succeeds today. It is also attached as a
 for a multi-page rate confirmation is page one rather than the whole document;
 there is no multi-file document record to point at. Declared rather than claimed.
 
-### 4 — IMPLEMENTED
+### 4 — IMPLEMENTED (corrected: was PARTIALLY, twice over)
 
 Five rows, in the drawn order, each with a change affordance — including the
 date, which gets one because spec 1.2 callout (3) is that a date can sit in a
 field labelled "Number", making it the field most likely to be plausibly wrong.
 The stop-count line's affordance is the card's `Review stops` button, which is
 disabled and says why (Phase 5).
+
+**Two things this verdict missed, both found in the walkthrough and both fixed
+in the defect round below.** Recorded here rather than quietly amended, because
+how the audit passed them is more useful than the fact that it did:
+
+1. **The date row never carried a value.** The check I ran was "is the row
+   drawn, in the drawn order, with a change affordance" — structural, against
+   the five names in the prompt. It was not "does the row show what the document
+   says", and on every test import the row read "None on the document", which is
+   a legitimate rendering of an empty column and so looked like data rather than
+   a broken pipeline. The drawing in Section 4.1 says `Date  Mon 27Jul`. It was
+   never once that. Auditing a row's existence is not auditing a row.
+
+2. **The heading above the card was the filename.** Section 4.1 draws no title
+   line at all, so a checklist built from the drawing had no entry for one, and
+   "page-2.jpg" sat above a card headed "We found this" without anything in the
+   audit having a place to object. The prompt item is "the summary card exactly
+   as drawn" — the omission is real, but it is an omission the method could not
+   have caught, because the method only looked for what the drawing contains.
 
 Confidence collapse is structural rather than disciplined: an unresolved client
 returns the client step early and renders one question; an unresolved contract
@@ -469,3 +488,119 @@ column side and the value side.
   and is where Phase 6 plugs in.
 - **DEC-13 is not a Phase 4 task but it is a live risk** — anything in Phase 4
   that writes `carrier_documents` inherits it.
+
+---
+
+# Defect round — 2026-08-04
+
+Five defects from a live walkthrough of a manifest and a rate confirmation. No
+DDL: the two new extraction fields live in `raw_extraction`, which is `jsonb`,
+so the Zod schema is the only contract that changed (DEC-3 respected).
+
+## 1 — The client on a rate confirmation was the warehouse
+
+`clientParty()` in `resolution.ts` now chooses the party by document type:
+`header.issuerName` for a rate confirmation, `header.originName` for everything
+else, falling back to the origin when no issuer was printed.
+
+The old code read `originName` for every type. On a manifest that is the shipper
+and the shipper pays, so it was right. On a rate confirmation the origin block is
+the **pickup facility** — the live import stored `originName = "MIDWEST
+DISTRIBUTION CENTER"`, a warehouse — while the company hiring the carrier was the
+broker on the letterhead. The broker was never offered as a candidate at all, and
+worse, `assignClient` would have taught the document profile that "MIDWEST
+DISTRIBUTION CENTER" means that client, so the next rate confirmation from the
+same broker would have collapsed onto the warehouse **without asking**.
+
+`issuerName` / `issuerAddress` / `issuerContact` were added to the extraction
+header and the prompt now defines both blocks explicitly, including the
+instruction never to copy the pickup into the issuer to fill the field. The
+origin block is still extracted and still correct — Phase 4 needs it as the first
+stop. It is simply not the client on this document type.
+
+Create-new pre-fills from the same party, so a broker is created with the
+broker's address rather than the warehouse's. The evidence row under the card,
+labelled "Named on it", now shows `clientNameOnDocument` — the string actually
+matched — and the pickup gets its own row, "Loads at", when the two differ.
+
+## 2 — The date never reached the card
+
+Traced end to end. Which link was broken, with the evidence:
+
+| Link | State | Evidence |
+|---|---|---|
+| Prompt asks for it | Yes | `EXTRACTION_PROMPT` has `"documentDate": string\|null` and rule 1 ("Manifest Number: 07/27/26 is a date") |
+| Model returns it | **Yes** | `raw_extraction.header.documentDate` = `"07/27/26"` (manifest), `"08/03/26"` (rate con) |
+| Zod keeps it | Yes | `documentDate: z.string().nullish()` — no format constraint, nothing dropped |
+| **Parsed to the column** | **NO** | `parseDocumentDate` matched `^\d{4}-\d{2}-\d{2}` only, returned null for both |
+| Column | Empty | `document_date` NULL on all 8 rows in `document_imports` |
+| Card reads it | Yes | `resolution.documentDate` ← `record.documentDate` — the right field of an empty column |
+
+The prompt never said what format `documentDate` should be in, so the model
+returned it exactly as the page printed it, and the parser accepted only ISO.
+Nothing logged, because null is a legitimate answer for a document with no date.
+
+Both halves fixed: the prompt now demands ISO (rule 1b, including the two-digit
+year rule), and `parseDocumentDate` accepts what documents actually print —
+`MM/DD/YY`, `MM/DD/YYYY`, dashes and dots, month-first per US freight
+convention — while rejecting `02/31/26` rather than rolling it into March.
+
+The imports already in the table only carry the printed form, so `documentDateOf`
+falls back to parsing the extraction when the column is null. Those imports show
+the right date now, without being re-read and re-billed.
+
+## 3 — The card was titled from the filename
+
+`ImportSummaryView.title` and `ImportListItem.title` are composed from the party
+and the document type — "Apex Freight Brokerage LLC rate confirmation", "Dealer
+Tire - Chicago WHSE manifest" — falling back to the filename only when extraction
+yields neither. ALL-CAPS names are title-cased for display, with trade
+abbreviations (LLC, WHSE, DC…) left alone; a name with any lowercase in it is
+printed exactly as the document had it.
+
+Why the per-item audit passed it is written up under **item 4** above rather than
+here: the short version is that the audit checked the five rows the spec draws,
+and the spec draws no title line, so nothing in the method had a place to object
+to "page-2.jpg".
+
+## 4 — Resume routed to a failed import
+
+`listResumableImports` included `FAILED`, so the Trips banner offered a CSV that
+could not be parsed under the words "Pick up where you left off". The status list
+is now the exported `RESUMABLE_STATUSES` — `UPLOADED`, `EXTRACTING`,
+`NEEDS_REVIEW` — and both surfaces read it from the server, so neither banner can
+drift from the other. The dead `FAILED` branches in the two banner components
+were removed with it.
+
+Failed imports stay in "Choose recent", which lists everything, because the
+re-shoot path lives on the import's own page and taking that away would remove a
+real recovery. What they gained is a dismiss (a cancel, `FAILED → CANCELLED`,
+already a legal edge) on both surfaces — until now there was no way to get rid of
+one at all.
+
+## 5 — Multi-contract with none right
+
+`createOffer` was gated on `candidates.length === 0`. It is now gated on the
+absence of a spot offer alone, so a client with three contracts and a load that
+moved under none of them gets the same inline create, rendered **below** the
+options with "None of these? Create a contract for…". A picker whose every row is
+the wrong agreement is the same dead end as an empty one; the only difference is
+that it does not look like one. The spot offer stays exclusive to rate
+confirmations, and where it exists it remains the only offer.
+
+## Verification
+
+```
+apps/web   npx tsc --noEmit   → clean
+apps/mobile npx tsc --noEmit  → clean
+vitest src/lib/document-import src/components/carrier/imports
+   Test Files  17 passed (17)
+        Tests  228 passed (228)
+```
+
+29 new tests across `document-date.test.ts` (the parser, including the exact
+strings the live imports stored), `rate-con-party.test.ts` (issuer as candidate,
+alias learned against the issuer, prefill from the issuer's address, manifest
+unaffected, date fallback, titles) and `resumable.test.ts` (the status list).
+The two contract tests that encoded "a picker means no create path" were
+rewritten — that scope was the defect.

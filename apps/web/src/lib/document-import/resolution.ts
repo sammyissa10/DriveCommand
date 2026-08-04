@@ -51,7 +51,7 @@ import {
   UNKNOWN_DOCUMENT_TYPE,
   type DocumentProfileRecord,
 } from './profiles';
-import { getImportRecord, type ImportRecord } from './persistence';
+import { getImportRecord, parseDocumentDate, type ImportRecord } from './persistence';
 import { isDedupeViolation } from './hashing';
 import { normaliseMoney } from './money';
 
@@ -290,14 +290,72 @@ function extractionOf(record: ImportRecord): CanonicalExtraction | null {
   return raw && Array.isArray(raw.consignments) ? raw : null;
 }
 
-/** The document's own name for the shipper — the string everything scores against. */
-function documentClientName(extraction: CanonicalExtraction | null): string | null {
-  const name = extraction?.header?.originName;
-  return name && name.trim() ? name.trim() : null;
-}
+/** Spec Section 5: rate confirmations are the type that carries a flat rate. */
+const RATE_CONFIRMATION = 'RATE_CONFIRMATION';
 
 function documentTypeOf(record: ImportRecord): string {
   return record.documentType || UNKNOWN_DOCUMENT_TYPE;
+}
+
+/**
+ * The party on the document that becomes the client — the counterparty who pays.
+ *
+ * WHICH BLOCK THAT IS DEPENDS ON THE DOCUMENT TYPE, and getting it wrong is not
+ * a near miss. On a manifest the origin block is the shipper, and the shipper is
+ * the customer. On a rate confirmation the origin block is the PICKUP FACILITY
+ * — a warehouse that never sees an invoice — while the company hiring the
+ * carrier is the broker on the letterhead. Reading `originName` for both put
+ * "MIDWEST DISTRIBUTION CENTER" forward as the client of a load that "APEX
+ * FREIGHT BROKERAGE LLC" was paying for, and never offered the broker at all.
+ *
+ * The origin block is still extracted and still correct — Phase 4 needs it as
+ * the first stop. It is simply not the client on this document type.
+ *
+ * Falls back to the origin when a rate confirmation names no issuer, because a
+ * candidate list built from the wrong name still beats an empty screen.
+ */
+function clientParty(
+  extraction: CanonicalExtraction | null,
+  documentType: string,
+): { name: string | null; address: NonNullable<CanonicalExtraction['header']>['originAddress']; contact: NonNullable<CanonicalExtraction['header']>['originContact'] } {
+  const header = extraction?.header;
+  const issuerName = header?.issuerName?.trim() || null;
+
+  if (documentType === RATE_CONFIRMATION && issuerName) {
+    return {
+      name: issuerName,
+      address: header?.issuerAddress ?? null,
+      contact: header?.issuerContact ?? null,
+    };
+  }
+
+  return {
+    name: header?.originName?.trim() || null,
+    address: header?.originAddress ?? null,
+    contact: header?.originContact ?? null,
+  };
+}
+
+/** The document's own name for the client — the string everything scores against. */
+function documentClientName(
+  extraction: CanonicalExtraction | null,
+  documentType: string,
+): string | null {
+  return clientParty(extraction, documentType).name;
+}
+
+/**
+ * The document's date, preferring the column and falling back to the extraction.
+ *
+ * The column is written once, at the end of extraction, and is also part of the
+ * dedupe key. The fallback exists because every import taken before the date
+ * parser was fixed has a date in its extraction and NULL in its column — those
+ * imports show the right date on the card immediately rather than only after
+ * being re-read. Nothing is written here; the card's own date row is what
+ * writes the column.
+ */
+function documentDateOf(record: ImportRecord, extraction: CanonicalExtraction | null): string | null {
+  return isoDate(record.documentDate) ?? isoDate(parseDocumentDate(extraction?.header?.documentDate));
 }
 
 // ---------------------------------------------------------------------------
@@ -378,12 +436,19 @@ function toClientOption(row: ClientRow, match: { score: number | null; matchedTe
   };
 }
 
-function prefillFromExtraction(extraction: CanonicalExtraction | null): ClientPrefill {
-  const header = extraction?.header;
-  const address = header?.originAddress ?? {};
-  const contact = header?.originContact ?? {};
+/**
+ * Create-new, pre-filled from the party that is actually becoming the client —
+ * so a broker is created with the broker's address rather than the warehouse's.
+ */
+function prefillFromExtraction(
+  extraction: CanonicalExtraction | null,
+  documentType: string,
+): ClientPrefill {
+  const party = clientParty(extraction, documentType);
+  const address = party.address ?? {};
+  const contact = party.contact ?? {};
   return {
-    name: header?.originName?.trim() ?? '',
+    name: party.name ?? '',
     primaryContact: contact?.name?.trim() || null,
     phone: contact?.phone?.trim() || null,
     email: contact?.email?.trim() || null,
@@ -421,8 +486,9 @@ async function buildClientSlot(
   profiles: DocumentProfileRecord[],
   query: string | null,
 ): Promise<ClientSlotView> {
-  const documentText = documentClientName(extraction);
-  const createPrefill = prefillFromExtraction(extraction);
+  const documentType = documentTypeOf(record);
+  const documentText = documentClientName(extraction, documentType);
+  const createPrefill = prefillFromExtraction(extraction, documentType);
 
   const rows = await loadActiveClients(db, orgId);
   const aliasesByClient = new Map<string, string[]>();
@@ -587,9 +653,6 @@ function rankCandidates(
 // Contract slot
 // ---------------------------------------------------------------------------
 
-/** Spec Section 5: rate confirmations are the type that carries a flat rate. */
-const RATE_CONFIRMATION = 'RATE_CONFIRMATION';
-
 /**
  * What a contract created from the import gets when the caller names no rate
  * type. It is the column's own default, so this changes nothing about the row
@@ -603,8 +666,8 @@ function spotContractName(record: ImportRecord, date: string): string {
 }
 
 /** The document's date, or today when it printed none. */
-function tripDate(record: ImportRecord): string {
-  return isoDate(record.documentDate) ?? new Date().toISOString().slice(0, 10);
+function tripDate(record: ImportRecord, extraction: CanonicalExtraction | null): string {
+  return documentDateOf(record, extraction) ?? new Date().toISOString().slice(0, 10);
 }
 
 async function buildContractSlot(
@@ -634,7 +697,7 @@ async function buildContractSlot(
 
   const offerSpot = (): SpotOffer | null => {
     if (record.documentType !== RATE_CONFIRMATION) return null;
-    const date = tripDate(record);
+    const date = tripDate(record, extraction);
     return {
       totalRate: extraction?.header?.totalRate?.trim() || null,
       currency: extraction?.header?.currency?.trim() || 'USD',
@@ -724,21 +787,23 @@ async function buildContractSlot(
     why: null,
     candidates,
     spotOffer,
-    // Nothing to pick and no spot offer is exactly the case that used to end in
-    // a sentence and no action. The spot offer stays exclusive to rate
-    // confirmations (spec 4.2), so where it is absent this takes its place —
-    // the step always has one thing the user can do.
-    createOffer:
-      candidates.length === 0 && !spotOffer
-        ? {
-            clientName,
-            // Deliberately does not restate "has no active contract" — the step
-            // above says that once, and saying it twice was half the original
-            // defect. This sentence is about the action, not the situation.
-            detail:
-              'A trip is billed against a contract. Create one here and the import carries on with it — its rate and terms can be filled in on the contract afterwards.',
-          }
-        : null,
+    // Offered whenever there is no spot offer — an empty picker (where it is
+    // the only way forward) AND a picker whose options are all wrong (where
+    // the only alternative was to select a contract the load is not under).
+    // The spot offer stays exclusive to rate confirmations per spec 4.2, so
+    // this never competes with it.
+    createOffer: spotOffer
+      ? null
+      : {
+          clientName,
+          // Deliberately does not restate "has no active contract" — the step
+          // above says that once, and saying it twice was half the original
+          // defect. This sentence is about the action, not the situation.
+          detail:
+            candidates.length === 0
+              ? 'A trip is billed against a contract. Create one here and the import carries on with it — its rate and terms can be filled in on the contract afterwards.'
+              : 'If none of these is the agreement this load moved under, create the one that is — its rate and terms can be filled in on the contract afterwards.',
+        },
     // The row is no longer blocked in any case it can reach: it either has
     // contracts to choose from, a spot offer, or the create offer above.
     blockedReason: null,
@@ -798,7 +863,7 @@ export async function resolveImport(
     client,
     contract,
     template: templateSlot(),
-    documentDate: isoDate(record.documentDate),
+    documentDate: documentDateOf(record, extraction),
     stops: {
       total,
       // Honestly null, not 0. Facility matching is Phase 4, and "0 matched"
@@ -901,7 +966,10 @@ export async function assignClient(
   const profile = await recordClientConfirmation(db, orgId, userId, {
     clientId,
     documentType,
-    originName: documentClientName(extraction),
+    // The alias learned is the name that was matched against — the issuer on a
+    // rate confirmation. Saving the pickup facility here would teach the
+    // profile the wrong string and collapse the next import onto it.
+    originName: documentClientName(extraction, documentType),
   });
 
   const changed = record.clientId !== clientId;
@@ -1126,7 +1194,7 @@ export async function createAndAssignContract(
     throw new ResolutionError(`“${rateType}” is not a rate type this system uses.`, 'INVALID_CONTRACT');
   }
 
-  const date = input.effectiveDate ?? tripDate(record);
+  const date = input.effectiveDate ?? tripDate(record, extraction);
 
   const created = await createContract(
     orgId,

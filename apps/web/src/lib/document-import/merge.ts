@@ -337,6 +337,11 @@ export function assemblePages(pages: PageInput[]): AssembleResult {
       originName: coalesce(header.originName, ex.header?.originName),
       originAddress: header.originAddress ?? ex.header?.originAddress ?? null,
       originContact: header.originContact ?? ex.header?.originContact ?? null,
+      // The issuer is usually printed once, on page 1 of a rate confirmation.
+      // Same first-non-null rule as the origin block.
+      issuerName: coalesce(header.issuerName, ex.header?.issuerName),
+      issuerAddress: header.issuerAddress ?? ex.header?.issuerAddress ?? null,
+      issuerContact: header.issuerContact ?? ex.header?.issuerContact ?? null,
       currency: coalesce(header.currency, ex.header?.currency),
       totalRate: coalesce(header.totalRate, ex.header?.totalRate),
     };

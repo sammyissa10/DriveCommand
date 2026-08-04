@@ -93,27 +93,36 @@ describe('ContractDecision for a rate confirmation with no contracts', () => {
 });
 
 describe('ContractDecision with contracts to pick', () => {
-  it('is a picker and offers no create path', () => {
-    const html = render(
-      slot({
-        candidates: [
-          {
-            id: 'contract-a',
-            contractNumber: 'CN-2026-00001',
-            contractName: 'Chicago lane',
-            contractType: 'contract',
-            rateType: 'per_mile',
-            baseRate: '2.4000',
-            effectiveDate: null,
-            expirationDate: null,
-            isOneTime: false,
-          },
-        ],
-      }),
-    );
+  const WITH_OPTIONS = slot({
+    candidates: [
+      {
+        id: 'contract-a',
+        contractNumber: 'CN-2026-00001',
+        contractName: 'Chicago lane',
+        contractType: 'contract',
+        rateType: 'per_mile',
+        baseRate: '2.4000',
+        effectiveDate: null,
+        expirationDate: null,
+        isOneTime: false,
+      },
+    ],
+    createOffer: {
+      clientName: CLIENT,
+      detail:
+        'If none of these is the agreement this load moved under, create the one that is — its rate and terms can be filled in on the contract afterwards.',
+    },
+  });
+
+  it('offers the options and a create path under them', () => {
+    const html = render(WITH_OPTIONS);
 
     expect(html).toContain('Chicago lane');
-    expect(html).not.toContain('Create a contract for');
+    expect(html).toContain(`None of these? Create a contract for ${CLIENT}`);
+    // A picker whose every option is the wrong agreement is as much of a dead
+    // end as an empty one, so the escape hatch is here too — but under the
+    // options, which are still the likely answer.
+    expect(html.indexOf('Chicago lane')).toBeLessThan(html.indexOf('None of these?'));
     expect(html).not.toContain('Create one-time contract');
   });
 });

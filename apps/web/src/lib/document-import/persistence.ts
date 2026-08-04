@@ -229,14 +229,27 @@ export async function findActiveDuplicate(
 }
 
 /**
- * Imports the user can pick up again.
+ * Statuses the resume banner may offer.
  *
- * Spec Phase 2 item 8 names NEEDS_REVIEW. EXTRACTING and UPLOADED are included
- * too, because those are precisely the states a killed lambda or a backgrounded
+ * Spec Phase 2 item 8 names NEEDS_REVIEW. EXTRACTING and UPLOADED are here too,
+ * because those are precisely the states a killed lambda or a backgrounded
  * phone leaves behind, and an import stuck at EXTRACTING with nothing offering
- * to resume it is the worst outcome of the whole flow. FAILED is included so a
- * re-shoot is one tap from the Trips page rather than a fresh upload.
+ * to resume it is the worst outcome of the whole flow.
+ *
+ * FAILED IS NOT HERE, and was. The banner says "pick up where you left off" and
+ * sent people to a CSV that could not be parsed — there is nothing to pick up,
+ * only a screen explaining that. A failed import is still reachable and still
+ * re-shootable from "Choose recent", which lists everything and now carries a
+ * dismiss on the failed rows; what it may not do is present itself as the
+ * unfinished work waiting for you.
  */
+export const RESUMABLE_STATUSES: readonly ImportStatus[] = [
+  'UPLOADED',
+  'EXTRACTING',
+  'NEEDS_REVIEW',
+];
+
+/** Imports the user can pick up again. */
 export async function listResumableImports(
   orgId: string,
   userId?: string | null,
@@ -247,7 +260,7 @@ export async function listResumableImports(
     where: {
       orgId,
       deletedAt: null,
-      status: { in: ['UPLOADED', 'EXTRACTING', 'NEEDS_REVIEW', 'FAILED'] },
+      status: { in: [...RESUMABLE_STATUSES] },
     },
     orderBy: { createdAt: 'desc' },
     take: limit,
@@ -516,13 +529,56 @@ export async function finishExtraction(input: FinishExtractionInput): Promise<vo
   }
 }
 
-/** `YYYY-MM-DD` at UTC midnight, or null. Never a timezone-shifted date. */
+/**
+ * The document's date at UTC midnight, or null. Never a timezone-shifted date.
+ *
+ * WHY THIS ACCEPTS MORE THAN ISO. It used to accept `YYYY-MM-DD` and nothing
+ * else, while the extraction prompt never asked for ISO — so the model returned
+ * the date exactly as the page printed it ("07/27/26", "08/03/26"), this
+ * returned null, and `document_date` stayed empty on every import ever run. The
+ * prompt now demands ISO, but a model will still echo the printed form
+ * sometimes, and the imports already in the table only carry the printed form.
+ * Parsing here is the cheaper and more durable half of the fix.
+ *
+ * US freight convention: a slashed date is MONTH first. "03/08/26" is 8 March,
+ * not 3 August. Every document this module has seen is a US carrier's.
+ */
 export function parseDocumentDate(value: string | null | undefined): Date | null {
   if (!value) return null;
-  const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
-  if (!iso) return null;
-  const d = new Date(`${iso[1]}-${iso[2]}-${iso[3]}T00:00:00.000Z`);
-  return Number.isNaN(d.getTime()) ? null : d;
+  const raw = String(value).trim();
+  if (!raw) return null;
+
+  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(raw);
+  if (iso) return utcDate(Number(iso[1]), Number(iso[2]), Number(iso[3]));
+
+  // 7/27/26, 07-27-2026, 07.27.26 — the printed forms, month first.
+  const us = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{2}|\d{4})$/.exec(raw);
+  if (us) return utcDate(expandYear(Number(us[3])), Number(us[1]), Number(us[2]));
+
+  return null;
+}
+
+/** Two-digit years: 00-79 is this century, 80-99 the last one. */
+function expandYear(year: number): number {
+  if (year >= 1000) return year;
+  return year < 80 ? 2000 + year : 1900 + year;
+}
+
+/**
+ * A real calendar date at UTC midnight, or null.
+ *
+ * Rejects what `new Date()` would silently roll over — "13/45/26" must not
+ * become February 14th on a document nobody will re-read.
+ */
+function utcDate(year: number, month: number, day: number): Date | null {
+  if (!Number.isInteger(year) || year < 1900 || year > 2999) return null;
+  if (!Number.isInteger(month) || month < 1 || month > 12) return null;
+  if (!Number.isInteger(day) || day < 1 || day > 31) return null;
+  const d = new Date(Date.UTC(year, month - 1, day));
+  if (Number.isNaN(d.getTime())) return null;
+  // Rollover check: 31 February parses, and must not be accepted.
+  if (d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) return null;
+  return d;
 }
 
 /** Failure path: record why, and move to FAILED. */

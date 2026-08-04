@@ -6,14 +6,15 @@
  *
  * Three things on this screen and no more: the client's active contracts; for a
  * rate confirmation, the offer to make a one-time contract from the rate
- * printed on the document; and, when there is nothing to pick and no rate to
- * make one from, the offer to create the client's first contract here. Which of
- * the three appears is decided server-side (`slot.spotOffer`,
- * `slot.createOffer`), so this surface and the mobile one cannot disagree.
+ * printed on the document; and otherwise the offer to create a contract here.
+ * Which appears is decided server-side (`slot.spotOffer`, `slot.createOffer`),
+ * so this surface and the mobile one cannot disagree.
  *
  * THERE IS ALWAYS AN ACTION. A client created inline a moment ago has no
  * contracts, so an empty picker is the ordinary state for a new client, not a
- * rare one; a screen that only said so left the wizard with no way forward.
+ * rare one; a screen that only said so left the wizard with no way forward. A
+ * picker whose three options are all the wrong agreement is the same dead end
+ * wearing a list — the create path sits under the options for that case.
  *
  * THE ONE-TIME CONTRACT IS LABELLED BEFORE IT EXISTS. The proposed name, the
  * rate, and the single-day term are all on screen before the button is pressed,
@@ -216,16 +217,21 @@ export function ContractDecision({ importId, slot, clientName, onResolved, compa
         </div>
       ) : null}
 
-      {/* ---- The client's first contract, created without leaving the import ----
+      {/* ---- A contract created without leaving the import ----
           Same shape as the client step's "Create and use": one optional field,
-          one button, and the row it produces is selected on the way back. */}
+          one button, and the row it produces is selected on the way back.
+          Rendered BELOW the options, because when there are options they are
+          the likely answer and this is the escape hatch — but a picker whose
+          every row is wrong is as much of a dead end as an empty one. */}
       {slot.createOffer ? (
         <div className="space-y-3 rounded-lg border border-dashed border-border p-4">
           <div className="flex items-start gap-2">
             <Plus className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div className="min-w-0">
               <p className="text-sm font-medium text-foreground">
-                Create a contract for {slot.createOffer.clientName}
+                {slot.candidates.length > 0
+                  ? `None of these? Create a contract for ${slot.createOffer.clientName}`
+                  : `Create a contract for ${slot.createOffer.clientName}`}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">{slot.createOffer.detail}</p>
             </div>

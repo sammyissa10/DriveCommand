@@ -182,9 +182,29 @@ export const extractionHeaderSchema = z.object({
   documentDate: z.string().nullish(),
   totalPages: z.number().int().positive().nullish(),
 
+  /**
+   * Where the freight is collected from. On a manifest this is the shipper and
+   * it is also who the carrier bills; on a rate confirmation it is the PICKUP
+   * FACILITY, which is not who pays.
+   */
   originName: z.string().nullish(),
   originAddress: addressSchema.nullish(),
   originContact: contactSchema.nullish(),
+
+  /**
+   * Who issued the document and owes the money — the broker on a rate
+   * confirmation's letterhead.
+   *
+   * Separate from `origin*` because on a rate confirmation the two are
+   * different companies and both matter: the issuer becomes the client, the
+   * origin becomes the first stop. Conflating them put "MIDWEST DISTRIBUTION
+   * CENTER" (a warehouse) forward as the client of a load that "APEX FREIGHT
+   * BROKERAGE LLC" was paying for. Null on document types that have no separate
+   * issuer, which is most of them.
+   */
+  issuerName: z.string().nullish(),
+  issuerAddress: addressSchema.nullish(),
+  issuerContact: contactSchema.nullish(),
 
   /** Rate confirmations only. Money stays a STRING here and becomes Decimal at
    *  persistence — never a float (spec Section 15). */

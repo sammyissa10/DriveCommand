@@ -224,7 +224,7 @@ describe('a rate confirmation with zero contracts', () => {
 });
 
 describe('a client that does have contracts', () => {
-  it('is a picker, with no create offer', async () => {
+  it('offers the picker AND a create path — none of them may be the right one', async () => {
     state.contracts = [
       {
         id: 'contract-a',
@@ -252,6 +252,40 @@ describe('a client that does have contracts', () => {
 
     const view = await resolveImportById(ORG, USER, IMPORT);
     expect(view?.contract.candidates).toHaveLength(2);
+    expect(view?.contract.createOffer).not.toBeNull();
+    // The wording turns on whether there is anything to reject.
+    expect(view?.contract.createOffer?.detail).toMatch(/none of these/i);
+  });
+
+  it('still gives a rate confirmation the one-time offer and only that', async () => {
+    seed('RATE_CONFIRMATION');
+    state.contracts = [
+      {
+        id: 'contract-a',
+        clientId: 'client-1',
+        contractNumber: 'CN-2026-00001',
+        contractName: 'Chicago lane',
+        contractType: 'contract',
+        rateType: 'per_mile',
+        baseRate: null,
+        effectiveDate: null,
+        expirationDate: null,
+      },
+      {
+        id: 'contract-b',
+        clientId: 'client-1',
+        contractNumber: 'CN-2026-00002',
+        contractName: 'Detroit lane',
+        contractType: 'contract',
+        rateType: 'per_mile',
+        baseRate: null,
+        effectiveDate: null,
+        expirationDate: null,
+      },
+    ];
+
+    const view = await resolveImportById(ORG, USER, IMPORT);
+    expect(view?.contract.spotOffer).not.toBeNull();
     expect(view?.contract.createOffer).toBeNull();
   });
 });
