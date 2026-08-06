@@ -160,3 +160,52 @@ one-function change (`ensureContractCommitted`, mirroring `ensureClientCommitted
 **Verification:** `tsc --noEmit` 0 errors in apps/web and apps/mobile;
 `vitest run src/lib/document-import` 222/222 passing across 16 files. Still not
 browser-verified. Not deployed, not pushed.
+
+## Follow-up — quick-510, the contract half (2026-08-06, commit 25e5ed96)
+
+Closes the gap quick-509 flagged. `buildContractSlot`'s PROFILE_PIN and
+ONLY_ACTIVE_CONTRACT branches were view-only in exactly the way the client
+branches were before quick-508: they render a RESOLVED contract and leave
+`contractId` null.
+
+**No schema was touched.** No Prisma model change, no migration, no DDL, no
+`prisma generate` — quick-509 already added the only column this needed. Two
+files changed: `resolution.ts` and one copy line in `ImportSummaryCard.tsx`.
+
+- `resolveContractDeterministic(profile, candidates, clientName, documentType)`
+  is pure and holds both branches; `buildContractSlot` calls it. Same shape as
+  `resolveClientDeterministic`, carrying the `WhyView` through so the copy is
+  defined once.
+- `ensureContractCommitted(orgId, userId, record)` no-ops when `contractId` is
+  set, otherwise composes `ensureClientCommitted` first — a contract belongs to a
+  client, so there is nothing to resolve against until the client is real, and
+  this makes one call commit both slots — then re-runs the resolver and delegates
+  to `assignContract` with PROFILE_PIN or SINGLE_ACTIVE provenance. No
+  `updateMany` inlined; the file still contains exactly three.
+
+**It has no caller, on purpose.** No mutation in the codebase guards on
+`contractId` today, so there is nowhere honest to call it from; wiring it into a
+path that does not need it would be a write nobody asked for. The requirement is
+recorded where it will be looked for — in the function's own doc comment, which
+states that Phase 8's atomic commit must call it before reading
+`record.contractId`. If that call is missed, a trip will commit with no contract
+attached while the card that authorised it displayed one.
+
+**Footer copy — done, but not in the conditional form asked for.** The line read
+"Stop review arrives in the next phase. The client and contract above are saved."
+The second sentence is unknowable to that component: `state: 'RESOLVED'` means
+the server *resolved* a slot, not that it *wrote* it, and after quick-508 an
+auto-resolved client is only written when a contract mutation fires — so the
+reachable case where neither id is persisted and the footer claims both are saved
+is real, not theoretical. Gating the sentence needs persistence state that
+neither `ImportView` (no `clientId`/`contractId`) nor `ImportResolutionView`
+(computed `state` only) carries, and `ImportResolutionView` is mirrored verbatim
+in `packages/api-client` — adding a field is the view restructuring this task
+ruled out. The false clause was therefore removed rather than gated. Restoring an
+affirmative version requires a deliberate decision to add e.g.
+`persisted: { client: boolean; contract: boolean }` to the resolution view and
+mirror it; that is a product call, not a fix.
+
+**Verification:** `tsc --noEmit` 0 errors in apps/web and apps/mobile;
+`vitest run src/lib/document-import` 222/222 across 16 files. Still not
+browser-verified. Not deployed, not pushed.
