@@ -465,6 +465,120 @@ function scoreLabel(score: number): string {
   return `${Math.round(score * 100)}%`;
 }
 
+type ScoredClient = { row: ClientRow; option: ClientOption };
+
+/**
+ * Every active client, scored against the name the document printed.
+ *
+ * Read-only, and deliberately separate from `buildClientSlot` so the commit
+ * path (`ensureClientCommitted`) can reach the same scoring without reaching
+ * the view assembly around it.
+ */
+async function scoreClients(
+  db: PrismaClient,
+  orgId: string,
+  profiles: DocumentProfileRecord[],
+  documentText: string | null,
+): Promise<ScoredClient[]> {
+  const rows = await loadActiveClients(db, orgId);
+  const aliasesByClient = new Map<string, string[]>();
+  for (const p of profiles) {
+    aliasesByClient.set(p.clientId, [...(aliasesByClient.get(p.clientId) ?? []), ...p.originNames]);
+  }
+
+  return rows.map((row) => {
+    const match = documentText
+      ? bestClientMatch(documentText, {
+          name: row.name,
+          dbaName: row.dbaName,
+          aliases: aliasesByClient.get(row.id) ?? [],
+        })
+      : null;
+    return {
+      row,
+      option: toClientOption(row, {
+        score: match ? match.score : null,
+        matchedText: match ? match.matchedText : null,
+        matchedField: match ? match.matchedField : null,
+      }),
+    };
+  });
+}
+
+/** A client the system may select without being asked. */
+interface DeterministicClient {
+  clientId: string;
+  option: ClientOption;
+  why: WhyView;
+}
+
+/**
+ * The two conditions under which the system selects a client on its own: a
+ * learned alias, or exactly one exact match. Pure — it reads the scored list it
+ * is handed and writes nothing.
+ *
+ * This is the single definition of "deterministic enough to collapse". The view
+ * (`buildClientSlot`) and the commit (`ensureClientCommitted`) both call it, so
+ * a card that shows a client collapsed and a mutation that persists that client
+ * cannot drift apart — which is exactly how the client came to be displayed but
+ * never saved.
+ *
+ * Note what is still absent: no fuzzy score, however high, resolves here.
+ */
+function resolveClientDeterministic(
+  record: ImportRecord,
+  profiles: DocumentProfileRecord[],
+  scored: ScoredClient[],
+  documentText: string | null,
+): DeterministicClient | null {
+  // ---- A learned alias ---------------------------------------------------
+  const aliasHit = findProfileByAlias(profiles, documentText);
+  if (aliasHit) {
+    const match = scored.find((s) => s.row.id === aliasHit.profile.clientId);
+    if (match) {
+      return {
+        clientId: match.row.id,
+        option: match.option,
+        why: {
+          via: 'PROFILE_ALIAS',
+          matchedText: aliasHit.matchedText,
+          documentText,
+          score: EXACT_MATCH,
+          detail: `“${aliasHit.matchedText}” is saved on this client from a previous import of the same document type.`,
+        },
+      };
+    }
+  }
+
+  // ---- Exactly one exact match ------------------------------------------
+  if (documentText) {
+    const exact = scored.filter((s) => s.option.score === EXACT_MATCH);
+    if (exact.length === 1) {
+      const only = exact[0];
+      return {
+        clientId: only.row.id,
+        option: only.option,
+        why: {
+          via: 'EXACT_MATCH',
+          matchedText: only.option.matchedText,
+          documentText,
+          score: EXACT_MATCH,
+          detail: `“${documentText}” on the document matches “${only.option.matchedText}” exactly (${scoreLabel(EXACT_MATCH)}).`,
+        },
+      };
+    }
+    if (exact.length > 1) {
+      logger.info('[document-import] ambiguous exact client match', {
+        importId: record.id,
+        documentText,
+        matches: exact.length,
+      });
+    }
+  }
+
+  return null;
+}
+
 /**
  * Build the client row.
  *
@@ -490,29 +604,7 @@ async function buildClientSlot(
   const documentText = documentClientName(extraction, documentType);
   const createPrefill = prefillFromExtraction(extraction, documentType);
 
-  const rows = await loadActiveClients(db, orgId);
-  const aliasesByClient = new Map<string, string[]>();
-  for (const p of profiles) {
-    aliasesByClient.set(p.clientId, [...(aliasesByClient.get(p.clientId) ?? []), ...p.originNames]);
-  }
-
-  const scored = rows.map((row) => {
-    const match = documentText
-      ? bestClientMatch(documentText, {
-          name: row.name,
-          dbaName: row.dbaName,
-          aliases: aliasesByClient.get(row.id) ?? [],
-        })
-      : null;
-    return {
-      row,
-      option: toClientOption(row, {
-        score: match ? match.score : null,
-        matchedText: match ? match.matchedText : null,
-        matchedField: match ? match.matchedField : null,
-      }),
-    };
-  });
+  const scored = await scoreClients(db, orgId, profiles, documentText);
 
   // ---- 1. Already chosen -------------------------------------------------
   if (record.clientId) {
@@ -543,55 +635,17 @@ async function buildClientSlot(
     }
   }
 
-  // ---- 2. A learned alias ------------------------------------------------
-  const aliasHit = findProfileByAlias(profiles, documentText);
-  if (aliasHit) {
-    const match = scored.find((s) => s.row.id === aliasHit.profile.clientId);
-    if (match) {
-      return {
-        state: 'RESOLVED',
-        value: match.option,
-        why: {
-          via: 'PROFILE_ALIAS',
-          matchedText: aliasHit.matchedText,
-          documentText,
-          score: EXACT_MATCH,
-          detail: `“${aliasHit.matchedText}” is saved on this client from a previous import of the same document type.`,
-        },
-        documentText,
-        candidates: rankCandidates(scored, query, documentText),
-        createPrefill,
-      };
-    }
-  }
-
-  // ---- 3. Exactly one exact match ---------------------------------------
-  if (documentText) {
-    const exact = scored.filter((s) => s.option.score === EXACT_MATCH);
-    if (exact.length === 1) {
-      const only = exact[0];
-      return {
-        state: 'RESOLVED',
-        value: only.option,
-        why: {
-          via: 'EXACT_MATCH',
-          matchedText: only.option.matchedText,
-          documentText,
-          score: EXACT_MATCH,
-          detail: `“${documentText}” on the document matches “${only.option.matchedText}” exactly (${scoreLabel(EXACT_MATCH)}).`,
-        },
-        documentText,
-        candidates: rankCandidates(scored, query, documentText),
-        createPrefill,
-      };
-    }
-    if (exact.length > 1) {
-      logger.info('[document-import] ambiguous exact client match', {
-        importId: record.id,
-        documentText,
-        matches: exact.length,
-      });
-    }
+  // ---- 2 & 3. A learned alias, then exactly one exact match --------------
+  const deterministic = resolveClientDeterministic(record, profiles, scored, documentText);
+  if (deterministic) {
+    return {
+      state: 'RESOLVED',
+      value: deterministic.option,
+      why: deterministic.why,
+      documentText,
+      candidates: rankCandidates(scored, query, documentText),
+      createPrefill,
+    };
   }
 
   return {
@@ -989,6 +1043,63 @@ export async function assignClient(
 }
 
 /**
+ * Persist a client the system resolved on its own, at the moment it first
+ * matters.
+ *
+ * The card collapses the client row whenever `buildClientSlot` resolves it, but
+ * two of those three routes — a learned alias, a single exact match — resolve it
+ * for display without anything being written: the view path is read-only and
+ * stays that way. The contract mutations then read `record.clientId` from the
+ * row and find nothing, and the user is told to pick a client that the header
+ * directly above the button has already named.
+ *
+ * So the write happens here, on the way into a mutation that needs it, rather
+ * than in the GET that displayed it. The resolution is re-run rather than
+ * trusted from the request, because the client the server is about to commit
+ * should be the one the server can still derive — not one a stale tab decided
+ * some minutes ago. It re-runs the same `resolveClientDeterministic` the card
+ * ran, so this commits precisely what was shown and never more: an ambiguous or
+ * merely-fuzzy match returns the record untouched and the caller's guard fires
+ * exactly as before.
+ *
+ * The write itself is delegated to `assignClient`, not reimplemented — that is
+ * what keeps the learned alias, the profile pointer and the contract-clearing
+ * rule identical to a human having picked the same client.
+ */
+async function ensureClientCommitted(
+  orgId: string,
+  userId: string,
+  record: ImportRecord,
+): Promise<ImportRecord> {
+  if (record.clientId) return record;
+
+  const db = await getTenantPrismaForOrg(orgId, userId);
+  const extraction = extractionOf(record);
+  const documentType = documentTypeOf(record);
+  const documentText = documentClientName(extraction, documentType);
+
+  const profiles = await listProfilesForType(db, orgId, documentType);
+  const scored = await scoreClients(db, orgId, profiles, documentText);
+
+  const deterministic = resolveClientDeterministic(record, profiles, scored, documentText);
+  if (!deterministic) return record;
+
+  await assignClient(orgId, userId, record.id, deterministic.clientId);
+
+  logger.info('[document-import] committed auto-resolved client', {
+    importId: record.id,
+    clientId: deterministic.clientId,
+    via: deterministic.why.via,
+  });
+
+  // Re-read rather than patch the object in hand: `assignClient` also writes
+  // `documentProfileId` and may clear `contractId`, and the caller goes on to
+  // use this record.
+  const fresh = await getImportRecord(orgId, record.id, userId);
+  return fresh ?? record;
+}
+
+/**
  * Correct the document date.
  *
  * The card's date row needs a change affordance like every other row, and a
@@ -1046,8 +1157,9 @@ export async function assignContract(
   importId: string,
   contractId: string,
 ): Promise<ImportResolutionView> {
-  const record = await requireRecord(orgId, userId, importId);
+  let record = await requireRecord(orgId, userId, importId);
   assertEditable(record);
+  record = await ensureClientCommitted(orgId, userId, record);
   if (!record.clientId) {
     throw new ResolutionError('Pick the client before the contract.', 'NO_CLIENT');
   }
@@ -1172,8 +1284,9 @@ export async function createAndAssignContract(
   importId: string,
   input: CreateContractInput,
 ): Promise<ImportResolutionView> {
-  const record = await requireRecord(orgId, userId, importId);
+  let record = await requireRecord(orgId, userId, importId);
   assertEditable(record);
+  record = await ensureClientCommitted(orgId, userId, record);
   if (!record.clientId) {
     throw new ResolutionError('Pick the client before the contract.', 'NO_CLIENT');
   }
