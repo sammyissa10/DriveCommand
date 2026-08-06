@@ -18,17 +18,34 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type { WhyView } from '@/lib/document-import/resolution';
+import type { StopWhyView } from '@/lib/document-import/facility-lookup';
 
-const VIA_LABEL: Record<WhyView['via'], string> = {
+/**
+ * The client, the contract and every resolved stop use this one component.
+ *
+ * The stop vias were added rather than given a second popover: "why is this the
+ * facility" is the same question as "why is this the client", and a dispatcher
+ * who has learned what the dotted `why` does on one row should not meet a
+ * different affordance on the next.
+ */
+const VIA_LABEL: Record<WhyView['via'] | StopWhyView['via'], string> = {
   EXACT_MATCH: 'Exact name match',
   PROFILE_ALIAS: 'Saved on this client',
   ONLY_ACTIVE_CONTRACT: 'Only active contract',
   PROFILE_PIN: 'Pinned to this client',
   CHOSEN: 'You chose it',
   CREATED: 'Created from this document',
+  // Facility ladder (spec Section 7).
+  EXTERNAL_REF: 'Saved code for this client',
+  NORMALISED_ADDRESS: 'Address match',
+  MANUAL: 'You chose it',
+  MANUAL_CREATE: 'Created from this document',
 };
 
-export function WhyPopover({ why }: { why: WhyView | null }) {
+/** A human decided, so there is nothing to score. Drives the copy at the bottom. */
+const HUMAN_VIAS = new Set(['CHOSEN', 'CREATED', 'MANUAL', 'MANUAL_CREATE']);
+
+export function WhyPopover({ why }: { why: WhyView | StopWhyView | null }) {
   if (!why) return null;
 
   return (
@@ -77,7 +94,9 @@ export function WhyPopover({ why }: { why: WhyView | null }) {
           // no score because nothing was guessed, and an empty "Score —" row
           // would read as a missing number rather than an absent question.
           <p className="border-t border-border pt-2 text-xs text-muted-foreground">
-            No score — this was set by a person, not matched.
+            {HUMAN_VIAS.has(why.via)
+              ? 'No score — this was set by a person, not matched.'
+              : 'No score — nothing was compared.'}
           </p>
         ) : null}
       </PopoverContent>

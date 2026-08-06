@@ -44,6 +44,7 @@ import type { ImportView } from '@/lib/document-import/intake';
 import { ClientDecision } from './ClientDecision';
 import { ContractDecision, contractLabel, contractRateLabel } from './ContractDecision';
 import { WhyPopover } from './WhyPopover';
+import { StopResolutionPanel } from './StopResolutionPanel';
 
 type OpenRow = 'client' | 'contract' | 'date' | null;
 
@@ -63,6 +64,11 @@ function merge(view: ImportView, resolution: unknown): ImportView {
 
 export function ImportSummaryCard({ view, onChange }: Props) {
   const [open, setOpen] = useState<OpenRow>(null);
+  // Collapsed by default, because a document whose stops all resolved silently
+  // is the outcome this module is for and does not need a list to prove it. The
+  // count line above says how many need a look, so opening this is a choice
+  // rather than a hunt.
+  const [stopsOpen, setStopsOpen] = useState(false);
   const r = view.resolution;
 
   if (!r) return null;
@@ -159,14 +165,32 @@ export function ImportSummaryCard({ view, onChange }: Props) {
 
       {/* ---- The stop-count line ---- */}
       <div className="border-t border-border pt-4">
-        <p className="text-lg font-semibold text-foreground">
-          {r.stops.total} stop{r.stops.total === 1 ? '' : 's'}
-        </p>
-        {/* Section 4.1 draws "11 matched · 1 new" under this. Facility matching
-            is the next phase, so the breakdown is absent rather than shown as
-            "0 matched", which would be a claim nothing has checked. */}
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="text-lg font-semibold text-foreground">
+            {r.stops.total} stop{r.stops.total === 1 ? '' : 's'}
+          </p>
+          {r.stops.total > 0 ? (
+            <button
+              type="button"
+              onClick={() => setStopsOpen(!stopsOpen)}
+              aria-expanded={stopsOpen}
+              className="min-h-[44px] rounded text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground"
+            >
+              {stopsOpen ? 'Hide facilities' : 'Facilities'}
+            </button>
+          ) : null}
+        </div>
+        {/* Section 4.1 draws "11 matched · 1 new" under this, and as of the
+            facility ladder these are real counts rather than the honest nulls
+            Phase 3 had to show. */}
         <p className="mt-0.5 text-xs text-muted-foreground">{r.stops.note}</p>
       </div>
+
+      {stopsOpen ? (
+        <div className="border-t border-border pt-4">
+          <StopResolutionPanel importId={view.id} />
+        </div>
+      ) : null}
 
       {view.summary && view.summary.warnings.length > 0 ? (
         <ul className="space-y-1.5 border-t border-border pt-3">

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
+import type { PrismaClient } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -19,6 +20,9 @@ export interface ListFacilitiesFilters {
 export interface FacilityCreateInput {
   name: string;
   facilityType?: string;
+  /** Who created it. Optional — every existing caller omits it and is unaffected. */
+  createdById?: string;
+  updatedById?: string;
   addressLine1?: string;
   addressLine2?: string;
   city?: string;
@@ -99,8 +103,24 @@ export async function getFacility(orgId: string, id: string) {
   });
 }
 
-export async function createFacility(orgId: string, data: FacilityCreateInput) {
-  const tenantPrisma = await getTenantPrisma();
+/**
+ * Create a facility.
+ *
+ * `client` is an OPTIONAL pre-resolved tenant Prisma client. Omitting it is the
+ * existing behaviour exactly — `getTenantPrisma()` reads the `x-tenant-id`
+ * header — so every current call site is untouched. It exists because that
+ * header does not exist on `/api/mobile/*` (DEC-11), and the document-import
+ * facility ladder runs on both surfaces; passing `getTenantPrismaForOrg(orgId,
+ * userId)` is what lets it reuse this function rather than write a second
+ * facility-creation path. Same extension `createClient` and `createContract`
+ * took in Phase 3, for the same reason.
+ */
+export async function createFacility(
+  orgId: string,
+  data: FacilityCreateInput,
+  client?: PrismaClient,
+) {
+  const tenantPrisma = client ?? (await getTenantPrisma());
   return tenantPrisma.carrierFacility.create({
     data: {
       ...data,

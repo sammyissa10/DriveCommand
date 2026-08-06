@@ -41,6 +41,11 @@ const db = vi.hoisted(() => ({
         (c) => c.id === where.id && (!where.clientId || c.clientId === where.clientId),
       ) ?? null,
   },
+  // Read by the Phase 4 stop-count line on the resolution view. Empty is the
+  // honest fixture here — this suite is about the contract step, and a tenant
+  // with no facilities simply puts every stop on T4.
+  carrierFacility: { findMany: async () => [] },
+  facilityExternalReference: { findMany: async () => [] },
   documentImport: {
     updateMany: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
       const row = state.imports.find((i) => i.id === where.id);

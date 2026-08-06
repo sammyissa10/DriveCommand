@@ -156,8 +156,119 @@ export interface ImportResolutionView {
   contract: ContractSlotView
   template: { state: 'STUB'; note: string }
   documentDate: string | null
-  stops: { total: number; matched: number | null; created: number | null; note: string }
+  /**
+   * `matched` and `created` were `null` while facility resolution did not exist
+   * (Phase 3, deliberately — "0 matched" would have been a claim nothing had
+   * checked). The facility ladder computes them, so they are real numbers now.
+   */
+  stops: { total: number; matched: number; created: number; note: string }
   resolved: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Facility resolution ladder — mirrors apps/web/src/lib/document-import/
+// facility-lookup.ts and facility-ladder.ts (spec Section 7).
+// ---------------------------------------------------------------------------
+
+/** T1 · T2 · T3 · T4. The rung a stop is on. */
+export type FacilityTier = 'T1' | 'T2' | 'T3' | 'T4'
+
+export type StopResolvedVia =
+  /** T1 — a confirmed `(tenant, client, code)` external reference. */
+  | 'EXTERNAL_REF'
+  /** T2 — the document address normalised equal to exactly one facility. */
+  | 'NORMALISED_ADDRESS'
+  /** T3, and any manual re-pick — a person chose this facility. */
+  | 'MANUAL'
+  /** T4 — a person created this facility from the pre-filled form. */
+  | 'MANUAL_CREATE'
+
+export interface StopWhyView {
+  via: StopResolvedVia
+  matchedText: string | null
+  documentText: string | null
+  score: number | null
+  detail: string
+}
+
+export interface StopFacilityView {
+  id: string
+  name: string
+  address: string
+  facilityType: string
+}
+
+/** A T3 candidate. A candidate is never a decision — linking needs a POST. */
+export interface FacilityProposal {
+  facilityId: string
+  name: string
+  address: string
+  /** 0..1. Shown, never acted on. */
+  score: number
+  /** Plain-language field differences, for the "show score + diffs" rule. */
+  differences: string[]
+  conflicts: string[]
+  nameScore: number
+}
+
+export interface FacilityPrefill {
+  name: string
+  facilityType: string
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  sourceCode: string | null
+}
+
+export type StopSlotState = 'LINKED' | 'PROPOSED' | 'NEW'
+
+export interface StopSlotView {
+  index: number
+  documentName: string
+  documentAddress: string
+  sourceCode: string | null
+  tier: FacilityTier
+  state: StopSlotState
+  facility: StopFacilityView | null
+  why: StopWhyView | null
+  proposals: FacilityProposal[]
+  prefill: FacilityPrefill | null
+  /**
+   * The hard rule, on the payload: no surface may render a T3 or T4 stop as
+   * settled, and nothing may be created without a person pressing something.
+   */
+  requiresHumanTap: boolean
+  /**
+   * True when the link is on the import row; false when it has only been
+   * computed for this read. A silent T1/T2 is displayed the moment it is
+   * derived and written when a mutation next needs it.
+   */
+  persisted: boolean
+}
+
+export interface StopResolutionView {
+  stops: StopSlotView[]
+  total: number
+  matched: number
+  created: number
+  needsReview: number
+  note: string
+}
+
+/** What the T4 create form sends. */
+export interface CreateStopFacilityInput {
+  name: string
+  facilityType?: string
+  addressLine1?: string
+  addressLine2?: string
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
+  contactName?: string
+  contactPhone?: string
 }
 
 export interface ImportView {
@@ -350,5 +461,44 @@ export const ownerImportsApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ spot: false, ...(contractName ? { contractName } : {}) }),
+    }).then((r) => r.data),
+
+  // -------------------------------------------------------------------------
+  // Facility resolution ladder (spec Section 7)
+  //
+  // Three calls, and the split between them is the safety rule: the GET decides
+  // and describes without writing, `linkStopFacility` links a facility a person
+  // chose, and `createStopFacility` is the ONLY one that can bring a facility
+  // into existence. T1 and T2 need none of them — they resolve silently and are
+  // committed server-side at the next mutation.
+  // -------------------------------------------------------------------------
+
+  /** Read-only. Opening the stop list cannot commit anything. */
+  getStops: (token: string, importId: string) =>
+    apiRequest<{ data: StopResolutionView }>(`${BASE}/${importId}/stops`, { token })
+      .then((r) => r.data),
+
+  /** The T3 exit — a person tapped a proposal, or re-picked a resolved stop. */
+  linkStopFacility: (token: string, importId: string, stopIndex: number, facilityId: string) =>
+    apiRequest<{ data: StopResolutionView }>(`${BASE}/${importId}/stops`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ stopIndex, facilityId }),
+    }).then((r) => r.data),
+
+  /**
+   * The T4 exit, and the only call in this client that creates a facility.
+   * Requires a name a person saw and accepted — spec Section 7's hard rule.
+   */
+  createStopFacility: (
+    token: string,
+    importId: string,
+    stopIndex: number,
+    input: CreateStopFacilityInput,
+  ) =>
+    apiRequest<{ data: StopResolutionView }>(`${BASE}/${importId}/stops/facility`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ stopIndex, ...input }),
     }).then((r) => r.data),
 }

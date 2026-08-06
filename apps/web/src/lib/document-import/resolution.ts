@@ -51,6 +51,19 @@ import {
   UNKNOWN_DOCUMENT_TYPE,
   type DocumentProfileRecord,
 } from './profiles';
+import {
+  clientProvenanceOf,
+  contractProvenanceOf,
+  provenanceOf,
+  stamp,
+  type ClientProvenance,
+  type ClientProvenanceVia,
+  type ContractProvenance,
+  type ContractProvenanceVia,
+  type ProvenanceInput,
+  type ResolutionProvenance,
+} from './provenance';
+import { resolveStopCounts } from './facility-lookup';
 import { getImportRecord, parseDocumentDate, type ImportRecord } from './persistence';
 import { isDedupeViolation } from './hashing';
 import { normaliseMoney } from './money';
@@ -80,111 +93,24 @@ export type ResolvedVia =
 // ---------------------------------------------------------------------------
 // Provenance — stored at write time, not inferred at read time
 // ---------------------------------------------------------------------------
+//
+// The vocabulary, the shapes and the parsing moved to `provenance.ts` when the
+// facility ladder arrived: the read-only stop view and these mutations both
+// need it, and neither may import the other. Re-exported here because callers
+// and tests already import these names from this module, and a move is not a
+// reason to break them.
 
-/**
- * How a slot came to hold the value it holds.
- *
- * Deliberately a different vocabulary from `ResolvedVia`. `ResolvedVia` says what
- * the card should render; this says what actually happened, and the two are not
- * the same question. `MANUAL` and `PROFILE_ALIAS` both produce a set `clientId`,
- * and before this was stored the read path could not tell them apart — so it
- * guessed "a person chose this", which for an auto-committed client is simply
- * untrue. Provenance exists so the affordance never has to guess.
- */
-export type ClientProvenanceVia =
-  /** A human picked an existing client from the list. */
-  | 'MANUAL'
-  /** A human created the client during this import. */
-  | 'MANUAL_CREATE'
-  /** Committed by the system: a name saved on the client's document profile. */
-  | 'PROFILE_ALIAS'
-  /** Committed by the system: exactly one active client matched exactly. */
-  | 'EXACT_MATCH';
-
-export type ContractProvenanceVia =
-  /** A human picked an existing contract. */
-  | 'MANUAL'
-  /** Committed because the client had exactly one active contract. */
-  | 'SINGLE_ACTIVE'
-  /** Committed because the client's profile pins it for this document type. */
-  | 'PROFILE_PIN'
-  /** Created by this import — spot, or the plain create-and-use path. */
-  | 'CREATED_THIS_IMPORT';
-
-/**
- * One slot's record. `score` and `matchedText` are the evidence a machine via
- * has and a human one does not: the alias that answered cannot be re-derived
- * later from the chosen client alone, which is exactly why it is stored rather
- * than recomputed.
- */
-export interface SlotProvenance<V extends string> {
-  via: V;
-  /** 0..1 for a scored match; null for a human choice, which is not a guess. */
-  score: number | null;
-  matchedText: string | null;
-  /** Who, when it was a person; the actor whose request committed it otherwise. */
-  byUserId: string | null;
-  /** ISO 8601. */
-  at: string;
-}
-
-export type ClientProvenance = SlotProvenance<ClientProvenanceVia>;
-export type ContractProvenance = SlotProvenance<ContractProvenanceVia>;
-
-export interface ResolutionProvenance {
-  client?: ClientProvenance;
-  contract?: ContractProvenance;
-}
-
-const CLIENT_VIAS: readonly string[] = ['MANUAL', 'MANUAL_CREATE', 'PROFILE_ALIAS', 'EXACT_MATCH'];
-const CONTRACT_VIAS: readonly string[] = ['MANUAL', 'SINGLE_ACTIVE', 'PROFILE_PIN', 'CREATED_THIS_IMPORT'];
-
-/** The stored object, or `{}` for a legacy row or anything malformed. */
-function provenanceOf(record: ImportRecord): ResolutionProvenance {
-  const raw = record.resolutionProvenance;
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
-  return raw as ResolutionProvenance;
-}
-
-/**
- * One slot's record, or null.
- *
- * An unrecognised `via` is treated as absent rather than rendered. A row written
- * by a newer deploy and read by an older one is a real possibility, and falling
- * back to the legacy copy is honest where inventing a sentence for a via this
- * build has never heard of is not.
- */
-function slotProvenance<V extends string>(
-  slot: SlotProvenance<V> | undefined,
-  allowed: readonly string[],
-): SlotProvenance<V> | null {
-  if (!slot || typeof slot !== 'object') return null;
-  if (typeof slot.via !== 'string' || !allowed.includes(slot.via)) return null;
-  return slot;
-}
-
-const clientProvenanceOf = (record: ImportRecord): ClientProvenance | null =>
-  slotProvenance(provenanceOf(record).client, CLIENT_VIAS);
-
-const contractProvenanceOf = (record: ImportRecord): ContractProvenance | null =>
-  slotProvenance(provenanceOf(record).contract, CONTRACT_VIAS);
-
-/** What a caller states about a write; `byUserId` and `at` are stamped here. */
-export interface ProvenanceInput<V extends string> {
-  via: V;
-  score?: number | null;
-  matchedText?: string | null;
-}
-
-function stamp<V extends string>(input: ProvenanceInput<V>, userId: string): SlotProvenance<V> {
-  return {
-    via: input.via,
-    score: input.score ?? null,
-    matchedText: input.matchedText ?? null,
-    byUserId: userId,
-    at: new Date().toISOString(),
-  };
-}
+export type {
+  ClientProvenance,
+  ClientProvenanceVia,
+  ContractProvenance,
+  ContractProvenanceVia,
+  ProvenanceInput,
+  ResolutionProvenance,
+  SlotProvenance,
+  StopProvenance,
+  StopProvenanceVia,
+} from './provenance';
 
 export interface WhyView {
   via: ResolvedVia;
@@ -315,9 +241,11 @@ export interface TemplateSlotView {
 
 export interface StopCountView {
   total: number;
-  /** Facility resolution is Phase 4, so these are honestly null rather than 0. */
-  matched: number | null;
-  created: number | null;
+  /** Linked to an existing facility — silently (T1/T2) or by a person (T3). */
+  matched: number;
+  /** Created from this document by a person (T4). */
+  created: number;
+  /** "11 matched · 1 new", as spec 4.1 draws it. */
   note: string;
 }
 
@@ -1192,22 +1120,18 @@ export async function resolveImport(
   );
   const contract = await buildContractSlot(db, orgId, record, extraction, client);
 
-  const total = extraction?.consignments.length ?? 0;
+  // Phase 4 fills the "11 matched · 1 new" line spec 4.1 draws. These were null
+  // rather than 0 while facility matching did not exist, because "0 matched"
+  // would have been a claim nothing had checked; now something has checked, and
+  // the numbers are real. Read-only — `resolveStopCounts` writes nothing.
+  const stops = await resolveStopCounts(db, orgId, record);
 
   return {
     client,
     contract,
     template: templateSlot(),
     documentDate: documentDateOf(record, extraction),
-    stops: {
-      total,
-      // Honestly null, not 0. Facility matching is Phase 4, and "0 matched"
-      // would read as "none of your twelve stops are known", which is a claim
-      // nothing has checked.
-      matched: null,
-      created: null,
-      note: 'Matching each stop to a facility arrives in the next phase.',
-    },
+    stops,
     resolved: client.state === 'RESOLVED' && contract.state === 'RESOLVED',
   };
 }
@@ -1240,7 +1164,10 @@ export class ResolutionError extends Error {
       | 'NO_CLIENT'
       | 'NO_RATE'
       | 'DUPLICATE_CLIENT'
-      | 'DUPLICATE_DOCUMENT',
+      | 'DUPLICATE_DOCUMENT'
+      /** Phase 4 — the facility ladder shares this error type and its handler mapping. */
+      | 'INVALID_FACILITY'
+      | 'INVALID_STOP',
   ) {
     super(message);
     this.name = 'ResolutionError';
@@ -1365,7 +1292,7 @@ export async function assignClient(
  * what keeps the learned alias, the profile pointer and the contract-clearing
  * rule identical to a human having picked the same client.
  */
-async function ensureClientCommitted(
+export async function ensureClientCommitted(
   orgId: string,
   userId: string,
   record: ImportRecord,

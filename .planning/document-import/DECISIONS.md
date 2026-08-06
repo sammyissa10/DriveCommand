@@ -443,3 +443,55 @@ worse failure. It is also not a fix, and this entry exists so it is not mistaken
 for one.
 
 **Owner:** the RLS Phase 2 cutover, alongside the GUC pool-leak from DEC-11.
+
+---
+
+## DEC-14 — `facility_external_references.resolved_via` holds a TIER, not a provenance via
+
+The column has a CHECK, confirmed against production 2026-08-06:
+
+```
+facility_external_references_resolved_via_check
+  CHECK (resolved_via IS NULL OR resolved_via = ANY (ARRAY['T1','T2','T3','T4']))
+```
+
+Phase 4's first implementation wrote the stop *provenance* vocabulary
+(`EXTERNAL_REF`, `NORMALISED_ADDRESS`, `MANUAL`, `MANUAL_CREATE`) into it. Every
+external-reference write would have raised a 23514 in production — which is every
+confirmed resolution, which is the entire value of the module.
+
+Two vocabularies, deliberately:
+
+| Where | Vocabulary | Why |
+|---|---|---|
+| `facility_external_references.resolved_via` | `T1 · T2 · T3 · T4` | constrained by the database; the column's own schema comment already said "T1/T2/T3/T4 of the resolution ladder" |
+| `document_imports.resolution_provenance.stops[i].via` | `EXTERNAL_REF · NORMALISED_ADDRESS · MANUAL · MANUAL_CREATE` | jsonb, unconstrained, and it is what the "why" affordance renders from |
+
+`REFERENCE_TIER` in `facility-resolution.ts` maps one to the other at the write.
+`MANUAL` maps to `T3` regardless of the tier the stop had been on, because the row
+records how the *link* came to exist and a person picking from a list is T3.
+
+**The general lesson, and it is the same one as B1:** this repo's carrier tables
+carry CHECK constraints seeded in early migrations that do not track the app's
+vocabulary (see `project_carrier_check_constraint_drift`). Read `pg_constraint`
+before writing any enum-ish carrier column. A faked database in a unit test is
+not evidence about SQL — it accepted the illegal value and the suite stayed green.
+
+---
+
+## DEC-15 — Stop → facility links live in `resolution_provenance.stops`
+
+No new table, no new column. There is no stop row to hold a `facilityId`: stops
+become `CarrierStop` records at commit (Phase 8), and until then a stop is an
+index into `reviewedExtraction`. The provenance record therefore *is* the link —
+`{ facilityId, via, score, matchedText, sourceCode, stopFingerprint, byUserId, at }`
+keyed by consignment index, merged in memory and written in the same `updateMany`
+as the quick-509 client/contract keys.
+
+An index is not an identity, so each record carries a `stopFingerprint` (the
+source code, or the normalised name + address key). On read, a fingerprint
+mismatch means stop review reordered or rewrote that position, and the record is
+treated as **absent** rather than trusted. Silently trusting the index would
+attach one consignee's confirmed facility to another's freight.
+
+Phase 5 must not "fix" this by re-keying on position.

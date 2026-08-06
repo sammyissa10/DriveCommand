@@ -31,6 +31,11 @@ import {
   setDocumentDate,
   ResolutionError,
 } from './resolution';
+import {
+  confirmStopFacility,
+  createStopFacility,
+  getStopResolution,
+} from './facility-resolution';
 import type { ClientCreateInput } from '@/lib/carrier/clients';
 import { TenantKeyError } from '@/lib/storage/tenant-key';
 import { logger } from '@/lib/logger';
@@ -173,6 +178,8 @@ const RESOLUTION_STATUS: Record<ResolutionError['code'], number> = {
   NO_RATE: 400,
   DUPLICATE_CLIENT: 409,
   DUPLICATE_DOCUMENT: 409,
+  INVALID_FACILITY: 400,
+  INVALID_STOP: 400,
 };
 
 async function resolutionCall(
@@ -299,6 +306,85 @@ export async function handleCreateResolutionContract(
       effectiveDate: typeof body.effectiveDate === 'string' ? body.effectiveDate : undefined,
       expirationDate: typeof body.expirationDate === 'string' ? body.expirationDate : undefined,
       notes: typeof body.notes === 'string' ? body.notes : undefined,
+    }),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Facility resolution — the stop ladder (Phase 4)
+// ---------------------------------------------------------------------------
+
+/** GET the stop ladder. Read-only: nothing below this line writes. */
+export async function handleGetStopResolution(
+  orgId: string,
+  userId: string,
+  importId: string,
+): Promise<HandlerResult> {
+  const view = await getStopResolution(orgId, userId, importId);
+  if (!view) return err('Import not found.', 404);
+  return ok(view);
+}
+
+/**
+ * POST — a person tapped a proposed facility, or re-picked a resolved one.
+ *
+ * The T3 exit. There is deliberately no PATCH that takes a tier or a score: the
+ * only thing a client may assert is *which facility a person chose*, and the
+ * server recomputes everything else.
+ */
+export async function handleConfirmStopFacility(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: { stopIndex?: unknown; facilityId?: unknown },
+): Promise<HandlerResult> {
+  const stopIndex = typeof body.stopIndex === 'number' ? body.stopIndex : NaN;
+  const facilityId = typeof body.facilityId === 'string' ? body.facilityId.trim() : '';
+  if (!Number.isInteger(stopIndex) || stopIndex < 0) return err('stopIndex is required.', 400);
+  if (!facilityId) return err('facilityId is required.', 400);
+
+  return resolutionCall('confirm stop facility', { orgId, importId, stopIndex }, () =>
+    confirmStopFacility(orgId, userId, importId, stopIndex, facilityId),
+  );
+}
+
+/**
+ * POST — a person tapped "create" on the pre-filled form.
+ *
+ * The T4 exit, and the only route in the module that can bring a facility into
+ * existence. It requires an explicit body with a name, which is what makes
+ * "never without a human tap" a property of the transport and not only of the
+ * service layer.
+ */
+export async function handleCreateStopFacility(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  const stopIndex = typeof body.stopIndex === 'number' ? body.stopIndex : NaN;
+  if (!Number.isInteger(stopIndex) || stopIndex < 0) return err('stopIndex is required.', 400);
+
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  if (!name) return err('A facility name is required.', 400);
+
+  const str = (key: string): string | undefined => {
+    const v = body[key];
+    return typeof v === 'string' && v.trim() ? v.trim() : undefined;
+  };
+
+  return resolutionCall('create stop facility', { orgId, importId, stopIndex }, () =>
+    createStopFacility(orgId, userId, importId, stopIndex, {
+      name,
+      facilityType: str('facilityType'),
+      addressLine1: str('addressLine1'),
+      addressLine2: str('addressLine2'),
+      city: str('city'),
+      state: str('state'),
+      zip: str('zip'),
+      country: str('country'),
+      contactName: str('contactName'),
+      contactPhone: str('contactPhone'),
     }),
   );
 }

@@ -30,6 +30,13 @@ const db = vi.hoisted(() => ({
       state.clients.find((c) => c.id === where.id) ?? null,
   },
   carrierContract: { findMany: async () => [], findFirst: async () => null },
+  // The resolution view computes the "11 matched · 1 new" stop line from the
+  // facility ladder (Phase 4), so it now reads these two. Empty is the honest
+  // fixture for a suite that is about which client string gets matched: a tenant
+  // with no facilities puts every stop on T4, which is correct and is not what
+  // these tests assert on.
+  carrierFacility: { findMany: async () => [] },
+  facilityExternalReference: { findMany: async () => [] },
   documentImport: {
     updateMany: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
       const row = state.imports.find((i) => i.id === where.id);
