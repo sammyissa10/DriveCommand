@@ -897,6 +897,70 @@ function tripDate(record: ImportRecord, extraction: CanonicalExtraction | null):
   return documentDateOf(record, extraction) ?? new Date().toISOString().slice(0, 10);
 }
 
+/** A contract the system may select without being asked. */
+interface DeterministicContract {
+  contractId: string;
+  option: ContractOption;
+  why: WhyView;
+}
+
+/**
+ * The two conditions under which the system selects a contract on its own: the
+ * client's profile pins one for this document type, or the client has exactly
+ * one active contract. Pure — it reads the candidate list it is handed.
+ *
+ * The client-side twin of this (`resolveClientDeterministic`) exists for the
+ * same reason and should be read alongside it: the view and the commit must
+ * agree on what "resolved without being asked" means, and the only way to
+ * guarantee that is for both to call the same function.
+ *
+ * `loadActiveContracts` has already excluded contracts that are expired by date
+ * even where `status` still says active, so "exactly one active contract" cannot
+ * auto-select a dead agreement.
+ */
+function resolveContractDeterministic(
+  profile: DocumentProfileRecord | null,
+  candidates: ContractOption[],
+  clientName: string,
+  documentType: string,
+): DeterministicContract | null {
+  // ---- Pinned by the profile ---------------------------------------------
+  if (profile?.pinnedContractId) {
+    const pinned = candidates.find((c) => c.id === profile.pinnedContractId);
+    if (pinned) {
+      return {
+        contractId: pinned.id,
+        option: pinned,
+        why: {
+          via: 'PROFILE_PIN',
+          matchedText: pinned.contractName ?? pinned.contractNumber,
+          documentText: null,
+          score: null,
+          detail: `This contract is pinned to ${clientName} for ${documentType.replace(/_/g, ' ').toLowerCase()} documents.`,
+        },
+      };
+    }
+  }
+
+  // ---- Exactly one active contract ---------------------------------------
+  if (candidates.length === 1) {
+    const only = candidates[0];
+    return {
+      contractId: only.id,
+      option: only,
+      why: {
+        via: 'ONLY_ACTIVE_CONTRACT',
+        matchedText: only.contractName ?? only.contractNumber,
+        documentText: null,
+        score: null,
+        detail: `${clientName} has one active contract.`,
+      },
+    };
+  }
+
+  return null;
+}
+
 /**
  * The contract "why" for a slot that is already committed.
  *
@@ -1030,41 +1094,18 @@ async function buildContractSlot(
     }
   }
 
-  // ---- 2. Pinned by the profile ------------------------------------------
-  if (profile?.pinnedContractId) {
-    const pinned = candidates.find((c) => c.id === profile.pinnedContractId);
-    if (pinned) {
-      return {
-        state: 'RESOLVED',
-        value: pinned,
-        why: {
-          via: 'PROFILE_PIN',
-          matchedText: pinned.contractName ?? pinned.contractNumber,
-          documentText: null,
-          score: null,
-          detail: `This contract is pinned to ${clientSlot.value?.name ?? 'this client'} for ${documentType.replace(/_/g, ' ').toLowerCase()} documents.`,
-        },
-        candidates,
-        spotOffer: null,
-        createOffer: null,
-        blockedReason: null,
-      };
-    }
-  }
-
-  // ---- 3. Exactly one active contract ------------------------------------
-  if (candidates.length === 1) {
-    const only = candidates[0];
+  // ---- 2 & 3. Pinned by the profile, then exactly one active contract -----
+  const deterministic = resolveContractDeterministic(
+    profile,
+    candidates,
+    clientSlot.value?.name ?? 'This client',
+    documentType,
+  );
+  if (deterministic) {
     return {
       state: 'RESOLVED',
-      value: only,
-      why: {
-        via: 'ONLY_ACTIVE_CONTRACT',
-        matchedText: only.contractName ?? only.contractNumber,
-        documentText: null,
-        score: null,
-        detail: `${clientSlot.value?.name ?? 'This client'} has one active contract.`,
-      },
+      value: deterministic.option,
+      why: deterministic.why,
       candidates,
       spotOffer: null,
       createOffer: null,
@@ -1362,6 +1403,67 @@ async function ensureClientCommitted(
   // use this record.
   const fresh = await getImportRecord(orgId, record.id, userId);
   return fresh ?? record;
+}
+
+/**
+ * The contract half of `ensureClientCommitted`, and the same defect closed on
+ * the other side of the card.
+ *
+ * `buildContractSlot` collapses the contract row when the client's profile pins
+ * one or when the client has exactly one active contract, and neither of those
+ * wrote anything: `contractId` stayed null while the card showed the row
+ * resolved. That is precisely the shape of the client bug — an affordance
+ * asserting a decision the database has no record of — and it is latent today
+ * only because nothing outside the view reads `contractId` yet.
+ *
+ * **Phase 8: the atomic commit must call this** before it reads
+ * `record.contractId`, exactly as the contract mutations call
+ * `ensureClientCommitted` before reading `record.clientId`. Without it, a trip
+ * created from an import whose contract was auto-resolved will commit with no
+ * contract attached while the card that authorised it displayed one — and a
+ * trip billed against nothing is the failure this whole module exists to
+ * prevent. It is deliberately not called from anywhere yet: no current mutation
+ * guards on `contractId`, and wiring it into one that does not need it would be
+ * a write nobody asked for.
+ *
+ * The client is committed first because a contract belongs to a client — there
+ * is nothing to resolve against until the client is real — which also makes one
+ * call to this function sufficient to commit both slots.
+ */
+export async function ensureContractCommitted(
+  orgId: string,
+  userId: string,
+  record: ImportRecord,
+): Promise<ImportRecord> {
+  if (record.contractId) return record;
+
+  const committed = await ensureClientCommitted(orgId, userId, record);
+  if (!committed.clientId) return committed;
+
+  const db = await getTenantPrismaForOrg(orgId, userId);
+  const documentType = documentTypeOf(committed);
+  const candidates = await loadActiveContracts(db, orgId, committed.clientId);
+  const profile = await getProfile(db, orgId, committed.clientId, documentType);
+
+  // The client's name is only ever used to build `why.detail`, which this path
+  // discards — only `via` and `matchedText` are persisted. Passing the generic
+  // label avoids a query for a sentence nobody will read.
+  const deterministic = resolveContractDeterministic(profile, candidates, 'This client', documentType);
+  if (!deterministic) return committed;
+
+  await assignContract(orgId, userId, committed.id, deterministic.contractId, {
+    via: deterministic.why.via === 'PROFILE_PIN' ? 'PROFILE_PIN' : 'SINGLE_ACTIVE',
+    matchedText: deterministic.why.matchedText,
+  });
+
+  logger.info('[document-import] committed auto-resolved contract', {
+    importId: committed.id,
+    contractId: deterministic.contractId,
+    via: deterministic.why.via,
+  });
+
+  const fresh = await getImportRecord(orgId, committed.id, userId);
+  return fresh ?? committed;
 }
 
 /**

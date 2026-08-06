@@ -184,8 +184,16 @@ export function ImportSummaryCard({ view, onChange }: Props) {
           Review stops
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
+        {/* Says only what it can know. The previous sentence ended "…and the
+            client and contract above are saved", which this component cannot
+            establish: `state: 'RESOLVED'` means the server resolved the slot,
+            not that it wrote it — an auto-resolved client or contract is
+            displayed here while the row still holds null. Asserting a save that
+            may not have happened is the same class of untruth as the "why"
+            claiming a person chose. See the note in the quick-510 summary for
+            what showing the affirmative version would require. */}
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          Stop review arrives in the next phase. The client and contract above are saved.
+          Stop review arrives in the next phase.
         </p>
       </div>
 
