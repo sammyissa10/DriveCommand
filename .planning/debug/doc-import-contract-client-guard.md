@@ -97,3 +97,66 @@ verification: |
   Not yet exercised in the browser against the Dealer Tire - Chicago WHSE manifest.
 files_changed:
   - apps/web/src/lib/document-import/resolution.ts
+
+## Follow-up — quick-509, resolution provenance (2026-08-06, commit 9fc739b8)
+
+quick-508 left a second-order problem behind it. Once the system commits a client
+on the user's behalf, the read path can no longer tell a machine commit from a
+human one — both are just a set `clientId` — and the already-chosen branch
+assumed a human, rendering "You picked this client" for a client nobody picked.
+The affordance whose entire job is to explain a decision was misattributing it.
+
+Provenance is not recoverable at read time, so it is now recorded at write time.
+
+**Column:** `document_imports.resolution_provenance jsonb NULL`, applied to
+production via Supabase MCP *before* this task. No DDL was run here. The repo was
+synced by writing `20260806040500_add_resolution_provenance` and marking it
+applied (`prisma migrate resolve --applied`), per DEC-3 rules 1 and 4 — verified
+in `_prisma_migrations`: `applied_steps_count = 0`, `finished_at` set,
+`rolled_back_at` null, identical to `20260803115314_add_raw_response` and
+`20260802230853_add_appointment_is_firm`. The count is 0 for every migration
+registered this way; `resolve --applied` records the row without executing steps.
+
+**Shape:** `{ client: { via, score, matchedText, byUserId, at }, contract: {...} }`.
+Client vias: MANUAL, MANUAL_CREATE, PROFILE_ALIAS, EXACT_MATCH. Contract vias:
+MANUAL, SINGLE_ACTIVE, PROFILE_PIN, CREATED_THIS_IMPORT. This vocabulary is
+deliberately separate from the view's `ResolvedVia` — one says what happened, the
+other says what to render, and conflating them is what produced the bug. No view
+type changed, so the `packages/api-client` mirror needed no update.
+
+**Merge:** Prisma exposes no jsonb `||` operator. Rather than add a round trip,
+both writers merge in memory from the record `requireRecord` already returned and
+write the merged object in the same `updateMany` — a read-modify-write that costs
+nothing because the read had already happened. The other slot's key is carried
+across, not overwritten. One deliberate exception: when the client changes,
+`assignClient` already nulls `contractId`, so it drops the contract's provenance
+with it rather than leaving a record describing a value that no longer exists.
+Concurrency is last-write-wins, the same as the `clientId` write it rides along
+with.
+
+**Read:** the already-chosen branches render from the stored record. A null
+record — every row written before the column existed — reproduces the previous
+copy byte-for-byte, and that fallback is true rather than merely safe: before
+quick-508 the manual picker was the only writer, so "you picked this" was correct
+for all of them. An unrecognised `via` is treated as absent for the same reason.
+
+**Copy correction that falls out of this:** the contract branch previously read
+`isOneTime` off the contract row, so a *pre-existing* one-time contract that a
+human selected from the list rendered "A one-time spot contract created from this
+document" — false. A stored MANUAL now renders "You picked this contract."
+
+**Not done, and flagged rather than worked around:** nothing writes the
+SINGLE_ACTIVE or PROFILE_PIN contract vias, because no code path commits a
+contract from those branches. `assignContract` has exactly two callers (MANUAL
+from the picker, CREATED_THIS_IMPORT from create-and-use).
+`buildContractSlot`'s PROFILE_PIN and ONLY_ACTIVE_CONTRACT branches are
+view-only — **the identical latent defect quick-508 fixed for clients**. It is
+not yet user-visible only because no commit path consumes `record.contractId`
+today (there is no `commit.ts`; that is a later phase). It will bite the moment
+one exists. The two vias and their rendering are in place, so closing it is a
+one-function change (`ensureContractCommitted`, mirroring `ensureClientCommitted`)
+— deliberately not made here, as it changes behaviour beyond this task's scope.
+
+**Verification:** `tsc --noEmit` 0 errors in apps/web and apps/mobile;
+`vitest run src/lib/document-import` 222/222 passing across 16 files. Still not
+browser-verified. Not deployed, not pushed.
