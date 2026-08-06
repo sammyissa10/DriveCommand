@@ -1183,6 +1183,7 @@ exports.Prisma.DocumentImportScalarFieldEnum = {
   contractId: 'contractId',
   routeTemplateId: 'routeTemplateId',
   documentProfileId: 'documentProfileId',
+  resolutionProvenance: 'resolutionProvenance',
   rawExtraction: 'rawExtraction',
   reviewedExtraction: 'reviewedExtraction',
   extractionWarnings: 'extractionWarnings',

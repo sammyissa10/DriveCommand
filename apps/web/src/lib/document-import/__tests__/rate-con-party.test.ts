@@ -166,7 +166,7 @@ describe('client resolution on a rate confirmation', () => {
   });
 
   it('teaches the profile the issuer, so the next one collapses on the right name', async () => {
-    await assignClient(ORG, USER, IMPORT, 'client-apex');
+    await assignClient(ORG, USER, IMPORT, 'client-apex', { via: 'MANUAL' });
 
     expect(state.confirmations).toHaveLength(1);
     expect(state.confirmations[0].originName).toBe(ISSUER);

@@ -95,6 +95,9 @@ export interface ImportRecord {
   contractId: string | null;
   routeTemplateId: string | null;
   documentProfileId: string | null;
+  /// How each of those slots came to be set. Shaped and parsed by `resolution.ts`
+  /// (`ResolutionProvenance`); null on rows written before the column existed.
+  resolutionProvenance: unknown;
   rawExtraction: unknown;
   reviewedExtraction: unknown;
   extractionWarnings: unknown;
@@ -125,6 +128,7 @@ const IMPORT_SELECT = {
   contractId: true,
   routeTemplateId: true,
   documentProfileId: true,
+  resolutionProvenance: true,
   rawExtraction: true,
   reviewedExtraction: true,
   extractionWarnings: true,

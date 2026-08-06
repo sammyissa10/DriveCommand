@@ -77,6 +77,115 @@ export type ResolvedVia =
   /** A human created it during this import. */
   | 'CREATED';
 
+// ---------------------------------------------------------------------------
+// Provenance — stored at write time, not inferred at read time
+// ---------------------------------------------------------------------------
+
+/**
+ * How a slot came to hold the value it holds.
+ *
+ * Deliberately a different vocabulary from `ResolvedVia`. `ResolvedVia` says what
+ * the card should render; this says what actually happened, and the two are not
+ * the same question. `MANUAL` and `PROFILE_ALIAS` both produce a set `clientId`,
+ * and before this was stored the read path could not tell them apart — so it
+ * guessed "a person chose this", which for an auto-committed client is simply
+ * untrue. Provenance exists so the affordance never has to guess.
+ */
+export type ClientProvenanceVia =
+  /** A human picked an existing client from the list. */
+  | 'MANUAL'
+  /** A human created the client during this import. */
+  | 'MANUAL_CREATE'
+  /** Committed by the system: a name saved on the client's document profile. */
+  | 'PROFILE_ALIAS'
+  /** Committed by the system: exactly one active client matched exactly. */
+  | 'EXACT_MATCH';
+
+export type ContractProvenanceVia =
+  /** A human picked an existing contract. */
+  | 'MANUAL'
+  /** Committed because the client had exactly one active contract. */
+  | 'SINGLE_ACTIVE'
+  /** Committed because the client's profile pins it for this document type. */
+  | 'PROFILE_PIN'
+  /** Created by this import — spot, or the plain create-and-use path. */
+  | 'CREATED_THIS_IMPORT';
+
+/**
+ * One slot's record. `score` and `matchedText` are the evidence a machine via
+ * has and a human one does not: the alias that answered cannot be re-derived
+ * later from the chosen client alone, which is exactly why it is stored rather
+ * than recomputed.
+ */
+export interface SlotProvenance<V extends string> {
+  via: V;
+  /** 0..1 for a scored match; null for a human choice, which is not a guess. */
+  score: number | null;
+  matchedText: string | null;
+  /** Who, when it was a person; the actor whose request committed it otherwise. */
+  byUserId: string | null;
+  /** ISO 8601. */
+  at: string;
+}
+
+export type ClientProvenance = SlotProvenance<ClientProvenanceVia>;
+export type ContractProvenance = SlotProvenance<ContractProvenanceVia>;
+
+export interface ResolutionProvenance {
+  client?: ClientProvenance;
+  contract?: ContractProvenance;
+}
+
+const CLIENT_VIAS: readonly string[] = ['MANUAL', 'MANUAL_CREATE', 'PROFILE_ALIAS', 'EXACT_MATCH'];
+const CONTRACT_VIAS: readonly string[] = ['MANUAL', 'SINGLE_ACTIVE', 'PROFILE_PIN', 'CREATED_THIS_IMPORT'];
+
+/** The stored object, or `{}` for a legacy row or anything malformed. */
+function provenanceOf(record: ImportRecord): ResolutionProvenance {
+  const raw = record.resolutionProvenance;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  return raw as ResolutionProvenance;
+}
+
+/**
+ * One slot's record, or null.
+ *
+ * An unrecognised `via` is treated as absent rather than rendered. A row written
+ * by a newer deploy and read by an older one is a real possibility, and falling
+ * back to the legacy copy is honest where inventing a sentence for a via this
+ * build has never heard of is not.
+ */
+function slotProvenance<V extends string>(
+  slot: SlotProvenance<V> | undefined,
+  allowed: readonly string[],
+): SlotProvenance<V> | null {
+  if (!slot || typeof slot !== 'object') return null;
+  if (typeof slot.via !== 'string' || !allowed.includes(slot.via)) return null;
+  return slot;
+}
+
+const clientProvenanceOf = (record: ImportRecord): ClientProvenance | null =>
+  slotProvenance(provenanceOf(record).client, CLIENT_VIAS);
+
+const contractProvenanceOf = (record: ImportRecord): ContractProvenance | null =>
+  slotProvenance(provenanceOf(record).contract, CONTRACT_VIAS);
+
+/** What a caller states about a write; `byUserId` and `at` are stamped here. */
+export interface ProvenanceInput<V extends string> {
+  via: V;
+  score?: number | null;
+  matchedText?: string | null;
+}
+
+function stamp<V extends string>(input: ProvenanceInput<V>, userId: string): SlotProvenance<V> {
+  return {
+    via: input.via,
+    score: input.score ?? null,
+    matchedText: input.matchedText ?? null,
+    byUserId: userId,
+    at: new Date().toISOString(),
+  };
+}
+
 export interface WhyView {
   via: ResolvedVia;
   /** The candidate-side text that matched, exactly as stored. */
@@ -580,6 +689,71 @@ function resolveClientDeterministic(
 }
 
 /**
+ * The client "why" for a slot that is already committed, told from what was
+ * recorded when it was committed.
+ *
+ * The null case is the legacy row — written before the column existed — and it
+ * reproduces the previous copy exactly. That fallback is not a stopgap: for
+ * every row written before quick-508 the only writer was the manual picker, so
+ * "you picked this" was true then and remains true now.
+ */
+function clientWhyFromProvenance(
+  provenance: ClientProvenance | null,
+  clientName: string,
+  documentText: string | null,
+): WhyView {
+  const picked: WhyView = {
+    via: 'CHOSEN',
+    matchedText: clientName,
+    documentText,
+    score: null,
+    detail: documentText
+      ? `You picked this client for “${documentText}”.`
+      : 'You picked this client.',
+  };
+  if (!provenance) return picked;
+
+  switch (provenance.via) {
+    case 'MANUAL':
+      return picked;
+
+    case 'MANUAL_CREATE':
+      return {
+        via: 'CREATED',
+        matchedText: clientName,
+        documentText,
+        score: null,
+        detail: documentText
+          ? `You created this client during this import, from “${documentText}” on the document.`
+          : 'You created this client during this import.',
+      };
+
+    case 'PROFILE_ALIAS':
+      return {
+        via: 'PROFILE_ALIAS',
+        matchedText: provenance.matchedText,
+        documentText,
+        score: provenance.score,
+        detail: provenance.matchedText
+          ? `“${provenance.matchedText}” is saved on this client from a previous import of the same document type.`
+          : 'A name saved on this client from a previous import of the same document type matched this document.',
+      };
+
+    case 'EXACT_MATCH':
+      return {
+        via: 'EXACT_MATCH',
+        matchedText: provenance.matchedText,
+        documentText,
+        score: provenance.score,
+        detail:
+          documentText && provenance.matchedText
+            ? `“${documentText}” on the document matches “${provenance.matchedText}” exactly (${scoreLabel(provenance.score ?? EXACT_MATCH)}).`
+            : `The name on the document matched this client exactly (${scoreLabel(provenance.score ?? EXACT_MATCH)}).`,
+      };
+  }
+}
+
+/**
  * Build the client row.
  *
  * Collapse conditions, in the order they are tried, and nothing else collapses:
@@ -616,18 +790,17 @@ async function buildClientSlot(
       select: { ...CLIENT_SELECT, contracts: { where: { deletedAt: null, status: 'active' }, select: { id: true, expirationDate: true } } },
     });
     if (chosen) {
+      // The provenance, not the mere fact that an id is set, decides what this
+      // row claims about who decided.
+      const provenance = clientProvenanceOf(record);
       return {
         state: 'RESOLVED',
-        value: toClientOption(chosen, { score: null, matchedText: null, matchedField: null }),
-        why: {
-          via: 'CHOSEN',
-          matchedText: chosen.name,
-          documentText,
-          score: null,
-          detail: documentText
-            ? `You picked this client for “${documentText}”.`
-            : 'You picked this client.',
-        },
+        value: toClientOption(chosen, {
+          score: provenance?.score ?? null,
+          matchedText: provenance?.matchedText ?? null,
+          matchedField: null,
+        }),
+        why: clientWhyFromProvenance(provenance, chosen.name, documentText),
         documentText,
         candidates: rankCandidates(scored, query, documentText),
         createPrefill,
@@ -724,6 +897,76 @@ function tripDate(record: ImportRecord, extraction: CanonicalExtraction | null):
   return documentDateOf(record, extraction) ?? new Date().toISOString().slice(0, 10);
 }
 
+/**
+ * The contract "why" for a slot that is already committed.
+ *
+ * The legacy fallback reads `isOneTime` off the contract itself, which is what
+ * this branch did for every row before provenance existed. Note what that could
+ * not distinguish: a one-time contract *created here* and a pre-existing
+ * one-time contract a human picked off the list rendered the same sentence,
+ * "created from this document", and for the second of those it was false.
+ * A stored `MANUAL` now says the true thing instead.
+ */
+function contractWhyFromProvenance(
+  provenance: ContractProvenance | null,
+  option: ContractOption,
+  clientName: string,
+  documentType: string,
+): WhyView {
+  const name = option.contractName ?? option.contractNumber;
+  const spotDetail = 'A one-time spot contract created from this document, effective for this trip only.';
+
+  if (!provenance) {
+    return {
+      via: option.isOneTime && option.contractType === 'spot' ? 'CREATED' : 'CHOSEN',
+      matchedText: name,
+      documentText: null,
+      score: null,
+      detail: option.isOneTime ? spotDetail : 'You picked this contract.',
+    };
+  }
+
+  switch (provenance.via) {
+    case 'MANUAL':
+      return {
+        via: 'CHOSEN',
+        matchedText: name,
+        documentText: null,
+        score: null,
+        detail: 'You picked this contract.',
+      };
+
+    case 'CREATED_THIS_IMPORT':
+      return {
+        via: 'CREATED',
+        matchedText: name,
+        documentText: null,
+        score: null,
+        // The spot sentence says more than "created during this import" — that
+        // its term is one trip — so it is kept where it applies.
+        detail: option.isOneTime ? spotDetail : 'Created during this import.',
+      };
+
+    case 'PROFILE_PIN':
+      return {
+        via: 'PROFILE_PIN',
+        matchedText: name,
+        documentText: null,
+        score: null,
+        detail: `This contract is pinned to ${clientName} for ${documentType.replace(/_/g, ' ').toLowerCase()} documents.`,
+      };
+
+    case 'SINGLE_ACTIVE':
+      return {
+        via: 'ONLY_ACTIVE_CONTRACT',
+        matchedText: name,
+        documentText: null,
+        score: null,
+        detail: `${clientName} had one active contract.`,
+      };
+  }
+}
+
 async function buildContractSlot(
   db: PrismaClient,
   orgId: string,
@@ -773,15 +1016,12 @@ async function buildContractSlot(
       return {
         state: 'RESOLVED',
         value: option,
-        why: {
-          via: option.isOneTime && option.contractType === 'spot' ? 'CREATED' : 'CHOSEN',
-          matchedText: option.contractName ?? option.contractNumber,
-          documentText: null,
-          score: null,
-          detail: option.isOneTime
-            ? 'A one-time spot contract created from this document, effective for this trip only.'
-            : 'You picked this contract.',
-        },
+        why: contractWhyFromProvenance(
+          contractProvenanceOf(record),
+          option,
+          clientSlot.value?.name ?? 'This client',
+          documentType,
+        ),
         candidates,
         spotOffer: null,
         createOffer: null,
@@ -1001,6 +1241,12 @@ export async function assignClient(
   userId: string,
   importId: string,
   clientId: string,
+  /**
+   * How this assignment came about. Required, and required to be truthful — the
+   * "why" affordance renders from it, and a wrong value here is not a cosmetic
+   * bug but a false claim about who decided.
+   */
+  provenance: ProvenanceInput<ClientProvenanceVia>,
 ): Promise<ImportResolutionView> {
   const record = await requireRecord(orgId, userId, importId);
   assertEditable(record);
@@ -1027,12 +1273,24 @@ export async function assignClient(
   });
 
   const changed = record.clientId !== clientId;
+
+  // Merged in memory from the record already read above, then written in the
+  // same statement — Prisma exposes no jsonb `||`, and a read-modify-write costs
+  // nothing here because the read has already happened. The contract key is
+  // carried across rather than overwritten, except when the client changes and
+  // the contract is being cleared: its provenance describes a value that is
+  // about to stop existing, and leaving it would outlive its subject.
+  const nextProvenance: ResolutionProvenance = { ...provenanceOf(record) };
+  nextProvenance.client = stamp(provenance, userId);
+  if (changed) delete nextProvenance.contract;
+
   await db.documentImport.updateMany({
     where: { id: importId, orgId, deletedAt: null },
     data: {
       clientId,
       documentProfileId: profile.id,
       ...(changed ? { contractId: null } : {}),
+      resolutionProvenance: nextProvenance as Prisma.InputJsonValue,
       updatedById: userId,
     },
   });
@@ -1084,7 +1342,14 @@ async function ensureClientCommitted(
   const deterministic = resolveClientDeterministic(record, profiles, scored, documentText);
   if (!deterministic) return record;
 
-  await assignClient(orgId, userId, record.id, deterministic.clientId);
+  // The via is taken from the resolver's own verdict rather than restated here,
+  // so what is stored is what actually decided — including the score and the
+  // alias text, neither of which can be recovered from the client row later.
+  await assignClient(orgId, userId, record.id, deterministic.clientId, {
+    via: deterministic.why.via === 'PROFILE_ALIAS' ? 'PROFILE_ALIAS' : 'EXACT_MATCH',
+    score: deterministic.why.score,
+    matchedText: deterministic.why.matchedText,
+  });
 
   logger.info('[document-import] committed auto-resolved client', {
     importId: record.id,
@@ -1156,6 +1421,8 @@ export async function assignContract(
   userId: string,
   importId: string,
   contractId: string,
+  /** How this assignment came about. See the note on `assignClient`. */
+  provenance: ProvenanceInput<ContractProvenanceVia>,
 ): Promise<ImportResolutionView> {
   let record = await requireRecord(orgId, userId, importId);
   assertEditable(record);
@@ -1173,9 +1440,19 @@ export async function assignContract(
     throw new ResolutionError('That contract does not belong to this client.', 'INVALID_CONTRACT');
   }
 
+  // Same merge as `assignClient`, from the record read at the top of this
+  // function — which, when `ensureClientCommitted` just ran, is the re-read that
+  // already carries the client provenance it wrote.
+  const nextProvenance: ResolutionProvenance = { ...provenanceOf(record) };
+  nextProvenance.contract = stamp(provenance, userId);
+
   await db.documentImport.updateMany({
     where: { id: importId, orgId, deletedAt: null },
-    data: { contractId, updatedById: userId },
+    data: {
+      contractId,
+      resolutionProvenance: nextProvenance as Prisma.InputJsonValue,
+      updatedById: userId,
+    },
   });
 
   await pinContract(db, orgId, userId, {
@@ -1227,7 +1504,7 @@ export async function createAndAssignClient(
     throw err;
   }
 
-  return assignClient(orgId, userId, importId, created.id);
+  return assignClient(orgId, userId, importId, created.id, { via: 'MANUAL_CREATE' });
 }
 
 export interface CreateContractInput {
@@ -1346,7 +1623,7 @@ export async function createAndAssignContract(
     await attachSourceDocument(db, orgId, userId, record, created.id);
   }
 
-  return assignContract(orgId, userId, importId, created.id);
+  return assignContract(orgId, userId, importId, created.id, { via: 'CREATED_THIS_IMPORT' });
 }
 
 /**

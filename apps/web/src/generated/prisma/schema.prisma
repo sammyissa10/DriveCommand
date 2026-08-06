@@ -2577,6 +2577,14 @@ model DocumentImport {
   routeTemplateId   String? @map("route_template_id") @db.Uuid
   documentProfileId String? @map("document_profile_id") @db.Uuid
 
+  /// How each resolved slot came to be resolved, written by whichever code path
+  /// committed it: `{ client: { via, score, matchedText, byUserId, at }, contract: {...} }`.
+  /// The "why" affordance renders from this rather than inferring from the fact
+  /// that an id is set — a machine-committed client is not a human's choice, and
+  /// saying so would be a lie about who decided. Null on rows written before the
+  /// column existed; those fall back to the original copy.
+  resolutionProvenance Json? @map("resolution_provenance")
+
   /// Model output, untouched. Holds third-party PII — subject to a retention
   /// window (spec Section 15); committed entities are the record of truth.
   rawExtraction      Json? @map("raw_extraction")

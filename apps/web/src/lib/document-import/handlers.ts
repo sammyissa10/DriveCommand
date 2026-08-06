@@ -232,8 +232,10 @@ export async function handleSetResolution(
   if (asked > 1) return err('Change one thing per request.', 400);
 
   return resolutionCall('set resolution', { orgId, importId }, () => {
-    if (clientId) return assignClient(orgId, userId, importId, clientId);
-    if (contractId) return assignContract(orgId, userId, importId, contractId);
+    // This endpoint is only ever reached by a person tapping a candidate in the
+    // picker, so both decisions are MANUAL by construction.
+    if (clientId) return assignClient(orgId, userId, importId, clientId, { via: 'MANUAL' });
+    if (contractId) return assignContract(orgId, userId, importId, contractId, { via: 'MANUAL' });
     return setDocumentDate(orgId, userId, importId, documentDate);
   });
 }
