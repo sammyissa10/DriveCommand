@@ -90,6 +90,48 @@ describe('the four-tier ladder', () => {
     expect(autoLinkTarget(verdict)).toEqual({ facilityId: RUSS_DARROW.id, tier: 'T1' });
   });
 
+  /**
+   * quick-511, at the rung it actually bites.
+   *
+   * The ladder never saw `record.clientId` — it consults the map it is handed.
+   * So the regression is expressed here as the two maps the caller can build:
+   * the one scoped by the effective client (populated) and the one scoped by a
+   * null client (empty). The first must reach T1; the second must not, and must
+   * not throw either.
+   *
+   * The address deliberately matches nothing, so T2 cannot mask the difference —
+   * which is precisely what hid the live bug: the addresses DID match, so an
+   * empty reference map still produced a silent link and looked fine.
+   */
+  it('T1 — fires from a populated reference map even when the address matches nothing', () => {
+    const verdict = resolveFacilityTier(
+      stop({
+        sourceCode: '43775',
+        address: { line1: '900 Elsewhere Rd', city: 'Milwaukee', state: 'WI', postalCode: '53202' },
+      }),
+      context({ referencesByCode: new Map([['43775', RUSS_DARROW.id]]) }),
+    );
+
+    expect(verdict.tier).toBe('T1');
+    expect(autoLinkTarget(verdict)).toEqual({ facilityId: RUSS_DARROW.id, tier: 'T1' });
+  });
+
+  it('T1 — an empty reference map skips the rung without throwing', () => {
+    const verdict = resolveFacilityTier(
+      stop({
+        sourceCode: '43775',
+        address: { line1: '900 Elsewhere Rd', city: 'Milwaukee', state: 'WI', postalCode: '53202' },
+      }),
+      // What a null effective client produces: `loadExternalReferences` returns
+      // an empty map rather than erroring, and the ladder falls through.
+      context({ referencesByCode: new Map() }),
+    );
+
+    expect(verdict.tier).toBe('T4');
+    expect(autoLinkTarget(verdict)).toBeNull();
+    expect(verdict.tier === 'T4' && verdict.requiresHumanTap).toBe(true);
+  });
+
   it('T1 — a reference pointing at a facility that is no longer a candidate does not resurrect it', () => {
     // Soft-deleted and driver-residence facilities are filtered out of
     // `candidates` upstream. A dangling reference must fall through, not link.

@@ -62,9 +62,22 @@ function evaluate(pair: FixturePair) {
 // ---------------------------------------------------------------------------
 
 describe('facility address fixture', () => {
-  it('reads all thirty pairs from disk', () => {
-    expect(pairs).toHaveLength(30);
-    expect(pairs.map((p) => p.id)).toEqual(Array.from({ length: 30 }, (_, i) => i + 1));
+  /**
+   * Fixture integrity, as a floor rather than an exact count.
+   *
+   * What this is actually protecting against is a pair going missing — a
+   * truncated file, a renumbering, a trap quietly dropped to make a run green.
+   * Contiguous ids from 1 catch all three. An exact `toHaveLength(n)` caught them
+   * too, but it also failed every time a pair was legitimately ADDED, which taxes
+   * the one thing this fixture wants to encourage. The floor ratchets: it only
+   * moves when someone deliberately raises it, and until then it cannot be
+   * satisfied by deleting anything.
+   */
+  const FIXTURE_FLOOR = 31;
+
+  it('reads a complete, contiguously numbered fixture from disk', () => {
+    expect(pairs.length).toBeGreaterThanOrEqual(FIXTURE_FLOOR);
+    expect(pairs.map((p) => p.id)).toEqual(pairs.map((_, i) => i + 1));
     expect(new Set(pairs.map((p) => p.expected))).toEqual(new Set(['SILENT', 'PROPOSE', 'NO_MATCH']));
   });
 

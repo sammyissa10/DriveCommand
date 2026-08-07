@@ -198,6 +198,12 @@ export async function loadFacilityCandidates(
  *
  * This is the table the whole module is for. Day one, `43775` is a T4 and a
  * person confirms it; every day after, it is a T1 and nobody is asked.
+ *
+ * The null short-circuit is kept deliberately (quick-511 narrowed *what* is
+ * passed in, not this). A tenant whose client genuinely cannot be resolved has
+ * no key to look references up by — `client_id` is `NOT NULL` on the table — and
+ * an empty map is the correct answer, not an error: the stop simply falls to T2
+ * or T3 and a person decides, which is the ladder working.
  */
 export async function loadExternalReferences(
   db: PrismaClient,
@@ -407,15 +413,40 @@ export function summariseStops(decisions: StopDecision[]): StopResolutionView {
  *
  * Read-only. It loads, it decides, it describes, and it returns — no branch of
  * it writes, and `facility-resolution.ts` is where every write lives.
+ *
+ * ---------------------------------------------------------------------------
+ * WHY THE CLIENT IS A PARAMETER AND NOT `record.clientId` (quick-511)
+ * ---------------------------------------------------------------------------
+ * It used to read `record.clientId` directly, and that was the bug. External
+ * references are keyed `(org_id, client_id, source_code)`, so with a null client
+ * `loadExternalReferences` short-circuits to an empty map and **T1 can never
+ * fire** — every learned code falls through to T2 and resolves on address
+ * instead, which is silent and correct-looking and completely misattributes why.
+ *
+ * `record.clientId` is null in the ordinary case: a client that auto-resolved is
+ * displayed as RESOLVED but only written when a mutation next needs it
+ * (quick-508). So the *persisted* client is the wrong thing to scope by; the
+ * **effective** client — persisted, else what the deterministic resolver says —
+ * is the right thing, and it is the caller's job to supply because the resolver
+ * lives in `resolution.ts` and importing it here would close a cycle.
+ *
+ * The commit path arrives at the same value from the other direction:
+ * `ensureStopsCommitted` runs `ensureClientCommitted` (which sets `clientId`
+ * from that same resolver) before building its context, so its effective client
+ * is already persisted. The two contexts are therefore equal by construction,
+ * not by coincidence — which is the identical-decision property this module
+ * depends on.
  */
 export async function resolveStops(
   db: PrismaClient,
   orgId: string,
   record: ImportRecord,
+  /** The effective client — see the note above. Null only when truly unresolved. */
+  effectiveClientId: string | null,
 ): Promise<StopResolutionView> {
   const [candidates, referencesByCode] = await Promise.all([
     loadFacilityCandidates(db, orgId),
-    loadExternalReferences(db, orgId, record.clientId),
+    loadExternalReferences(db, orgId, effectiveClientId),
   ]);
   return summariseStops(decideStops(record, { candidates, referencesByCode }));
 }
@@ -425,7 +456,8 @@ export async function resolveStopCounts(
   db: PrismaClient,
   orgId: string,
   record: ImportRecord,
+  effectiveClientId: string | null,
 ): Promise<{ total: number; matched: number; created: number; note: string }> {
-  const view = await resolveStops(db, orgId, record);
+  const view = await resolveStops(db, orgId, record, effectiveClientId);
   return { total: view.total, matched: view.matched, created: view.created, note: view.note };
 }

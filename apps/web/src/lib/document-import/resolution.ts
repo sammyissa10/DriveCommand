@@ -701,12 +701,18 @@ async function buildClientSlot(
   extraction: CanonicalExtraction | null,
   profiles: DocumentProfileRecord[],
   query: string | null,
+  /**
+   * The scored client list, loaded by the caller so the stop ladder can share
+   * it (quick-511). Required rather than optional: an optional parameter with a
+   * load-it-myself fallback is two code paths that can answer differently, and
+   * "the client the card shows and the client the references are scoped by must
+   * be the same one" is the entire point of threading it.
+   */
+  scored: ScoredClient[],
 ): Promise<ClientSlotView> {
   const documentType = documentTypeOf(record);
   const documentText = documentClientName(extraction, documentType);
   const createPrefill = prefillFromExtraction(extraction, documentType);
-
-  const scored = await scoreClients(db, orgId, profiles, documentText);
 
   // ---- 1. Already chosen -------------------------------------------------
   if (record.clientId) {
@@ -1108,7 +1114,15 @@ export async function resolveImport(
 ): Promise<ImportResolutionView> {
   const db = await getTenantPrismaForOrg(orgId, userId);
   const extraction = extractionOf(record);
-  const profiles = await listProfilesForType(db, orgId, documentTypeOf(record));
+  const documentType = documentTypeOf(record);
+  const profiles = await listProfilesForType(db, orgId, documentType);
+
+  // Scored once, here, and shared with both consumers below. `scoreClients` is
+  // the only query in this path that loads the client list, and the stop ladder
+  // needs the same answer the client slot reaches — running it twice would be
+  // two round trips for one question (quick-511).
+  const documentText = documentClientName(extraction, documentType);
+  const scored = await scoreClients(db, orgId, profiles, documentText);
 
   const client = await buildClientSlot(
     db,
@@ -1117,6 +1131,7 @@ export async function resolveImport(
     extraction,
     profiles,
     options.clientQuery ?? null,
+    scored,
   );
   const contract = await buildContractSlot(db, orgId, record, extraction, client);
 
@@ -1124,7 +1139,20 @@ export async function resolveImport(
   // rather than 0 while facility matching did not exist, because "0 matched"
   // would have been a claim nothing had checked; now something has checked, and
   // the numbers are real. Read-only — `resolveStopCounts` writes nothing.
-  const stops = await resolveStopCounts(db, orgId, record);
+  //
+  // The effective client, not `record.clientId`: an auto-resolved client is
+  // displayed here but not written until a mutation needs it, and scoping the
+  // reference lookup by the unwritten column is what stopped T1 firing on codes
+  // the tenant had already confirmed (quick-511). Recomputed rather than read
+  // off the slot, because `resolveClientDeterministic` is pure and free at this
+  // point and taking the id off `client.value` would silently start including
+  // fuzzy matches the day anything fuzzy is allowed to collapse the row.
+  const stops = await resolveStopCounts(
+    db,
+    orgId,
+    record,
+    effectiveClientIdOf(record, resolveClientDeterministic(record, profiles, scored, documentText)),
+  );
 
   return {
     client,
@@ -1134,6 +1162,59 @@ export async function resolveImport(
     stops,
     resolved: client.state === 'RESOLVED' && contract.state === 'RESOLVED',
   };
+}
+
+// ---------------------------------------------------------------------------
+// The effective client (quick-511)
+// ---------------------------------------------------------------------------
+
+/**
+ * The client a lookup should be scoped by: the persisted one, else the one the
+ * deterministic resolver reaches, else nothing.
+ *
+ * Pure, and the single definition of "effective client" — both the view path
+ * and the standalone stop route go through it, so neither can drift into
+ * scoping by something the other would not.
+ */
+function effectiveClientIdOf(
+  record: ImportRecord,
+  deterministic: DeterministicClient | null,
+): string | null {
+  return record.clientId ?? deterministic?.clientId ?? null;
+}
+
+/**
+ * The effective client for an import, loading whatever it needs.
+ *
+ * For callers that have no client slot in hand — `GET /[id]/stops` builds a
+ * ladder context and nothing else, so it has no `scoreClients` result to share.
+ *
+ * **It early-returns before touching the database when the client is already
+ * persisted**, which is every call from the commit path: `ensureStopsCommitted`
+ * has run `ensureClientCommitted` by the time it builds its context, so this
+ * costs nothing there and returns precisely the id that was just written. That
+ * is why the view context and the commit context load identical reference maps
+ * — the same resolver decides both, and on the commit side its answer has
+ * simply already been persisted.
+ *
+ * Read-only. It resolves; it never commits. Committing is
+ * `ensureClientCommitted`'s job and it is called from mutations only.
+ */
+export async function resolveEffectiveClientId(
+  db: PrismaClient,
+  orgId: string,
+  record: ImportRecord,
+): Promise<string | null> {
+  if (record.clientId) return record.clientId;
+
+  const documentType = documentTypeOf(record);
+  const extraction = extractionOf(record);
+  const documentText = documentClientName(extraction, documentType);
+
+  const profiles = await listProfilesForType(db, orgId, documentType);
+  const scored = await scoreClients(db, orgId, profiles, documentText);
+
+  return effectiveClientIdOf(record, resolveClientDeterministic(record, profiles, scored, documentText));
 }
 
 /** `resolveImport` from an import id. Returns null when the import is gone. */

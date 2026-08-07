@@ -28,5 +28,6 @@
 {"id":27,"class":"N vs W on the Chicago grid","a":"3300 N Kimball Ave, Chicago, IL 60618","b":"3300 W Kimball Ave, Chicago, IL 60618","expected":"NO_MATCH"},
 {"id":28,"class":"OCR digit confusion 8 vs 3","a":"8845 W 47th St, McCook, IL 60525","b":"3845 W 47th St, McCook, IL 60525","expected":"NO_MATCH"},
 {"id":29,"class":"merged single line vs fielded","a":"Russ Darrow Nissan 12000 W Capitol Dr Wauwatosa WI 53222","b":"12000 W Capitol Dr, Wauwatosa, WI 53222","expected":"PROPOSE"},
-{"id":30,"class":"external reference code prefix","a":"Whse 43775 - 12000 W Capitol Dr, Wauwatosa, WI 53222","b":"12000 W Capitol Dr, Wauwatosa, WI 53222","expected":"PROPOSE"}
+{"id":30,"class":"external reference code prefix","a":"Whse 43775 - 12000 W Capitol Dr, Wauwatosa, WI 53222","b":"12000 W Capitol Dr, Wauwatosa, WI 53222","expected":"PROPOSE"},
+{"id":31,"class":"ordinal words vs digits in street name","a":"4141 South One Hundred Eighth Street, Greenfield, WI 53228","b":"4141 S 108th St, Greenfield, WI 53228","expected":"PROPOSE"}
 ]}

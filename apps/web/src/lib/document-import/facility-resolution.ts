@@ -71,7 +71,7 @@ import {
   summariseStops,
   type StopResolutionView,
 } from './facility-lookup';
-import { ensureClientCommitted, ResolutionError } from './resolution';
+import { ensureClientCommitted, resolveEffectiveClientId, ResolutionError } from './resolution';
 import { getImportRecord, type ImportRecord } from './persistence';
 import {
   provenanceOf,
@@ -222,13 +222,28 @@ async function writeExternalReference(
   return true;
 }
 
+/**
+ * Build a ladder context for a record.
+ *
+ * Scoped by the **effective** client rather than `record.clientId` (quick-511):
+ * on a record whose client auto-resolved but has not been written yet, the
+ * column is null and the reference map would come back empty, so every learned
+ * code would fall past T1 and resolve on address instead.
+ *
+ * Every caller below `ensureClientCommitted` gets the early-return path — the
+ * client is persisted by then, so this costs no query and returns the id that
+ * was just written. `viewOf` on an uncommitted record is the case that derives,
+ * and it derives with the same resolver the commit used, which is what makes
+ * the two contexts identical rather than merely similar.
+ */
 async function loadContext(orgId: string, userId: string, record: ImportRecord) {
   const db = await getTenantPrismaForOrg(orgId, userId);
+  const effectiveClientId = await resolveEffectiveClientId(db, orgId, record);
   const [candidates, referencesByCode] = await Promise.all([
     loadFacilityCandidates(db, orgId),
-    loadExternalReferences(db, orgId, record.clientId),
+    loadExternalReferences(db, orgId, effectiveClientId),
   ]);
-  return { db, candidates, referencesByCode };
+  return { db, candidates, referencesByCode, effectiveClientId };
 }
 
 async function viewOf(orgId: string, userId: string, record: ImportRecord): Promise<StopResolutionView> {
