@@ -270,6 +270,23 @@ Migration strategy: Prisma migrate deploy via hook on every migration.sql write.
 
 ---
 
+# Phase History (Document Import — spec `docs/specs/DocumentImport_TechnicalSpec_v1.md`)
+
+Own numbering, separate from v5.0 Mobile above. Plans and per-phase summaries in `.planning/document-import/`.
+
+| Phase | What was built |
+|-------|---------------|
+| 4 | Facility resolution ladder (spec §7): T1 learned external reference `(tenant, client, code)` → silent link · T2 normalised address exact match within tenant → silent link + backfill ref · T3 fuzzy ≥ threshold → PROPOSE, requires a human tap · T4 nothing → pre-filled create form, requires a human tap. Shared address normaliser (`address.ts`), external refs written on every confirmation and T2 backfill, stop links + provenance under `resolution_provenance.stops` (no DDL) |
+
+**Hard rule:** T3 and T4 **never create a facility without an explicit human tap** — enforced by the verdict union's shape (T3/T4 members carry no facility id) and by `autoLinkTarget()`, not by a check an edit could drop. A polluted facility table is unrecoverable.
+
+- **The 31-pair address fixture is the matcher's permanent guardrail.** `__fixtures__/facility-address-pairs.fixture.json`, read from disk and driven through the real normaliser and scorer. 11 negatives, including same-street/different-number and N-vs-W on the Chicago grid. Weakening a NO_MATCH pair to make a run green is a task failure, not a fix. Integrity guard asserts contiguous ids + a length floor, so adding pairs is free and deleting them is not.
+- **Threshold and weights live in `facility-constants.ts` and nowhere else** — grep-verified single occurrence. Tests import the constant rather than restating it.
+- **DEC-14 — `facility_external_references.resolved_via` admits only `T1|T2|T3|T4`.** Writing the richer provenance vocabulary there is a Postgres 23514 on every confirmation. **Read `pg_constraint` before writing any enum-ish carrier column** — these tables carry CHECKs seeded in early migrations that do not track the app's vocabulary (same class as `facility_type`, where `shipper`/`receiver` were deleted by TKT-0016; consignee → `customer_site`, origin → `warehouse`). A faked DB in a unit test is not evidence about SQL.
+- **quick-511 — the ladder context must derive the *effective* client**, via the shared deterministic resolver (`resolveEffectiveClientId`), never `record.clientId` alone. That column is null whenever a client auto-resolved and no mutation has fired (quick-508), and scoping the reference lookup by it makes T1 unreachable — every learned code silently falls to T2. View and commit paths must reach the same client or the card's tier is not the tier that gets written.
+
+---
+
 # Completed Web Features (Pre-Mobile Phases 1–28)
 
 - **v1.0:** Core CRUD — trucks, drivers, routes, loads, documents, basic dashboard
