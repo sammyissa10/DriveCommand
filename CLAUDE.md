@@ -223,6 +223,7 @@ Migration strategy: Prisma migrate deploy via hook on every migration.sql write.
 - Shared types: `packages/types/src/` — import as `@drivecommand/types`
 - Shared validation: `packages/validation/src/` — import as `@drivecommand/validation`
 - API client: `packages/api-client/src/` — used by mobile only
+- **Rebuild package `dist/` before typechecking or running** (`npx tsc` in `packages/validation` / `packages/api-client`) — `main` points at gitignored `dist/`, so new exports are invisible until built; hides well because type-only imports still resolve. Recurring: bit Document Import phases 1, 2 and 3
 
 ## Mobile Patterns
 - All screens import `useThemeColors()` from `@/hooks/useThemeColors` for styling
