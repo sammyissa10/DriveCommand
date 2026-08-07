@@ -31,7 +31,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import type { StopReviewRow as Row } from '@/lib/document-import/stop-review';
 import { StopStatus } from './StopResolutionList';
-import { TruncatedText } from './TruncatedText';
 
 export function StopReviewRowItem({
   row,
@@ -67,15 +66,48 @@ export function StopReviewRowItem({
   const primary = row.facility?.name ?? row.name ?? row.documentName;
 
   return (
-    <li
+    /*
+     * A <div>, not an <li> (quick-513). The screen wraps each row together with
+     * its detail panel in the <li>, because `ul` admits only `li` as a child and
+     * the wrapper used to be a `div` — `ul > div > li`, which the parser also
+     * rejects. One element owns the list-item semantics, and it is the wrapper.
+     */
+    <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-3 transition-colors',
+        'relative flex items-center gap-3 rounded-lg px-3 py-3 transition-colors',
         selected ? 'bg-muted' : 'hover:bg-muted/50',
         isDragging && 'bg-muted shadow-lg',
       )}
     >
+      {/*
+       * THE OPEN TARGET, AND IT HAS NO CHILDREN (quick-513).
+       *
+       * This used to be a <button> wrapped around the name and address, with the
+       * name's own expander button inside it. `<button>` forbids interactive
+       * descendants, so the parser broke the nesting and the inner control never
+       * saw a click.
+       *
+       * An overlay fixes it structurally rather than by being careful: a button
+       * with nothing inside it cannot nest anything. It is absolutely positioned
+       * with `z-index: auto`, so it paints above the row's in-flow, NON-positioned
+       * content (the name, the address, the counts) and clicking any of that
+       * opens the row. Every interactive sibling below carries `relative` and
+       * comes later in DOM order, so it paints above the overlay and receives its
+       * own clicks — and because the overlay is a SIBLING rather than an
+       * ancestor, nothing bubbles to it and no stopPropagation is needed for it.
+       *
+       * Keeping it a real <button> rather than a div[role="button"] means Enter
+       * and Space work natively, with no hand-rolled key handling to get wrong.
+       */}
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={`Open ${primary}`}
+        className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      />
+
       {/* Drag handle. Its own 44px target so a drag never starts from a tap
           meant for the row, and never from the checkbox. */}
       <button
@@ -85,7 +117,7 @@ export function StopReviewRowItem({
         aria-label={`Reorder ${primary}`}
         disabled={disabled}
         className={cn(
-          'flex h-11 w-6 shrink-0 cursor-grab touch-none items-center justify-center rounded text-muted-foreground',
+          'relative flex h-11 w-6 shrink-0 cursor-grab touch-none items-center justify-center rounded text-muted-foreground',
           'hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           disabled && 'cursor-not-allowed opacity-40',
         )}
@@ -93,7 +125,7 @@ export function StopReviewRowItem({
         <GripVertical className="h-4 w-4" />
       </button>
 
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center">
+      <span className="relative flex h-11 w-11 shrink-0 items-center justify-center">
         <Checkbox
           checked={selected}
           disabled={disabled}
@@ -109,15 +141,26 @@ export function StopReviewRowItem({
 
       <span className="w-6 shrink-0 text-sm tabular-nums text-muted-foreground">{row.sequence}</span>
 
-      <button
-        type="button"
-        onClick={onOpen}
-        className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left"
-        aria-label={`Open ${primary}`}
-      >
+      {/*
+       * Not positioned, and therefore UNDER the overlay — clicking the name or
+       * the address opens the row, which is what a dispatcher expects.
+       *
+       * The name is plain truncated text with a `title`, not the interactive
+       * `TruncatedText` expander it used to be. That expander was the nested
+       * button, and putting it back above the overlay would trade one broken
+       * control for another: it is `block w-full`, so it would cover the name —
+       * the single most likely place someone clicks to open a stop. The Phase 5
+       * rule still holds, because opening the row IS the tap that reveals the
+       * full value: the detail editor's header and facility field both render it
+       * in full, and the editor's own expander is untouched.
+       */}
+      <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
         <span className="flex w-full min-w-0 items-center gap-2">
-          <span className="min-w-0 flex-1 text-sm font-medium text-foreground">
-            <TruncatedText value={primary || 'Unnamed stop'} />
+          <span
+            className="min-w-0 flex-1 truncate text-sm font-medium text-foreground"
+            title={primary || 'Unnamed stop'}
+          >
+            {primary || 'Unnamed stop'}
           </span>
           {hasIssue ? (
             <span className="shrink-0 text-xs font-medium text-muted-foreground">needs a look</span>
@@ -129,7 +172,7 @@ export function StopReviewRowItem({
             {row.facility?.address || row.documentAddress || 'No address on the document'}
           </span>
         </span>
-      </button>
+      </div>
 
       {/* Quantity rollup, with the override mark Section 10 asks for. */}
       <span className="hidden shrink-0 items-center gap-1 text-xs tabular-nums text-muted-foreground sm:flex">
@@ -148,8 +191,36 @@ export function StopReviewRowItem({
         <span aria-hidden>ref</span>
       </span>
 
-      <StopStatus stop={row} />
-    </li>
+      {/*
+       * The status badge, and the "+ New is dead" half of quick-513.
+       *
+       * It was NOT dead because of the nesting — it is a sibling of the old open
+       * button, not a descendant, and `Badge` renders a <div>. It never
+       * responded to clicks because it has never been a control: Section 15 makes
+       * status colour + icon + text, and that is what it is.
+       *
+       * A settled status is still not a call to action, so LINKED keeps the plain
+       * badge. An unresolved one is the entire reason the row is asking for
+       * attention, so PROPOSED and NEW get a real button that opens the row —
+       * where the facility resolution actually lives. `relative` puts it above
+       * the overlay; the resolution UI in the detail editor is untouched.
+       */}
+      {row.requiresHumanTap ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          aria-label={`Resolve the facility for ${primary}`}
+          className="relative shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <StopStatus stop={row} />
+        </button>
+      ) : (
+        <StopStatus stop={row} />
+      )}
+    </div>
   );
 }
 

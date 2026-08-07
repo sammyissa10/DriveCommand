@@ -315,7 +315,11 @@ export function StopReviewScreen({
         <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
           <ul className="divide-y divide-border">
             {view.stops.map((row) => (
-              <div key={row.index}>
+              // `li`, not `div` (quick-513). `ul` admits only `li` as a child,
+              // and the row itself is now a `div` — one element owns the
+              // list-item semantics and it is this wrapper, which is also what
+              // holds the row together with its open detail panel.
+              <li key={row.index}>
                 <StopReviewRowItem
                   row={row}
                   selected={selection.isSelected(String(row.index))}
@@ -346,7 +350,7 @@ export function StopReviewScreen({
                     />
                   </div>
                 ) : null}
-              </div>
+              </li>
             ))}
           </ul>
         </SortableContext>
