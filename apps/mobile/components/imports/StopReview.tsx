@@ -1461,6 +1461,18 @@ function SmallInput({
       style={{
         width,
         flex: flex ? 1 : undefined,
+        /*
+         * A floor for the flexed field — the description (quick-512).
+         *
+         * The web editor had this same field collapse to one character, because
+         * a `flex: 1` item has a ZERO flex-basis and takes only the space its
+         * fixed siblings leave over. This row cannot reproduce that defect: it
+         * has no `flexWrap` and only two fixed siblings (SKU 90 + remove 44), so
+         * the description genuinely gets the remainder — about 154px on a 360pt
+         * screen. The floor is a guard, not a fix, and 100 is chosen so the row
+         * still fits a 320pt device without overflowing (90 + 8 + 100 + 8 + 44).
+         */
+        minWidth: flex ? 100 : undefined,
         minHeight: TOUCH,
         borderRadius: radii.sm,
         backgroundColor: c.surfaceCard,

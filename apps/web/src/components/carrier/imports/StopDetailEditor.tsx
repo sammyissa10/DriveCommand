@@ -679,56 +679,88 @@ function EditField({
               set('lineItems', next);
             };
             return (
-              <div key={i} className="flex flex-wrap items-center gap-2 rounded-lg bg-background p-3">
-                <Input
-                  className="h-11 w-28"
-                  placeholder="SKU"
-                  aria-label={`Line item ${i + 1} SKU`}
-                  value={item.sku ?? ''}
-                  onChange={(e) => update({ sku: e.target.value || null })}
-                />
-                <Input
-                  className="h-11 min-w-0 flex-1"
-                  placeholder="Description"
-                  aria-label={`Line item ${i + 1} description`}
-                  value={item.description ?? ''}
-                  onChange={(e) => update({ description: e.target.value || null })}
-                />
-                <Input
-                  className="h-11 w-20"
-                  inputMode="decimal"
-                  placeholder="Qty"
-                  aria-label={`Line item ${i + 1} quantity`}
-                  value={item.quantity ?? ''}
-                  onChange={(e) => update({ quantity: numberOrNull(e.target.value) })}
-                />
-                <Input
-                  className="h-11 w-20"
-                  placeholder="UOM"
-                  aria-label={`Line item ${i + 1} unit`}
-                  value={item.uom ?? ''}
-                  onChange={(e) => update({ uom: e.target.value || null })}
-                />
-                <Input
-                  className="h-11 w-24"
-                  inputMode="decimal"
-                  placeholder="Weight"
-                  aria-label={`Line item ${i + 1} weight`}
-                  value={item.weight ?? ''}
-                  onChange={(e) => update({ weight: numberOrNull(e.target.value) })}
-                />
-                <label className="flex min-h-[44px] items-center gap-2 text-xs text-muted-foreground">
-                  <Checkbox
-                    checked={item.hazmat === true}
-                    onCheckedChange={(v) => update({ hazmat: v === true })}
-                    aria-label={`Line item ${i + 1} hazmat`}
+              /*
+               * TWO ROWS, AND THE SPLIT IS THE FIX (quick-512).
+               *
+               * This was one wrapping row of seven controls, with the
+               * description as the only `flex-1`. `flex-1` means
+               * `flex: 1 1 0%`, so its hypothetical main size is ZERO — it
+               * contributes nothing to flex line-breaking, which means the
+               * wrap algorithm can never give it a line of its own. It only
+               * ever received whatever free space five fixed-width siblings
+               * left over, and on the 520px content box this card actually
+               * gets, that was 42px. The `Input` base is `px-4` plus borders,
+               * so 34px of that is chrome: the field rendered about one
+               * clipped character wide.
+               *
+               * Splitting identity from quantities leaves the description
+               * growing against two fixed siblings instead of five, and
+               * `basis-40` gives it a real flex-basis so it both claims width
+               * and participates in line-breaking — at a narrow viewport the
+               * row now WRAPS rather than crushing the field to nothing.
+               *
+               * Do not merge these back into one row, and do not give the
+               * description `flex-1` without a basis.
+               */
+              <div key={i} className="space-y-2 rounded-lg bg-background p-3">
+                {/* Identity — the description is the primary text and is sized
+                    accordingly: everything else on this row is content-sized. */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Input
+                    className="h-11 w-24 shrink-0"
+                    placeholder="SKU"
+                    aria-label={`Line item ${i + 1} SKU`}
+                    value={item.sku ?? ''}
+                    onChange={(e) => update({ sku: e.target.value || null })}
                   />
-                  Hazmat
-                </label>
-                <RemoveButton
-                  label={`Remove line item ${i + 1}`}
-                  onClick={() => set('lineItems', draft.lineItems.filter((_, j) => j !== i))}
-                />
+                  <Input
+                    className="h-11 min-w-0 flex-1 basis-40"
+                    placeholder="Description"
+                    aria-label={`Line item ${i + 1} description`}
+                    value={item.description ?? ''}
+                    onChange={(e) => update({ description: e.target.value || null })}
+                  />
+                  <RemoveButton
+                    label={`Remove line item ${i + 1}`}
+                    onClick={() => set('lineItems', draft.lineItems.filter((_, j) => j !== i))}
+                  />
+                </div>
+
+                {/* Quantities — every control here is content-sized, so
+                    `flex-wrap` behaves correctly and they simply reflow. */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Input
+                    className="h-11 w-20"
+                    inputMode="decimal"
+                    placeholder="Qty"
+                    aria-label={`Line item ${i + 1} quantity`}
+                    value={item.quantity ?? ''}
+                    onChange={(e) => update({ quantity: numberOrNull(e.target.value) })}
+                  />
+                  <Input
+                    className="h-11 w-20"
+                    placeholder="UOM"
+                    aria-label={`Line item ${i + 1} unit`}
+                    value={item.uom ?? ''}
+                    onChange={(e) => update({ uom: e.target.value || null })}
+                  />
+                  <Input
+                    className="h-11 w-24"
+                    inputMode="decimal"
+                    placeholder="Weight"
+                    aria-label={`Line item ${i + 1} weight`}
+                    value={item.weight ?? ''}
+                    onChange={(e) => update({ weight: numberOrNull(e.target.value) })}
+                  />
+                  <label className="flex min-h-[44px] items-center gap-2 text-xs text-muted-foreground">
+                    <Checkbox
+                      checked={item.hazmat === true}
+                      onCheckedChange={(v) => update({ hazmat: v === true })}
+                      aria-label={`Line item ${i + 1} hazmat`}
+                    />
+                    Hazmat
+                  </label>
+                </div>
               </div>
             );
           })}
