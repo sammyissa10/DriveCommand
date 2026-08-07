@@ -22,6 +22,41 @@ export type {
   SpotOffer,
   ContractCreateOffer,
   ImportResolutionView,
+  // Facility resolution ladder (Phase 4).
+  //
+  // These shipped with Phase 4 but were never added to this list, so they were
+  // unreachable from `@drivecommand/api-client` — a gap nothing caught because
+  // Phase 4 deliberately built no mobile stop screen to import them. Phase 5
+  // builds that screen, which is what surfaced it. Added here rather than in a
+  // Phase 5 block, because they are Phase 4's.
+  FacilityTier,
+  StopResolvedVia,
+  StopWhyView,
+  StopFacilityView,
+  FacilityProposal,
+  FacilityPrefill,
+  StopSlotState,
+  StopSlotView,
+  StopResolutionView,
+  CreateStopFacilityInput,
+  // Stop review (Phase 5)
+  StopType,
+  RequiredDocument,
+  BulkAppliedField,
+  StopReferenceType,
+  StopReference,
+  StopLineItem,
+  StopRollup,
+  StopRollups,
+  StopAppointment,
+  StopContact,
+  StopReviewRow,
+  StopIssueCode,
+  StopIssue,
+  StopReviewView,
+  StopEditInput,
+  StopBulkInput,
+  StopBulkResult,
 } from './owner-imports'
 export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, DirectionsResult, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType, DriverRoute, DriverRouteLoad, DriverRouteTruck } from './driver'

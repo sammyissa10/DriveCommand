@@ -50,6 +50,87 @@ export type ReferenceType = z.infer<typeof referenceTypeEnum>;
 /** Weight units. Documents mix these freely; normalise at the rollup, not here. */
 export const weightUomEnum = z.enum(['LBS', 'KG']);
 
+/**
+ * What kind of stop this consignment becomes. Spec Section 10 lists `type` as a
+ * per-stop field.
+ *
+ * THESE FIVE VALUES ARE THE DATABASE'S, NOT AN INVENTION. Verified against
+ * production before this schema was written:
+ *
+ * ```
+ * stops_stop_type_check
+ *   CHECK (stop_type IN ('pickup','delivery','fuel_stop','layover','relay_handoff'))
+ * ```
+ *
+ * This is the same trap DEC-1 hit with `facility_type` and DEC-14 hit with
+ * `facility_external_references.resolved_via`: a vocabulary that reads naturally
+ * ("dropoff", "consignee", "stop") is a Postgres 23514 at commit, and a jsonb
+ * column will happily store the wrong word for weeks because nothing checks it
+ * until Phase 8 tries to write a row. Offering only committable values here is
+ * what stops a dispatcher's edit becoming a failed commit later.
+ */
+export const stopTypeEnum = z.enum([
+  'pickup',
+  'delivery',
+  'fuel_stop',
+  'layover',
+  'relay_handoff',
+]);
+export type CanonicalStopType = z.infer<typeof stopTypeEnum>;
+
+/**
+ * Paperwork the driver must capture at this stop.
+ *
+ * Deliberately only two values, and that is a constraint of the target row
+ * rather than a shortcut: `stops` carries `"bolRequired"` and `"podRequired"`
+ * as booleans and has no third column and no list.
+ *
+ * (Those two column names are camelCase in the live database — verified, not
+ * assumed — where every neighbour on that table is snake_case. Prisma declares
+ * them without an `@map`, so `bol_required` does not exist and a Phase 8 raw
+ * SQL write against it would be an undefined-column error. Recorded here
+ * because the pattern is the same one DEC-1 and DEC-14 taught: read the schema,
+ * do not infer it from the convention around it.)
+ *
+ * Offering "photo of the seal" or
+ * "lumper receipt" here would let a dispatcher set a requirement the commit
+ * cannot carry and the driver flow (Phase 9) cannot enforce — a promise the
+ * system silently drops. If a richer requirement list is wanted it needs a
+ * column, which is DDL, which is not this phase's to write.
+ */
+export const requiredDocumentEnum = z.enum(['BOL', 'POD']);
+export type CanonicalRequiredDocument = z.infer<typeof requiredDocumentEnum>;
+
+/**
+ * Which rollups a person typed rather than the line items producing.
+ *
+ * `pallets` is deliberately absent. "Overridden" means *differs from what the
+ * line items compute*, and line items carry no pallet marker — there is nothing
+ * to differ from, so a pallet count is only ever a typed value and marking it
+ * "overridden" would claim a comparison that never happened. Same rule as
+ * `MANUAL_CREATE` carrying a null score in Phase 4.
+ */
+export const rollupFieldEnum = z.enum(['pieces', 'weight']);
+export type CanonicalRollupField = z.infer<typeof rollupFieldEnum>;
+
+/**
+ * The fields the bulk-apply bar can set, and therefore the fields "clear any
+ * bulk-applied field" can take back off (spec Section 10).
+ *
+ * Recorded per consignment because "clear" has to be able to tell a value a
+ * person typed on one stop from a value a bar wrote across seven. Without the
+ * marker, clear either wipes hand-typed work or does nothing — both are worse
+ * than not offering it.
+ */
+export const bulkAppliedFieldEnum = z.enum([
+  'notes',
+  'requiredDocuments',
+  'appointment',
+  'stopType',
+  'totals',
+]);
+export type CanonicalBulkAppliedField = z.infer<typeof bulkAppliedFieldEnum>;
+
 // ---------------------------------------------------------------------------
 // Leaf shapes
 // ---------------------------------------------------------------------------
@@ -166,6 +247,52 @@ export const consignmentSchema = z.object({
   notes: z.string().nullish(),
 
   fieldConfidence: fieldConfidenceSchema.default({}),
+
+  // -------------------------------------------------------------------------
+  // Stop review (spec Section 10). Everything below is set by a person on the
+  // review screen, not by extraction — a model never fills these in.
+  //
+  // They live here rather than in a staging table for the reason Section 6
+  // gives: "edits live in `reviewedExtraction`, not a normalised staging table
+  // — resume-after-close works for free and there is no second schema to keep
+  // in sync". All four are additive keys on an existing jsonb column, so NO DDL
+  // was written for any of them.
+  // -------------------------------------------------------------------------
+
+  /**
+   * Null until someone sets it. Not defaulted to `delivery`, because a default
+   * that looks like an answer is how a fuel stop reaches a customer's dock: the
+   * review screen shows an unset type as unset and asks.
+   */
+  stopType: stopTypeEnum.nullish(),
+
+  /**
+   * Paperwork required at this stop. Absent or empty means "whatever the trip
+   * default is".
+   *
+   * OPTIONAL, NOT `.default([])`, and the three below are the same — unlike
+   * `references` and `lineItems`, which extraction always produces and which are
+   * therefore required on the type. Nothing in the extraction pipeline sets a
+   * review field, so making them required would force every constructor of a
+   * consignment (the spreadsheet parser, the merge step, every fixture) to
+   * invent an empty array for a concept it has never heard of. Absent is the
+   * honest value for "no person has been here yet".
+   */
+  requiredDocuments: z.array(requiredDocumentEnum).optional(),
+
+  /**
+   * Rollups a person typed over the computed line-item total.
+   *
+   * Per field rather than one flag, so the screen can mark the *pallet* count as
+   * overridden while pieces still tracks the line items. `stops.rollup_overridden`
+   * is a single boolean, so Phase 8 collapses this to `length > 0` — lossy in
+   * one direction only, and the review screen is where the distinction is
+   * actually looked at.
+   */
+  overriddenTotals: z.array(rollupFieldEnum).optional(),
+
+  /** Which fields the bulk bar last wrote here. See `bulkAppliedFieldEnum`. */
+  bulkAppliedFields: z.array(bulkAppliedFieldEnum).optional(),
 });
 export type CanonicalConsignment = z.infer<typeof consignmentSchema>;
 

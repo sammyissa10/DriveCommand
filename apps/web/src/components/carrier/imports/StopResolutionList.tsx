@@ -145,15 +145,22 @@ function StopRow({
 
       {isOpen ? (
         <div className="mt-3 pl-9">
-          <StopDecision importId={importId} stop={stop} onResolved={onResolved} onCancel={onToggle} />
+          <StopFacilityDecision importId={importId} stop={stop} onResolved={onResolved} onCancel={onToggle} />
         </div>
       ) : null}
     </li>
   );
 }
 
-/** Colour AND icon AND text, per spec Section 15. Never colour alone. */
-function StopStatus({ stop }: { stop: StopSlotView }) {
+/**
+ * Colour AND icon AND text, per spec Section 15. Never colour alone.
+ *
+ * Exported so the Phase 5 review list renders the SAME badge rather than a
+ * second one that drifts. In particular "New" is `outline`, not `destructive` —
+ * Section 15 reserves red for errors and destructive actions, and a stop the
+ * system has not seen before is the ordinary case on a first import.
+ */
+export function StopStatus({ stop }: { stop: Pick<StopSlotView, 'state'> }) {
   if (stop.state === 'LINKED') {
     return (
       <Badge variant="success" className="shrink-0 gap-1">
@@ -188,8 +195,14 @@ function StopStatus({ stop }: { stop: StopSlotView }) {
  * The create form is present on T3 as well as T4, because "none of these" is a
  * real answer to a list of candidates and a dispatcher who has to back out to
  * find it will pick the closest wrong one instead.
+ *
+ * EXPORTED for the Phase 5 stop detail editor, which lists `facility` as its
+ * first field (spec Section 10) and needs the same two exits. Exported rather
+ * than copied: the hard rule that a T3 or T4 never resolves without a POST a
+ * person triggered is enforced here, and a second copy of this component is a
+ * second place for that to be got wrong.
  */
-function StopDecision({
+export function StopFacilityDecision({
   importId,
   stop,
   onResolved,

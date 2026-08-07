@@ -23,6 +23,7 @@ import {
   type ImportView,
   type WhyView,
 } from '@drivecommand/api-client'
+import { useRouter } from 'expo-router'
 import { BottomSheet } from '../ui/BottomSheet'
 import { haptic } from '../../lib/haptics'
 import { useThemeColors, radii, spacing, typography } from '../../constants/tokens'
@@ -57,6 +58,7 @@ interface Props {
 
 export function ImportResolutionCard({ token, view, onChange }: Props) {
   const c = useThemeColors()
+  const router = useRouter()
   const [open, setOpen] = useState<'client' | 'contract' | 'date' | null>(null)
   const [why, setWhy] = useState<{ label: string; why: WhyView } | null>(null)
 
@@ -175,13 +177,29 @@ export function ImportResolutionCard({ token, view, onChange }: Props) {
         </View>
       ) : null}
 
+      {/* ---- Review stops. LIVE as of Phase 5. ----
+          This card stays the entry step: it is the only way in, so the client
+          and the contract are always decided before anyone starts moving stops
+          around. A document with no stops has nothing to review and says so
+          rather than opening an empty screen. */}
       <View style={{ borderTopWidth: 1, borderTopColor: c.divider, marginTop: spacing.md, paddingTop: spacing.md }}>
-        <View
+        <Pressable
+          disabled={r.stops.total === 0}
+          onPress={() => {
+            haptic.medium()
+            router.push({
+              pathname: '/(owner)/imports/review/[id]',
+              params: { id: view.id, title: view.summary?.title ?? view.originalName ?? '' },
+            } as never)
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Review stops"
+          accessibilityState={{ disabled: r.stops.total === 0 }}
           style={{
             minHeight: 52,
             borderRadius: radii.md,
             backgroundColor: c.brandDark,
-            opacity: 0.5,
+            opacity: r.stops.total === 0 ? 0.5 : 1,
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
@@ -190,9 +208,16 @@ export function ImportResolutionCard({ token, view, onChange }: Props) {
         >
           <Text style={{ color: '#ffffff', fontWeight: '700', fontSize: 16 }}>Review stops</Text>
           <ArrowRight color="#ffffff" size={17} />
-        </View>
+        </Pressable>
+        {/* Says only what it can know. This once ended "The client and contract
+            above are saved", which this component cannot establish: RESOLVED
+            means the server resolved the slot, not that it wrote it
+            (quick-508/510). What IS true is that stop review is a mutation
+            boundary — it is the first thing that will commit them. */}
         <Text style={{ ...typography.caption1, color: c.textTertiary, textAlign: 'center', marginTop: spacing.sm }}>
-          Stop review arrives in the next phase. The client and contract above are saved.
+          {r.stops.total > 0
+            ? 'Check the order, the quantities and the facilities before this becomes a trip.'
+            : 'No stops were read from this document.'}
         </Text>
       </View>
 

@@ -203,21 +203,36 @@ export function ImportSummaryCard({ view, onChange }: Props) {
         </ul>
       ) : null}
 
+      {/* ---- Review stops. LIVE as of Phase 5. ----
+          The card stays the entry step: this is the only way in, so the client
+          and the contract are always decided before anyone starts moving stops
+          around. `r.stops.total === 0` is the one case that has nothing to
+          review, and it says so rather than offering an empty screen. */}
       <div className="border-t border-border pt-4">
-        <Button className="h-12 w-full text-base" disabled>
-          Review stops
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-        {/* Says only what it can know. The previous sentence ended "…and the
+        {r.stops.total > 0 ? (
+          <Button asChild className="h-12 w-full text-base">
+            <Link href={`/carrier/imports/${view.id}/stops`}>
+              Review stops
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        ) : (
+          <Button className="h-12 w-full text-base" disabled>
+            Review stops
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        )}
+        {/* Says only what it can know. The sentence here once ended "…and the
             client and contract above are saved", which this component cannot
             establish: `state: 'RESOLVED'` means the server resolved the slot,
             not that it wrote it — an auto-resolved client or contract is
-            displayed here while the row still holds null. Asserting a save that
-            may not have happened is the same class of untruth as the "why"
-            claiming a person chose. See the note in the quick-510 summary for
-            what showing the affirmative version would require. */}
+            displayed here while the row still holds null (quick-508/510). What
+            IS true is that opening stop review is a mutation boundary: it is
+            the first thing that will commit them. */}
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          Stop review arrives in the next phase.
+          {r.stops.total > 0
+            ? 'Check the order, the quantities and the facilities before this becomes a trip.'
+            : 'No stops were read from this document.'}
         </p>
       </div>
 

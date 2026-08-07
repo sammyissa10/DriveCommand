@@ -271,6 +271,180 @@ export interface CreateStopFacilityInput {
   contactPhone?: string
 }
 
+// ---------------------------------------------------------------------------
+// Stop review — mirrors apps/web/src/lib/document-import/stop-review.ts
+// (spec Section 10).
+//
+// The facility half of every row is the Phase 4 ladder, recomputed on each read.
+// The consignment half is `reviewed_extraction`, which IS the persisted state —
+// so a reorder or an edit made on a phone is what a browser sees next, and vice
+// versa. Nothing on this screen is local.
+// ---------------------------------------------------------------------------
+
+/** Verified against the live `stops_stop_type_check`. Not an invented list. */
+export type StopType = 'pickup' | 'delivery' | 'fuel_stop' | 'layover' | 'relay_handoff'
+
+/** `stops` carries `"bolRequired"`/`"podRequired"` (camelCase, verified) and no third column. */
+export type RequiredDocument = 'BOL' | 'POD'
+
+export type BulkAppliedField = 'notes' | 'requiredDocuments' | 'appointment' | 'stopType' | 'totals'
+
+export type StopReferenceType =
+  | 'SHIPMENT'
+  | 'PRO'
+  | 'ORDER'
+  | 'PO'
+  | 'BOL'
+  | 'LOAD'
+  | 'SEAL'
+  | 'OTHER'
+
+export interface StopReference {
+  type: StopReferenceType
+  value: string
+}
+
+export interface StopLineItem {
+  sku: string | null
+  description: string | null
+  quantity: number | null
+  uom: string | null
+  weight: number | null
+  hazmat: boolean | null
+}
+
+export interface StopRollup {
+  /** What the line items add up to. Null when no item carries the field. */
+  computed: number | null
+  /** What the stop claims — the typed value, else the computed one. */
+  value: number | null
+  /** True when a person typed it. The visible mark reads off THIS, not a diff. */
+  overridden: boolean
+}
+
+export interface StopRollups {
+  pieces: StopRollup
+  weight: StopRollup
+  /** Hand-entered only — line items carry no pallet marker. Never "overridden". */
+  pallets: number | null
+  weightUom: 'LBS' | 'KG' | null
+  /** "5 · 1,200 lbs". What the list row shows. */
+  label: string
+}
+
+export interface StopAppointment {
+  earliest: string | null
+  latest: string | null
+  isFirm: boolean
+}
+
+export interface StopContact {
+  name: string | null
+  phone: string | null
+}
+
+export interface StopReviewRow {
+  index: number
+  sequence: number
+
+  // facility (Phase 4, computed on read)
+  state: StopSlotState
+  tier: FacilityTier
+  facility: StopFacilityView | null
+  why: StopWhyView | null
+  proposals: FacilityProposal[]
+  prefill: FacilityPrefill | null
+  requiresHumanTap: boolean
+  persisted: boolean
+  documentName: string
+  documentAddress: string
+  sourceCode: string | null
+
+  // consignment (reviewedExtraction)
+  name: string
+  stopType: StopType | null
+  references: StopReference[]
+  referenceCount: number
+  lineItems: StopLineItem[]
+  rollups: StopRollups
+  appointment: StopAppointment | null
+  requiredDocuments: RequiredDocument[]
+  contact: StopContact | null
+  notes: string | null
+  pageNumbers: number[]
+  bulkAppliedFields: BulkAppliedField[]
+}
+
+export type StopIssueCode =
+  | 'UNRESOLVED_FACILITY'
+  | 'MISSING_NAME'
+  | 'DUPLICATE_FACILITY'
+  | 'REPEATED_FACILITY'
+  | 'NO_QUANTITIES'
+  | 'NO_REFERENCES'
+  | 'NO_STOP_TYPE'
+  | 'PARTIAL_APPOINTMENTS'
+  | 'HAND_EDITED_ROLLUPS'
+
+export interface StopIssue {
+  code: StopIssueCode
+  /** Already counted and already worded. A surface prints it, never builds it. */
+  message: string
+  stopIndexes: number[]
+}
+
+export interface StopReviewView {
+  stops: StopReviewRow[]
+  total: number
+  matched: number
+  created: number
+  needsReview: number
+  note: string
+  /** Hard stops. The primary action is disabled while this is non-empty. */
+  blocks: StopIssue[]
+  /** One dismissible summary. Never a modal (Section 10). */
+  warnings: StopIssue[]
+  canProceed: boolean
+  /** The sentence printed next to the disabled action. Null when nothing blocks. */
+  blockedReason: string | null
+}
+
+/** One dispatcher's edit. Only the keys sent are applied. */
+export interface StopEditInput {
+  name?: string
+  stopType?: StopType | null
+  references?: StopReference[]
+  lineItems?: StopLineItem[]
+  /** A number sets an override; null reverts to the line-item total. */
+  pieces?: number | null
+  weight?: number | null
+  pallets?: number | null
+  weightUom?: 'LBS' | 'KG' | null
+  appointment?: StopAppointment | null
+  requiredDocuments?: RequiredDocument[]
+  contact?: StopContact | null
+  notes?: string | null
+}
+
+export interface StopBulkInput {
+  notes?: string
+  requiredDocuments?: RequiredDocument[]
+  appointment?: StopAppointment
+  stopType?: StopType
+  copyQuantitiesFromAbove?: boolean
+  /** Takes back only what the bar applied. Never a hand-typed value. */
+  clear?: BulkAppliedField[]
+}
+
+export interface StopBulkResult {
+  view: StopReviewView
+  /** How many stops actually changed. What the confirmation should now report. */
+  applied: number
+  /** Selected stops that had nothing to change. Reported, never hidden. */
+  skipped: number[]
+  fields: string[]
+}
+
 export interface ImportView {
   id: string
   status: ImportStatus
@@ -500,5 +674,62 @@ export const ownerImportsApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ stopIndex, ...input }),
+    }).then((r) => r.data),
+
+  // -------------------------------------------------------------------------
+  // Stop review (spec Section 10)
+  //
+  // Four calls, and every mutating one returns the whole view — so the screen's
+  // next state arrives with the write and there is nothing local to reconcile.
+  // That is what makes a reorder survive backgrounding the app: the order is on
+  // the row before the animation has finished.
+  // -------------------------------------------------------------------------
+
+  /** Read-only. Opening the review screen cannot commit anything. */
+  getStopReview: (token: string, importId: string) =>
+    apiRequest<{ data: StopReviewView }>(`${BASE}/${importId}/stops/review`, { token }).then(
+      (r) => r.data,
+    ),
+
+  /** One dispatcher's edit to one stop. */
+  updateStop: (token: string, importId: string, stopIndex: number, input: StopEditInput) =>
+    apiRequest<{ data: StopReviewView }>(`${BASE}/${importId}/stops/review`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify({ stopIndex, ...input }),
+    }).then((r) => r.data),
+
+  /**
+   * Persist a new running order.
+   *
+   * `order` is the FULL permutation — the old index of each stop in its new
+   * position — not a move delta. Idempotent under a retry, and validated as a
+   * permutation server-side, so a stale client cannot move the wrong stop.
+   */
+  reorderStops: (token: string, importId: string, order: number[]) =>
+    apiRequest<{ data: StopReviewView }>(`${BASE}/${importId}/stops/order`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ order }),
+    }).then((r) => r.data),
+
+  /**
+   * Apply one field across the selection.
+   *
+   * `stopIndexes` IS the selection. The server acts on every index named and
+   * never asks which of them were on screen — a selected stop scrolled out of
+   * view receives the change because nothing below this line knows what a
+   * viewport is.
+   */
+  bulkApplyStops: (
+    token: string,
+    importId: string,
+    stopIndexes: number[],
+    input: StopBulkInput,
+  ) =>
+    apiRequest<{ data: StopBulkResult }>(`${BASE}/${importId}/stops/bulk`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ stopIndexes, ...input }),
     }).then((r) => r.data),
 }
