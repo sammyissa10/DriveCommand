@@ -213,6 +213,15 @@ export interface TemplateSlotView {
   value: TemplateCandidateView | null
   why: TemplateWhyView | null
   candidates: TemplateCandidateView[]
+  /**
+   * Every candidate ≥ the candidate threshold, ranked and UNCAPPED — the list
+   * behind "Change" on a row that already has a template (quick-516).
+   * `candidates` is the middle band's capped three; this is the chooser's list,
+   * and capping it would hide the lower-scoring route the person is reaching for.
+   * Empty on `DECLINED`, where nothing is matched until a person clears the
+   * decision with `resetTemplate`.
+   */
+  alternatives: TemplateCandidateView[]
   widened: boolean
   /** False means "derived on this read, not written yet" (the quick-508 shape). */
   persisted: boolean
@@ -882,6 +891,22 @@ export const ownerImportsApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ action: 'decline' }),
+    }).then((r) => r.data),
+
+  /**
+   * "Look again." Clears the stored template decision and returns the freshly
+   * matched row (quick-516).
+   *
+   * A POST because a stored decision outranks anything computed — the view
+   * short-circuits on it — so the only thing that may unmake it is a person, and
+   * re-reading the row can never produce a different answer. The stops are not
+   * touched: a merge that already happened stays.
+   */
+  resetTemplate: (token: string, importId: string) =>
+    apiRequest<{ data: TemplateSlotView }>(`${BASE}/${importId}/template`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'reset' }),
     }).then((r) => r.data),
 
   /**

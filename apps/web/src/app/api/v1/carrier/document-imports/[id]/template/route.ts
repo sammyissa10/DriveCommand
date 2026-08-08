@@ -9,9 +9,12 @@
  * presentations the best score earns. It commits nothing — an auto-collapsed
  * template comes back with `persisted: false` until a mutation needs it.
  *
- * POST is `select`, `apply` or `decline`. Selecting and declining write one
- * column and one provenance record; applying rewrites the running order and is
- * therefore always something a person asked for, never a consequence of looking.
+ * POST is `select`, `apply`, `decline` or `reset`. Selecting, declining and
+ * resetting write one column and one provenance record; applying rewrites the
+ * running order and is therefore always something a person asked for, never a
+ * consequence of looking. `reset` is the "Look again" control (quick-516): it
+ * clears the stored decision so the next read scores the templates again, which
+ * is a write, which is why it is not the GET that control used to call.
  */
 
 import { NextRequest, NextResponse } from 'next/server';

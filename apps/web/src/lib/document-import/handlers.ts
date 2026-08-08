@@ -45,6 +45,7 @@ import {
 import {
   applyTemplate,
   assignTemplate,
+  clearTemplateDecision,
   declineTemplate,
   getTemplateOffer,
   getTemplateView,
@@ -696,10 +697,15 @@ export async function handleGetTemplate(
 /**
  * POST — decide the template.
  *
- * Three actions on one route because they are three answers to one question,
- * and a client that can express "this one", "none" and "apply it" against the
- * same resource cannot get into a state where it has picked one thing on one
- * endpoint and declined on another.
+ * Four actions on one route because they are four answers to one question, and a
+ * client that can express "this one", "none", "apply it" and "ask me again"
+ * against the same resource cannot get into a state where it has picked one thing
+ * on one endpoint and declined on another.
+ *
+ * `reset` is here rather than on a route of its own for that reason, and because
+ * it is unambiguously a write: it clears the stored decision so matching can run
+ * again (quick-516). The control it serves — "Look again" — used to call the GET,
+ * which re-read the decision instead of clearing it.
  *
  * `templateId` is validated against the candidate set server-side
  * (`assignTemplate`), never trusted — a template belonging to another client is
@@ -719,6 +725,12 @@ export async function handleSetTemplate(
     );
   }
 
+  if (action === 'reset') {
+    return stopReviewCall('clear template decision', { orgId, importId }, () =>
+      clearTemplateDecision(orgId, userId, importId),
+    );
+  }
+
   if (action === 'apply') {
     return stopReviewCall('apply template', { orgId, importId }, () =>
       applyTemplate(orgId, userId, importId),
@@ -733,7 +745,7 @@ export async function handleSetTemplate(
     );
   }
 
-  return err("action must be one of 'select', 'apply' or 'decline'.", 400);
+  return err("action must be one of 'select', 'apply', 'decline' or 'reset'.", 400);
 }
 
 /**

@@ -1103,6 +1103,7 @@ function blockedTemplateSlot(reason: string): TemplateSlotView {
     value: null,
     why: null,
     candidates: [],
+    alternatives: [],
     widened: false,
     persisted: false,
     applied: false,

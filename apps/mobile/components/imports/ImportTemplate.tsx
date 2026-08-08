@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native'
-import { AlertTriangle, Check, ChevronRight, Route, Sparkles } from 'lucide-react-native'
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import { AlertTriangle, Ban, Check, ChevronRight, Info, Route, Sparkles } from 'lucide-react-native'
 import {
   ownerImportsApi,
   type TemplateCandidateView,
@@ -33,6 +33,19 @@ import { useThemeColors, radii, spacing, typography } from '../../constants/toke
  *
  * EVERY ACTIONABLE THING IS A REAL CONTROL. Candidates are `Pressable`, with no
  * nested pressables inside them.
+ *
+ * ---------------------------------------------------------------------------
+ * "CHANGE" IS A QUESTION, NOT AN ANSWER (quick-516)
+ * ---------------------------------------------------------------------------
+ * It used to call `decline()`, so changing a template meant giving one up: the
+ * row wrote `via: 'NONE'` on the first tap and there was no way to reach a
+ * lower-scoring route. It now opens a chooser over `slot.alternatives` — every
+ * candidate the server scored, uncapped, plus "No template" as an explicit
+ * option. Opening it writes nothing.
+ *
+ * "Look again" was wired to `onChanged`, a reload, which re-read the decision it
+ * was meant to clear. It now calls `resetTemplate`, the mutation that clears it,
+ * and says what the fresh look found.
  */
 
 const TOUCH = 44
@@ -59,6 +72,9 @@ export function ImportTemplate({
   const [error, setError] = useState<string | null>(null)
   const [confirming, setConfirming] = useState<TemplateCandidateView | null>(null)
   const [applied, setApplied] = useState<string | null>(null)
+  const [choosing, setChoosing] = useState(false)
+  /** What the last "Look again" found. Says so even when the answer is nothing. */
+  const [notice, setNotice] = useState<string | null>(null)
 
   async function run<T>(work: () => Promise<T>): Promise<T | null> {
     setBusy(true)
@@ -81,8 +97,46 @@ export function ImportTemplate({
 
   async function decline() {
     haptic.light()
+    setChoosing(false)
     const done = await run(() => ownerImportsApi.declineTemplate(token, importId))
     if (done) onChanged()
+  }
+
+  /**
+   * Picked from the chooser. Selects, then hands straight to the same
+   * `ApplyConfirm` the middle band reaches through "Use this template" — not a
+   * second flow, and not an apply. See the web twin for why the confirmation
+   * follows here and not after a middle-band pick.
+   */
+  async function chooseAndConfirm(candidate: TemplateCandidateView) {
+    haptic.medium()
+    setChoosing(false)
+    setNotice(null)
+    const done = await run(() => ownerImportsApi.selectTemplate(token, importId, candidate.id))
+    if (!done) return
+    onChanged()
+    setConfirming(candidate)
+  }
+
+  /**
+   * "Look again" — the mutation. Clears the decision so matching runs again, then
+   * reports what came back, including when nothing did.
+   */
+  async function lookAgain() {
+    haptic.light()
+    setNotice(null)
+    const fresh = await run(() => ownerImportsApi.resetTemplate(token, importId))
+    if (!fresh) return
+    setNotice(
+      fresh.state === 'RESOLVED' && fresh.value
+        ? `Looked again — “${fresh.value.name}” matches at ${fresh.value.scorePercent}%.`
+        : fresh.state === 'CANDIDATES'
+          ? `Looked again — ${fresh.candidates.length} saved route${fresh.candidates.length === 1 ? '' : 's'} to choose from.`
+          : fresh.state === 'BLOCKED'
+            ? (fresh.blockedReason ?? 'Looked again — this cannot be matched yet.')
+            : 'Looked again — nothing saved matches today’s run.',
+    )
+    onChanged()
   }
 
   async function apply() {
@@ -133,7 +187,12 @@ export function ImportTemplate({
             {slot.value.name}
           </Text>
           <Pressable
-            onPress={() => void decline()}
+            onPress={() => {
+              haptic.light()
+              setError(null)
+              setNotice(null)
+              setChoosing(true)
+            }}
             disabled={busy}
             accessibilityRole="button"
             accessibilityLabel="Change the template"
@@ -157,6 +216,8 @@ export function ImportTemplate({
             </Text>
           ) : null}
         </View>
+
+        {notice ? <NoticeLine c={c} message={notice} /> : null}
 
         {applied ? (
           <View style={{ flexDirection: 'row', gap: spacing.sm, paddingLeft: 78 + spacing.md }}>
@@ -211,6 +272,17 @@ export function ImportTemplate({
           onCancel={() => setConfirming(null)}
           onConfirm={() => void apply()}
         />
+
+        <TemplateChooser
+          c={c}
+          visible={choosing}
+          current={slot.value}
+          alternatives={slot.alternatives}
+          busy={busy}
+          onClose={() => setChoosing(false)}
+          onPick={(candidate) => void chooseAndConfirm(candidate)}
+          onNone={() => void decline()}
+        />
       </View>
     )
   }
@@ -218,19 +290,29 @@ export function ImportTemplate({
   // ---- A person chose to run without one -----------------------------------
   if (slot.state === 'DECLINED') {
     return (
-      <Row c={c}>
-        <Text style={{ ...typography.subhead, color: c.textTertiary, flex: 1 }}>
-          No template — this trip runs on its own.
-        </Text>
-        <Pressable
-          onPress={onChanged}
-          accessibilityRole="button"
-          accessibilityLabel="Look for templates again"
-          style={{ minHeight: TOUCH, justifyContent: 'center', paddingHorizontal: spacing.sm }}
-        >
-          <Text style={{ ...typography.caption1, color: c.textTertiary }}>Look again</Text>
-        </Pressable>
-      </Row>
+      <View style={{ paddingVertical: spacing.md, gap: spacing.xs }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+          <Text style={{ ...typography.subhead, color: c.textSecondary, width: 78 }}>Template</Text>
+          <Text style={{ ...typography.subhead, color: c.textTertiary, flex: 1 }}>
+            No template — this trip runs on its own.
+          </Text>
+          <Pressable
+            onPress={() => void lookAgain()}
+            disabled={busy}
+            accessibilityRole="button"
+            accessibilityLabel="Look for templates again"
+            style={{ minHeight: TOUCH, justifyContent: 'center', paddingHorizontal: spacing.sm }}
+          >
+            {busy ? (
+              <ActivityIndicator color={c.textTertiary} size="small" />
+            ) : (
+              <Text style={{ ...typography.caption1, color: c.textTertiary }}>Look again</Text>
+            )}
+          </Pressable>
+        </View>
+        {notice ? <NoticeLine c={c} message={notice} /> : null}
+        {error ? <ErrorLine c={c} message={error} /> : null}
+      </View>
     )
   }
 
@@ -253,47 +335,17 @@ export function ImportTemplate({
           </Text>
         ) : null}
 
+        {notice ? <NoticeLine c={c} message={notice} /> : null}
+
         <View style={{ gap: spacing.sm }}>
           {slot.candidates.map((candidate) => (
-            <Pressable
+            <CandidateRow
               key={candidate.id}
-              onPress={() => void select(candidate)}
+              c={c}
+              candidate={candidate}
               disabled={busy}
-              accessibilityRole="button"
-              accessibilityLabel={`Use ${candidate.name}, ${candidate.scorePercent} percent match`}
-              style={{
-                minHeight: TOUCH,
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                gap: spacing.md,
-                padding: spacing.md,
-                borderRadius: radii.md,
-                backgroundColor: c.surfaceElevated,
-                opacity: busy ? 0.6 : 1,
-              }}
-            >
-              <Route color={c.textSecondary} size={16} style={{ marginTop: 2 }} />
-              <View style={{ flex: 1, gap: spacing.xs }}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs }}>
-                  <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }} numberOfLines={1}>
-                    {candidate.name}
-                  </Text>
-                  <Chip c={c} label={`${candidate.scorePercent}% match`} />
-                  {candidate.widened ? <Chip c={c} label="Other contract" /> : null}
-                  {candidate.isSuggested ? <Chip c={c} label="Suggested" /> : null}
-                </View>
-                <Text style={{ ...typography.caption1, color: c.textTertiary }}>
-                  {candidate.stopCount} stop{candidate.stopCount === 1 ? '' : 's'} · {candidate.diffNote}
-                </Text>
-                {candidate.countMismatch ? (
-                  <Text style={{ ...typography.caption1, color: c.textTertiary }}>
-                    Scored down — a different number of stops from today&apos;s.
-                  </Text>
-                ) : null}
-                <StopDiff c={c} candidate={candidate} />
-              </View>
-              <ChevronRight color={c.textTertiary} size={16} style={{ marginTop: 2 }} />
-            </Pressable>
+              onPress={() => void select(candidate)}
+            />
           ))}
         </View>
 
@@ -312,6 +364,7 @@ export function ImportTemplate({
           Nothing saved looks like today&apos;s run.
         </Text>
       </View>
+      {notice ? <NoticeLine c={c} message={notice} /> : null}
       {error ? <ErrorLine c={c} message={error} /> : null}
       <ContinueWithout c={c} onPress={() => void decline()} disabled={busy} />
     </View>
@@ -345,6 +398,185 @@ function Chip({ c, label, icon }: { c: Colors; label: string; icon?: React.React
     >
       {icon}
       <Text style={{ ...typography.caption2, color: c.textSecondary }}>{label}</Text>
+    </View>
+  )
+}
+
+/**
+ * One candidate, as a row.
+ *
+ * The middle band's presentation, lifted out so the chooser draws the identical
+ * thing (quick-516) rather than a thinner list that would make "the 0.50 one" a
+ * guess. A single `Pressable` with inert chips inside it — no nested pressables.
+ */
+function CandidateRow({
+  c,
+  candidate,
+  disabled,
+  onPress,
+  current = false,
+}: {
+  c: Colors
+  candidate: TemplateCandidateView
+  disabled: boolean
+  onPress: () => void
+  /** The template already on the row. Shown, chipped, and not pickable. */
+  current?: boolean
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || current}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || current, selected: current }}
+      accessibilityLabel={
+        current
+          ? `${candidate.name}, the template already in use`
+          : `Use ${candidate.name}, ${candidate.scorePercent} percent match`
+      }
+      style={{
+        minHeight: TOUCH,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: spacing.md,
+        padding: spacing.md,
+        borderRadius: radii.md,
+        backgroundColor: c.surfaceElevated,
+        opacity: disabled || current ? 0.6 : 1,
+      }}
+    >
+      <Route color={c.textSecondary} size={16} style={{ marginTop: 2 }} />
+      <View style={{ flex: 1, gap: spacing.xs }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs }}>
+          <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }} numberOfLines={1}>
+            {candidate.name}
+          </Text>
+          <Chip c={c} label={`${candidate.scorePercent}% match`} />
+          {current ? <Chip c={c} label="Current" /> : null}
+          {candidate.widened ? <Chip c={c} label="Other contract" /> : null}
+          {candidate.isSuggested ? <Chip c={c} label="Suggested" /> : null}
+        </View>
+        <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+          {candidate.stopCount} stop{candidate.stopCount === 1 ? '' : 's'} · {candidate.diffNote}
+        </Text>
+        {candidate.countMismatch ? (
+          <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+            Scored down — a different number of stops from today&apos;s.
+          </Text>
+        ) : null}
+        <StopDiff c={c} candidate={candidate} />
+      </View>
+      {current ? null : <ChevronRight color={c.textTertiary} size={16} style={{ marginTop: 2 }} />}
+    </Pressable>
+  )
+}
+
+/**
+ * The chooser behind "Change".
+ *
+ * Every candidate the server scored — `slot.alternatives`, uncapped — with the
+ * selected one chipped `Current` and not pickable, and "No template" as an option
+ * of its own. Opening it writes nothing, which is the whole fix: the tap used to
+ * be the decline.
+ *
+ * A `ScrollView` because the list is uncapped and each row carries its diff; the
+ * sheet has to survive a client with eight saved routes on a 360pt screen.
+ */
+function TemplateChooser({
+  c,
+  visible,
+  current,
+  alternatives,
+  busy,
+  onClose,
+  onPick,
+  onNone,
+}: {
+  c: Colors
+  visible: boolean
+  current: TemplateCandidateView | null
+  alternatives: TemplateCandidateView[]
+  busy: boolean
+  onClose: () => void
+  onPick: (candidate: TemplateCandidateView) => void
+  onNone: () => void
+}) {
+  const others = alternatives.filter((a) => a.id !== current?.id)
+
+  return (
+    <BottomSheet visible={visible} onClose={onClose} title="Which saved route is this?">
+      <View style={{ gap: spacing.md, paddingBottom: spacing.lg }}>
+        <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+          Picking one selects it — you confirm before anything on the stop list moves.
+        </Text>
+
+        <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: spacing.sm }}>
+          {current ? (
+            <CandidateRow c={c} candidate={current} disabled={busy} onPress={onClose} current />
+          ) : null}
+          {others.map((candidate) => (
+            <CandidateRow
+              key={candidate.id}
+              c={c}
+              candidate={candidate}
+              disabled={busy}
+              onPress={() => onPick(candidate)}
+            />
+          ))}
+        </ScrollView>
+
+        {others.length === 0 ? (
+          <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+            Nothing else saved looks like today&apos;s run.
+          </Text>
+        ) : null}
+
+        <Pressable
+          onPress={onNone}
+          disabled={busy}
+          accessibilityRole="button"
+          accessibilityLabel="No template, this trip runs on its own"
+          style={{
+            minHeight: TOUCH,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.md,
+            padding: spacing.md,
+            borderRadius: radii.md,
+            backgroundColor: c.surfaceElevated,
+            opacity: busy ? 0.6 : 1,
+          }}
+        >
+          <Ban color={c.textSecondary} size={16} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }}>
+              No template
+            </Text>
+            <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+              This trip runs on its own. Nothing already on the stops is undone.
+            </Text>
+          </View>
+        </Pressable>
+
+        <Pressable
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Cancel"
+          style={{ minHeight: TOUCH, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text style={{ ...typography.subhead, color: c.textSecondary }}>Cancel</Text>
+        </Pressable>
+      </View>
+    </BottomSheet>
+  )
+}
+
+/** What just happened, in the row. Neutral — this is never an error. */
+function NoticeLine({ c, message }: { c: Colors; message: string }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: spacing.sm, paddingLeft: 78 + spacing.md }}>
+      <Info color={c.textTertiary} size={14} style={{ marginTop: 2 }} />
+      <Text style={{ ...typography.caption1, color: c.textSecondary, flex: 1 }}>{message}</Text>
     </View>
   )
 }

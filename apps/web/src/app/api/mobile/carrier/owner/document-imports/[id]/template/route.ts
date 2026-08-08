@@ -5,7 +5,8 @@
  * Bearer-token mirror of the web route. Same handlers, so the two surfaces
  * cannot drift — including which actions are admissible and the fact that
  * `templateId` is checked against the candidate set rather than trusted, both of
- * which are validated once in `handlers.ts`.
+ * which are validated once in `handlers.ts`. That includes `reset` (quick-516),
+ * so "Look again" clears a decision identically on a phone and on a desktop.
  */
 
 import { NextRequest, NextResponse } from 'next/server';

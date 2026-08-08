@@ -25,10 +25,24 @@
  * `<button>`, not a `<div>` with an `onClick`; the badges inside them are inert
  * `<Badge>`s and the button has no interactive descendants, so there is nothing
  * to nest.
+ *
+ * ---------------------------------------------------------------------------
+ * "CHANGE" IS A QUESTION, NOT AN ANSWER (quick-516)
+ * ---------------------------------------------------------------------------
+ * It used to call `decline()`, so the only way to change a template was to give
+ * one up: the row wrote `via: 'NONE'` on the first tap and a dispatcher who
+ * wanted the 0.50 route instead of the 0.80 one had nowhere to say so. It now
+ * opens a chooser over `slot.alternatives` — every candidate the server scored,
+ * uncapped, plus "No template" as an explicit option. **Opening it writes
+ * nothing**; the write happens when a person picks.
+ *
+ * "Look again" was wired all along, to a re-fetch, which re-read the decision it
+ * was trying to clear (`buildTemplateSlot` returns `DECLINED` before it scores
+ * anything). It now POSTs `reset`, which is the mutation that clears it.
  */
 
 import { useState } from 'react';
-import { AlertTriangle, ArrowRight, Check, Loader2, Route, Sparkles } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Ban, Check, Info, Loader2, Route, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +55,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import type {
@@ -55,13 +76,16 @@ interface Props {
   onResolved: (resolution: unknown) => void;
 }
 
-type Busy = null | 'select' | 'apply' | 'decline';
+type Busy = null | 'select' | 'apply' | 'decline' | 'reset';
 
 export function TemplateDecision({ importId, slot, onResolved }: Props) {
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<TemplateCandidateView | null>(null);
   const [applied, setApplied] = useState<string | null>(null);
+  const [choosing, setChoosing] = useState(false);
+  /** What the last "Look again" found. Says so even when the answer is nothing. */
+  const [notice, setNotice] = useState<string | null>(null);
 
   async function post(body: Record<string, unknown>, which: Busy) {
     setBusy(which);
@@ -101,8 +125,53 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
   }
 
   async function decline() {
+    setChoosing(false);
     const data = await post({ action: 'decline' }, 'decline');
     if (data) await refreshResolution();
+  }
+
+  /**
+   * Picked from the chooser. Selects, then hands straight to the apply
+   * confirmation — the same `ApplyConfirm` the middle band reaches through "Use
+   * this template", not a second flow.
+   *
+   * Continuing to the confirmation here and not after a middle-band pick is
+   * deliberate. In the middle band the person is answering "which of these?" and
+   * the row they land on is the answer. Here they were looking at a template the
+   * system had already chosen and said "not that one" — the next thing they want
+   * is the new one in place. Cancelling leaves the selection written and
+   * unapplied, with "Use this template" on the row, so nothing is merged without
+   * a tap either way.
+   */
+  async function chooseAndConfirm(candidate: TemplateCandidateView) {
+    setChoosing(false);
+    setNotice(null);
+    const data = await post({ action: 'select', templateId: candidate.id }, 'select');
+    if (!data) return;
+    await refreshResolution();
+    setConfirming(candidate);
+  }
+
+  /**
+   * "Look again" — the mutation, at last. Clears the decision, which lets the
+   * matcher run again on the way out, and then says what it found. A fresh look
+   * that finds nothing is reported rather than left as an unchanged-looking row.
+   */
+  async function lookAgain() {
+    setNotice(null);
+    const data = await post({ action: 'reset' }, 'reset');
+    if (!data) return;
+    const fresh = data as TemplateSlotView;
+    setNotice(
+      fresh.state === 'RESOLVED' && fresh.value
+        ? `Looked again — “${fresh.value.name}” matches at ${fresh.value.scorePercent}%.`
+        : fresh.state === 'CANDIDATES'
+          ? `Looked again — ${fresh.candidates.length} saved route${fresh.candidates.length === 1 ? '' : 's'} to choose from.`
+          : fresh.state === 'BLOCKED'
+            ? (fresh.blockedReason ?? 'Looked again — this cannot be matched yet.')
+            : 'Looked again — nothing saved matches today’s run.',
+    );
+    await refreshResolution();
   }
 
   async function apply() {
@@ -165,7 +234,11 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
           <TemplateWhy slot={slot} />
           <button
             type="button"
-            onClick={() => void decline()}
+            onClick={() => {
+              setError(null);
+              setNotice(null);
+              setChoosing(true);
+            }}
             disabled={busy != null}
             className="min-h-[44px] shrink-0 rounded px-2 text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground disabled:opacity-50"
           >
@@ -174,6 +247,8 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
         </div>
 
         <p className="pl-[7.5rem] text-xs text-muted-foreground">{slot.value.diffNote}</p>
+
+        {notice ? <NoticeLine message={notice} /> : null}
 
         {applied ? (
           <p className="flex items-start gap-2 pl-[7.5rem] text-xs text-muted-foreground">
@@ -215,6 +290,16 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
           onCancel={() => setConfirming(null)}
           onConfirm={() => void apply()}
         />
+
+        <TemplateChooser
+          open={choosing}
+          current={slot.value}
+          alternatives={slot.alternatives}
+          busy={busy != null}
+          onClose={() => setChoosing(false)}
+          onPick={(candidate) => void chooseAndConfirm(candidate)}
+          onNone={() => void decline()}
+        />
       </div>
     );
   }
@@ -222,16 +307,33 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
   // ---- A person chose to run without one -----------------------------------
   if (slot.state === 'DECLINED') {
     return (
-      <TemplateRow>
-        <span className="text-sm text-muted-foreground">No template — this trip runs on its own.</span>
-        <button
-          type="button"
-          onClick={() => void refreshResolution()}
-          className="min-h-[44px] shrink-0 rounded px-2 text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground"
-        >
-          Look again
-        </button>
-      </TemplateRow>
+      <div className="space-y-2 py-3">
+        <div className="flex items-center gap-3">
+          <dt className="w-24 shrink-0 text-sm text-muted-foreground">Template</dt>
+          <dd className="flex min-w-0 flex-1 items-center gap-2">
+            <span className="min-w-0 flex-1 text-sm text-muted-foreground">
+              No template — this trip runs on its own.
+            </span>
+            <button
+              type="button"
+              onClick={() => void lookAgain()}
+              disabled={busy != null}
+              // The name is on the button, not on the label, so it survives the
+              // spinner replacing the text.
+              aria-label="Look for templates again"
+              className="min-h-[44px] shrink-0 rounded px-2 text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground disabled:opacity-50"
+            >
+              {busy === 'reset' ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+              ) : (
+                'Look again'
+              )}
+            </button>
+          </dd>
+        </div>
+        {notice ? <NoticeLine message={notice} /> : null}
+        {error ? <ErrorLine message={error} /> : null}
+      </div>
     );
   }
 
@@ -247,38 +349,16 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
         </div>
 
         {slot.widened ? <WidenedNote /> : null}
+        {notice ? <NoticeLine message={notice} /> : null}
 
         <ul className="space-y-2">
           {slot.candidates.map((candidate) => (
             <li key={candidate.id}>
-              <button
-                type="button"
-                onClick={() => void select(candidate)}
+              <CandidateRow
+                candidate={candidate}
                 disabled={busy != null}
-                className="flex w-full items-start gap-3 rounded-lg bg-muted/40 p-4 text-left transition-colors hover:bg-muted disabled:opacity-50"
-              >
-                <Route className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <span className="min-w-0 flex-1 space-y-1">
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="truncate text-sm font-medium text-foreground">{candidate.name}</span>
-                    <Badge variant="secondary" className="shrink-0">
-                      {candidate.scorePercent}% match
-                    </Badge>
-                    {candidate.widened ? <WidenedBadge /> : null}
-                    {candidate.isSuggested ? <SuggestedBadge /> : null}
-                  </span>
-                  <span className="block text-xs text-muted-foreground">
-                    {candidate.stopCount} stop{candidate.stopCount === 1 ? '' : 's'} · {candidate.diffNote}
-                  </span>
-                  {candidate.countMismatch ? (
-                    <span className="block text-xs text-muted-foreground">
-                      Scored down — this route has a different number of stops from today&apos;s.
-                    </span>
-                  ) : null}
-                  <StopDiff candidate={candidate} />
-                </span>
-                <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-              </button>
+                onClick={() => void select(candidate)}
+              />
             </li>
           ))}
         </ul>
@@ -299,6 +379,7 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
           Nothing saved looks like today&apos;s run.
         </dd>
       </div>
+      {notice ? <NoticeLine message={notice} /> : null}
       {error ? <ErrorLine message={error} /> : null}
       <ContinueWithout onClick={() => void decline()} busy={busy === 'decline'} disabled={busy != null} />
     </div>
@@ -363,6 +444,172 @@ function TemplateWhy({ slot }: { slot: TemplateSlotView }) {
         )}
       </PopoverContent>
     </Popover>
+  );
+}
+
+/**
+ * One candidate, as a row.
+ *
+ * The middle band's presentation, lifted out so the chooser draws the identical
+ * thing (quick-516) rather than a second, thinner list that would teach a
+ * dispatcher two different pictures of the same comparison. Everything a person
+ * needs to choose is here — name, score, stop count, diff note, the count-mismatch
+ * caveat and the per-stop diff — because a chooser that showed only names would
+ * make "the 0.50 one" a guess.
+ *
+ * A childless `<button>` with inert `<Badge>`s inside (quick-513): no interactive
+ * descendants, nothing to nest.
+ */
+function CandidateRow({
+  candidate,
+  disabled,
+  onClick,
+  current = false,
+}: {
+  candidate: TemplateCandidateView;
+  disabled: boolean;
+  onClick: () => void;
+  /** The template already on the row. Shown, chipped, and not pickable. */
+  current?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled || current}
+      aria-current={current ? 'true' : undefined}
+      className={cn(
+        'flex w-full items-start gap-3 rounded-lg bg-muted/40 p-4 text-left transition-colors',
+        current ? 'cursor-default opacity-70' : 'hover:bg-muted',
+        'disabled:opacity-50',
+      )}
+    >
+      <Route className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+      <span className="min-w-0 flex-1 space-y-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="truncate text-sm font-medium text-foreground">{candidate.name}</span>
+          <Badge variant="secondary" className="shrink-0">
+            {candidate.scorePercent}% match
+          </Badge>
+          {current ? (
+            <Badge variant="outline" className="shrink-0">
+              Current
+            </Badge>
+          ) : null}
+          {candidate.widened ? <WidenedBadge /> : null}
+          {candidate.isSuggested ? <SuggestedBadge /> : null}
+        </span>
+        <span className="block text-xs text-muted-foreground">
+          {candidate.stopCount} stop{candidate.stopCount === 1 ? '' : 's'} · {candidate.diffNote}
+        </span>
+        {candidate.countMismatch ? (
+          <span className="block text-xs text-muted-foreground">
+            Scored down — this route has a different number of stops from today&apos;s.
+          </span>
+        ) : null}
+        <StopDiff candidate={candidate} />
+      </span>
+      {current ? null : <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />}
+    </button>
+  );
+}
+
+/**
+ * The chooser behind "Change".
+ *
+ * Lists every candidate the server scored — `slot.alternatives`, uncapped — with
+ * the one already selected chipped `Current` and not pickable, and offers "No
+ * template" as an option of its own. **Nothing is written by opening this.** The
+ * old behaviour wrote `via: 'NONE'` on the tap that opened nothing at all, which
+ * is what made a 0.50 route unreachable whenever a 0.80 one existed.
+ *
+ * When there is nothing else to switch to it says so, and "No template" is still
+ * there — a dialog that could only be cancelled would be a dead end dressed up as
+ * a choice.
+ */
+function TemplateChooser({
+  open,
+  current,
+  alternatives,
+  busy,
+  onClose,
+  onPick,
+  onNone,
+}: {
+  open: boolean;
+  current: TemplateCandidateView | null;
+  alternatives: TemplateCandidateView[];
+  busy: boolean;
+  onClose: () => void;
+  onPick: (candidate: TemplateCandidateView) => void;
+  onNone: () => void;
+}) {
+  const others = alternatives.filter((c) => c.id !== current?.id);
+
+  return (
+    <Dialog open={open} onOpenChange={(next) => (next ? null : onClose())}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Which saved route is this?</DialogTitle>
+          <DialogDescription>
+            Picking one selects it — you confirm before anything on the stop list moves.
+          </DialogDescription>
+        </DialogHeader>
+
+        <ul className="space-y-2">
+          {current ? (
+            <li>
+              <CandidateRow candidate={current} disabled={busy} onClick={onClose} current />
+            </li>
+          ) : null}
+          {others.map((candidate) => (
+            <li key={candidate.id}>
+              <CandidateRow
+                candidate={candidate}
+                disabled={busy}
+                onClick={() => onPick(candidate)}
+              />
+            </li>
+          ))}
+        </ul>
+
+        {others.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nothing else saved looks like today&apos;s run.
+          </p>
+        ) : null}
+
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={onNone}
+            disabled={busy}
+            className="flex min-h-[44px] w-full items-center gap-3 rounded-lg bg-muted/40 p-4 text-left transition-colors hover:bg-muted disabled:opacity-50"
+          >
+            <Ban className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-medium text-foreground">No template</span>
+              <span className="block text-xs text-muted-foreground">
+                This trip runs on its own. Nothing already on the stops is undone.
+              </span>
+            </span>
+          </button>
+          <Button variant="ghost" className="min-h-[44px] w-full" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** What just happened, in the row. Neutral — this is never an error. */
+function NoticeLine({ message }: { message: string }) {
+  return (
+    <p className="flex items-start gap-2 pl-[7.5rem] text-xs text-muted-foreground">
+      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+      <span>{message}</span>
+    </p>
   );
 }
 

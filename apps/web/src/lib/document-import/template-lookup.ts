@@ -94,6 +94,28 @@ export interface TemplateSlotView {
   why: TemplateWhyView | null;
   candidates: TemplateCandidateView[];
   /**
+   * Every candidate this import has, ranked, **uncapped** — the list behind
+   * "Change" (quick-516).
+   *
+   * `candidates` is the middle band's presentation and is capped at three,
+   * because that is what Section 8 asks a dispatcher to *choose between* when the
+   * system has no answer. This is a different question: someone is looking at a
+   * template the system already picked and saying "not that one". Capping their
+   * options to the same three would hide the 0.50 route they are reaching for
+   * behind the 0.80 they just rejected — which is exactly the state quick-516 was
+   * filed about, where the only reachable answer was "no template at all".
+   *
+   * Filtered on `band`, never on a number, so the 0.45 line still lives in
+   * `template-constants.ts` and nowhere else. Includes the currently selected
+   * template when it scores, so the chooser can mark it rather than silently
+   * omit it; the UI disables that row.
+   *
+   * Empty on `DECLINED` — see the early return in `buildTemplateSlot`. Nothing is
+   * matched on a row where a person has already answered, and "Look again" is a
+   * mutation that clears the answer rather than a read that ignores it.
+   */
+  alternatives: TemplateCandidateView[];
+  /**
    * True when the CONTRACT had no templates and the search was widened to the
    * client's. Section 8 requires widened candidates to be visibly labelled, so
    * it is on the payload rather than left for a component to infer from a count.
@@ -380,6 +402,7 @@ export function buildTemplateSlot(input: TemplateSlotInput): TemplateSlotView {
     value: null,
     why: null,
     candidates: [],
+    alternatives: [],
     widened,
     persisted: false,
     applied: false,
@@ -414,6 +437,14 @@ export function buildTemplateSlot(input: TemplateSlotInput): TemplateSlotView {
     templates.map((t) => ({ template: t, facilityIds: templateFacilitySet(t.stops) })),
   );
 
+  // Everything a person could switch to, computed once and attached to every
+  // state below (quick-516). Uncapped and filtered on the band the ranker already
+  // decided, so this cannot become a second opinion about what "close enough to
+  // offer" means.
+  const alternatives = ranked
+    .filter((r) => r.band !== 'NONE')
+    .map((r) => candidateView(r.template, r.score, buildTemplateDiff(importStops, r.template.stops)));
+
   // ---- A template already selected on the row -------------------------------
   if (record.routeTemplateId) {
     const chosen = templates.find((t) => t.id === record.routeTemplateId);
@@ -430,6 +461,7 @@ export function buildTemplateSlot(input: TemplateSlotInput): TemplateSlotView {
           detail: VIA_DETAIL[stored?.via ?? 'MANUAL'],
         },
         candidates: [],
+        alternatives,
         widened,
         persisted: true,
         applied: Boolean(stored?.appliedAt),
@@ -461,6 +493,7 @@ export function buildTemplateSlot(input: TemplateSlotInput): TemplateSlotView {
         }.`,
       },
       candidates: [],
+      alternatives,
       widened,
       // Derived on this read. Written when a mutation next needs it — the
       // quick-508 shape, stated on the payload rather than implied.
@@ -481,6 +514,7 @@ export function buildTemplateSlot(input: TemplateSlotInput): TemplateSlotView {
       candidates: shortlist.map((c) =>
         candidateView(c.template, c.score, buildTemplateDiff(importStops, c.template.stops)),
       ),
+      alternatives,
       widened,
       persisted: false,
       applied: false,
@@ -490,7 +524,9 @@ export function buildTemplateSlot(input: TemplateSlotInput): TemplateSlotView {
   }
 
   // ---- < 0.45 : nothing is offered ------------------------------------------
-  return empty('NONE');
+  // `alternatives` is empty here by construction — nothing cleared the band — and
+  // is spread in rather than special-cased so the field is never absent.
+  return { ...empty('NONE'), alternatives };
 }
 
 /**

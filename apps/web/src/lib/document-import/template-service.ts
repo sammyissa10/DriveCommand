@@ -148,19 +148,27 @@ async function loadContext(orgId: string, userId: string, record: ImportRecord):
  * In-memory merge, single `updateMany`, other keys carried across untouched —
  * the quick-509 pattern, unchanged. Prisma has no jsonb `||` operator and the
  * read has already happened, so this costs nothing.
+ *
+ * A `null` provenance **removes** the key rather than writing a record that says
+ * nothing (quick-516). The distinction is load-bearing: `buildTemplateSlot` reads
+ * the presence of `template.via === 'NONE'` as "a person decided to run without
+ * one" and short-circuits every band on the strength of it, so the only way back
+ * to an undecided row is for the key to be gone.
  */
 async function writeTemplate(
   orgId: string,
   userId: string,
   record: ImportRecord,
   templateId: string | null,
-  provenance: TemplateProvenance,
+  provenance: TemplateProvenance | null,
   extra?: { reviewedExtraction?: CanonicalExtraction; stops?: Record<string, StopProvenance> },
 ): Promise<ImportRecord> {
   const db = await getTenantPrismaForOrg(orgId, userId);
 
   const current = provenanceOf(record);
-  const next: ResolutionProvenance = { ...current, template: provenance };
+  const next: ResolutionProvenance = { ...current };
+  if (provenance) next.template = provenance;
+  else delete next.template;
   if (extra?.stops) next.stops = extra.stops;
 
   const data: Prisma.DocumentImportUncheckedUpdateManyInput = {
@@ -350,6 +358,58 @@ export async function declineTemplate(
 
   const updated = await writeTemplate(orgId, userId, record, null, provenance);
   logger.info('[document-import] template declined', { importId });
+  return templateSlotFor(orgId, userId, updated);
+}
+
+/**
+ * "Look again." Un-decide the template (quick-516).
+ *
+ * ---------------------------------------------------------------------------
+ * WHY THIS HAD TO BE A MUTATION
+ * ---------------------------------------------------------------------------
+ * "Look again" was already wired — on both surfaces — to a re-fetch of the
+ * resolution. The fetch worked. It just could not produce a different answer,
+ * because `buildTemplateSlot` opens with
+ *
+ * ```ts
+ *   if (stored?.via === 'NONE') return { ...empty('DECLINED'), persisted: true };
+ * ```
+ *
+ * and returns before a single template is scored. So the control re-read the very
+ * state it was trying to leave, forever, and looked broken while behaving exactly
+ * as written.
+ *
+ * That branch is right and stays: a stored decision must outrank anything
+ * computed, or a stop-review edit would quietly overrule a person (the rule
+ * `buildClientSlot` follows for the same reason). What was missing is the one
+ * thing that may legitimately clear it — **a person asking**. So this is a POST,
+ * and the matching that follows is a consequence of the write rather than
+ * something a GET does on its own.
+ *
+ * Drops the whole `template` key: `routeTemplateId` back to null, no via, no
+ * score, no `appliedAt`. The row returns to undecided and the next read scores it
+ * from scratch.
+ *
+ * `assertEditable` confines this to `NEEDS_REVIEW` / `READY`, which is also why
+ * dropping the key cannot lose a post-commit `offer` record — an offer is only
+ * ever written by `runPostCommitTemplateStep` against a `COMMITTED` row, and a
+ * `COMMITTED` row cannot reach this function at all. "Offered once" survives.
+ *
+ * The stops are NOT touched. A merge that already happened stays on the list:
+ * un-choosing a template is not a claim that yesterday's reorder was wrong, and
+ * silently reverting twelve stops because someone tapped a link that says "Look
+ * again" would be the largest unrequested write in the module.
+ */
+export async function clearTemplateDecision(
+  orgId: string,
+  userId: string,
+  importId: string,
+): Promise<TemplateSlotView> {
+  const record = await requireRecord(orgId, userId, importId);
+  assertEditable(record);
+
+  const updated = await writeTemplate(orgId, userId, record, null, null);
+  logger.info('[document-import] template decision cleared', { importId });
   return templateSlotFor(orgId, userId, updated);
 }
 
