@@ -27,6 +27,8 @@
  * that drives to the wrong town while scoring a confident 1.0.
  */
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import type { CanonicalAddress, CanonicalConsignment } from '@drivecommand/validation';
@@ -57,6 +59,7 @@ import {
   TEMPLATE_STOP_COUNT_TOLERANCE,
 } from '../template-constants';
 import { stopTypeEnum } from '@drivecommand/validation';
+import { stopRowsFor } from '../stop-review';
 import type { StopProvenance } from '../provenance';
 
 // ---------------------------------------------------------------------------
@@ -583,28 +586,91 @@ describe('applyTemplateToConsignments', () => {
     expect(result.consignments[0].notes).toBe("Today's note");
   });
 
-  it('fills an EMPTY appointment window from the template offsets', () => {
+  /**
+   * ---------------------------------------------------------------------------
+   * THE ANCHOR IS THE TRIP'S START TIME, AND IT DOES NOT EXIST DURING REVIEW
+   * ---------------------------------------------------------------------------
+   * `route_template_stops.appt_window_*_offset_min` are minutes from the trip's
+   * departure. Every real consumer anchors to `Trip.scheduledDeparture`
+   * (`trips.ts:321`, `:491`, `:760`) and spec §4.1 draws that as the
+   * `Start 06:00` field on the Finish trip screen — which is Phase 8.
+   *
+   * `route_templates.scheduled_departure_time` is NOT that anchor: it is the
+   * seed the dispatch generator uses to compute a departure on a recurrence
+   * date, and it is NULL on every `on_call` template (which is every template
+   * this module auto-creates). Phase 6 anchored to it, so windows silently
+   * vanished on a NULL and landed on the wrong clock otherwise — quick-514.
+   *
+   * **Materialisation is therefore deferred to commit, unconditionally.** These
+   * tests assert the deferred semantics: the offsets are carried for display,
+   * nothing is invented, and no appointment is written whether or not the
+   * template happens to have a departure time. They replace two tests that
+   * asserted the defect was correct.
+   */
+  it('DEFERS the window even when the template HAS a departure time — the anchor is still wrong', () => {
     const template = [templateStop('A', 1, { apptWindowStartOffsetMin: 60, apptWindowEndOffsetMin: 150 })];
     const result = applyTemplateToConsignments(
       [consignment('Hall Ford')],
       importStops(['A']),
       template,
       {},
-      context,
+      context, // scheduledDepartureTime: '06:00' — present, and still not the anchor
     );
 
-    // 06:00 + 60 = 07:00, 06:00 + 150 = 08:30.
-    expect(result.consignments[0].appointment).toEqual({
-      earliest: '2026-07-27T07:00',
-      latest: '2026-07-27T08:30',
-      isFirm: false,
-    });
-    expect(result.windowsApplied).toBe(1);
+    // Nothing invented. This previously asserted 07:00 → 08:30 off the
+    // template's own departure default, which is not when the trip leaves.
+    expect(result.consignments[0].appointment).toBeNull();
+    // Carried for display instead, verbatim.
+    expect(result.consignments[0].templateApptOffsetStartMin).toBe(60);
+    expect(result.consignments[0].templateApptOffsetEndMin).toBe(150);
+    expect(result.windowsDeferred).toBe(1);
   });
 
-  it("KEEPS a window printed on today's document rather than overwriting it", () => {
-    // The one field both sides can carry. A window a customer agreed to is a
-    // fact about today; the template's offset is a habit.
+  it('DEFERS the window when the template has NO departure time — the MKE-NORTH-2 case', () => {
+    // The exact shape of quick-514: offsets present, anchor NULL. The old test
+    // asserted `appointment === null` and called that "reports rather than
+    // invents" — true, but it recorded the silent drop as the specification.
+    // What is asserted now is that the offsets SURVIVE for display.
+    const template = [templateStop('A', 1, { apptWindowStartOffsetMin: 630, apptWindowEndOffsetMin: 720 })];
+    const result = applyTemplateToConsignments(
+      [consignment('Hall Ford')],
+      importStops(['A']),
+      template,
+      {},
+      { documentDate: '2026-07-27', scheduledDepartureTime: null },
+    );
+
+    expect(result.consignments[0].appointment).toBeNull();
+    expect(result.consignments[0].templateApptOffsetStartMin).toBe(630);
+    expect(result.consignments[0].templateApptOffsetEndMin).toBe(720);
+    expect(result.windowsDeferred).toBe(1);
+    // Semantics unchanged: the template has offsets and no pair to resolve them
+    // against. It no longer gates anything, because deferral is unconditional.
+    expect(result.windowsUnavailable).toBe(true);
+  });
+
+  it('surfaces the deferred offsets on the review row, as elapsed time from the route start', () => {
+    const template = [templateStop('A', 1, { apptWindowStartOffsetMin: 630, apptWindowEndOffsetMin: 720 })];
+    const result = applyTemplateToConsignments(
+      [consignment('Hall Ford')],
+      importStops(['A']),
+      template,
+      {},
+      { documentDate: '2026-07-27', scheduledDepartureTime: null },
+    );
+
+    const [row] = stopRowsFor(result.consignments, []);
+    expect(row.appointment).toBeNull();
+    // NOT an em-dash, and not a clock time either — a clock time would need a
+    // start that has not been chosen.
+    expect(row.templateAppointment?.label).toBe('10h 30m – 12h 00m after the route starts');
+    expect(row.templateAppointment?.startOffsetMin).toBe(630);
+  });
+
+  it("KEEPS a window printed on today's document, and does not offer the route's beside it", () => {
+    // A window a customer agreed to is a fact about today. Two answers to one
+    // question is worse than one, so the row suppresses the template's offsets
+    // entirely when the document printed a window.
     const printed = { earliest: '2026-07-27T09:15', latest: '2026-07-27T10:15', isFirm: true };
     const template = [templateStop('A', 1, { apptWindowStartOffsetMin: 60, apptWindowEndOffsetMin: 150 })];
 
@@ -618,21 +684,24 @@ describe('applyTemplateToConsignments', () => {
 
     expect(result.consignments[0].appointment).toEqual(printed);
     expect(result.windowsKept).toBe(1);
-    expect(result.windowsApplied).toBe(0);
+    expect(result.windowsDeferred).toBe(0);
+
+    const [row] = stopRowsFor(result.consignments, []);
+    expect(row.templateAppointment).toBeNull();
   });
 
-  it('reports rather than invents when the template has offsets but no departure time', () => {
-    const template = [templateStop('A', 1, { apptWindowStartOffsetMin: 60 })];
+  it('offers nothing when the route carries no offsets either', () => {
     const result = applyTemplateToConsignments(
       [consignment('Hall Ford')],
       importStops(['A']),
-      template,
+      templateStops(['A']),
       {},
-      { documentDate: '2026-07-27', scheduledDepartureTime: null },
+      context,
     );
-
-    expect(result.consignments[0].appointment).toBeNull();
-    expect(result.windowsUnavailable).toBe(true);
+    const [row] = stopRowsFor(result.consignments, []);
+    expect(row.appointment).toBeNull();
+    expect(row.templateAppointment).toBeNull();
+    expect(result.windowsDeferred).toBe(0);
   });
 
   it('appends an import-only stop at the END, badged, and never slots it in', () => {
@@ -816,6 +885,72 @@ describe('templateStopsFrom', () => {
     const draft = templateStopsFrom([consignment('One', { requiredDocuments: [] })], { 0: 'A' });
     expect(draft.stops[0].bolRequired).toBe(false);
     expect(draft.stops[0].podRequired).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Drift — the trigger for the post-commit offer
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// The render guard — quick-514's actual defect
+// ---------------------------------------------------------------------------
+
+/**
+ * The standing note was selected, mapped, persisted, typed and mirrored to
+ * mobile, and rendered by nothing: `FIELDS` in the two detail components is a
+ * hand-written literal, so a field added to the row type but not to that array
+ * is invisible in BOTH modes on BOTH surfaces and nothing type-errors.
+ *
+ * There is no component test harness in this module, so this reads the two
+ * component files **from disk** — the same construction `address.test.ts` uses
+ * for the address fixture, and for the same reason: a guard that lives in the
+ * artefact it guards can be edited away without anyone noticing.
+ *
+ * It is a weak test on purpose. It cannot prove the field renders *well*; it can
+ * only prove it is in the list that gets rendered at all, which is precisely the
+ * thing that was missing. The honest full check is a DOM assertion and it needs
+ * Playwright.
+ */
+describe('the detail editors render every field the row carries', () => {
+  const SURFACES = [
+    { name: 'web · StopDetailEditor.tsx', path: 'src/components/carrier/imports/StopDetailEditor.tsx' },
+    { name: 'mobile · StopReview.tsx', path: '../mobile/components/imports/StopReview.tsx' },
+  ];
+
+  /** The FIELDS array literal, so a mention in a comment cannot satisfy this. */
+  function fieldsArrayOf(source: string): string {
+    const start = source.indexOf('const FIELDS = [');
+    expect(start, 'FIELDS array not found — did it get renamed?').toBeGreaterThan(-1);
+    const end = source.indexOf(']', start);
+    return source.slice(start, end);
+  }
+
+  it.each(SURFACES)('$name lists templateStandingNotes', ({ path }) => {
+    const source = readFileSync(resolve(__dirname, '../../../..', path), 'utf8');
+    const fields = fieldsArrayOf(source);
+
+    expect(fields).toContain("'templateStandingNotes'");
+    // Adjacent to `notes`, so the two notes read as a pair and their ownership
+    // is obvious from the order rather than only from the label.
+    expect(fields.indexOf("'templateStandingNotes'")).toBeGreaterThan(fields.indexOf("'notes'"));
+  });
+
+  it.each(SURFACES)('$name still lists the eleven Phase 5 fields', ({ path }) => {
+    const source = readFileSync(resolve(__dirname, '../../../..', path), 'utf8');
+    const fields = fieldsArrayOf(source);
+    for (const field of [
+      'facility', 'sequence', 'type', 'references', 'lineItems', 'rollups',
+      'appointment', 'requiredDocuments', 'contact', 'notes', 'pages',
+    ]) {
+      expect(fields, `${field} missing`).toContain(`'${field}'`);
+    }
+  });
+
+  it('the guard actually fails on a FIELDS array without the entry (control)', () => {
+    // A guard that has never caught the defect proves nothing (quick-513).
+    const before = "const FIELDS = [\n  'notes',\n  'pages',\n] as const;";
+    expect(fieldsArrayOf(before)).not.toContain("'templateStandingNotes'");
   });
 });
 

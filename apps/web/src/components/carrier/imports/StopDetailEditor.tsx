@@ -71,6 +71,11 @@ const FIELDS = [
   'requiredDocuments',
   'contact',
   'notes',
+  // Twelfth, and read-only in both modes (quick-515). It sits next to `notes`
+  // because both are notes and a dispatcher looking for one will look here —
+  // and immediately after it, so the ownership of the two is obvious by
+  // adjacency: the one above is theirs, this one is the route's.
+  'templateStandingNotes',
   'pages',
 ] as const;
 
@@ -87,6 +92,7 @@ const LABEL: Record<Field, string> = {
   requiredDocuments: 'Required documents',
   contact: 'Contact',
   notes: 'Notes',
+  templateStandingNotes: 'Route standing note',
   pages: 'Document pages',
 };
 
@@ -413,7 +419,12 @@ function ViewField({
           ) : null}
         </span>
       ) : (
-        EMPTY
+        // An em-dash here was a lie whenever the template carried offsets: it
+        // said "no window" about a stop the route has two offsets for
+        // (quick-515). The offsets are shown as elapsed time from the route
+        // start, because the clock time needs a trip start that is chosen on
+        // the Finish trip screen and does not exist yet.
+        <TemplateWindowNote row={row} />
       );
 
     case 'requiredDocuments':
@@ -447,6 +458,9 @@ function ViewField({
       ) : (
         EMPTY
       );
+
+    case 'templateStandingNotes':
+      return <StandingNote row={row} />;
 
     case 'pages':
       // Page slicing is what lets the driver at stop 5 open page 4 rather than a
@@ -845,6 +859,15 @@ function EditField({
             />
             Firm
           </label>
+          {/* The route's offsets, while the fields are still empty. Says what
+              WILL happen if the dispatcher types nothing, rather than leaving
+              two blank inputs that imply the stop has no window (quick-515). */}
+          {row.templateAppointment && !draft.earliest && !draft.latest ? (
+            <p className="w-full text-xs text-muted-foreground">
+              This route says {row.templateAppointment.label}. The exact times are set when you
+              finish the trip and choose its start — type here only to override them.
+            </p>
+          ) : null}
         </div>
       );
 
@@ -901,6 +924,14 @@ function EditField({
         />
       );
 
+    case 'templateStandingNotes':
+      // Read-only in both modes, and the third field to be so (quick-515). It
+      // belongs to the ROUTE, not to this trip: editing it here would either
+      // silently change every future trip generated from the template, or —
+      // worse and more likely — look like it had and change nothing. The place
+      // to change it is the template.
+      return <StandingNote row={row} />;
+
     case 'pages':
       // Read-only in both modes: page numbers are where the text was found, not
       // a preference. Editing them would break the driver's page slice.
@@ -912,6 +943,51 @@ function EditField({
         </span>
       );
   }
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * The route's standing note (spec Section 8: templates supply standing notes).
+ *
+ * Rendered distinctly from `notes` — muted, tagged, and never editable — because
+ * the two are different things that happen to both be prose. `notes` is this
+ * trip's, typed by a dispatcher about today's freight; this one is the route's,
+ * true of every trip the template generates. Phase 6 kept them in separate
+ * fields for exactly that reason; this is the half that makes the distinction
+ * visible instead of merely stored.
+ */
+function StandingNote({ row }: { row: StopReviewRow }) {
+  if (!row.templateStandingNotes) {
+    return <span className="text-muted-foreground">No standing note on this route&apos;s stop</span>;
+  }
+  return (
+    <span className="flex flex-wrap items-start gap-2">
+      <span className="min-w-0 break-words text-muted-foreground">{row.templateStandingNotes}</span>
+      <Badge variant="outline" className="shrink-0">
+        From the route
+      </Badge>
+    </span>
+  );
+}
+
+/**
+ * What the Appointment window row says when the document printed no window.
+ *
+ * Three cases, and the middle one is the whole point of quick-515: an em-dash
+ * used to be shown even when the template carried two offsets, which told a
+ * dispatcher there was no window when there were two.
+ */
+function TemplateWindowNote({ row }: { row: StopReviewRow }) {
+  if (!row.templateAppointment) return EMPTY;
+  return (
+    <span className="flex flex-col gap-0.5">
+      <span className="text-foreground">{row.templateAppointment.label}</span>
+      <span className="text-xs text-muted-foreground">
+        From the route — the exact times are set when you finish the trip and choose its start.
+      </span>
+    </span>
+  );
 }
 
 function RollupInput({

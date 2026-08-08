@@ -370,6 +370,25 @@ const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
  * Returns null when either input is missing. **A window is never invented**: a
  * template with no departure time cannot say when its offsets land, and an
  * appointment the customer never agreed to is worse than a blank field.
+ *
+ * ---------------------------------------------------------------------------
+ * THIS IS NOT THE ANCHOR THE OFFSETS ARE FOR (quick-515)
+ * ---------------------------------------------------------------------------
+ * `route_templates.scheduled_departure_time` is the *seed* the dispatch
+ * generator uses to compute a trip's departure on a recurrence date
+ * (`dispatch-generator.ts`), not the thing the offsets hang off. Every real
+ * consumer — `trips.ts:321`, `:491`, `:760` — anchors to
+ * `Trip.scheduledDeparture`, and spec §4.1 draws that as the `Start 06:00`
+ * field on the Finish trip screen. On an `on_call` template the column is
+ * legitimately NULL, which is why this function returned null for every stop of
+ * MKE-NORTH-2 and why no window landed.
+ *
+ * **Materialisation is therefore deferred to commit (Phase 8)**, where the trip
+ * start exists and where that arithmetic already lives. This function is kept
+ * because it is still correct for the case it describes, and because
+ * `windowsUnavailable` is computed from the same inputs — but nothing in the
+ * review path depends on it producing a value any more. See
+ * `templateApptOffsetStartMin` on the consignment for what is carried instead.
  */
 export function windowFromOffset(
   documentDate: string | null,
@@ -391,6 +410,37 @@ export function windowFromOffset(
   const hh = String(Math.floor(minuteOfDay / 60)).padStart(2, '0');
   const mm = String(minuteOfDay % 60).padStart(2, '0');
   return `${shifted}T${hh}:${mm}`;
+}
+
+/**
+ * The template's offsets as words, for a stop that has no printed window
+ * (quick-515). Display only — nothing is derived from this and nothing is
+ * stored from it.
+ *
+ * **Rendered as elapsed time from the route start, not as a clock time**, and
+ * that is the whole point: 630 minutes is "10h 30m after the route starts", and
+ * turning it into "16:30" would require a start time that has not been chosen
+ * yet. An em-dash was the previous answer and it was worse than either — it
+ * said the template carried no window when it carries two offsets.
+ */
+export function formatOffsetWindow(
+  startMin: number | null | undefined,
+  endMin: number | null | undefined,
+): string | null {
+  const start = offsetLabel(startMin);
+  const end = offsetLabel(endMin);
+  if (!start && !end) return null;
+  const span = start && end ? `${start} – ${end}` : (start ?? end);
+  return `${span} after the route starts`;
+}
+
+function offsetLabel(minutes: number | null | undefined): string | null {
+  if (minutes == null) return null;
+  const sign = minutes < 0 ? '−' : '';
+  const abs = Math.abs(minutes);
+  const hours = Math.floor(abs / 60);
+  const mins = abs % 60;
+  return hours > 0 ? `${sign}${hours}h ${String(mins).padStart(2, '0')}m` : `${sign}${mins}m`;
 }
 
 /** Calendar arithmetic at UTC noon, so no local zone can move the day. */
@@ -420,9 +470,22 @@ export interface TemplateApplyResult {
   /** Re-keyed by the new positions, fingerprints untouched. See below. */
   stopProvenance: Record<string, StopProvenance>;
   diff: TemplateDiff;
-  /** Windows the template could have set but did not, and why — surfaced, not swallowed. */
-  windowsApplied: number;
+  /**
+   * Matched stops carrying template offsets that will become real appointment
+   * times at commit (quick-515). Named `deferred` rather than `applied` because
+   * nothing was applied — the anchor is the trip's start and it does not exist
+   * yet. A count nobody can act on is still worth stating: it is the difference
+   * between "this route has no windows" and "its windows are coming".
+   */
+  windowsDeferred: number;
+  /** Stops whose printed window was kept as printed. The import always wins. */
   windowsKept: number;
+  /**
+   * Semantics unchanged from Phase 6: the template carries offsets and there is
+   * no `documentDate` + `scheduled_departure_time` pair to resolve them against.
+   * It no longer gates anything — deferral is now unconditional — but it still
+   * describes a real property of the template and Phase 7/8 may want it.
+   */
   windowsUnavailable: boolean;
 }
 
@@ -446,15 +509,15 @@ export interface TemplateApplyResult {
  * standing note, and a document has no running order. So for those the split is
  * simply "the template fills them", and no value is at risk.
  *
- * **Appointment is the one field both sides can carry, and the import wins.**
- * Stated rather than glossed, because a literal reading of "template supplies
- * appointment windows" would overwrite it. A window printed on today's manifest
- * is a fact about today that a customer agreed to; the template's offset is a
- * habit. Silently replacing the first with the second changes a delivery time
- * nobody asked to change, and it would do so invisibly on the stop most likely
- * to have a firm window. So the template fills an EMPTY window and reports the
- * ones it left alone (`windowsKept`), which is visible in the confirmation
- * rather than buried.
+ * **Appointment is the one field both sides can carry, and it is settled twice
+ * over.** A window printed on today's manifest is a fact a customer agreed to
+ * and the import keeps it (`windowsKept`). And the template's side is not
+ * materialised here at all (quick-515): its offsets hang off the TRIP's start
+ * time, which is chosen on the Finish trip screen, so there is no correct value
+ * to compute during review. The offsets are carried onto the stop for display
+ * (`templateApptOffsetStartMin`) and counted as `windowsDeferred`; Phase 8's
+ * commit turns them into appointment times with the arithmetic `trips.ts`
+ * already has. See `mergeTemplateStop`.
  *
  * The template's standing note goes to `templateStandingNotes`, a separate key
  * from `notes`, for exactly the same reason: `notes` is the import's per-stop
@@ -492,7 +555,7 @@ export function applyTemplateToConsignments(
   const next: CanonicalConsignment[] = [];
   const stopProvenance: Record<string, StopProvenance> = {};
 
-  let windowsApplied = 0;
+  let windowsDeferred = 0;
   let windowsKept = 0;
   const windowsUnavailable = templateStops.some(
     (t) => t.apptWindowStartOffsetMin != null || t.apptWindowEndOffsetMin != null,
@@ -512,8 +575,10 @@ export function applyTemplateToConsignments(
 
     const merged = template ? mergeTemplateStop(source, template, context) : { ...source, templateOrigin: 'IMPORT_ONLY' as const };
     if (template) {
-      if (merged.appointment !== source.appointment) windowsApplied++;
-      else if (source.appointment?.earliest || source.appointment?.latest) windowsKept++;
+      const printed = Boolean(source.appointment?.earliest || source.appointment?.latest);
+      const hasOffsets = template.apptWindowStartOffsetMin != null || template.apptWindowEndOffsetMin != null;
+      if (printed) windowsKept++;
+      else if (hasOffsets) windowsDeferred++;
     }
 
     const carried = links[String(row.importIndex)];
@@ -521,24 +586,37 @@ export function applyTemplateToConsignments(
     next.push(merged);
   }
 
-  return { consignments: next, stopProvenance, diff, windowsApplied, windowsKept, windowsUnavailable };
+  return { consignments: next, stopProvenance, diff, windowsDeferred, windowsKept, windowsUnavailable };
 }
 
 /** One matched stop: template order/windows/docs/standing note, import everything else. */
 function mergeTemplateStop(
   source: CanonicalConsignment,
   template: TemplateStopRef,
-  context: TemplateApplyContext,
+  _context: TemplateApplyContext,
 ): CanonicalConsignment {
-  const hasWindow = Boolean(source.appointment?.earliest || source.appointment?.latest);
-
-  const earliest = windowFromOffset(context.documentDate, context.scheduledDepartureTime, template.apptWindowStartOffsetMin);
-  const latest = windowFromOffset(context.documentDate, context.scheduledDepartureTime, template.apptWindowEndOffsetMin);
-
-  const appointment =
-    hasWindow || (!earliest && !latest)
-      ? source.appointment
-      : { earliest, latest, isFirm: source.appointment?.isFirm ?? false };
+  // ---------------------------------------------------------------------------
+  // THE APPOINTMENT IS NOT MATERIALISED HERE. AT ALL. (quick-515)
+  // ---------------------------------------------------------------------------
+  // It used to be, anchored to `route_templates.scheduled_departure_time`, and
+  // that was wrong in both directions:
+  //
+  //   - NULL anchor (every `on_call` template, including every template this
+  //     module auto-creates) -> no window written, silently.
+  //   - NON-null anchor -> a window written against the TEMPLATE's scheduling
+  //     default instead of the trip's start time. Quieter, and worse: a
+  //     plausible appointment on the wrong clock.
+  //
+  // The offsets belong to the trip's start (`trips.ts` anchors to
+  // `Trip.scheduledDeparture` in all three of its call sites; spec §4.1 draws it
+  // as `Start 06:00` on the Finish trip screen). That value does not exist while
+  // an import is being reviewed, so there is nothing correct to compute here and
+  // the honest move is to carry the offsets and let Phase 8 do the arithmetic it
+  // already has.
+  //
+  // `source.appointment` therefore passes through untouched in every case — a
+  // window printed on today's document is still kept, which was always the rule.
+  const appointment = source.appointment;
 
   const required: ('BOL' | 'POD')[] = [];
   if (template.bolRequired) required.push('BOL');
@@ -555,6 +633,11 @@ function mergeTemplateStop(
     requiredDocuments: source.requiredDocuments?.length ? source.requiredDocuments : required,
     stopType: source.stopType ?? stopTypeForTemplate(template.stopType),
     templateStandingNotes: template.specialInstructions ?? null,
+    // Carried for DISPLAY, never materialised here — the anchor is the trip's
+    // start time and it does not exist yet (quick-515). Phase 8 turns these into
+    // real appointment times at commit.
+    templateApptOffsetStartMin: template.apptWindowStartOffsetMin,
+    templateApptOffsetEndMin: template.apptWindowEndOffsetMin,
     contact: source.contact ?? contactFrom(template),
   };
 }
@@ -600,6 +683,8 @@ function templateOnlyConsignment(template: TemplateStopRef): CanonicalConsignmen
     templateOrigin: 'TEMPLATE_ONLY',
     skipped: true,
     templateStandingNotes: template.specialInstructions ?? null,
+    templateApptOffsetStartMin: template.apptWindowStartOffsetMin,
+    templateApptOffsetEndMin: template.apptWindowEndOffsetMin,
   };
 }
 

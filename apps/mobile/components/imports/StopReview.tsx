@@ -840,6 +840,11 @@ const FIELDS = [
   'requiredDocuments',
   'contact',
   'notes',
+  // Twelfth, and read-only in both modes (quick-515). Immediately after `notes`
+  // so the ownership of the two is obvious by adjacency: the one above is the
+  // dispatcher's, this one is the route's. Same position as the web twin —
+  // there is one field order and both surfaces render it.
+  'templateStandingNotes',
   'pages',
 ] as const
 
@@ -856,6 +861,7 @@ const FIELD_LABEL: Record<Field, string> = {
   requiredDocuments: 'Required documents',
   contact: 'Contact',
   notes: 'Notes',
+  templateStandingNotes: 'Route standing note',
   pages: 'Document pages',
 }
 
@@ -1261,16 +1267,36 @@ function StopDetail({
             <Field value={earliest} onChangeText={setEarliest} label="Earliest" placeholder="YYYY-MM-DDTHH:MM" c={c} />
             <Field value={latest} onChangeText={setLatest} label="Latest" placeholder="YYYY-MM-DDTHH:MM" c={c} />
             <Toggle label="Firm window" on={isFirm} onPress={() => setIsFirm(!isFirm)} c={c} />
+            {/* The route's offsets while the fields are still empty — says what
+                WILL happen if nothing is typed, rather than leaving two blank
+                inputs that imply no window (quick-515). */}
+            {row.templateAppointment && !earliest && !latest ? (
+              <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+                This route says {row.templateAppointment.label}. The exact times are set when you
+                finish the trip — type here only to override them.
+              </Text>
+            ) : null}
           </View>
-        ) : (
+        ) : row.appointment ? (
           <Value
-            text={
-              row.appointment
-                ? `${row.appointment.earliest ?? 'any time'} → ${row.appointment.latest ?? 'any time'}${row.appointment.isFirm ? ' · firm' : ''}`
-                : '—'
-            }
+            text={`${row.appointment.earliest ?? 'any time'} → ${row.appointment.latest ?? 'any time'}${row.appointment.isFirm ? ' · firm' : ''}`}
             c={c}
           />
+        ) : row.templateAppointment ? (
+          // An em-dash here was a lie whenever the route carried offsets: it
+          // said "no window" about a stop with two of them (quick-515). Shown as
+          // elapsed time from the route start, because the clock time needs a
+          // trip start that is chosen on the Finish trip screen.
+          <View style={{ gap: 2 }}>
+            <Text style={{ ...typography.subhead, color: c.textPrimary }}>
+              {row.templateAppointment.label}
+            </Text>
+            <Text style={{ ...typography.caption1, color: c.textTertiary }}>
+              From the route — the exact times are set when you finish the trip and choose its start.
+            </Text>
+          </View>
+        ) : (
+          <Value text="—" c={c} />
         )
 
       case 'requiredDocuments':
@@ -1308,6 +1334,30 @@ function StopDetail({
             <Value text={row.notes ?? '—'} c={c} />
             {row.bulkAppliedFields.includes('notes') ? (
               <Text style={{ ...typography.caption2, color: c.textTertiary }}>Applied in bulk</Text>
+            ) : null}
+          </View>
+        )
+
+      case 'templateStandingNotes':
+        // Read-only in BOTH modes, and rendered distinctly from `notes` above.
+        // The two are different things that happen to both be prose: `notes` is
+        // this trip's, typed about today's freight; this one belongs to the
+        // route and is true of every trip the template generates. Editing it
+        // here would either silently change every future trip or — more likely
+        // — look like it had and change nothing. The place to change it is the
+        // template (quick-515).
+        return (
+          <View style={{ gap: spacing.xs }}>
+            <Text
+              style={{
+                ...typography.subhead,
+                color: row.templateStandingNotes ? c.textSecondary : c.textTertiary,
+              }}
+            >
+              {row.templateStandingNotes ?? "No standing note on this route's stop"}
+            </Text>
+            {row.templateStandingNotes ? (
+              <Text style={{ ...typography.caption2, color: c.textTertiary }}>From the route</Text>
             ) : null}
           </View>
         )

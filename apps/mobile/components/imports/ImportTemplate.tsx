@@ -99,7 +99,11 @@ export function ImportTemplate({
         result.windowsKept
           ? `${result.windowsKept} window${result.windowsKept === 1 ? '' : 's'} left as printed`
           : null,
-        result.windowsUnavailable ? 'no departure time on the template, so its windows were not applied' : null,
+        // See the web twin: deferral is unconditional and is not a failure
+        // (quick-515).
+        result.windowsDeferred
+          ? `${result.windowsDeferred} window${result.windowsDeferred === 1 ? '' : 's'} come from the route and are set when you finish the trip`
+          : null,
       ]
         .filter(Boolean)
         .join(' · '),
@@ -425,7 +429,8 @@ function ApplyConfirm({
           </Text>
           <Text style={{ ...typography.subhead, color: c.textSecondary }}>
             {candidate.diff.matched} stop{candidate.diff.matched === 1 ? '' : 's'} will take this
-            route&apos;s order, appointment windows, paperwork and standing notes.
+            route&apos;s order, paperwork, standing notes and appointment windows (set from the
+            route when the trip is finished).
           </Text>
           {candidate.diff.importOnly > 0 ? (
             <Text style={{ ...typography.subhead, color: c.textSecondary }}>

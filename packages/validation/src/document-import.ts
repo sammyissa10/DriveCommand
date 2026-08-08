@@ -340,6 +340,28 @@ export const consignmentSchema = z.object({
    * dispatcher had typed anything, which is precisely when they would notice.
    */
   templateStandingNotes: z.string().nullish(),
+
+  /**
+   * The template's appointment offsets, in minutes from the route start, carried
+   * onto the stop **for display only** (quick-515).
+   *
+   * These are NOT a window and no window is derived from them here. The offsets
+   * anchor to the *trip's* start time, which is chosen on the Finish trip screen
+   * and does not exist while an import is being reviewed — so materialising a
+   * window at application time is impossible, and inventing one would put an
+   * appointment on a stop that nobody agreed to. Phase 8's commit does the
+   * arithmetic, against `Trip.scheduledDeparture`, using the code `trips.ts`
+   * has always used.
+   *
+   * They are stored rather than re-read from the template at render time for the
+   * same reason `templateStandingNotes` is: the review screen is a function of
+   * the consignment array (Phase 5), it holds no template, and re-joining to one
+   * after a reorder or an edit would mean re-deriving the merge on every read.
+   * Storing a template-supplied FACT is not the same as storing a derived
+   * window.
+   */
+  templateApptOffsetStartMin: z.number().int().nullish(),
+  templateApptOffsetEndMin: z.number().int().nullish(),
 });
 export type CanonicalConsignment = z.infer<typeof consignmentSchema>;
 

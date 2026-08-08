@@ -362,11 +362,47 @@ export interface TemplateApplyOutcome {
   matched: number;
   appended: number;
   notOnManifest: number;
-  windowsApplied: number;
+  /**
+   * Matched stops whose windows the route supplies and Phase 8 will set at
+   * commit (quick-515). Not "applied" — nothing was.
+   */
+  windowsDeferred: number;
   windowsKept: number;
-  /** True when the template has windows but no departure time to anchor them to. */
+  /** True when the template has offsets but no departure time to anchor them to. */
   windowsUnavailable: boolean;
 }
+
+/**
+ * ---------------------------------------------------------------------------
+ * PHASE 8 OBLIGATION #4 — MATERIALISE THE APPOINTMENT WINDOWS AT COMMIT
+ * ---------------------------------------------------------------------------
+ * The other three are: `ensureTemplateCommitted` before reading
+ * `routeTemplateId`, `ensureStopsCommitted` before reading stop links, and
+ * `runPostCommitTemplateStep` after the transaction. This is the fourth, and it
+ * is the one with a user-visible hole until it is done (quick-515).
+ *
+ * A stop applied from a template carries `templateApptOffsetStartMin` /
+ * `templateApptOffsetEndMin` — minutes from the route start — and **no
+ * appointment**. The review screen shows them as elapsed time and says the exact
+ * times are set when the trip is finished. Phase 8 has to make that true:
+ *
+ * ```ts
+ * // The arithmetic already exists. Do not reimplement it here.
+ * //   apps/web/src/lib/carrier/trips.ts:317-328  (and :491, :760)
+ * const depTime = trip.scheduledDeparture;               // the Finish trip "Start" field
+ * appointmentStart = new Date(depTime.getTime() + startOffsetMin * 60000);
+ * appointmentEnd   = new Date(depTime.getTime() + endOffsetMin   * 60000);
+ * ```
+ *
+ * Anchor to the **trip's** `scheduledDeparture`, never to
+ * `route_templates.scheduled_departure_time` — that column is the dispatch
+ * generator's seed for computing a departure on a recurrence date, it is NULL on
+ * every `on_call` template (which is every template this module auto-creates),
+ * and anchoring to it is the defect quick-515 removed.
+ *
+ * A stop whose `appointment` is already set keeps it: the import wins, and a
+ * window printed on today's document must not be recomputed from a habit.
+ */
 
 /**
  * Apply the selected template to the stop list. Section 8's merge box.
@@ -460,7 +496,7 @@ export async function applyTemplate(
     matched: result.diff.matched,
     appended: result.diff.importOnly,
     notOnManifest: result.diff.templateOnly,
-    windowsApplied: result.windowsApplied,
+    windowsDeferred: result.windowsDeferred,
     windowsKept: result.windowsKept,
     windowsUnavailable: result.windowsUnavailable,
   };

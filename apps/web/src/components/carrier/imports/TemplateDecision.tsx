@@ -113,7 +113,7 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
       matched: number;
       appended: number;
       notOnManifest: number;
-      windowsApplied: number;
+      windowsDeferred: number;
       windowsKept: number;
       windowsUnavailable: boolean;
     };
@@ -127,7 +127,12 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
         result.windowsKept
           ? `${result.windowsKept} window${result.windowsKept === 1 ? '' : 's'} on the document left as printed`
           : null,
-        result.windowsUnavailable ? 'the template has no departure time, so its windows were not applied' : null,
+        // Was "the template has no departure time, so its windows were not
+        // applied" — true of one template and misleading about the rule
+        // (quick-515). Deferral is unconditional and is not a failure.
+        result.windowsDeferred
+          ? `${result.windowsDeferred} window${result.windowsDeferred === 1 ? '' : 's'} come from the route and are set when you finish the trip`
+          : null,
       ]
         .filter(Boolean)
         .join(' · '),
@@ -468,7 +473,8 @@ function ApplyConfirm({
                 <div className="space-y-2 text-sm">
                   <p>
                     {candidate.diff.matched} stop{candidate.diff.matched === 1 ? '' : 's'} will take
-                    this route&apos;s order, appointment windows, paperwork and standing notes.
+                    this route&apos;s order, paperwork, standing notes and appointment windows (set
+                    from the route when the trip is finished).
                   </p>
                   {candidate.diff.importOnly > 0 ? (
                     <p>

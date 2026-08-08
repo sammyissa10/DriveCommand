@@ -50,6 +50,7 @@ import type {
   CanonicalTemplateOrigin,
 } from '@drivecommand/validation';
 
+import { formatOffsetWindow } from './template-matching';
 import type { StopProvenance } from './provenance';
 import type { StopSlotView, StopFacilityView, StopWhyView } from './facility-lookup';
 import type { FacilityProposal, FacilityPrefill, FacilityTier } from './facility-ladder';
@@ -149,6 +150,20 @@ export interface StopReviewRow {
   skipped: boolean;
   /** The template's standing note. Separate from `notes`, which is the import's. */
   templateStandingNotes: string | null;
+  /**
+   * The template's appointment offsets, already in words, for a stop with no
+   * printed window (quick-515).
+   *
+   * Present ONLY when the stop has no `appointment` of its own — a printed
+   * window is the fact, and showing the template's offsets beside it would
+   * invite a dispatcher to reconcile two things that are not in conflict.
+   * `label` is composed server-side so both surfaces say the same sentence.
+   */
+  templateAppointment: {
+    startOffsetMin: number | null;
+    endOffsetMin: number | null;
+    label: string;
+  } | null;
 }
 
 export type StopIssueCode =
@@ -341,8 +356,27 @@ export function stopRowsFor(
       templateOrigin: consignment.templateOrigin ?? null,
       skipped: consignment.skipped ?? false,
       templateStandingNotes: consignment.templateStandingNotes?.trim() || null,
+      templateAppointment: templateAppointmentOf(consignment),
     };
   });
+}
+
+/**
+ * The template's offsets as a sentence, or null.
+ *
+ * Suppressed entirely when the stop has its own appointment: application keeps a
+ * printed window (the import wins), so surfacing the template's offsets beside
+ * it would show two answers to one question when only one of them is in play.
+ */
+function templateAppointmentOf(consignment: CanonicalConsignment): StopReviewRow['templateAppointment'] {
+  if (consignment.appointment?.earliest || consignment.appointment?.latest) return null;
+
+  const startOffsetMin = consignment.templateApptOffsetStartMin ?? null;
+  const endOffsetMin = consignment.templateApptOffsetEndMin ?? null;
+  const label = formatOffsetWindow(startOffsetMin, endOffsetMin);
+  if (!label) return null;
+
+  return { startOffsetMin, endOffsetMin, label };
 }
 
 // ---------------------------------------------------------------------------

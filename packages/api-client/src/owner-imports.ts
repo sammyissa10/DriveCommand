@@ -227,7 +227,12 @@ export interface TemplateApplyResult {
   matched: number
   appended: number
   notOnManifest: number
-  windowsApplied: number
+  /**
+   * Matched stops whose windows come from the route and are set at commit
+   * (quick-515). Nothing is applied during review — the offsets anchor to the
+   * trip's start time, which is chosen on the Finish trip screen.
+   */
+  windowsDeferred: number
   windowsKept: number
   windowsUnavailable: boolean
 }
@@ -481,6 +486,16 @@ export interface StopReviewRow {
   skipped: boolean
   /** The template's standing note. Separate from `notes`, which is the import's. */
   templateStandingNotes: string | null
+  /**
+   * The route's appointment offsets as words, for a stop with no printed window
+   * (quick-515). Null when the stop has its own window. `label` is composed
+   * server-side so both surfaces say the same sentence.
+   */
+  templateAppointment: {
+    startOffsetMin: number | null
+    endOffsetMin: number | null
+    label: string
+  } | null
 }
 
 export type StopIssueCode =
