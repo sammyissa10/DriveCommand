@@ -186,6 +186,29 @@ export function StopReview({
     }
   }
 
+  /**
+   * Keep, or skip, a stop the template has and today's manifest does not
+   * (spec Section 8). One boolean, through the ordinary stop patch.
+   */
+  async function setSkipped(stopIndex: number, skipped: boolean) {
+    haptic.light()
+    setBusy(true)
+    setError(null)
+    try {
+      const next = await ownerImportsApi.updateStop(token, importId, stopIndex, { skipped })
+      setView(next)
+      setNotice(
+        skipped
+          ? `Stop ${stopIndex + 1} will be skipped on this trip.`
+          : `Stop ${stopIndex + 1} is back on this trip.`,
+      )
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'That did not save.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function confirmBulk() {
     if (!pending) return
     haptic.medium()
@@ -315,6 +338,10 @@ export function StopReview({
             onToggle={() => toggle(item.index)}
             onOpen={() => setDetail(item.index)}
             onMove={(d) => void move(index, d)}
+            // Section 8's "one tap to keep" for a stop the template has and
+            // today's document does not. A server write like every other edit
+            // here — there is no local skipped state to drift from the row.
+            onSetSkipped={(skipped) => void setSkipped(item.index, skipped)}
             c={c}
           />
         )}
@@ -436,6 +463,7 @@ function StopRow({
   onToggle,
   onOpen,
   onMove,
+  onSetSkipped,
   c,
 }: {
   row: StopReviewRow
@@ -447,6 +475,7 @@ function StopRow({
   onToggle: () => void
   onOpen: () => void
   onMove: (direction: -1 | 1) => void
+  onSetSkipped: (skipped: boolean) => void
   c: Colors
 }) {
   const primary = row.facility?.name || row.name || row.documentName || 'Unnamed stop'
@@ -461,6 +490,9 @@ function StopRow({
         paddingHorizontal: spacing.sm,
         borderRadius: radii.md,
         backgroundColor: selected ? c.surfaceElevated : 'transparent',
+        // Dimmed, not hidden and not struck through: a skipped stop is still a
+        // row someone can act on, and it stays legible.
+        opacity: row.skipped ? 0.6 : 1,
       }}
     >
       <Pressable
@@ -507,13 +539,46 @@ function StopRow({
           {row.rollups.pieces.overridden || row.rollups.weight.overridden ? (
             <Lock color={c.textTertiary} size={11} />
           ) : null}
+          {/* Template badges (Section 8). Words, never colour alone, and never
+              red — Section 15 names a "new" badge as exactly the case that does
+              not qualify for red. */}
+          {row.templateOrigin === 'IMPORT_ONLY' ? (
+            <Text style={{ ...typography.caption2, color: c.textSecondary }}>New</Text>
+          ) : null}
+          {row.templateOrigin === 'TEMPLATE_ONLY' ? (
+            <Text style={{ ...typography.caption2, color: c.textSecondary }}>
+              Not on today&apos;s manifest
+            </Text>
+          ) : null}
           {hasIssue ? (
             <Text style={{ ...typography.caption2, color: c.textSecondary }}>needs a look</Text>
           ) : null}
         </View>
       </Pressable>
 
-      <StopBadge state={row.state} c={c} />
+      {/* A skipped row shows the keep/skip tap INSTEAD of the resolution badge:
+          an unconfirmed facility is not a question worth asking about a stop
+          that is not on the trip. */}
+      {row.templateOrigin === 'TEMPLATE_ONLY' ? (
+        <Pressable
+          onPress={() => onSetSkipped(!row.skipped)}
+          disabled={busy}
+          accessibilityRole="button"
+          accessibilityLabel={row.skipped ? `Keep ${primary} on this trip` : `Skip ${primary}`}
+          style={{
+            minHeight: TOUCH,
+            justifyContent: 'center',
+            paddingHorizontal: spacing.sm,
+            opacity: busy ? 0.5 : 1,
+          }}
+        >
+          <Text style={{ ...typography.caption1, color: c.textSecondary }}>
+            {row.skipped ? 'Keep' : 'Skip'}
+          </Text>
+        </Pressable>
+      ) : (
+        <StopBadge state={row.state} c={c} />
+      )}
 
       {/* Reorder. See the file header for why these are arrows. */}
       <View style={{ gap: 0 }}>

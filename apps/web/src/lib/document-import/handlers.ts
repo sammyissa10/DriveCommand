@@ -42,6 +42,15 @@ import {
   reorderStops,
   updateStop,
 } from './stop-review-service';
+import {
+  applyTemplate,
+  assignTemplate,
+  declineTemplate,
+  getTemplateOffer,
+  getTemplateView,
+  respondToTemplateOffer,
+  saveImportAsRouteTemplate,
+} from './template-service';
 import type { BulkApplyInput, StopPatch } from './stop-review';
 import type {
   CanonicalBulkAppliedField,
@@ -589,6 +598,14 @@ export async function handleUpdateStop(
     if ('notes' in body) {
       patch.notes = body.notes === null ? null : str(body.notes, 'The note').trim() || null;
     }
+    // Section 8's "one tap to keep" for a stop the template has and today's
+    // document does not. A boolean and nothing else — anything non-boolean is a
+    // 400 rather than a coerced truthiness, because "keep this stop" is not a
+    // question a stray string should be able to answer.
+    if ('skipped' in body) {
+      if (typeof body.skipped !== 'boolean') throw new BadRequest('skipped must be true or false.');
+      patch.skipped = body.skipped;
+    }
 
     if (Object.keys(patch).length === 0) throw new BadRequest('Nothing to change.');
     return updateStop(orgId, userId, importId, stopIndex, patch);
@@ -659,6 +676,107 @@ export async function handleBulkApplyStops(
 
     return bulkApplyStops(orgId, userId, importId, raw as number[], input);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Route template matching (spec Section 8)
+// ---------------------------------------------------------------------------
+
+/** GET the template row. Read-only — see `template-lookup.ts`. */
+export async function handleGetTemplate(
+  orgId: string,
+  userId: string,
+  importId: string,
+): Promise<HandlerResult> {
+  const view = await getTemplateView(orgId, userId, importId);
+  if (!view) return err('Import not found.', 404);
+  return ok(view);
+}
+
+/**
+ * POST — decide the template.
+ *
+ * Three actions on one route because they are three answers to one question,
+ * and a client that can express "this one", "none" and "apply it" against the
+ * same resource cannot get into a state where it has picked one thing on one
+ * endpoint and declined on another.
+ *
+ * `templateId` is validated against the candidate set server-side
+ * (`assignTemplate`), never trusted — a template belonging to another client is
+ * a 400, not a silently applied cross-client order.
+ */
+export async function handleSetTemplate(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  const action = body.action;
+
+  if (action === 'decline') {
+    return stopReviewCall('decline template', { orgId, importId }, () =>
+      declineTemplate(orgId, userId, importId),
+    );
+  }
+
+  if (action === 'apply') {
+    return stopReviewCall('apply template', { orgId, importId }, () =>
+      applyTemplate(orgId, userId, importId),
+    );
+  }
+
+  if (action === 'select') {
+    const templateId = typeof body.templateId === 'string' ? body.templateId.trim() : '';
+    if (!templateId) return err('templateId is required.', 400);
+    return stopReviewCall('select template', { orgId, importId }, () =>
+      assignTemplate(orgId, userId, importId, templateId),
+    );
+  }
+
+  return err("action must be one of 'select', 'apply' or 'decline'.", 400);
+}
+
+/**
+ * GET / POST the post-commit template offer (spec Section 8, items 5 and 7).
+ *
+ * GET is the offer as recorded; POST is the answer. Both are no-ops on an import
+ * that has not been committed, because there is no success screen before there
+ * is a commit — Phase 8 owns that, and this route is what it will light up.
+ */
+export async function handleGetTemplateOffer(
+  orgId: string,
+  userId: string,
+  importId: string,
+): Promise<HandlerResult> {
+  const view = await getTemplateOffer(orgId, userId, importId);
+  if (!view) return err('Import not found.', 404);
+  return ok(view);
+}
+
+export async function handleTemplateOfferResponse(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  const action = body.action;
+
+  // "Save as route template" — the one-tap offer shown when the tenant setting
+  // is off. A different action from answering the update offer, because it
+  // creates a template rather than answering a question about one.
+  if (action === 'save') {
+    return stopReviewCall('save import as template', { orgId, importId }, () =>
+      saveImportAsRouteTemplate(orgId, userId, importId),
+    );
+  }
+
+  if (action === 'update' || action === 'dismiss') {
+    return stopReviewCall('answer template offer', { orgId, importId }, () =>
+      respondToTemplateOffer(orgId, userId, importId, action === 'update' ? 'UPDATED' : 'DISMISSED'),
+    );
+  }
+
+  return err("action must be one of 'save', 'update' or 'dismiss'.", 400);
 }
 
 // ---------------------------------------------------------------------------

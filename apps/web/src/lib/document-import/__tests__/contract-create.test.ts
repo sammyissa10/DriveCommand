@@ -46,6 +46,12 @@ const db = vi.hoisted(() => ({
   // with no facilities simply puts every stop on T4.
   carrierFacility: { findMany: async () => [] },
   facilityExternalReference: { findMany: async () => [] },
+  // Read by the Phase 6 template row on the resolution view, once the client
+  // and the contract are both resolved. Empty for the same reason as the two
+  // above: this suite is about the contract step, and a tenant with no saved
+  // routes gets the "nothing looks like today's run" band, which is correct and
+  // is not what these tests assert on.
+  routeTemplate: { findMany: async () => [] },
   documentImport: {
     updateMany: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
       const row = state.imports.find((i) => i.id === where.id);

@@ -45,6 +45,7 @@ import { ClientDecision } from './ClientDecision';
 import { ContractDecision, contractLabel, contractRateLabel } from './ContractDecision';
 import { WhyPopover } from './WhyPopover';
 import { StopResolutionPanel } from './StopResolutionPanel';
+import { TemplateDecision } from './TemplateDecision';
 
 type OpenRow = 'client' | 'contract' | 'date' | null;
 
@@ -144,15 +145,10 @@ export function ImportSummaryCard({ view, onChange }: Props) {
           </div>
         ) : null}
 
-        {/* Template — drawn because Section 4.1 draws it, and honest about
-            being a stub. It never shows a value it does not have. */}
-        <div className="flex items-center gap-3 py-3">
-          <dt className="w-24 shrink-0 text-sm text-muted-foreground">Template</dt>
-          <dd className="min-w-0 flex-1 text-sm text-muted-foreground">Not matched yet</dd>
-          <Badge variant="secondary" className="shrink-0">
-            Later phase
-          </Badge>
-        </div>
+        {/* Template — real as of Phase 6 (spec Section 8). The three
+            presentations live in the component; which one is shown is decided
+            server-side by the score, so this file compares nothing to 0.75. */}
+        <TemplateDecision importId={view.id} slot={r.template} onResolved={apply} />
 
         <DateRow
           importId={view.id}

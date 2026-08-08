@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { ImportSummaryCard } from '@/components/carrier/imports/ImportSummaryCard';
+import { TemplateOfferCard } from '@/components/carrier/imports/TemplateOfferCard';
 import type { ImportView } from '@/lib/document-import/intake';
 
 const POLL_MS = 1500;
@@ -311,6 +312,13 @@ export function ImportProgress({ initial, autoStart }: Props) {
           {view.resolution?.resolved ? <DocumentFacts view={view} /> : null}
         </>
       ) : null}
+
+      {/* ---- The post-commit template question (spec Section 8, items 5 and 7).
+              Renders nothing until the import is COMMITTED and the server has
+              RECORDED an offer, which is what makes "offered once, never
+              silent" true rather than a component's good intentions. Phase 8
+              owns the commit, so this draws nothing today. */}
+      {view.status === 'COMMITTED' ? <TemplateOfferCard importId={view.id} /> : null}
 
       {/* ---- Pages ---- */}
       <section className="space-y-2">

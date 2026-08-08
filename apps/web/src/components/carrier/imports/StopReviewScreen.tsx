@@ -338,6 +338,21 @@ export function StopReviewScreen({
                     )
                   }
                   onOpen={() => setOpenIndex(openIndex === row.index ? null : row.index)}
+                  // Section 8's "one tap to keep". A server write like every
+                  // other edit on this screen — there is no local skipped state
+                  // that could survive a navigation and disagree with the row.
+                  onSetSkipped={(skipped) => {
+                    void send('/review', 'PATCH', { stopIndex: row.index, skipped })
+                      .then((next) => {
+                        setView(next as StopReviewView);
+                        setNotice(
+                          skipped
+                            ? `Stop ${row.sequence} will be skipped on this trip.`
+                            : `Stop ${row.sequence} is back on this trip.`,
+                        );
+                      })
+                      .catch((e) => setError(e instanceof Error ? e.message : 'That did not save.'));
+                  }}
                 />
                 {openIndex === row.index ? (
                   <div className="px-3 pb-4">

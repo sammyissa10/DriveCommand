@@ -57,6 +57,18 @@ export type {
   StopEditInput,
   StopBulkInput,
   StopBulkResult,
+  // Phase 6 — route template matching (spec Section 8).
+  TemplateProvenanceVia,
+  TemplateWhyView,
+  TemplateStopOrigin,
+  TemplateDiffRow,
+  TemplateDiff,
+  TemplateCandidateView,
+  TemplateSlotState,
+  TemplateSlotView,
+  TemplateApplyResult,
+  TemplateOfferView,
+  SaveTemplateResult,
 } from './owner-imports'
 export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, DirectionsResult, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType, DriverRoute, DriverRouteLoad, DriverRouteTruck } from './driver'

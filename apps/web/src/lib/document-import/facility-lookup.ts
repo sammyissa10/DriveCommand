@@ -444,11 +444,29 @@ export async function resolveStops(
   /** The effective client — see the note above. Null only when truly unresolved. */
   effectiveClientId: string | null,
 ): Promise<StopResolutionView> {
+  return summariseStops(await resolveStopDecisions(db, orgId, record, effectiveClientId));
+}
+
+/**
+ * The ladder verdicts themselves, not just the summary.
+ *
+ * Phase 6 needs these: route-template matching is defined over **resolved
+ * facility ids** (spec Section 8), so it consumes the decision rather than the
+ * count. Split out so that one caller can build both the stop line and the
+ * template row from a single run of the ladder instead of two — the same reason
+ * quick-511 hoisted `scoreClients` in `resolveImport`.
+ */
+export async function resolveStopDecisions(
+  db: PrismaClient,
+  orgId: string,
+  record: ImportRecord,
+  effectiveClientId: string | null,
+): Promise<StopDecision[]> {
   const [candidates, referencesByCode] = await Promise.all([
     loadFacilityCandidates(db, orgId),
     loadExternalReferences(db, orgId, effectiveClientId),
   ]);
-  return summariseStops(decideStops(record, { candidates, referencesByCode }));
+  return decideStops(record, { candidates, referencesByCode });
 }
 
 /** The counts alone, for the summary card's stop row. */

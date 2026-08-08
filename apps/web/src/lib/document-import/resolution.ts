@@ -63,7 +63,9 @@ import {
   type ProvenanceInput,
   type ResolutionProvenance,
 } from './provenance';
-import { resolveStopCounts } from './facility-lookup';
+import { resolveStopDecisions, summariseStops } from './facility-lookup';
+import { buildTemplateSlot, loadTemplateCandidates, type TemplateSlotView } from './template-lookup';
+import { TEMPLATE_AUTO_APPLY_THRESHOLD, TEMPLATE_CANDIDATE_THRESHOLD } from './template-constants';
 import { getImportRecord, parseDocumentDate, type ImportRecord } from './persistence';
 import { isDedupeViolation } from './hashing';
 import { normaliseMoney } from './money';
@@ -233,11 +235,13 @@ export interface ContractSlotView {
   blockedReason: string | null;
 }
 
-export interface TemplateSlotView {
-  state: Extract<SlotState, 'STUB'>;
-  /** Stated in the payload, not only in the UI, so no surface can imply more. */
-  note: string;
-}
+/**
+ * The Template row's shape now lives in `template-lookup.ts`, beside the code
+ * that builds it — the same place `StopSlotView` lives beside the ladder.
+ * Re-exported here because `ImportResolutionView` is this module's type and
+ * callers already import the slot names from it.
+ */
+export type { TemplateSlotView, TemplateCandidateView, TemplateWhyView } from './template-lookup';
 
 export interface StopCountView {
   total: number;
@@ -1080,19 +1084,33 @@ async function buildContractSlot(
 }
 
 // ---------------------------------------------------------------------------
-// Template slot — a stub, and it says so
+// Template slot — real as of Phase 6; this is only the not-yet-askable case
 // ---------------------------------------------------------------------------
 
 /**
- * Phase 6 owns template matching (spec Section 8). This row exists in the card
- * because Section 4.1 draws it there, and leaving a hole would make the card
- * look like the finished article minus a feature rather than a card with one
- * row still to come. It never claims a value.
+ * The Template row before the client and the contract are settled.
+ *
+ * Candidate templates are scoped by contract-then-client (spec Section 8), so
+ * until both are decided there is nothing to score against and the honest answer
+ * is a stated reason rather than an empty list — an empty list reads as "no
+ * templates exist", which is a different and possibly false claim.
+ *
+ * `buildTemplateSlot` in `template-lookup.ts` produces every other state.
  */
-function templateSlot(): TemplateSlotView {
+function blockedTemplateSlot(reason: string): TemplateSlotView {
   return {
-    state: 'STUB',
-    note: 'Route template matching arrives in a later phase. This trip will not be matched to a template yet.',
+    state: 'BLOCKED',
+    value: null,
+    why: null,
+    candidates: [],
+    widened: false,
+    persisted: false,
+    applied: false,
+    blockedReason: reason,
+    thresholds: {
+      autoApply: TEMPLATE_AUTO_APPLY_THRESHOLD,
+      candidate: TEMPLATE_CANDIDATE_THRESHOLD,
+    },
   };
 }
 
@@ -1147,19 +1165,44 @@ export async function resolveImport(
   // off the slot, because `resolveClientDeterministic` is pure and free at this
   // point and taking the id off `client.value` would silently start including
   // fuzzy matches the day anything fuzzy is allowed to collapse the row.
-  const stops = await resolveStopCounts(
-    db,
-    orgId,
+  const effectiveClientId = effectiveClientIdOf(
     record,
-    effectiveClientIdOf(record, resolveClientDeterministic(record, profiles, scored, documentText)),
+    resolveClientDeterministic(record, profiles, scored, documentText),
   );
+
+  const decisions = await resolveStopDecisions(db, orgId, record, effectiveClientId);
+  const stops = summariseStops(decisions);
+
+  // Phase 6 — the Template row, real as of Section 8.
+  //
+  // Computed only once the client and the contract are settled, and that is a
+  // cost decision as much as a correctness one. Candidate templates are scoped
+  // by contract-then-client, so there is nothing stable to score against while
+  // the client is still being typed — and `resolveImport` is the body of the
+  // client picker's search-as-you-type endpoint, where one more query per
+  // keystroke is a cost 04-SUMMARY already flagged. The card cannot render this
+  // row before both are resolved either (it returns early), so the skipped case
+  // is never displayed.
+  const template =
+    client.state === 'RESOLVED' && contract.state === 'RESOLVED'
+      ? buildTemplateSlot({
+          record,
+          decisions,
+          templates: await loadTemplateCandidates(db, orgId, effectiveClientId, record.contractId),
+          effectiveClientId,
+        })
+      : blockedTemplateSlot(
+          client.state === 'RESOLVED'
+            ? 'Pick the contract first — templates belong to a contract.'
+            : 'Pick the client first — templates belong to a client.',
+        );
 
   return {
     client,
     contract,
-    template: templateSlot(),
+    template,
     documentDate: documentDateOf(record, extraction),
-    stops,
+    stops: { total: stops.total, matched: stops.matched, created: stops.created, note: stops.note },
     resolved: client.state === 'RESOLVED' && contract.state === 'RESOLVED',
   };
 }

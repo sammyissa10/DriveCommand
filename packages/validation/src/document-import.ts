@@ -122,6 +122,17 @@ export type CanonicalRollupField = z.infer<typeof rollupFieldEnum>;
  * marker, clear either wipes hand-typed work or does nothing — both are worse
  * than not offering it.
  */
+/**
+ * Where a stop came from once a route template has been applied (spec Section 8).
+ *
+ * The three columns of the merge box, named. `MATCHED` is on both lists,
+ * `IMPORT_ONLY` is today's document only (appended at the end, badged New),
+ * `TEMPLATE_ONLY` is the template only (kept, badged "Not on today's manifest",
+ * defaulted to skipped).
+ */
+export const templateOriginEnum = z.enum(['MATCHED', 'IMPORT_ONLY', 'TEMPLATE_ONLY']);
+export type CanonicalTemplateOrigin = z.infer<typeof templateOriginEnum>;
+
 export const bulkAppliedFieldEnum = z.enum([
   'notes',
   'requiredDocuments',
@@ -293,6 +304,42 @@ export const consignmentSchema = z.object({
 
   /** Which fields the bulk bar last wrote here. See `bulkAppliedFieldEnum`. */
   bulkAppliedFields: z.array(bulkAppliedFieldEnum).optional(),
+
+  // -------------------------------------------------------------------------
+  // Route template application (spec Section 8, Phase 6). Three more additive
+  // keys on the same jsonb column — still NO DDL.
+  // -------------------------------------------------------------------------
+
+  /**
+   * Where this row came from once a template was applied, and null until one is.
+   *
+   * It is what the "New" and "Not on today's manifest" badges read off, and it
+   * is stored rather than recomputed because after application there is nothing
+   * left to recompute from: the merge is the only moment both lists exist side
+   * by side.
+   */
+  templateOrigin: templateOriginEnum.nullish(),
+
+  /**
+   * True for a stop the template has and today's document does not — included,
+   * badged, and defaulted to skipped, per Section 8's "one tap to keep".
+   *
+   * A skipped stop is NOT committed as a trip stop and is NOT written into a
+   * template saved from this list. It exists so that a consignee missing from
+   * today's manifest is *visible* as missing: the alternative is an absent row,
+   * and a page that failed to scan looks exactly like a day off.
+   */
+  skipped: z.boolean().nullish(),
+
+  /**
+   * The template's standing note for this stop.
+   *
+   * Deliberately NOT merged into `notes`. Section 8 splits them — the template
+   * supplies standing notes, the import supplies per-stop notes — and one field
+   * holding both would make applying a template destructive the moment a
+   * dispatcher had typed anything, which is precisely when they would notice.
+   */
+  templateStandingNotes: z.string().nullish(),
 });
 export type CanonicalConsignment = z.infer<typeof consignmentSchema>;
 

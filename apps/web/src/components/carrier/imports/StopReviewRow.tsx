@@ -27,6 +27,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Hash, Lock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import type { StopReviewRow as Row } from '@/lib/document-import/stop-review';
@@ -39,6 +40,7 @@ export function StopReviewRowItem({
   hasIssue,
   onToggleSelect,
   onOpen,
+  onSetSkipped,
 }: {
   row: Row;
   selected: boolean;
@@ -47,6 +49,8 @@ export function StopReviewRowItem({
   hasIssue: boolean;
   onToggleSelect: (event: React.MouseEvent) => void;
   onOpen: () => void;
+  /** Section 8's "one tap to keep" for a stop that is not on today's manifest. */
+  onSetSkipped: (skipped: boolean) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: String(row.index),
@@ -79,6 +83,9 @@ export function StopReviewRowItem({
         'relative flex items-center gap-3 rounded-lg px-3 py-3 transition-colors',
         selected ? 'bg-muted' : 'hover:bg-muted/50',
         isDragging && 'bg-muted shadow-lg',
+        // A skipped stop is dimmed, not hidden and not struck through: it is
+        // still a row someone can act on, and it is deliberately still legible.
+        row.skipped && 'opacity-60',
       )}
     >
       {/*
@@ -162,6 +169,22 @@ export function StopReviewRowItem({
           >
             {primary || 'Unnamed stop'}
           </span>
+          {/*
+           * Template badges (spec Section 8). `outline`, never red: Section 15
+           * reserves red for errors and destructive actions, and it names this
+           * exact case — "a 'new' badge does not qualify". Both carry words, so
+           * neither depends on colour to be understood.
+           */}
+          {row.templateOrigin === 'IMPORT_ONLY' ? (
+            <Badge variant="outline" className="shrink-0">
+              New
+            </Badge>
+          ) : null}
+          {row.templateOrigin === 'TEMPLATE_ONLY' ? (
+            <Badge variant="outline" className="shrink-0">
+              Not on today&apos;s manifest
+            </Badge>
+          ) : null}
           {hasIssue ? (
             <span className="shrink-0 text-xs font-medium text-muted-foreground">needs a look</span>
           ) : null}
@@ -205,7 +228,26 @@ export function StopReviewRowItem({
        * where the facility resolution actually lives. `relative` puts it above
        * the overlay; the resolution UI in the detail editor is untouched.
        */}
-      {row.requiresHumanTap ? (
+      {/*
+       * "Defaulted to skipped, one tap to keep" (Section 8) — and the tap is a
+       * real <button>, `relative` so it paints above the overlay, with
+       * stopPropagation so keeping a stop does not also open it. A skipped row
+       * shows this INSTEAD of the resolution badge: an unconfirmed facility is
+       * not a question worth asking about a stop that is not on the trip.
+       */}
+      {row.templateOrigin === 'TEMPLATE_ONLY' ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSetSkipped(!row.skipped);
+          }}
+          disabled={disabled}
+          className="relative min-h-[44px] shrink-0 rounded px-2 text-xs text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+        >
+          {row.skipped ? 'Keep this stop' : 'Skip it'}
+        </button>
+      ) : row.requiresHumanTap ? (
         <button
           type="button"
           onClick={(e) => {

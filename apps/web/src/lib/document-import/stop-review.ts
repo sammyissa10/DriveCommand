@@ -47,6 +47,7 @@ import type {
   CanonicalRollupField,
   CanonicalStopType,
   CanonicalBulkAppliedField,
+  CanonicalTemplateOrigin,
 } from '@drivecommand/validation';
 
 import type { StopProvenance } from './provenance';
@@ -134,6 +135,20 @@ export interface StopReviewRow {
   notes: string | null;
   pageNumbers: number[];
   bulkAppliedFields: CanonicalBulkAppliedField[];
+
+  // --- route template application (Phase 6, spec Section 8) -----------------
+  /**
+   * Where this row came from once a template was applied. Null until one is.
+   * What the "New" and "Not on today's manifest" badges read off.
+   */
+  templateOrigin: CanonicalTemplateOrigin | null;
+  /**
+   * True for a template stop that is not on today's document — kept in the
+   * list, badged, and one tap from being back in the trip.
+   */
+  skipped: boolean;
+  /** The template's standing note. Separate from `notes`, which is the import's. */
+  templateStandingNotes: string | null;
 }
 
 export type StopIssueCode =
@@ -322,6 +337,10 @@ export function stopRowsFor(
       notes: consignment.notes?.trim() || null,
       pageNumbers: consignment.pageNumbers ?? [],
       bulkAppliedFields: consignment.bulkAppliedFields ?? [],
+
+      templateOrigin: consignment.templateOrigin ?? null,
+      skipped: consignment.skipped ?? false,
+      templateStandingNotes: consignment.templateStandingNotes?.trim() || null,
     };
   });
 }
@@ -358,7 +377,7 @@ function listStops(indexes: number[]): string {
  *
  * That is stated here rather than quietly omitted, per DEC-9.
  */
-export function validateStops(rows: StopReviewRow[]): {
+export function validateStops(allRows: StopReviewRow[]): {
   blocks: StopIssue[];
   warnings: StopIssue[];
   canProceed: boolean;
@@ -366,6 +385,15 @@ export function validateStops(rows: StopReviewRow[]): {
 } {
   const blocks: StopIssue[] = [];
   const warnings: StopIssue[] = [];
+
+  // A skipped stop is one the dispatcher has said is not part of today's run —
+  // a template stop that is not on this manifest (spec Section 8). It is not
+  // committed, so it cannot block a commit, and validating it would produce a
+  // block nobody can clear: the whole point of the row is that it has no
+  // freight, no references and often no confirmed facility. It comes back into
+  // every check the moment someone taps "keep", which is the one action that
+  // makes it part of the trip.
+  const rows = allRows.filter((r) => !r.skipped);
 
   // --- BLOCK: unresolved facility -----------------------------------------
   const unresolved = rows.filter((r) => r.requiresHumanTap).map((r) => r.index);
@@ -552,6 +580,16 @@ export interface StopPatch {
   requiredDocuments?: CanonicalRequiredDocument[];
   contact?: { name: string | null; phone: string | null } | null;
   notes?: string | null;
+  /**
+   * Section 8's "one tap to keep" — and its opposite.
+   *
+   * A template stop that is not on today's manifest arrives `skipped: true`;
+   * setting this false is the tap that puts it back in the trip. It is an
+   * ordinary field on an ordinary patch rather than its own endpoint, because
+   * it is one boolean on one consignment and everything else about that row is
+   * already edited through here.
+   */
+  skipped?: boolean;
 }
 
 function withoutField(
@@ -645,6 +683,13 @@ export function applyStopPatch(
     next.notes = patch.notes;
     bulk = withoutField(bulk, 'notes');
   }
+
+  // Keeping a template-only stop does not change where it came from. The badge
+  // still says it was not on today's manifest, because that remains true — what
+  // changed is whether it is part of the trip, and those are two different
+  // facts. Overwriting `templateOrigin` here would erase the reason the row
+  // needed a decision in the first place.
+  if (patch.skipped !== undefined) next.skipped = patch.skipped;
 
   next = { ...next, bulkAppliedFields: bulk, overriddenTotals: overridden };
   return next;

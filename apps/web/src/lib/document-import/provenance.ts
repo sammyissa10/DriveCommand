@@ -122,11 +122,69 @@ export interface StopProvenance extends SlotProvenance<StopProvenanceVia> {
   stopFingerprint: string;
 }
 
+/**
+ * How this import came to point at a route template — or at none (spec Section 8).
+ *
+ * `NONE` is a recorded decision rather than an absence, and that distinction is
+ * the whole reason it is in the vocabulary: "nobody has looked at templates yet"
+ * and "a dispatcher chose to run without one" are different states, and only the
+ * second may stop the card re-asking. It is also what the auto-create step reads
+ * to know that no template was applied.
+ */
+export type TemplateProvenanceVia =
+  /** Committed by the system: exactly one template scored at or above 0.75. */
+  | 'AUTO_MATCH'
+  /** A human picked one of the ranked candidates. */
+  | 'MANUAL'
+  /** A human chose "Continue without a template". */
+  | 'NONE'
+  /** Created from this import by the tenant's auto-create setting. */
+  | 'AUTO_CREATED'
+  /** Created from this import by a human tapping "Save as route template". */
+  | 'SAVED_FROM_IMPORT';
+
+/**
+ * The post-commit "update the template?" offer (spec Section 8: *"Offered once,
+ * never silent"*).
+ *
+ * Stored, because "once" is a claim about history that cannot be derived from
+ * the current row: an import whose trip differs from its template looks
+ * identical whether the dispatcher was asked and said no, or was never asked.
+ * Without this record the offer either nags on every visit or is skipped
+ * entirely, and both are worse than asking once.
+ */
+export interface TemplateOfferRecord {
+  offeredAt: string;
+  respondedAt: string | null;
+  response: 'UPDATED' | 'DISMISSED' | null;
+  /** What actually differed, so the offer states it rather than merely asking. */
+  changedSummary: string | null;
+}
+
+export interface TemplateProvenance extends SlotProvenance<TemplateProvenanceVia> {
+  /** Null for `NONE`, set for every other via. */
+  templateId: string | null;
+  templateName: string | null;
+  /**
+   * ISO 8601, set when the template's order / windows / documents / standing
+   * notes were merged into the stops — NOT when the template was selected.
+   *
+   * Two separate moments on purpose. Selection auto-collapses at 0.75 and is
+   * committed at the mutation boundary the way the client and the contract are
+   * (quick-508 / quick-510). Application rewrites the running order, which is a
+   * change a dispatcher must ask for. A card that showed a template and silently
+   * reordered twelve stops would be the worst possible reading of "collapse".
+   */
+  appliedAt: string | null;
+  offer: TemplateOfferRecord | null;
+}
+
 export interface ResolutionProvenance {
   client?: ClientProvenance;
   contract?: ContractProvenance;
   /** Keyed by consignment index, as a string. See `StopProvenance`. */
   stops?: Record<string, StopProvenance>;
+  template?: TemplateProvenance;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,6 +194,7 @@ export interface ResolutionProvenance {
 const CLIENT_VIAS: readonly string[] = ['MANUAL', 'MANUAL_CREATE', 'PROFILE_ALIAS', 'EXACT_MATCH'];
 const CONTRACT_VIAS: readonly string[] = ['MANUAL', 'SINGLE_ACTIVE', 'PROFILE_PIN', 'CREATED_THIS_IMPORT'];
 const STOP_VIAS: readonly string[] = ['EXTERNAL_REF', 'NORMALISED_ADDRESS', 'MANUAL', 'MANUAL_CREATE'];
+const TEMPLATE_VIAS: readonly string[] = ['AUTO_MATCH', 'MANUAL', 'NONE', 'AUTO_CREATED', 'SAVED_FROM_IMPORT'];
 
 /** The stored object, or `{}` for a legacy row or anything malformed. */
 export function provenanceOf(record: ImportRecord): ResolutionProvenance {
@@ -166,6 +225,22 @@ export const clientProvenanceOf = (record: ImportRecord): ClientProvenance | nul
 
 export const contractProvenanceOf = (record: ImportRecord): ContractProvenance | null =>
   slotProvenance(provenanceOf(record).contract, CONTRACT_VIAS);
+
+/**
+ * The template record, or null.
+ *
+ * A record whose via is anything other than `NONE` must carry a `templateId` —
+ * a record claiming a template without naming one is not a decision, and it is
+ * discarded here rather than reaching a caller that would trust it. Same guard,
+ * and same reasoning, as `stopProvenanceOf`'s `facilityId` check.
+ */
+export function templateProvenanceOf(record: ImportRecord): TemplateProvenance | null {
+  const slot = slotProvenance(provenanceOf(record).template, TEMPLATE_VIAS);
+  if (!slot) return null;
+  const template = slot as TemplateProvenance;
+  if (template.via !== 'NONE' && (typeof template.templateId !== 'string' || !template.templateId)) return null;
+  return template;
+}
 
 /**
  * Every stop record on the row, keyed by index, with the malformed ones dropped.
@@ -221,6 +296,23 @@ export function stampStop(input: StopProvenanceInput, userId: string): StopProve
     facilityId: input.facilityId,
     sourceCode: input.sourceCode ?? null,
     stopFingerprint: input.stopFingerprint,
+  };
+}
+
+export interface TemplateProvenanceInput extends ProvenanceInput<TemplateProvenanceVia> {
+  templateId: string | null;
+  templateName: string | null;
+  appliedAt?: string | null;
+  offer?: TemplateOfferRecord | null;
+}
+
+export function stampTemplate(input: TemplateProvenanceInput, userId: string): TemplateProvenance {
+  return {
+    ...stamp(input, userId),
+    templateId: input.templateId,
+    templateName: input.templateName,
+    appliedAt: input.appliedAt ?? null,
+    offer: input.offer ?? null,
   };
 }
 

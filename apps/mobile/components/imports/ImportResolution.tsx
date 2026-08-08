@@ -25,6 +25,7 @@ import {
 } from '@drivecommand/api-client'
 import { useRouter } from 'expo-router'
 import { BottomSheet } from '../ui/BottomSheet'
+import { ImportTemplate } from './ImportTemplate'
 import { haptic } from '../../lib/haptics'
 import { useThemeColors, radii, spacing, typography } from '../../constants/tokens'
 
@@ -68,6 +69,23 @@ export function ImportResolutionCard({ token, view, onChange }: Props) {
   const apply = (resolution: ImportResolutionView) => {
     onChange({ ...view, resolution })
     setOpen(null)
+  }
+
+  /**
+   * Re-read the whole resolution after a template write.
+   *
+   * Committing a template also commits the contract and the client behind it
+   * (`ensureTemplateCommitted` composes `ensureContractCommitted`), so
+   * refreshing only the template row would leave two slots on screen that the
+   * server has since written — the same class of stale card quick-508's bug
+   * produced.
+   */
+  const reloadResolution = async () => {
+    try {
+      apply(await ownerImportsApi.getResolution(token, view.id))
+    } catch {
+      // Left as it was rather than blanked. The write itself already reported.
+    }
   }
 
   // ---- The unresolved decision gets the screen to itself -------------------
@@ -136,13 +154,15 @@ export function ImportResolutionCard({ token, view, onChange }: Props) {
 
       <Divider c={c} />
 
-      {/* Template — drawn because Section 4.1 draws it, honest about being a
-          stub, and it never shows a value it does not have. */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, gap: spacing.md }}>
-        <Text style={{ ...typography.subhead, color: c.textSecondary, width: 78 }}>Template</Text>
-        <Text style={{ ...typography.subhead, color: c.textTertiary, flex: 1 }}>Not matched yet</Text>
-        <Text style={{ ...typography.caption1, color: c.textTertiary }}>Later phase</Text>
-      </View>
+      {/* Template — real as of Phase 6 (spec Section 8). Which of the three
+          presentations is shown is decided server-side by the score, so this
+          file compares nothing to 0.75. */}
+      <ImportTemplate
+        token={token}
+        importId={view.id}
+        slot={r.template}
+        onChanged={() => void reloadResolution()}
+      />
 
       <Divider c={c} />
 

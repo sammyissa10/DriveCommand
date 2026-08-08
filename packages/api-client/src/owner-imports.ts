@@ -151,10 +151,110 @@ export interface ContractSlotView {
   blockedReason: string | null
 }
 
+// ---------------------------------------------------------------------------
+// Route template matching — mirrors apps/web/src/lib/document-import/
+// template-lookup.ts and template-matching.ts (spec Section 8).
+// ---------------------------------------------------------------------------
+
+export type TemplateProvenanceVia =
+  | 'AUTO_MATCH'
+  | 'MANUAL'
+  | 'NONE'
+  | 'AUTO_CREATED'
+  | 'SAVED_FROM_IMPORT'
+
+export interface TemplateWhyView {
+  via: TemplateProvenanceVia
+  score: number | null
+  matchedText: string | null
+  detail: string
+}
+
+/** Where a row in the applied list came from — Section 8's three columns. */
+export type TemplateStopOrigin = 'MATCHED' | 'IMPORT_ONLY' | 'TEMPLATE_ONLY'
+
+export interface TemplateDiffRow {
+  origin: TemplateStopOrigin
+  facilityId: string | null
+  name: string
+  templateSequence: number | null
+  importIndex: number | null
+}
+
+export interface TemplateDiff {
+  rows: TemplateDiffRow[]
+  matched: number
+  importOnly: number
+  templateOnly: number
+  /** Stops the ladder has not resolved. They can never match a template stop. */
+  unresolved: number
+}
+
+export interface TemplateCandidateView {
+  id: string
+  name: string
+  score: number
+  /** Rounded server-side, once, so the two surfaces cannot round differently. */
+  scorePercent: number
+  stopCount: number
+  /** True when this candidate came from the CLIENT because the contract had none. */
+  widened: boolean
+  diffNote: string
+  diff: TemplateDiff
+  countMismatch: boolean
+  /** Auto-created from an import and not yet confirmed by a human. */
+  isSuggested: boolean
+}
+
+export type TemplateSlotState = 'RESOLVED' | 'CANDIDATES' | 'NONE' | 'DECLINED' | 'BLOCKED'
+
+export interface TemplateSlotView {
+  state: TemplateSlotState
+  value: TemplateCandidateView | null
+  why: TemplateWhyView | null
+  candidates: TemplateCandidateView[]
+  widened: boolean
+  /** False means "derived on this read, not written yet" (the quick-508 shape). */
+  persisted: boolean
+  /** True once the template's order and standing fields were merged in. */
+  applied: boolean
+  blockedReason: string | null
+  thresholds: { autoApply: number; candidate: number }
+}
+
+export interface TemplateApplyResult {
+  view: TemplateSlotView
+  matched: number
+  appended: number
+  notOnManifest: number
+  windowsApplied: number
+  windowsKept: number
+  windowsUnavailable: boolean
+}
+
+export interface TemplateOfferView {
+  kind: 'NONE' | 'UPDATE_TEMPLATE' | 'SAVE_AS_TEMPLATE' | 'AUTO_CREATED'
+  templateId: string | null
+  templateName: string | null
+  changedSummary: string | null
+  answered: boolean
+}
+
+export interface SaveTemplateResult {
+  templateId: string
+  templateName: string
+  isSuggested: boolean
+  stopCount: number
+  skippedUnresolved: number
+  skippedNotToday: number
+  narrowedStopTypes: number
+}
+
 export interface ImportResolutionView {
   client: ClientSlotView
   contract: ContractSlotView
-  template: { state: 'STUB'; note: string }
+  /** Real as of Phase 6 — it was `{ state: 'STUB' }` while Section 8 was unbuilt. */
+  template: TemplateSlotView
   documentDate: string | null
   /**
    * `matched` and `created` were `null` while facility resolution did not exist
@@ -373,6 +473,14 @@ export interface StopReviewRow {
   notes: string | null
   pageNumbers: number[]
   bulkAppliedFields: BulkAppliedField[]
+
+  // --- route template application (Phase 6, spec Section 8) -----------------
+  /** Where this row came from once a template was applied. Null until one is. */
+  templateOrigin: TemplateStopOrigin | null
+  /** A template stop that is not on today's document — kept, badged, skipped. */
+  skipped: boolean
+  /** The template's standing note. Separate from `notes`, which is the import's. */
+  templateStandingNotes: string | null
 }
 
 export type StopIssueCode =
@@ -424,6 +532,8 @@ export interface StopEditInput {
   requiredDocuments?: RequiredDocument[]
   contact?: StopContact | null
   notes?: string | null
+  /** Section 8's "one tap to keep" — false puts a skipped template stop back. */
+  skipped?: boolean
 }
 
 export interface StopBulkInput {
@@ -731,5 +841,66 @@ export const ownerImportsApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ stopIndexes, ...input }),
+    }).then((r) => r.data),
+
+  // -------------------------------------------------------------------------
+  // Route template matching (spec Section 8)
+  // -------------------------------------------------------------------------
+
+  /** The template row: the collapsed match, the ranked candidates, or neither. */
+  getTemplate: (token: string, importId: string) =>
+    apiRequest<{ data: TemplateSlotView }>(`${BASE}/${importId}/template`, { token }).then(
+      (r) => r.data,
+    ),
+
+  /** Pick one of the ranked candidates. Checked against the candidate set server-side. */
+  selectTemplate: (token: string, importId: string, templateId: string) =>
+    apiRequest<{ data: TemplateSlotView }>(`${BASE}/${importId}/template`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'select', templateId }),
+    }).then((r) => r.data),
+
+  /** "Continue without a template." A recorded decision, not an absence. */
+  declineTemplate: (token: string, importId: string) =>
+    apiRequest<{ data: TemplateSlotView }>(`${BASE}/${importId}/template`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'decline' }),
+    }).then((r) => r.data),
+
+  /**
+   * Merge the selected template into the stop list.
+   *
+   * Rewrites the running order, so it is always an explicit tap — selecting a
+   * template never applies it.
+   */
+  applyTemplate: (token: string, importId: string) =>
+    apiRequest<{ data: TemplateApplyResult }>(`${BASE}/${importId}/template`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'apply' }),
+    }).then((r) => r.data),
+
+  /** The post-commit question, as recorded. `kind: 'NONE'` means render nothing. */
+  getTemplateOffer: (token: string, importId: string) =>
+    apiRequest<{ data: TemplateOfferView }>(`${BASE}/${importId}/template/offer`, { token }).then(
+      (r) => r.data,
+    ),
+
+  /** One-tap "Save as route template" on the commit success screen. */
+  saveAsRouteTemplate: (token: string, importId: string) =>
+    apiRequest<{ data: SaveTemplateResult }>(`${BASE}/${importId}/template/offer`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'save' }),
+    }).then((r) => r.data),
+
+  /** Answer "the trip differed — update the template?". Asked once, never repeated. */
+  answerTemplateOffer: (token: string, importId: string, action: 'update' | 'dismiss') =>
+    apiRequest<{ data: TemplateOfferView }>(`${BASE}/${importId}/template/offer`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action }),
     }).then((r) => r.data),
 }
