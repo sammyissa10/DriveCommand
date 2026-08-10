@@ -7,6 +7,7 @@ import {
   type TemplateSlotView,
 } from '@drivecommand/api-client'
 import { BottomSheet } from '../ui/BottomSheet'
+import { APPLY_CONFIRM_FOOTNOTE, applyConfirmSentences } from '../../lib/template-copy'
 import { haptic } from '../../lib/haptics'
 import { useThemeColors, radii, spacing, typography } from '../../constants/tokens'
 
@@ -659,28 +660,13 @@ function ApplyConfirm({
           <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }}>
             {candidate.name}
           </Text>
-          <Text style={{ ...typography.subhead, color: c.textSecondary }}>
-            {candidate.diff.matched} stop{candidate.diff.matched === 1 ? '' : 's'} will take this
-            route&apos;s order, paperwork, standing notes and appointment windows (set from the
-            route when the trip is finished).
-          </Text>
-          {candidate.diff.importOnly > 0 ? (
-            <Text style={{ ...typography.subhead, color: c.textSecondary }}>
-              {candidate.diff.importOnly} stop{candidate.diff.importOnly === 1 ? '' : 's'} on
-              today&apos;s document {candidate.diff.importOnly === 1 ? 'is' : 'are'} not on this
-              route. They go at the end, badged New, and you can move them.
+          {applyConfirmSentences(candidate.diff).map((sentence) => (
+            <Text key={sentence} style={{ ...typography.subhead, color: c.textSecondary }}>
+              {sentence}
             </Text>
-          ) : null}
-          {candidate.diff.templateOnly > 0 ? (
-            <Text style={{ ...typography.subhead, color: c.textSecondary }}>
-              {candidate.diff.templateOnly} stop{candidate.diff.templateOnly === 1 ? '' : 's'} on
-              this route {candidate.diff.templateOnly === 1 ? 'is' : 'are'} not on today&apos;s
-              manifest. They stay in the list, skipped, and one tap keeps any of them.
-            </Text>
-          ) : null}
+          ))}
           <Text style={{ ...typography.caption1, color: c.textTertiary }}>
-            Today&apos;s quantities, references and per-stop notes are not changed. A window printed
-            on this document is kept as printed.
+            {APPLY_CONFIRM_FOOTNOTE}
           </Text>
 
           <Pressable

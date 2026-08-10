@@ -75,12 +75,19 @@ const ADDRESS: CanonicalAddress = {
   country: null,
 };
 
-/** Stops resolved to facilities `A`, `B`, … in document order. */
-function importStops(ids: (string | null)[]): ImportStopRef[] {
+/**
+ * Stops resolved to facilities `A`, `B`, … in document order.
+ *
+ * `skippedIndexes` marks stops the dispatcher (or the merge) left out of today's
+ * run — quick-517's subject. Defaults to none, so every existing case reads
+ * exactly as it did.
+ */
+function importStops(ids: (string | null)[], skippedIndexes: readonly number[] = []): ImportStopRef[] {
   return ids.map((facilityId, index) => ({
     index,
     facilityId,
     name: facilityId ? `Stop ${facilityId}` : 'Unresolved stop',
+    skipped: skippedIndexes.includes(index),
   }));
 }
 
@@ -363,8 +370,8 @@ describe('scores on facility IDS, never on names', () => {
     // Both dealerships print "RUSS DARROW HONDA" on the manifest. They are two
     // buildings forty minutes apart, and the facility ladder has already told
     // them apart — this asserts the matcher does not undo that work.
-    const milwaukee: ImportStopRef = { index: 0, facilityId: 'fac-mke', name: 'RUSS DARROW HONDA' };
-    const westBend: ImportStopRef = { index: 1, facilityId: 'fac-wb', name: 'RUSS DARROW HONDA' };
+    const milwaukee: ImportStopRef = { index: 0, facilityId: 'fac-mke', name: 'RUSS DARROW HONDA', skipped: false };
+    const westBend: ImportStopRef = { index: 1, facilityId: 'fac-wb', name: 'RUSS DARROW HONDA', skipped: false };
 
     const template = [
       templateStop('fac-mke', 1, { facilityName: 'RUSS DARROW HONDA' }),
@@ -392,7 +399,7 @@ describe('scores on facility IDS, never on names', () => {
   it('the same building under two different printed names DOES match', () => {
     // The other half of the same property. The ladder resolved both spellings
     // to one facility, so the matcher sees one id and one match.
-    const printedOneWay: ImportStopRef = { index: 0, facilityId: 'fac-x', name: 'HALL FORD' };
+    const printedOneWay: ImportStopRef = { index: 0, facilityId: 'fac-x', name: 'HALL FORD', skipped: false };
     const template = [templateStop('fac-x', 1, { facilityName: 'Hall Ford Lincoln — Brookfield' })];
 
     const score = scoreFacilitySets(

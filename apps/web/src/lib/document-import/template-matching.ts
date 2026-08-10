@@ -47,6 +47,15 @@ export interface ImportStopRef {
   facilityId: string | null;
   /** For the diff's text only. Never scored — see the header. */
   name: string;
+  /**
+   * Left out of today's run. **Excluded from the score, kept in the diff**
+   * (quick-517).
+   *
+   * Required rather than optional on purpose: `false` is today's behaviour, so an
+   * optional field that a new construction site forgot would silently restore the
+   * defect this flag exists to fix, and it is a defect nothing fails on.
+   */
+  skipped: boolean;
 }
 
 /** One stop on a saved route template. Mirrors `route_template_stops`. */
@@ -88,9 +97,45 @@ export interface TemplateStopRef {
  * The synthetic key is built here, at the bridge, rather than inside the scorer
  * — `scoreFacilitySets` really does take two lists of ids and do nothing but
  * Jaccard, which is what Section 8 specifies and what the tests pin.
+ *
+ * ---------------------------------------------------------------------------
+ * A SKIPPED STOP IS NOT PART OF THE RUN, SO IT IS NOT PART OF THE SCORE (quick-517)
+ * ---------------------------------------------------------------------------
+ * The opposite of the unresolved case above, and worth having both in front of
+ * you: an unresolved stop is *on today's run and we do not know where* — it must
+ * count, or a half-read manifest scores 1.0. A skipped stop is *not on today's
+ * run at all* — it must not count, or applying a template makes every later score
+ * worse.
+ *
+ * That was not hypothetical. Applying a template inserts its `TEMPLATE_ONLY` rows
+ * as `skipped: true` consignments, and on the next read the ladder resolves those
+ * rows at T2 (their address came from the facility), so they came back as fully
+ * resolved members of the import's set:
+ *
+ * ```
+ *   before apply   import 5, template 4, ∩4  →  union 5  →  4/5 = 0.80        80%
+ *   after apply    import 6, template 4, ∩4  →  union 6  →  4/6 = 0.667
+ *                  counts 6 v 4 = 0.333 > 0.30  →  ×0.8   =  0.533           53%
+ * ```
+ *
+ * One skipped row did both halves of that: it added a member to the union AND
+ * pushed the stop-count difference past the tolerance, so the downweight fired
+ * too. Two templates 30 points apart both rendered 53%.
+ *
+ * Filtering here rather than in the scorer fixes the count as well as the set,
+ * because `scoreFacilitySets` takes `importStopCount` from `importIds.length` —
+ * one filter, both halves, and `scoreFacilitySets` stays a function that does
+ * nothing but Jaccard.
+ *
+ * **`buildTemplateDiff` still sees every stop**, and must: it is the same
+ * function `applyTemplateToConsignments` walks to build the new list, so dropping
+ * rows from it would drop consignments off the dispatcher's stop list in the name
+ * of a percentage. Scoring and merging want different inputs; they now get them.
  */
 export function facilitySetForImport(stops: readonly ImportStopRef[]): string[] {
-  return stops.map((s) => (s.facilityId ? s.facilityId : `unresolved:${s.index}`));
+  return stops
+    .filter((s) => !s.skipped)
+    .map((s) => (s.facilityId ? s.facilityId : `unresolved:${s.index}`));
 }
 
 export const templateFacilitySet = (stops: readonly TemplateStopRef[]): string[] =>

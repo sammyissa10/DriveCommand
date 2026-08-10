@@ -331,12 +331,18 @@ export const facilityLine = (address: CanonicalAddress): string =>
  * the scorer ids. A stop the ladder has not settled carries `facilityId: null`
  * and `facilitySetForImport` turns it into a member that cannot match — see that
  * function for why an unresolved stop must count rather than vanish.
+ *
+ * `skipped` comes off the consignment, which is where stop review writes it and
+ * where the merge writes it for a template stop that is not on today's manifest.
+ * It is carried here rather than looked up later because this is the one place
+ * that holds the decision and the consignment side by side (quick-517).
  */
 export function importStopsFrom(decisions: readonly StopDecision[]): ImportStopRef[] {
   return decisions.map((d) => ({
     index: d.slot.index,
     facilityId: d.slot.facility?.id ?? null,
     name: d.slot.documentName || d.slot.facility?.name || '',
+    skipped: Boolean(d.consignment?.skipped),
   }));
 }
 

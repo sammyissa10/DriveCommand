@@ -64,6 +64,11 @@ import {
 } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import {
+  APPLY_CONFIRM_FOOTNOTE,
+  applyConfirmSentences,
+} from '@/lib/document-import/template-copy';
+import type { TemplateDiff } from '@/lib/document-import/template-matching';
 import type {
   TemplateCandidateView,
   TemplateSlotView,
@@ -694,6 +699,40 @@ function ErrorLine({ message }: { message: string }) {
 }
 
 /**
+ * The confirmation's body copy.
+ *
+ * ---------------------------------------------------------------------------
+ * ONE STRING PER SENTENCE. NOT FOUR ADJACENT CHILDREN. (quick-517)
+ * ---------------------------------------------------------------------------
+ * This dialog rendered "4 stopswill" and "2 stopson" on screen. Each sentence
+ * used to be assembled by the renderer from a count, a `" stop"` text node, a
+ * pluralising ternary and a continuation text node — and whatever dropped the gap
+ * between "stops" and "will" could only do so because that gap was a boundary
+ * between two nodes instead of a character inside one. `applyConfirmSentences`
+ * returns finished strings, so there is no boundary left to lose. See
+ * `template-copy.ts` for the evidence trail.
+ *
+ * Exported, and a component of its own rather than JSX inlined in the dialog, for
+ * a second reason: the dialog body is behind `AlertDialog` and unreachable from a
+ * static render, so before this split the copy could not be tested at all. It can
+ * now — `__tests__/TemplateDecision.test.tsx` renders it and reads the markup.
+ *
+ * Takes `diff` rather than the candidate: the copy is about the merge, and a
+ * component that received the whole candidate would invite someone to put the
+ * template's name in a sentence the title already carries.
+ */
+export function ApplyConfirmCopy({ diff }: { diff: TemplateDiff }) {
+  return (
+    <div className="space-y-2 text-sm">
+      {applyConfirmSentences(diff).map((sentence) => (
+        <p key={sentence}>{sentence}</p>
+      ))}
+      <p className="text-muted-foreground">{APPLY_CONFIRM_FOOTNOTE}</p>
+    </div>
+  );
+}
+
+/**
  * The confirmation before the merge.
  *
  * Applying reorders the stop list, so it names what will happen and to how many
@@ -717,33 +756,7 @@ function ApplyConfirm({
             <AlertDialogHeader>
               <AlertDialogTitle>Use “{candidate.name}” for this trip?</AlertDialogTitle>
               <AlertDialogDescription asChild>
-                <div className="space-y-2 text-sm">
-                  <p>
-                    {candidate.diff.matched} stop{candidate.diff.matched === 1 ? '' : 's'} will take
-                    this route&apos;s order, paperwork, standing notes and appointment windows (set
-                    from the route when the trip is finished).
-                  </p>
-                  {candidate.diff.importOnly > 0 ? (
-                    <p>
-                      {candidate.diff.importOnly} stop
-                      {candidate.diff.importOnly === 1 ? '' : 's'} on today&apos;s document
-                      {candidate.diff.importOnly === 1 ? ' is' : ' are'} not on this route. They go
-                      at the end, badged New, and you can drag them where they belong.
-                    </p>
-                  ) : null}
-                  {candidate.diff.templateOnly > 0 ? (
-                    <p>
-                      {candidate.diff.templateOnly} stop
-                      {candidate.diff.templateOnly === 1 ? '' : 's'} on this route
-                      {candidate.diff.templateOnly === 1 ? ' is' : ' are'} not on today&apos;s
-                      manifest. They stay in the list, skipped, and one tap keeps any of them.
-                    </p>
-                  ) : null}
-                  <p className="text-muted-foreground">
-                    Today&apos;s quantities, references and per-stop notes are not changed. A window
-                    printed on this document is kept as printed.
-                  </p>
-                </div>
+                <ApplyConfirmCopy diff={candidate.diff} />
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
