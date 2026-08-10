@@ -88,6 +88,7 @@ function importStops(ids: (string | null)[], skippedIndexes: readonly number[] =
     facilityId,
     name: facilityId ? `Stop ${facilityId}` : 'Unresolved stop',
     skipped: skippedIndexes.includes(index),
+    templateInserted: false,
   }));
 }
 
@@ -370,8 +371,8 @@ describe('scores on facility IDS, never on names', () => {
     // Both dealerships print "RUSS DARROW HONDA" on the manifest. They are two
     // buildings forty minutes apart, and the facility ladder has already told
     // them apart — this asserts the matcher does not undo that work.
-    const milwaukee: ImportStopRef = { index: 0, facilityId: 'fac-mke', name: 'RUSS DARROW HONDA', skipped: false };
-    const westBend: ImportStopRef = { index: 1, facilityId: 'fac-wb', name: 'RUSS DARROW HONDA', skipped: false };
+    const milwaukee: ImportStopRef = { index: 0, facilityId: 'fac-mke', name: 'RUSS DARROW HONDA', skipped: false, templateInserted: false };
+    const westBend: ImportStopRef = { index: 1, facilityId: 'fac-wb', name: 'RUSS DARROW HONDA', skipped: false, templateInserted: false };
 
     const template = [
       templateStop('fac-mke', 1, { facilityName: 'RUSS DARROW HONDA' }),
@@ -399,7 +400,7 @@ describe('scores on facility IDS, never on names', () => {
   it('the same building under two different printed names DOES match', () => {
     // The other half of the same property. The ladder resolved both spellings
     // to one facility, so the matcher sees one id and one match.
-    const printedOneWay: ImportStopRef = { index: 0, facilityId: 'fac-x', name: 'HALL FORD', skipped: false };
+    const printedOneWay: ImportStopRef = { index: 0, facilityId: 'fac-x', name: 'HALL FORD', skipped: false, templateInserted: false };
     const template = [templateStop('fac-x', 1, { facilityName: 'Hall Ford Lincoln — Brookfield' })];
 
     const score = scoreFacilitySets(

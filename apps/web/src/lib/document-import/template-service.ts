@@ -430,6 +430,12 @@ export interface TemplateApplyOutcome {
   windowsKept: number;
   /** True when the template has offsets but no departure time to anchor them to. */
   windowsUnavailable: boolean;
+  /**
+   * Rows a previous application inserted that this merge re-derived rather than
+   * carried (quick-518). Reported so a stop leaving the list is something the
+   * dispatcher is told about, not something they notice later.
+   */
+  reDerived: number;
 }
 
 /**
@@ -559,6 +565,7 @@ export async function applyTemplate(
     windowsDeferred: result.windowsDeferred,
     windowsKept: result.windowsKept,
     windowsUnavailable: result.windowsUnavailable,
+    reDerived: result.diff.templateInsertedDropped,
   };
 }
 

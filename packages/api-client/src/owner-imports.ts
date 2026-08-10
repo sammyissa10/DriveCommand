@@ -186,6 +186,11 @@ export interface TemplateDiff {
   matched: number
   importOnly: number
   templateOnly: number
+  /**
+   * Rows a previous template application inserted that the next merge re-derives
+   * rather than carries (quick-518). Never a stop a person kept or a document backs.
+   */
+  templateInsertedDropped: number
   /** Stops the ladder has not resolved. They can never match a template stop. */
   unresolved: number
 }
@@ -244,6 +249,8 @@ export interface TemplateApplyResult {
   windowsDeferred: number
   windowsKept: number
   windowsUnavailable: boolean
+  /** Ghost rows from a previous application that this merge re-derived (quick-518). */
+  reDerived: number
 }
 
 export interface TemplateOfferView {

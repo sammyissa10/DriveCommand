@@ -42,6 +42,7 @@ import type { CanonicalAddress, CanonicalConsignment } from '@drivecommand/valid
 import {
   applyTemplateToConsignments,
   facilitySetForImport,
+  isTemplateInsertedStop,
   rankTemplates,
   scoreFacilitySets,
   templateFacilitySet,
@@ -63,12 +64,13 @@ const ADDRESS: CanonicalAddress = {
   country: null,
 };
 
-function stop(index: number, facilityId: string | null, skipped = false): ImportStopRef {
+function stop(index: number, facilityId: string | null, skipped = false, templateInserted = false): ImportStopRef {
   return {
     index,
     facilityId,
     name: facilityId ? `Stop ${facilityId}` : 'Unresolved stop',
     skipped,
+    templateInserted,
   };
 }
 
@@ -215,6 +217,10 @@ function reread(consignments: readonly CanonicalConsignment[], facilityByName: R
     facilityId: facilityByName[c.name ?? ''] ?? null,
     name: c.name ?? '',
     skipped: Boolean(c.skipped),
+    // The real predicate, not a hand-set flag — this is the bridge production
+    // uses (`importStopsFrom`), so the ghost detection under test is the one that
+    // ships (quick-518).
+    templateInserted: isTemplateInsertedStop(c),
   }));
 }
 
@@ -278,23 +284,19 @@ describe('applying a template does not change any template score', () => {
 
   /**
    * ---------------------------------------------------------------------------
-   * CHARACTERISATION, NOT AN ENDORSEMENT — applying the SAME template twice
+   * WAS A CHARACTERISATION TEST. NOW AN ASSERTION. (quick-517 → quick-518)
    * ---------------------------------------------------------------------------
-   * The score does move across a second application, and not because of the
-   * scorer: `mergeTemplateStop` sets `skipped: false` on every MATCHED row, and
-   * `buildTemplateDiff` ignores `skipped`, so the second pass sees the row the
-   * first pass inserted-and-skipped, calls it a match, and **un-skips it**. The
-   * stop list genuinely changes — a stop nobody confirmed becomes part of the run
-   * — so the score changing is downstream of that, and filtering skipped stops out
-   * of the set cannot and should not paper over it.
+   * quick-517 recorded this as broken-but-out-of-scope and "not currently
+   * reachable from the UI". **Both halves of that were wrong**: it is reachable
+   * (apply A, then change to B through the chooser) and it was confirmed on screen.
+   * The ghost came back as an ordinary stop — unskipped, badged New, Linked,
+   * counted in "matched", with nothing to deliver.
    *
-   * Recorded here rather than fixed: the merge is out of this task's scope, and
-   * the path is not currently reachable from the UI (the row hides "Use this
-   * template" once `appliedAt` is set, so a second apply of the same template
-   * takes a deliberate detour through the chooser). Written down so that if
-   * someone makes it reachable, this test tells them what happens today.
+   * quick-518 fixed it by leaving template-inserted rows out of the diff, so a
+   * second application re-derives them instead of promoting them. The assertions
+   * below are the same scenario with the expectations turned the right way up.
    */
-  it('un-skips a previously template-only row on a SECOND apply — merge behaviour, recorded', () => {
+  it('re-derives a previously template-only row on a SECOND apply, and keeps it skipped', () => {
     const facilityByName: Record<string, string> = {
       'Facility A': 'A',
       'Facility B': 'B',
@@ -322,9 +324,16 @@ describe('applying a template does not change any template score', () => {
     });
     const afterTwo = reread(second.consignments, facilityByName);
 
-    // The merge un-skipped it. The list really did change, so the score follows.
-    expect(afterTwo.filter((s) => s.skipped)).toHaveLength(0);
-    expect(score(afterTwo)).not.toBe(score(stops));
-    expect(score(afterTwo)).toBe(1);
+    // The ghost is dropped and re-derived, so it is still exactly one skipped row
+    // — not promoted, not duplicated.
+    expect(afterTwo.filter((s) => s.skipped)).toHaveLength(1);
+    expect(afterTwo.filter((s) => s.templateInserted)).toHaveLength(1);
+    expect(second.consignments).toHaveLength(3);
+    expect(second.diff.templateInsertedDropped).toBe(1);
+    // Applying the same template twice is now idempotent, list and score alike.
+    expect(score(afterTwo)).toBe(score(stops));
+    expect(second.consignments.map((c) => [c.name, c.skipped])).toEqual(
+      first.consignments.map((c) => [c.name, c.skipped]),
+    );
   });
 });

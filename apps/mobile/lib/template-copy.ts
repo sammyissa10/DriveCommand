@@ -62,6 +62,13 @@ export function applyConfirmSentences(diff: TemplateDiff): string[] {
     )
   }
 
+  // A stop leaving the list is said out loud, not discovered (quick-518).
+  if (diff.templateInsertedDropped > 0) {
+    sentences.push(
+      `${countOf(diff.templateInsertedDropped, 'skipped stop')} added by the last template ${isAre(diff.templateInsertedDropped)} removed and worked out again for this one. Nothing from the document is touched.`,
+    )
+  }
+
   return sentences
 }
 

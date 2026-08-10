@@ -66,6 +66,16 @@ export function applyConfirmSentences(diff: TemplateDiff): string[] {
     );
   }
 
+  // A stop leaving the list is something to say out loud, not something to let a
+  // dispatcher discover (quick-518). Named by what it is — a stop the last
+  // template added, not a stop from the document — so nobody reads it as freight
+  // being dropped.
+  if (diff.templateInsertedDropped > 0) {
+    sentences.push(
+      `${countOf(diff.templateInsertedDropped, 'skipped stop')} added by the last template ${isAre(diff.templateInsertedDropped)} removed and worked out again for this one. Nothing from the document is touched.`,
+    );
+  }
+
   return sentences;
 }
 

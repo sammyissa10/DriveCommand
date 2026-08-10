@@ -159,6 +159,10 @@ export function ImportTemplate({
         result.windowsDeferred
           ? `${result.windowsDeferred} window${result.windowsDeferred === 1 ? '' : 's'} come from the route and are set when you finish the trip`
           : null,
+        // A stop that left the list is stated, not left to be noticed (quick-518).
+        result.reDerived
+          ? `${result.reDerived} skipped stop${result.reDerived === 1 ? '' : 's'} from the last template worked out again`
+          : null,
       ]
         .filter(Boolean)
         .join(' · '),

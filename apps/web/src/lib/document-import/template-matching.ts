@@ -56,6 +56,69 @@ export interface ImportStopRef {
    * defect this flag exists to fix, and it is a defect nothing fails on.
    */
   skipped: boolean;
+  /**
+   * This row exists **only** because a previous template application inserted it,
+   * and no person has kept it. It is not part of the import at all — see
+   * `isTemplateInsertedStop` (quick-518).
+   *
+   * Required for the same reason as `skipped`: the safe default is `false`, and a
+   * forgotten optional would silently restore a defect that nothing throws on.
+   */
+  templateInserted: boolean;
+}
+
+/**
+ * Is this consignment a ghost — a stop a previous template application put on the
+ * list, that nobody has claimed and no document backs? (quick-518)
+ *
+ * ---------------------------------------------------------------------------
+ * WHY THIS PREDICATE EXISTS
+ * ---------------------------------------------------------------------------
+ * Applying template A inserts A's not-on-manifest facilities as `TEMPLATE_ONLY`,
+ * `skipped: true` rows. Applying template B afterwards used to treat those rows as
+ * part of today's document: `buildTemplateDiff` ignored `skipped`, so B matched
+ * the ghost's facility, and `mergeTemplateStop` cleared `skipped` — so the row
+ * came back as an ordinary stop, badged New, Linked, counted in "matched", with no
+ * quantities and nothing to deliver. A stop that only ever existed because of a
+ * template got promoted into the trip by a second template.
+ *
+ * ---------------------------------------------------------------------------
+ * THE SIGNAL: THREE CONDITIONS, ALL REQUIRED
+ * ---------------------------------------------------------------------------
+ * 1. **`templateOrigin === 'TEMPLATE_ONLY'`** — the merge stamped it. This is the
+ *    primary signal and it is sufficient on its own to identify the row; the other
+ *    two exist to make a false positive impossible rather than unlikely.
+ * 2. **`skipped`** — a row a dispatcher *kept* (Section 8's "one tap to keep") is
+ *    a decision a person made, and decisions are never undone by a later apply.
+ *    Un-skipping is exactly how a human says "this one is real".
+ * 3. **No document backing** — no pages, no line items, no totals. If someone has
+ *    typed freight onto the row it has content, whatever its origin says, and
+ *    removing it would delete work.
+ *
+ * A conjunction, so every direction of doubt keeps the row. A legacy row written
+ * before Phase 6 has no `templateOrigin` at all and is therefore never stripped,
+ * which is the correct failure direction: **document-backed stops are
+ * untouchable**, and the cost of a false negative is a stale ghost while the cost
+ * of a false positive is deleting a customer's freight.
+ */
+export function isTemplateInsertedStop(consignment: CanonicalConsignment): boolean {
+  if (consignment.templateOrigin !== 'TEMPLATE_ONLY') return false;
+  if (!consignment.skipped) return false;
+  return !hasDocumentBacking(consignment);
+}
+
+/**
+ * Did a document — or a person — put anything on this stop?
+ *
+ * Pages are the strongest evidence (the extractor read it off a page), line items
+ * and totals the next: both are freight, and freight is never invented by the
+ * template merge (`templateOnlyConsignment` writes `pageNumbers: []`,
+ * `lineItems: []`, `totals: {}`).
+ */
+function hasDocumentBacking(consignment: CanonicalConsignment): boolean {
+  if (consignment.pageNumbers?.length) return true;
+  if (consignment.lineItems?.length) return true;
+  return Object.values(consignment.totals ?? {}).some((v) => v != null);
 }
 
 /** One stop on a saved route template. Mirrors `route_template_stops`. */
@@ -316,6 +379,12 @@ export interface TemplateDiff {
   templateOnly: number;
   /** Stops the ladder has not resolved. They can never match — see `facilitySetForImport`. */
   unresolved: number;
+  /**
+   * Rows a previous template application inserted, that this merge will re-derive
+   * rather than carry across (quick-518). Never includes a stop a person kept or a
+   * document backs — see `isTemplateInsertedStop`.
+   */
+  templateInsertedDropped: number;
 }
 
 /**
@@ -340,8 +409,31 @@ export function buildTemplateDiff(
   const claimed = new Set<number>();
   const rows: TemplateDiffRow[] = [];
 
+  // ---------------------------------------------------------------------------
+  // GHOSTS FROM A PREVIOUS APPLICATION ARE NOT PART OF THE IMPORT (quick-518)
+  // ---------------------------------------------------------------------------
+  // One filter, and three behaviours fall out of it, which is why the fix is here
+  // rather than in three places:
+  //
+  //   - a ghost can no longer be MATCHED by the next template, so
+  //     `mergeTemplateStop` never gets the chance to clear its `skipped`;
+  //   - a ghost is not appended as IMPORT_ONLY either, so it does not survive as
+  //     a "new" stop the template happens not to mention;
+  //   - `applyTemplateToConsignments` builds the new list by walking `rows`, so a
+  //     row that appears in neither loop is simply **dropped** — the re-derive the
+  //     ticket asks for, with no second pass and no index remapping.
+  //
+  // If the incoming template lists that facility it becomes TEMPLATE_ONLY again
+  // and is re-inserted, skipped, exactly as the first application inserted it. If
+  // it does not, the ghost is gone. Both are what should happen.
+  //
+  // Note this also makes the PREVIEW honest: the candidate rows and the confirm
+  // dialog are built from this same function, so what a dispatcher is shown is
+  // still, as the header promises, the merge that actually runs.
+  const present = importStops.filter((s) => !s.templateInserted);
+
   for (const t of ordered) {
-    const hit = importStops.find((s) => s.facilityId === t.facilityId && !claimed.has(s.index));
+    const hit = present.find((s) => s.facilityId === t.facilityId && !claimed.has(s.index));
     if (hit) {
       claimed.add(hit.index);
       rows.push({
@@ -366,7 +458,7 @@ export function buildTemplateDiff(
   // Where a new stop belongs in the day is a routing decision, and Section 8 is
   // explicit that the user makes it ("draggable"). Guessing would be a reorder
   // nobody asked for, which the phase's constraints forbid outright.
-  for (const s of importStops) {
+  for (const s of present) {
     if (claimed.has(s.index)) continue;
     rows.push({
       origin: 'IMPORT_ONLY',
@@ -382,7 +474,10 @@ export function buildTemplateDiff(
     matched: rows.filter((r) => r.origin === 'MATCHED').length,
     importOnly: rows.filter((r) => r.origin === 'IMPORT_ONLY').length,
     templateOnly: rows.filter((r) => r.origin === 'TEMPLATE_ONLY').length,
-    unresolved: importStops.filter((s) => !s.facilityId).length,
+    unresolved: present.filter((s) => !s.facilityId).length,
+    // Ghosts this merge will re-derive rather than carry. Reported so the
+    // confirmation can say it out loud instead of a stop quietly vanishing.
+    templateInsertedDropped: importStops.length - present.length,
   };
 }
 
@@ -586,6 +681,19 @@ export interface TemplateApplyResult {
  * **untouched**, so a link that was already stale before the merge is still
  * dropped after it — both properties hold at once. Template-only rows get no
  * link at all; see `templateOnlyConsignment`.
+ *
+ * ---------------------------------------------------------------------------
+ * A PREVIOUS APPLICATION'S GHOSTS ARE RE-DERIVED, NOT INHERITED (quick-518)
+ * ---------------------------------------------------------------------------
+ * Rows the last application inserted and nobody kept are dropped here and rebuilt
+ * from the incoming template. Applying A then B no longer promotes A's
+ * not-on-manifest stop into a real stop on B's say-so — B either lists that
+ * facility (it comes back skipped, as A left it) or it does not (it is gone).
+ *
+ * There is no separate stripping pass: `buildTemplateDiff` leaves those rows out
+ * of `diff.rows`, and this loop walks `diff.rows`, so they are absent from the
+ * output and their provenance is never carried. See the filter in that function.
+ * **Document-backed stops are untouched** — the predicate cannot reach them.
  */
 export function applyTemplateToConsignments(
   consignments: readonly CanonicalConsignment[],

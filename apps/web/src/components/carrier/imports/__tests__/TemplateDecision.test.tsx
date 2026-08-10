@@ -34,6 +34,7 @@ const stop = (index: number, facilityId: string): ImportStopRef => ({
   facilityId,
   name: `Stop ${facilityId}`,
   skipped: false,
+  templateInserted: false,
 });
 
 const templateStop = (facilityId: string, sequenceOrder: number): TemplateStopRef => ({

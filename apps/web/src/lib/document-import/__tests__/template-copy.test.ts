@@ -25,6 +25,7 @@ const stop = (index: number, facilityId: string | null): ImportStopRef => ({
   facilityId,
   name: facilityId ? `Stop ${facilityId}` : 'Unresolved',
   skipped: false,
+  templateInserted: false,
 });
 
 const templateStop = (facilityId: string, sequenceOrder: number): TemplateStopRef => ({

@@ -33,6 +33,7 @@ import {
   describeDiff,
   deterministicTemplate,
   facilitySetForImport,
+  isTemplateInsertedStop,
   rankTemplates,
   templateFacilitySet,
   topCandidates,
@@ -343,6 +344,11 @@ export function importStopsFrom(decisions: readonly StopDecision[]): ImportStopR
     facilityId: d.slot.facility?.id ?? null,
     name: d.slot.documentName || d.slot.facility?.name || '',
     skipped: Boolean(d.consignment?.skipped),
+    // A ghost from a previous application — not part of the import, and dropped
+    // by the next merge rather than promoted into it (quick-518). Decided by the
+    // shared predicate so the diff, the merge and the preview cannot disagree
+    // about which rows those are.
+    templateInserted: d.consignment ? isTemplateInsertedStop(d.consignment) : false,
   }));
 }
 
