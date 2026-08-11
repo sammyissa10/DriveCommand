@@ -361,7 +361,7 @@ export function TemplateDecision({ importId, slot, onResolved }: Props) {
         {slot.widened ? <WidenedNote /> : null}
         {notice ? <NoticeLine message={notice} /> : null}
 
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {slot.candidates.map((candidate) => (
             <li key={candidate.id}>
               <CandidateRow
@@ -495,7 +495,7 @@ function CandidateRow({
       )}
     >
       <Route className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-      <span className="min-w-0 flex-1 space-y-1">
+      <span className="flex min-w-0 flex-1 flex-col gap-2">
         <span className="flex flex-wrap items-center gap-2">
           <span className="truncate text-sm font-medium text-foreground">{candidate.name}</span>
           <Badge variant="secondary" className="shrink-0">
@@ -558,7 +558,19 @@ function TemplateChooser({
 
   return (
     <Dialog open={open} onOpenChange={(next) => (next ? null : onClose())}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+      {/*
+       * `DialogContent` is a `grid` with an implicit `auto` column (ui/dialog.tsx).
+       * An `auto` track's minimum is the MAX of its items' min-content widths, and
+       * a `truncate`d chip's min-content is its full string — `max-w-full` on the
+       * chip is ignored during intrinsic sizing, so it does not save it. That is
+       * how one long facility name used to blow the whole dialog wider than its
+       * own `max-w-lg`, clipping the header's subtitle and forcing a horizontal
+       * scrollbar. `grid-cols-[minmax(0,1fr)]` gives the grid an EXPLICIT track
+       * with a zero minimum instead, so no descendant's min-content can widen the
+       * dialog — once the track is capped, `max-w-full` + `truncate` work again
+       * because percentages resolve normally at layout time.
+       */}
+      <DialogContent className="grid-cols-[minmax(0,1fr)] max-h-[85vh] overflow-y-auto overflow-x-hidden sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Which saved route is this?</DialogTitle>
           <DialogDescription>
@@ -566,7 +578,7 @@ function TemplateChooser({
           </DialogDescription>
         </DialogHeader>
 
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {current ? (
             <li>
               <CandidateRow candidate={current} disabled={busy} onClick={onClose} current />
@@ -589,7 +601,7 @@ function TemplateChooser({
           </p>
         ) : null}
 
-        <div className="space-y-2">
+        <div className="space-y-3 border-t border-border pt-4">
           <button
             type="button"
             onClick={onNone}
@@ -634,9 +646,14 @@ function StopDiff({ candidate }: { candidate: TemplateCandidateView }) {
     );
   }
   return (
-    <span className="mt-1 flex flex-wrap gap-1.5">
+    <span className="flex flex-wrap gap-2">
       {notable.slice(0, 6).map((row, i) => (
-        <Badge key={`${row.origin}-${row.facilityId ?? i}`} variant="outline" className="max-w-full">
+        <Badge
+          key={`${row.origin}-${row.facilityId ?? i}`}
+          variant="outline"
+          className="min-w-0 max-w-full"
+          title={row.name || 'Unnamed stop'}
+        >
           <span className="truncate">
             {row.origin === 'IMPORT_ONLY' ? '+ ' : '− '}
             {row.name || 'Unnamed stop'}

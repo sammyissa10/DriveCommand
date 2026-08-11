@@ -387,7 +387,14 @@ function Row({ c, children }: { c: Colors; children: React.ReactNode }) {
   )
 }
 
-/** A neutral chip. Words, never colour alone (Section 15). */
+/**
+ * A neutral chip. Words, never colour alone (Section 15).
+ *
+ * `maxWidth: '100%'` + `flexShrink: 1` on the container and the label so a long
+ * facility name shrinks and truncates with `numberOfLines={1}` instead of
+ * forcing its row (and the sheet) wider — the mobile equivalent of web's
+ * `truncate` + `title` hover.
+ */
 function Chip({ c, label, icon }: { c: Colors; label: string; icon?: React.ReactNode }) {
   return (
     <View
@@ -399,10 +406,17 @@ function Chip({ c, label, icon }: { c: Colors; label: string; icon?: React.React
         paddingVertical: 2,
         borderRadius: radii.sm,
         backgroundColor: c.surfaceElevated,
+        maxWidth: '100%',
+        flexShrink: 1,
       }}
     >
       {icon}
-      <Text style={{ ...typography.caption2, color: c.textSecondary }}>{label}</Text>
+      <Text
+        numberOfLines={1}
+        style={{ ...typography.caption2, color: c.textSecondary, flexShrink: 1 }}
+      >
+        {label}
+      </Text>
     </View>
   )
 }
@@ -451,9 +465,17 @@ function CandidateRow({
       }}
     >
       <Route color={c.textSecondary} size={16} style={{ marginTop: 2 }} />
-      <View style={{ flex: 1, gap: spacing.xs }}>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs }}>
-          <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }} numberOfLines={1}>
+      <View style={{ flex: 1, gap: spacing.sm }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm }}>
+          {/* `flexShrink: 1` is load-bearing, not decoration. RN defaults
+           * flexShrink to 0 (unlike web), so `numberOfLines={1}` alone does not
+           * stop a long route name from sizing to its full string and pushing
+           * this wrap row — and the sheet — past a 360pt screen. Shrink first,
+           * then ellipsise. Same rule as `Chip`. */}
+          <Text
+            numberOfLines={1}
+            style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600', flexShrink: 1 }}
+          >
             {candidate.name}
           </Text>
           <Chip c={c} label={`${candidate.scorePercent}% match`} />
@@ -515,7 +537,7 @@ function TemplateChooser({
           Picking one selects it — you confirm before anything on the stop list moves.
         </Text>
 
-        <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: spacing.sm }}>
+        <ScrollView style={{ maxHeight: 380 }} contentContainerStyle={{ gap: spacing.md }}>
           {current ? (
             <CandidateRow c={c} candidate={current} disabled={busy} onPress={onClose} current />
           ) : null}
@@ -536,6 +558,10 @@ function TemplateChooser({
           </Text>
         ) : null}
 
+        {/* Hairline divider — mirrors web's `border-t border-border pt-4` so
+         * "No template" reads as separate from the candidate list above it. */}
+        <View style={{ height: 1, backgroundColor: c.border }} />
+
         <Pressable
           onPress={onNone}
           disabled={busy}
@@ -553,7 +579,11 @@ function TemplateChooser({
           }}
         >
           <Ban color={c.textSecondary} size={16} />
-          <View style={{ flex: 1, gap: 2 }}>
+          {/* gap: spacing.xs (4) is deliberate, not a scale violation — these two
+           * lines are a title and its own caption inside ONE card (intra-label
+           * leading), not spacing between separate elements. Web stacks the same
+           * two lines with no gap at all. */}
+          <View style={{ flex: 1, gap: spacing.xs }}>
             <Text style={{ ...typography.subhead, color: c.textPrimary, fontWeight: '600' }}>
               No template
             </Text>
@@ -597,7 +627,7 @@ function StopDiff({ c, candidate }: { c: Colors; candidate: TemplateCandidateVie
     )
   }
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: 2 }}>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
       {notable.slice(0, 4).map((row, i) => (
         <Chip
           key={`${row.origin}-${row.facilityId ?? i}`}
