@@ -645,6 +645,114 @@ const BASE = '/api/mobile/carrier/owner/document-imports'
 
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// End stop policy (spec Section 9, Part A)
+// ---------------------------------------------------------------------------
+
+/**
+ * The five policies, exactly as the CHECK constraints spell them.
+ *
+ * `Tenant_defaultEndStopPolicy_check`, `route_templates_end_stop_policy_check`
+ * and `dispatches_end_stop_policy_check` all admit these and nothing else, read
+ * from `pg_constraint`. A sixth value invented here would compile fine and be a
+ * Postgres 23514 on the server.
+ */
+export type EndStopPolicy =
+  | 'RETURN_TO_ORIGIN'
+  | 'HOME_BASE'
+  | 'DESIGNATED_PARKING'
+  | 'DRIVER_RESIDENCE'
+  | 'NONE'
+
+/** Which of the three layers answered. */
+export type EndStopPolicySource = 'TENANT' | 'TEMPLATE' | 'TRIP'
+
+export type EndStopSlotState = 'RESOLVED' | 'NONE' | 'NEEDS_CHOICE' | 'NEEDS_DRIVER' | 'UNAVAILABLE'
+
+export interface EndStopFacilityView {
+  id: string
+  name: string
+  address: string
+  facilityType: string | null
+  /**
+   * True only for the assigned driver's own home, and only when the viewer is
+   * allowed to see it — the server filters and masks residences before they
+   * reach here (spec Section 9). A client that receives one has already been
+   * authorised for it.
+   */
+  isDriverResidence: boolean
+}
+
+export interface EndStopPolicyOption {
+  policy: EndStopPolicy
+  label: string
+  available: boolean
+  unavailableReason: string | null
+}
+
+export interface EndStopSlotView {
+  state: EndStopSlotState
+  policy: EndStopPolicy
+  source: EndStopPolicySource
+  facility: EndStopFacilityView | null
+  why: { via: string | null; source: EndStopPolicySource; detail: string }
+  options: EndStopPolicyOption[]
+  /** Offered when the policy is `DESIGNATED_PARKING`. Never contains a residence. */
+  parkingCandidates: EndStopFacilityView[]
+  blockedReason: string | null
+  /** False means "derived on this read, not written yet" (the quick-508 shape). */
+  persisted: boolean
+  /** True once the commit wrote the real stop. The decision is then fixed. */
+  materialised: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Route optimisation (spec Section 9, Part B)
+// ---------------------------------------------------------------------------
+
+export type OptimisationDeclineReason =
+  | 'NOT_ENOUGH_STOPS'
+  | 'UNRESOLVED_STOPS'
+  | 'NO_MATRIX'
+  | 'ALREADY_BEST'
+  | 'BELOW_FLOOR'
+
+export interface OptimisationSuggestion {
+  offered: boolean
+  declineReason: OptimisationDeclineReason | null
+  movedOrder: number[]
+  currentMiles: number
+  currentMinutes: number
+  suggestedMiles: number
+  suggestedMinutes: number
+  savedMiles: number
+  savedMinutes: number
+  floors: { miles: number; minutes: number }
+}
+
+export interface OptimisationView {
+  /** The ONLY thing a client should branch on. See `getOptimisation`. */
+  offered: boolean
+  /**
+   * Section 9's one line — "Suggested order saves 18 miles and 34 min" — already
+   * assembled server-side as a single string.
+   *
+   * Not four pieces for a renderer to join. A sentence built from adjacent
+   * children around a count is what rendered "4 stopswill" on this app's own
+   * screens twice (quick-517), and this one has two counts in it.
+   */
+  sentence: string | null
+  declineNote: string | null
+  suggestion: OptimisationSuggestion
+  stopsChangedFromTemplate: boolean
+}
+
+export interface OptimisationApplyResult {
+  applied: boolean
+  savedMiles: number
+  savedMinutes: number
+}
+
 export const ownerImportsApi = {
   listResumable: (token: string) =>
     apiRequest<{ data: { items: ImportListItem[] } }>(`${BASE}?scope=resumable`, { token }).then(
@@ -949,5 +1057,80 @@ export const ownerImportsApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ action }),
+    }).then((r) => r.data),
+
+  // -------------------------------------------------------------------------
+  // End stop policy (spec Section 9, Part A)
+  // -------------------------------------------------------------------------
+
+  /** Where the working day ends, resolved tenant → template → this trip. */
+  getEndStop: (token: string, importId: string) =>
+    apiRequest<{ data: EndStopSlotView }>(`${BASE}/${importId}/end-stop`, { token }).then(
+      (r) => r.data,
+    ),
+
+  /**
+   * Choose an end stop for this trip — Section 9's third rung.
+   *
+   * `facilityId` is only admissible for `DESIGNATED_PARKING`; every other policy
+   * works out its own facility and the server rejects one that is named.
+   */
+  setEndStop: (
+    token: string,
+    importId: string,
+    policy: EndStopPolicy,
+    facilityId?: string | null,
+  ) =>
+    apiRequest<{ data: EndStopSlotView }>(`${BASE}/${importId}/end-stop`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'select', policy, facilityId: facilityId ?? null }),
+    }).then((r) => r.data),
+
+  /**
+   * "Use my company default again." DELETES the stored decision.
+   *
+   * A POST, and it removes the key rather than writing another one — the view
+   * short-circuits on the key's presence, so re-reading can never undo a choice.
+   * Same shape and same reason as `resetTemplate` (quick-516). There is no
+   * policy value that means undecided: `NONE` says this trip ends nowhere.
+   */
+  resetEndStop: (token: string, importId: string) =>
+    apiRequest<{ data: EndStopSlotView }>(`${BASE}/${importId}/end-stop`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'reset' }),
+    }).then((r) => r.data),
+
+  // -------------------------------------------------------------------------
+  // Route optimisation (spec Section 9, Part B)
+  // -------------------------------------------------------------------------
+
+  /**
+   * The suggestion, if there is one worth showing.
+   *
+   * `offered: false` is the common answer — below the floor, already the best
+   * order, or the stops have not changed since the applied template. The client
+   * renders nothing in that case; it never compares a saving to a number, because
+   * the floor lives in `optimisation-constants.ts` on the server and nowhere else.
+   */
+  getOptimisation: (token: string, importId: string) =>
+    apiRequest<{ data: OptimisationView }>(`${BASE}/${importId}/optimisation`, { token }).then(
+      (r) => r.data,
+    ),
+
+  /**
+   * "Use suggested order."
+   *
+   * The only action there is: declining writes nothing, because declining is the
+   * absence of a request. The server recomputes the suggestion rather than
+   * trusting an order from here, and applies it through the same reorder path a
+   * hand-moved stop takes.
+   */
+  applyOptimisation: (token: string, importId: string) =>
+    apiRequest<{ data: OptimisationApplyResult }>(`${BASE}/${importId}/optimisation`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ action: 'apply' }),
     }).then((r) => r.data),
 }

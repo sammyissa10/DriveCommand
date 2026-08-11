@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { facilityVisibilityWhere, staffViewer } from '@/lib/carrier/facility-visibility';
 import { LoadForm } from '@/components/carrier/loads/LoadForm';
 import { NewLoadMobile } from './NewLoadMobile';
 import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
@@ -35,7 +36,8 @@ export default async function NewLoadPage() {
     }),
     // Mobile picks stop facilities from a select; desktop uses a search modal.
     prisma.carrierFacility.findMany({
-      where: { orgId },
+      // A picker. Driver residences are excluded server-side (spec Section 9).
+      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),

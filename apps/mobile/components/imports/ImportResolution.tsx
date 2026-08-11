@@ -26,6 +26,7 @@ import {
 import { useRouter } from 'expo-router'
 import { BottomSheet } from '../ui/BottomSheet'
 import { ImportTemplate } from './ImportTemplate'
+import { ImportEndStop } from './ImportEndStop'
 import { haptic } from '../../lib/haptics'
 import { useThemeColors, radii, spacing, typography } from '../../constants/tokens'
 
@@ -163,6 +164,15 @@ export function ImportResolutionCard({ token, view, onChange }: Props) {
         slot={r.template}
         onChanged={() => void reloadResolution()}
       />
+
+      <Divider c={c} />
+
+      {/* Where the day ends — real as of Phase 7 (spec Section 9). Loads its own
+          slot: the resolution payload is Phase 3's shape and the end stop
+          resolves against three layers this card does not hold. Its "use my
+          company default" is a POST that REMOVES the stored decision, not a
+          re-read that would return it. */}
+      <ImportEndStop token={token} importId={view.id} onChanged={() => void reloadResolution()} />
 
       <Divider c={c} />
 

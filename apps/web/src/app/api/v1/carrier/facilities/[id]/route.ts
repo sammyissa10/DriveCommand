@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getFacility, updateFacility, softDeleteFacility } from '@/lib/carrier/facilities';
+import { viewerFromSession } from '@/lib/carrier/facility-visibility';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 const FacilityUpdateSchema = z.object({
   name: z.string().min(1).optional(),
@@ -40,7 +42,10 @@ export async function GET(
 
   try {
     const { id } = await params;
-    const facility = await getFacility(orgId, id);
+    // Section 9: a residence is not fetchable by id either, or the list filter
+    // would only be a suggestion.
+    const db = await getTenantPrismaForOrg(orgId, session.userId);
+    const facility = await getFacility(orgId, id, await viewerFromSession(db, orgId, session));
     if (!facility) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ data: facility });
@@ -70,7 +75,13 @@ export async function PATCH(
       );
     }
 
-    const facility = await updateFacility(orgId, id, parsed.data);
+    const db = await getTenantPrismaForOrg(orgId, session.userId);
+    const facility = await updateFacility(
+      orgId,
+      id,
+      parsed.data,
+      await viewerFromSession(db, orgId, session),
+    );
     if (!facility) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ data: facility });
@@ -91,7 +102,12 @@ export async function DELETE(
 
   try {
     const { id } = await params;
-    const result = await softDeleteFacility(orgId, id);
+    const db = await getTenantPrismaForOrg(orgId, session.userId);
+    const result = await softDeleteFacility(
+      orgId,
+      id,
+      await viewerFromSession(db, orgId, session),
+    );
     if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ data: { id: result.id, status: 'inactive' } });

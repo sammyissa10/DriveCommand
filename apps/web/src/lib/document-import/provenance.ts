@@ -179,12 +179,66 @@ export interface TemplateProvenance extends SlotProvenance<TemplateProvenanceVia
   offer: TemplateOfferRecord | null;
 }
 
+/**
+ * How this import came to close its working day where it does (spec Section 9).
+ *
+ * The four vias are the three resolution layers plus the human one, and keeping
+ * them apart is what lets the card say *"your company's default"* rather than
+ * *"someone chose this"* about a value nobody chose. `MANUAL` is the per-trip
+ * layer — the third rung of "tenant default, then template override, then
+ * per-trip choice" — so the presence of a `MANUAL` record IS the per-trip
+ * override, not a separate flag beside it.
+ */
+export type EndStopProvenanceVia =
+  /** Committed by the system from `Tenant."defaultEndStopPolicy"`. */
+  | 'TENANT_DEFAULT'
+  /** Committed by the system from the selected template's override. */
+  | 'TEMPLATE_OVERRIDE'
+  /** A person chose this policy, and possibly its facility, for this trip. */
+  | 'MANUAL';
+
+export interface EndStopProvenance extends SlotProvenance<EndStopProvenanceVia> {
+  /** One of the five. Validated against the CHECK's vocabulary on read. */
+  policy: string;
+  /**
+   * The facility the policy resolved to when the record was written, or null.
+   *
+   * Null is ordinary and not a failure: `NONE` has no facility, and
+   * `DRIVER_RESIDENCE` has none until a driver is assigned (Phase 8). What it is
+   * NOT is a cache — the view re-resolves the policy on every read, and this is
+   * the answer that was true when someone decided, kept so the "why" can be
+   * honest about it if the two ever disagree.
+   */
+  facilityId: string | null;
+  /**
+   * ISO 8601, set when Phase 8's commit wrote the real `CarrierStop`.
+   *
+   * The same two-moments distinction `TemplateProvenance.appliedAt` draws, and
+   * for the same reason: choosing where the day ends is a decision, and creating
+   * a stop row with a sequence and a geofence is a write. A row where the second
+   * has happened must never be re-materialised, or a trip grows two end stops.
+   */
+  materialisedAt: string | null;
+}
+
 export interface ResolutionProvenance {
   client?: ClientProvenance;
   contract?: ContractProvenance;
   /** Keyed by consignment index, as a string. See `StopProvenance`. */
   stops?: Record<string, StopProvenance>;
   template?: TemplateProvenance;
+  /**
+   * The end stop decision (spec Section 9).
+   *
+   * **The key's PRESENCE is the decision, and clearing it means DELETING the
+   * key** — never writing another one that says "undecided". That is quick-516's
+   * lesson applied before it could be re-learned: `buildEndStopSlot` short-
+   * circuits the ladder on this key exactly the way `buildTemplateSlot` does on
+   * `template`, so a "Use my company default again" control wired to a re-fetch
+   * would re-read the very record it was trying to leave. It is a POST, and it
+   * removes the key.
+   */
+  endStop?: EndStopProvenance;
 }
 
 // ---------------------------------------------------------------------------
@@ -195,6 +249,7 @@ const CLIENT_VIAS: readonly string[] = ['MANUAL', 'MANUAL_CREATE', 'PROFILE_ALIA
 const CONTRACT_VIAS: readonly string[] = ['MANUAL', 'SINGLE_ACTIVE', 'PROFILE_PIN', 'CREATED_THIS_IMPORT'];
 const STOP_VIAS: readonly string[] = ['EXTERNAL_REF', 'NORMALISED_ADDRESS', 'MANUAL', 'MANUAL_CREATE'];
 const TEMPLATE_VIAS: readonly string[] = ['AUTO_MATCH', 'MANUAL', 'NONE', 'AUTO_CREATED', 'SAVED_FROM_IMPORT'];
+const END_STOP_VIAS: readonly string[] = ['TENANT_DEFAULT', 'TEMPLATE_OVERRIDE', 'MANUAL'];
 
 /** The stored object, or `{}` for a legacy row or anything malformed. */
 export function provenanceOf(record: ImportRecord): ResolutionProvenance {
@@ -263,6 +318,25 @@ export function stopProvenanceOf(record: ImportRecord): Record<string, StopProve
   return out;
 }
 
+/**
+ * The end stop record, or null.
+ *
+ * A record whose `policy` is not one of the five the CHECK constraints admit is
+ * discarded rather than returned. The vocabulary is repeated here as strings
+ * rather than imported from `end-stop-constants.ts` for the same reason the
+ * other three lists above are: this file is the parser and must not depend on
+ * any feature module, or every phase's constants end up importable from the
+ * shape layer. The two lists are pinned together by a test.
+ */
+export function endStopProvenanceOf(record: ImportRecord): EndStopProvenance | null {
+  const slot = slotProvenance(provenanceOf(record).endStop, END_STOP_VIAS);
+  if (!slot) return null;
+  const endStop = slot as EndStopProvenance;
+  const POLICIES = ['RETURN_TO_ORIGIN', 'HOME_BASE', 'DESIGNATED_PARKING', 'DRIVER_RESIDENCE', 'NONE'];
+  if (typeof endStop.policy !== 'string' || !POLICIES.includes(endStop.policy)) return null;
+  return endStop;
+}
+
 // ---------------------------------------------------------------------------
 // Writing
 // ---------------------------------------------------------------------------
@@ -313,6 +387,21 @@ export function stampTemplate(input: TemplateProvenanceInput, userId: string): T
     templateName: input.templateName,
     appliedAt: input.appliedAt ?? null,
     offer: input.offer ?? null,
+  };
+}
+
+export interface EndStopProvenanceInput extends ProvenanceInput<EndStopProvenanceVia> {
+  policy: string;
+  facilityId: string | null;
+  materialisedAt?: string | null;
+}
+
+export function stampEndStop(input: EndStopProvenanceInput, userId: string): EndStopProvenance {
+  return {
+    ...stamp(input, userId),
+    policy: input.policy,
+    facilityId: input.facilityId,
+    materialisedAt: input.materialisedAt ?? null,
   };
 }
 

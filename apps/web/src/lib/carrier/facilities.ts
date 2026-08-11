@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import type { PrismaClient } from '@/generated/prisma';
+import { facilityVisibilityWhere, type FacilityViewer } from './facility-visibility';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -46,7 +47,20 @@ export type FacilityUpdateInput = Partial<FacilityCreateInput>;
 // Functions
 // ---------------------------------------------------------------------------
 
-export async function listFacilities(orgId: string, filters: ListFacilitiesFilters = {}) {
+/**
+ * The general facility picker and list.
+ *
+ * `viewer` is OPTIONAL and omitting it excludes driver residences — spec
+ * Section 9's "not in the general picker", enforced in the `where` rather than
+ * in whatever renders the result. Default deny is chosen so an existing call
+ * site that was never taught about viewers leaks nothing; see
+ * `facility-visibility.ts`.
+ */
+export async function listFacilities(
+  orgId: string,
+  filters: ListFacilitiesFilters = {},
+  viewer?: FacilityViewer | null,
+) {
   const tenantPrisma = await getTenantPrisma();
   const { facilityType, search, lat, lng, radiusMiles, page = 1, pageSize = 50 } = filters;
   const skip = (page - 1) * pageSize;
@@ -77,6 +91,8 @@ export async function listFacilities(orgId: string, filters: ListFacilitiesFilte
     ...(facilityType ? { facilityType } : {}),
     ...(search ? { name: { contains: search, mode: 'insensitive' as const } } : {}),
     ...(proximityIds != null ? { id: { in: proximityIds } } : {}),
+    // Driver residences: server-side, never a UI hide (spec Section 9).
+    ...facilityVisibilityWhere(viewer),
   };
 
   const [items, total] = await Promise.all([
@@ -92,13 +108,16 @@ export async function listFacilities(orgId: string, filters: ListFacilitiesFilte
   return { items, total };
 }
 
-export async function getFacility(orgId: string, id: string) {
+/** One facility. Same default-deny rule as `listFacilities` — a residence is
+ *  not fetchable by id either, or the list filter would be a suggestion. */
+export async function getFacility(orgId: string, id: string, viewer?: FacilityViewer | null) {
   const tenantPrisma = await getTenantPrisma();
   return tenantPrisma.carrierFacility.findFirst({
     where: {
       id,
       orgId,
       NOT: { facilityType: { startsWith: 'inactive_' } },
+      ...facilityVisibilityWhere(viewer),
     },
   });
 }
@@ -129,10 +148,22 @@ export async function createFacility(
   });
 }
 
-export async function updateFacility(orgId: string, id: string, data: FacilityUpdateInput) {
+export async function updateFacility(
+  orgId: string,
+  id: string,
+  data: FacilityUpdateInput,
+  viewer?: FacilityViewer | null,
+) {
   const tenantPrisma = await getTenantPrisma();
   const existing = await tenantPrisma.carrierFacility.findFirst({
-    where: { id, orgId, NOT: { facilityType: { startsWith: 'inactive_' } } },
+    // Same filter as the read: a facility you may not see is not one you may
+    // edit, or "server-side filter" would mean "hidden but writable".
+    where: {
+      id,
+      orgId,
+      NOT: { facilityType: { startsWith: 'inactive_' } },
+      ...facilityVisibilityWhere(viewer),
+    },
   });
   if (!existing) return null;
 
@@ -142,9 +173,11 @@ export async function updateFacility(orgId: string, id: string, data: FacilityUp
   });
 }
 
-export async function softDeleteFacility(orgId: string, id: string) {
+export async function softDeleteFacility(orgId: string, id: string, viewer?: FacilityViewer | null) {
   const tenantPrisma = await getTenantPrisma();
-  const existing = await tenantPrisma.carrierFacility.findFirst({ where: { id, orgId } });
+  const existing = await tenantPrisma.carrierFacility.findFirst({
+    where: { id, orgId, ...facilityVisibilityWhere(viewer) },
+  });
   if (!existing) return null;
 
   // NOTE: CarrierFacility lacks an 'active' column. Soft-delete uses facilityType prefix convention.

@@ -4,6 +4,7 @@ import { MapPin, Package, Clock, CheckCircle, Truck, ArrowRight, Play } from 'lu
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
+import { maskFacilitiesForViewer } from '@/lib/carrier/facility-visibility';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,10 +63,25 @@ export default async function DriverTripsPage() {
   // Batch fetch facility details
   const facilityIds = [...new Set(trips.flatMap((t) => t.stops.map((s) => s.facilityId)))];
   const facilities = facilityIds.length
-    ? await prisma.carrierFacility.findMany({
-        where: { id: { in: facilityIds } },
-        select: { id: true, name: true, city: true, state: true },
-      })
+    ? maskFacilitiesForViewer(
+        await prisma.carrierFacility.findMany({
+          where: { id: { in: facilityIds } },
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            state: true,
+            // Read only so the mask can decide. Never rendered.
+            isDriverResidence: true,
+            residentDriverId: true,
+          },
+        }),
+        // THIS driver, so their own home shows in full and nobody else's would
+        // (spec Section 9: "visible only to that driver…"). The id is the
+        // carrier_drivers row this page already holds — NOT User.id, which is
+        // not what resident_driver_id points at.
+        { role: session.role, permissions: session.permissions, carrierDriverId: driver.id },
+      )
     : [];
   const facilityMap = Object.fromEntries(facilities.map((f) => [f.id, f]));
 

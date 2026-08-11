@@ -42,6 +42,28 @@ export interface UserPermissions {
   // Other
   aiDocuments: boolean;       // /ai-documents
 
+  /**
+   * See drivers' home addresses (spec Section 9, Document Import Phase 7).
+   *
+   * THE ONE KEY THAT IS NOT DEFAULT-ALLOW. Every other permission here follows
+   * the file's stated convention — a MANAGER has it unless an owner switched it
+   * off — because the cost of a surprise is a report appearing in a sidebar.
+   * This one guards a driver's house, and Section 9 says "dispatchers with
+   * **explicit** permission", so it defaults to `false` in
+   * `DEFAULT_MANAGER_PERMISSIONS` and the check that reads it
+   * (`canSeeDriverResidences` in `lib/carrier/facility-visibility.ts`) demands a
+   * literal `true` rather than "not false".
+   *
+   * Do NOT gate it through `hasPermission()`. That helper resolves a MANAGER as
+   * `permissions?.[key] !== false`, so a user whose stored permissions predate
+   * this key — which is every manager in every tenant on the deploy that adds it
+   * — would read as permitted.
+   *
+   * Not route-gated: there is no page to block. It filters rows inside pages
+   * these users are otherwise entitled to see.
+   */
+  driverResidences: boolean;
+
   // Always accessible (NOT in permissions — hardcoded):
   // /support — always accessible to managers
   // /settings — limited view for managers (no team-permissions, no subscription)
@@ -69,6 +91,8 @@ export const DEFAULT_MANAGER_PERMISSIONS: UserPermissions = {
   performanceReport: true,
   liveMap: true,
   aiDocuments: true,
+  // The single exception to "default all true" — see the interface comment.
+  driverResidences: false,
 };
 
 /** Full permissions for OWNER role — always all true. */
@@ -88,6 +112,7 @@ export const OWNER_PERMISSIONS: UserPermissions = {
   performanceReport: true,
   liveMap: true,
   aiDocuments: true,
+  driverResidences: true,
 };
 
 // ============================================================
@@ -125,6 +150,15 @@ export const PERMISSION_SECTIONS: PermissionSection[] = [
       { key: 'carrierDrivers', label: 'Carrier Drivers', description: 'View and manage carrier drivers', route: '/carrier/fleet/drivers' },
       { key: 'carrierTrucks', label: 'Carrier Trucks', description: 'View and manage carrier trucks', route: '/carrier/fleet/trucks' },
       { key: 'facilities', label: 'Facilities', description: 'View and manage facilities', route: '/carrier/facilities' },
+      // Off by default, unlike everything else on this screen. The description
+      // says so, because an owner toggling it on is granting access to homes.
+      {
+        key: 'driverResidences',
+        label: 'Driver Home Addresses',
+        description:
+          'See drivers’ home addresses in facility lists, pickers and end-stop choices. Off unless you turn it on.',
+        route: '/carrier/facilities',
+      },
     ],
   },
   {

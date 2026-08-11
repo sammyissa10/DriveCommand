@@ -78,7 +78,38 @@ export interface SaveRouteTemplateCore {
   /** Lands the template in "Suggested templates" until a human confirms it. */
   isSuggested?: boolean;
   createdById?: string;
+  /**
+   * This route's end stop override — the SECOND rung of spec Section 9's
+   * "tenant default, then template override, then per-trip choice".
+   *
+   * `route_templates.end_stop_policy` is nullable, and null is meaningful: it
+   * says "this route has no opinion, use the company default". So an omitted
+   * field leaves the column exactly as it was, and passing `null` explicitly is
+   * how a caller clears an override — the same distinction between "not
+   * mentioned" and "clear it" that the stop-review patch draws.
+   *
+   * The value is checked against the CHECK constraint's five below rather than
+   * trusted. TypeScript sees a `String` column; Postgres sees
+   * `dispatches_end_stop_policy_check`, and the gap between those two is where a
+   * 23514 lives (DEC-14).
+   */
+  endStopPolicy?: string | null;
 }
+
+/**
+ * `route_templates_end_stop_policy_check`, read from `pg_constraint` on
+ * 2026-08-10. Restated here rather than imported from
+ * `lib/document-import/end-stop-constants.ts` because this file predates that
+ * module and belongs to the carrier layer, which must not depend on a feature
+ * module. A test pins the two lists together.
+ */
+const END_STOP_POLICIES: readonly string[] = [
+  'RETURN_TO_ORIGIN',
+  'HOME_BASE',
+  'DESIGNATED_PARKING',
+  'DRIVER_RESIDENCE',
+  'NONE',
+];
 
 export interface SaveRouteTemplateOutcome {
   success: boolean;
@@ -124,6 +155,7 @@ export async function saveRouteTemplateCore(
     sourceImportId,
     isSuggested,
     createdById,
+    endStopPolicy,
   } = data;
 
   // Validate required fields
@@ -137,6 +169,10 @@ export async function saveRouteTemplateCore(
   if (stops.length === 0) return { success: false, error: 'At least one stop is required' };
   if (stops.some((s) => !s.facility_id)) {
     return { success: false, error: 'All stops must have a facility selected.' };
+  }
+  // Rejected here rather than thrown by Postgres as a 23514 nobody can act on.
+  if (endStopPolicy != null && !END_STOP_POLICIES.includes(endStopPolicy)) {
+    return { success: false, error: 'That is not an end stop this system has.' };
   }
 
   // Verify clientId belongs to this org
@@ -215,6 +251,9 @@ export async function saveRouteTemplateCore(
     ...(notes ? { notes } : {}),
     ...(sourceImportId ? { sourceImportId } : {}),
     ...(isSuggested != null ? { isSuggested } : {}),
+    // `undefined` leaves the column alone; an explicit `null` clears the
+    // override. See the field's comment — the two are different requests.
+    ...(endStopPolicy !== undefined ? { endStopPolicy } : {}),
   };
 
   // Map the stop builder's shape → RouteTemplateStop DB fields

@@ -52,6 +52,14 @@ import {
   respondToTemplateOffer,
   saveImportAsRouteTemplate,
 } from './template-service';
+import { clearEndStopChoice, getEndStopView, setEndStopChoice } from './end-stop-service';
+import {
+  applyImportOptimisation,
+  applyTemplateOptimisation,
+  getImportOptimisation,
+  getTemplateOptimisation,
+} from './optimisation-service';
+import type { FacilityViewer } from '@/lib/carrier/facility-visibility';
 import type { BulkApplyInput, StopPatch } from './stop-review';
 import type {
   CanonicalBulkAppliedField,
@@ -789,6 +797,130 @@ export async function handleTemplateOfferResponse(
   }
 
   return err("action must be one of 'save', 'update' or 'dismiss'.", 400);
+}
+
+// ---------------------------------------------------------------------------
+// End stop policy (spec Section 9, Part A)
+// ---------------------------------------------------------------------------
+
+/** GET the end stop row. Read-only — see `end-stop-lookup.ts`. */
+export async function handleGetEndStop(
+  orgId: string,
+  userId: string,
+  importId: string,
+  viewer?: FacilityViewer | null,
+): Promise<HandlerResult> {
+  const view = await getEndStopView(orgId, userId, importId, viewer);
+  if (!view) return err('Import not found.', 404);
+  return ok(view);
+}
+
+/**
+ * POST — decide the end stop.
+ *
+ * Two actions, and the second is the one worth reading. `reset` is a WRITE: it
+ * deletes `resolution_provenance.endStop` so the tenant default and the template
+ * override apply again. There is no policy value that means "undecided" —
+ * `NONE` means "this trip ends nowhere", which is a different answer — so the
+ * only way back is removing the key, and a control that has to change a stored
+ * decision is a POST, always (quick-516).
+ *
+ * `facilityId` is accepted for `DESIGNATED_PARKING` and rejected for every other
+ * policy: the rest work out their own facility, and a client that could name one
+ * could pin an end stop the ladder never resolved.
+ */
+export async function handleSetEndStop(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  const action = body.action;
+
+  if (action === 'reset') {
+    return stopReviewCall('clear end stop', { orgId, importId }, () =>
+      clearEndStopChoice(orgId, userId, importId),
+    );
+  }
+
+  if (action === 'select') {
+    const policy = typeof body.policy === 'string' ? body.policy.trim() : '';
+    if (!policy) return err('policy is required.', 400);
+    const facilityId = typeof body.facilityId === 'string' ? body.facilityId.trim() || null : null;
+    return stopReviewCall('set end stop', { orgId, importId, policy }, () =>
+      setEndStopChoice(orgId, userId, importId, policy, facilityId),
+    );
+  }
+
+  return err("action must be 'select' or 'reset'.", 400);
+}
+
+// ---------------------------------------------------------------------------
+// Route optimisation (spec Section 9, Part B)
+// ---------------------------------------------------------------------------
+
+/**
+ * GET the suggestion for an import. **Read-only, and it reorders nothing.**
+ *
+ * Answers `offered: false` far more often than not — below the floor, already
+ * best, stops unchanged since the template, no matrix. Section 9: *"below a
+ * configurable floor, do not offer it at all."*
+ */
+export async function handleGetOptimisation(
+  orgId: string,
+  userId: string,
+  importId: string,
+  viewer?: FacilityViewer | null,
+): Promise<HandlerResult> {
+  const view = await getImportOptimisation(orgId, userId, importId, viewer);
+  if (!view) return err('Import not found.', 404);
+  return ok(view);
+}
+
+/**
+ * POST — "Use suggested order".
+ *
+ * The only action, deliberately: "Keep current order" is not a request, it is
+ * the absence of one, and an endpoint for it would be an endpoint that writes
+ * when a dispatcher declines. The server recomputes the suggestion rather than
+ * applying an order the body carried, and the reorder itself goes through Phase
+ * 5's `reorderStops`.
+ */
+export async function handleApplyOptimisation(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+  viewer?: FacilityViewer | null,
+): Promise<HandlerResult> {
+  if (body.action !== 'apply') return err("action must be 'apply'.", 400);
+  return stopReviewCall('apply optimised order', { orgId, importId }, () =>
+    applyImportOptimisation(orgId, userId, importId, viewer),
+  );
+}
+
+/** GET the suggestion for a saved route template. Read-only. */
+export async function handleGetTemplateOptimisation(
+  orgId: string,
+  userId: string,
+  templateId: string,
+): Promise<HandlerResult> {
+  const view = await getTemplateOptimisation(orgId, userId, templateId);
+  if (!view) return err('Template not found.', 404);
+  return ok(view);
+}
+
+/** POST — apply the suggested order to a saved route template. */
+export async function handleApplyTemplateOptimisation(
+  orgId: string,
+  userId: string,
+  templateId: string,
+  body: Record<string, unknown>,
+): Promise<HandlerResult> {
+  if (body.action !== 'apply') return err("action must be 'apply'.", 400);
+  return stopReviewCall('apply optimised template order', { orgId, templateId }, () =>
+    applyTemplateOptimisation(orgId, userId, templateId),
+  );
 }
 
 // ---------------------------------------------------------------------------

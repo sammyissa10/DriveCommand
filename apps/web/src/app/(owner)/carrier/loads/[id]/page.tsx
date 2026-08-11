@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { facilityVisibilityWhere, maskFacilitiesForViewer, staffViewer } from '@/lib/carrier/facility-visibility';
 import { getLoad } from '@/lib/carrier/loads';
 import type { StopInput } from '@/lib/carrier/loads';
 import { LoadForm } from '@/components/carrier/loads/LoadForm';
@@ -81,7 +82,8 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
       orderBy: { contractName: 'asc' },
     }),
     prisma.carrierFacility.findMany({
-      where: { orgId },
+      // A picker. Driver residences are excluded server-side (spec Section 9).
+      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),
@@ -124,10 +126,24 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   if (stopsForMapping.length === 0 && !load.dispatchId && load.pendingStopsJson) {
     const parsedStops = JSON.parse(load.pendingStopsJson as string) as StopInput[];
     const facilityIds = [...new Set(parsedStops.map((s) => s.facility_id).filter(Boolean))];
-    const facilities = await prisma.carrierFacility.findMany({
-      where: { id: { in: facilityIds }, orgId },
-      select: { id: true, name: true, city: true, state: true },
-    });
+    const facilities = maskFacilitiesForViewer(
+      await prisma.carrierFacility.findMany({
+        where: { id: { in: facilityIds }, orgId },
+        select: {
+          id: true,
+          name: true,
+          city: true,
+          state: true,
+          // Read only so the mask can decide. Never rendered.
+          isDriverResidence: true,
+          residentDriverId: true,
+        },
+      }),
+      // This load's own stops — masked, not removed. Dropping the row would
+      // delete the end stop from the itinerary, which is the untracked return
+      // Part A exists to fix.
+      staffViewer(session),
+    );
     const facilityMap = new Map(facilities.map((f) => [f.id, f]));
     mappedStops = parsedStops.map((s, i) => {
       const fac = facilityMap.get(s.facility_id);

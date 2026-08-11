@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { facilityVisibilityWhere, staffViewer } from '@/lib/carrier/facility-visibility';
 import { RouteTemplateForm } from '@/components/carrier/templates/RouteTemplateForm';
 import { NewTemplateMobile } from './NewTemplateMobile';
 import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
@@ -32,7 +33,8 @@ export default async function NewRouteTemplatePage() {
       orderBy: { unitNumber: 'asc' },
     }),
     prisma.carrierFacility.findMany({
-      where: { orgId },
+      // A picker. Driver residences are excluded server-side (spec Section 9).
+      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),

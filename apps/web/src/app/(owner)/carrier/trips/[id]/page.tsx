@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getTrip } from '@/lib/carrier/trips';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { facilityVisibilityWhere, maskFacilitiesForViewer, staffViewer } from '@/lib/carrier/facility-visibility';
 import { hasPermission } from '@/lib/auth/permissions';
 import { DispatchHeader } from '@/components/carrier/dispatches/DispatchHeader';
 import { StopTimeline } from '@/components/carrier/dispatches/StopTimeline';
@@ -58,10 +59,25 @@ export default async function DispatchDetailPage({ params }: Props) {
   // Fetch facility names for all stops
   const facilityIds = [...new Set(dispatch.stops.map((s) => s.facilityId))];
   const facilities = facilityIds.length
-    ? await prisma.carrierFacility.findMany({
-        where: { id: { in: facilityIds }, orgId },
-        select: { id: true, name: true, addressLine1: true, city: true, state: true },
-      })
+    ? maskFacilitiesForViewer(
+        await prisma.carrierFacility.findMany({
+          where: { id: { in: facilityIds }, orgId },
+          select: {
+            id: true,
+            name: true,
+            addressLine1: true,
+            city: true,
+            state: true,
+            // Read only so the mask can decide. Never rendered.
+            isDriverResidence: true,
+            residentDriverId: true,
+          },
+        }),
+        // These are THIS trip's own stops, so the row stays and only the address
+        // goes — dropping it would delete the end stop from the itinerary, which
+        // is the untracked return Part A exists to fix.
+        staffViewer(session),
+      )
     : [];
   const facilityMap: Record<string, { name: string; addressLine1: string | null; city: string | null; state: string | null }> = {};
   for (const f of facilities) facilityMap[f.id] = f;
@@ -150,7 +166,8 @@ export default async function DispatchDetailPage({ params }: Props) {
   // Every facility in the org — the mobile Stops tab picks from these when adding
   // a stop inline (desktop uses a search modal instead).
   const allFacilities = await prisma.carrierFacility.findMany({
-    where: { orgId },
+    // A picker. Driver residences are excluded server-side (spec Section 9).
+    where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
     select: { id: true, name: true, city: true, state: true },
     orderBy: { name: 'asc' },
   });

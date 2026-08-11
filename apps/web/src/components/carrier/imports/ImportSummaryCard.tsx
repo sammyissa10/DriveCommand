@@ -46,6 +46,7 @@ import { ContractDecision, contractLabel, contractRateLabel } from './ContractDe
 import { WhyPopover } from './WhyPopover';
 import { StopResolutionPanel } from './StopResolutionPanel';
 import { TemplateDecision } from './TemplateDecision';
+import { EndStopDecision } from './EndStopDecision';
 
 type OpenRow = 'client' | 'contract' | 'date' | null;
 
@@ -149,6 +150,14 @@ export function ImportSummaryCard({ view, onChange }: Props) {
             presentations live in the component; which one is shown is decided
             server-side by the score, so this file compares nothing to 0.75. */}
         <TemplateDecision importId={view.id} slot={r.template} onResolved={apply} />
+
+        {/* Where the day ends — real as of Phase 7 (spec Section 9). Loads its
+            own slot, because the resolution payload is Phase 3's shape and the
+            end stop resolves against three layers this card does not hold. Like
+            every other row it has a change affordance, and its "use my company
+            default" is a POST that removes the stored decision rather than a
+            re-read that would return it. */}
+        <EndStopDecision importId={view.id} />
 
         <DateRow
           importId={view.id}

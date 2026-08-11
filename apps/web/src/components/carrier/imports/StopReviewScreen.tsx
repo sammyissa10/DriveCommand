@@ -71,6 +71,7 @@ import type { StopReviewView } from '@/lib/document-import/stop-review';
 import { StopReviewRowItem } from './StopReviewRow';
 import { StopDetailEditor } from './StopDetailEditor';
 import { StopBulkBar, type BulkPayload } from './StopBulkBar';
+import { OptimisationSuggestion } from './OptimisationSuggestion';
 
 const GRID_ID = 'document-import-stop-review';
 
@@ -238,6 +239,14 @@ export function StopReviewScreen({
       </div>
 
       <p className="text-sm text-muted-foreground">{view.note}</p>
+
+      {/* ---- the optimisation suggestion (spec Section 9, Part B) ----
+          Renders nothing at all when the saving is below the floor, when this
+          order is already the best one, or when the stops have not changed since
+          the applied template. Sequence stays the source of truth: this offers,
+          and "Use suggested order" goes through the SAME reorder write a drag
+          uses, so a reordered list here is a reordered list on the server. */}
+      <OptimisationSuggestion importId={importId} onApplied={() => void reload()} />
 
       {/* ---- one dismissible warning summary. Never a modal. ---- */}
       {view.warnings.length > 0 && warningsOpen ? (

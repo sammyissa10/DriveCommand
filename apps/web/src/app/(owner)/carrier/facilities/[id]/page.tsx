@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getFacility } from '@/lib/carrier/facilities';
+import { staffViewer } from '@/lib/carrier/facility-visibility';
 import { FacilityForm } from '@/components/carrier/facilities/FacilityForm';
 import { DeleteFacilityButton } from './DeleteFacilityButton';
 import { FacilityEditMobile, type FacilityContact } from './FacilityEditMobile';
@@ -20,7 +21,9 @@ export default async function FacilityDetailPage({ params }: Props) {
 
   const { id } = await params;
   const [facility, facilityAudit] = await Promise.all([
-    getFacility(session.tenantId, id),
+    // A residence 404s for a manager without the permission — the detail page
+    // must not be the way round the list filter (spec Section 9).
+    getFacility(session.tenantId, id, staffViewer(session)),
     prisma.carrierFacility.findUnique({
       where: { id },
       select: {

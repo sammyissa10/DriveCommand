@@ -9,6 +9,7 @@ import { TemplateStatusToggle } from './TemplateStatusToggle';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
+import { facilityVisibilityWhere, staffViewer } from '@/lib/carrier/facility-visibility';
 import { TemplateEditMobile } from './TemplateEditMobile';
 import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
@@ -64,7 +65,8 @@ export default async function EditRouteTemplatePage({ params }: Props) {
         })
       : Promise.resolve([]),
     prisma.carrierFacility.findMany({
-      where: { orgId },
+      // A picker. Driver residences are excluded server-side (spec Section 9).
+      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),

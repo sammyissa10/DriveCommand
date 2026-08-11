@@ -30,6 +30,7 @@ import {
 } from '@drivecommand/api-client'
 import { BottomSheet } from '../ui/BottomSheet'
 import { haptic } from '../../lib/haptics'
+import { ImportOptimisation } from './ImportOptimisation'
 import { useThemeColors, radii, spacing, typography } from '../../constants/tokens'
 
 /**
@@ -260,6 +261,13 @@ export function StopReview({
             </View>
 
             <Text style={{ ...typography.footnote, color: c.textSecondary }}>{view.note}</Text>
+
+            {/* The optimisation suggestion (spec Section 9, Part B). Renders
+                nothing when the saving is below the floor, when this order is
+                already the best one, or when the stops have not changed since the
+                applied template. Sequence stays the source of truth: accepting
+                goes through the SAME reorder write the arrows use. */}
+            <ImportOptimisation token={token} importId={importId} onApplied={() => void refresh()} />
 
             {/* One dismissible summary. Never a modal (Section 10). */}
             {view.warnings.length > 0 && warningsOpen ? (

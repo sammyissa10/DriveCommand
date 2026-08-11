@@ -69,6 +69,17 @@ export type {
   TemplateApplyResult,
   TemplateOfferView,
   SaveTemplateResult,
+  // Phase 7 — end stop policy and route optimisation (spec Section 9).
+  EndStopPolicy,
+  EndStopPolicySource,
+  EndStopSlotState,
+  EndStopFacilityView,
+  EndStopPolicyOption,
+  EndStopSlotView,
+  OptimisationDeclineReason,
+  OptimisationSuggestion,
+  OptimisationView,
+  OptimisationApplyResult,
 } from './owner-imports'
 export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, DirectionsResult, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType, DriverRoute, DriverRouteLoad, DriverRouteTruck } from './driver'

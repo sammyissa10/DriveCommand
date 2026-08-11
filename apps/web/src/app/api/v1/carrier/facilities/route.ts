@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listFacilities, createFacility } from '@/lib/carrier/facilities';
+import { viewerFromSession } from '@/lib/carrier/facility-visibility';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 const FacilityCreateSchema = z.object({
   name: z.string().min(1),
@@ -49,7 +51,17 @@ export async function GET(req: NextRequest) {
     const lng = lngRaw != null ? parseFloat(lngRaw) : undefined;
     const radiusMiles = radiusRaw != null ? parseFloat(radiusRaw) : undefined;
 
-    const result = await listFacilities(orgId, { facilityType, search, lat, lng, radiusMiles, page, pageSize });
+    // The driver-residence rule is applied in the query, not in whatever renders
+    // this (spec Section 9). Testing it means calling THIS endpoint as another
+    // driver, which is the phase's stated verification.
+    const db = await getTenantPrismaForOrg(orgId, session.userId);
+    const viewer = await viewerFromSession(db, orgId, session);
+
+    const result = await listFacilities(
+      orgId,
+      { facilityType, search, lat, lng, radiusMiles, page, pageSize },
+      viewer,
+    );
 
     return NextResponse.json({ data: { ...result, page, pageSize } });
   } catch (err) {

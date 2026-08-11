@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getTrip } from '@/lib/carrier/trips';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { maskFacilitiesForViewer, staffViewer } from '@/lib/carrier/facility-visibility';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -73,10 +74,21 @@ export default async function StopsOverviewPage({ params }: Props) {
   // Fetch facility names for all stops
   const facilityIds = [...new Set(dispatch.stops.map((s) => s.facilityId))];
   const facilities = facilityIds.length
-    ? await prisma.carrierFacility.findMany({
-        where: { id: { in: facilityIds }, orgId },
-        select: { id: true, name: true, city: true, state: true },
-      })
+    ? maskFacilitiesForViewer(
+        await prisma.carrierFacility.findMany({
+          where: { id: { in: facilityIds }, orgId },
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            state: true,
+            isDriverResidence: true,
+            residentDriverId: true,
+          },
+        }),
+        // This trip's own stops — masked, not removed. See the trip detail page.
+        staffViewer(session),
+      )
     : [];
   const facilityMap: Record<string, { name: string; city: string | null; state: string | null }> = {};
   for (const f of facilities) facilityMap[f.id] = f;
