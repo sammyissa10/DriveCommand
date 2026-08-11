@@ -2223,6 +2223,17 @@ model RouteTemplate {
   // ─── Document Import (Phase 1, spec Sections 6 + 8 + 9) ───────────────────
   // Overrides the tenant default; per-trip choice still wins over this.
   endStopPolicy          String?   @map("end_stop_policy")
+  /// Where the truck parks when this route's policy is `DESIGNATED_PARKING`, and
+  /// read ONLY under that policy — every other policy computes its own facility,
+  /// so the save path clears this column whenever the policy is written to
+  /// anything else rather than leaving a value nothing will ever read.
+  ///
+  /// A scalar with **no Prisma relation, deliberately**: the FK
+  /// `route_templates_end_stop_facility_id_fkey → facilities(id) ON DELETE SET NULL`
+  /// exists in the database (read off production, not inferred), and declaring the
+  /// relation here would force a back-relation on `CarrierFacility` for no benefit
+  /// — nothing ever navigates from a facility to the templates that park there.
+  endStopFacilityId      String?   @map("end_stop_facility_id") @db.Uuid
   /// Set when a template was auto-created from a committed import. Such templates
   /// land in "Suggested templates" until a human confirms (spec Section 8).
   sourceImportId         String?   @map("source_import_id") @db.Uuid
@@ -2747,6 +2758,38 @@ model DocumentProfile {
   @@index([orgId])
   @@index([clientId])
   @@map("document_profiles")
+}
+
+/// The persistent half of the route-optimisation distance matrix cache
+/// (spec Section 9: *"cache the matrix per ordered facility set"*).
+///
+/// `facility_key` is the SORTED facility-id list, so invalidation is structural:
+/// a different set is a different key. L1 lives in process memory
+/// (`optimisation-matrix.ts`); this is L2, and its whole purpose is to survive a
+/// deploy, a cold start and a second instance.
+///
+/// Three things about the shape, all of them deliberate:
+///
+///  - **There is no `updated_at` column**, so there is no `@updatedAt`. A cache
+///    HIT must not write, which is what keeps the read paths read-only, so
+///    `computed_at` genuinely means "when the provider was asked" and the TTL is
+///    measured from that.
+///  - **No tenant relation.** `org_id` is scoped in every `where`, but the table
+///    is a derived cache and there is no FK on it in the database; declaring a
+///    relation would invent one Prisma then believes in.
+///  - Every column here was **read off production** (`information_schema`) before
+///    this model was written, not inferred from the neighbours.
+model RouteMatrixCache {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId       String   @map("org_id") @db.Uuid
+  facilityKey String   @map("facility_key")
+  miles       Json
+  minutes     Json
+  computedAt  DateTime @default(now()) @map("computed_at") @db.Timestamptz
+
+  @@unique([orgId, facilityKey], map: "route_matrix_cache_org_key_unique")
+  @@index([orgId], map: "route_matrix_cache_org_idx")
+  @@map("route_matrix_cache")
 }
 
 model CarrierExpense {

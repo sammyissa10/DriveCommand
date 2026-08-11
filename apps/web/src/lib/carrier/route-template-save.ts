@@ -94,6 +94,21 @@ export interface SaveRouteTemplateCore {
    * 23514 lives (DEC-14).
    */
   endStopPolicy?: string | null;
+  /**
+   * Where the truck parks when this route's policy is `DESIGNATED_PARKING` —
+   * `route_templates.end_stop_facility_id`.
+   *
+   * Same `undefined` / `null` distinction as `endStopPolicy` above: an omitted
+   * field leaves the column exactly as it was, and an explicit `null` clears it.
+   * That is what keeps every existing caller byte-identical, and it is what stops
+   * a reorder or an auto-create from wiping a facility it never mentioned.
+   *
+   * **Validated rather than trusted.** This is a raw uuid arriving from a form,
+   * and the three things it could be — another tenant's facility, a deactivated
+   * one, or a driver's home address — are all things the database's FK will
+   * happily accept. Only the ladder's rules can reject them.
+   */
+  endStopFacilityId?: string | null;
 }
 
 /**
@@ -156,6 +171,7 @@ export async function saveRouteTemplateCore(
     isSuggested,
     createdById,
     endStopPolicy,
+    endStopFacilityId,
   } = data;
 
   // Validate required fields
@@ -231,6 +247,56 @@ export async function saveRouteTemplateCore(
     }
   }
 
+  // ---- The designated-parking facility -------------------------------------
+  // `undefined` = not mentioned = leave the column alone. Anything else is
+  // resolved into this and spread in at the bottom.
+  let endStopFacilityUpdate: string | null | undefined = undefined;
+
+  if (typeof endStopFacilityId === 'string' && endStopFacilityId.length > 0) {
+    // The policy must arrive in the SAME payload. Deliberately not resolved by
+    // reading the existing row first: every caller that sets a facility also
+    // states the policy (the form sends both; the reorder path carries both
+    // through), so a second read would only exist to let a caller be vague about
+    // a decision it has already made.
+    if (endStopPolicy !== 'DESIGNATED_PARKING') {
+      return { success: false, error: 'Only designated parking takes a facility.' };
+    }
+
+    const facility = await db.carrierFacility.findFirst({
+      where: {
+        id: endStopFacilityId,
+        orgId,
+        NOT: { facilityType: { startsWith: 'inactive_' } },
+      },
+      select: { id: true, isDriverResidence: true },
+    });
+    if (!facility) {
+      return { success: false, error: 'That facility is not available.' };
+    }
+    // A residence is never designated parking, whoever is asking — the same rule
+    // and the same sentence as `setEndStopChoice`. This core has no `viewer`, so
+    // the check is unconditional: `residenceFacilityForDriver` guards the LOOKUP,
+    // and this guards the WRITE, which is the division that service documents.
+    if (facility.isDriverResidence) {
+      return {
+        success: false,
+        error: 'A driver’s home cannot be designated parking. Choose the driver’s home policy instead.',
+      };
+    }
+
+    endStopFacilityUpdate = facility.id;
+  } else if (endStopFacilityId === null) {
+    endStopFacilityUpdate = null;
+  }
+
+  // And regardless of the above: writing the policy to anything other than
+  // `DESIGNATED_PARKING` clears the facility. A template must not carry a
+  // parking spot its own policy will never read — a value nothing reads is a
+  // value that comes back to life the next time somebody flips the policy.
+  if (endStopPolicy !== undefined && endStopPolicy !== 'DESIGNATED_PARKING') {
+    endStopFacilityUpdate = null;
+  }
+
   // Build template payload — only include optional fields if set
   const templateData = {
     templateName: templateName.trim(),
@@ -254,6 +320,7 @@ export async function saveRouteTemplateCore(
     // `undefined` leaves the column alone; an explicit `null` clears the
     // override. See the field's comment — the two are different requests.
     ...(endStopPolicy !== undefined ? { endStopPolicy } : {}),
+    ...(endStopFacilityUpdate !== undefined ? { endStopFacilityId: endStopFacilityUpdate } : {}),
   };
 
   // Map the stop builder's shape → RouteTemplateStop DB fields

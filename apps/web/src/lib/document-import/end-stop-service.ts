@@ -327,7 +327,13 @@ export async function ensureEndStopCommitted(
   const target = endStopTargetFor(resolution.policy, {
     firstPickupFacilityId: context.firstPickupFacilityId,
     homeBaseFacilityId: context.homeBaseFacilityId,
-    designatedParkingFacilityId: null,
+    // The template's own parking facility. Hardcoded `null` here until
+    // quick-520, which meant a template-level `DESIGNATED_PARKING` committed as
+    // `NEEDS_CHOICE` with no facility even though the template had already
+    // answered the question. There is deliberately no per-trip term: this
+    // function only runs when nothing is stored (the guard above), so the trip
+    // rung has nothing to say.
+    designatedParkingFacilityId: context.templateEndStopFacilityId,
     driverResidenceFacilityId: context.driverResidenceFacilityId,
     assignedDriverId: context.assignedDriverId,
   });

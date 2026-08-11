@@ -162,6 +162,14 @@ export interface EndStopContext {
   homeBaseFacilityId: string | null;
   /** `route_templates.end_stop_policy` on the selected template, or null. */
   templatePolicy: string | null;
+  /**
+   * `route_templates.end_stop_facility_id` on the selected template, or null.
+   *
+   * The template rung's answer to `DESIGNATED_PARKING` — Section 9's *"per
+   * template or trip"*, whose template half had no column to live in until
+   * quick-520. Read only under that policy.
+   */
+  templateEndStopFacilityId: string | null;
   /** The driver assigned to the trip this import created, if it has one. */
   assignedDriverId: string | null;
   /** That driver's residence, already through the visibility filter. */
@@ -229,7 +237,7 @@ export async function loadEndStopContext(
     record.routeTemplateId
       ? db.routeTemplate.findFirst({
           where: { id: record.routeTemplateId, orgId },
-          select: { endStopPolicy: true },
+          select: { endStopPolicy: true, endStopFacilityId: true },
         })
       : Promise.resolve(null),
     record.createdTripId
@@ -253,6 +261,9 @@ export async function loadEndStopContext(
     driverResidenceFacilityId,
     firstPickupFacilityId,
     stored?.facilityId ?? null,
+    // The template's parking facility can be the answer, so its display row has
+    // to be loaded here or the card resolves to a facility it cannot name.
+    template?.endStopFacilityId ?? null,
   ].filter((id): id is string => Boolean(id));
 
   const [named, parkingCandidates] = await Promise.all([
@@ -285,6 +296,7 @@ export async function loadEndStopContext(
     tenantPolicy: tenant?.defaultEndStopPolicy ?? null,
     homeBaseFacilityId: tenant?.homeBaseFacilityId ?? null,
     templatePolicy: template?.endStopPolicy ?? null,
+    templateEndStopFacilityId: template?.endStopFacilityId ?? null,
     assignedDriverId,
     driverResidenceFacilityId,
     firstPickupFacilityId,
@@ -329,11 +341,18 @@ export function buildEndStopSlot(context: EndStopContext): EndStopSlotView {
   const targetContext = {
     firstPickupFacilityId: context.firstPickupFacilityId,
     homeBaseFacilityId: context.homeBaseFacilityId,
-    // Only a stored MANUAL record can carry a parking facility: it is the "per
-    // trip" half of Section 9's "per template or trip", and the template half
-    // has no column to hold a facility id (see 07-SUMMARY.md).
+    // Section 9's "per template or trip", with BOTH halves present since
+    // quick-520 gave the template one (`route_templates.end_stop_facility_id`).
+    //
+    // **The per-trip rung outranks the template rung** — that is Section 9's
+    // order and inverting it would let a template quietly override a choice a
+    // dispatcher made for today. The `??` is safe rather than lucky: a stored
+    // decision whose policy is NOT `DESIGNATED_PARKING` resolves to a different
+    // policy entirely (it is fed in as the trip layer above), so the fallback
+    // cannot smuggle a parking facility into a trip that chose `NONE`.
     designatedParkingFacilityId:
-      stored?.policy === 'DESIGNATED_PARKING' ? stored.facilityId : null,
+      (stored?.policy === 'DESIGNATED_PARKING' ? stored.facilityId : null) ??
+      context.templateEndStopFacilityId,
     driverResidenceFacilityId: context.driverResidenceFacilityId,
     assignedDriverId: context.assignedDriverId,
   };

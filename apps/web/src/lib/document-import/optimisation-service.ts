@@ -21,8 +21,14 @@
  * and get the same code, including its permutation validation and its provenance
  * permutation.
  *
- * NO DDL. Nothing in this file adds a column; the matrix cache is in process
- * (see `optimisation-matrix.ts`).
+ * NO DDL. Nothing in this file adds a column.
+ *
+ * The matrix cache has two layers (`optimisation-matrix.ts`): L1 in process, L2
+ * in `route_matrix_cache`. Both are READ from every path here. Only the two
+ * `apply*` functions pass `persist: true`, so **only an accepted suggestion ever
+ * writes a cache row** — the `get*` functions, and therefore every GET handler,
+ * write nothing at all. That is the same rule as the header above, one layer
+ * down: a view path does not mutate, and a cache row is a mutation.
  */
 
 import type { PrismaClient } from '@/generated/prisma';
@@ -41,7 +47,7 @@ import {
   loadFacilityCandidates,
   type StopDecision,
 } from './facility-lookup';
-import { getDistanceMatrix, type MatrixPoint } from './optimisation-matrix';
+import { getDistanceMatrix, prismaMatrixStore, type MatrixPoint } from './optimisation-matrix';
 import {
   buildOptimisationSuggestion,
   spliceSuggestedOrder,
@@ -221,6 +227,14 @@ export async function importOptimisationFor(
   userId: string,
   record: ImportRecord,
   viewer?: FacilityViewer | null,
+  /**
+   * `persist: true` lets a computed matrix be written to `route_matrix_cache`.
+   * Threaded from the caller rather than decided here because the provider is
+   * reached through THIS function on both paths: the accept POST recomputes the
+   * suggestion by calling it, so setting the flag at the bottom of `apply*`
+   * would be setting it after the only call that could use it.
+   */
+  options?: { persist?: boolean },
 ): Promise<OptimisationView> {
   const { db, decisions } = await importContext(orgId, userId, record);
   const { consignments } = reviewedConsignmentsOf(record.reviewedExtraction, record.rawExtraction);
@@ -269,7 +283,13 @@ export async function importOptimisationFor(
   if (startFacilityId) facilityIds.push(startFacilityId);
 
   const points = await pointsFor(db, orgId, facilityIds);
-  const matrix = points ? await getDistanceMatrix(points) : null;
+  const matrix = points
+    ? await getDistanceMatrix(points, {
+        orgId,
+        store: prismaMatrixStore(db),
+        persist: options?.persist === true,
+      })
+    : null;
   if (!matrix) {
     return notOffered({ ...empty, declineReason: 'NO_MATRIX' }, stopsChangedFromTemplate);
   }
@@ -310,7 +330,9 @@ export async function applyImportOptimisation(
   const record = await getImportRecord(orgId, importId, userId);
   if (!record) throw new ResolutionError('Import not found.', 'NOT_FOUND');
 
-  const view = await importOptimisationFor(orgId, userId, record, viewer);
+  // `persist: true` — this is an accepted suggestion, and one of exactly two
+  // places in the codebase allowed to write a `route_matrix_cache` row.
+  const view = await importOptimisationFor(orgId, userId, record, viewer, { persist: true });
   if (!view.offered) {
     throw new ResolutionError(
       view.declineNote ?? 'There is no better order to apply.',
@@ -371,6 +393,8 @@ export async function getTemplateOptimisation(
   orgId: string,
   userId: string,
   templateId: string,
+  /** See `importOptimisationFor` — the accept path reaches the provider here. */
+  options?: { persist?: boolean },
 ): Promise<OptimisationView | null> {
   const db = await getTenantPrismaForOrg(orgId, userId);
 
@@ -379,6 +403,7 @@ export async function getTemplateOptimisation(
     select: {
       id: true,
       endStopPolicy: true,
+      endStopFacilityId: true,
       stops: {
         select: {
           id: true,
@@ -428,21 +453,40 @@ export async function getTemplateOptimisation(
     endFacilityId: null,
   });
 
-  // A template's `RETURN_TO_ORIGIN` is its own first stop, and `HOME_BASE` is the
-  // tenant's. The other three resolve per trip and contribute nothing here.
+  // A template's `RETURN_TO_ORIGIN` is its own first stop, `HOME_BASE` is the
+  // tenant's, and `DESIGNATED_PARKING` is now the template's own column — the
+  // rung Section 9 always named and that had nowhere to store a facility until
+  // quick-520. The remaining two resolve per trip and contribute nothing here.
   const endFacilityId =
     resolution.policy === 'HOME_BASE'
       ? (tenant?.homeBaseFacilityId ?? null)
       : resolution.policy === 'RETURN_TO_ORIGIN'
         ? (stops[0]?.facilityId ?? null)
-        : null;
-  const startFacilityId = endFacilityId;
+        : resolution.policy === 'DESIGNATED_PARKING'
+          ? (template.endStopFacilityId ?? null)
+          : null;
+
+  // **`startFacilityId = endFacilityId` was only ever correct because
+  // `endFacilityId` was null for every policy except the two closed-loop ones.**
+  // Adding DESIGNATED_PARKING breaks that accident: the day does not START at
+  // the yard, it merely ends there, and equating the two would silently cost
+  // every candidate order a leg from the parking spot to the first pickup and
+  // turn an open route into a loop. Mirrors `importOptimisationFor` (~line 238).
+  const closedLoop =
+    resolution.policy === 'HOME_BASE' || resolution.policy === 'RETURN_TO_ORIGIN';
+  const startFacilityId = closedLoop ? endFacilityId : null;
 
   const facilityIds = stops.map((s) => s.facilityId);
   if (endFacilityId) facilityIds.push(endFacilityId);
 
   const points = await pointsFor(db, orgId, facilityIds);
-  const matrix = points ? await getDistanceMatrix(points) : null;
+  const matrix = points
+    ? await getDistanceMatrix(points, {
+        orgId,
+        store: prismaMatrixStore(db),
+        persist: options?.persist === true,
+      })
+    : null;
   if (!matrix) return notOffered({ ...empty, declineReason: 'NO_MATRIX' }, true);
 
   const suggestion = buildOptimisationSuggestion({ stops, matrix, startFacilityId, endFacilityId });
@@ -473,7 +517,8 @@ export async function applyTemplateOptimisation(
 ): Promise<{ applied: boolean; savedMiles: number; savedMinutes: number }> {
   const db = await getTenantPrismaForOrg(orgId, userId);
 
-  const view = await getTemplateOptimisation(orgId, userId, templateId);
+  // `persist: true` — the second and last place allowed to write a cache row.
+  const view = await getTemplateOptimisation(orgId, userId, templateId, { persist: true });
   if (!view) throw new ResolutionError('Template not found.', 'NOT_FOUND');
   if (!view.offered) {
     throw new ResolutionError(
@@ -502,6 +547,11 @@ export async function applyTemplateOptimisation(
       autoGenerateDaysAhead: true,
       notes: true,
       endStopPolicy: true,
+      // Selected because the payload below re-saves the WHOLE template through
+      // `saveRouteTemplateCore`. A field missing from either the select or the
+      // payload is a field this reorder DELETES — reordering a template would
+      // silently wipe its designated parking.
+      endStopFacilityId: true,
       stops: {
         orderBy: { sequenceOrder: 'asc' },
         select: {
@@ -550,6 +600,9 @@ export async function applyTemplateOptimisation(
     autoGenerateDaysAhead: template.autoGenerateDaysAhead ?? undefined,
     notes: template.notes ?? undefined,
     endStopPolicy: template.endStopPolicy ?? undefined,
+    // Carried through for the reason given at the select: this reorder rewrites
+    // the whole row, so omitting the facility would clear it.
+    endStopFacilityId: template.endStopFacilityId ?? undefined,
     createdById: userId,
     stops: ordered.map((stop, i) => ({
       facility_id: stop.facilityId,

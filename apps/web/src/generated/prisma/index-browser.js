@@ -989,6 +989,7 @@ exports.Prisma.RouteTemplateScalarFieldEnum = {
   active: 'active',
   notes: 'notes',
   endStopPolicy: 'endStopPolicy',
+  endStopFacilityId: 'endStopFacilityId',
   sourceImportId: 'sourceImportId',
   isSuggested: 'isSuggested',
   lastAppliedAt: 'lastAppliedAt',
@@ -1257,6 +1258,15 @@ exports.Prisma.DocumentProfileScalarFieldEnum = {
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RouteMatrixCacheScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  facilityKey: 'facilityKey',
+  miles: 'miles',
+  minutes: 'minutes',
+  computedAt: 'computedAt'
 };
 
 exports.Prisma.CarrierExpenseScalarFieldEnum = {
@@ -2592,6 +2602,7 @@ exports.Prisma.ModelName = {
   DocumentImportPage: 'DocumentImportPage',
   FacilityExternalReference: 'FacilityExternalReference',
   DocumentProfile: 'DocumentProfile',
+  RouteMatrixCache: 'RouteMatrixCache',
   CarrierExpense: 'CarrierExpense',
   DriverPayRecord: 'DriverPayRecord',
   CarrierCatalogMeta: 'CarrierCatalogMeta',

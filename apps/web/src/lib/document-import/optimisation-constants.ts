@@ -126,12 +126,47 @@ export const OPTIMISATION_SOFT_WINDOW_PENALTY_MINUTES = 30;
 export const MATRIX_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 /**
- * Most matrices held at once.
+ * How long a matrix row in `route_matrix_cache` (L2) stays usable.
  *
- * A bound rather than a tuning: this cache lives in process memory (there is no
- * cache table and this phase writes no DDL), so it must not be able to grow
- * without limit on a long-lived server. 200 matrices of a dozen stops each is a
- * few hundred kilobytes.
+ * **30 days, and it is deliberately a DIFFERENT number from the 24-hour L1 TTL
+ * above.** Copying that value here would quietly defeat the feature, so the
+ * difference is the point rather than an oversight:
+ *
+ *  - *L1's 24 hours is a backstop inside ONE PROCESS'S LIFETIME*, and a serverless
+ *    process rarely lives long enough to reach it. It costs nothing because the
+ *    whole cache dies with the process anyway.
+ *  - *L2's entire purpose is to survive a deploy, a cold start and a second
+ *    instance.* A template that runs weekly rather than daily would miss on every
+ *    single run under a 24-hour ceiling — which is precisely the "optimise once,
+ *    reuse daily" case Section 9 asks for, and precisely the case an in-process
+ *    cache could never serve.
+ *
+ * There is a ceiling at all for the one thing the structural key cannot see: a
+ * facility that gets **re-geocoded**. The key is the sorted id list, and an id
+ * whose coordinates were corrected is the same id, so nothing about the key
+ * changes and the stale matrix would otherwise be served forever. Time is the
+ * only thing that retires it. 30 days bounds how long a corrected geocode can be
+ * masked while still letting a daily or weekly set hit indefinitely.
+ *
+ * Because a HIT deliberately does not refresh `computed_at` (that would be a
+ * write on a read path — see `optimisation-matrix.ts`), a set is recomputed once
+ * every 30 days and no more, rather than being kept alive by its own popularity.
+ *
+ * **Known gap, recorded rather than built:** re-geocoding a facility should
+ * ideally delete that org's cache rows naming it. No such hook exists.
+ */
+export const MATRIX_L2_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * Most matrices held at once **in L1**.
+ *
+ * A bound rather than a tuning: the in-process layer lives in the server's own
+ * memory, so it must not be able to grow without limit on a long-lived process.
+ * 200 matrices of a dozen stops each is a few hundred kilobytes.
+ *
+ * Says nothing about L2. `route_matrix_cache` is a table with one row per
+ * `(org_id, facility_key)` pair; it is bounded by how many distinct facility sets
+ * a tenant actually optimises, not by anything here.
  */
 export const MATRIX_CACHE_MAX_ENTRIES = 200;
 
