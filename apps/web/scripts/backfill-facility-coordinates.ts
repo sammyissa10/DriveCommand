@@ -98,9 +98,31 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseArgs(argv: string[]): { orgId: string | null; apply: boolean } {
+/**
+ * `--ids` is an EXPLICIT ALLOWLIST of facility ids, and it is deliberately not
+ * a class filter.
+ *
+ * The dry run sorted the NULL-coordinate set into classes (full street address
+ * / city-centroid-only / no address at all), and it would have been easy to
+ * encode "apply to Class A only" as a predicate. That would be the wrong
+ * mechanism: a predicate re-derives its own membership at run time, so a row
+ * whose address changed between the review and the write silently changes
+ * class and joins — or leaves — the write set that a human approved. An
+ * allowlist of literal ids cannot do that. What was reviewed is what is
+ * written, and anything absent from the list is untouched no matter what its
+ * data now looks like.
+ *
+ * Every other guard still applies on top of it: an allowlisted row that fails
+ * to geocode is still skipped rather than written.
+ */
+function parseArgs(argv: string[]): {
+  orgId: string | null;
+  apply: boolean;
+  ids: string[] | null;
+} {
   let orgId: string | null = null;
   let apply = false;
+  let rawIds: string | null = null;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -111,10 +133,26 @@ function parseArgs(argv: string[]): { orgId: string | null; apply: boolean } {
       i++;
     } else if (arg.startsWith('--org-id=')) {
       orgId = arg.slice('--org-id='.length);
+    } else if (arg === '--ids') {
+      rawIds = argv[i + 1] ?? null;
+      i++;
+    } else if (arg.startsWith('--ids=')) {
+      rawIds = arg.slice('--ids='.length);
     }
   }
 
-  return { orgId: orgId && orgId.trim().length > 0 ? orgId.trim() : null, apply };
+  const ids = rawIds
+    ? rawIds
+        .split(',')
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0)
+    : null;
+
+  return {
+    orgId: orgId && orgId.trim().length > 0 ? orgId.trim() : null,
+    apply,
+    ids: ids && ids.length > 0 ? ids : null,
+  };
 }
 
 function nonBlank(value: string | null | undefined): string | null {
@@ -199,11 +237,12 @@ function printRow(
 }
 
 async function main() {
-  const { orgId, apply } = parseArgs(process.argv.slice(2));
+  const { orgId, apply, ids } = parseArgs(process.argv.slice(2));
 
   if (!orgId) {
-    console.error('Usage: npx tsx --env-file=.env.local scripts/backfill-facility-coordinates.ts --org-id <uuid> [--apply]');
+    console.error('Usage: npx tsx --env-file=.env.local scripts/backfill-facility-coordinates.ts --org-id <uuid> [--ids <id,id,...>] [--apply]');
     console.error('  --org-id is REQUIRED.');
+    console.error('  --ids is OPTIONAL. When given, ONLY those facility ids are considered (explicit allowlist).');
     console.error('  --apply is OPTIONAL and DEFAULTS TO OFF (dry run). Every database here is production Supabase.');
     process.exit(1);
     return;
@@ -229,8 +268,23 @@ async function main() {
     console.log('DRY RUN — no database writes');
   }
 
+  // Printed BEFORE any write, so the approved set is on the record above the
+  // rows it produced rather than inferred from them afterwards.
+  if (ids) {
+    console.log('');
+    console.log(`[backfill] ALLOWLIST — ${ids.length} facility id(s); nothing outside this list is read or written:`);
+    ids.forEach((id, i) => console.log(`  ${String(i + 1).padStart(2)}. ${id}`));
+    console.log('');
+  } else {
+    console.log('[backfill] no --ids allowlist given — considering every NULL-coordinate facility in the org');
+  }
+
   const rows = await prisma.carrierFacility.findMany({
-    where: { orgId, OR: [{ latitude: null }, { longitude: null }] },
+    where: {
+      orgId,
+      OR: [{ latitude: null }, { longitude: null }],
+      ...(ids ? { id: { in: ids } } : {}),
+    },
     select: {
       id: true,
       name: true,
@@ -245,6 +299,22 @@ async function main() {
   });
 
   console.log(`[backfill] found ${rows.length} facilities in org ${orgId} with a NULL latitude or longitude`);
+
+  // A mistyped or already-populated id must be LOUD. Silently processing 7 rows
+  // when a human approved 8 is the failure mode this check exists to prevent.
+  if (ids) {
+    const found = new Set(rows.map((r) => r.id));
+    const unmatched = ids.filter((id) => !found.has(id));
+    if (unmatched.length > 0) {
+      console.log(
+        `[backfill] WARNING — ${unmatched.length} allowlisted id(s) matched no NULL-coordinate facility in this org ` +
+        `(wrong org, wrong id, or already populated):`
+      );
+      unmatched.forEach((id) => console.log(`  ! ${id}`));
+    } else {
+      console.log(`[backfill] allowlist fully matched: ${rows.length}/${ids.length}`);
+    }
+  }
   console.log('');
   console.log(
     pad('id', 38) + '| ' +
