@@ -114,3 +114,58 @@ DRY RUN COMPLETE — 0 rows written
 4. **Sequencing still holds:** `route_matrix_cache` is at 0 rows, so applying now is free. The cache key encodes facility ids, not coordinates, and there is no L2 invalidation hook — apply before anything triggers an optimisation, or stale pre-geocode matrices get served for up to 30 days.
 
 **Recommended apply subset:** the 8 resolved WI rows with real street addresses. Hold the 3 city-centroid IN rows and the 4 unresolvable ones.
+
+---
+
+# APPLY RUN — approved and executed 2026-08-15
+
+The user opened the gate and scoped it to the recommended subset. **8 rows written.**
+
+## Scope mechanism: an explicit allowlist, not a class filter
+
+The user required the exclusion be an allowlist of literal ids rather than an inferred class predicate. The script had no such parameter, so `--ids` was **added** — an additive argument only. The geocode, throttle, bbox, skip and write logic were not modified.
+
+The reasoning is recorded in the code and is the point of the requirement: a class predicate re-derives its own membership at run time, so a row whose address changed between the review and the write silently changes class and joins — or leaves — a write set a human had approved. An allowlist of literal ids cannot do that. What was reviewed is what was written.
+
+One safety check was added alongside it: any allowlisted id that matches no NULL-coordinate row in the org is reported as a loud `WARNING` rather than silently processing fewer rows than approved. It reported `allowlist fully matched: 8/8`.
+
+## The 8 written rows
+
+| Facility id | Name | Latitude | Longitude | bbox | `updated_at` before | `updated_at` after |
+|---|---|---|---|---|---|---|
+| `fcef652b-7a02-4fe1-bcce-60d2a55ef28d` | ANDREW TOYOTA | 43.1196513 | -87.9306311 | PASS | 2026-08-06T06:40:36.289Z | 2026-08-16T01:09:43.976Z |
+| `9aee8bfd-a3e2-4050-9315-1a08a72488ab` | BOUCHER KIA OF MILWAUKEE | 42.968704 | -88.0478304 | PASS | 2026-08-06T06:38:51.921Z | 2026-08-16T01:09:45.268Z |
+| `b7425e1a-b262-4ba0-8c9e-09d4e34f7315` | HALL FORD LINCOLN | 43.035266 | -88.1594119 | PASS | 2026-08-06T06:38:57.479Z | 2026-08-16T01:09:46.534Z |
+| `4377ef7c-4820-4022-80af-7f12c68452c5` | HEISER CHEVROLET WEST ALLIS | 42.999913 | -88.0428877 | PASS | 2026-08-07T06:08:46.676Z | 2026-08-16T01:09:47.785Z |
+| `82a4c1fc-af8c-4457-9799-cc8724f5e00c` | INTERNATIONAL AUTOS GROUP NORTH BMW | 43.1105896 | -87.915305 | PASS | 2026-08-07T06:09:55.619Z | 2026-08-16T01:09:49.045Z |
+| `b5613856-628f-4e14-938f-2959966061a0` | SCHLOSSMANN DODGE CITY | 42.9813956 | -88.046224 | PASS | 2026-08-06T06:40:06.883Z | 2026-08-16T01:09:50.286Z |
+| `164892e2-613d-4bb0-92f1-f6ecf6c32a26` | UMANSKY MOTOR CARS | 43.119138 | -87.941602 | PASS | 2026-08-06T06:39:07.329Z | 2026-08-16T01:09:51.548Z |
+| `74fd37e3-97ea-4f71-9bfb-ade33ac5ad01` | WILDE HONDA | 43.0248398 | -88.2022446 | PASS | 2026-08-06T06:39:02.346Z | 2026-08-16T01:09:52.809Z |
+
+`APPLY COMPLETE — 8 rows written, 0 partial/fallback writes` · bbox PASS=8 FAIL=0 UNKNOWN=0.
+
+**Every coordinate is byte-identical to the dry run's**, re-geocoded independently ~1h later — the resolutions are reproducible, not a one-off.
+
+## Post-run database verification (independent of the script's own output)
+
+| Check | Expected | Actual |
+|---|---|---|
+| Facilities still NULL in the org | 7 | **7** |
+| Facilities now populated in the org | — | 17 (9 pre-existing hand-seeded + 8 new) |
+| `route_matrix_cache` rows | 0 | **0** |
+
+**The 7 remaining are exactly the intended exclusions, and all are provably untouched** — every one still carries its pre-existing `updated_at`, none stamped 2026-08-16:
+
+| Name | Class | `updated_at` (unchanged) |
+|---|---|---|
+| `112`, `85`, `98` | C — no address data | 2026-04-15 / 2026-04-16 / 2026-04-16 |
+| DealerCorp, House, Walmart IN | B — IN city-centroid | 2026-04-20 / 2026-04-17 / 2026-05-24 |
+| RUSS DARROW NISSAN | A — geocoder returned null | 2026-08-06 |
+
+All 8 written rows independently re-checked in-database against the WI bounding box: `in_wi_bbox = true` for all 8.
+
+## What this does and does not unblock
+
+**MKE-NORTH-2 is still not costable.** Three of its four facilities now have coordinates; `RUSS DARROW NISSAN` does not. Phase 7's guard is all-or-nothing (`pointsFor` returns null for the whole set on the first coordinate-less row), so the template still declines with `NO_MATRIX`. **Fixing it requires correcting that facility's address on file** — `11212 W METRO BLVD, MILWAUKEE, WI 53224` does not resolve in Nominatim — and then re-running the script with a one-id allowlist. No script change is involved.
+
+The cache-staleness window is still open and still free: `route_matrix_cache` remains at 0 rows, so nothing stale can be served. The 8 new coordinates are in place *before* any optimisation has been triggered, which is the ordering the sequencing note called for.
