@@ -26,6 +26,8 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { facilitiesColumns } from './columns';
 import type { FacilityRow } from './types';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
 interface FacilitiesGridProps {
   facilities: FacilityRow[];
@@ -37,6 +39,22 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const {
+    isPending: isDeletePending,
+    dialogOpen,
+    itemCount,
+    itemName,
+    requestDelete,
+    confirmDelete,
+    setDialogOpen,
+  } = useSoftDelete({
+    entityType: 'CarrierFacility',
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      router.refresh();
+    },
+  });
 
   const table = useReactTable({
     data: facilities,
@@ -77,10 +95,7 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to delete mutation
-          console.warn('Delete not implemented');
-        },
+        onClick: () => requestDelete(row.id),
         destructive: true,
       },
     ];
@@ -107,17 +122,18 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
         id: 'delete',
         label: 'Delete',
         icon: Trash2,
-        onClick: () => {
-          // TODO: Wire to bulk delete mutation
-          console.warn('Bulk delete not implemented');
-        },
+        // Same `requestDelete` as the row action, which is what gives the bulk
+        // path the confirmation it previously lacked: `destructive: true` only
+        // colours the button, it does not gate anything.
+        onClick: () => requestDelete(Array.from(selectedIds)),
         destructive: true,
       },
     ],
-    []
+    [selectedIds, requestDelete]
   );
 
   return (
+    <>
     <GridShell
       gridId="facilities-overview"
       table={table}
@@ -150,5 +166,14 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
         setPageSize: (size) => table.setPageSize(size),
       }}
     />
+    <DeleteConfirmationDialog
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+      onConfirm={confirmDelete}
+      itemCount={itemCount}
+      itemName={itemName}
+      isLoading={isDeletePending}
+    />
+    </>
   );
 }
