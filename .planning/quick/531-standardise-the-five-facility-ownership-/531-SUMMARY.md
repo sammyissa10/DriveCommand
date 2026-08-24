@@ -215,3 +215,85 @@ No Rule 1–4 deviations occurred beyond what the plan itself flagged in advance
 - Commit `e7734a3e` — FOUND (`git log --oneline` confirms)
 - Commit `b258fe45` — FOUND
 - Commit `bd5c8e9a` — FOUND
+
+---
+
+## Orchestrator addendum — independent verification and one further fix
+
+The executor's claims were re-verified from scratch rather than accepted, and one follow-on
+defect was found and fixed.
+
+### The `deletedAt` invariant, re-proved at the right scope
+
+The executor reported this honestly at two scopes but the decisive form is the source-only diff.
+Across the whole task (`git diff ac226c07..HEAD -U0 -- apps/web/src`), every `deletedAt` line is
+an **addition (`+`) inside the two new files**; there is **not a single `-` line**, at any site,
+in any file. So no existing predicate was removed or altered — which is the invariant, stated in
+the form that cannot be satisfied by accident.
+
+The one added occurrence, `select: { deletedAt: true }` in `diagnoseFacilityUnavailable`, is the
+explicitly pre-authorised one: that query's entire job is to find the soft-deleted row, so it is
+deliberately unfiltered. It is a **new** query, not an edit to one of the ten.
+
+### tsc gate — probed independently a second time
+
+The executor probed and so did the orchestrator, on a different file (`facility-errors.ts`):
+
+```
+src/lib/carrier/facility-errors.ts(1,7): error TS2322: Type 'string' is not assignable to type 'number'.
+```
+
+That was the **only** error reported, which proves both that semantic checking ran and that
+everything else was already clean. Probe removed, re-run: 0 errors. Stray-probe sweep clean.
+
+### Regression comparison — failing set byte-identical
+
+| | Files | Tests |
+|---|---|---|
+| Pre-task baseline | 14 failed / 104 passed | 61 failed / 1218 passed |
+| After quick-531 | 14 failed / **105** passed | 61 failed / **1226** passed |
+
+The failing **file list** was diffed and is byte-identical to the baseline captured in quick-530 —
+workflows, driver-pay settlements, notifications dispatcher, auth and validation schemas, none of
+which this task touches. The entire delta is `+1` file / `+8` tests, exactly the new
+`facility-errors.test.ts`. **Zero genuine regressions.** Scoped run over the touched areas:
+`36 passed / 541 tests`.
+
+### One further defect found in review and fixed — commit `2a3fcef1`
+
+`api/v1/carrier/stops/route.ts` still returned **404 "Dispatch or facility not found"**. After
+Task 3, `createStop` can no longer return `null` for a facility — that branch throws and is caught
+as a 400 — so the 404 named the one cause it cannot have.
+
+The executor left it "exactly as is", which is defensible as scope discipline, but it is the same
+defect class this task exists to remove: **a message that points debugging at the wrong cause**.
+And it was newly created by this task's own change, so fixing it is part of doing the task
+properly rather than scope creep. It now reads **"Dispatch, load or client not found"** — the three
+causes that branch actually has. Those keep `return null` and keep their 404, because they are
+genuine absences, unlike a facility that exists but is deleted or cross-tenant.
+
+### Audit rows revised by this addendum
+
+| Step | Verdict | Note |
+|------|---------|------|
+| 5 — site 16 to validation shape, caller updated | **IMPLEMENTED** (was PARTIALLY complete in substance) | The lib half landed in `bd5c8e9a`; the caller's stale 404 *message* was only corrected in `2a3fcef1`. Step 5 says "update its caller so the 404 path is no longer taken for this condition" — the path was already not taken, but the text still advertised it. |
+| 7 — tsc probe | **IMPLEMENTED** | Probed twice, independently, on two different files. |
+| 8 — regression comparison | **IMPLEMENTED** | Failing file list diffed, not just counted. |
+
+### Deliberate non-changes, restated
+
+- No `deletedAt` predicate added, removed or altered (all ten from quick-530 byte-identical).
+- `softDeleteFacility`, `optimisation-service.ts`, the `route_matrix_cache` paths, `schema.prisma`
+  and every migration: untouched. No DDL, no Supabase calls.
+- The eight Group B hydration sites: untouched.
+- Cross-tenant rejection remains a rejection — only its message and status changed.
+- `app/(owner)/actions/loads.ts:214` verified, not edited: it already returns `error.message`
+  verbatim, so the truthful message reaches the form with no change.
+
+### Follow-up not taken
+
+`route-template-save.ts` (site 15) keeps its `{ success: false, error }` shape deliberately, since
+`optimisation-service.ts` and two `template-service.ts` callers consume it and are out of bounds.
+Its message is now truthful, but it is the one site of the five that does not surface as an HTTP
+400 — it has no route of its own. If that shape is ever unified, those three callers are the
+constraint to check first.
