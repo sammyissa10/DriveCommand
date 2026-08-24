@@ -29,6 +29,7 @@
 
 import { prisma } from '@/lib/db/prisma'; // kept for $transaction — see below
 import type { PrismaClient } from '@/generated/prisma';
+import { diagnoseFacilityUnavailable, facilityUnavailableMessage } from '@/lib/carrier/facility-errors';
 
 /** One stop as the Templates screen's stop builder produces it. */
 export interface SaveRouteTemplateStop {
@@ -243,7 +244,8 @@ export async function saveRouteTemplateCore(
     const validFacilityIds = new Set(validFacilities.map((f) => f.id));
     const invalidFacility = facilityIds.find((id) => !validFacilityIds.has(id));
     if (invalidFacility) {
-      return { success: false, error: 'Invalid facility — does not belong to this organization' };
+      const reason = await diagnoseFacilityUnavailable(db, invalidFacility, orgId);
+      return { success: false, error: facilityUnavailableMessage(reason) };
     }
   }
 

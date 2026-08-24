@@ -5,6 +5,7 @@ import type { PrismaClient } from '@/generated/prisma/client';
 import { logger } from '@/lib/logger';
 import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
 import { sendInvoiceGeneratedNotification, sendClientDeliveredNotification, sendClientInvoiceReadyNotification, sendTripChangeNotification } from '@/lib/carrier/notifications';
+import { FacilityUnavailableError, diagnoseFacilityUnavailable } from '@/lib/carrier/facility-errors';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -370,7 +371,10 @@ async function persistStops(
   const validIds = new Set(validFacilities.map((f) => f.id));
   for (const facilityId of facilityIds) {
     if (!validIds.has(facilityId)) {
-      throw new Error(`Invalid facility: ${facilityId}`);
+      throw new FacilityUnavailableError(
+        await diagnoseFacilityUnavailable(tenantPrisma, facilityId, orgId),
+        facilityId,
+      );
     }
   }
 

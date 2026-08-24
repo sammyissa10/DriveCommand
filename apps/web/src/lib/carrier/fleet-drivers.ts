@@ -8,6 +8,7 @@ import { encryptField, decryptField } from '@/lib/security/field-crypto';
 import { getCurrentKey } from '@/lib/security/key-registry';
 import { writeAuditLog } from '@/lib/security/audit-log';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { FacilityUnavailableError, diagnoseFacilityUnavailable } from '@/lib/carrier/facility-errors';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -244,7 +245,10 @@ export async function createCarrierDriver(
       where: { id: data.homeTerminalId, orgId, deletedAt: null },
     });
     if (!facility) {
-      throw new Error('Invalid homeTerminalId: facility not found in this organization');
+      throw new FacilityUnavailableError(
+        await diagnoseFacilityUnavailable(tenantPrisma, data.homeTerminalId, orgId),
+        data.homeTerminalId,
+      );
     }
   }
 
@@ -594,7 +598,10 @@ export async function updateCarrierDriver(
       where: { id: data.homeTerminalId, orgId, deletedAt: null },
     });
     if (!facility) {
-      throw new Error('Invalid homeTerminalId: facility not found in this organization');
+      throw new FacilityUnavailableError(
+        await diagnoseFacilityUnavailable(tenantPrisma, data.homeTerminalId, orgId),
+        data.homeTerminalId,
+      );
     }
   }
 

@@ -2,6 +2,7 @@ import { after } from 'next/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 import { sendTripChangeNotification } from '@/lib/carrier/notifications';
+import { FacilityUnavailableError, diagnoseFacilityUnavailable } from '@/lib/carrier/facility-errors';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,7 +98,8 @@ export async function getStop(orgId: string, id: string) {
 
 export async function createStop(orgId: string, data: StopCreateInput) {
   const tenantPrisma = await getTenantPrisma();
-  // Verify the dispatch belongs to this org
+  // Verify the dispatch belongs to this org.
+  // Genuine absence — this dispatch does not exist / is not ours. 404 is correct.
   const dispatch = await tenantPrisma.trip.findFirst({
     where: { id: data.dispatchId, orgId },
   });
@@ -105,7 +107,8 @@ export async function createStop(orgId: string, data: StopCreateInput) {
     return null;
   }
 
-  // Verify loadId belongs to this org (if supplied)
+  // Verify loadId belongs to this org (if supplied).
+  // Genuine absence — this load does not exist / is not ours. 404 is correct.
   if (data.loadId) {
     const load = await tenantPrisma.carrierLoad.findFirst({
       where: { id: data.loadId, orgId },
@@ -116,7 +119,8 @@ export async function createStop(orgId: string, data: StopCreateInput) {
     }
   }
 
-  // Verify clientId belongs to this org (if supplied)
+  // Verify clientId belongs to this org (if supplied).
+  // Genuine absence — this client does not exist / is not ours. 404 is correct.
   if (data.clientId) {
     const clientRecord = await tenantPrisma.carrierClient.findFirst({
       where: { id: data.clientId, orgId },
@@ -127,12 +131,20 @@ export async function createStop(orgId: string, data: StopCreateInput) {
     }
   }
 
-  // Fetch facility to build address_snapshot
+  // Fetch facility to build address_snapshot.
+  // Unlike dispatch/load/client above, a bad facility here is NOT a genuine
+  // absence from the route's point of view — it may exist but be deleted or
+  // cross-tenant, and the two need different messages (quick-531). Hence the
+  // asymmetry: this branch throws through the shared diagnosis instead of
+  // returning null/404 like its siblings above.
   const facility = await tenantPrisma.carrierFacility.findFirst({
     where: { id: data.facilityId, orgId, deletedAt: null },
   });
   if (!facility) {
-    return null;
+    throw new FacilityUnavailableError(
+      await diagnoseFacilityUnavailable(tenantPrisma, data.facilityId, orgId),
+      data.facilityId,
+    );
   }
 
   const addressSnapshot = {
