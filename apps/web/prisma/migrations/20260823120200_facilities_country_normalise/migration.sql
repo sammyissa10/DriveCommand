@@ -1,0 +1,27 @@
+-- DATA ONLY — this migration contains no DDL.
+--
+-- `facilities.country` is NOT NULL DEFAULT 'US', but held two spellings: 'US'
+-- on 46 rows across 11 orgs, and the literal 'United States' on 5 rows across
+-- 2 orgs (all Indiana, created 2026-04-17 → 2026-07-18). Two spellings of one
+-- country is a silent matcher hazard: the shared address normaliser feeds
+-- facility resolution's T2 exact-match rung, and anything that ever compares
+-- country would score two identical addresses as different.
+--
+-- Nothing in the codebase writes the long form. `country` is an unvalidated
+-- free-text passthrough end to end — the forms default to 'US' behind a plain
+-- text input, the API schema is `z.string().optional()`, and `createFacility`
+-- spreads it straight into `.create()`. The address autocomplete deliberately
+-- never sets it. These five rows were hand-typed.
+--
+-- NO CODE CHANGE ships with this, deliberately: the recurrence analysis is
+-- recorded in `.planning/quick/530-.../530-SUMMARY.md` and the fix belongs at
+-- the write boundary, not in three separate forms. The conduit to watch is the
+-- document-import ladder, which asks the extraction model for a `country` on
+-- every address and hands it verbatim to `createFacility` — an LLM reading a
+-- US rate confirmation emits "United States" or "USA" far more often than "US".
+--
+-- Applied to production via Supabase MCP before this file was written, and
+-- marked applied with `prisma migrate resolve --applied` rather than replayed,
+-- per DEC-3 rules 1 and 4. Idempotent by its own WHERE clause: re-running it
+-- after the first application affects zero rows.
+UPDATE facilities SET country = 'US' WHERE country = 'United States';
