@@ -65,7 +65,12 @@ export async function POST(req: NextRequest) {
 
     const stop = await createStop(orgId, parsed.data);
     if (!stop) {
-      return NextResponse.json({ error: 'Dispatch or facility not found' }, { status: 404 });
+      // Facility is deliberately absent from this list now (quick-531): a bad
+      // facility throws FacilityUnavailableError and is caught below as a 400,
+      // so it can no longer reach this branch. Leaving it named here would
+      // point debugging at the one cause this 404 cannot have — the same
+      // misdirection this task removed from the messages themselves.
+      return NextResponse.json({ error: 'Dispatch, load or client not found' }, { status: 404 });
     }
 
     return NextResponse.json({ data: stop }, { status: 201 });
