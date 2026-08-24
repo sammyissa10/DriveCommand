@@ -110,7 +110,14 @@ export async function DELETE(
     );
     if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    return NextResponse.json({ data: { id: result.id, status: 'inactive' } });
+    // 'inactive' was the vocabulary of the pre-quick-530 scheme, which encoded
+    // deletion by prefixing facilityType with 'inactive_' — a value
+    // facilities_facility_type_check never admitted, so that write always 23514'd.
+    // Soft delete is now a deleted_at stamp, and the response says so. Safe to
+    // change: grep-verified that the only two callers of this route
+    // (DeleteFacilityButton, FacilityEditMobile) branch on res.ok and read
+    // data.error, and nothing anywhere reads data.status.
+    return NextResponse.json({ data: { id: result.id, status: 'deleted', deletedAt: result.deletedAt } });
   } catch (err) {
     logger.error('DELETE /api/v1/carrier/facilities/[id] failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
