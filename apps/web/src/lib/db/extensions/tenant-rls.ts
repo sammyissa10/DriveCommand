@@ -98,6 +98,25 @@ const EXEMPT_MODELS = new Set([
   'DocumentImportPage', // uses orgId instead of tenantId
   'FacilityExternalReference', // uses orgId instead of tenantId
   'DocumentProfile', // uses orgId instead of tenantId
+  //
+  // SECOND OCCURRENCE OF THE SAME CLASS (quick-520 introduced it, quick-528
+  // diagnosed it). `RouteMatrixCache` was added to schema.prisma by quick-520
+  // — which regenerated the Prisma client in the same commit but never touched
+  // this file — so every operation on it threw PrismaClientValidationError
+  // client-side, before any SQL was emitted. The read lost `where`; the upsert
+  // lost `where` AND `create`. The table sat at zero rows from creation, and
+  // the failure was invisible because both call sites swallow into a warn.
+  //
+  // The paragraph directly above predicted this exactly and was four lines
+  // away. **A model added to schema.prisma without a tenantId column must be
+  // added here in the same commit** — the schema edit and this list are one
+  // change wearing two files, and a Prisma regeneration will not tell you.
+  //
+  // Isolation is unaffected: `optimisation-matrix.ts` passes `orgId` explicitly
+  // in the read's `where`, and in the upsert's `where` (via the
+  // `(org_id, facility_key)` compound unique) and `create`. It was never the
+  // injection that scoped this table — the injection only ever broke it.
+  'RouteMatrixCache', // uses orgId instead of tenantId
   // RouteDriver — removed: now has tenantId (quick-327)
   // SysAdminInvoiceItem — removed: now has tenantId (quick-327)
   // PushToken — removed: now has tenantId (quick-327)

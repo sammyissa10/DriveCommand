@@ -34,6 +34,15 @@
  * **no view path can write a row** — Section 9's "optimisation is a suggestion,
  * never a mutation", enforced at the layer that would otherwise be tempted.
  *
+ * **`persist: true` writes L2 from BOTH exits, not just the provider one**
+ * (quick-529). An accept POST almost always finds L1 already warm — its own GET
+ * rendered the card seconds earlier — so it takes the early return, and for the
+ * whole of Phase 7 that meant the only code able to write a row sat 45 lines
+ * below the line the write path actually stopped at. The L1-hit exit therefore
+ * writes through under the same gate. Two write sites, one condition: a fresh
+ * provider result writes below, a cached value writes at the hit. Neither can
+ * fire without `persist`, so the paragraph above is unchanged in substance.
+ *
  * The honest consequence, stated rather than glossed: **a facility set that is
  * only ever VIEWED and never accepted still pays one provider call per cold
  * start, exactly as it did before this table existed.** Making that case free
@@ -43,10 +52,19 @@
  * facility set, that set is free forever after — across deploys, cold starts and
  * instances — which is what "optimise once, reuse daily" actually requires.
  *
- * A cache HIT never writes anything, in either layer's store. `computed_at`
- * therefore means "when the provider was asked", the L2 TTL is measured from a
- * real event, and a popular set is recomputed on a fixed cadence rather than
- * being kept alive by being read.
+ * A cache hit never writes anything **on a read path**. `computed_at` therefore
+ * still means "when the provider was asked": the write-through above fires only
+ * under `persist`, i.e. on an accept, which is a mutation and not a read. So no
+ * amount of VIEWING a set can refresh its timestamp, the L2 TTL is still measured
+ * from a real provider call, and a popular set is still recomputed on a fixed
+ * cadence rather than being kept alive by being looked at.
+ *
+ * The one honest wrinkle: an accept over an already-cached set touches
+ * `computed_at` through the upsert's update branch, so the 30-day L2 ceiling is
+ * measured from the last ACCEPT rather than the last provider call. That is a
+ * deliberate trade for making L2 reachable at all, and it errs the safe way — it
+ * can only ever delay the retirement of a matrix a human just acted on, never
+ * extend the life of one nobody is using.
  *
  * L2 **degrades, never throws**. A read or a write that fails is logged and
  * treated as a miss or a no-op. The matrix is a suggestion; an unreachable cache
@@ -55,7 +73,7 @@
 
 import type { PrismaClient } from '@/generated/prisma';
 import { getOSRMMatrix } from '@/lib/geo/osrm';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 import {
   MATRIX_CACHE_MAX_ENTRIES,
@@ -163,7 +181,15 @@ export function prismaMatrixStore(db: PrismaClient): MatrixStore {
           computedAt: row.computedAt,
         };
       } catch (error) {
-        logger.warn('[document-import] matrix cache read failed', { error });
+        // `serializeError`, not `{ error }`. A bare Error stringifies to `{}`
+        // because name/message/stack are non-enumerable — see lib/logger.ts,
+        // which records the same defect eating "page cache read failed". THIS
+        // catch is the one that hid quick-528's PrismaClientValidationError for
+        // the entire module: a validation error naming the offending argument
+        // was reduced to a generic sentence, and the read looked like a miss.
+        logger.warn('[document-import] matrix cache read failed', {
+          error: serializeError(error),
+        });
         return null;
       }
     },
@@ -186,7 +212,9 @@ export function prismaMatrixStore(db: PrismaClient): MatrixStore {
           },
         });
       } catch (error) {
-        logger.warn('[document-import] matrix cache write failed', { error });
+        logger.warn('[document-import] matrix cache write failed', {
+          error: serializeError(error),
+        });
       }
     },
   };
@@ -259,12 +287,43 @@ export async function getDistanceMatrix(
   const key = matrixCacheKey(ids);
   const now = Date.now();
 
-  const cached = readCache(key, now);
-  if (cached) return cached;
-
-  // --- L2. Read on every path, including the GETs. Reading is not writing. ---
+  // Hoisted above the L1 read so the write-through below can see them. They were
+  // declared after the early return, which is half of why L2 was unreachable.
   const store = options?.store ?? null;
   const orgId = options?.orgId ?? null;
+
+  const cached = readCache(key, now);
+  if (cached) {
+    // --- L1 HIT WRITE-THROUGH (quick-527/529) -------------------------------
+    //
+    // Without this, `persist: true` was unsatisfiable in practice. The card must
+    // be RENDERED before it can be TAPPED; rendering is a GET that computes the
+    // matrix and fills L1 below while being forbidden from writing L2, and the
+    // tap is a POST over the same facility set — so it hit L1 and returned here,
+    // 45 lines above the only code that could write a row. The GET populated L1
+    // but could not write L2; the POST could write L2 but never got past L1.
+    // Each half was individually correct and the pair was unsatisfiable.
+    //
+    // Deliberately a SECOND write rather than moving the one below: that write
+    // belongs to a fresh provider result, this one to a cached value, and the
+    // two have different reasons to exist. The `persist` gate is identical, so
+    // **a GET still cannot write L2** — a viewed-never-accepted set stays L1-only
+    // exactly as the header promises. The upsert is idempotent on
+    // `(org_id, facility_key)`, so a redundant write-through is a no-op row
+    // touch, not a duplicate.
+    if (options?.persist === true && store && orgId) {
+      try {
+        await store.write(orgId, key, { miles: cached.miles, minutes: cached.minutes });
+      } catch (error) {
+        logger.warn('[document-import] matrix cache write-through failed', {
+          error: serializeError(error),
+        });
+      }
+    }
+    return cached;
+  }
+
+  // --- L2. Read on every path, including the GETs. Reading is not writing. ---
   if (store && orgId) {
     // Guarded HERE as well as inside `prismaMatrixStore`, not instead of it: the
     // seam is an interface, so the failing implementation may be any store at
@@ -274,7 +333,9 @@ export async function getDistanceMatrix(
     try {
       row = await store.read(orgId, key);
     } catch (error) {
-      logger.warn('[document-import] matrix cache read failed', { error });
+      logger.warn('[document-import] matrix cache read failed', {
+        error: serializeError(error),
+      });
     }
     if (row) {
       const computedAt = row.computedAt instanceof Date ? row.computedAt.getTime() : NaN;
@@ -309,8 +370,11 @@ export async function getDistanceMatrix(
     try {
       await store.write(orgId, key, { miles: matrix.miles, minutes: matrix.minutes });
     } catch (error) {
-      logger.warn('[document-import] matrix cache write failed', { error });
+      logger.warn('[document-import] matrix cache write failed', {
+        error: serializeError(error),
+      });
     }
   }
   return matrix;
 }
+
