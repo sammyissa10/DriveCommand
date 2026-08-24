@@ -15,6 +15,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { StopBuilder, type StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
+import { TemplateOptimisationSuggestion } from './TemplateOptimisationSuggestion';
 import { saveRouteTemplate } from '@/actions/carrier/save-route-template';
 // A COMPONENT may import the feature module's vocabulary, and here it must:
 // spec Section 9's labels exist so the two surfaces cannot name the same policy
@@ -194,6 +195,16 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
     initialData?.endStopFacilityId ?? ''
   );
   const [stops, setStops] = useState<StopBuilderStop[]>(initialData?.stops ?? []);
+  /**
+   * Bumped on every successful save of an existing template — spec Section 9's
+   * *"runs on the template when created or edited"*. `0` means no save yet on
+   * this page load, and the card fetches nothing until it moves.
+   *
+   * A counter rather than a boolean because two saves in a row must produce two
+   * evaluations; a flag that was already `true` would make the second save
+   * silently reuse the first one's answer.
+   */
+  const [optimisationToken, setOptimisationToken] = useState(0);
 
   // Auto-generate RRULE string from builder state
   useEffect(() => {
@@ -407,7 +418,27 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
       }
 
       toast.success(isEdit ? 'Template updated' : 'Template created');
-      router.push('/carrier/templates');
+
+      if (isEdit) {
+        // Stay on the page — unconditionally, every time, whether or not a
+        // suggestion turns out to exist. Navigation that depended on the answer
+        // would make the screen behave differently for reasons the person who
+        // pressed Save cannot see.
+        //
+        // Bumping the token is synchronous and cannot throw, so the optimisation
+        // request it triggers can never delay this save, fail it, or change what
+        // it just reported. See `TemplateOptimisationSuggestion`.
+        setOptimisationToken((t) => t + 1);
+        return;
+      }
+
+      // A new template has no id until now, and Section 9 runs on the template.
+      // Land on its edit page so the next save evaluates there. Falling back to
+      // the list keeps a save that succeeded from looking like a failure if the
+      // id is ever missing.
+      router.push(
+        result.templateId ? `/carrier/templates/${result.templateId}` : '/carrier/templates'
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -891,6 +922,22 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
 
         {/* RIGHT PANEL — Stops */}
         <div className="w-full lg:w-1/2 space-y-4">
+          {/* Spec Section 9, Part B. Renders nothing until a save has happened
+              and the server offers a suggestion — no empty card, no placeholder. */}
+          {isEdit && templateId && (
+            <TemplateOptimisationSuggestion
+              templateId={templateId}
+              token={optimisationToken}
+              onApplied={(applied) => {
+                // The order the server actually committed, read back rather than
+                // replayed locally. Clearing the per-stop errors is safe: every
+                // stop in this array came from the database, so each has a
+                // facility by construction.
+                setStops(applied);
+                setStopErrors({});
+              }}
+            />
+          )}
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             Route Stops
           </h3>
@@ -934,3 +981,4 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
     </form>
   );
 }
+
