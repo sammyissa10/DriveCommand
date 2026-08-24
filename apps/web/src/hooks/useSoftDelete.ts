@@ -85,5 +85,11 @@ export function useSoftDelete({ entityType, onSuccess, onError }: UseSoftDeleteO
     cancelDelete,
     setDialogOpen,
     itemName: displayName.toLowerCase(),
+    // The real plural, for consumers that render a count. The confirmation
+    // dialog otherwise appends a bare 's', which is right for the first seven
+    // entities and wrong for the eighth: "3 facilitys". ENTITY_PLURAL_NAMES has
+    // always held the correct form — the toast above uses it — so this closes
+    // the one path that was still guessing.
+    itemNamePlural: pluralName.toLowerCase(),
   };
 }

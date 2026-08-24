@@ -21,6 +21,9 @@ interface DeleteConfirmationDialogProps {
   description?: string;
   itemCount?: number;
   itemName?: string;
+  /** Correct plural. Falls back to `itemName + 's'`, which is what every
+   *  caller relied on before facilities arrived and broke the guess. */
+  itemNamePlural?: string;
   isPermanent?: boolean;
   isLoading?: boolean;
 }
@@ -33,11 +36,14 @@ export function DeleteConfirmationDialog({
   description,
   itemCount = 1,
   itemName = 'item',
+  itemNamePlural,
   isPermanent = false,
   isLoading = false,
 }: DeleteConfirmationDialogProps) {
   const plural = itemCount > 1;
-  const itemText = plural ? `${itemCount} ${itemName}s` : `this ${itemName}`;
+  const itemText = plural
+    ? `${itemCount} ${itemNamePlural ?? `${itemName}s`}`
+    : `this ${itemName}`;
 
   const defaultTitle = isPermanent
     ? `Permanently delete ${itemText}?`

@@ -45,6 +45,7 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
     dialogOpen,
     itemCount,
     itemName,
+    itemNamePlural,
     requestDelete,
     confirmDelete,
     setDialogOpen,
@@ -172,6 +173,7 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
       onConfirm={confirmDelete}
       itemCount={itemCount}
       itemName={itemName}
+      itemNamePlural={itemNamePlural}
       isLoading={isDeletePending}
     />
     </>
