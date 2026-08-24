@@ -83,7 +83,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     }),
     prisma.carrierFacility.findMany({
       // A picker. Driver residences are excluded server-side (spec Section 9).
-      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
+      where: { orgId, deletedAt: null, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),
@@ -127,6 +127,9 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     const parsedStops = JSON.parse(load.pendingStopsJson as string) as StopInput[];
     const facilityIds = [...new Set(parsedStops.map((s) => s.facility_id).filter(Boolean))];
     const facilities = maskFacilitiesForViewer(
+      // No deletedAt filter, deliberately: this hydrates this load's own
+      // already-saved stops, not a picker — a soft-deleted facility must still
+      // resolve by name here.
       await prisma.carrierFacility.findMany({
         where: { id: { in: facilityIds }, orgId },
         select: {

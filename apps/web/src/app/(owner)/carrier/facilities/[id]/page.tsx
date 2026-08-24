@@ -24,6 +24,9 @@ export default async function FacilityDetailPage({ params }: Props) {
     // A residence 404s for a manager without the permission — the detail page
     // must not be the way round the list filter (spec Section 9).
     getFacility(session.tenantId, id, staffViewer(session)),
+    // No deletedAt filter here: this is only audit metadata for a row the
+    // sibling `getFacility` call above already gated (`if (!facility) notFound()`
+    // below), not an independent access path.
     prisma.carrierFacility.findUnique({
       where: { id },
       select: {

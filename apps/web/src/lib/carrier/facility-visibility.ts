@@ -319,7 +319,7 @@ export async function residenceFacilityForDriver(
       orgId,
       isDriverResidence: true,
       residentDriverId: carrierDriverId,
-      NOT: { facilityType: { startsWith: 'inactive_' } },
+      deletedAt: null,
     },
     select: { id: true },
   });

@@ -273,7 +273,10 @@ export async function loadEndStopContext(
           // `wanted` was already produced by a path that applied the rule (the
           // residence through `residenceFacilityForDriver`, the rest are not
           // residences), and re-filtering here would silently drop the assigned
-          // driver's own home from their own trip's card.
+          // driver's own home from their own trip's card. Same reasoning covers
+          // deletedAt: this hydrates facilities already attached to a trip
+          // (stored decision, first pickup, template parking), so a soft-deleted
+          // one must still resolve by name here.
           where: { id: { in: [...new Set(wanted)] }, orgId },
           select: FACILITY_SELECT,
         })
@@ -282,7 +285,7 @@ export async function loadEndStopContext(
       where: {
         orgId,
         facilityType: { in: [...DESIGNATED_PARKING_FACILITY_TYPES] },
-        NOT: { facilityType: { startsWith: 'inactive_' } },
+        deletedAt: null,
         ...facilityVisibilityWhere(viewer),
       },
       select: FACILITY_SELECT,

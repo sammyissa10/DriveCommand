@@ -86,8 +86,8 @@ export async function listFacilities(
 
   const where = {
     orgId,
-    // Exclude soft-deleted facilities (those with 'inactive_' prefix)
-    NOT: { facilityType: { startsWith: 'inactive_' } },
+    // Exclude soft-deleted facilities.
+    deletedAt: null,
     ...(facilityType ? { facilityType } : {}),
     ...(search ? { name: { contains: search, mode: 'insensitive' as const } } : {}),
     ...(proximityIds != null ? { id: { in: proximityIds } } : {}),
@@ -116,7 +116,7 @@ export async function getFacility(orgId: string, id: string, viewer?: FacilityVi
     where: {
       id,
       orgId,
-      NOT: { facilityType: { startsWith: 'inactive_' } },
+      deletedAt: null,
       ...facilityVisibilityWhere(viewer),
     },
   });
@@ -161,7 +161,7 @@ export async function updateFacility(
     where: {
       id,
       orgId,
-      NOT: { facilityType: { startsWith: 'inactive_' } },
+      deletedAt: null,
       ...facilityVisibilityWhere(viewer),
     },
   });
@@ -176,19 +176,18 @@ export async function updateFacility(
 export async function softDeleteFacility(orgId: string, id: string, viewer?: FacilityViewer | null) {
   const tenantPrisma = await getTenantPrisma();
   const existing = await tenantPrisma.carrierFacility.findFirst({
-    where: { id, orgId, ...facilityVisibilityWhere(viewer) },
+    where: { id, orgId, deletedAt: null, ...facilityVisibilityWhere(viewer) },
   });
   if (!existing) return null;
 
-  // NOTE: CarrierFacility lacks an 'active' column. Soft-delete uses facilityType prefix convention.
-  // Migration 015 should add an 'active' boolean column; update this logic afterward.
-  const currentType = existing.facilityType ?? 'terminal';
-  const newType = currentType.startsWith('inactive_') ? currentType : `inactive_${currentType}`;
-
-  logger.info('softDeleteFacility: marking facility inactive via facilityType prefix', { id, orgId, newType });
+  // deletedAt exists precisely because the previous approach (prefixing
+  // facilityType with 'inactive_') was rejected by facilities_facility_type_check
+  // on every write, so soft delete never actually happened. facilityType is
+  // left untouched here.
+  logger.info('softDeleteFacility: stamping deletedAt', { id, orgId });
 
   return tenantPrisma.carrierFacility.update({
     where: { id },
-    data: { facilityType: newType },
+    data: { deletedAt: new Date() },
   });
 }

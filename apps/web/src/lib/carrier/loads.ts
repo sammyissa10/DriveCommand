@@ -364,7 +364,7 @@ async function persistStops(
   // Verify all facilities belong to this org (tenant isolation)
   const facilityIds = [...new Set(stops.map((s) => s.facility_id))];
   const validFacilities = await tenantPrisma.carrierFacility.findMany({
-    where: { id: { in: facilityIds }, orgId },
+    where: { id: { in: facilityIds }, orgId, deletedAt: null },
     select: { id: true },
   });
   const validIds = new Set(validFacilities.map((f) => f.id));

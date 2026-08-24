@@ -399,6 +399,9 @@ export async function GET() {
           carrierLoadCountMap.set(row.dispatchId, row.loadCount);
         }
 
+        // No deleted_at filter on this LEFT JOIN, deliberately: this names the
+        // next stop of a dispatch's OWN active itinerary, not a picker — a
+        // soft-deleted facility must still resolve by name here.
         const carrierNextStopRows = (await tenantRawQuery((tx) =>
           tx.$queryRaw`
             SELECT DISTINCT ON (s.dispatch_id)

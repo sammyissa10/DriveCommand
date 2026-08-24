@@ -222,7 +222,7 @@ export async function setEndStopChoice(
       throw new ResolutionError('Pick where this truck parks at the end of the day.', 'INVALID_FACILITY');
     }
     const facility = await db.carrierFacility.findFirst({
-      where: { id: facilityId, orgId, NOT: { facilityType: { startsWith: 'inactive_' } } },
+      where: { id: facilityId, orgId, deletedAt: null },
       select: { id: true, isDriverResidence: true, residentDriverId: true },
     });
     if (!facility) {

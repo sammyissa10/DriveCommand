@@ -37,7 +37,7 @@ export default async function NewLoadPage() {
     // Mobile picks stop facilities from a select; desktop uses a search modal.
     prisma.carrierFacility.findMany({
       // A picker. Driver residences are excluded server-side (spec Section 9).
-      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
+      where: { orgId, deletedAt: null, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),

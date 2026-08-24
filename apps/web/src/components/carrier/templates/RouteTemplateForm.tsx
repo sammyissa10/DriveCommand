@@ -311,7 +311,8 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
   // (`DRIVER_RESIDENCE_FACILITY_TYPE`), which is not one of the three, so a
   // residence cannot appear in this list at all. That is structural exclusion,
   // not a client-side hide — and the endpoint additionally applies
-  // `facilityVisibilityWhere` and drops `inactive_` rows server-side.
+  // `facilityVisibilityWhere` and drops soft-deleted (`deletedAt`) rows
+  // server-side.
   useEffect(() => {
     if (endStopPolicy !== 'DESIGNATED_PARKING') return;
     async function loadParkingFacilities() {

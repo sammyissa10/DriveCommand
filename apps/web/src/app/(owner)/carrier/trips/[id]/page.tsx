@@ -60,6 +60,8 @@ export default async function DispatchDetailPage({ params }: Props) {
   const facilityIds = [...new Set(dispatch.stops.map((s) => s.facilityId))];
   const facilities = facilityIds.length
     ? maskFacilitiesForViewer(
+        // No deletedAt filter, deliberately: this trip's own stops — masked, not
+        // removed, so a soft-deleted facility still resolves by name here.
         await prisma.carrierFacility.findMany({
           where: { id: { in: facilityIds }, orgId },
           select: {
@@ -167,7 +169,7 @@ export default async function DispatchDetailPage({ params }: Props) {
   // a stop inline (desktop uses a search modal instead).
   const allFacilities = await prisma.carrierFacility.findMany({
     // A picker. Driver residences are excluded server-side (spec Section 9).
-    where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
+    where: { orgId, deletedAt: null, ...facilityVisibilityWhere(staffViewer(session)) },
     select: { id: true, name: true, city: true, state: true },
     orderBy: { name: 'asc' },
   });

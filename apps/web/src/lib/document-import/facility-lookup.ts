@@ -158,10 +158,7 @@ const FACILITY_SELECT = {
  *
  * Two exclusions, both of which are correctness rather than tidiness:
  *
- *  - **Soft-deleted facilities.** `softDeleteFacility` marks a facility by
- *    prefixing its type with `inactive_` (there is no `deleted_at` and no
- *    `active` column on this table — audit finding B4, still open, and out of
- *    scope here because closing it needs DDL this phase may not write). A
+ *  - **Soft-deleted facilities.** `softDeleteFacility` stamps `deletedAt`. A
  *    facility a dispatcher believes is gone must not be a silent T1 or T2 target,
  *    so it is filtered the same way `getFacility` and `updateFacility` already
  *    filter it.
@@ -184,7 +181,7 @@ export async function loadFacilityCandidates(
   const rows = await db.carrierFacility.findMany({
     where: {
       orgId,
-      NOT: { facilityType: { startsWith: 'inactive_' } },
+      deletedAt: null,
       isDriverResidence: false,
     },
     select: FACILITY_SELECT,

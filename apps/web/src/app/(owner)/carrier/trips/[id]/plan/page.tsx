@@ -35,7 +35,9 @@ export default async function TripPlanPage({ params }: Props) {
         residentDriverId: true,
       },
     }),
-    // This trip's own stops — masked, not removed. See the load detail page.
+    // This trip's own stops — masked, not removed, and no deletedAt filter for
+    // the same reason: a soft-deleted facility must still resolve by name here.
+    // See the load detail page.
     staffViewer(session),
   );
   const facilityMap = Object.fromEntries(facilities.map((f) => [f.id, f]));

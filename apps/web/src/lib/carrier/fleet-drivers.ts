@@ -241,7 +241,7 @@ export async function createCarrierDriver(
   // Verify homeTerminalId belongs to this org (FK ownership check)
   if (data.homeTerminalId) {
     const facility = await tenantPrisma.carrierFacility.findFirst({
-      where: { id: data.homeTerminalId, orgId },
+      where: { id: data.homeTerminalId, orgId, deletedAt: null },
     });
     if (!facility) {
       throw new Error('Invalid homeTerminalId: facility not found in this organization');
@@ -591,7 +591,7 @@ export async function updateCarrierDriver(
   // Verify homeTerminalId belongs to this org when being set (FK ownership check)
   if (data.homeTerminalId !== undefined && data.homeTerminalId) {
     const facility = await tenantPrisma.carrierFacility.findFirst({
-      where: { id: data.homeTerminalId, orgId },
+      where: { id: data.homeTerminalId, orgId, deletedAt: null },
     });
     if (!facility) {
       throw new Error('Invalid homeTerminalId: facility not found in this organization');

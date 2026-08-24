@@ -86,7 +86,8 @@ export default async function StopsOverviewPage({ params }: Props) {
             residentDriverId: true,
           },
         }),
-        // This trip's own stops — masked, not removed. See the trip detail page.
+        // This trip's own stops — masked, not removed, and no deletedAt filter
+        // for the same reason. See the trip detail page.
         staffViewer(session),
       )
     : [];

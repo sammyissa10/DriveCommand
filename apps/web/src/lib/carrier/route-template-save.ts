@@ -237,7 +237,7 @@ export async function saveRouteTemplateCore(
   const facilityIds = [...new Set(stops.map((s) => s.facility_id).filter(Boolean))] as string[];
   if (facilityIds.length > 0) {
     const validFacilities = await db.carrierFacility.findMany({
-      where: { id: { in: facilityIds }, orgId },
+      where: { id: { in: facilityIds }, orgId, deletedAt: null },
       select: { id: true },
     });
     const validFacilityIds = new Set(validFacilities.map((f) => f.id));
@@ -266,7 +266,7 @@ export async function saveRouteTemplateCore(
       where: {
         id: endStopFacilityId,
         orgId,
-        NOT: { facilityType: { startsWith: 'inactive_' } },
+        deletedAt: null,
       },
       select: { id: true, isDriverResidence: true },
     });

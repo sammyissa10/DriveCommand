@@ -34,7 +34,7 @@ export default async function NewRouteTemplatePage() {
     }),
     prisma.carrierFacility.findMany({
       // A picker. Driver residences are excluded server-side (spec Section 9).
-      where: { orgId, ...facilityVisibilityWhere(staffViewer(session)) },
+      where: { orgId, deletedAt: null, ...facilityVisibilityWhere(staffViewer(session)) },
       select: { id: true, name: true, city: true, state: true },
       orderBy: { name: 'asc' },
     }),

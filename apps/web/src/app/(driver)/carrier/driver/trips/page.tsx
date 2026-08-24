@@ -64,6 +64,9 @@ export default async function DriverTripsPage() {
   const facilityIds = [...new Set(trips.flatMap((t) => t.stops.map((s) => s.facilityId)))];
   const facilities = facilityIds.length
     ? maskFacilitiesForViewer(
+        // No deletedAt filter, deliberately: these are this driver's own trips'
+        // stops, not a picker — a soft-deleted facility must still resolve by
+        // name here.
         await prisma.carrierFacility.findMany({
           where: { id: { in: facilityIds } },
           select: {

@@ -129,7 +129,7 @@ export async function createStop(orgId: string, data: StopCreateInput) {
 
   // Fetch facility to build address_snapshot
   const facility = await tenantPrisma.carrierFacility.findFirst({
-    where: { id: data.facilityId, orgId },
+    where: { id: data.facilityId, orgId, deletedAt: null },
   });
   if (!facility) {
     return null;
