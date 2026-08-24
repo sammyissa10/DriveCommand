@@ -243,6 +243,23 @@ constants, so re-tuning a constant re-tunes the tests rather than breaking them.
   Deliberately **not** wired into `saveRouteTemplateCore`: a save that reached a
   routing provider would make writing a template depend on a network call, and a
   save that reordered would be the mutation Part B forbids.
+
+  > **CORRECTION (quick-525, fixed in quick-526).** As written above, this
+  > paragraph was wrong about the present tense for the whole of Phase 7. The
+  > endpoint was built and complete, but **no client ever called it** — no
+  > component, page, hook, server action or `packages/api-client` entry — so
+  > `applyTemplateOptimisation` was unreachable from any UI and the template
+  > screen made no optimisation request at any point. That is also why
+  > `route_matrix_cache` stayed empty: `persist: true` comes only from the two
+  > `apply*` mutations, and this was the one nobody could reach. The sentence
+  > described the intended design, not delivered behaviour, and the component
+  > table above (all four entries import-side) was the accurate record.
+  >
+  > **quick-526 wired the client half**, so the paragraph is now true:
+  > `RouteTemplateForm` stays on the page after an existing-template save and
+  > `TemplateOptimisationSuggestion` issues the GET. The second sentence —
+  > *"deliberately not wired into `saveRouteTemplateCore`"* — was always correct
+  > and remains so; that omission is the design, not the gap.
 - **Trip (import):** only when `stopSetChanged(templateFacilityIds,
   runFacilityIds)` — a **multiset** comparison (two stops at one cross-dock vs
   one is a change, and a plain `Set` would call those equal), **ignoring order**
