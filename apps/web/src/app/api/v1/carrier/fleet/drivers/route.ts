@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierDrivers, createCarrierDriver } from '@/lib/carrier/fleet-drivers';
+import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
@@ -117,6 +118,9 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (err) {
+    if (err instanceof FacilityUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     if (err instanceof Error && err.message === 'User already linked to a carrier driver') {
       return NextResponse.json({ error: err.message }, { status: 400 });
     }

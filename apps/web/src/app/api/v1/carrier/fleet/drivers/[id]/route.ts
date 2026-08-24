@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getCarrierDriver, updateCarrierDriver, deleteCarrierDriver } from '@/lib/carrier/fleet-drivers';
+import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
 
 const CarrierDriverUpdateSchema = z.object({
   firstName: z.string().min(1).optional(),
@@ -97,6 +98,9 @@ export async function PATCH(
     revalidatePath(`/carrier/fleet/drivers/${id}`);
     return NextResponse.json({ data: driver });
   } catch (err) {
+    if (err instanceof FacilityUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     logger.error('PATCH /api/v1/carrier/fleet/drivers/[id] failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

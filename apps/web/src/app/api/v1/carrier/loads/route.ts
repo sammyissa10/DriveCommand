@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listLoads, createLoad } from '@/lib/carrier/loads';
 import { RATE_TYPES } from '@/lib/carrier/rate-types';
+import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
 
 const StopInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -109,6 +110,9 @@ export async function POST(req: NextRequest) {
     const load = await createLoad(orgId, parsed.data);
     return NextResponse.json({ data: load }, { status: 201 });
   } catch (err) {
+    if (err instanceof FacilityUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     if (err instanceof Error && (
       err.message === 'Invalid client' ||
       err.message === 'Invalid contract'

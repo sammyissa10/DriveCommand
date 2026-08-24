@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listStops, createStop } from '@/lib/carrier/stops';
+import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
 
 const StopCreateSchema = z.object({
   dispatchId: z.string().uuid(),
@@ -69,6 +70,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data: stop }, { status: 201 });
   } catch (err) {
+    if (err instanceof FacilityUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     logger.error('POST /api/v1/carrier/stops failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

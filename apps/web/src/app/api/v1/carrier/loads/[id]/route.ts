@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getLoad, updateLoad } from '@/lib/carrier/loads';
 import { RATE_TYPES } from '@/lib/carrier/rate-types';
+import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
 
 const StopInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -95,6 +96,9 @@ export async function PATCH(
 
     return NextResponse.json({ data: load });
   } catch (err) {
+    if (err instanceof FacilityUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     logger.error('PATCH /api/v1/carrier/loads/[id] failed', {
       error: err instanceof Error ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err as object)),
       stack: err instanceof Error ? err.stack : undefined,
