@@ -3,7 +3,7 @@
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { revalidatePath } from 'next/cache';
-import type { SoftDeletableEntity } from '@/lib/carrier/soft-delete';
+import { HAS_DELETED_BY, type SoftDeletableEntity } from '@/lib/carrier/soft-delete';
 
 interface SoftDeleteResult {
   success: boolean;
@@ -35,6 +35,7 @@ export async function softDeleteRecords(
     Route: tenantPrisma.route,
     Trip: tenantPrisma.trip,
     CarrierLoad: tenantPrisma.carrierLoad,
+    CarrierFacility: tenantPrisma.carrierFacility,
   } as const;
 
   const orgField = entityType === 'Route' ? 'tenantId' : 'orgId';
@@ -85,10 +86,15 @@ export async function softDeleteRecords(
       [orgField]: orgId,
       deletedAt: null, // Only delete non-deleted records
     },
-    data: {
-      deletedAt: now,
-      deletedById: userId,
-    },
+    // `facilities` has `deleted_at` but NO `deleted_by_id` — quick-530 added the
+    // one column it needed and no more. Every other member of the union has both.
+    // The delegate is reached through `as any`, so naming a column that does not
+    // exist is NOT a compile error: it is a runtime "Unknown argument" from
+    // Prisma on the first click. Verified against production
+    // information_schema, not inferred from the neighbours.
+    data: HAS_DELETED_BY[entityType]
+      ? { deletedAt: now, deletedById: userId }
+      : { deletedAt: now },
   });
 
   revalidatePath('/', 'layout');
@@ -116,6 +122,7 @@ export async function restoreRecords(
     Route: tenantPrisma.route,
     Trip: tenantPrisma.trip,
     CarrierLoad: tenantPrisma.carrierLoad,
+    CarrierFacility: tenantPrisma.carrierFacility,
   } as const;
 
   const orgField = entityType === 'Route' ? 'tenantId' : 'orgId';
@@ -127,10 +134,11 @@ export async function restoreRecords(
       [orgField]: orgId,
       deletedAt: { not: null },
     },
-    data: {
-      deletedAt: null,
-      deletedById: null,
-    },
+    // See the note in softDeleteRecords: facilities have no `deleted_by_id`,
+    // and clearing a column that does not exist fails exactly like setting one.
+    data: HAS_DELETED_BY[entityType]
+      ? { deletedAt: null, deletedById: null }
+      : { deletedAt: null },
   });
 
   revalidatePath('/', 'layout');
@@ -158,6 +166,7 @@ export async function permanentlyDeleteRecords(
     Route: tenantPrisma.route,
     Trip: tenantPrisma.trip,
     CarrierLoad: tenantPrisma.carrierLoad,
+    CarrierFacility: tenantPrisma.carrierFacility,
   } as const;
 
   const orgField = entityType === 'Route' ? 'tenantId' : 'orgId';
