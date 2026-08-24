@@ -1,7 +1,7 @@
 # quick-533 — Summary
 
 **Date:** 2026-08-24
-**Commits:** `f5784d7d`, `f77dc5cb`, `b96d6069`
+**Commits:** `f5784d7d`, `f77dc5cb`, `b96d6069`, `25d06b70`
 **tsc:** 0 errors, gate probe-verified live
 **Tests:** no regressions (working-tree failures are a strict subset of baseline)
 
@@ -17,6 +17,17 @@ Facilities now delete from the grid, through the same path as the other seven en
 | `actions/carrier/soft-delete.ts` | `CarrierFacility` added to all **three** modelMaps; `deletedById` omitted for facilities in the two mutating payloads |
 | `carrier/facilities/_grid/FacilitiesGrid.tsx` | both stubs replaced; `DeleteConfirmationDialog` rendered |
 | `api/v1/carrier/facilities/[id]/route.ts` | `status: 'inactive'` → `status: 'deleted'` + `deletedAt` |
+| `hooks/useSoftDelete.ts` + `components/shared/DeleteConfirmationDialog.tsx` | dialog stopped guessing the plural — see below |
+
+---
+
+## Second defect found while wiring: "Delete 3 facilitys?"
+
+`DeleteConfirmationDialog` built its count text as `` `${itemCount} ${itemName}s` ``. Naive `+s` is correct for all seven previously-wired entities — clients, contracts, drivers, trucks, routes, trips, loads — and **facilities is the first entity where it breaks**. The bulk confirmation this task adds would have shipped reading *"Delete 3 facilitys?"*.
+
+`ENTITY_PLURAL_NAMES` has always held the correct form, and `useSoftDelete` already used it for the success toast; only the dialog was still guessing. The hook now returns `itemNamePlural` and the dialog prefers it, falling back to the old concatenation — so the seven siblings render identically and **none of them needed to change**.
+
+Worth noting for the next entity added: the pattern had two places deriving a plural and only one of them was right.
 
 ---
 
