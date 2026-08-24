@@ -1,0 +1,36 @@
+-- Give `facilities` a real soft-delete column.
+--
+-- The table had NO `active` column and NO `deleted_at` column, so
+-- `softDeleteFacility` wrote `inactive_<type>` into `facility_type` instead.
+-- `facilities_facility_type_check` admits six values and none of them carry an
+-- `inactive_` prefix, so that write has ALWAYS been a 23514: soft delete has
+-- never once worked in production. The paired read predicate
+-- (`NOT facilityType startsWith 'inactive_'`, at eight call sites) was
+-- therefore a no-op that merely looked like a filter — which is why nobody
+-- noticed. Zero rows exist in the prefixed state, so no backfill is needed and
+-- none is performed.
+--
+-- `deleted_at timestamptz`, nullable, no default, matching the sibling carrier
+-- tables (`clients`, `contracts`, `loads`, `carrier_drivers`, `carrier_trucks`,
+-- `dispatches`, `document_imports`, all snake_case `deleted_at`). Column read
+-- off `information_schema`, not inferred from the convention around it.
+--
+-- `deleted_by_id` is deliberately NOT added. Several siblings carry one, but
+-- nothing in the facility paths reads it and a column nothing reads is a column
+-- that comes back to life wrong. Add it with the code that needs it.
+--
+-- No uniqueness is added either, and none needed converting: the only unique
+-- index on this table is `facilities_pkey` on `id`. The standing rule — any
+-- uniqueness on a soft-deletable table must be a partial unique index
+-- (`WHERE deleted_at IS NULL`), never a plain unique constraint — binds
+-- whoever adds the first natural key here. `loadFacilityCandidates` says in a
+-- comment that the fix at scale is "a stored normalised-address key with an
+-- index"; that index must be partial.
+--
+-- Applied to production via Supabase MCP before this file was written, and
+-- marked applied with `prisma migrate resolve --applied` rather than replayed,
+-- per DEC-3 rules 1 and 4. Idempotent (`ADD COLUMN IF NOT EXISTS`).
+--
+-- Deliberately NOT done here: `facilities_facility_type_check` is NOT widened.
+-- The fix for a constraint-illegal write is a new column, not more enum values.
+ALTER TABLE facilities ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;

@@ -2040,39 +2040,52 @@ model CarrierContract {
 }
 
 model CarrierFacility {
-  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId               String   @map("org_id") @db.Uuid
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId               String    @map("org_id") @db.Uuid
   name                String
   // Allowed values: 'terminal' | 'yard' | 'warehouse' | 'drop_yard' | 'customer_site' | 'driver_residence'
   // Not a Prisma enum — enforcement lives in the SQL CHECK constraint
   // `facilities_facility_type_check`. Widened to admit 'driver_residence' by
   // migration 20260802173535_widen_facility_type_check. Any new value must be
   // added to that constraint in a migration or the write fails at the database.
-  facilityType        String   @default("terminal") @map("facility_type")
-  addressLine1        String?  @map("address_line1")
-  addressLine2        String?  @map("address_line2")
+  facilityType        String    @default("terminal") @map("facility_type")
+  addressLine1        String?   @map("address_line1")
+  addressLine2        String?   @map("address_line2")
   city                String?
   state               String?
   zip                 String?
-  country             String   @default("US")
+  country             String    @default("US")
   latitude            Float?
   longitude           Float?
-  contactName         String?  @map("contact_name")
-  contactPhone        String?  @map("contact_phone")
-  contactEmail        String?  @map("contact_email")
-  lumperRequired      Boolean  @default(false) @map("lumper_required")
-  appointmentRequired Boolean  @default(false) @map("appointment_required")
-  contacts            Json     @default("[]")
+  contactName         String?   @map("contact_name")
+  contactPhone        String?   @map("contact_phone")
+  contactEmail        String?   @map("contact_email")
+  lumperRequired      Boolean   @default(false) @map("lumper_required")
+  appointmentRequired Boolean   @default(false) @map("appointment_required")
+  contacts            Json      @default("[]")
   notes               String?
   // ─── Document Import (Phase 1, spec Sections 6 + 9) ───────────────────────
   // A driver residence is visible only to that driver, the owner, and dispatchers
   // with explicit permission — enforced server-side, never as a UI hide (Section 9).
-  isDriverResidence   Boolean  @default(false) @map("is_driver_residence")
-  residentDriverId    String?  @map("resident_driver_id") @db.Uuid
-  createdById         String?  @map("created_by_id") @db.Uuid // NEW (Wave 2)
-  updatedById         String?  @map("updated_by_id") @db.Uuid // NEW (Wave 2)
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  isDriverResidence   Boolean   @default(false) @map("is_driver_residence")
+  residentDriverId    String?   @map("resident_driver_id") @db.Uuid
+  createdById         String?   @map("created_by_id") @db.Uuid // NEW (Wave 2)
+  updatedById         String?   @map("updated_by_id") @db.Uuid // NEW (Wave 2)
+  // Soft delete (quick-530). Before this column existed, `softDeleteFacility`
+  // wrote `inactive_<type>` into `facilityType` — a value
+  // `facilities_facility_type_check` has never admitted, so the write was a
+  // 23514 every time and soft delete never worked. Stamping this column leaves
+  // `facilityType` alone and constraint-legal.
+  //
+  // Read rule, and it cuts both ways: FILTER A PICKER, HYDRATE A TRIP'S OWN
+  // STOPS. Pickers, candidate sets and write-time ownership checks all take
+  // `deletedAt: null`. Queries that fetch facilities BY ID for stops already on
+  // a trip or load must NOT filter — dropping the row blanks the facility name
+  // on a live itinerary, the same failure the driver-residence mask exists to
+  // avoid.
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant             Tenant              @relation(fields: [orgId], references: [id])
   createdBy          User?               @relation(name: "CarrierFacilityCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
