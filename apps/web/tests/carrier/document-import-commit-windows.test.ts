@@ -598,7 +598,9 @@ describeWithDb('Phase 8 commit — template appointment windows materialise on r
       throw new Error(`expected a successful commit, got ${JSON.stringify(outcome)}`);
     }
 
-    const stops = await bypass((tx) =>
+    const stops = await bypass<
+      { sequenceOrder: number; appointmentStart: Date | null; appointmentEnd: Date | null }[]
+    >((tx) =>
       tx.carrierStop.findMany({
         where: { dispatchId: outcome.tripId },
         orderBy: { sequenceOrder: 'asc' },
@@ -617,7 +619,7 @@ describeWithDb('Phase 8 commit — template appointment windows materialise on r
     // stopped writing windows".
     for (const i of [0, 2, 3]) {
       expect(stops[i].appointmentStart).not.toBeNull();
-      expect(stops[i].appointmentStart.getTime()).toBe(
+      expect(stops[i].appointmentStart!.getTime()).toBe(
         DEPARTURE.getTime() + OFFSETS[i][0] * MINUTE,
       );
     }
