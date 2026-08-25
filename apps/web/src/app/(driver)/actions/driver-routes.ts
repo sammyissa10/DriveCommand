@@ -12,8 +12,9 @@
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { transitionTripStatus } from '@/lib/carrier/trips';
+import { handleStartTrip } from '@/lib/carrier/inspection-handlers';
 import { arriveStop, completeStop } from '@/lib/carrier/stop-completion';
+import { logger, serializeError } from '@/lib/logger';
 import { revalidatePath } from 'next/cache';
 
 // ---------------------------------------------------------------------------
@@ -167,6 +168,19 @@ export async function getMyDispatchHistory() {
  * Verifies the dispatch belongs to the authenticated driver before delegating.
  *
  * SECURITY: Verifies dispatch.primaryDriverId = carrierDriver.id AND orgId = session.tenantId.
+ *
+ * COMPLIANCE (quick-540): delegates to `handleStartTrip`, which runs the Phase 9
+ * inspection gate BEFORE reaching `transitionTripStatus`. This action previously
+ * called `transitionTripStatus` directly, so a web driver could start a trip on
+ * an uninspected truck with `requirePreTripInspection = true` and nothing
+ * recorded it — quick-539 Q3. Ownership is still verified here first: the gate
+ * answers "may this trip start", not "is this your trip", and both questions
+ * have to be asked.
+ *
+ * The refusal is returned as `{ error }` — the SAME shape this action already
+ * returned for "not assigned to you" — carrying the gate's own sentence, so the
+ * existing caller surfaces the real reason without any UI change. `code` rides
+ * alongside for a future caller that wants to route on it.
  */
 export async function startTrip(dispatchId: string) {
   await requireRole([UserRole.DRIVER]);
@@ -196,9 +210,48 @@ export async function startTrip(dispatchId: string) {
     return { error: 'Dispatch not found or not assigned to you' };
   }
 
-  const result = await transitionTripStatus(session.tenantId, dispatchId, 'in_progress');
+  let result: Awaited<ReturnType<typeof handleStartTrip>>;
+  try {
+    result = await handleStartTrip({
+      orgId: session.tenantId,
+      dispatchId,
+      userId: session.userId,
+    });
+  } catch (err) {
+    // A THROW is not a refusal, and the two must not read alike. The full error
+    // — name, message, Prisma code — goes to the log via serializeError; the
+    // driver gets a sentence that says the gate could not be checked, which is
+    // deliberately NOT "you may go".
+    logger.error('[startTrip] inspection gate threw', err, {
+      orgId: session.tenantId,
+      dispatchId,
+      driverUserId: session.userId,
+      error: serializeError(err),
+    });
+    return {
+      error:
+        'Could not check the pre-trip inspection for this truck. Please try again, or contact your dispatcher.',
+      code: 'GATE_UNAVAILABLE' as const,
+    };
+  }
+
+  if (!result.ok) {
+    // Named, never swallowed. `result.error` is the gate's own sentence —
+    // "This trip cannot start. 1 critical item failed inspection." — not a
+    // generic failure string, and not a silent no-op that leaves the driver
+    // tapping a button that appears to do nothing.
+    logger.info('[startTrip] refused by inspection gate', {
+      orgId: session.tenantId,
+      dispatchId,
+      driverUserId: session.userId,
+      code: result.code,
+    });
+    return { error: result.error, code: result.code };
+  }
+
   revalidatePath('/my-route');
-  return result;
+  revalidatePath('/home');
+  return { id: result.data.id, status: result.data.status };
 }
 
 // ---------------------------------------------------------------------------
