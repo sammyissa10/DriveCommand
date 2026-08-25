@@ -97,7 +97,25 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
         label: 'Delete',
         icon: Trash2,
         onClick: () => requestDelete(row.id),
-        destructive: true,
+        // `destructive: true` is deliberately NOT set, and this is the whole fix
+        // for the two-dialogs-in-a-row bug.
+        //
+        // In shell/shared/QuickActions.tsx that one flag does two unrelated
+        // things: it tints the icon red on hover, AND it makes handleAction open
+        // QuickActions' own AlertDialog instead of calling onClick. Confirming
+        // that dialog then calls onClick — which is requestDelete — so the
+        // canonical dialog opens second. Two prompts, and the first one reads
+        // "This action cannot be undone", which is the opposite of true: this
+        // delete is a deleted_at stamp with an Undo toast and a Recently Deleted
+        // entry.
+        //
+        // Dropping the flag costs a red hover tint on an icon that is already a
+        // trash can, is already labelled Delete, and already leads to a properly
+        // destructive-styled confirmation. That is the cheaper half to give up.
+        //
+        // The bulk action below keeps `destructive: true` because
+        // BulkActionsBar's copy of that flag only picks a button variant — it
+        // has no dialog of its own.
       },
     ];
     return <QuickActions actions={actions} />;
