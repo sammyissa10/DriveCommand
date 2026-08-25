@@ -9,10 +9,10 @@ export type SoftDeletableEntity =
   | 'Route'
   | 'Trip'
   | 'CarrierLoad'
-  // CarrierFacility is the one member whose table has NO `deleted_by_id`
-  // column (quick-530 added `deleted_at` alone). `softDeleteRecords` and
-  // `restoreRecords` therefore omit `deletedById` for this member only —
-  // see the comment at those sites before adding a ninth entity.
+  // Facilities briefly had `deleted_at` without `deleted_by_id` (quick-530
+  // added one column, quick-533 worked around the gap, quick-534 closed it).
+  // All eight members now carry both columns — see HAS_DELETED_BY below, which
+  // is still consulted, and still worth consulting, for the ninth.
   | 'CarrierFacility';
 
 export const ENTITY_DISPLAY_NAMES: Record<SoftDeletableEntity, string> = {
@@ -41,16 +41,22 @@ export const ENTITY_PLURAL_NAMES: Record<SoftDeletableEntity, string> = {
  * Which soft-deletable tables actually carry a `deleted_by_id` column.
  *
  * This is not a preference — it is a fact about the schema, verified against
- * production `information_schema.columns`. `facilities` got `deleted_at` alone
- * in quick-530; every other member of the union has both columns.
+ * production `information_schema.columns`.
+ *
+ * **Every entry is now `true`** — quick-534 gave `facilities` the
+ * `deleted_by_id` it was missing, so the one `false` that motivated this map is
+ * gone. It is kept anyway, deliberately, and not because removing it is hard.
  *
  * It exists as a `Record<SoftDeletableEntity, boolean>` rather than an
- * `entityType === 'CarrierFacility'` check at the two mutation sites because
- * the delegates in `actions/carrier/soft-delete.ts` are reached through
- * `(model as any)`, which means a column name that does not exist is a RUNTIME
- * Prisma error, not a compile error. This map is the only part of that path a
- * type-checker can still police: adding a ninth entity fails the build until
- * someone states which kind it is.
+ * `entityType === '…'` check at the two mutation sites because the delegates in
+ * `actions/carrier/soft-delete.ts` are reached through `(model as any)`, which
+ * means a column name that does not exist is a RUNTIME Prisma error, not a
+ * compile error. This map is the only part of that path a type-checker can
+ * still police: adding a ninth entity fails the build until someone states
+ * which kind it is. That guard is worth more now than when every answer was
+ * interesting, because a uniformly-`true` map is exactly the shape someone
+ * deletes on sight — and the next table to arrive without the column would then
+ * fail in production instead of at the keyboard.
  */
 export const HAS_DELETED_BY: Record<SoftDeletableEntity, boolean> = {
   CarrierClient: true,
@@ -60,7 +66,7 @@ export const HAS_DELETED_BY: Record<SoftDeletableEntity, boolean> = {
   Route: true,
   Trip: true,
   CarrierLoad: true,
-  CarrierFacility: false,
+  CarrierFacility: true,
 };
 
 // Calculate purge date from deletedAt
