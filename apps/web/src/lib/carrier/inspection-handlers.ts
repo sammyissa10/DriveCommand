@@ -25,7 +25,7 @@ import { listInspectionSteps, signatureState } from './inspection-lookup';
 import type { InspectionItemOutcome, TripStartVerdict } from './inspection-gate';
 import { FAIL_NOTE_MIN_LENGTH, INSPECTION_VALIDITY_HOURS } from './inspection-constants';
 // Imported (not merely re-exported) because `buildChecklistView` below calls both.
-import { sectionOf, requiresPhotoOnFail } from './inspection-snapshot';
+import { sectionOf, requiresPhotoOnFail, isDriverAnswerableStep } from './inspection-snapshot';
 
 // ---------------------------------------------------------------------------
 // Wire types — shared verbatim with mobile via packages/api-client
@@ -78,6 +78,16 @@ export interface InspectionStepView {
   /** Section grouping — see `sectionOf` below. */
   section: string;
   requiresPhotoOnFail: boolean;
+  /**
+   * quick-543. Who this step belongs to, and whether the driver can answer it.
+   *
+   * A tenant-built inspection may contain steps assigned to someone else. Those
+   * are rendered read-only and excluded from the driver's progress count — see
+   * `isDriverAnswerableStep`. `assigneeRole` is carried so the screen can say
+   * WHOSE it is rather than just refusing.
+   */
+  assigneeRole: string | null;
+  answerableByDriver: boolean;
 }
 
 export interface InspectionChecklistView {
@@ -375,11 +385,19 @@ async function buildChecklistView(
       isDispatchBlocker?: boolean;
     };
     const result = (s.result ?? {}) as { note?: unknown; photoUrls?: unknown };
+    const stepType = snap.stepType ?? 'INSPECTION_ITEM';
     return {
       stepInstanceId: s.id,
       name: snap.name ?? 'Inspection item',
       description: snap.description ?? null,
-      stepType: snap.stepType ?? 'INSPECTION_ITEM',
+      stepType,
+      assigneeRole: s.assigneeRole ?? null,
+      answerableByDriver: isDriverAnswerableStep({
+        stepType,
+        assigneeRole: s.assigneeRole,
+        assignedUserId: s.assignedUserId,
+        driverUserId: trip.driverUserId,
+      }),
       isCritical: snap.isDispatchBlocker === true,
       status: s.status as InspectionStepView['status'],
       note: typeof result.note === 'string' ? result.note : null,

@@ -10,6 +10,7 @@ import {
   Sparkles,
   FileText,
   ClipboardList,
+  ClipboardCheck,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +21,7 @@ type PlaybookListItem = inferRouterOutputs<AppRouter>['workflows']['playbook']['
 
 const CATEGORY_ICON: Record<string, React.ReactNode> = {
   ONBOARDING: <User className="w-6 h-6" />,
+  VEHICLE_INSPECTION: <ClipboardCheck className="w-6 h-6" />,
   SAFETY: <Shield className="w-6 h-6" />,
   OPERATIONS: <Package className="w-6 h-6" />,
   COMPLIANCE: <FileText className="w-6 h-6" />,
@@ -29,6 +31,7 @@ const CATEGORY_ICON: Record<string, React.ReactNode> = {
 
 const CATEGORY_COLOR: Record<string, string> = {
   ONBOARDING: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  VEHICLE_INSPECTION: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
   SAFETY: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   OPERATIONS: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   COMPLIANCE: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
@@ -46,6 +49,7 @@ const ENTITY_TYPE_LABEL: Record<string, string> = {
 
 const CATEGORY_LABEL: Record<string, string> = {
   ONBOARDING: 'Onboarding',
+  VEHICLE_INSPECTION: 'Vehicle Inspection',
   SAFETY: 'Safety',
   OPERATIONS: 'Operations',
   COMPLIANCE: 'Compliance',

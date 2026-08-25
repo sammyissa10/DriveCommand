@@ -1,3 +1,4 @@
+import { PHOTO_ON_FAIL_KEY } from '@/lib/carrier/inspection-snapshot';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@/generated/prisma';
 
@@ -264,7 +265,8 @@ async function createPreTripInspection(tx: TxClient, tenantId: string): Promise<
           description: item.description,
           stepType: 'INSPECTION_ITEM',
           assigneeRole: 'DRIVER',
-          defaultConfig: { requiresPhotoOnFail: true },
+          // Key comes from the shared constant, never spelled inline — quick-543.
+          defaultConfig: { [PHOTO_ON_FAIL_KEY]: true },
         },
       })
     )

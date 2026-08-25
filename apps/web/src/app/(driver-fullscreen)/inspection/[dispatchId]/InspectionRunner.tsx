@@ -10,6 +10,7 @@ import {
   Check,
   CheckCircle2,
   Loader2,
+  Lock,
   MinusCircle,
   PenLine,
   ShieldCheck,
@@ -98,6 +99,35 @@ const copy = {
       ? '1 item was flagged and logged against the truck.'
       : `${n} items were flagged and logged against the truck.`,
 } as const;
+
+/** Role names as a driver would say them, not as the enum spells them. */
+const ROLE_LABEL: Record<string, string> = {
+  DISPATCHER: 'dispatch',
+  MECHANIC: 'the shop',
+  SAFETY_MANAGER: 'the safety manager',
+  THIRD_PARTY: 'a third party',
+  OWNER: 'the office',
+};
+
+/**
+ * What a driver reads on a step that is not theirs.
+ *
+ * One string per sentence, per the rule above. Says WHOSE it is when the role is
+ * one a driver would recognise, and stays vague rather than leaking an enum
+ * value when it is not.
+ */
+function notYoursCopy(step: InspectionStepView): string {
+  if (step.stepType !== 'INSPECTION_ITEM') {
+    const who = step.assigneeRole ? ROLE_LABEL[step.assigneeRole] : null;
+    return who
+      ? `Not part of your walkaround — ${who} completes this one.`
+      : 'Not part of your walkaround. Somebody else completes this one.';
+  }
+  const who = step.assigneeRole ? ROLE_LABEL[step.assigneeRole] : null;
+  return who
+    ? `Assigned to ${who}, not to you.`
+    : 'This item is assigned to somebody else.';
+}
 
 // ---------------------------------------------------------------------------
 // Small presentational pieces
@@ -331,8 +361,28 @@ function ItemCard({
         </p>
       )}
 
+      {/*
+        quick-543 — somebody else's step.
+
+        Read-only, named, and no buttons. It is NOT hidden: the owner put it in
+        this checklist deliberately, and silently dropping it would make the
+        driver's walkaround differ from the playbook without anyone being told.
+        It is also not counted in progress (see `totals` below), because a step
+        the driver cannot answer must never be the reason the bar stops short of
+        the end.
+
+        Before this, it rendered with Pass / Fail / N-A and the server refused
+        all three — a button that does nothing, in a yard, with gloves on.
+      */}
+      {!step.answerableByDriver && (
+        <div className="mt-3 flex items-start gap-2 rounded-xl bg-muted/60 p-3">
+          <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">{notYoursCopy(step)}</p>
+        </div>
+      )}
+
       {/* Answer buttons */}
-      {!isFailed && mode === 'idle' && (
+      {step.answerableByDriver && !isFailed && mode === 'idle' && (
         <div className="mt-4 flex gap-2">
           {!answered && (
             <AnswerButton
@@ -548,17 +598,29 @@ export function InspectionRunner({
   const [signing, setSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Progress counts ONLY steps this driver can answer (quick-543).
+   *
+   * A DISPATCHER-assigned step left NOT_STARTED would otherwise sit in the
+   * denominator forever: the bar would stop one short of full, "1 item still
+   * needs an answer" would never clear, and the driver would hunt for a step
+   * they are not allowed to touch. The gate already ignores these — its
+   * outcomes have always been INSPECTION_ITEM-only — so counting them here was
+   * the screen disagreeing with the verdict it was about to receive.
+   */
   const totals = useMemo(() => {
-    const all = sections.flatMap((s) => s.steps);
-    const answered = all.filter(
+    const mine = sections.flatMap((s) => s.steps).filter((s) => s.answerableByDriver);
+    const answered = mine.filter(
       (s) => s.status !== 'NOT_STARTED' && s.status !== 'IN_PROGRESS',
     ).length;
-    return { total: all.length, answered, remaining: all.length - answered };
+    return { total: mine.length, answered, remaining: mine.length - answered };
   }, [sections]);
 
   const section = sections[index];
   const sectionRemaining =
-    section?.steps.filter((s) => s.status === 'NOT_STARTED' || s.status === 'IN_PROGRESS').length ?? 0;
+    section?.steps.filter(
+      (s) => s.answerableByDriver && (s.status === 'NOT_STARTED' || s.status === 'IN_PROGRESS'),
+    ).length ?? 0;
 
   const isLastSection = index >= sections.length - 1;
 
@@ -721,8 +783,30 @@ function SignatureScreen({
    */
   const signedAt = useRef(new Date()).current;
 
-  const failed = view.sections.flatMap((s) => s.steps).filter((s) => s.status === 'FAILED');
-  const canSign = remaining === 0 && hasInk && name.trim().length > 0 && !busy;
+  /**
+   * The pre-signature summary mirrors what the GATE will count as a failure, so
+   * the driver is not told one thing here and another on the next screen.
+   *
+   * That means filtering on `stepType === 'INSPECTION_ITEM'` — `buildSnapshot`'s
+   * rule — and NOT on `answerableByDriver`. An INSPECTION_ITEM someone else
+   * failed is still a defect on this trip and still reaches the verdict; hiding
+   * it here would under-report the very thing the driver is signing beneath.
+   */
+  const failed = view.sections
+    .flatMap((s) => s.steps)
+    .filter((s) => s.stepType === 'INSPECTION_ITEM' && s.status === 'FAILED');
+  /**
+   * Ink is only required when the playbook HAS a signature step.
+   *
+   * Found while verifying quick-543 item 6: neither of the demo tenant's
+   * inspections contains a SIGNATURE step, so `signature.required` is false and
+   * `submit()` correctly skips the upload — but this button still demanded a
+   * drawn mark, so the driver had to sign something that was then thrown away.
+   * A gesture with no record behind it is theatre, and on a DVIR that is worse
+   * than no gesture at all.
+   */
+  const signatureNeeded = view.signature.required;
+  const canSign = remaining === 0 && (!signatureNeeded || hasInk) && name.trim().length > 0 && !busy;
 
   async function submit() {
     setBusy(true);
@@ -833,13 +917,20 @@ function SignatureScreen({
         )}
 
         <div className="rounded-2xl bg-card p-4 shadow-sm">
-          <SignaturePad
-            onHandle={(h) => {
-              handleRef.current = h;
-            }}
-            onInkChange={setHasInk}
-            disabled={busy}
-          />
+          {signatureNeeded ? (
+            <SignaturePad
+              onHandle={(h) => {
+                handleRef.current = h;
+              }}
+              onInkChange={setHasInk}
+              disabled={busy}
+            />
+          ) : (
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              This checklist does not ask for a drawn signature. Your name and the time below are
+              recorded against it.
+            </p>
+          )}
 
           {/* Name and timestamp printed beneath the mark — Section 12. */}
           <div className="mt-3 space-y-2">

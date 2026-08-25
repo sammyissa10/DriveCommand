@@ -71,6 +71,8 @@ type StepRow = {
   completedByUserId: string | null;
   result: unknown;
   stepSnapshot: unknown;
+  assigneeRole?: string | null;
+  assignedUserId?: string | null;
 };
 
 function toOutcome(step: StepRow): InspectionItemOutcome {
@@ -145,6 +147,16 @@ const STEP_SELECT = {
   completedByUserId: true,
   result: true,
   stepSnapshot: true,
+  // quick-543: the two ASSIGNMENT columns, so the driver's checklist can tell
+  // which steps are actually theirs to answer.
+  //
+  // The COLUMNS, not `stepSnapshot.assigneeRole` — both exist and they are not
+  // guaranteed to agree. `findOwnStep`, which is what actually accepts or
+  // refuses the driver's tap, filters on these columns, so a screen that
+  // decided from the snapshot could offer a button the server then rejects.
+  // Read what the gatekeeper reads.
+  assigneeRole: true,
+  assignedUserId: true,
 } as const;
 
 /**

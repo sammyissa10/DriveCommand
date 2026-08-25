@@ -165,6 +165,19 @@ export interface InspectionStepView {
   photoKeys: string[]
   section: string
   requiresPhotoOnFail: boolean
+  /**
+   * quick-543 — who owns this step, and whether the signed-in driver may answer
+   * it. The server always sends both; see `isDriverAnswerableStep` in
+   * `apps/web/src/lib/carrier/inspection-snapshot.ts` for the rule.
+   *
+   * The WEB checklist honours these: a step that is not the driver's renders
+   * read-only and is excluded from the progress count. `apps/mobile`'s
+   * `TripInspectionScreen` does NOT yet — it still offers Pass / Fail / N-A on
+   * every step, and the server refuses all three. Carried here so that fix is a
+   * rendering change rather than another round trip through the wire type.
+   */
+  assigneeRole: string | null
+  answerableByDriver: boolean
 }
 
 export interface InspectionChecklistView {

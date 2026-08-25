@@ -37,8 +37,26 @@ const ENTITY_TYPE_OPTIONS: Array<{ value: PlaybookEntityType; label: string }> =
   { value: 'OTHER', label: 'Other' },
 ];
 
+/**
+ * All seven `PlaybookCategory` values.
+ *
+ * quick-543 added `VEHICLE_INSPECTION`, which had been missing since the enum's
+ * seventh value was introduced. The omission was not cosmetic: it is the ONLY
+ * category the pre-trip inspection gate accepts
+ * (`inspection-service.ts` → `category: 'VEHICLE_INSPECTION'`), so the set of
+ * categories an owner could pick and the set the gate would honour had an empty
+ * intersection. A tenant that turned on `requirePreTripInspection` and built
+ * their own checklist got "no vehicle inspection checklist exists. Create one in
+ * Checklists & Workflows" — from this screen, where the required category could
+ * not be chosen.
+ *
+ * Nothing else needed changing: `playbookCategorySchema`, the Prisma enum and
+ * the Postgres type have all accepted the value since it was added. This list
+ * was the only gate.
+ */
 const CATEGORY_OPTIONS: Array<{ value: PlaybookCategory; label: string }> = [
   { value: 'ONBOARDING', label: 'Onboarding' },
+  { value: 'VEHICLE_INSPECTION', label: 'Vehicle Inspection (DVIR)' },
   { value: 'SAFETY', label: 'Safety' },
   { value: 'OPERATIONS', label: 'Operations' },
   { value: 'COMPLIANCE', label: 'Compliance' },
