@@ -495,3 +495,73 @@ treated as **absent** rather than trusted. Silently trusting the index would
 attach one consignee's confirmed facility to another's freight.
 
 Phase 5 must not "fix" this by re-keying on position.
+
+---
+
+## DEC-16 — Adding an enum value is THREE changes, not one
+
+Discovered by quick-543, from a timeline nobody had assembled before.
+
+`PlaybookCategory` shipped on 2026-04-24 with six values. `VEHICLE_INSPECTION`
+was added the same day, by a later migration. Sixteen months on, a driver in the
+demo tenant pressed the pre-trip inspection button and got *"Pre-trip
+inspections are required, but no vehicle inspection checklist exists."*
+
+The timeline, read off `_prisma_migrations` and the rows themselves:
+
+| Time (UTC, 2026-04-24) | Event |
+|---|---|
+| **02:21:59** | `20260423100001_add_workflow_engine_foundation` — `CREATE TYPE "PlaybookCategory" AS ENUM ('ONBOARDING','SAFETY','OPERATIONS','COMPLIANCE','PARTNER','CUSTOM')` |
+| **02:23:24 → 02:23:39** | seven `Pre-Trip Inspection` playbooks written, `category = 'SAFETY'`, 85 seconds later |
+| 03:56:44 | `Pre-Trip Inspection v2` written, same category |
+| **18:06:45** | `20260424100001_workflow_engine_inspection_mode` — `ALTER TYPE "PlaybookCategory" ADD VALUE 'VEHICLE_INSPECTION'` |
+
+**Nobody chose the wrong category.** `VEHICLE_INSPECTION` did not exist in the
+database for another 15.7 hours; Postgres would have rejected the insert.
+`SAFETY` was the only defensible value available and it was correct when it was
+written. The bug was created by the migration that came *after* those rows.
+
+That migration did one of the three things it needed to.
+
+### The rule
+
+> **Adding a value to an enum is three changes, and the type is only the first:**
+>
+> 1. **The type** — `ALTER TYPE ... ADD VALUE`. The part everyone does.
+> 2. **The existing rows** — every row written before the value existed that
+>    would have used it. They are not wrong; they are *older than the vocabulary*,
+>    and nothing else will ever come back for them.
+> 3. **Every place a user picks from it** — dropdowns, filters, pickers, tab
+>    strips. An enum value a user cannot select is a value only code can produce,
+>    which silently makes it a system-internal value whether or not that was
+>    intended.
+>
+> **Ship all three in the same change, or write down which you are deferring and
+> why.** A deferred backfill that nobody records is indistinguishable from a
+> backfill nobody thought of.
+
+### How this one presented, which is the part worth recognising
+
+Both omissions were invisible in isolation and only failed in combination:
+
+- Skipping (2) left eight playbooks under a category the gate does not accept.
+- Skipping (3) meant the owner could not fix it — the gate's own error told them
+  to "Create one in Checklists & Workflows", a screen where `VEHICLE_INSPECTION`
+  was the one category the dropdown omitted. **The set of categories a user could
+  pick and the set the gate would honour had an empty intersection.**
+
+So the feature was unreachable from both directions at once, and the failure
+surfaced only when a tenant first turned `requirePreTripInspection` on. quick-543
+items 4 and 5 are, between them, that migration's missing half.
+
+**Enforcement is a habit, not a check.** There is no lint for "a user can pick
+every value of this enum" — the dropdown is a hand-written array in a component
+(`CreatePlaybookDialog.tsx`), and it drifted from `pg_enum` for sixteen months
+with nothing failing. When touching an enum, grep for its name across `src/app`
+before closing the change: a `Record<Category, …>` or an options array that does
+not mention the new value is the tell.
+
+Same family as DEC-1 (the `facility_type` CHECK widened a phase late) and DEC-2
+(the `PUSH` channel added to the enum while the surrounding code shipped without
+it) — three instances now of a vocabulary change landing in one layer and not
+the others.
