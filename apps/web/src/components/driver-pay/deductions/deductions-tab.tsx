@@ -5,6 +5,7 @@ import Decimal from 'decimal.js';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AddDeductionForm } from './add-deduction-form';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -156,17 +157,9 @@ export function DeductionsTab({ driverId, canEdit }: Props) {
                     {fmt.format(Number(deduction.amountPerPeriod))}/period
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Starts {new Date(deduction.startsOn).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
+                    Starts {formatDateOnlyShort(deduction.startsOn)}
                     {deduction.endsOn && (
-                      <> &mdash; Ends {new Date(deduction.endsOn).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}</>
+                      <> &mdash; Ends {formatDateOnlyShort(deduction.endsOn)}</>
                     )}
                   </p>
                 </div>

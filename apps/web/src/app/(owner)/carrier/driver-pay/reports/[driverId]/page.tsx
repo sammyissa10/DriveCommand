@@ -17,6 +17,7 @@ import { computeDriverDetail } from '@/lib/driver-pay/reporting';
 import { KpiCard } from '../_components/KpiCard';
 import { NetPaySparkline } from '../_components/NetPaySparkline';
 import { SettlementsYtdTable } from './_components/SettlementsYtdTable';
+import { formatDateOnly } from '@/lib/utils/date';
 
 export const metadata = { title: 'Driver Pay Detail | DriveCommand' };
 
@@ -195,7 +196,7 @@ export default async function DriverDetailPage({
               <NetPaySparkline data={last4NetPay} />
               <div className="mt-2 flex justify-between text-xs text-muted-foreground px-1">
                 {[...last4NetPay].reverse().map((p) => (
-                  <span key={p.periodEnd}>{format(parseISO(p.periodEnd), 'MMM d')}</span>
+                  <span key={p.periodEnd}>{formatDateOnly(p.periodEnd, { month: 'short', day: 'numeric' })}</span>
                 ))}
               </div>
             </CardContent>

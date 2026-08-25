@@ -11,6 +11,7 @@ import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUplo
 import { toast } from 'sonner';
 import type { ContactInput } from '@/lib/carrier/client-contacts';
 import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 interface ContractRow {
   id: string;
@@ -595,9 +596,7 @@ export function ClientDetail({
                               </Badge>
                             </td>
                             <td className="px-4 py-3 text-muted-foreground">
-                              {c.expirationDate
-                                ? new Date(c.expirationDate).toLocaleDateString()
-                                : '—'}
+                              {formatDateOnlyShort(c.expirationDate)}
                             </td>
                           </tr>
                         ))}

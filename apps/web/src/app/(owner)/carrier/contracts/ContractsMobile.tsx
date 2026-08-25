@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/ds';
 import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
 import type { ContractRow } from './_grid/types';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 // ---------------------------------------------------------------------------
 // Formatting — mirrors the desktop grid's columns.tsx so the two views agree
@@ -38,11 +39,12 @@ function formatRate(rateType: string | null, baseRate: string | null): string | 
   }
 }
 
+// `effective_date` / `expiration_date` are `@db.Date` — see lib/utils/date.ts.
+// Keeps the null (not em-dash) contract the callers below branch on.
 function formatDate(dateStr: string | null): string | null {
   if (!dateStr) return null;
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const out = formatDateOnlyShort(dateStr);
+  return out === '—' ? null : out;
 }
 
 // Carrier contract lifecycle: active / pending / expired / terminated (+ the

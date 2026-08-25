@@ -16,6 +16,7 @@ import {
   type StatusTone,
 } from '@/components/ui/ds';
 import { deletePayrollRecord } from '@/app/(owner)/actions/payroll';
+import { formatDateOnly } from '@/lib/utils/date';
 
 export interface PayrollDetailData {
   id: string;
@@ -48,9 +49,11 @@ function fmtDollar(n: number): string {
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
+// The pay period is two `@db.Date` columns — see lib/utils/date.ts. `fmtDate`
+// above stays as it is: it formats `paidAt`, a real timestamptz.
 function fmtPeriod(a: string, b: string): string {
   const o: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
-  return `${new Date(a).toLocaleDateString('en-US', o)} – ${new Date(b).toLocaleDateString('en-US', o)}`;
+  return `${formatDateOnly(a, o)} – ${formatDateOnly(b, o)}`;
 }
 
 /**

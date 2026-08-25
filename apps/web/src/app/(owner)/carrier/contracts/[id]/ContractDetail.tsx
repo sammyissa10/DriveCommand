@@ -9,6 +9,7 @@ import { ContractForm, ContractData } from '@/components/carrier/contracts/Contr
 import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 import { toast } from 'sonner';
 import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
+import { formatDateOnly } from '@/lib/utils/date';
 
 interface ContractSerialized {
   id: string;
@@ -284,15 +285,11 @@ export function ContractDetail({
               />
               <Field
                 label="Effective Date"
-                value={contract.effectiveDate
-                  ? new Date(contract.effectiveDate).toLocaleDateString()
-                  : null}
+                value={contract.effectiveDate ? formatDateOnly(contract.effectiveDate) : null}
               />
               <Field
                 label="Expiration Date"
-                value={contract.expirationDate
-                  ? new Date(contract.expirationDate).toLocaleDateString()
-                  : null}
+                value={contract.expirationDate ? formatDateOnly(contract.expirationDate) : null}
               />
               <Field
                 label="Status"

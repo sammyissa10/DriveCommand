@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { SerializedTemplate } from '@/app/(owner)/actions/driver-compensation-templates';
+import { formatDateOnly } from '@/lib/utils/date';
 
 const PAY_TYPE_LABELS: Record<string, string> = {
   CPM: 'Cost Per Mile',
@@ -46,17 +47,8 @@ function formatRate(payType: string, baseRate: string, currency: string): string
   }).format(n);
 }
 
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  } catch {
-    return iso;
-  }
-}
+// `effective_from` / `effective_to` are `@db.Date` — see lib/utils/date.ts.
+const formatDate = formatDateOnly;
 
 function isEndingSoon(effectiveTo: string | null): boolean {
   if (!effectiveTo) return false;

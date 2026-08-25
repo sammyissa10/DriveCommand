@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { DollarSign, ChevronRight } from 'lucide-react';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 interface PayrollRecord {
   id: string;
@@ -83,8 +84,8 @@ export function PayrollList({ records }: { records: PayrollRecord[] }) {
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {new Date(record.periodStart).toLocaleDateString()} &ndash;{' '}
-                    {new Date(record.periodEnd).toLocaleDateString()}
+                    {formatDateOnlyShort(record.periodStart)} &ndash;{' '}
+                    {formatDateOnlyShort(record.periodEnd)}
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -132,8 +133,8 @@ export function PayrollList({ records }: { records: PayrollRecord[] }) {
                 </span>
               </div>
               <div className="mt-1 text-sm text-muted-foreground">
-                Period: {new Date(record.periodStart).toLocaleDateString()} &ndash;{' '}
-                {new Date(record.periodEnd).toLocaleDateString()}
+                Period: {formatDateOnlyShort(record.periodStart)} &ndash;{' '}
+                {formatDateOnlyShort(record.periodEnd)}
               </div>
               <div className="mt-0.5 text-sm font-bold text-foreground">
                 ${Number(record.totalPay).toLocaleString(undefined, { minimumFractionDigits: 2 })}

@@ -6,6 +6,7 @@ import { deletePayrollRecord } from '@/app/(owner)/actions/payroll';
 import { DeletePayrollButton } from '@/components/payroll/delete-payroll-button';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { PayrollDetailMobile } from '@/components/payroll/PayrollDetailMobile';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -84,8 +85,8 @@ export default async function PayrollDetailPage({
           </h1>
           <div className="mt-2 flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {new Date(record.periodStart).toLocaleDateString()} &ndash;{' '}
-              {new Date(record.periodEnd).toLocaleDateString()}
+              {formatDateOnlyShort(record.periodStart)} &ndash;{' '}
+              {formatDateOnlyShort(record.periodEnd)}
             </span>
             <span
               className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[record.status]}`}

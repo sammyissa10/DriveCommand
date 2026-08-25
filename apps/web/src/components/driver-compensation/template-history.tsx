@@ -1,4 +1,5 @@
 import type { SerializedTemplate } from '@/app/(owner)/actions/driver-compensation-templates';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 const PAY_TYPE_LABELS: Record<string, string> = {
   CPM: 'Cost Per Mile',
@@ -22,17 +23,8 @@ interface TemplateHistoryProps {
   templates: SerializedTemplate[];
 }
 
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  } catch {
-    return iso;
-  }
-}
+// `effective_from` / `effective_to` are `@db.Date` — see lib/utils/date.ts.
+const formatDate = formatDateOnlyShort;
 
 function formatRate(payType: string, baseRate: string, currency: string): string {
   if (payType === 'PERCENTAGE') {

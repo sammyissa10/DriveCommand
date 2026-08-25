@@ -3,6 +3,7 @@
 import React from 'react';
 import Decimal from 'decimal.js';
 import { scheduleInstallments } from '@/lib/driver-pay/installment-scheduler';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -54,11 +55,7 @@ export function InstallmentPreview({ totalAmount, count, startDate, intervalDays
             <tr key={row.installmentNumber} className="border-b border-border last:border-0">
               <td className="py-1 pr-3 text-muted-foreground">{row.installmentNumber}</td>
               <td className="py-1 pr-3">
-                {row.scheduledPayDate.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
+                {formatDateOnlyShort(row.scheduledPayDate)}
               </td>
               <td className="py-1 text-right font-medium">
                 {fmt.format(Number(row.amount.toString()))}

@@ -24,6 +24,7 @@ import type {
   DriverDeduction,
   CarrierLoad,
 } from '@/generated/prisma';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -216,11 +217,10 @@ const styles = StyleSheet.create({
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatDate(d: Date | string | null): string {
-  if (!d) return '—';
-  const dt = typeof d === 'string' ? new Date(d) : d;
-  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+// `period_start` / `period_end` are `@db.Date`. A settlement PDF is a
+// document a driver keeps, so the period printed on it must be the period
+// stored — see lib/utils/date.ts (quick-541).
+const formatDate = formatDateOnlyShort;
 
 function formatMoney(val: { toString(): string } | string | number): string {
   const n = parseFloat(typeof val === 'object' ? val.toString() : String(val));

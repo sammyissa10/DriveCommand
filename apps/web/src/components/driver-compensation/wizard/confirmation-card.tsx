@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Pencil, Loader2 } from 'lucide-react';
 import type { WizardFormState } from '@/app/(owner)/carrier/fleet/drivers/[id]/compensation/wizard/page';
+import { formatDateOnly } from '@/lib/utils/date';
 
 const PAY_TYPE_LABELS: Record<WizardFormState['payType'], string> = {
   CPM: 'Cost Per Mile (CPM)',
@@ -65,18 +66,6 @@ function SectionRow({ label, value }: SectionRowProps) {
 }
 
 export function ConfirmationCard({ state, goToStep, onSave, saving }: ConfirmationCardProps) {
-  function formatDate(iso: string): string {
-    try {
-      return new Date(iso).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch {
-      return iso;
-    }
-  }
-
   return (
     <div className="space-y-5">
       <div>
@@ -132,7 +121,7 @@ export function ConfirmationCard({ state, goToStep, onSave, saving }: Confirmati
           />
           <SectionRow label="Employment type" value={EMPLOYMENT_TYPE_LABELS[state.employmentType]} />
           <SectionRow label="Currency" value={state.currency} />
-          <SectionRow label="Effective from" value={formatDate(state.effectiveFrom)} />
+          <SectionRow label="Effective from" value={formatDateOnly(state.effectiveFrom)} />
           {state.payType === 'CPM' && (
             <SectionRow
               label="Loaded miles only"

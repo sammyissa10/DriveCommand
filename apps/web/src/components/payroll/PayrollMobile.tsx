@@ -15,6 +15,7 @@ import {
   type StatusTone,
   type SegmentOption,
 } from '@/components/ui/ds';
+import { formatDateOnly } from '@/lib/utils/date';
 
 export interface PayrollMobileRow {
   id: string;
@@ -49,9 +50,10 @@ function fmtCompact(n: number): string {
   if (Math.abs(n) >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
   return `$${Math.round(n)}`;
 }
+// `pay_period_start` / `pay_period_end` are `@db.Date` — see lib/utils/date.ts.
 function fmtPeriod(startIso: string, endIso: string): string {
   const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-  return `${new Date(startIso).toLocaleDateString('en-US', opts)} – ${new Date(endIso).toLocaleDateString('en-US', opts)}`;
+  return `${formatDateOnly(startIso, opts)} – ${formatDateOnly(endIso, opts)}`;
 }
 
 type Scope = 'all' | 'DRAFT' | 'APPROVED' | 'PAID';

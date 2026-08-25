@@ -11,6 +11,7 @@ import { useDataGrid } from '@/components/data-grid/core/useDataGrid';
 import type { DataGridColumnMeta } from '@/components/data-grid/core/types';
 import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
+import { formatDateOnly } from '@/lib/utils/date';
 
 interface Settlement {
   id: string;
@@ -65,7 +66,7 @@ const columns: ColumnDef<Settlement, unknown>[] = [
     header: 'Period',
     cell: ({ row }) => (
       <span className="text-sm">
-        {format(parseISO(row.original.periodStart), 'MMM d')} – {format(parseISO(row.original.periodEnd), 'MMM d, yyyy')}
+        {formatDateOnly(row.original.periodStart, { month: 'short', day: 'numeric' })} – {formatDateOnly(row.original.periodEnd, { month: 'short', day: 'numeric', year: 'numeric' })}
       </span>
     ),
     enableSorting: true,

@@ -8,6 +8,7 @@ import { StatusBadge } from '@/components/data-grid/shell';
 import { AlertTriangle } from 'lucide-react';
 import { isOneTimeContract, ONE_TIME_LABEL } from '@/lib/carrier/one-time-contract';
 import type { ContractRow } from './types';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 function formatRateDisplay(rateType: string | null, baseRate: string | null): string {
   if (!baseRate) return '—';
@@ -23,11 +24,8 @@ function formatRateDisplay(rateType: string | null, baseRate: string | null): st
   }
 }
 
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+// `effective_date` / `expiration_date` are `@db.Date` — see lib/utils/date.ts.
+const formatDate = formatDateOnlyShort;
 
 const CONTRACT_TYPE_LABELS: Record<string, string> = {
   spot: 'Spot',

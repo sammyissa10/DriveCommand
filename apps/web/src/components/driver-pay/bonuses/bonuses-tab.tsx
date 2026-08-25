@@ -18,6 +18,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { AddBonusForm } from './add-bonus-form';
+import { formatDateOnlyShort } from '@/lib/utils/date';
 
 const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -181,20 +182,12 @@ export function BonusesTab({ driverId, driverName, canEdit, canMarkPaid, tenantD
                   <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                     <span>
                       Trigger:{' '}
-                      {new Date(bonus.triggerDate).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
+                      {formatDateOnlyShort(bonus.triggerDate)}
                     </span>
                     {bonus.scheduledPayDate && (
                       <span>
                         Pay:{' '}
-                        {new Date(bonus.scheduledPayDate).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                        {formatDateOnlyShort(bonus.scheduledPayDate)}
                       </span>
                     )}
                     {bonus.totalInstallments && bonus.installmentNumber && (
