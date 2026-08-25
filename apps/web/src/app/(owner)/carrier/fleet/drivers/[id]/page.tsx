@@ -6,6 +6,7 @@ import { getCarrierDriver, getLatestInvitationInfo } from '@/lib/carrier/fleet-d
 import { listFacilities } from '@/lib/carrier/facilities';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { CarrierDriverForm } from '@/components/carrier/fleet/CarrierDriverForm';
+import { ConvertSampleRecord } from '@/components/onboarding/convert-sample-record';
 import { DriverDetailActions } from '@/components/carrier/fleet/DriverDetailActions';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -253,6 +254,14 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
           />
         </div>
       </div>
+
+      {/* Sample record explainer + convert action (TKT-0075) */}
+      {driver.isSample && canEdit && (
+        <ConvertSampleRecord
+          endpoint={`/api/v1/carrier/fleet/drivers/${driver.id}`}
+          recordLabel="driver"
+        />
+      )}
 
       {/* Compliance card */}
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">

@@ -43,6 +43,12 @@ export interface ClientCreateInput {
   creditLimit?: string | number | null;
   notes?: string;
   contacts?: ContactInput[];
+  /**
+   * TKT-0075/TKT-0076: lets a seeded sample record be promoted to a real one,
+   * which is what puts it back in the operational pickers. Only ever set to
+   * FALSE from the UI — nothing may flag a record as a sample after seeding.
+   */
+  isSample?: boolean;
 }
 
 export type ClientUpdateInput = Partial<ClientCreateInput>;

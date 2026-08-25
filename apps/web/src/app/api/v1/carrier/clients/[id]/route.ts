@@ -36,6 +36,9 @@ const ClientUpdateSchema = z.object({
   creditLimit: z.union([z.string(), z.number()]).optional().nullable(),
   notes: z.string().optional(),
   contacts: z.array(ContactSchema).optional(),
+  // Allow promoting a seeded sample record to a real one (TKT-0075). Only ever
+  // set to false from the UI — records are never re-flagged as sample.
+  isSample: z.boolean().optional(),
 });
 
 export async function GET(

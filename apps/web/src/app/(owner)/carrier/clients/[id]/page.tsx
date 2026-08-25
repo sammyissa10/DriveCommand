@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { getClient } from '@/lib/carrier/clients';
+import { ConvertSampleRecord } from '@/components/onboarding/convert-sample-record';
 import { ClientDetail } from './ClientDetail';
 import { ClientDetailMobile } from './ClientDetailMobile';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
@@ -79,6 +80,15 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
       }
       desktop={
         <div>
+          {/* Sample record explainer + convert action (TKT-0075) */}
+          {client.isSample && (session.role === 'SYSTEM_ADMIN' || session.role === 'OWNER') && (
+            <div className="mb-4">
+              <ConvertSampleRecord
+                endpoint={`/api/v1/carrier/clients/${client.id}`}
+                recordLabel="client"
+              />
+            </div>
+          )}
           <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} canCreateContract={canCreateContract} />
           {clientAudit && (
             <AuditTrailFooter

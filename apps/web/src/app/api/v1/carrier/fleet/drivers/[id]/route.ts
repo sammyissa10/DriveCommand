@@ -22,6 +22,9 @@ const CarrierDriverUpdateSchema = z.object({
   userId: z.string().uuid().optional(),
   status: z.enum(['active', 'inactive', 'suspended']).optional(),
   notes: z.string().optional(),
+  // Allow promoting a seeded sample record to a real one (TKT-0075). Only ever
+  // set to false from the UI — records are never re-flagged as sample.
+  isSample: z.boolean().optional(),
 });
 
 export async function GET(
