@@ -156,7 +156,14 @@ async function writeStopProvenance(
  * picking from a list is T3 whether the list was proposed to them or they went
  * looking for it.
  */
-const REFERENCE_TIER: Record<StopProvenanceVia, 'T1' | 'T2' | 'T3' | 'T4'> = {
+/**
+ * Exported so Phase 8's commit writes the SAME vocabulary from inside its
+ * transaction. DEC-14: `facility_external_references.resolved_via` has a CHECK
+ * admitting only `T1|T2|T3|T4`, and the richer provenance vocabulary is a
+ * Postgres 23514 on every confirmation. One map, grep-verifiable, rather than a
+ * second copy in the commit path that could drift into the illegal values.
+ */
+export const REFERENCE_TIER: Record<StopProvenanceVia, 'T1' | 'T2' | 'T3' | 'T4'> = {
   EXTERNAL_REF: 'T1',
   NORMALISED_ADDRESS: 'T2',
   MANUAL: 'T3',

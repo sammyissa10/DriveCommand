@@ -396,17 +396,30 @@ export function StopReviewScreen({
 
       {/* ---- the single primary action ---- */}
       <div className="pt-2">
-        <Button className="h-12 w-full text-base" disabled={!view.canProceed || busy}>
-          Continue
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+        {/* LIVE as of Phase 8. `asChild` only when it can proceed: a disabled
+            `<Button asChild>` renders an anchor, and an anchor ignores
+            `disabled` — the "disabled" button would still navigate, which is
+            exactly the hole this screen exists to close. */}
+        {view.canProceed && !busy ? (
+          <Button asChild className="h-12 w-full text-base">
+            <Link href={`/carrier/imports/${importId}/assign`}>
+              Continue
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        ) : (
+          <Button className="h-12 w-full text-base" disabled>
+            Continue
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        )}
         {/* The reason, inline and named — not a tooltip, not a toast on press.
             A disabled button that will not say why is the thing dispatchers
             report as "it's broken". */}
         <p className="mt-2 text-center text-xs text-muted-foreground">
           {view.blockedReason
             ? view.blockedReason
-            : 'Route matching and assignment arrive in the next phases.'}
+            : 'Next: pick a driver and a truck, then create the trip.'}
         </p>
       </div>
     </div>

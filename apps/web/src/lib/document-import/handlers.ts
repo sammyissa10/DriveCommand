@@ -53,6 +53,7 @@ import {
   saveImportAsRouteTemplate,
 } from './template-service';
 import { clearEndStopChoice, getEndStopView, setEndStopChoice } from './end-stop-service';
+import { commitImport, getCommitPreview, type AssignmentInput } from './commit-service';
 import {
   applyImportOptimisation,
   applyTemplateOptimisation,
@@ -951,4 +952,81 @@ export async function handleReshoot(
     logger.error('[document-import] reshoot failed', e, { orgId, importId, pageNumber });
     return err('Could not replace that page.', 500);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Commit (spec Section 11)
+// ---------------------------------------------------------------------------
+
+function assignmentFromBody(body: Record<string, unknown>): AssignmentInput {
+  const str = (v: unknown): string | null =>
+    typeof v === 'string' && v.trim() ? v.trim() : null;
+
+  return {
+    primaryDriverId: str(body.primaryDriverId),
+    truckId: str(body.truckId),
+    trailerId: str(body.trailerId),
+    coDriverId: str(body.coDriverId),
+    scheduledDeparture: str(body.scheduledDeparture),
+    notes: str(body.notes),
+  };
+}
+
+/**
+ * GET — the assignment screen.
+ *
+ * Read-only. It runs the SAME `validateCommit` the POST does, so the disabled
+ * button and the server's refusal can never disagree about why.
+ *
+ * The assignment itself arrives as query parameters rather than being stored:
+ * nothing about a driver choice is persisted until the commit, so the screen is
+ * a function of what the dispatcher has picked so far, exactly like the stop
+ * review screen is a function of the consignment array.
+ */
+export async function handleGetCommitPreview(
+  orgId: string,
+  userId: string,
+  importId: string,
+  query: Record<string, unknown>,
+  viewer?: FacilityViewer | null,
+): Promise<HandlerResult> {
+  return stopReviewCall('commit preview', { orgId, importId }, async () => {
+    const view = await getCommitPreview(orgId, userId, importId, assignmentFromBody(query), viewer);
+    if (!view) throw new ResolutionError('That import does not exist.', 'NOT_FOUND');
+    return view;
+  });
+}
+
+/**
+ * POST — commit.
+ *
+ * **This is the control, not the UI.** `commitImport` re-runs validation
+ * server-side, so a direct API call naming a driver with an expired licence is
+ * refused here with the reason named, exactly as the screen would have.
+ *
+ * A blocked commit answers 422 with the full validation object rather than 400:
+ * the request was well-formed and understood, and the caller needs the blocks
+ * to render them. A commit that got as far as the transaction and failed
+ * answers 409 with a plain-language message and the step that died — the import
+ * is back in NEEDS_REVIEW and the caller can fix and retry.
+ */
+export async function handleCommitImport(
+  orgId: string,
+  userId: string,
+  importId: string,
+  body: Record<string, unknown>,
+  viewer?: FacilityViewer | null,
+): Promise<HandlerResult> {
+  const result = await stopReviewCall('commit', { orgId, importId }, () =>
+    commitImport(orgId, userId, importId, assignmentFromBody(body), viewer),
+  );
+
+  // `stopReviewCall` already mapped the throwing paths. What is left is a
+  // structured refusal, which is data rather than an exception and therefore
+  // needs its own status.
+  const data = (result.body as { data?: unknown })?.data as
+    | Awaited<ReturnType<typeof commitImport>>
+    | undefined;
+  if (result.status !== 200 || !data || data.ok) return result;
+  return { status: data.reason === 'BLOCKED' ? 422 : 409, body: { data } };
 }

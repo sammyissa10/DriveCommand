@@ -134,13 +134,32 @@ async function loadContext(
  * key to be gone — there is no value that means undecided, because `NONE` means
  * something else entirely ("this trip ends nowhere").
  */
+/**
+ * The slice of a Prisma client this module writes through.
+ *
+ * Narrow on purpose: a transaction client is not assignable to `PrismaClient`
+ * (it has no `$transaction`), so accepting the whole client type would force a
+ * cast at the one call site that matters most.
+ */
+export type EndStopWriteClient = Pick<Prisma.TransactionClient, 'documentImport'>;
+
 async function writeEndStop(
   orgId: string,
   userId: string,
   record: ImportRecord,
   provenance: EndStopProvenance | null,
+  /**
+   * A transaction client, when the caller owns a transaction this write must
+   * join. Phase 8 passes one so `markEndStopMaterialised` lands in the same
+   * atomic block as the `stops` row it records — the doc comment on that
+   * function has always said "inside the same transaction", and without this
+   * parameter it structurally could not be.
+   *
+   * Every other caller omits it and gets the tenant client, unchanged.
+   */
+  tx?: EndStopWriteClient,
 ): Promise<ImportRecord> {
-  const db = await getTenantPrismaForOrg(orgId, userId);
+  const db = (tx ?? (await getTenantPrismaForOrg(orgId, userId))) as EndStopWriteClient;
 
   const current = provenanceOf(record);
   const next: ResolutionProvenance = { ...current };
@@ -153,6 +172,13 @@ async function writeEndStop(
   };
 
   await db.documentImport.updateMany({ where: { id: record.id, orgId, deletedAt: null }, data });
+
+  // Inside a transaction the row is not yet visible to a separate client, so
+  // the updated record is composed in memory rather than re-read. Outside one
+  // the re-read stays: it is what every pre-existing caller returns.
+  if (tx) {
+    return { ...record, resolutionProvenance: next as unknown as ImportRecord['resolutionProvenance'] };
+  }
 
   const fresh = await getImportRecord(orgId, record.id, userId);
   return fresh ?? record;
@@ -417,13 +443,18 @@ export async function markEndStopMaterialised(
   orgId: string,
   userId: string,
   record: ImportRecord,
+  /** Phase 8's transaction, so the stamp and the `stops` row commit together. */
+  tx?: EndStopWriteClient,
 ): Promise<ImportRecord> {
   const stored = endStopProvenanceOf(record);
   if (!stored) return record;
   if (stored.materialisedAt) return record;
 
-  return writeEndStop(orgId, userId, record, {
-    ...stored,
-    materialisedAt: new Date().toISOString(),
-  });
+  return writeEndStop(
+    orgId,
+    userId,
+    record,
+    { ...stored, materialisedAt: new Date().toISOString() },
+    tx,
+  );
 }

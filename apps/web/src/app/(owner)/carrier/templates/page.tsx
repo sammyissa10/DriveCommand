@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { RouteTemplateList } from '@/components/carrier/templates/RouteTemplateList';
 import { TemplatesMobile } from './TemplatesMobile';
+import { SuggestedTemplates } from '@/components/carrier/templates/SuggestedTemplates';
 
 export default async function RouteTemplatesPage() {
   const session = await getSession();
@@ -28,6 +29,12 @@ export default async function RouteTemplatesPage() {
             </p>
           </div>
         </div>
+
+        {/* Routes the system created from committed imports (spec Section 8,
+            item 6). Renders nothing when there are none. */}
+        {session.tenantId ? (
+          <SuggestedTemplates orgId={session.tenantId} userId={session.userId} />
+        ) : null}
 
         <RouteTemplateList />
       </div>

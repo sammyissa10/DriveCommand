@@ -36,6 +36,7 @@ import {
   Building2,
   ListChecks,
   CalendarDays,
+  FileScan,
 } from "lucide-react"
 import { DispatchBadge } from "@/components/navigation/dispatch-badge"
 import { MessagesBadge } from "@/components/navigation/messages-badge"
@@ -305,6 +306,24 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
         href: "/carrier/trips",
         icon: Truck,
         badge: <DispatchBadge />,
+        // Document Import (spec Sections 1-12). A CHILD of Trips rather than a
+        // sixth OPERATIONS item, deliberately: this section is capped at five
+        // and the cap says "force discussion before adding more". An import is
+        // not a peer of Trips — it is one of the ways a trip comes to exist,
+        // which is exactly what a submenu says.
+        //
+        // The module has had its own URLs since Phase 2 and NO sidebar entry
+        // through five phases; the only ways in were the picker inside the
+        // upload flow and a resume banner. Gated on `dispatches` because an
+        // import's only outcome is a trip: anyone who may not see trips has no
+        // use for the thing that makes one.
+        children: [
+          {
+            label: "Document Imports",
+            href: "/carrier/imports",
+            icon: FileScan,
+          },
+        ],
       })
     }
 
