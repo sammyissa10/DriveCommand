@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/ds';
 import type { HOSDutyStatusLike } from '@/lib/hos/compute-hos-clocks';
 import { DriverHoursTab, type HOSEntryDTO } from './DriverHoursTab';
+import { formatDateOnlyShort, daysUntilDateOnly } from '@/lib/utils/date';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -149,8 +150,18 @@ function toDateInput(iso: string | null): string {
   const d = new Date(iso);
   return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
 }
+/**
+ * Whole days to a date-only expiry column (`@db.Date`).
+ *
+ * Was `Math.ceil((new Date(iso) - Date.now()) / 86_400_000)`, which compares a
+ * UTC midnight against the current instant — so "expires today" landed on the
+ * wrong calendar day depending on the hour. Delegates to the shared helper
+ * (quick-541); NaN on unparseable input, which is what every comparison below
+ * already assumed.
+ */
 function daysUntil(iso: string): number {
-  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+  const days = daysUntilDateOnly(iso);
+  return days === null ? NaN : days;
 }
 function expiryTone(iso: string | null): StatusTone | undefined {
   if (!iso) return undefined;
@@ -379,7 +390,7 @@ export function DriverDetailMobile({
     },
     { key: 'cdlClass', label: 'Class', value: data.cdlClass ? (LICENSE_CLASS_LABEL[data.cdlClass] ?? `Class ${data.cdlClass}`) : null, input: { value: form.cdlClass, onChange: (v) => setField('cdlClass', v), options: LICENSE_CLASS_OPTIONS } },
     { key: 'cdlState', label: 'State', value: data.cdlState, input: { value: form.cdlState, onChange: (v) => setField('cdlState', v.toUpperCase().slice(0, 2)), autoCapitalize: 'characters', maxLength: 2, placeholder: 'TX' } },
-    { key: 'cdlExpiry', label: 'License expires', value: data.cdlExpiry ? fmtDate(data.cdlExpiry) : null, tone: expiryTone(data.cdlExpiry), input: { value: form.cdlExpiry, onChange: (v) => setField('cdlExpiry', v), type: 'date' } },
+    { key: 'cdlExpiry', label: 'License expires', value: data.cdlExpiry ? formatDateOnlyShort(data.cdlExpiry) : null, tone: expiryTone(data.cdlExpiry), input: { value: form.cdlExpiry, onChange: (v) => setField('cdlExpiry', v), type: 'date' } },
   ];
   const payFields: FieldDef[] = [
     { key: 'payModel', label: 'Pay model', value: PAY_MODEL_LABEL[data.payModel] ?? data.payModel, input: { value: form.payModel, onChange: (v) => setField('payModel', v), options: PAY_MODEL_OPTIONS } },

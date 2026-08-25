@@ -11,6 +11,7 @@
 import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
+import { formatDateOnlyShort, daysUntilDateOnly } from '@/lib/utils/date';
 import { StatusBadge } from '@/components/data-grid/shell';
 import { SamplePill } from '@/components/onboarding/sample-pill';
 import type { TruckRow } from './types';
@@ -19,20 +20,11 @@ import type { TruckRow } from './types';
 // Helpers
 // ---------------------------------------------------------------------------
 
-function daysUntil(date: Date | string | null): number | null {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const diff = d.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-function formatDate(date: Date | string | null): string {
-  if (!date) return '—';
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+// These expiry columns are `@db.Date`. Formatting one with
+// `new Date(x).toLocaleDateString()` renders the PREVIOUS day in any negative
+// UTC offset, and subtracting milliseconds from `now` reports a licence
+// expiring TODAY as already expired. Both rules live in lib/utils/date.ts
+// now — see quick-541.
 
 function formatOdometer(miles: number | null): string {
   if (miles == null) return '—';
@@ -85,8 +77,8 @@ const STATUS_VARIANTS: Record<string, 'success' | 'warning' | 'danger' | 'neutra
 function ExpirationCell({ date }: { date: Date | string | null }) {
   if (!date) return <span className="text-muted-foreground">—</span>;
 
-  const days = daysUntil(date);
-  const formatted = formatDate(date);
+  const days = daysUntilDateOnly(date);
+  const formatted = formatDateOnlyShort(date);
 
   if (days === null) {
     return <span className="tabular-nums text-foreground">{formatted}</span>;
@@ -127,8 +119,8 @@ export const trucksColumns: ColumnDef<TruckRow, unknown>[] = [
     },
     cell: ({ row }) => {
       const t = row.original;
-      const regDays = daysUntil(t.registrationExpiry);
-      const licDays = daysUntil(t.licenseExpiry);
+      const regDays = daysUntilDateOnly(t.registrationExpiry);
+      const licDays = daysUntilDateOnly(t.licenseExpiry);
       const hasAlert = (regDays !== null && regDays < 30) || (licDays !== null && licDays < 30);
 
       return (

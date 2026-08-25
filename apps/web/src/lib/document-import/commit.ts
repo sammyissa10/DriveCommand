@@ -30,6 +30,7 @@
  */
 
 import type { CanonicalConsignment } from '@drivecommand/validation';
+import { formatDateOnlyShort, isExpiredDateOnly } from '@/lib/utils/date';
 import type { EndStopPolicy } from './end-stop-constants';
 import type { StopIssue, StopReviewRow } from './stop-review';
 
@@ -165,8 +166,24 @@ export interface CommitValidationInput {
 
 const DAY_MS = 86_400_000;
 
-function fmtDate(d: Date): string {
-  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+/**
+ * Every date this formats is a `@db.Date` column — `cdl_expiry`, the medical
+ * card's `expiry_date`, `registration_expiry`, `insurance_expiry`. It used to
+ * be `d.toLocaleDateString(...)`, which renders a UTC midnight as the PREVIOUS
+ * day in any negative offset, and this is the message a dispatcher reads under
+ * a disabled Commit button: a CDL stored as 2026-01-14 was reported as
+ * "expired on Jan 13, 2026". quick-541 routed it through the shared helper.
+ *
+ * `fmtTime` below is deliberately untouched — it formats `scheduledDeparture`,
+ * a real timestamptz, and local rendering is correct there.
+ *
+ * Accepts null because `isExpiredDateOnly` is a predicate over the value rather
+ * than a `x && x.getTime() < …` guard, so it no longer narrows the field for
+ * the message that follows. Null is unreachable at every call site (a null
+ * expiry is never expired) and renders as an em dash if that ever changes.
+ */
+function fmtDate(d: Date | null): string {
+  return formatDateOnlyShort(d);
 }
 
 function fmtTime(d: Date): string {
@@ -308,10 +325,17 @@ export function validateCommit(input: CommitValidationInput): CommitValidation {
   // expires tomorrow is valid today and invalid for a trip scheduled next week,
   // and checking the wrong one of those is how a compliant driver gets refused
   // or a lapsed one gets dispatched.
+  // …and compared as CALENDAR DATES, not as instants. Each of these columns is
+  // a `@db.Date`, which Prisma materialises at UTC midnight; `expiry.getTime()
+  // < asOf.getTime()` therefore reported a document as expired for the whole of
+  // the day it was still valid, because midnight precedes every departure time
+  // on that date. A licence that expires on the 14th is good ON the 14th, so
+  // "expired" has to mean the calendar date has passed — which is exactly what
+  // `isExpiredDateOnly` asks (quick-541).
   const asOf = scheduledDeparture ?? now;
 
   if (driver) {
-    if (driver.cdlExpiry && driver.cdlExpiry.getTime() < asOf.getTime()) {
+    if (isExpiredDateOnly(driver.cdlExpiry, asOf)) {
       blocks.push(
         block('LICENCE_EXPIRED', `${driver.name}'s CDL expired on ${fmtDate(driver.cdlExpiry)}`),
       );
@@ -322,7 +346,7 @@ export function validateCommit(input: CommitValidationInput): CommitValidation {
     // and medical dates still block above and below on their own merits.
     const enforcementOn = driver.isDispatchReady === false;
 
-    if (driver.medicalExpiry && driver.medicalExpiry.getTime() < asOf.getTime() && enforcementOn) {
+    if (isExpiredDateOnly(driver.medicalExpiry, asOf) && enforcementOn) {
       blocks.push(
         block(
           'MEDICAL_EXPIRED',
@@ -349,7 +373,7 @@ export function validateCommit(input: CommitValidationInput): CommitValidation {
     // reads. Stated rather than silently mapped: if a real
     // `next_inspection_due` column is added later, this is the one place to
     // change.
-    if (truck.registrationExpiry && truck.registrationExpiry.getTime() < asOf.getTime()) {
+    if (isExpiredDateOnly(truck.registrationExpiry, asOf)) {
       blocks.push(
         block(
           'TRUCK_INSPECTION_OVERDUE',
@@ -357,7 +381,7 @@ export function validateCommit(input: CommitValidationInput): CommitValidation {
         ),
       );
     }
-    if (truck.insuranceExpiry && truck.insuranceExpiry.getTime() < asOf.getTime()) {
+    if (isExpiredDateOnly(truck.insuranceExpiry, asOf)) {
       blocks.push(
         block(
           'TRUCK_INSPECTION_OVERDUE',

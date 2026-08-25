@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { CarrierTruckData } from './CarrierTruckForm';
 import { TruckPhotoUploadModal } from './TruckPhotoUploadModal';
+import { formatDateOnly, daysUntilDateOnly } from '@/lib/utils/date';
 
 // ---------------------------------------------------------------------------
 // Local extended type (CarrierTruckForm is not modified)
@@ -41,26 +42,16 @@ const STATUS_CLASSES: Record<string, string> = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function daysUntil(date: Date | string | null): number | null {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-}
+// The expiry columns below are `@db.Date`. Day counting and formatting both
+// live in lib/utils/date.ts — a local copy renders the previous day in any
+// negative UTC offset and calls a licence expiring today expired (quick-541).
 
 function expiryColorClass(date: Date | string | null): string {
-  const days = daysUntil(date);
+  const days = daysUntilDateOnly(date);
   if (days === null) return 'text-muted-foreground';
   if (days < 30) return 'text-red-600 dark:text-red-400';
   if (days < 90) return 'text-amber-600 dark:text-amber-400';
   return 'text-green-600 dark:text-green-400';
-}
-
-function formatDate(date: Date | string | null): string {
-  if (!date) return '—';
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 function daysLabel(days: number | null, date: Date | string | null): string {
@@ -81,11 +72,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function ComplianceDate({ date }: { date: Date | string | null }) {
   if (!date) return <span className="text-muted-foreground">—</span>;
-  const days = daysUntil(date);
+  const days = daysUntilDateOnly(date);
   const cls = expiryColorClass(date);
   return (
     <div>
-      <span className={`font-medium ${cls}`}>{formatDate(date)}</span>
+      <span className={`font-medium ${cls}`}>{formatDateOnly(date)}</span>
       <p className={`text-xs ${cls}`}>{daysLabel(days, date)}</p>
     </div>
   );

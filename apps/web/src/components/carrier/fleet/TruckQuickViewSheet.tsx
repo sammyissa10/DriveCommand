@@ -13,6 +13,7 @@ import {
   SheetDescription,
   SheetFooter,
 } from '@/components/ui/sheet';
+import { formatDateOnlyShort, daysUntilDateOnly } from '@/lib/utils/date';
 
 // ---------------------------------------------------------------------------
 // CarrierTruckItem type (previously imported from CarrierTruckList, now inline)
@@ -44,35 +45,24 @@ export interface CarrierTruckItem {
 // Helpers (self-contained copies)
 // ---------------------------------------------------------------------------
 
-function daysUntil(date: Date | string | null): number | null {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const diff = d.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
+// The expiry columns below are `@db.Date`. Day counting and formatting both
+// live in lib/utils/date.ts — a local copy renders the previous day in any
+// negative UTC offset and calls a licence expiring today expired (quick-541).
 
 function expiryColor(date: Date | string | null): string {
-  const days = daysUntil(date);
+  const days = daysUntilDateOnly(date);
   if (days === null) return 'text-muted-foreground';
   if (days < 30) return 'text-red-600 dark:text-red-400';
   if (days < 90) return 'text-amber-600 dark:text-amber-400';
   return 'text-green-600 dark:text-green-400';
 }
 
-function formatDate(date: Date | string | null): string {
-  if (!date) return '—';
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
 function formatExpiryLabel(date: Date | string | null): string {
-  const days = daysUntil(date);
+  const days = daysUntilDateOnly(date);
   if (days === null) return '—';
-  if (days < 0) return `${formatDate(date)} (${Math.abs(days)}d overdue)`;
-  if (days === 0) return `${formatDate(date)} (expires today)`;
-  return `${formatDate(date)} (${days}d remaining)`;
+  if (days < 0) return `${formatDateOnlyShort(date)} (${Math.abs(days)}d overdue)`;
+  if (days === 0) return `${formatDateOnlyShort(date)} (expires today)`;
+  return `${formatDateOnlyShort(date)} (${days}d remaining)`;
 }
 
 // ---------------------------------------------------------------------------

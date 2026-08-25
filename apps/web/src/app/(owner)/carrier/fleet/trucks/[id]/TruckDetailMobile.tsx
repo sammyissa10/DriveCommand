@@ -21,6 +21,7 @@ import {
   type FieldDef,
   type ParentChip,
 } from '@/components/ui/ds';
+import { formatDateOnlyShort, daysUntilDateOnly } from '@/lib/utils/date';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -112,8 +113,18 @@ function toDateInput(iso: string | null): string {
   const d = new Date(iso);
   return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
 }
+/**
+ * Whole days to a date-only expiry column (`@db.Date`).
+ *
+ * Was `Math.ceil((new Date(iso) - Date.now()) / 86_400_000)`, which compares a
+ * UTC midnight against the current instant — so "expires today" landed on the
+ * wrong calendar day depending on the hour. Delegates to the shared helper
+ * (quick-541); NaN on unparseable input, which is what every comparison below
+ * already assumed.
+ */
 function daysUntil(iso: string): number {
-  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
+  const days = daysUntilDateOnly(iso);
+  return days === null ? NaN : days;
 }
 /** Expiry tint: expired = danger, within threshold = warning, else untinted. */
 function expiryTone(iso: string | null): StatusTone | undefined {
@@ -323,9 +334,9 @@ export function TruckDetailMobile({
   const complianceFields: FieldDef[] = [
     { key: 'licensePlate', label: 'License plate', value: data.licensePlate, input: { value: form.licensePlate, onChange: (v) => setField('licensePlate', v.toUpperCase()), autoCapitalize: 'characters' } },
     { key: 'licenseState', label: 'License state', value: data.licenseState, input: { value: form.licenseState, onChange: (v) => setField('licenseState', v.toUpperCase().slice(0, 2)), autoCapitalize: 'characters', maxLength: 2 } },
-    { key: 'registrationExpiry', label: 'Registration expiry', value: data.registrationExpiry ? fmtDate(data.registrationExpiry) : null, tone: expiryTone(data.registrationExpiry), input: { value: form.registrationExpiry, onChange: (v) => setField('registrationExpiry', v), type: 'date' } },
-    { key: 'licenseExpiry', label: 'Plate expiry', value: data.licenseExpiry ? fmtDate(data.licenseExpiry) : null, tone: expiryTone(data.licenseExpiry), input: { value: form.licenseExpiry, onChange: (v) => setField('licenseExpiry', v), type: 'date' } },
-    { key: 'insuranceExpiry', label: 'Insurance expiry', value: data.insuranceExpiry ? fmtDate(data.insuranceExpiry) : null, tone: expiryTone(data.insuranceExpiry), input: { value: form.insuranceExpiry, onChange: (v) => setField('insuranceExpiry', v), type: 'date' } },
+    { key: 'registrationExpiry', label: 'Registration expiry', value: data.registrationExpiry ? formatDateOnlyShort(data.registrationExpiry) : null, tone: expiryTone(data.registrationExpiry), input: { value: form.registrationExpiry, onChange: (v) => setField('registrationExpiry', v), type: 'date' } },
+    { key: 'licenseExpiry', label: 'Plate expiry', value: data.licenseExpiry ? formatDateOnlyShort(data.licenseExpiry) : null, tone: expiryTone(data.licenseExpiry), input: { value: form.licenseExpiry, onChange: (v) => setField('licenseExpiry', v), type: 'date' } },
+    { key: 'insuranceExpiry', label: 'Insurance expiry', value: data.insuranceExpiry ? formatDateOnlyShort(data.insuranceExpiry) : null, tone: expiryTone(data.insuranceExpiry), input: { value: form.insuranceExpiry, onChange: (v) => setField('insuranceExpiry', v), type: 'date' } },
   ];
 
   const notesFields: FieldDef[] = [

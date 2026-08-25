@@ -16,32 +16,22 @@ import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import type { HOSDutyStatusLike } from '@/lib/hos/compute-hos-clocks';
 import { DriverDetailMobile } from './DriverDetailMobile';
 import { DriverEditCard } from './DriverEditCard';
+import { formatDateOnly, daysUntilDateOnly } from '@/lib/utils/date';
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-function daysUntil(date: Date | string | null): number | null {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const diff = d.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
+// The expiry columns below are `@db.Date`. Day counting and formatting both
+// live in lib/utils/date.ts — a local copy renders the previous day in any
+// negative UTC offset and calls a licence expiring today expired (quick-541).
 
 function expiryColorClass(date: Date | string | null): string {
-  const days = daysUntil(date);
+  const days = daysUntilDateOnly(date);
   if (days === null) return 'text-muted-foreground';
   if (days < 30) return 'text-red-600 dark:text-red-400';
   if (days < 90) return 'text-amber-600 dark:text-amber-400';
   return 'text-green-600 dark:text-green-400';
-}
-
-function formatDate(date: Date | string | null): string {
-  if (!date) return '—';
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 const PAY_MODEL_LABELS: Record<string, string> = {
@@ -106,7 +96,7 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
     : null;
   const invitationStatus = invitationInfo?.status ?? null;
 
-  const cdlDays = daysUntil(driver.cdlExpiry);
+  const cdlDays = daysUntilDateOnly(driver.cdlExpiry);
 
   // Combine dispatches with role labels
   const allDispatches = [
@@ -290,7 +280,7 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
             {driver.cdlExpiry ? (
               <div>
                 <p className={`text-sm font-semibold ${expiryColorClass(driver.cdlExpiry)}`}>
-                  {formatDate(driver.cdlExpiry)}
+                  {formatDateOnly(driver.cdlExpiry)}
                 </p>
                 {cdlDays !== null && (
                   <p className={`text-xs ${expiryColorClass(driver.cdlExpiry)}`}>

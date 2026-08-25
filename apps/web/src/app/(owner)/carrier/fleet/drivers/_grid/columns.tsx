@@ -10,6 +10,7 @@
 import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
+import { formatDateOnlyShort, daysUntilDateOnly } from '@/lib/utils/date';
 import { StatusBadge } from '@/components/data-grid/shell';
 import { SamplePill } from '@/components/onboarding/sample-pill';
 import type { DriverRow } from './types';
@@ -18,20 +19,11 @@ import type { DriverRow } from './types';
 // Helpers
 // ---------------------------------------------------------------------------
 
-function daysUntil(date: Date | string | null): number | null {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const diff = d.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-function formatDate(date: Date | string | null): string {
-  if (!date) return '—';
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+// These expiry columns are `@db.Date`. Formatting one with
+// `new Date(x).toLocaleDateString()` renders the PREVIOUS day in any negative
+// UTC offset, and subtracting milliseconds from `now` reports a licence
+// expiring TODAY as already expired. Both rules live in lib/utils/date.ts
+// now — see quick-541.
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -64,8 +56,8 @@ const STATUS_VARIANTS: Record<string, 'success' | 'neutral' | 'danger'> = {
 function CDLExpirationCell({ date }: { date: Date | string | null }) {
   if (!date) return <span className="text-muted-foreground">—</span>;
 
-  const days = daysUntil(date);
-  const formatted = formatDate(date);
+  const days = daysUntilDateOnly(date);
+  const formatted = formatDateOnlyShort(date);
 
   if (days === null) {
     return <span className="tabular-nums text-foreground">{formatted}</span>;
@@ -106,7 +98,7 @@ export const driversColumns: ColumnDef<DriverRow, unknown>[] = [
     },
     cell: ({ row }) => {
       const d = row.original;
-      const days = daysUntil(d.cdlExpiry);
+      const days = daysUntilDateOnly(d.cdlExpiry);
       const isNearExpiry = days !== null && days < 30;
 
       return (
