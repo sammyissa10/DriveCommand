@@ -891,8 +891,15 @@ export const ownerApi = {
       body: JSON.stringify(payload),
     }),
 
+  /**
+   * The PICKER variant. TKT-0076: seeded demo records are excluded, because
+   * everything that calls this is assigning a truck to real work.
+   * `getTrucks` is the LIST variant and deliberately still returns them.
+   */
   getTruckOptions: (token: string) =>
-    apiRequest<{ trucks: TruckOption[] }>('/api/mobile/owner/trucks', { token }).then((r) => r.trucks),
+    apiRequest<{ trucks: TruckOption[] }>('/api/mobile/owner/trucks?exclude_samples=true', {
+      token,
+    }).then((r) => r.trucks),
 
   predictProfit: (token: string, payload: PredictProfitPayload) =>
     apiRequest<PredictProfitResult>('/api/mobile/owner/profit-predictor', {

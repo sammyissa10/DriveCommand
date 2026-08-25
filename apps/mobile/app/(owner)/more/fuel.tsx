@@ -92,8 +92,10 @@ function AddFuelModal({
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
 
   const { data: trucks } = useQuery<TruckOption[]>({
-    queryKey: ['owner-trucks'],
-    queryFn: () => ownerApi.getTrucks(token),
+    // TKT-0076: the picker variant — samples excluded, and its OWN cache key so
+    // it cannot collide with the trucks LIST, which still shows them.
+    queryKey: ['owner-truck-options'],
+    queryFn: () => ownerApi.getTruckOptions(token),
     enabled: !!token && visible,
     staleTime: 60_000,
   })

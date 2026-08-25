@@ -23,6 +23,16 @@ export interface ListLoadsFilters {
   dateTo?: string;
   page?: number;
   pageSize?: number;
+  /**
+   * TKT-0076. Opt-in, and it must STAY opt-in.
+   *
+   * This one function serves both the loads LIST grid and `DispatchLoadsPanel`,
+   * the picker that attaches a load to a dispatch. Samples belong in the grid
+   * (with their pill) and must not be attachable to a real trip, so the filter
+   * cannot live in the shared `where`. Default off keeps every existing caller
+   * — and the grid — behaving exactly as before; only the picker passes true.
+   */
+  excludeSamples?: boolean;
 }
 
 export interface StopInput {
@@ -80,7 +90,7 @@ export type LoadUpdateInput = Partial<Omit<LoadCreateInput, 'dispatchId'>> & {
 
 export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
   const tenantPrisma = await getTenantPrisma();
-  const { clientId, dispatchId, status, dateFrom, dateTo, page = 1, pageSize = 50 } = filters;
+  const { clientId, dispatchId, status, dateFrom, dateTo, page = 1, pageSize = 50, excludeSamples = false } = filters;
   const skip = (page - 1) * pageSize;
 
   const where: Record<string, unknown> = {
@@ -89,6 +99,7 @@ export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
     ...(clientId ? { clientId } : {}),
     ...(dispatchId ? { dispatchId } : {}),
     ...(status ? { status } : {}),
+    ...(excludeSamples ? { isSample: false } : {}),
     ...(dateFrom || dateTo
       ? {
           createdAt: {

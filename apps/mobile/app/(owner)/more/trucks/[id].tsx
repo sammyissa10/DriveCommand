@@ -519,6 +519,8 @@ export default function TruckDetailScreen() {
       haptic.success()
       queryClient.invalidateQueries({ queryKey: ['owner-truck', id] })
       queryClient.invalidateQueries({ queryKey: ['owner-trucks'] })
+      // TKT-0076: the picker keeps a separate cache, so it needs its own nudge.
+      queryClient.invalidateQueries({ queryKey: ['owner-truck-options'] })
       Toast.show({ type: 'success', text1: 'Truck updated', text2: 'Changes saved successfully.', visibilityTime: 3000 })
       setEditSheetVisible(false)
     },

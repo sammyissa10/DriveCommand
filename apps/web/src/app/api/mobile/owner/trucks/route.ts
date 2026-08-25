@@ -136,12 +136,21 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+  const excludeSamples = searchParams.get('exclude_samples') === 'true';
 
   try {
     const { trucks, total } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-      const where = { tenantId, archivedAt: null };
+      // TKT-0076. Opt-in and default OFF: this endpoint serves the mobile
+      // trucks LIST screen (`more/trucks/index`), where samples must stay
+      // visible with their pill, AND the truck pickers. Only the pickers ask
+      // for `exclude_samples=true`, via `ownerApi.getTruckOptions`.
+      const where = {
+        tenantId,
+        archivedAt: null,
+        ...(excludeSamples ? { isSample: false } : {}),
+      };
 
       const [items, count] = await Promise.all([
         tx.truck.findMany({

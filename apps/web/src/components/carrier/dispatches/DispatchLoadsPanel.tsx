@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Package, Plus, X, Search, AlertTriangle, Bell, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
+import { SampleHiddenNote } from '@/components/onboarding/sample-hidden-note';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -92,7 +93,10 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
   async function fetchUnassigned(query: string) {
     setSearching(true);
     try {
-      const params = new URLSearchParams({ status: 'pending', pageSize: '50' });
+      // TKT-0076: this is a picker — it attaches a load to a real dispatch — so
+      // it opts out of sample records. The grid behind the same endpoint does
+      // not, and still shows them with their pill.
+      const params = new URLSearchParams({ status: 'pending', pageSize: '50', exclude_samples: 'true' });
       const res = await fetch(`/api/v1/carrier/loads?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch loads');
       const json = await res.json() as { data: { items: Array<UnassignedLoad & { dispatchId?: string | null }> } };
@@ -218,6 +222,11 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
               className="w-full pl-8 pr-3 py-1.5 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
+          {/* TKT-0076: say why a sample load is not in this list. Unconditional
+              here, unlike the server-rendered pickers — a client component
+              cannot cheaply ask whether this tenant has any, and the sentence
+              is true of the picker either way. */}
+          <SampleHiddenNote className="mb-1" />
           <div className="max-h-40 overflow-y-auto space-y-1">
             {searching ? (
               <p className="text-xs text-muted-foreground text-center py-2">Searching…</p>

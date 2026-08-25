@@ -26,8 +26,10 @@ export function TruckPickerSheet({
   const queryClient = useQueryClient()
 
   const { data: trucks, isLoading } = useQuery({
-    queryKey: ['owner-trucks'],
-    queryFn: () => ownerApi.getTrucks(token!),
+    // TKT-0076: the picker variant — samples excluded, and its OWN cache key so
+    // it cannot collide with the trucks LIST, which still shows them.
+    queryKey: ['owner-truck-options'],
+    queryFn: () => ownerApi.getTruckOptions(token!),
     enabled: !!token && visible,
   })
 

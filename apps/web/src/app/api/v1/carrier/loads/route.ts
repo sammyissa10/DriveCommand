@@ -64,6 +64,11 @@ export async function GET(req: NextRequest) {
     const dateTo = searchParams.get('date_to') ?? undefined;
     const page = parseInt(searchParams.get('page') ?? '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') ?? '50', 10);
+    // TKT-0076. Opt-in and default OFF: this endpoint serves the loads GRID,
+    // where samples must stay visible with their pill. Only a picker asks for
+    // `exclude_samples=true` — today that is `DispatchLoadsPanel`, which
+    // attaches a load to a dispatch.
+    const excludeSamples = searchParams.get('exclude_samples') === 'true';
 
     const result = await listLoads(orgId, {
       clientId,
@@ -73,6 +78,7 @@ export async function GET(req: NextRequest) {
       dateTo,
       page,
       pageSize,
+      excludeSamples,
     });
 
     return NextResponse.json({ data: { ...result, page, pageSize } });
