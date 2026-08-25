@@ -117,6 +117,13 @@ const EXEMPT_MODELS = new Set([
   // `(org_id, facility_key)` compound unique) and `create`. It was never the
   // injection that scoped this table — the injection only ever broke it.
   'RouteMatrixCache', // uses orgId instead of tenantId
+  //
+  // THIRD MODEL OF THE SAME CLASS, added here in the same commit that adds it to
+  // schema.prisma — which is what the paragraph above asks for. Phase 9's
+  // `CarrierTruckDefect` scopes by `orgId` like every carrier sibling, and its
+  // isolation is the explicit `orgId` filter in `inspection-service.ts` plus the
+  // `tenant_isolation_policy` written in its own migration, not this list.
+  'CarrierTruckDefect', // uses orgId instead of tenantId
   // RouteDriver — removed: now has tenantId (quick-327)
   // SysAdminInvoiceItem — removed: now has tenantId (quick-327)
   // PushToken — removed: now has tenantId (quick-327)

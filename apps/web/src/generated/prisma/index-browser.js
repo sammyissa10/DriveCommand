@@ -969,6 +969,26 @@ exports.Prisma.CarrierTruckScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CarrierTruckDefectScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  truckId: 'truckId',
+  dispatchId: 'dispatchId',
+  stepInstanceId: 'stepInstanceId',
+  itemName: 'itemName',
+  note: 'note',
+  photoKeys: 'photoKeys',
+  isCritical: 'isCritical',
+  status: 'status',
+  reportedByUserId: 'reportedByUserId',
+  reportedAt: 'reportedAt',
+  resolvedByUserId: 'resolvedByUserId',
+  resolvedAt: 'resolvedAt',
+  resolutionNote: 'resolutionNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.RouteTemplateScalarFieldEnum = {
   id: 'id',
   orgId: 'orgId',
@@ -2593,6 +2613,7 @@ exports.Prisma.ModelName = {
   CarrierFacility: 'CarrierFacility',
   CarrierDriver: 'CarrierDriver',
   CarrierTruck: 'CarrierTruck',
+  CarrierTruckDefect: 'CarrierTruckDefect',
   RouteTemplate: 'RouteTemplate',
   RouteTemplateStop: 'RouteTemplateStop',
   Trip: 'Trip',

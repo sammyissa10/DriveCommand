@@ -201,6 +201,7 @@ model Tenant {
   driverPayRecords      DriverPayRecord[]
   inAppNotifications    InAppNotification[]
   carrierDocumentTypes  CarrierDocumentType[]
+  carrierTruckDefects   CarrierTruckDefect[]
 
   // Workflow Engine reverse relations
   stepTemplates          StepTemplate[]
@@ -406,6 +407,8 @@ model User {
   documentImportsDeleted        DocumentImport[]            @relation(name: "DocumentImportDeletedBy")
   facilityExternalRefsConfirmed FacilityExternalReference[] @relation(name: "FacilityExternalRefConfirmedBy")
   tripInspectionsOverridden     Trip[]                      @relation(name: "TripInspectionOverriddenBy")
+  truckDefectsReported          CarrierTruckDefect[]        @relation(name: "TruckDefectReportedBy")
+  truckDefectsResolved          CarrierTruckDefect[]        @relation(name: "TruckDefectResolvedBy")
 
   // TKT-0015 Prompt 2b — Wave 4 reverse relations (driver pay + workflow + templates)
   driverInvitationsCreated           DriverInvitation[]           @relation(name: "DriverInvitationCreatedBy")
@@ -2211,13 +2214,14 @@ model CarrierTruck {
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant                Tenant          @relation(fields: [orgId], references: [id])
-  createdBy             User?           @relation(name: "CarrierTruckCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
-  updatedBy             User?           @relation(name: "CarrierTruckUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
-  deletedBy             User?           @relation(name: "CarrierTruckDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
-  primaryDispatches     Trip[]          @relation(name: "PrimaryTruck")
-  trailerDispatches     Trip[]          @relation(name: "TrailerTruck")
-  defaultRouteTemplates RouteTemplate[] @relation(name: "DefaultTruck")
+  tenant                Tenant               @relation(fields: [orgId], references: [id])
+  createdBy             User?                @relation(name: "CarrierTruckCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
+  updatedBy             User?                @relation(name: "CarrierTruckUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
+  deletedBy             User?                @relation(name: "CarrierTruckDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+  primaryDispatches     Trip[]               @relation(name: "PrimaryTruck")
+  trailerDispatches     Trip[]               @relation(name: "TrailerTruck")
+  defects               CarrierTruckDefect[]
+  defaultRouteTemplates RouteTemplate[]      @relation(name: "DefaultTruck")
   gpsLocations          GPSLocation[]
   routes                Route[]
 
@@ -2225,6 +2229,51 @@ model CarrierTruck {
   @@index([status])
   @@index([deletedAt])
   @@map("carrier_trucks")
+}
+
+/// Phase 9 (spec Section 12) — a defect raised against a truck by a failed
+/// pre-trip inspection item. `CarrierTruck` had no defect or maintenance
+/// relation before this: `MaintenanceEvent` / `ScheduledService` hang off the
+/// LEGACY `Truck` model, and the only truck-level signal was
+/// `carrier_trucks.status`, which is the wrong instrument — flipping it to
+/// 'maintenance' over a cracked mudflap takes a truck out of service.
+///
+/// Scoped by `orgId`, like every carrier sibling, so it MUST appear in
+/// EXEMPT_MODELS in `lib/db/extensions/tenant-rls.ts`. It does, in this commit.
+model CarrierTruckDefect {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId            String    @map("org_id") @db.Uuid
+  truckId          String    @map("truck_id") @db.Uuid
+  dispatchId       String?   @map("dispatch_id") @db.Uuid
+  /// The failed StepInstance that raised it. Uniquely indexed (partial, NOT NULL
+  /// only) so re-submitting the same item UPDATES its defect instead of adding a
+  /// second one. No FK — StepInstance belongs to the workflow module, and a
+  /// cascade across a module boundary is how a truck's defect history quietly
+  /// disappears when someone tidies up an old playbook instance.
+  stepInstanceId   String?   @map("step_instance_id") @db.Uuid
+  itemName         String    @map("item_name")
+  note             String?
+  photoKeys        Json      @default("[]") @map("photo_keys")
+  isCritical       Boolean   @default(false) @map("is_critical")
+  /// 'open' | 'resolved' — enforced live by carrier_truck_defects_status_check.
+  status           String    @default("open")
+  reportedByUserId String?   @map("reported_by_user_id") @db.Uuid
+  reportedAt       DateTime  @default(now()) @map("reported_at") @db.Timestamptz
+  resolvedByUserId String?   @map("resolved_by_user_id") @db.Uuid
+  resolvedAt       DateTime? @map("resolved_at") @db.Timestamptz
+  resolutionNote   String?   @map("resolution_note")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  truck      CarrierTruck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  dispatch   Trip?        @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
+  reportedBy User?        @relation(name: "TruckDefectReportedBy", fields: [reportedByUserId], references: [id], onDelete: SetNull)
+  resolvedBy User?        @relation(name: "TruckDefectResolvedBy", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, truckId, status])
+  @@index([dispatchId])
+  @@map("carrier_truck_defects")
 }
 
 model RouteTemplate {
@@ -2356,24 +2405,25 @@ model Trip {
   createdAt                  DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt                  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant                 Tenant            @relation(fields: [orgId], references: [id])
-  createdBy              User?             @relation(name: "TripCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  updatedBy              User?             @relation(name: "TripUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  deletedBy              User?             @relation(name: "TripDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
-  routeTemplate          RouteTemplate?    @relation(fields: [routeTemplateId], references: [id])
-  primaryDriver          CarrierDriver     @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
-  coDriver               CarrierDriver?    @relation(name: "CoDriver", fields: [coDriverId], references: [id])
-  truck                  CarrierTruck      @relation(name: "PrimaryTruck", fields: [truckId], references: [id])
-  trailer                CarrierTruck?     @relation(name: "TrailerTruck", fields: [trailerId], references: [id])
-  dispatcher             User?             @relation(name: "TripDispatcher", fields: [dispatcherId], references: [id])
-  sourceImport           DocumentImport?   @relation(name: "TripSourceImport", fields: [sourceImportId], references: [id], onDelete: SetNull)
-  inspectionOverriddenBy User?             @relation(name: "TripInspectionOverriddenBy", fields: [inspectionOverriddenById], references: [id], onDelete: SetNull)
+  tenant                 Tenant               @relation(fields: [orgId], references: [id])
+  createdBy              User?                @relation(name: "TripCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy              User?                @relation(name: "TripUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedBy              User?                @relation(name: "TripDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+  routeTemplate          RouteTemplate?       @relation(fields: [routeTemplateId], references: [id])
+  primaryDriver          CarrierDriver        @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
+  coDriver               CarrierDriver?       @relation(name: "CoDriver", fields: [coDriverId], references: [id])
+  truck                  CarrierTruck         @relation(name: "PrimaryTruck", fields: [truckId], references: [id])
+  trailer                CarrierTruck?        @relation(name: "TrailerTruck", fields: [trailerId], references: [id])
+  dispatcher             User?                @relation(name: "TripDispatcher", fields: [dispatcherId], references: [id])
+  sourceImport           DocumentImport?      @relation(name: "TripSourceImport", fields: [sourceImportId], references: [id], onDelete: SetNull)
+  inspectionOverriddenBy User?                @relation(name: "TripInspectionOverriddenBy", fields: [inspectionOverriddenById], references: [id], onDelete: SetNull)
   stops                  CarrierStop[]
   carrierLoads           CarrierLoad[]
   expenses               CarrierExpense[]
   driverPayRecords       DriverPayRecord[]
   messages               FleetMessage[]
   documents              CarrierDocument[]
+  truckDefects           CarrierTruckDefect[]
 
   @@index([primaryDriverId])
   @@index([truckId])
