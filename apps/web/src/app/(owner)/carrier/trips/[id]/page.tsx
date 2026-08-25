@@ -175,14 +175,18 @@ export default async function DispatchDetailPage({ params }: Props) {
   });
 
   // Fetch all active drivers and trucks for the expenses panel
+  // TKT-0076: seeded demo records must never appear in an operational picker —
+  // the same predicate `carrier/trips/new` uses. `deletedAt` guards against
+  // soft-deleted rows lingering in a dropdown. Sample records stay visible in
+  // the list grids with their pill; this hides them from ASSIGNMENT only.
   const [allDrivers, allTrucks] = await Promise.all([
     prisma.carrierDriver.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, firstName: true, lastName: true },
       orderBy: { lastName: 'asc' },
     }),
     prisma.carrierTruck.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, unitNumber: true, displayName: true },
       orderBy: { unitNumber: 'asc' },
     }),

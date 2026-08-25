@@ -13,10 +13,28 @@ import { DriverAssignmentSection } from '@/components/driver-pay/assignment-sect
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { listAssignmentsForLoad } from '@/app/(owner)/actions/load-driver-assignments';
 import { LoadDetailMobile } from './LoadDetailMobile';
+import { SampleHiddenNote } from '@/components/onboarding/sample-hidden-note';
 import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+
+/**
+ * Did TKT-0076 actually remove anything for THIS tenant?
+ *
+ * The note only earns its place when a record really is missing. Asking the
+ * question here rather than inside the component keeps it one cheap count per
+ * entity on a page that is already fetching those tables.
+ */
+async function hasHiddenSamples(orgId: string): Promise<boolean> {
+  const [c, d, t] = await Promise.all([
+    prisma.carrierClient.count({ where: { orgId, isSample: true, deletedAt: null } }),
+    prisma.carrierDriver.count({ where: { orgId, isSample: true, deletedAt: null } }),
+    prisma.carrierTruck.count({ where: { orgId, isSample: true, deletedAt: null } }),
+  ]);
+  return c + d + t > 0;
 }
 
 export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
@@ -28,15 +46,21 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   const { id } = await params;
 
+  // TKT-0076: seeded demo records must never appear in an operational picker —
+  // the same predicate `carrier/trips/new` uses. `deletedAt` guards against
+  // soft-deleted rows lingering in a dropdown. Sample records stay visible in
+  // the list grids with their pill; this hides them from ASSIGNMENT only.
+  const samplesHidden = await hasHiddenSamples(orgId);
+
   const [load, clients, rawDrivers, rawTrucks, loadAudit] = await Promise.all([
     getLoad(orgId, id),
     prisma.carrierClient.findMany({
-      where: { orgId },
+      where: { orgId, isSample: false, deletedAt: null },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
     }),
     prisma.carrierDriver.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: {
         id: true,
         firstName: true,
@@ -47,7 +71,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
       orderBy: { lastName: 'asc' },
     }),
     prisma.carrierTruck.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, unitNumber: true, make: true, model: true },
       orderBy: { unitNumber: 'asc' },
     }),
@@ -342,6 +366,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
             />
           </div>
 
+          {samplesHidden && <SampleHiddenNote className="-mb-2" />}
           <LoadForm
             mode="edit"
             initialData={initialData}

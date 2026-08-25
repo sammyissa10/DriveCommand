@@ -11,10 +11,28 @@ import { AuditTrailFooter } from '@/components/audit-trail-footer';
 import { prisma } from '@/lib/db/prisma';
 import { facilityVisibilityWhere, staffViewer } from '@/lib/carrier/facility-visibility';
 import { TemplateEditMobile } from './TemplateEditMobile';
+import { SampleHiddenNote } from '@/components/onboarding/sample-hidden-note';
 import { ResponsiveSwitch } from '@/components/ui/ResponsiveSwitch';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+
+/**
+ * Did TKT-0076 actually remove anything for THIS tenant?
+ *
+ * The note only earns its place when a record really is missing. Asking the
+ * question here rather than inside the component keeps it one cheap count per
+ * entity on a page that is already fetching those tables.
+ */
+async function hasHiddenSamples(orgId: string): Promise<boolean> {
+  const [c, d, t] = await Promise.all([
+    prisma.carrierClient.count({ where: { orgId, isSample: true, deletedAt: null } }),
+    prisma.carrierDriver.count({ where: { orgId, isSample: true, deletedAt: null } }),
+    prisma.carrierTruck.count({ where: { orgId, isSample: true, deletedAt: null } }),
+  ]);
+  return c + d + t > 0;
 }
 
 export default async function EditRouteTemplatePage({ params }: Props) {
@@ -41,19 +59,25 @@ export default async function EditRouteTemplatePage({ params }: Props) {
   // first paint. Client-fetching them made the Client field flash "Select client…"
   // (a native select with no matching option falls back to its first one).
   const orgId = session.tenantId;
+  // TKT-0076: seeded demo records must never appear in an operational picker —
+  // the same predicate `carrier/trips/new` uses. `deletedAt` guards against
+  // soft-deleted rows lingering in a dropdown. Sample records stay visible in
+  // the list grids with their pill; this hides them from ASSIGNMENT only.
+  const samplesHidden = await hasHiddenSamples(orgId);
+
   const [clients, drivers, trucks, contracts, facilities] = await Promise.all([
     prisma.carrierClient.findMany({
-      where: { orgId },
+      where: { orgId, isSample: false, deletedAt: null },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
     }),
     prisma.carrierDriver.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, firstName: true, lastName: true },
       orderBy: { lastName: 'asc' },
     }),
     prisma.carrierTruck.findMany({
-      where: { orgId, status: 'active' },
+      where: { orgId, status: 'active', isSample: false, deletedAt: null },
       select: { id: true, unitNumber: true },
       orderBy: { unitNumber: 'asc' },
     }),
@@ -153,6 +177,7 @@ export default async function EditRouteTemplatePage({ params }: Props) {
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6">
+            {samplesHidden && <SampleHiddenNote className="-mb-2" />}
             <RouteTemplateForm initialData={formData} templateId={id} />
           </div>
 

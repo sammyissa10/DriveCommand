@@ -40,8 +40,12 @@ export async function GET(req: NextRequest) {
     const drivers = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
+      // TKT-0076: this is the PICKER endpoint — `routes/new` binds its driver
+      // selector to it — so seeded demo records are excluded here. Its sibling
+      // `/api/mobile/owner/drivers` is the LIST screen and deliberately still
+      // returns samples, with their pill. Two endpoints, two jobs.
       return tx.user.findMany({
-        where: { tenantId, role: 'DRIVER', isActive: true },
+        where: { tenantId, role: 'DRIVER', isActive: true, isSample: false },
         select: { id: true, firstName: true, lastName: true },
         orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
       });
