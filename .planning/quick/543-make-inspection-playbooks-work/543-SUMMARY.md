@@ -174,4 +174,8 @@ packages/api-client/src/carrier-driver.ts           wire-type parity
 2. **`RecipeCard.tsx`'s `suggestedCategory` filter** — left alone as instructed. It admits `VEHICLE_INSPECTION` and `CUSTOM`, so after item 5 the migrated playbooks now *pass* that filter where they previously did not. Worth re-checking rather than assuming it is still wrong.
 3. **`apps/mobile`'s `TripInspectionScreen` still renders non-driver steps as answerable.** The wire fields are now there; the fix is a rendering change.
 4. **The 2026-04-24 script is not in the repo.** It writes `require_photo_on_fail` and `isDispatchBlocker: false`. If it is ever run again it will re-create both defects.
+
+   **Why it used `SAFETY` is now answered, and it was not a mistake.** Checked against `_prisma_migrations` after this task's commit: the foundation migration created `PlaybookCategory` with six values at **02:21:59**, the playbooks were written **85 seconds later at 02:23:24**, and `VEHICLE_INSPECTION` was not added to the enum until **18:06:45** the same day — 15.7 hours after. The script could not have used it; Postgres would have rejected the insert.
+
+   So the real omission belongs to `20260424100001_workflow_engine_inspection_mode`, which added the seventh enum value and neither backfilled the rows written before it nor added it to the builder's dropdown. Items 4 and 5 of this task are, between them, that migration's missing half — finished sixteen months late. Worth remembering the next time an enum gains a value: **adding one is three changes — the type, the existing rows, and every place a user picks from it.**
 5. **v2's steps carry `playbookPhase` PRE_START / DAY_1**, so the walkaround renders sections titled "Pre start" and "Day 1". Cosmetic, but meaningless to a driver.

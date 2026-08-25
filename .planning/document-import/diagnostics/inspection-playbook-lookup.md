@@ -83,7 +83,37 @@ and `playbook.create` (`src/server/api/routers/workflows/playbook.ts:64-74`) spr
 
 One per tenant, 1.7–5 seconds apart, across the seven tenants that existed on 2026-04-24 (DriveCommand Demo, Demo Member, QA Test Org, QA Test Org B, SAMMY ISSA, Nadeem User, Nadeem's Testing). `updatedAt == createdAt` on all eight — never edited since. The only `SAFETY` row with a real author is "Vehicle Check", which came through the builder and has **zero steps**.
 
-**No file in the repository creates a playbook with `category: 'SAFETY'`** — a repo-wide grep for `category: 'SAFETY'` returns nothing. So the creating script is not checked in; most likely an ad-hoc script or a Supabase SQL-editor run.
+**No file in the repository creates a playbook with `category: 'SAFETY'`** — a repo-wide grep for `category: 'SAFETY'` returns nothing (confirmed a second time over all `.ts/.js/.mjs/.sql`, including `prisma/migrations`; the only hits are the enum's own `CREATE TYPE` and an unrelated driver-pay bonus type). So the creating script is not checked in.
+
+### Why `SAFETY`, resolved: the data predates the category
+
+Added 2026-08-25 after checking `_prisma_migrations`. This section originally
+implied the script *chose* `SAFETY` where the seed chose `VEHICLE_INSPECTION` —
+a divergence. It was not a choice.
+
+| Time (UTC, 2026-04-24) | Event |
+|---|---|
+| **02:21:59** | `20260423100001_add_workflow_engine_foundation` applied. `CREATE TYPE "PlaybookCategory" AS ENUM ('ONBOARDING','SAFETY','OPERATIONS','COMPLIANCE','PARTNER','CUSTOM')` — **six values, no `VEHICLE_INSPECTION`** |
+| **02:23:24 → 02:23:39** | the seven `SAFETY`/`VEHICLE` playbooks created — **85 seconds after that migration finished** |
+| 03:56:44 | "Pre-Trip Inspection v2" created |
+| **18:06:45** | `20260424100001_workflow_engine_inspection_mode` applied: `ALTER TYPE "PlaybookCategory" ADD VALUE ... 'VEHICLE_INSPECTION'` |
+
+**`VEHICLE_INSPECTION` did not exist in the database until 15.7 hours after those
+rows were written.** The script could not have used it — Postgres would have
+rejected the insert. `SAFETY` was the only defensible option available, and it
+was correct at the time.
+
+So the defect is not that anyone picked the wrong category. It is that
+`workflow_engine_inspection_mode` introduced a seventh value and did **two**
+things that should have accompanied it and did neither: it did not backfill the
+rows created before it, and it did not add the value to the builder's dropdown.
+Both omissions surfaced together, sixteen months later, as one driver seeing
+"no vehicle inspection checklist exists".
+
+The 85-second gap also narrows the culprit: whatever ran immediately after the
+foundation migration, as part of bringing the workflow engine up. **Still not
+identified** — it is not in the repository — but it is a setup step of that
+deployment rather than something someone typed later.
 
 > **Stated as ambiguity, not resolved:** I cannot identify the script. `createdById = NULL` proves *not the builder while logged in*; it does not name what it was. A seeder run with a null actor and a hand-written SQL insert are indistinguishable from here.
 
@@ -338,7 +368,7 @@ A complete fix for *this tenant* is B + C **plus** repairing the two playbooks: 
 
 ## What I did not determine
 
-- **Which script created the eight `SAFETY` playbooks.** `createdById = NULL` rules out the builder-while-logged-in; it does not identify the writer, and nothing in the repository matches.
+- **Which script created the eight `SAFETY` playbooks.** `createdById = NULL` rules out the builder-while-logged-in; it does not identify the writer, and nothing in the repository matches. Narrowed but not closed: it ran 85 seconds after the workflow-engine foundation migration, so it is a setup step of that deployment. **Why it used `SAFETY` is now fully answered** — see the timeline above; the alternative did not exist yet.
 - **Whether any tenant intends `SAFETY` to mean something other than inspection.** All eight current rows are inspections by name and content; intent is not in the data.
 - **Whether 6.3 reproduces in a browser.** Derived from code against real rows, not walked.
 - **Whether the demo tenant's playbooks should be repaired or replaced.** Replacing them with the seeded DVIR would lose 20 instances; repairing keeps them. That is a product call.
