@@ -8,6 +8,7 @@ import { useTRPC } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -64,13 +65,21 @@ export function StepDetailEditor({ playbookId, step, onClose }: StepDetailEditor
   const [overdueRecipient, setOverdueRecipient] = useState<'DRIVER' | 'OWNER' | 'BOTH'>(
     (step.overdueRecipient as 'DRIVER' | 'OWNER' | 'BOTH') ?? 'OWNER',
   );
+  const [isDispatchBlocker, setIsDispatchBlocker] = useState<boolean>(step.isDispatchBlocker);
 
   // Reset local state when the selected step changes
   useEffect(() => {
     setConfig((step.overrideConfig as Record<string, unknown>) ?? {});
     setDueWithinHours(step.dueWithinHours ?? null);
     setOverdueRecipient((step.overdueRecipient as 'DRIVER' | 'OWNER' | 'BOTH') ?? 'OWNER');
-  }, [step.id, step.overrideConfig, step.dueWithinHours, step.overdueRecipient]);
+    setIsDispatchBlocker(step.isDispatchBlocker);
+  }, [
+    step.id,
+    step.overrideConfig,
+    step.dueWithinHours,
+    step.overdueRecipient,
+    step.isDispatchBlocker,
+  ]);
 
   const updateStepMutation = useMutation(
     trpc.workflows.playbook.updateStep.mutationOptions({
@@ -91,10 +100,13 @@ export function StepDetailEditor({ playbookId, step, onClose }: StepDetailEditor
         overrideConfig: config,
         dueWithinHours: dueWithinHours,
         overdueRecipient: overdueRecipient,
+        isDispatchBlocker: isDispatchBlocker,
       },
       { onError: (err) => toast.error(err.message ?? 'Failed to save step') },
     );
   }
+
+  const isInspectionItem = step.stepTemplate.stepType === 'INSPECTION_ITEM';
 
   function renderEditor() {
     const stepType = step.stepTemplate.stepType;
@@ -197,6 +209,54 @@ export function StepDetailEditor({ playbookId, step, onClose }: StepDetailEditor
       {/* Config editor body */}
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {renderEditor()}
+
+        {/*
+          quick-544 — the control that did not exist.
+
+          Placed FIRST, above the SLA fields, because it is the only setting on
+          this panel that can stop a truck. The label changes with step type
+          because the flag genuinely means two different things:
+          `computeDispatchReadiness` treats an open blocker as "not ready to
+          dispatch" for every playbook, while the Phase 9 gate additionally
+          treats a FAILED blocking inspection item as a hard stop. One label for
+          both would have to be vague enough to be useless.
+
+          "Dispatch blocker" — the column's name — is not used anywhere the
+          owner can see it. It is our word, not theirs.
+        */}
+        <div className="space-y-2 rounded-lg border border-border p-3">
+          <div className="flex items-start justify-between gap-3">
+            <label htmlFor="dispatch-blocker" className="text-sm font-medium leading-snug">
+              {isInspectionItem ? 'Failing this stops the trip' : 'Must be finished before dispatch'}
+            </label>
+            <Switch
+              id="dispatch-blocker"
+              checked={isDispatchBlocker}
+              onCheckedChange={setIsDispatchBlocker}
+            />
+          </div>
+
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {isInspectionItem
+              ? 'If the driver reports this item as failed, the trip is blocked and dispatch is notified. Turn it on for anything that makes the vehicle unsafe to drive — brakes, tires, lights. Leave it off for faults worth recording but not worth stopping a truck for.'
+              : 'The driver or vehicle this checklist belongs to will not count as ready to dispatch until this step is complete.'}
+          </p>
+
+          {/*
+            Two truths an owner cannot see from here and would otherwise learn
+            the hard way. Both are stated rather than assumed obvious.
+          */}
+          {isInspectionItem && (
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Trips are only stopped while <span className="font-medium">Block trip start on
+              failed inspection</span> is on in Operations settings.
+            </p>
+          )}
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Applies to checklists started from now on. Ones already running keep the rules they
+            started with.
+          </p>
+        </div>
 
         {/* Due Within (Hours) */}
         <div className="space-y-1.5">

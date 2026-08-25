@@ -191,6 +191,8 @@ const addStep = adminProcedure
         playbookPhase: input.playbookPhase,
         sequence,
         overrideConfig: input.overrideConfig,
+        // quick-544. Defaults to false in the schema, matching the column.
+        isDispatchBlocker: input.isDispatchBlocker,
       },
       include: { stepTemplate: true },
     });
@@ -255,6 +257,22 @@ const updateStep = adminProcedure
     }
     if (input.overdueRecipient !== undefined) {
       data.overdueRecipient = input.overdueRecipient;
+    }
+    /**
+     * quick-544 — the write that was missing.
+     *
+     * `isDispatchBlocker` has existed on `PlaybookStep` since the workflow
+     * engine shipped, is copied into `stepSnapshot` by `buildStepSnapshot`, and
+     * is read by `computeDispatchReadiness` and the Phase 9 inspection gate.
+     * Every link in that chain worked except this one: nothing between the
+     * builder and the column ever set it, so only `seedStarterPlaybooks` could
+     * produce a blocking step and no owner could create or change one.
+     *
+     * Guarded on `!== undefined` like its neighbours, so an older client that
+     * omits the field leaves the stored value alone rather than clearing it.
+     */
+    if (input.isDispatchBlocker !== undefined) {
+      data.isDispatchBlocker = input.isDispatchBlocker;
     }
 
     // 4. Return the updated PlaybookStep with stepTemplate so client can re-render without refetch

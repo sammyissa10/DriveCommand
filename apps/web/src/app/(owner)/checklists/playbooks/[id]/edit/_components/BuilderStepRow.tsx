@@ -112,6 +112,22 @@ export function BuilderStepRow({
           <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
             {STEP_TYPE_LABELS[step.stepTemplate.stepType]}
           </Badge>
+          {/*
+            quick-544 — visible at a glance, not one click deep.
+
+            A control an owner has to open eight step editors to audit is a
+            control they will not audit. Amber rather than red: this is a
+            deliberate setting doing its job, not an error, and Section 15
+            reserves red for errors and destructive actions.
+          */}
+          {step.isDispatchBlocker && (
+            <Badge
+              variant="secondary"
+              className="text-[10px] px-1.5 py-0 h-4 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300"
+            >
+              Blocks dispatch
+            </Badge>
+          )}
           <span className="text-[10px] text-muted-foreground">
             {ASSIGNEE_ROLE_LABELS[step.stepTemplate.assigneeRole]}
           </span>

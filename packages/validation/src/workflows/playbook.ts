@@ -23,6 +23,16 @@ export const addStepSchema = z.object({
   playbookPhase: phaseTypeSchema.optional().default('NONE'),
   sequence: z.number().int().nonnegative().optional(),
   overrideConfig: z.record(z.string(), z.any()).optional().default({}),
+  /**
+   * Does this step block dispatch? quick-544.
+   *
+   * Default `false`, matching the Prisma column default, so the add path is
+   * unchanged for every existing caller. The builder does not send it — a step
+   * is added first and marked blocking afterwards in the step editor, the same
+   * way `dueWithinHours` works. It is accepted here so an API caller can create
+   * a blocking step in one call rather than two.
+   */
+  isDispatchBlocker: z.boolean().optional().default(false),
 });
 
 export const removeStepSchema = z.object({
@@ -48,6 +58,17 @@ export const updatePlaybookStepSchema = z.object({
   playbookPhase: phaseTypeSchema.optional(),
   dueWithinHours: z.number().int().min(1).max(8760).nullable().optional(), // up to 365 days in hours
   overdueRecipient: overdueRecipientSchema.optional(),
+  /**
+   * Does this step block dispatch? quick-544.
+   *
+   * `optional()` with NO default, deliberately — unlike `addStepSchema`. This
+   * schema is a partial update and the router only writes fields that are
+   * `!== undefined`, so a default of `false` here would silently clear the flag
+   * on every caller that omits it. That is the difference between "the user did
+   * not tick the box" and "the user is not editing this field", and getting it
+   * wrong would un-block every step saved by an older client.
+   */
+  isDispatchBlocker: z.boolean().optional(),
 });
 
 /**
