@@ -14,6 +14,9 @@ import { DispatchPayRecordsPanel } from '@/components/carrier/dispatches/Dispatc
 import { DispatchMessages } from '@/components/carrier/dispatches/DispatchMessages';
 import { TripSuccessBanner } from '@/components/carrier/dispatches/TripSuccessBanner';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
+import { TripInspectionPanel } from '@/components/carrier/dispatches/TripInspectionPanel';
+import { OVERRIDE_REASON_MIN_LENGTH } from '@/lib/carrier/inspection-constants';
+import { UserRole } from '@/lib/auth/roles';
 import { TripDetailMobile } from './TripDetailMobile';
 
 interface Props {
@@ -283,6 +286,14 @@ export default async function DispatchDetailPage({ params }: Props) {
   const dispatchNumberMatch = dispatch.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
   const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : `DC-${id.slice(0, 8)}`;
 
+  // Phase 9 item 5. Overriding a safety gate is dispatcher-or-above per spec
+  // Section 15, and the `dispatches` permission is not the same thing — a
+  // dispatcher may manage a trip without being entitled to send a truck out on
+  // a failed brake check. The API route enforces this again; this only decides
+  // whether the control is drawn.
+  const canOverrideInspection =
+    session.role === UserRole.OWNER || session.role === UserRole.MANAGER;
+
   return (
     <>
       {/* Mobile-web design system — rendered below lg; desktop keeps its own layout */}
@@ -317,6 +328,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           stopDocCounts={stopDocCounts}
           canManage={canManage}
           loads={stopLoads}
+          canOverrideInspection={canOverrideInspection}
         />
       </div>
 
@@ -359,6 +371,15 @@ export default async function DispatchDetailPage({ params }: Props) {
         allStopsDone={allStopsDone}
         allDrivers={driversForPanels}
         allTrucks={trucksForAttach}
+      />
+
+      {/* Pre-trip inspection gate + owner override (Phase 9, spec Section 12).
+          Placed directly under the header because on a blocked trip it is the
+          only thing anyone opening this page cares about. */}
+      <TripInspectionPanel
+        dispatchId={dispatch.id}
+        canOverride={canOverrideInspection}
+        overrideReasonMinLength={OVERRIDE_REASON_MIN_LENGTH}
       />
 
       {/* Stop Timeline */}

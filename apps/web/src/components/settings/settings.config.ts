@@ -152,6 +152,10 @@ export const SETTINGS_PAGE_META: Record<string, SettingsPageMeta> = {
     title: "Notifications",
     subtitle: "Choose what to be notified about and where",
   },
+  operations: {
+    title: "Operations",
+    subtitle: "Pre-trip inspections and how a failed one affects a trip",
+  },
   integrations: {
     title: "Integrations",
     subtitle: "Connect DriveCommand with your other tools",

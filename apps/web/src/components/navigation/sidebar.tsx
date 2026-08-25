@@ -22,6 +22,7 @@ import {
   BarChart3,
   MessageSquare,
   ListChecks,
+  ClipboardCheck,
   HelpCircle,
   Bell,
   Trash2,
@@ -492,6 +493,19 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
+                {/* Operations — pre-trip inspection gate (Phase 9). OWNER/MANAGER. */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings/operations')}
+                    tooltip="Operations"
+                  >
+                    <Link href="/settings/operations" onClick={handleNavClick}>
+                      <ClipboardCheck />
+                      <span>Operations</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 {/* Notifications — always accessible to OWNER/MANAGER */}
                 <SidebarMenuItem>
                   <SidebarMenuButton

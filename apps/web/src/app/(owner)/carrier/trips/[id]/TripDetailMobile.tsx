@@ -20,6 +20,8 @@ import {
   type FieldDef,
   type ParentChip,
 } from '@/components/ui/ds';
+import { TripInspectionPanel } from '@/components/carrier/dispatches/TripInspectionPanel';
+import { OVERRIDE_REASON_MIN_LENGTH } from '@/lib/carrier/inspection-constants';
 import { dispatchFieldEditability } from '@/lib/dispatch/dispatch-field-editability';
 
 // ---------------------------------------------------------------------------
@@ -219,6 +221,7 @@ export function TripDetailMobile({
   stopDocCounts,
   canManage,
   loads = [],
+  canOverrideInspection = false,
 }: {
   trip: TripDetailData;
   driverName: string;
@@ -234,6 +237,8 @@ export function TripDetailMobile({
   stopDocCounts: Record<string, { bolCount: number; podCount: number }>;
   canManage: boolean;
   loads?: { id: string; referenceNumber: string | null; clientName: string }[];
+  /** OWNER or MANAGER. The API enforces it again; this only draws the control. */
+  canOverrideInspection?: boolean;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -698,6 +703,13 @@ export function TripDetailMobile({
 
           {tab === 'details' ? (
             <div className="space-y-6">
+              {/* Phase 9: the gate, and the owner override. First on the tab
+                  because on a blocked trip nothing below it matters yet. */}
+              <TripInspectionPanel
+                dispatchId={trip.id}
+                canOverride={canOverrideInspection}
+                overrideReasonMinLength={OVERRIDE_REASON_MIN_LENGTH}
+              />
               <div>
                 <SectionHeader title="Assignment" />
                 <FieldGroup fields={assignmentView} isEditing={false} />
