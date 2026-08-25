@@ -46,9 +46,27 @@ export const OVERRIDE_REASON_MIN_LENGTH = 10;
 /**
  * Minimum length of the note a driver must write when failing an item.
  *
- * Shorter than the override minimum on purpose: the driver is standing in the
- * cold with gloves on and "left rear tire flat" is a complete answer at 20
- * characters. The owner sitting at a desk overriding a safety block is held to
- * a higher bar than the driver reporting the fault.
+ * RAISED from 3 to 8 in Phase 9-web. Three was not a considered number: the
+ * comment that shipped with it argued only that the driver should be held to a
+ * LOWER bar than the owner typing an override reason, and cited "left rear tire
+ * flat" — twenty characters — as its example of a complete answer. Nothing in
+ * that reasoning produces 3, and 3 accepts "abc", "n/a", "ok" and "...", which
+ * is the same as no minimum at all.
+ *
+ * This note is the record a mechanic works from and, on a critical item, the
+ * sentence a dispatcher reads on the blocked screen before deciding whether to
+ * override a safety stop. Eight characters rejects every filler above while
+ * accepting the terse real answers this domain actually produces — "air leak"
+ * (8), "flat tire" (9), "brake leak" (10), "lights out" (10).
+ *
+ * It is not free: "no horn" (7) is a genuine answer this rejects. That is why
+ * the web checklist renders a live character counter beside the field rather
+ * than failing the driver at submit — the bar is visible while they type, not
+ * sprung on them afterwards. Still lower than `OVERRIDE_REASON_MIN_LENGTH`,
+ * which keeps the asymmetry the earlier comment was reaching for.
+ *
+ * Enforced SERVER-SIDE from Phase 9-web (`recordDriverInspectionFailure`).
+ * Before that it was a client-side check in one React Native component and
+ * nothing else, so every other caller could write an empty note.
  */
-export const FAIL_NOTE_MIN_LENGTH = 3;
+export const FAIL_NOTE_MIN_LENGTH = 8;

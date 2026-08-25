@@ -1,0 +1,239 @@
+'use client';
+
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Loader2, Truck } from 'lucide-react';
+import type {
+  InspectionChecklistView,
+  InspectionGateView,
+} from '@/lib/carrier/inspection-handlers';
+import { InspectionRunner } from './InspectionRunner';
+import { openInspectionChecklist } from '../actions';
+import { startTrip } from '@/app/(driver)/actions/driver-routes';
+
+/**
+ * The three states a driver can be in on this route, and the transitions
+ * between them. Deliberately one client component rather than three routes:
+ * finishing a walkaround and being told the outcome is one continuous moment,
+ * and a redirect in the middle of it loses the "you just did this" context.
+ *
+ * The exception is BLOCKED, which IS its own route — see `onOutcome`.
+ */
+export function InspectionClient({
+  dispatchId,
+  truckUnitNumber,
+  checklist,
+}: {
+  dispatchId: string;
+  truckUnitNumber: string;
+  checklist: InspectionChecklistView | null;
+}) {
+  const router = useRouter();
+  const [outcome, setOutcome] = useState<InspectionGateView | null>(null);
+
+  if (outcome) {
+    return <OutcomeScreen dispatchId={dispatchId} gate={outcome} />;
+  }
+
+  if (!checklist) {
+    return (
+      <BeginScreen
+        dispatchId={dispatchId}
+        truckUnitNumber={truckUnitNumber}
+        onOpened={() => router.refresh()}
+      />
+    );
+  }
+
+  return (
+    <InspectionRunner
+      view={checklist}
+      onOutcome={(gate) => {
+        if (gate.outcome === 'BLOCKED') {
+          // A blocked trip is a different situation, not a different message —
+          // it needs its own screen with its own actions, and it must survive a
+          // refresh and a back button. `replace` rather than `push` so the back
+          // button does not return the driver to a checklist they have already
+          // submitted.
+          router.replace(`/inspection/${dispatchId}/blocked`);
+          return;
+        }
+        setOutcome(gate);
+      }}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Begin — only reached on a tenant with no ON_DISPATCH_CREATE trigger
+// ---------------------------------------------------------------------------
+
+/**
+ * Opening the checklist WRITES: `handleOpenChecklist` creates the
+ * `PlaybookInstance` when the tenant has no trigger configured. That is why the
+ * page does not do it on render — a GET that spawns a checklist would put the
+ * creation path on a page load and every refresh would be another write
+ * (quick-516). So it is a button, and the driver taps it.
+ *
+ * On a tenant whose trigger already ran, `createTrip` made the instance long
+ * before the driver opened anything, the page finds it, and this screen is
+ * never seen.
+ */
+function BeginScreen({
+  dispatchId,
+  truckUnitNumber,
+  onOpened,
+}: {
+  dispatchId: string;
+  truckUnitNumber: string;
+  onOpened: () => void;
+}) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
+      <div className="space-y-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+          <ClipboardCheck className="h-7 w-7 text-primary" />
+        </div>
+        <h1 className="text-2xl font-bold leading-tight text-foreground">Pre-trip inspection</h1>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Walk around unit {truckUnitNumber} and answer each item. You can go back at any point
+          before you sign.
+        </p>
+        {error && (
+          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() =>
+            startTransition(async () => {
+              setError(null);
+              const res = await openInspectionChecklist(dispatchId);
+              if (!res.success) {
+                setError(res.error);
+                return;
+              }
+              onOpened();
+            })
+          }
+          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+        >
+          {pending ? <Loader2 className="h-5 w-5 shrink-0 animate-spin" /> : null}
+          Start the walkaround
+        </button>
+        <Link
+          href="/home"
+          className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
+        >
+          Not now
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Outcome — passed, or passed with defects
+// ---------------------------------------------------------------------------
+
+function OutcomeScreen({ dispatchId, gate }: { dispatchId: string; gate: InspectionGateView }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const withDefects = gate.outcome === 'PASSED_WITH_DEFECTS';
+
+  return (
+    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
+      <div className="space-y-4">
+        <div
+          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+            withDefects ? 'bg-amber-100 dark:bg-amber-950' : 'bg-green-100 dark:bg-green-950'
+          }`}
+        >
+          {withDefects ? (
+            <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
+          ) : (
+            <CheckCircle2 className="h-7 w-7 text-green-700 dark:text-green-400" />
+          )}
+        </div>
+
+        <h1 className="text-2xl font-bold leading-tight text-foreground">
+          {withDefects ? 'Inspection complete, with faults' : 'Inspection complete'}
+        </h1>
+
+        {/*
+          The gate's own sentence, rendered whole. `inspectionCopy` builds it
+          server-side as one string precisely so it is never reassembled from
+          fragments here.
+        */}
+        <p className="text-base leading-relaxed text-muted-foreground">{gate.message}</p>
+
+        {gate.failures.length > 0 && (
+          <ul className="space-y-2 rounded-2xl bg-card p-4 shadow-sm">
+            {gate.failures.map((f) => (
+              <li key={f.stepInstanceId} className="text-sm">
+                <span className="font-medium text-foreground">{f.name}</span>
+                {f.note ? <span className="text-muted-foreground"> — {f.note}</span> : null}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {error && (
+          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        {/*
+          Starting is a SEPARATE, explicit tap. `handleSubmitInspection` never
+          starts the trip, so a driver who finishes a walkaround at 04:50 is not
+          put on the road at 04:50.
+        */}
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() =>
+            startTransition(async () => {
+              setError(null);
+              const res = (await startTrip(dispatchId)) as { error?: string };
+              if (res?.error) {
+                setError(res.error);
+                return;
+              }
+              router.replace('/my-route');
+            })
+          }
+          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+        >
+          {pending ? (
+            <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+          ) : (
+            <Truck className="h-5 w-5 shrink-0" />
+          )}
+          Start trip
+        </button>
+        <Link
+          href="/home"
+          className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
+        >
+          Back to my trips
+        </Link>
+      </div>
+    </div>
+  );
+}

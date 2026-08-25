@@ -2,7 +2,12 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin } from 'lucide-react';
+import Link from 'next/link';
+import { ClipboardCheck, MapPin } from 'lucide-react';
+import {
+  TripStartRefusalDialog,
+  type TripStartRefusal,
+} from '@/components/driver/trip-start-refusal';
 
 // The dispatch type returned by getMyActiveDispatch — stops + truck included
 interface DispatchStop {
@@ -94,6 +99,7 @@ const STATUS_LABEL: Record<string, string> = {
 export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCardProps) {
   const [mounted, setMounted] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [refusal, setRefusal] = useState<TripStartRefusal | null>(null);
   const router = useRouter();
 
   useEffect(() => setMounted(true), []);
@@ -131,10 +137,13 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
     if (!startAction) return;
     startTransition(async () => {
       const result = await startAction(dispatch!.id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = result as any;
+      const r = result as { error?: string; code?: string } | null;
       if (r?.error) {
-        alert(r.error);
+        // The gate's own sentence, carried into an in-app dialog that can also
+        // carry the next step — the checklist, or the blocked screen. This was
+        // `alert(r.error)`; see `trip-start-refusal.tsx` for the three reasons
+        // that was the wrong surface, only one of which was cosmetic.
+        setRefusal({ message: r.error, code: r.code });
         return;
       }
       if (dispatch!.firstDeliveryStop) {
@@ -177,6 +186,13 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
   const isPlanned = dispatch.status === 'planned';
 
   return (
+    <>
+      {/* The gate's refusal, with its next step. Replaces alert(). */}
+      <TripStartRefusalDialog
+        dispatchId={dispatch.id}
+        refusal={refusal}
+        onClose={() => setRefusal(null)}
+      />
     <div className="bg-card rounded-xl shadow-sm border border-border p-4">
       {/* Header row */}
       <div className="flex items-start justify-between mb-3">
@@ -272,13 +288,37 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
           {isPending ? 'Loading...' : 'Complete Current Stop'}
         </button>
       ) : ctaState === 'start' ? (
-        <button
-          onClick={handleStartTrip}
-          disabled={isPending}
-          className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50"
-        >
-          {isPending ? 'Starting...' : 'Start Trip & Navigate'}
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={handleStartTrip}
+            disabled={isPending}
+            className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50"
+          >
+            {isPending ? 'Starting...' : 'Start Trip & Navigate'}
+          </button>
+
+          {/*
+            NAVIGATION WIRE-UP for `/inspection/[dispatchId]`.
+
+            The refusal dialog also routes here, but only once the gate has said
+            no — which makes the checklist reachable only by being turned away,
+            and only on a tenant that requires one. Drivers walk the truck
+            BEFORE they tap start, so there is a standing entry too.
+
+            It is shown on any planned trip rather than conditionally on the
+            gate, because this card does not read the gate and adding a fetch to
+            it to decide whether to render a link would be a query per dashboard
+            load for a link. When no inspection is needed the page says so in a
+            sentence and offers the way back — a correct answer, not a dead end.
+          */}
+          <Link
+            href={`/inspection/${dispatch.id}`}
+            className="flex items-center justify-center gap-2 w-full min-h-[44px] rounded-lg bg-muted text-foreground font-semibold text-sm transition-colors hover:bg-muted/80"
+          >
+            <ClipboardCheck className="h-4 w-4 shrink-0" />
+            Pre-trip inspection
+          </Link>
+        </div>
       ) : (
         <button
           onClick={handleBeginNav}
@@ -289,5 +329,6 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
         </button>
       )}
     </div>
+    </>
   );
 }

@@ -8,6 +8,10 @@
  */
 
 import { useState, useTransition, useEffect } from 'react';
+import {
+  TripStartRefusalDialog,
+  type TripStartRefusal,
+} from '@/components/driver/trip-start-refusal';
 
 // ---------------------------------------------------------------------------
 // Hydration-safe local time helpers
@@ -194,27 +198,36 @@ interface StartTripButtonProps {
 
 export function StartTripButton({ dispatchId, startAction }: StartTripButtonProps) {
   const [isPending, startTransition] = useTransition();
+  const [refusal, setRefusal] = useState<TripStartRefusal | null>(null);
 
   function handleClick() {
     startTransition(async () => {
       const result = await startAction(dispatchId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = result as any;
+      const r = result as { error?: string; code?: string } | null;
       if (r?.error) {
-        alert(r.error);
+        // Same in-app refusal as the dashboard card, sharing one component so
+        // the two entry points cannot drift. Was `alert(r.error)`.
+        setRefusal({ message: r.error, code: r.code });
       }
     });
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={isPending}
-      className="inline-flex items-center gap-2 rounded-md bg-green-600 px-5 py-2.5 text-sm font-semibold text-white min-h-[44px] hover:bg-green-700 disabled:opacity-50 transition-colors"
-    >
-      <Play className="h-4 w-4" />
-      {isPending ? 'Starting...' : 'Start Trip'}
-    </button>
+    <>
+      <TripStartRefusalDialog
+        dispatchId={dispatchId}
+        refusal={refusal}
+        onClose={() => setRefusal(null)}
+      />
+      <button
+        onClick={handleClick}
+        disabled={isPending}
+        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-5 py-2.5 text-sm font-semibold text-white min-h-[44px] hover:bg-green-700 disabled:opacity-50 transition-colors"
+      >
+        <Play className="h-4 w-4" />
+        {isPending ? 'Starting...' : 'Start Trip'}
+      </button>
+    </>
   );
 }
 

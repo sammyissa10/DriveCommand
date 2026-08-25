@@ -13,6 +13,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { computeDispatchReadiness } from './computeDispatchReadiness';
 import { sendStepFailed, sendApprovalNeeded } from './notifications';
+import { requiresPhotoOnFail } from '@/lib/carrier/inspection-snapshot';
 
 export async function failInspectionItem(args: {
   stepInstanceId: string;
@@ -41,13 +42,33 @@ export async function failInspectionItem(args: {
 
   const snap = stepInstance.stepSnapshot as {
     name?: string;
-    defaultConfig?: { requiresPhoto?: boolean };
+    defaultConfig?: { requiresPhoto?: boolean; requiresPhotoOnFail?: boolean };
   };
 
-  // Validate photo requirement (read from stepSnapshot.defaultConfig per research)
-  const requiresPhoto =
-    (snap.defaultConfig as { requiresPhoto?: boolean } | undefined)?.requiresPhoto === true;
-  if (requiresPhoto && (!result.photoUrls || result.photoUrls.length === 0)) {
+  /**
+   * Photo requirement — read through the SHARED reader (Phase 9-web, ruling 8).
+   *
+   * This used to read `defaultConfig.requiresPhoto` directly. `seedStarterPlaybooks`
+   * writes `requiresPhotoOnFail: true` on all twelve inspection templates and has
+   * never written `requiresPhoto`, so on every seeded tenant this check was
+   * looking at an undefined key and enforcing nothing — while the driver's screen,
+   * which reads `requiresPhotoOnFail`, told the driver a photo WAS required and
+   * blocked them client-side. Screen and server disagreed, and the server was the
+   * one that was wrong.
+   *
+   * `requiresPhotoOnFail()` reads both spellings, so this both closes the gap and
+   * cannot break a tenant who hand-authored the older key.
+   *
+   * WHAT THIS CHANGES IN PRODUCTION, stated plainly rather than buried: on a
+   * seeded tenant a failed item now genuinely requires a photo, where before the
+   * server accepted a failure without one. That is what the seed author asked
+   * for, and it is what mobile has been promising drivers since Phase 9. The
+   * driver is never trapped by it — the note is required and is recorded either
+   * way, and the web checklist surfaces the camera on exactly the items this
+   * function returns true for, from the same helper.
+   */
+  const photoRequired = requiresPhotoOnFail(stepInstance.stepSnapshot);
+  if (photoRequired && (!result.photoUrls || result.photoUrls.length === 0)) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'PHOTO_REQUIRED' });
   }
 

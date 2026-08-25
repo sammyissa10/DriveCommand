@@ -24,6 +24,8 @@ import {
 import { listInspectionSteps, signatureState } from './inspection-lookup';
 import type { InspectionItemOutcome, TripStartVerdict } from './inspection-gate';
 import { FAIL_NOTE_MIN_LENGTH, INSPECTION_VALIDITY_HOURS } from './inspection-constants';
+// Imported (not merely re-exported) because `buildChecklistView` below calls both.
+import { sectionOf, requiresPhotoOnFail } from './inspection-snapshot';
 
 // ---------------------------------------------------------------------------
 // Wire types — shared verbatim with mobile via packages/api-client
@@ -146,57 +148,20 @@ function hoursSince(then: Date, now: Date): number {
 }
 
 // ---------------------------------------------------------------------------
-// Sections
+// Snapshot readers — re-exported, defined in `inspection-snapshot.ts`
 // ---------------------------------------------------------------------------
 
 /**
- * Which screen an item belongs on.
+ * `sectionOf` and `requiresPhotoOnFail` moved to `./inspection-snapshot` in
+ * Phase 9-web so `failInspectionItem` can share them.
  *
- * Item 2 asks for "one section per screen". The workflow engine has no section
- * concept for inspection items — `PhaseType` exists but is `NONE` on every step
- * the starter seed creates, so grouping by it would produce exactly one section
- * called "None" and quietly deliver nothing.
- *
- * So: an explicit `section` key on `stepSnapshot.defaultConfig` when the tenant
- * has set one (a checklist author can add it without any schema change, because
- * `defaultConfig` is Json), falling back to `playbookPhase` when it is not NONE,
- * and finally to a single "Walkaround" section. Chunking a flat list into
- * arbitrary groups of N was rejected — a section boundary that does not mean
- * anything is worse than no boundary, because the driver reads it as one.
+ * They are pure functions over a JSON blob; this module is not, and a workflow
+ * service importing it would drag Prisma, `after()` and the notification stack
+ * in behind them. Re-exported here rather than relocated-and-updated at every
+ * call site, because the wire types above are the natural place to look for
+ * `InspectionStepView.section` and `.requiresPhotoOnFail`.
  */
-const DEFAULT_SECTION = 'Walkaround';
-
-export function sectionOf(snapshot: unknown): string {
-  const snap = (snapshot ?? {}) as {
-    defaultConfig?: { section?: unknown };
-    overrideConfig?: { section?: unknown } | null;
-    playbookPhase?: string;
-  };
-  const override = snap.overrideConfig?.section;
-  if (typeof override === 'string' && override.trim() !== '') return override.trim();
-
-  const fromConfig = snap.defaultConfig?.section;
-  if (typeof fromConfig === 'string' && fromConfig.trim() !== '') return fromConfig.trim();
-
-  if (snap.playbookPhase && snap.playbookPhase !== 'NONE') {
-    return snap.playbookPhase.replace(/_/g, ' ').toLowerCase().replace(/^./, (c) => c.toUpperCase());
-  }
-  return DEFAULT_SECTION;
-}
-
-/**
- * `requiresPhotoOnFail` — read from BOTH spellings.
- *
- * `seedStarterPlaybooks` writes `requiresPhotoOnFail: true`; `failInspectionItem`
- * enforces `requiresPhoto`. Two keys, so the seeded enforcement has always been
- * inert. Reading both here means the driver's screen offers the camera on the
- * items the seed intended, without changing what the server enforces — widening
- * the server's rule would start rejecting submissions that work today.
- */
-export function requiresPhotoOnFail(snapshot: unknown): boolean {
-  const cfg = ((snapshot ?? {}) as { defaultConfig?: Record<string, unknown> }).defaultConfig ?? {};
-  return cfg.requiresPhotoOnFail === true || cfg.requiresPhoto === true;
-}
+export { sectionOf, requiresPhotoOnFail };
 
 // ---------------------------------------------------------------------------
 // View builders

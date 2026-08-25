@@ -7,6 +7,20 @@ export const stepResultSchema = z.object({
   fileUrls: z.array(z.string()).optional(),
   // SIGNATURE
   signatureUrl: z.string().optional(),
+  // SIGNATURE — who signed and when.
+  //
+  // Added in Phase 9-web. Mobile's TripInspectionScreen has posted both since
+  // Phase 9 (`signedByName`, `signedAt`), but they were absent from this schema,
+  // so they travelled as untyped extras that `z.object` would have stripped had
+  // anything parsed the payload. Section 12 requires the driver's name and a
+  // timestamp beneath the signature, which makes them part of the record rather
+  // than decoration — a DVIR without them is not one.
+  //
+  // `signedAt` is an ISO 8601 instant, not a date-only value: it is the moment
+  // the driver signed, so `toLocaleDateString`-family rendering is correct here
+  // and the quick-541 date-only helpers would be the inverse bug.
+  signedByName: z.string().optional(),
+  signedAt: z.string().optional(),
   // FORM_FILL
   formData: z.record(z.string(), z.unknown()).optional(),
   // INSPECTION_ITEM
