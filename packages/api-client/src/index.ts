@@ -85,7 +85,20 @@ export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, DirectionsResult, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType, DriverRoute, DriverRouteLoad, DriverRouteTruck } from './driver'
 export { ownerApi } from './owner'
 export { carrierDriverApi } from './carrier-driver'
+// TripStartBlockedError is a CLASS, so it is a value export, not a type one.
+// Putting it in the `export type` list below would make `instanceof` a compile
+// error at every call site — the same class of gap as the Phase 4 types above,
+// which shipped and were unreachable.
+export { TripStartBlockedError } from './carrier-driver'
 export type { CarrierDispatch, CarrierDispatchStop, CarrierDispatchDetail, CarrierDispatchDetailStop, CarrierStopDocument, CarrierExpenseSummary, ExpenseInput } from './carrier-driver'
+// Phase 9 — pre-trip inspection gate (spec Section 12).
+export type {
+  InspectionOutcome,
+  InspectionFailureView,
+  InspectionGateView,
+  InspectionStepView,
+  InspectionChecklistView,
+} from './carrier-driver'
 export type { OwnerDashboardData, OwnerLoadSummary, OwnerLoadDetail, TruckOption, TruckDetail, CreateTruckPayload, FleetPosition, CustomerOption, DriverOption, CreateLoadPayload, UpdateLoadPayload, UpdateDriverPayload, UpdateTruckPayload, OwnerDriverSummary, OwnerDriverDetail, OwnerDriverDetailHOS, OwnerDriverActiveLoad, OwnerDriverHOS, OwnerDriverDocument, OwnerDriverIncident, OwnerDriverCurrentLoad, MapVehicle, FleetMessageSummary, SendFleetMessagePayload, ConversationSummary, ConversationMessage, InvoiceStats, InvoiceSummary, InvoicesResponse, InvoiceLineItem, InvoiceDetail, CRMStats, CustomerSummary, CRMResponse, CrmContactDetail, UpdateCrmContactPayload, PayrollStats, PayrollRecordSummary, PayrollResponse, PayrollRecordDetail, CreatePayrollPayload, ComplianceSummary, ComplianceAlert, ComplianceResponse, CreateCustomerPayload, CreateInvoicePayload, OwnerRouteSummary, OwnerRouteDetail, UpdateRoutePayload, PredictProfitPayload, PredictProfitResult, FuelEntry, CreateFuelEntryPayload, MaintenanceEventSummary, LogMaintenancePayload, SafetyAlert, SafetyAlertsResponse, ScheduledServiceSummary, ScheduledServiceWithTruck, CreateScheduledServicePayload, CompleteScheduledServicePayload } from './owner'
 export type { RouteStop as OwnerRouteStop } from './owner'
 export type * from '@drivecommand/types'

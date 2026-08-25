@@ -12,6 +12,7 @@ import {
 } from '@drivecommand/api-client'
 import { AnimatedScreen } from '@/components/ui/AnimatedScreen'
 import { StopListItem } from '@/components/carrier/StopListItem'
+import { TripStartCard } from '@/components/carrier/TripStartCard'
 import { useThemeColors } from '@/constants/tokens'
 
 // ---------------------------------------------------------------------------
@@ -207,6 +208,10 @@ export default function DispatchDetailScreen() {
             {formatTime(dispatch.scheduledDeparture)}
           </Text>
         </View>
+
+        {/* Phase 9: the inspection gate and Start trip. Above the stop list
+            because on a planned trip it is the only action on this screen. */}
+        <TripStartCard dispatchId={dispatch.id} tripStatus={dispatch.status} />
 
         {/* Progress bar */}
         <View style={[styles.progressSection, { borderBottomColor: c.border }]}>

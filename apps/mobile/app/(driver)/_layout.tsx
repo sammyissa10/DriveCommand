@@ -326,6 +326,23 @@ export default function DriverLayout() {
         <Tabs.Screen name="incidents" options={{ href: null }} />
         <Tabs.Screen name="carrier" options={{ href: null }} />
         <Tabs.Screen name="tasks/[id]" options={{ href: null }} />
+        {/* Phase 9 (spec Section 12): "Full screen means full screen — not a
+            sheet, not a modal."
+
+            `href: null` alone is NOT enough and never was. It hides the tab
+            BUTTON, but the screen still lives inside this Tabs navigator, so
+            the tab BAR stays on screen — which is why the pre-existing
+            inspection at `tasks/[id]` above has never actually been full
+            screen despite being described as one. `tabBarStyle: display none`
+            is what removes the chrome.
+
+            The SupportTicketFAB below is deliberately left in place: a driver
+            blocked by a failed brake check at 05:00 wanting help is the exact
+            situation it exists for. */}
+        <Tabs.Screen
+          name="inspection"
+          options={{ href: null, tabBarStyle: { display: 'none' } }}
+        />
       </Tabs>
 
       {/* Notification permission modal — shown on first login */}

@@ -1,122 +1,54 @@
-import React, { useCallback, useRef, useState } from 'react'
-import {
-  ActivityIndicator,
-  PanResponder,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
-import Svg, { Path } from 'react-native-svg'
-import { captureRef } from 'react-native-view-shot'
+import React, { useRef, useState } from 'react'
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { ArrowLeft } from 'lucide-react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useThemeColors } from '../../../constants/tokens'
 import { haptic } from '../../../lib/haptics'
-import { putToPresignedUrl } from '../../../lib/upload'
+import { SignaturePad, uploadSignature, type SignaturePoint } from './SignaturePad'
 import type { StepInstance } from './MyTasksScreen'
 
 // ---------------------------------------------------------------------------
-// Constants
+// The SIGNATURE step, reached from the task list.
+//
+// The canvas, the capture and the upload now live in `SignaturePad`, shared
+// with the trip inspection's final screen — one signature implementation, not
+// two that drift.
+//
+// THE DEFECT THIS FIXES. The previous version set `s3Key` whether or not the
+// bytes landed, and said so in a comment that ended "Behaviour preserved
+// deliberately — fixing it changes driver signature submission, which is Phase
+// 9's flow and not this cleanup's business." This is Phase 9. A signed DVIR
+// whose signature object was never written is exactly the artifact a roadside
+// inspection asks for, and the driver was shown a green "Signature submitted"
+// either way. `uploadSignature` now throws, and this screen reports the reason.
 // ---------------------------------------------------------------------------
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000'
-const CANVAS_HEIGHT = 220
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 interface SignatureScreenProps {
   stepInstance: StepInstance
 }
-
-interface Point {
-  x: number
-  y: number
-}
-
-// ---------------------------------------------------------------------------
-// Helpers — build SVG path from a stroke
-// ---------------------------------------------------------------------------
-
-function buildPath(points: Point[]): string {
-  if (points.length < 2) return ''
-  const [first, ...rest] = points
-  const d = [`M${first.x.toFixed(1)},${first.y.toFixed(1)}`]
-  for (const p of rest) {
-    d.push(`L${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-  }
-  return d.join(' ')
-}
-
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
 
 export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
   const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const [strokes, setStrokes] = useState<Point[][]>([])
-  const [currentStroke, setCurrentStroke] = useState<Point[]>([])
+
+  const [hasSignature, setHasSignature] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const canvasRef = useRef<View>(null)
-  const canvasOffsetRef = useRef({ x: 0, y: 0 })
+  const padRef = useRef<View | null>(null)
+  const strokesRef = useRef<SignaturePoint[][]>([])
+  const signedAt = useRef(new Date()).current
 
   const stepSnapshot = stepInstance.stepSnapshot
   const instruction = stepSnapshot.description ?? 'Sign in the box below'
-  const hasSignature = strokes.length > 0 || currentStroke.length > 0
 
-  // Measure canvas position for accurate point mapping
-  const measureCanvas = useCallback(() => {
-    if (canvasRef.current) {
-      canvasRef.current.measure((_x, _y, _w, _h, pageX, pageY) => {
-        canvasOffsetRef.current = { x: pageX, y: pageY }
-      })
-    }
-  }, [])
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (evt) => {
-        const { pageX, pageY } = evt.nativeEvent
-        const point: Point = {
-          x: pageX - canvasOffsetRef.current.x,
-          y: pageY - canvasOffsetRef.current.y,
-        }
-        setCurrentStroke([point])
-      },
-      onPanResponderMove: (evt) => {
-        const { pageX, pageY } = evt.nativeEvent
-        const point: Point = {
-          x: pageX - canvasOffsetRef.current.x,
-          y: pageY - canvasOffsetRef.current.y,
-        }
-        setCurrentStroke((prev) => [...prev, point])
-      },
-      onPanResponderRelease: () => {
-        setStrokes((prev) => {
-          const next = currentStroke.length > 0 ? [...prev, currentStroke] : prev
-          return next
-        })
-        setCurrentStroke([])
-      },
-    })
-  ).current
-
-  function handleClear() {
-    haptic.light()
-    setStrokes([])
-    setCurrentStroke([])
-  }
+  const driverName =
+    (stepInstance as unknown as { assignedUserName?: string }).assignedUserName ?? null
 
   async function handleSubmit() {
     if (!hasSignature || !token) return
@@ -124,92 +56,31 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
     haptic.medium()
 
     try {
-      let s3Key: string | null = null
+      const { s3Key } = await uploadSignature({
+        viewRef: padRef,
+        strokes: strokesRef.current,
+        token,
+        fileBaseName: `signature-${stepInstance.id}`,
+        presignEndpoint: '/api/mobile/driver/documents/upload-url',
+      })
 
-      // Try to capture SVG canvas as PNG
-      if (canvasRef.current) {
-        try {
-          const imageUri = await captureRef(canvasRef, {
-            format: 'png',
-            quality: 0.9,
-          })
-
-          // Upload PNG to S3
-          const presignedRes = await fetch(
-            `${API_BASE_URL}/api/mobile/driver/documents/upload-url`,
-            {
-              method: 'POST',
-              body: JSON.stringify({
-                fileName: `signature-${stepInstance.id}.png`,
-                contentType: 'image/png',
-              }),
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          )
-          if (presignedRes.ok) {
-            const { uploadUrl, s3Key: key } = await presignedRes.json() as { uploadUrl: string; s3Key: string }
-            const imageBlob = await fetch(imageUri).then((r) => r.blob())
-            // A throw here is caught by the enclosing try and falls through to
-            // the path-data fallback below — the same outcome as the previous
-            // `if (uploadRes.ok)` check.
-            await putToPresignedUrl(uploadUrl, imageBlob, 'image/png')
-            s3Key = key
-          }
-        } catch {
-          // Fallback to path data if capture fails
-        }
-      }
-
-      // Fallback: upload SVG path data as JSON if image upload failed
-      if (!s3Key) {
-        const pathData = JSON.stringify({ strokes })
-        const presignedRes = await fetch(
-          `${API_BASE_URL}/api/mobile/driver/documents/upload-url`,
-          {
-            method: 'POST',
-            body: JSON.stringify({
-              fileName: `signature-${stepInstance.id}.json`,
-              contentType: 'application/json',
-            }),
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-        if (presignedRes.ok) {
-          const { uploadUrl, s3Key: key } = await presignedRes.json() as { uploadUrl: string; s3Key: string }
-          const blob = new Blob([pathData], { type: 'application/json' })
-          // NOTE: this path has always ignored the PUT result and set s3Key
-          // regardless, so a failed upload completes the step with a key whose
-          // object was never written. Behaviour preserved deliberately — fixing
-          // it changes driver signature submission, which is Phase 9's flow and
-          // not this cleanup's business. Raised in 02-SUMMARY.
-          try {
-            await putToPresignedUrl(uploadUrl, blob, 'application/json')
-          } catch {
-            /* swallowed, as before */
-          }
-          s3Key = key
-        }
-      }
-
-      // Complete the step
       const completeRes = await fetch(
         `${API_BASE_URL}/api/mobile/driver/tasks/${stepInstance.id}/complete`,
         {
           method: 'POST',
-          body: JSON.stringify({ result: { signatureUrl: s3Key } }),
+          body: JSON.stringify({
+            result: { signatureUrl: s3Key, signedAt: signedAt.toISOString() },
+          }),
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         }
       )
-      if (!completeRes.ok) throw new Error('Failed to complete task')
+      if (!completeRes.ok) {
+        const body = (await completeRes.json().catch(() => ({}))) as { error?: string }
+        throw new Error(body.error ?? `HTTP ${completeRes.status}`)
+      }
 
       haptic.success()
       Toast.show({ type: 'success', text1: 'Signature submitted' })
@@ -218,8 +89,9 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
       haptic.error()
       Toast.show({
         type: 'error',
-        text1: 'Submission Failed',
-        text2: err instanceof Error ? err.message : 'Please try again',
+        text1: 'Submission failed',
+        // The actual reason, never "please try again" over a swallowed error.
+        text2: err instanceof Error ? err.message : String(err),
       })
     } finally {
       setIsSubmitting(false)
@@ -227,8 +99,10 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: c.background }]} edges={['bottom', 'left', 'right']}>
-      {/* Header */}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: c.background }]}
+      edges={['bottom', 'left', 'right']}
+    >
       <View style={[styles.headerRow, { borderBottomColor: c.border }]}>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -242,84 +116,30 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
         <Text style={[styles.headerTitle, { color: c.textPrimary }]} numberOfLines={1}>
           {stepSnapshot.name}
         </Text>
-        <TouchableOpacity
-          onPress={handleClear}
-          style={styles.clearBtn}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          accessibilityLabel="Clear signature"
-          accessibilityRole="button"
-        >
-          <Text style={[styles.clearBtnText, { color: c.brand }]}>Clear</Text>
-        </TouchableOpacity>
       </View>
 
-      {/* Instruction */}
-      <View style={styles.instructionContainer}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={[styles.stepName, { color: c.textPrimary }]}>{stepSnapshot.name}</Text>
         <Text style={[styles.instruction, { color: c.textSecondary }]}>{instruction}</Text>
-      </View>
 
-      {/* Signature canvas */}
-      <View style={styles.canvasWrapper}>
-        <View
-          ref={canvasRef}
-          style={[styles.canvas, { borderColor: c.border, backgroundColor: c.surfaceCard }]}
-          onLayout={measureCanvas}
-          {...panResponder.panHandlers}
-        >
-          <Svg
-            style={StyleSheet.absoluteFill}
-            width="100%"
-            height={CANVAS_HEIGHT}
-          >
-            {/* Completed strokes */}
-            {strokes.map((stroke, index) => {
-              const d = buildPath(stroke)
-              return d ? (
-                <Path
-                  key={index}
-                  d={d}
-                  stroke={c.textPrimary}
-                  strokeWidth={2.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                />
-              ) : null
-            })}
-            {/* Current stroke */}
-            {currentStroke.length > 1 && (
-              <Path
-                d={buildPath(currentStroke)}
-                stroke={c.textPrimary}
-                strokeWidth={2.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            )}
-          </Svg>
+        <View style={{ height: 12 }} />
 
-          {/* Hint text when empty */}
-          {!hasSignature && (
-            <View style={styles.canvasHint} pointerEvents="none">
-              <Text style={[styles.canvasHintText, { color: c.textMuted }]}>
-                Sign here
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
+        <SignaturePad
+          driverName={driverName}
+          signedAt={signedAt}
+          onChange={setHasSignature}
+          padRef={padRef}
+          strokesRef={strokesRef}
+        />
+      </ScrollView>
 
-      {/* Submit button */}
-      <View
-        style={[
-          styles.footer,
-          { borderTopColor: c.border, paddingBottom: insets.bottom + 12 },
-        ]}
-      >
+      <View style={[styles.footer, { borderTopColor: c.border, paddingBottom: insets.bottom + 12 }]}>
         <TouchableOpacity
-          onPress={handleSubmit}
+          onPress={() => void handleSubmit()}
           disabled={!hasSignature || isSubmitting}
           style={[
             styles.submitBtn,
@@ -340,14 +160,8 @@ export function SignatureScreen({ stepInstance }: SignatureScreenProps) {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -356,83 +170,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   backBtn: {
-    width: 56,
-    height: 56,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
   },
-  headerTitle: {
-    flex: 1,
-    fontSize: 17,
-    fontWeight: '600',
-    marginHorizontal: 8,
-  },
-  clearBtn: {
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-  },
-  clearBtnText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  instructionContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 12,
-    gap: 8,
-  },
-  stepName: {
-    fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 30,
-  },
-  instruction: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  canvasWrapper: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  canvas: {
-    height: CANVAS_HEIGHT,
-    minHeight: CANVAS_HEIGHT,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    overflow: 'hidden',
-  },
-  canvasHint: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  canvasHintText: {
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
-  footer: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  submitBtn: {
-    height: 56,
-    minHeight: 56,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitBtnDisabled: {
-    opacity: 0.4,
-  },
-  submitBtnText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  headerTitle: { flex: 1, flexShrink: 1, fontSize: 17, fontWeight: '600', marginHorizontal: 8 },
+  content: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 24, gap: 8 },
+  stepName: { fontSize: 24, fontWeight: '700', lineHeight: 30 },
+  instruction: { fontSize: 15, lineHeight: 22 },
+  footer: { paddingHorizontal: 16, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth },
+  submitBtn: { height: 56, minHeight: 56, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  submitBtnDisabled: { opacity: 0.4 },
+  submitBtnText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
 })
