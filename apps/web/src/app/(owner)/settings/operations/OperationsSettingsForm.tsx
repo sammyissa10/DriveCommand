@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -9,6 +10,15 @@ import { saveOperationsSettings, type OperationsSettings } from './actions';
 
 interface Props {
   initial: OperationsSettings;
+  /**
+   * quick-545 — the tenant's inspection checklists exist and carry inspection
+   * items, but not one of those items is marked as stopping the trip.
+   *
+   * Resolved server-side by `tenantInspectionsBlockNothing`; the two tenant
+   * settings are NOT folded into it, deliberately, so this component can test
+   * them against live toggle state (below).
+   */
+  inspectionsBlockNothing: boolean;
 }
 
 /**
@@ -20,10 +30,26 @@ interface Props {
  * off is a choice a carrier is entitled to make, not an error state, and Section
  * 15 reserves red for errors and destructive actions.
  */
-export function OperationsSettingsForm({ initial }: Props) {
+export function OperationsSettingsForm({ initial, inspectionsBlockNothing }: Props) {
   const [requireInspection, setRequireInspection] = useState(initial.requirePreTripInspection);
   const [blockOnFailure, setBlockOnFailure] = useState(initial.blockTripStartOnFailedInspection);
   const [isSaving, startSaving] = useTransition();
+
+  /**
+   * quick-545 — the setting reads as protection and protects nothing.
+   *
+   * Both toggles are read from LIVE state, not `initial`: an owner who switches
+   * inspections on should learn straight away that no item can stop a trip,
+   * rather than saving first and finding out never. The two clauses are also
+   * what keeps this honest — with inspections off, the existing line below owns
+   * the case; with blocking off, the owner has deliberately chosen not to block
+   * and there is no false promise to correct.
+   *
+   * Mutually exclusive with that existing line by construction: this one
+   * requires `requireInspection`, that one requires `!requireInspection`.
+   */
+  const showsProtectionThatIsNotThere =
+    requireInspection && blockOnFailure && inspectionsBlockNothing;
 
   const dirty =
     requireInspection !== initial.requirePreTripInspection ||
@@ -94,6 +120,21 @@ export function OperationsSettingsForm({ initial }: Props) {
             <p className="text-sm text-muted-foreground">
               Inspections are off, so nothing can block a trip start. Turn inspections on to
               use this setting.
+            </p>
+          )}
+
+          {showsProtectionThatIsNotThere && (
+            <p className="text-sm text-muted-foreground">
+              No inspection item is set to stop the trip, so nothing can block a trip
+              start. In{' '}
+              <Link
+                href="/checklists"
+                className="font-medium text-foreground underline underline-offset-2 hover:no-underline"
+              >
+                Checklists &amp; Workflows
+              </Link>
+              , open your vehicle inspection checklist, select an item, and turn on
+              &ldquo;Failing this stops the trip&rdquo;.
             </p>
           )}
         </CardContent>

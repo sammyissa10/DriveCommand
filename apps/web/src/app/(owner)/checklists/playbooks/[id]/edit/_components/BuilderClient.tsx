@@ -15,10 +15,11 @@ import {
   closestCenter,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { ArrowLeft, Eye, Loader2 } from 'lucide-react';
+import { ArrowLeft, Eye, Loader2, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useTRPC } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
+import { checklistBlocksNothing } from '@/lib/carrier/inspection-coverage';
 import type { PhaseType } from '@drivecommand/validation';
 import { BuilderCanvas } from './BuilderCanvas';
 import { StepLibraryPanel } from './StepLibraryPanel';
@@ -49,6 +50,20 @@ export interface PlaybookStepItem {
 }
 
 const PHASE_ORDER: PhaseType[] = ['PRE_START', 'DAY_1', 'WEEK_1', 'ONGOING', 'NONE'];
+
+/**
+ * quick-545 — the "this checklist stops nothing" strip, one string per sentence.
+ *
+ * Not inline JSX, for quick-517's reason: a sentence split across a `<strong>`
+ * and its siblings is three children with two whitespace-sensitive boundaries,
+ * and that is how "4 stopswill" reached production twice. There is no count
+ * here — deliberately, so there is no plural branch either — but the boundary
+ * problem is the same shape, and one string per sentence removes it rather than
+ * relying on JSX trimming behaving.
+ */
+const NO_BLOCKER_HEADLINE = 'No item in this checklist stops a trip.';
+const NO_BLOCKER_BODY =
+  'A driver can fail every item and still start. Select an item and turn on “Failing this stops the trip”.';
 
 /** Normalise the raw Prisma/tRPC step shape into PlaybookStepItem to avoid deep type instantiation. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -272,6 +287,35 @@ export function BuilderClient({ playbookId }: BuilderClientProps) {
     ? steps.find((s) => s.id === selectedStepId) ?? null
     : null;
 
+  /**
+   * quick-545 — an inspection checklist whose items cannot stop a trip.
+   *
+   * The predicate is shared with `/settings/operations`
+   * (`checklistBlocksNothing`), so the warning here and the warning there cannot
+   * drift apart. It requires the checklist to HAVE inspection items: with none
+   * at all the trip gate answers INSPECTION_REQUIRED forever and drivers dead
+   * end, which is a stricter failure than this sentence describes.
+   *
+   * No tenant settings are read. An author building a toothless inspection
+   * checklist should hear it whether or not the tenant has inspections switched
+   * on today — the setting is not theirs to see from this screen, and the
+   * checklist outlives the toggle.
+   *
+   * Computed from local `steps`, which is what the canvas renders, so the strip
+   * disappears the moment a blocker is saved and the query refetches.
+   */
+  const blocksNothing = useMemo(
+    () =>
+      playbook?.category === 'VEHICLE_INSPECTION' &&
+      checklistBlocksNothing(
+        steps.map((s) => ({
+          stepType: s.stepTemplate.stepType,
+          isDispatchBlocker: s.isDispatchBlocker,
+        })),
+      ),
+    [playbook?.category, steps],
+  );
+
   if (isLoading) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
@@ -318,6 +362,23 @@ export function BuilderClient({ playbookId }: BuilderClientProps) {
           </Button>
         </div>
       </div>
+
+      {/* quick-545 — this inspection checklist cannot stop a trip.
+          A strip BENEATH the header, not inside it: that row already holds a
+          truncated title in a crowded flex line, and per quick-519 a nowrap
+          sibling in a constrained track is how a layout ends up wider than its
+          own container. Amber rather than red — it matches the "Blocks dispatch"
+          badge on the step rows, and Section 15 reserves red for errors and
+          destructive actions. This is a configuration state, not an error. */}
+      {blocksNothing && (
+        <div className="flex items-start gap-2.5 px-4 py-3 border-b border-amber-500/20 bg-amber-500/10 flex-shrink-0">
+          <ShieldAlert className="h-4 w-4 mt-0.5 flex-shrink-0 text-amber-600 dark:text-amber-500" />
+          <p className="text-sm text-amber-700 dark:text-amber-400 min-w-0">
+            <span className="font-medium">{NO_BLOCKER_HEADLINE}</span>{' '}
+            <span className="text-amber-700/90 dark:text-amber-400/90">{NO_BLOCKER_BODY}</span>
+          </p>
+        </div>
+      )}
 
       {/* 3-column layout */}
       <DndContext

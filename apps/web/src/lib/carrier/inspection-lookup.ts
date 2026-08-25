@@ -28,6 +28,10 @@ import {
   type InspectionItemOutcome,
   type InspectionSnapshot,
 } from './inspection-gate';
+import {
+  INSPECTION_ITEM_STEP_TYPE,
+  type InspectionBlockerCoverage,
+} from './inspection-coverage';
 
 /** `stepSnapshot`, as much of it as this module reads. */
 interface StepSnapshotShape {
@@ -61,7 +65,7 @@ function readNote(result: unknown): string | null {
  * checklist reads as "one item unanswered" rather than "not signed" — the same
  * verdict, but the wrong sentence on the driver's screen.
  */
-const INSPECTION_ITEM = 'INSPECTION_ITEM';
+const INSPECTION_ITEM = INSPECTION_ITEM_STEP_TYPE;
 const SIGNATURE = 'SIGNATURE';
 
 type StepRow = {
@@ -338,4 +342,69 @@ export async function listOpenTruckDefects(orgId: string, truckId: string) {
     });
     return [];
   }
+}
+
+/**
+ * quick-545 — how much of this tenant's inspection coverage can actually stop a
+ * truck.
+ *
+ * Feeds `tenantInspectionsBlockNothing` on `/settings/operations`. Read-only,
+ * like everything else in this file, and it deliberately does NOT read the two
+ * `Tenant` settings: the settings page checks those against LIVE toggle state so
+ * the warning appears the moment an owner flips the switch, before saving.
+ *
+ * The `where` mirrors `ensureTripInspection`'s playbook selection exactly —
+ * `category`, `isActive`, `deletedAt`, and `entityType IN ('DISPATCH','VEHICLE')`
+ * — because a warning about which checklist will run has to agree with the code
+ * that picks it. `entityType` is a filter on the CANDIDATE SET, not a fixed
+ * value: the seeded DVIR playbook is DISPATCH-scoped, the 2026-04-24 script's is
+ * VEHICLE-scoped, and both are eligible.
+ *
+ * Deleted steps are excluded; a step an owner removed is not coverage.
+ */
+export async function getInspectionBlockerCoverage(
+  orgId: string
+): Promise<InspectionBlockerCoverage> {
+  const tenantPrisma = await getTenantPrismaForOrg(orgId);
+
+  const playbooks = await tenantPrisma.playbook.findMany({
+    where: {
+      tenantId: orgId,
+      category: 'VEHICLE_INSPECTION',
+      isActive: true,
+      deletedAt: null,
+      entityType: { in: ['DISPATCH', 'VEHICLE'] },
+    },
+    select: {
+      id: true,
+      steps: {
+        where: { deletedAt: null },
+        select: {
+          isDispatchBlocker: true,
+          stepTemplate: { select: { stepType: true } },
+        },
+      },
+    },
+  });
+
+  let checklistsWithItems = 0;
+  let blockingItems = 0;
+
+  for (const playbook of playbooks) {
+    // The step TEMPLATE's type, not the snapshot's — nothing is running yet.
+    // This is the authoring state, which is what a settings page should
+    // describe: what the NEXT inspection will do, not what an in-flight one is
+    // already locked into.
+    const items = playbook.steps.filter(
+      (s) => s.stepTemplate?.stepType === INSPECTION_ITEM_STEP_TYPE
+    );
+    if (items.length > 0) checklistsWithItems += 1;
+    blockingItems += items.filter((s) => s.isDispatchBlocker).length;
+  }
+
+  return {
+    candidateChecklists: playbooks.length,
+    checklistsWithItems,
+    blockingItems,
+  };
 }

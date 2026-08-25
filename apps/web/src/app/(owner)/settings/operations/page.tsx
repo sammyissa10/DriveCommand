@@ -3,6 +3,8 @@ import { SettingsHeader } from '@/components/settings/SettingsHeader';
 import { SETTINGS_PAGE_META } from '@/components/settings/settings.config';
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
+import { getInspectionBlockerCoverage } from '@/lib/carrier/inspection-lookup';
+import { tenantInspectionsBlockNothing } from '@/lib/carrier/inspection-coverage';
 import { OperationsSettingsForm } from './OperationsSettingsForm';
 
 const meta = SETTINGS_PAGE_META.operations;
@@ -22,13 +24,19 @@ export default async function OperationsSettingsPage() {
   if (!session?.tenantId) redirect('/login');
 
   const tenantPrisma = await getTenantPrismaForOrg(session.tenantId);
-  const tenant = await tenantPrisma.tenant.findUnique({
-    where: { id: session.tenantId },
-    select: {
-      requirePreTripInspection: true,
-      blockTripStartOnFailedInspection: true,
-    },
-  });
+  const [tenant, coverage] = await Promise.all([
+    tenantPrisma.tenant.findUnique({
+      where: { id: session.tenantId },
+      select: {
+        requirePreTripInspection: true,
+        blockTripStartOnFailedInspection: true,
+      },
+    }),
+    // quick-545. Only the CHECKLIST half is resolved here; the form combines it
+    // with the two toggles' LIVE state, so an owner who switches inspections on
+    // sees the warning immediately rather than after a save.
+    getInspectionBlockerCoverage(session.tenantId),
+  ]);
 
   return (
     <div>
@@ -38,6 +46,7 @@ export default async function OperationsSettingsPage() {
           requirePreTripInspection: tenant?.requirePreTripInspection ?? false,
           blockTripStartOnFailedInspection: tenant?.blockTripStartOnFailedInspection ?? true,
         }}
+        inspectionsBlockNothing={tenantInspectionsBlockNothing(coverage)}
       />
     </div>
   );
