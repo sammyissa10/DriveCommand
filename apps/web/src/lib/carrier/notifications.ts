@@ -17,7 +17,7 @@
 import React from 'react';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { sendEmail } from '@/lib/email/gmail-client';
 import { getAppBaseUrl } from '@/lib/app-url';
 import {
@@ -207,11 +207,24 @@ export async function sendDispatchAssignedNotification(
 
     logger.info('sendDispatchAssignedNotification: sent', { orgId, dispatchId, driverId });
   } catch (err) {
-    logger.error('sendDispatchAssignedNotification: failed', {
+    // `logger.error(message, error, context)` — the SECOND argument is the
+    // error. This passed the CONTEXT there, so every failure was rebuilt as
+    // `new Error(String({...}))` and logged — and reported to Sentry — as
+    // `Error: [object Object]`: name, message and stack all destroyed, and
+    // every notification failure in production collapsed into one
+    // indistinguishable Sentry group. `error: err` inside the context did not
+    // save it either: `JSON.stringify(new Error(...))` is `{}`, so it printed
+    // as `"error":{}`. Both copies of the error were lost.
+    //
+    // DEC-11 §3. Found by quick-536 while proving that a failing notification
+    // cannot roll back a committed trip — the trip survived, but the reason the
+    // driver was never told was unreadable, which is the half of "isolated"
+    // that still has to be operable.
+    logger.error('sendDispatchAssignedNotification: failed', err, {
       orgId,
       dispatchId,
       driverId,
-      error: err,
+      err: serializeError(err),
     });
     // Do NOT rethrow — notifications must never block the calling action
   }
