@@ -350,6 +350,7 @@ model User {
   carrierContractsDeleted  CarrierContract[] @relation(name: "CarrierContractDeletedBy")
   carrierFacilitiesCreated CarrierFacility[] @relation(name: "CarrierFacilityCreatedBy")
   carrierFacilitiesUpdated CarrierFacility[] @relation(name: "CarrierFacilityUpdatedBy")
+  carrierFacilitiesDeleted CarrierFacility[] @relation(name: "CarrierFacilityDeletedBy")
   carrierDriversCreated    CarrierDriver[]   @relation(name: "CarrierDriverCreatedBy")
   carrierDriversUpdated    CarrierDriver[]   @relation(name: "CarrierDriverUpdatedBy")
   carrierDriversDeleted    CarrierDriver[]   @relation(name: "CarrierDriverDeletedBy")
@@ -2084,12 +2085,26 @@ model CarrierFacility {
   // on a live itinerary, the same failure the driver-residence mask exists to
   // avoid.
   deletedAt           DateTime? @map("deleted_at") @db.Timestamptz
+  // Added by quick-534. The migration that created `deleted_at` withheld this
+  // one on purpose — "add it with the code that needs it" — and Recently
+  // Deleted is that code: it selects a `deletedBy` relation for every
+  // soft-deletable entity, so without this facilities could be deleted but
+  // never listed or restored.
+  //
+  // The relation below carries `onDelete: SetNull` to match the siblings
+  // exactly, but there is NO foreign key in the database on `deleted_by_id` —
+  // not here and not on any of the seven siblings, verified with
+  // `pg_get_constraintdef`. `created_by_id`/`updated_by_id` DO have one. That
+  // Prisma-vs-DB gap is the pre-existing house pattern; do not "fix" it here in
+  // isolation.
+  deletedById         String?   @map("deleted_by_id") @db.Uuid
   createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant             Tenant              @relation(fields: [orgId], references: [id])
   createdBy          User?               @relation(name: "CarrierFacilityCreatedBy", fields: [createdById], references: [id], onDelete: SetNull) // NEW
   updatedBy          User?               @relation(name: "CarrierFacilityUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull) // NEW
+  deletedBy          User?               @relation(name: "CarrierFacilityDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
   residentDriver     CarrierDriver?      @relation(name: "FacilityResidentDriver", fields: [residentDriverId], references: [id], onDelete: SetNull)
   carrierDrivers     CarrierDriver[]
   routeTemplateStops RouteTemplateStop[]

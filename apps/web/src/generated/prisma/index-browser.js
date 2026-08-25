@@ -900,6 +900,7 @@ exports.Prisma.CarrierFacilityScalarFieldEnum = {
   createdById: 'createdById',
   updatedById: 'updatedById',
   deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

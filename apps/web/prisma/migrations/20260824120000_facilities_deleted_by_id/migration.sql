@@ -1,0 +1,36 @@
+-- Give `facilities` the `deleted_by_id` that quick-533 had to work around.
+--
+-- The quick-530 migration that added `deleted_at` deliberately withheld this
+-- column: "a column nothing reads is a column that comes back to life wrong.
+-- Add it with the code that needs it." The code now needs it. Recently Deleted
+-- selects a `deletedBy` relation for all seven soft-deletable entities, so
+-- without this column facilities can be deleted but never listed or restored,
+-- and quick-533 had to special-case them out of `softDeleteRecords` entirely
+-- via the HAS_DELETED_BY guard.
+--
+-- Shape read off the live schema, not inferred: `uuid`, NULL-able, no default,
+-- matching `deleted_by_id` on all seven siblings (carrier_drivers,
+-- carrier_trucks, clients, contracts, dispatches, document_imports, loads).
+--
+-- NO FOREIGN KEY, and that is deliberate. Verified with pg_get_constraintdef
+-- against clients, loads and facilities before writing this: `created_by_id`
+-- and `updated_by_id` each carry
+-- `REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE SET NULL`, and
+-- `deleted_by_id` carries none on any of the seven. Adding one here would make
+-- facilities the only table in the set whose deleter reference is enforced,
+-- which is a divergence dressed as a correctness fix. Note the schema.prisma
+-- side DOES declare a `deletedBy` relation with `onDelete: SetNull` — that
+-- mirrors the siblings exactly, and the resulting Prisma-vs-DB gap is the
+-- pre-existing house pattern, not something introduced here.
+--
+-- No backfill. NULL is the correct value for rows deleted before the column
+-- existed — it means "we do not know who", not "nobody".
+--
+-- Idempotent. Applied to production via Supabase MCP before this file was
+-- written, and marked applied with `prisma migrate resolve --applied` rather
+-- than replayed, per DEC-3 rules 1 and 4.
+--
+-- Deliberately NOT done here: no index on `deleted_by_id` (no sibling has one,
+-- and nothing filters by it — Recently Deleted filters `deleted_at IS NOT NULL`
+-- and only joins the deleter for display).
+ALTER TABLE facilities ADD COLUMN IF NOT EXISTS deleted_by_id UUID;
