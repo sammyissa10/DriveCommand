@@ -565,10 +565,72 @@ async function ensureAllCommitted(
 // Preview
 // ---------------------------------------------------------------------------
 
-// `dispatches.trailer_id` points at `carrier_trucks`, so a trailer is a truck
-// row with a trailer-ish `truck_type`. Filtered here rather than by a second
-// table that does not exist.
-const TRAILER_TYPES = new Set(['trailer', 'reefer', 'flatbed', 'dry_van', 'tanker', 'step_deck']);
+/**
+ * Trailers cannot be told apart from tractors on `carrier_trucks` today.
+ *
+ * `dispatches.trailer_id` is a nullable FK back to `carrier_trucks`, so the
+ * intent was "a trailer is a truck row with a trailer-ish `truck_type`". That
+ * intent has no support in the schema. `carrier_trucks_truck_type_check` — read
+ * off `pg_constraint`, per the DEC-1 / DEC-14 house rule that a column's
+ * vocabulary is never inferred from the convention around it — admits exactly:
+ *
+ *   semi · box_truck · flatbed · reefer · tanker · day_cab · straight_truck
+ *   cargo_van · sprinter_van · pickup · car
+ *
+ * **Every one of those is a power unit. None of them is a trailer.**
+ *
+ * The set this replaced held six values, and all six were wrong in one of two
+ * ways:
+ *
+ *   - `trailer`, `dry_van`, `step_deck` — **cannot exist on this table at all.**
+ *     They belong to `route_templates.equipment_type`
+ *     (`dry_van|flatbed|reefer|tanker|step_deck|other`), a different column on a
+ *     different table. The set was assembled from the wrong enum.
+ *   - `flatbed`, `reefer`, `tanker` — real, common **tractors**, filed as
+ *     trailers because the word also names a trailer body style.
+ *
+ * The visible cost was quick-536's Finding 1: a dispatcher could not find an
+ * out-of-service truck in the Truck picker and got no explanation. The truck was
+ * never filtered by `status` — the query below has no status predicate and
+ * `toTruckOption` already flags `Out of service` and blocks — it was being
+ * diverted into the Trailer list by its `truck_type`. The only
+ * `out_of_service` row in the database is a `flatbed`, so the two facts met.
+ * Every flatbed, reefer and tanker tractor in every fleet was missing from the
+ * Truck picker for the same reason, out of service or not.
+ *
+ * So the set is empty, and stated as empty rather than deleted: the Trailer
+ * section is already conditional on `trailers.length > 0`, so it simply stops
+ * rendering. **This is a reported gap, not a silent removal** — `trailerId`
+ * still round-trips through `AssignmentInput` and still writes
+ * `dispatches.trailer_id`, and 0 of 301 dispatches have ever set it, so nothing
+ * in use is lost. Giving the picker back needs a real signal that does not exist
+ * yet (an `is_trailer` column, or a trailer type added to the CHECK). When one
+ * arrives, this is the single place to change.
+ */
+export const TRAILER_TYPES = new Set<string>([]);
+
+/**
+ * `carrier_trucks_truck_type_check`, verbatim, read off `pg_constraint`.
+ *
+ * Here so the guardrail test can assert the one property that matters —
+ * `TRAILER_TYPES` must not claim any value this column can actually hold —
+ * rather than restating the list in the test and letting the two drift. If the
+ * CHECK ever gains a genuine trailer value, it goes here AND in
+ * `TRAILER_TYPES`, and the test holds you to doing both deliberately.
+ */
+export const CARRIER_TRUCK_TYPES = [
+  'semi',
+  'box_truck',
+  'flatbed',
+  'reefer',
+  'tanker',
+  'day_cab',
+  'straight_truck',
+  'cargo_van',
+  'sprinter_van',
+  'pickup',
+  'car',
+] as const;
 
 /** The assignment screen: pickers, availability, and the live verdict. */
 export async function getCommitPreview(
