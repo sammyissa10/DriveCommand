@@ -1,7 +1,7 @@
 import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
@@ -9,6 +9,9 @@ import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { computeNextOccurrence } from '@/lib/carrier/route-templates';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+// Phase 10 — Section 13's trip lifecycle triggers.
+import { emitNotification } from '@/lib/notifications/emit';
+import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { dispatchFieldEditability, lockedDispatchUpdateFields } from '@/lib/dispatch/dispatch-field-editability';
 
 // Helper: convert Prisma Decimal | null to string | null
@@ -546,6 +549,91 @@ export async function updateTrip(
   return updated;
 }
 
+/**
+ * Phase 10 — emit `trip.started` / `trip.completed` to subscribers.
+ *
+ * Takes the ALREADY-RESOLVED tenant client rather than resolving its own. That
+ * is the whole point: `transitionTripStatus` obtains it via `getTenantPrisma()`
+ * inside the request, and this helper is called before the response is gone.
+ * Resolving a client inside a deferred closure is the E251 bug that has been
+ * silently killing Phase 8's driver notification since it shipped.
+ *
+ * Swallows everything. A trip's status has already changed by the time this
+ * runs, and no notification failure may present as a failed transition.
+ */
+async function emitTripLifecycleNotification(
+  triggerKey: 'trip.started' | 'trip.completed',
+  args: {
+    orgId: string;
+    tenantPrisma: Awaited<ReturnType<typeof getTenantPrisma>>;
+    tripId: string;
+    notes: string | null;
+    primaryDriverId: string | null;
+    truckId: string | null;
+    at: Date;
+    stopCount?: number;
+  },
+): Promise<void> {
+  try {
+    const [driver, truck] = await Promise.all([
+      args.primaryDriverId
+        ? args.tenantPrisma.carrierDriver.findFirst({
+            where: { id: args.primaryDriverId },
+            select: { firstName: true, lastName: true },
+          })
+        : Promise.resolve(null),
+      args.truckId
+        ? args.tenantPrisma.carrierTruck.findFirst({
+            where: { id: args.truckId },
+            select: { unitNumber: true },
+          })
+        : Promise.resolve(null),
+    ]);
+
+    const driverName =
+      [driver?.firstName, driver?.lastName].filter(Boolean).join(' ') || 'The driver';
+    const match = args.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+    const tripNumber = match ? match[1] : args.tripId.slice(0, 8);
+    const truckUnit = truck?.unitNumber ?? 'Truck';
+    // `actual_departure` and `actual_arrival` are both `@db.Timestamptz` — real
+    // instants — so local rendering is CORRECT here. quick-541's date-only
+    // helpers would be the inverse bug on a timestamptz.
+    const when = formatDateInTenantTimezone(args.at, 'UTC');
+
+    if (triggerKey === 'trip.started') {
+      await emitNotification('trip.started', {
+        tenantId: args.orgId,
+        relatedEntity: { type: 'trip', id: args.tripId },
+        payload: { tripId: args.tripId, tripNumber, driverName, truckUnit, startedAt: when },
+      });
+      return;
+    }
+
+    await emitNotification('trip.completed', {
+      tenantId: args.orgId,
+      relatedEntity: { type: 'trip', id: args.tripId },
+      payload: {
+        tripId: args.tripId,
+        tripNumber,
+        driverName,
+        truckUnit,
+        completedAt: when,
+        stopCount: String(args.stopCount ?? 0),
+      },
+    });
+  } catch (err) {
+    // `logger.error(message, error, context)` — the error goes SECOND. Several
+    // callers in this file still pass `{ err }` into that slot and get
+    // `Error: [object Object]`; this one does not.
+    logger.error('[transitionTripStatus] lifecycle notification failed', err, {
+      orgId: args.orgId,
+      triggerKey,
+      dispatchId: args.tripId,
+      error: serializeError(err),
+    });
+  }
+}
+
 export async function transitionTripStatus(
   orgId: string,
   id: string,
@@ -636,6 +724,26 @@ export async function transitionTripStatus(
       } catch (err) {
         logger.error('[transitionTripStatus] activation tracker failed', { dispatchId: id, err });
       }
+    });
+
+    // Phase 10 — Section 13 "Trip started": subscribers, in-app.
+    //
+    // Distinct from the driver push/in-app pair above, which tells the DRIVER
+    // their own trip began. This tells whoever subscribed. `defaultRecipients`
+    // on `trip.started` is `[]`, so it reaches subscribers and nobody else.
+    //
+    // Facts gathered here, before the deferred emit, from `tenantPrisma` — which
+    // this function resolved via `getTenantPrisma()` at the top, i.e. inside the
+    // request, where the header still exists. Reading it inside the closure
+    // instead would be the E251 bug Phase 8 shipped.
+    await emitTripLifecycleNotification('trip.started', {
+      orgId,
+      tenantPrisma,
+      tripId: id,
+      notes: dispatch.notes,
+      primaryDriverId: dispatch.primaryDriverId,
+      truckId: dispatch.truckId,
+      at: updated.actualDeparture ?? new Date(),
     });
 
     return { id: updated.id, status: updated.status, notes: updated.notes };
@@ -837,6 +945,18 @@ export async function transitionTripStatus(
         tenantId: orgId,
       }).catch((err) => logger.error('[transitionTripStatus] fireEvent ON_DISPATCH_DELIVER failed', err))
     );
+
+    // Phase 10 — Section 13 "Trip completed": subscribers, in-app.
+    await emitTripLifecycleNotification('trip.completed', {
+      orgId,
+      tenantPrisma,
+      tripId: id,
+      notes: dispatch.notes,
+      primaryDriverId: dispatch.primaryDriverId,
+      truckId: dispatch.truckId,
+      at: updated.actualArrival ?? new Date(),
+      stopCount: stops.length,
+    });
 
     return { id: updated.id, status: updated.status, notes: updated.notes };
   }

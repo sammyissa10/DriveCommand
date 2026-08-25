@@ -11,7 +11,9 @@
  * THIS TEST ASSERTS ON ROWS. THE MOCK IS THE INJECTION, NOT THE EVIDENCE.
  * ===========================================================================
  *
- * The one mocked thing is `sendDispatchAssignedNotification`, replaced with a
+ * The one mocked thing is `emitNotificationAfterResponse` (Phase 10; it was
+ * `sendDispatchAssignedNotification` until the commit stopped calling that),
+ * replaced with a
  * function that rejects. That is how the failure is FORCED — the same role
  * `failAtStep` plays in the rollback suite. Every assertion that decides
  * whether this test passes is a `count()` or a `findMany()` issued against a
@@ -24,7 +26,7 @@
  * ---------------------------------------------------------------------------
  * HOW THIS WOULD FAIL IF THE NOTIFICATION WERE INSIDE THE TRANSACTION
  * ---------------------------------------------------------------------------
- * If `sendDispatchAssignedNotification` were awaited inside the `$transaction`
+ * If the emit were awaited inside the `$transaction`
  * callback — or awaited after it without a guard, or if `afterResponse`'s
  * fallback rethrew instead of swallowing — the rejection would propagate into
  * `commitImport`'s catch. That catch rolls the import back to NEEDS_REVIEW and
@@ -75,11 +77,38 @@ const notif = vi.hoisted(() => ({
   lastErrorName: null as string | null,
 }));
 
-vi.mock('@/lib/carrier/notifications', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/carrier/notifications')>();
+/**
+ * PHASE 10 RETARGETED THIS MOCK, and the property under test is unchanged.
+ *
+ * The commit used to notify via `sendDispatchAssignedNotification`. That
+ * function opens with `await getTenantPrisma()`, which reads the `x-tenant-id`
+ * header — and it was being called from inside `after()`, where the response is
+ * gone and `headers()` throws E251. It had therefore been failing on every real
+ * commit since Phase 8 shipped, swallowed by the guard this very test exists to
+ * verify. Phase 10 replaced the call site with
+ * `emitNotificationAfterResponse('trip.assigned', …)`.
+ *
+ * So the injection point moves and NOTHING ELSE DOES. Every assertion below is
+ * still a `count()` against a real PostgreSQL table, and the question is still
+ * "can a failing notification undo a committed trip". Had the mock been left
+ * pointing at the old function, this suite would have gone green forever while
+ * testing a code path the commit no longer takes — a test passing because it
+ * asserts on nothing.
+ *
+ * The throw is SYNCHRONOUS on purpose. `emitNotificationAfterResponse` returns
+ * `void` rather than a promise, so a synchronous throw is the only failure mode
+ * that could actually escape into `commitImport`'s try block. It is the
+ * strongest form of the injection available at this call site.
+ */
+vi.mock('@/lib/notifications/emit', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/notifications/emit')>();
   return {
     ...actual,
-    sendDispatchAssignedNotification: async () => {
+    emitNotificationAfterResponse: (triggerKey: string) => {
+      // Only the commit's own driver notification. `transitionImport` also emits
+      // through this module now (import.needs_review), and forcing THAT to throw
+      // would be testing a different call site than the one this file is about.
+      if (triggerKey !== 'trip.assigned') return;
       notif.calls += 1;
       if (notif.shouldThrow) {
         // A named, distinctive error — so if it ever DID escape into the
@@ -413,6 +442,13 @@ describeWithDb('Phase 8 commit — a failing driver notification cannot undo the
       await tx.carrierContract.deleteMany({ where: { orgId: tenantId } });
       await tx.carrierClient.deleteMany({ where: { orgId: tenantId } });
       await tx.routeTemplate.deleteMany({ where: { orgId: tenantId } });
+      // Phase 10: the commit now emits import.needs_review / trip.assigned,
+      // which write InAppNotification rows. `in_app_notifications.org_id` is a
+      // real FK to the tenant, so leaving them behind makes this teardown fail
+      // with a foreign-key violation AFTER every assertion has already passed.
+      // The tests were not wrong; the cleanup list simply predates the table
+      // ever having rows in these fixtures.
+      await tx.inAppNotification.deleteMany({ where: { orgId: tenantId } });
       await tx.user.deleteMany({ where: { tenantId } });
       await tx.tenant.deleteMany({ where: { id: tenantId } });
     });

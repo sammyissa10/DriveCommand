@@ -13,7 +13,10 @@ export type AuditLogEntry = {
   triggerKey: string;
   recipientUserId?: string | null;
   recipientEmail?: string | null;
-  channel: 'EMAIL' | 'IN_APP';
+  // PUSH added in Phase 10 alongside the dispatcher's third branch. The
+  // NotificationChannel enum has carried it since DEC-2; this type was the one
+  // place still narrower than the column.
+  channel: 'EMAIL' | 'IN_APP' | 'PUSH';
   subject?: string | null;
   status:
     | 'SENT'

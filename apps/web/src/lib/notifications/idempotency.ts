@@ -6,6 +6,7 @@
  */
 
 import type { PrismaClient } from '@/generated/prisma/client';
+import { logger, serializeError } from '@/lib/logger';
 
 /**
  * Build a deterministic idempotency key.
@@ -59,6 +60,77 @@ export async function checkIdempotency(
     return existing !== null;
   } catch (err) {
     console.error('[notifications] idempotency check failed, allowing send', err);
+    return false;
+  }
+}
+
+/**
+ * Phase 10 — has this exact notification already gone out inside the window?
+ *
+ * A ROLLING LOOKBACK, not a bucketed key, and the distinction is the whole
+ * point. `buildIdempotencyKey`'s event scope pins the key to an ISO second, so
+ * two emits 1100 ms apart produce two different keys and both send — which fails
+ * Section 13's "fire the same trigger twice fast, get one notification" outright.
+ * The obvious repair, widening the key to `floor(now / WINDOW)`, trades one edge
+ * for another: two emits 10 ms apart either side of a bucket boundary still both
+ * send. That is quick-541's UTC-midnight bug wearing a different hat — an
+ * arithmetic boundary with no relationship to the thing being measured.
+ *
+ * So this asks the only question that has no edge to land on: *did we send this
+ * in the last N milliseconds?*
+ *
+ * Matched on the triple that defines "the same notification for the same thing"
+ * — trigger, entity, recipient — plus the channel, because Section 13 gives some
+ * triggers three channels and suppressing an email should not suppress the push
+ * that accompanies it.
+ *
+ * Returns FALSE on any DB error, exactly like `checkIdempotency`: a probe
+ * failure must never be the reason a driver is not told their brakes failed.
+ * Failing open duplicates a notification; failing closed loses one.
+ */
+export async function wasSentWithinWindow(
+  prisma: PrismaClient,
+  args: {
+    triggerKey: string;
+    relatedEntity: { type: string; id: string } | undefined;
+    recipientUserId: string | null;
+    recipientEmail: string | null;
+    channel: 'EMAIL' | 'IN_APP' | 'PUSH';
+    windowMs: number;
+    now?: Date;
+  },
+): Promise<boolean> {
+  const now = args.now ?? new Date();
+  const since = new Date(now.getTime() - args.windowMs);
+
+  try {
+    const existing = await prisma.notificationSendLog.findFirst({
+      where: {
+        triggerKey: args.triggerKey,
+        channel: args.channel,
+        status: 'SENT',
+        createdAt: { gte: since },
+        // An entity-less trigger would otherwise match every other entity-less
+        // send of the same trigger. `relatedEntityId: null` is the honest
+        // filter for that case, not "any".
+        relatedEntityType: args.relatedEntity?.type ?? null,
+        relatedEntityId: args.relatedEntity?.id ?? null,
+        ...(args.recipientUserId !== null
+          ? { recipientUserId: args.recipientUserId }
+          : { recipientUserId: null, recipientEmail: args.recipientEmail }),
+      },
+      select: { id: true },
+    });
+    return existing !== null;
+  } catch (err) {
+    // Never a bare string, and the error goes in the ERROR slot —
+    // `logger.error(message, error, context)`. Passing context there renders
+    // `Error: [object Object]` and drops everything (DEC-11 §3).
+    logger.error('[notifications] windowed dedup probe failed, allowing send', err, {
+      triggerKey: args.triggerKey,
+      channel: args.channel,
+      error: serializeError(err),
+    });
     return false;
   }
 }

@@ -18,7 +18,9 @@
 import type { CanonicalExtraction } from '@drivecommand/validation';
 import { Prisma } from '@/generated/prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
+import { emitNotificationAfterResponse } from '@/lib/notifications/emit';
+import { reviewedConsignmentsOf } from './stop-review';
 import { assertTenantKey } from '@/lib/storage/tenant-key';
 import { assertTransition, type ImportStatus } from './lifecycle';
 import { isDedupeViolation } from './hashing';
@@ -401,13 +403,119 @@ export async function transitionImport(
   assertTransition(from, to);
 
   const db = await getTenantPrismaForOrg(orgId, userId);
-  await db.documentImport.updateMany({
+  const written = await db.documentImport.updateMany({
     where: { id: importId, orgId, deletedAt: null, status: from },
     data: {
       status: to,
       updatedById: userId,
       failureCode: extra?.failureCode ?? null,
       failureMessage: extra?.failureMessage ?? null,
+    },
+  });
+
+  // -------------------------------------------------------------------------
+  // Phase 10 — Section 13's two Import triggers, emitted here because this is
+  // the ONE function that moves an import's status. Wiring them to callers
+  // instead would mean finding every caller and remembering the next one.
+  //
+  // `updateMany` is filtered on `status: from`, so `count === 0` means the row
+  // was not in the state we thought and nothing moved. Emitting on that would
+  // notify about a transition that did not happen — the guard is the whole
+  // reason the result is captured rather than discarded.
+  //
+  // Audience is the UPLOADER (`uploadedById`), per Section 13. Resolved here,
+  // before the deferred emit, using the client already in hand — never
+  // `getTenantPrisma()`, which would throw once the response is gone.
+  //
+  // The whole block is guarded: this function's job is to move a status, and a
+  // notification failure must not undo that or surface as a failed transition.
+  if (written.count > 0 && (to === 'NEEDS_REVIEW' || to === 'FAILED')) {
+    try {
+      await emitImportStatusNotification(db, orgId, importId, to, extra?.failureMessage ?? null);
+    } catch (err) {
+      logger.error('[document-import] import status notification failed', err, {
+        importId,
+        to,
+        err: serializeError(err),
+      });
+    }
+  }
+}
+
+/**
+ * Build and fire `import.needs_review` / `import.failed`.
+ *
+ * Separated from `transitionImport` only so the guard above stays one line and
+ * the happy path stays readable.
+ *
+ * NEEDS_REVIEW is reachable from three places — a finished extraction, a
+ * retried failure, and the commit rollback edge (`COMMITTING -> NEEDS_REVIEW`).
+ * All three genuinely mean "this import is back on your desk", so all three
+ * should tell the uploader. The five-minute dedup window in `emitNotification`
+ * is what stops a retry loop turning that into a stream.
+ */
+async function emitImportStatusNotification(
+  db: Awaited<ReturnType<typeof getTenantPrismaForOrg>>,
+  orgId: string,
+  importId: string,
+  to: 'NEEDS_REVIEW' | 'FAILED',
+  failureMessage: string | null,
+): Promise<void> {
+  const record = await db.documentImport.findFirst({
+    where: { id: importId, orgId, deletedAt: null },
+    select: {
+      // THE UPLOADER IS `createdById`. There is no `uploadedById` column —
+      // checked against schema.prisma rather than inferred from the fact that
+      // `originalName` and `storageKeys` are described as "as uploaded". Same
+      // family as DEC-14 and the medical-card column that does not exist: read
+      // the schema, never take a plausible name on trust.
+      createdById: true,
+      originalName: true,
+      reviewedExtraction: true,
+      rawExtraction: true,
+      client: { select: { name: true } },
+    },
+  });
+
+  // No uploader means nobody to tell. Not an error — an import can be created
+  // by a system path with no user attached.
+  if (!record?.createdById) return;
+
+  const fileName = record.originalName ?? 'Uploaded document';
+
+  if (to === 'FAILED') {
+    emitNotificationAfterResponse('import.failed', {
+      tenantId: orgId,
+      relatedEntity: { type: 'document_import', id: importId },
+      payload: {
+        uploaderUserId: record.createdById,
+        importId,
+        fileName,
+        // The message already shown on the import itself, verbatim. Composing a
+        // second wording here would let the email and the screen disagree about
+        // why the same import failed.
+        failureReason: failureMessage ?? 'The document could not be read.',
+      },
+    });
+    return;
+  }
+
+  // Two arguments: reviewed first, raw as the fallback. The reviewed copy does
+  // not exist until a human has opened the import, and this notification is
+  // precisely what tells them to.
+  const { consignments } = reviewedConsignmentsOf(record.reviewedExtraction, record.rawExtraction);
+  emitNotificationAfterResponse('import.needs_review', {
+    tenantId: orgId,
+    relatedEntity: { type: 'document_import', id: importId },
+    payload: {
+      uploaderUserId: record.createdById,
+      importId,
+      fileName,
+      stopCount: String(consignments.length),
+      // Null until a client resolves and a mutation commits it (quick-508), and
+      // this notification fires exactly when that may not have happened yet.
+      // "Unresolved" is the honest word for it, not an empty string.
+      clientName: record.client?.name ?? 'Unresolved',
     },
   });
 }

@@ -65,7 +65,12 @@ import { after } from 'next/server';
 import { Prisma } from '@/generated/prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger, serializeError } from '@/lib/logger';
-import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
+// Phase 10 replaced the `sendDispatchAssignedNotification` emit at step 8 —
+// see the comment there. The import is gone with it; nothing else in this file
+// used it, and leaving a known-E251 path beside a working one is how parallel
+// mechanisms start.
+import { emitNotificationAfterResponse } from '@/lib/notifications/emit';
+import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { assertTenantKey, TenantKeyError } from '@/lib/storage/tenant-key';
 import type { FacilityViewer } from '@/lib/carrier/facility-visibility';
 import type { CanonicalConsignment } from '@drivecommand/validation';
@@ -280,6 +285,43 @@ function afterResponse(label: string, importId: string, work: () => Promise<void
     // and this work is not allowed to affect that either way.
     void guarded();
   }
+}
+
+/**
+ * The dispatch number a human recognises, pulled back out of `Trip.notes`.
+ *
+ * `createTrip` writes it as `[DISPATCH_NUMBER=DC-YYYY-NNNNN]` inside the notes
+ * string — there is no column for it. Same extraction as `trips.ts` and
+ * `carrier/notifications.ts` do; falling back to a short id keeps the sentence
+ * readable rather than empty when the marker is missing on an older row.
+ */
+function dispatchNumberOf(notes: string | null | undefined, tripId: string): string {
+  const match = notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+  return match ? match[1] : tripId.slice(0, 8);
+}
+
+/**
+ * One stop, as a phrase a driver can read on a lock screen.
+ *
+ * Name AND address, not the name alone: "RUSS DARROW HONDA" is three
+ * dealerships in one metro, which is the same reason template matching scores
+ * over resolved facility ids rather than names. A driver reading "first stop
+ * Hall Ford" on a phone at 05:00 needs to know which one.
+ *
+ * `StopFacilityView` carries `address` as a single normalised display line —
+ * there is no `city` field on it, checked rather than assumed. The line is
+ * capped because this ends up in a push notification title, where Expo
+ * truncates anyway and a full street address would push the name off screen.
+ */
+const STOP_ADDRESS_MAX = 60;
+
+function describeStop(stop: StopReviewRow | undefined): string {
+  if (!stop) return 'No stops';
+  const name = stop.facility?.name ?? stop.name ?? stop.documentName;
+  const address = stop.facility?.address ?? stop.documentAddress ?? '';
+  if (!address) return name;
+  const short = address.length > STOP_ADDRESS_MAX ? `${address.slice(0, STOP_ADDRESS_MAX)}…` : address;
+  return `${name}, ${short}`;
 }
 
 function tripwire(step: CommitStep, opts: CommitOptions | undefined): void {
@@ -1152,9 +1194,75 @@ export async function commitImport(
     });
 
     // ---- 8. driver notification, OUTSIDE the transaction ------------------
-    afterResponse('driver notification', importId, async () => {
-      await sendDispatchAssignedNotification(orgId, result.tripId, driver.id);
-    });
+    //
+    // PHASE 10 REPLACED WHAT USED TO BE HERE, and the reason matters.
+    //
+    // This called `sendDispatchAssignedNotification(orgId, result.tripId,
+    // driver.id)`, whose first statement is `await getTenantPrisma()`. That
+    // helper reads the `x-tenant-id` header and the session cookie; inside
+    // `after()` the response is already gone and `headers()` throws E251
+    // (quick-536). `afterResponse` swallows and logs, so the driver
+    // notification for a committed trip has been failing on EVERY COMMIT since
+    // Phase 8 shipped, visible only to somebody reading the logs. Phase 9's own
+    // file header recorded that the function "still has that shape and still
+    // throws" — it was a known defect with no owner.
+    //
+    // `emitNotificationAfterResponse` cannot repeat it: `dispatchNotification`
+    // takes `tenantId` as an argument and uses the bare client, so nothing on
+    // that path reads a header. The payload is gathered HERE, before the
+    // closure, using `db` — already resolved via `getTenantPrismaForOrg`.
+    //
+    // Gathering is wrapped separately: a lookup failure while building a
+    // notification must not escape into the response of a trip that already
+    // exists (Section 11), so it degrades to sending nothing rather than
+    // throwing.
+    try {
+      const [driverRow, tripRow] = await Promise.all([
+        db.carrierDriver.findFirst({
+          where: { id: driver.id, orgId },
+          select: { userId: true },
+        }),
+        db.trip.findFirst({
+          where: { id: result.tripId, orgId },
+          select: { notes: true },
+        }),
+      ]);
+
+      if (driverRow?.userId) {
+        const firstStop = ctx.stops[0];
+        emitNotificationAfterResponse('trip.assigned', {
+          tenantId: orgId,
+          relatedEntity: { type: 'trip', id: result.tripId },
+          payload: {
+            driverUserId: driverRow.userId,
+            tripId: result.tripId,
+            tripNumber: dispatchNumberOf(tripRow?.notes, result.tripId),
+            driverName: driver.name,
+            truckUnit: truck.unitNumber,
+            firstStop: describeStop(firstStop),
+            // `Trip.scheduledDeparture` is `@db.Timestamptz` — a real instant.
+            // quick-541's date-only helpers would be the INVERSE bug here;
+            // local rendering of a timestamptz is correct.
+            scheduledDeparture: formatDateInTenantTimezone(departure, 'UTC'),
+            stopCount: String(ctx.stops.length),
+          },
+        });
+      } else {
+        // Not an error. A CarrierDriver with no linked User has no portal
+        // account and nowhere to receive this — worth a line, not a failure.
+        logger.info('[document-import] trip.assigned skipped — driver has no linked user', {
+          importId,
+          tripId: result.tripId,
+          driverId: driver.id,
+        });
+      }
+    } catch (err) {
+      logger.error('[document-import] could not build trip.assigned payload', err, {
+        importId,
+        tripId: result.tripId,
+        err: serializeError(err),
+      });
+    }
 
     return {
       ok: true,

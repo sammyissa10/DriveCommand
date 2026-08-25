@@ -465,6 +465,13 @@ describeWithDb('Phase 8 commit — template appointment windows materialise on r
       await tx.carrierDriver.deleteMany({ where: { orgId: tenantId } });
       await tx.carrierContract.deleteMany({ where: { orgId: tenantId } });
       await tx.carrierClient.deleteMany({ where: { orgId: tenantId } });
+      // Phase 10: the commit now emits import.needs_review / trip.assigned,
+      // which write InAppNotification rows. `in_app_notifications.org_id` is a
+      // real FK to the tenant, so leaving them behind makes this teardown fail
+      // with a foreign-key violation AFTER every assertion has already passed.
+      // The tests were not wrong; the cleanup list simply predates the table
+      // ever having rows in these fixtures.
+      await tx.inAppNotification.deleteMany({ where: { orgId: tenantId } });
       await tx.user.deleteMany({ where: { tenantId } });
       await tx.tenant.deleteMany({ where: { id: tenantId } });
     });

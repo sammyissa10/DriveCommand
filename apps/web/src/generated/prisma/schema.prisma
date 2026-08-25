@@ -3761,6 +3761,19 @@ enum NotificationCategory {
   ROUTE
   CUSTOMER
   DIGEST
+  // Document Import Phase 10 (spec Section 13). Applied to production via
+  // Supabase MCP and mirrored in 20260825140000_notification_push_channel_and_categories.
+  //
+  // A Trip is deliberately NOT filed under ROUTE: this repo has two parallel
+  // route systems (legacy `Route` vs carrier `route_templates`) and conflating
+  // them has already cost one production incident.
+  //
+  // DEC-16 — the other two changes that must ship with an enum value: existing
+  // rows (VACUOUS here, all ten Phase 10 keys are new) and every place a user
+  // picks from it (preferences-form.tsx and notifications-tab.tsx, both edited
+  // in the same commit).
+  TRIP
+  IMPORT
 }
 
 enum NotificationChannel {
@@ -3795,6 +3808,10 @@ model NotificationTemplate {
   defaultRecipients  Json
   isActive           Boolean              @default(true)
   inAppEnabled       Boolean              @default(true)
+  /// Phase 10. DEFAULT FALSE is precisely what stops the dispatcher's new PUSH
+  /// branch from changing any existing trigger's behaviour — all 37 pre-Phase-10
+  /// templates take the default, verified as 0 rows true after the apply.
+  pushEnabled        Boolean              @default(false)
   createdAt          DateTime             @default(now()) @db.Timestamptz
   updatedAt          DateTime             @updatedAt @db.Timestamptz
 
@@ -3845,6 +3862,10 @@ model UserNotificationPreference {
   triggerKey   String
   emailEnabled Boolean   @default(true)
   inAppEnabled Boolean   @default(true)
+  /// Phase 10. Default TRUE like its two siblings. The template's `pushEnabled`
+  /// is the real gate, so defaulting this to false would demand two opt-ins
+  /// before anyone ever received a push.
+  pushEnabled  Boolean   @default(true)
   createdAt    DateTime  @default(now()) @db.Timestamptz
   updatedAt    DateTime  @updatedAt @db.Timestamptz
   tenantId     String    @db.Uuid

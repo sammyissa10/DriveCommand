@@ -7,6 +7,30 @@
  *   3. Deduplicating by userId (for User-backed recipients) or email (for external-email recipients)
  *   4. Attaching UserNotificationPreference (defaults: email=true, inApp=true)
  *   5. Appending email-only recipients (userId=null) for external_email rule matches with no User row
+ *
+ * ---------------------------------------------------------------------------
+ * STEPS 1 AND 2 ARE A UNION, NOT AN INTERSECTION. Read this before adding a
+ * trigger.
+ * ---------------------------------------------------------------------------
+ *
+ * `defaultRecipients` and `NotificationSubscription` are TWO INDEPENDENT
+ * mechanisms whose outputs are merged. A rule of `{ type: 'tenant_owners' }` or
+ * `{ type: 'role', role: 'OWNER' }` addresses every matching active user WITHOUT
+ * CONSULTING SUBSCRIPTION AT ALL, and `UserNotificationPreference` — applied
+ * afterwards — is a CHANNEL preference that defaults to true. So an owner who
+ * has never opened the settings screen receives everything such a rule sends.
+ *
+ * That is correct for the triggers that use it (an HOS violation should reach
+ * the owner whether or not they went looking for it), and it is a live trap for
+ * any trigger whose audience is "subscribers". Section 13's six subscriber
+ * triggers therefore ship with `defaultRecipients: []`: with no rules to expand,
+ * step 1 contributes nothing and step 2 is the ONLY source of recipients, so an
+ * unsubscribed user receives nothing BY CONSTRUCTION.
+ *
+ * Getting that guarantee from the shape of the data rather than from a check
+ * inside this function is deliberate — a check can be edited out by someone who
+ * does not know why it is there, and the failure would be silent and would look
+ * like the feature working.
  */
 
 import type { PrismaClient } from '@/generated/prisma/client';
@@ -17,6 +41,8 @@ export type ResolvedRecipient = {
   email: string;
   emailEnabled: boolean;
   inAppEnabled: boolean;
+  /** Phase 10. Defaults true like its siblings; the TEMPLATE flag is the real gate. */
+  pushEnabled: boolean;
 };
 
 /**
@@ -135,7 +161,7 @@ export async function resolveRecipients(
   if (userIds.length > 0) {
     const prefs = await prisma.userNotificationPreference.findMany({
       where: { userId: { in: userIds }, triggerKey },
-      select: { userId: true, emailEnabled: true, inAppEnabled: true },
+      select: { userId: true, emailEnabled: true, inAppEnabled: true, pushEnabled: true },
     });
     const prefMap = new Map(prefs.map((p) => [p.userId, p]));
 
@@ -150,6 +176,7 @@ export async function resolveRecipients(
         email,
         emailEnabled: p?.emailEnabled ?? true,
         inAppEnabled: p?.inAppEnabled ?? true,
+        pushEnabled: p?.pushEnabled ?? true,
       });
     }
   }
@@ -168,6 +195,9 @@ export async function resolveRecipients(
       email,
       emailEnabled: true,
       inAppEnabled: false,
+      // No User row means no device token either — PushToken.userId is a
+      // non-null FK, the same reason inAppEnabled is false here.
+      pushEnabled: false,
     });
   }
 

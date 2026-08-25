@@ -1874,6 +1874,7 @@ exports.Prisma.NotificationTemplateScalarFieldEnum = {
   defaultRecipients: 'defaultRecipients',
   isActive: 'isActive',
   inAppEnabled: 'inAppEnabled',
+  pushEnabled: 'pushEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1905,6 +1906,7 @@ exports.Prisma.UserNotificationPreferenceScalarFieldEnum = {
   triggerKey: 'triggerKey',
   emailEnabled: 'emailEnabled',
   inAppEnabled: 'inAppEnabled',
+  pushEnabled: 'pushEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   tenantId: 'tenantId',
@@ -2551,7 +2553,9 @@ exports.NotificationCategory = exports.$Enums.NotificationCategory = {
   FINANCE: 'FINANCE',
   ROUTE: 'ROUTE',
   CUSTOMER: 'CUSTOMER',
-  DIGEST: 'DIGEST'
+  DIGEST: 'DIGEST',
+  TRIP: 'TRIP',
+  IMPORT: 'IMPORT'
 };
 
 exports.NotificationChannel = exports.$Enums.NotificationChannel = {

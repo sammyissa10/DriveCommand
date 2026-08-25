@@ -58,6 +58,15 @@ const CATEGORY_COLORS: Record<NotificationCategory, string> = {
   ROUTE: 'bg-indigo-100 text-indigo-700',
   CUSTOMER: 'bg-pink-100 text-pink-700',
   DIGEST: 'bg-gray-100 text-gray-700',
+  // Document Import Phase 10 — DEC-16 change 3.
+  //
+  // Worth noting which of the three category pickers this is: it is typed
+  // `Record<NotificationCategory, string>`, so tsc FAILS the build when a value
+  // is added to the enum and not here. The other two are plain string-literal
+  // arrays and drift silently. That asymmetry is precisely how PlaybookCategory
+  // spent sixteen months with a value no user could select.
+  TRIP: 'bg-sky-100 text-sky-700',
+  IMPORT: 'bg-violet-100 text-violet-700',
 };
 
 // ---------------------------------------------------------------------------

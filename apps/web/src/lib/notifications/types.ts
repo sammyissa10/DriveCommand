@@ -48,7 +48,35 @@ export type TriggerKey =
   // Digest (3)
   | 'digest.daily_driver'
   | 'digest.weekly_owner'
-  | 'digest.compliance_30day';
+  | 'digest.compliance_30day'
+  // ---------------------------------------------------------------------------
+  // Document Import Phase 10 — spec Section 13 (10)
+  //
+  // Section 13's table has SEVEN rows; three are compound (the `·`), which is
+  // where ten comes from: assigned/reminder, started/completed, and
+  // needs-review/failed are each two triggers sharing a row.
+  //
+  // AUDIENCES, and the one distinction that matters. Six of these are
+  // "Subscribers" and ship with `defaultRecipients: []` — with no rules to
+  // expand, `resolveRecipients` has NOTHING but `NotificationSubscription` left
+  // to draw from, so an unsubscribed owner receives nothing BY CONSTRUCTION
+  // rather than by a check an edit could drop. The other four are addressed at
+  // one named person (`related`), because Section 13 names their audience as
+  // Driver or Uploader, not Subscribers.
+  // ---------------------------------------------------------------------------
+  // Trip (4)
+  | 'trip.assigned'
+  | 'trip.reminder'
+  | 'trip.started'
+  | 'trip.completed'
+  // Inspection (4)
+  | 'inspection.passed'
+  | 'inspection.passed_with_defects'
+  | 'inspection.failed'
+  | 'inspection.overridden'
+  // Import (2)
+  | 'import.needs_review'
+  | 'import.failed';
 
 // Mapped type — typed payload shape per trigger.
 // Define just enough fields to make payloads useful; expand in Plan 02.
@@ -106,6 +134,106 @@ export type NotificationPayload = {
   'digest.daily_driver': { driverName: string; date: string; loadCount: string; summaryHtml: string };
   'digest.weekly_owner': { ownerName: string; weekRange: string; loadCount: string; revenue: string; summaryHtml: string };
   'digest.compliance_30day': { ownerName: string; expiringDocCount: string; summaryHtml: string };
+
+  // ---------------------------------------------------------------------------
+  // Document Import Phase 10 — Section 13.
+  //
+  // Every field is a STRING because `renderTemplate` substitutes `{{token}}`
+  // into HTML; there is no formatter in that path. Anything derived from a
+  // `@db.Date` column is therefore formatted at the EMIT SITE with the shared
+  // helpers from `lib/utils/date.ts` (quick-541), never here and never inline.
+  //
+  // Section 13 item 4 — "actionable at a glance without opening the app" — is
+  // why `inspection.failed` carries driverName, truckUnit, tripNumber AND
+  // failedItems, and why `inspection.overridden` carries overriddenBy and
+  // reason. Those two field sets are named in the spec, not chosen here.
+  // ---------------------------------------------------------------------------
+  'trip.assigned': {
+    /** `related` recipient rule reads this. A User.id, not a CarrierDriver.id. */
+    driverUserId: string;
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    firstStop: string;
+    scheduledDeparture: string;
+    stopCount: string;
+  };
+  'trip.reminder': {
+    driverUserId: string;
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    firstStop: string;
+    scheduledDeparture: string;
+  };
+  'trip.started': {
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    startedAt: string;
+  };
+  'trip.completed': {
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    completedAt: string;
+    stopCount: string;
+  };
+
+  'inspection.passed': {
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    itemCount: string;
+  };
+  'inspection.passed_with_defects': {
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    defectCount: string;
+    /** Comma-separated item names. The whole point of the email. */
+    defectItems: string;
+  };
+  'inspection.failed': {
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    failedCount: string;
+    /** Section 13 item 4 names this explicitly. */
+    failedItems: string;
+  };
+  'inspection.overridden': {
+    tripId: string;
+    tripNumber: string;
+    driverName: string;
+    truckUnit: string;
+    /** Section 13 item 4: "names the overriding user and the reason". */
+    overriddenBy: string;
+    reason: string;
+    failedItems: string;
+  };
+
+  'import.needs_review': {
+    /** `related` recipient rule reads this — the uploader, per Section 13. */
+    uploaderUserId: string;
+    importId: string;
+    fileName: string;
+    stopCount: string;
+    clientName: string;
+  };
+  'import.failed': {
+    uploaderUserId: string;
+    importId: string;
+    fileName: string;
+    failureReason: string;
+  };
 };
 
 /**
@@ -147,4 +275,12 @@ export type NotificationTemplateSeed = {
   defaultRecipients: DefaultRecipientRule[];
   isActive: boolean;               // always true for shipped defaults
   inAppEnabled: boolean;           // always true for shipped defaults
+  /**
+   * Phase 10. OPTIONAL, and it must stay optional: every one of the 37
+   * pre-existing seeds omits it and must keep taking the column's `false`
+   * default, which is the whole reason the dispatcher's new PUSH branch cannot
+   * change an existing trigger's behaviour. Only the three Section 13 triggers
+   * that name Push as a channel set it true.
+   */
+  pushEnabled?: boolean;
 };

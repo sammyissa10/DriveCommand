@@ -21,6 +21,9 @@ import { logger, serializeError } from '@/lib/logger';
 import { generatePlaybookInstance } from '@/server/services/workflows/generatePlaybookInstance';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
+// Phase 10 — the Section 13 catalogue path. Runs ALONGSIDE createNotification
+// above for the blocked case, never instead of it; see applyVerdictSideEffects.
+import { emitNotification } from '@/lib/notifications/emit';
 import {
   evaluateTripStartGate,
   failedItems,
@@ -423,7 +426,41 @@ export async function applyVerdictSideEffects(args: {
       truckUnitNumber: trip.truckUnitNumber,
       criticalFailures: verdict.criticalFailures,
     });
+    // Phase 10 — Section 13 "Inspection failed": subscribers, in-app + email +
+    // push.
+    //
+    // This runs ALONGSIDE `notifyDispatchOfBlock` above, not instead of it, and
+    // the duplication is deliberate. That function addresses the trip's
+    // dispatcher (or every owner/manager when there is none) unconditionally,
+    // and the driver's blocked screen states "dispatch has been told" as a fact
+    // — it is a GUARANTEED path backing a promise already made on screen.
+    // Deleting it to avoid a second notification would quietly turn that
+    // sentence into a lie for any tenant with no subscribers.
+    //
+    // This one is the catalogue path: subscribers only, three channels, and
+    // subscribable per user like every other Section 13 trigger. A subscriber
+    // who is also the named dispatcher gets both; the pair are not deduplicated
+    // against each other because they are different mechanisms with different
+    // guarantees, and collapsing them would mean one of the two losing its.
+    await emitInspectionNotification('inspection.failed', {
+      orgId,
+      trip,
+      failures: verdict.criticalFailures,
+    });
+
     return { defectsWritten: written, dispatchNotified: notified };
+  }
+
+  if (verdict.kind === 'ALLOWED' && verdict.via === 'PASSED') {
+    // Section 13 "Inspection passed": subscribers, in-app. No defects to list.
+    const current = await findTripInspection(orgId, trip.dispatchId, trip.truckId);
+    await emitInspectionNotification('inspection.passed', {
+      orgId,
+      trip,
+      failures: [],
+      itemCount: current?.items.length ?? 0,
+    });
+    return { defectsWritten: 0, dispatchNotified: 0 };
   }
 
   if (verdict.kind === 'ALLOWED' && verdict.via === 'PASSED_WITH_DEFECTS') {
@@ -434,6 +471,14 @@ export async function applyVerdictSideEffects(args: {
       reportedByUserId: actingUserId,
       failures: verdict.defects,
     });
+
+    // Section 13 "Passed with defects": subscribers, in-app + email.
+    await emitInspectionNotification('inspection.passed_with_defects', {
+      orgId,
+      trip,
+      failures: verdict.defects,
+    });
+
     return { defectsWritten: written, dispatchNotified: 0 };
   }
 
@@ -454,6 +499,106 @@ export async function applyVerdictSideEffects(args: {
   }
 
   return { defectsWritten: 0, dispatchNotified: 0 };
+}
+
+// ---------------------------------------------------------------------------
+// Phase 10 — the Section 13 inspection triggers
+// ---------------------------------------------------------------------------
+
+/**
+ * Emit one of the four inspection triggers.
+ *
+ * All four want the same four facts — driver, truck, trip, items — because
+ * Section 13 item 4 requires the notification to be actionable at a glance
+ * without opening the app. Gathering them once here keeps the four call sites
+ * to a single line each and keeps the wording of "which items" identical
+ * across them.
+ *
+ * NEVER `getTenantPrisma()`: this is reached from `applyVerdictSideEffects`,
+ * which is itself called from route handlers on both surfaces including
+ * `/api/mobile/*`, where no `x-tenant-id` header exists. `orgId` is explicit
+ * throughout, exactly as the rest of this file already insists.
+ *
+ * Swallows everything. A notification must never be the reason a driver cannot
+ * be told their inspection outcome, and `applyVerdictSideEffects` returns counts
+ * the caller renders.
+ */
+async function emitInspectionNotification(
+  triggerKey: 'inspection.passed' | 'inspection.passed_with_defects' | 'inspection.failed',
+  args: {
+    orgId: string;
+    trip: TripGateContext;
+    failures: InspectionItemOutcome[];
+    itemCount?: number;
+  },
+): Promise<void> {
+  const { orgId, trip, failures } = args;
+
+  try {
+    const tenantPrisma = await getTenantPrismaForOrg(orgId);
+    const row = await tenantPrisma.trip.findFirst({
+      where: { id: trip.dispatchId, orgId },
+      select: { notes: true, primaryDriver: { select: { firstName: true, lastName: true } } },
+    });
+
+    const driverName =
+      [row?.primaryDriver?.firstName, row?.primaryDriver?.lastName].filter(Boolean).join(' ') ||
+      'The driver';
+    const tripNumber = dispatchNumberOf(row?.notes, trip.dispatchId);
+    const itemNames = failures.map((f) => f.name).join(', ');
+    const base = {
+      tripId: trip.dispatchId,
+      tripNumber,
+      driverName,
+      truckUnit: trip.truckUnitNumber,
+    };
+    const relatedEntity = { type: 'trip', id: trip.dispatchId };
+
+    if (triggerKey === 'inspection.failed') {
+      await emitNotification('inspection.failed', {
+        tenantId: orgId,
+        relatedEntity,
+        payload: { ...base, failedCount: String(failures.length), failedItems: itemNames },
+      });
+      return;
+    }
+
+    if (triggerKey === 'inspection.passed_with_defects') {
+      await emitNotification('inspection.passed_with_defects', {
+        tenantId: orgId,
+        relatedEntity,
+        payload: { ...base, defectCount: String(failures.length), defectItems: itemNames },
+      });
+      return;
+    }
+
+    await emitNotification('inspection.passed', {
+      tenantId: orgId,
+      relatedEntity,
+      payload: { ...base, itemCount: String(args.itemCount ?? 0) },
+    });
+  } catch (err) {
+    // `logger.error(message, error, context)` — error SECOND. Passing the
+    // context object into that slot renders `Error: [object Object]`.
+    logger.error('[inspection-service] inspection notification failed', err, {
+      orgId,
+      triggerKey,
+      dispatchId: trip.dispatchId,
+      error: serializeError(err),
+    });
+  }
+}
+
+/**
+ * The dispatch number, out of `Trip.notes`.
+ *
+ * There is no column for it — `createTrip` embeds `[DISPATCH_NUMBER=DC-…]` in
+ * the notes string, and `trips.ts` and `carrier/notifications.ts` both read it
+ * back the same way.
+ */
+function dispatchNumberOf(notes: string | null | undefined, tripId: string): string {
+  const match = notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+  return match ? match[1] : tripId.slice(0, 8);
 }
 
 // ---------------------------------------------------------------------------
@@ -569,6 +714,65 @@ export async function overrideInspection(args: {
         })
       )
     );
+  }
+
+  // Phase 10 — Section 13 "Inspection overridden": subscribers, in-app + email.
+  //
+  // Item 4 names the required content exactly: the overriding user and the
+  // reason. Both are in the first sentence of the template, and the reason is
+  // carried VERBATIM rather than summarised — this is the permanent record of
+  // why a truck with a failed critical item left the yard, and a paraphrase of
+  // it is worth nothing to whoever reads it next.
+  //
+  // Emitted after the two writes above have both succeeded. Notifying about an
+  // override that failed to record would be worse than not notifying at all.
+  // Everything is gathered here, with `tenantPrisma` already resolved; nothing
+  // downstream reads a header.
+  try {
+    const [overrider, tripRow] = await Promise.all([
+      tenantPrisma.user.findFirst({
+        where: { id: userId, tenantId: orgId },
+        select: { firstName: true, lastName: true, email: true },
+      }),
+      tenantPrisma.trip.findFirst({
+        where: { id: dispatchId, orgId },
+        select: {
+          notes: true,
+          truck: { select: { unitNumber: true } },
+          primaryDriver: { select: { firstName: true, lastName: true } },
+        },
+      }),
+    ]);
+
+    await emitNotification('inspection.overridden', {
+      tenantId: orgId,
+      relatedEntity: { type: 'trip', id: dispatchId },
+      payload: {
+        tripId: dispatchId,
+        tripNumber: dispatchNumberOf(tripRow?.notes, dispatchId),
+        driverName:
+          [tripRow?.primaryDriver?.firstName, tripRow?.primaryDriver?.lastName]
+            .filter(Boolean)
+            .join(' ') || 'The driver',
+        truckUnit: tripRow?.truck?.unitNumber ?? 'Truck',
+        // Falls back to the email, then to a neutral phrase — never to an empty
+        // string. "overrode the block" with nobody named is the one thing this
+        // notification exists to prevent.
+        overriddenBy:
+          [overrider?.firstName, overrider?.lastName].filter(Boolean).join(' ') ||
+          overrider?.email ||
+          'An owner or manager',
+        reason,
+        failedItems: current ? failedItems(current).map((f) => f.name).join(', ') : 'Not recorded',
+      },
+    });
+  } catch (err) {
+    logger.error('[inspection-service] override notification failed', err, {
+      orgId,
+      dispatchId,
+      userId,
+      error: serializeError(err),
+    });
   }
 
   return { ok: true, override: { byUserId: userId, reason, at }, defectsWritten: written };
