@@ -704,3 +704,64 @@ describeWithDb('quick-549 — a BLOCKED inspection writes its defects, asserted 
     expect(carrierDriverId).not.toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// The redirect itself — a source scan, and why it needs one
+// ---------------------------------------------------------------------------
+
+/**
+ * The suite above calls `handleSubmitInspection` DIRECTLY. That is the right
+ * shape for proving the BLOCKED branch writes rows, and it is also blind to the
+ * defect quick-549 actually fixed: a render-time redirect in the page meant the
+ * driver never REACHED submit, so every assertion above would stay green while
+ * no real driver ever triggered any of it.
+ *
+ * Row assertions cannot see a page-level redirect — there is no request, no
+ * render, and no router in this file. So the redirect gets a source scan, the
+ * same technique `inspection-scope.test.ts` uses on the trip-inspection scope
+ * constant and for the same reason: the failure mode of "someone puts it back"
+ * is a silently-passing suite.
+ *
+ * Deliberately narrow. It forbids ONE thing — a `redirect(...)` reached from a
+ * BLOCKED test on the checklist page — and says nothing about the other
+ * redirects on that page, which are correct and must keep working:
+ * `/sign-in` when the session is gone, and the blocked page's own bounce back
+ * to the checklist when the trip has been cleared.
+ */
+describe('quick-549 — the checklist page must not redirect on BLOCKED', () => {
+  // No `.gitattributes` + `core.autocrlf=true` means the working tree is CRLF
+  // while the index is LF (quick-546). Normalise, or every Windows checkout
+  // fails this on correct source.
+  const PAGE = 'src/app/(driver-fullscreen)/inspection/[dispatchId]/page.tsx';
+  const source = readFileSync(resolve(process.cwd(), PAGE), 'utf8').replace(/\r\n/g, '\n');
+
+  it('was actually read — the scan is not running against an empty string', () => {
+    // Without this, a moved or renamed page makes every assertion below pass
+    // vacuously: exactly the edit the scan exists to catch.
+    expect(source.length).toBeGreaterThan(500);
+    expect(source).toContain('DriverInspectionPage');
+  });
+
+  it('does not branch on a BLOCKED outcome at all', () => {
+    // CATCHES: the literal five lines quick-549 deleted, and any re-spelling of
+    // them. The page has no legitimate reason to test for BLOCKED: BLOCKED sets
+    // `canStart: false` with a non-null playbookInstanceId, so it falls through
+    // to the checklist, which is the whole point.
+    const blockedTest = /outcome\s*===\s*['"]BLOCKED['"]/.exec(source);
+    expect(
+      blockedTest?.[0] ?? null,
+      `${PAGE} tests for a BLOCKED outcome again. A render-time redirect on ` +
+        'BLOCKED skips every side effect in `applyVerdictSideEffects` — the ' +
+        'driver never reaches submit, and a failed brake check leaves no defect ' +
+        'against the truck (quick-548). The blocked screen is reached from ' +
+        '`InspectionClient.onOutcome` AFTER submit, not from here.',
+    ).toBeNull();
+  });
+
+  it('still redirects an unauthenticated request to sign-in', () => {
+    // The counter-assertion. Without it the test above could be satisfied by
+    // deleting the page's redirects wholesale, which would publish a driver's
+    // walkaround to anyone with the URL.
+    expect(source).toContain("redirect('/sign-in')");
+  });
+});
