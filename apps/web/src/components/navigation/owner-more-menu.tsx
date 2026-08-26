@@ -58,6 +58,7 @@ const menuSections: MenuSection[] = [
       { label: 'Revenue', href: '/carrier/reports/revenue', icon: BarChart3 },
       { label: 'Driver Pay', href: '/carrier/reports/driver-pay', icon: BarChart3 },
       { label: 'Performance', href: '/carrier/reports/performance', icon: BarChart3 },
+      { label: "Today's Trips", href: '/carrier/reports/todays-trips', icon: BarChart3 },
     ],
   },
   {

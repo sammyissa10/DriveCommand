@@ -13,8 +13,7 @@ import TripsTab from './trips-tab';
 import KpiStrip from '@/components/tracking/KpiStrip';
 import FilterChips from '@/components/tracking/FilterChips';
 import ViewToggle from '@/components/tracking/ViewToggle';
-import { TruckRow } from '@/components/tracking/TruckRow';
-import { TruckRowExpanded } from '@/components/tracking/TruckRowExpanded';
+import { LiveBoard } from '@/components/tracking/LiveBoard';
 import { deriveKpis } from '@/lib/tracking/deriveKpis';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
 import { MapErrorBoundary } from './map-error-boundary';
@@ -61,9 +60,6 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   // New state for visual foundation
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatusKey>('all');
-
-  // State for expanded truck rows in list view
-  const [expandedTruckIds, setExpandedTruckIds] = useState<Set<string>>(new Set());
 
   // Derive KPIs and status counts from vehicles
   const kpis = useMemo(() => deriveKpis(vehicles, []), [vehicles]);
@@ -162,18 +158,6 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
     setHistoryPrefillTruckId(truckId);
     setHistoryPrefillDate(date);
     setActiveTab('history');
-  }, []);
-
-  const handleToggleExpand = useCallback((truckId: string) => {
-    setExpandedTruckIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(truckId)) {
-        next.delete(truckId);
-      } else {
-        next.add(truckId);
-      }
-      return next;
-    });
   }, []);
 
   return (
@@ -288,28 +272,23 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
                 transition={{ duration: 0.18 }}
                 className="absolute inset-0 overflow-y-auto bg-background"
               >
-                {statusFilteredVehicles.length === 0 ? (
-                  <div className="flex items-center justify-center h-64 text-muted-foreground">
-                    No vehicles match the current filter
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    {statusFilteredVehicles.map((vehicle) => (
-                      <div key={vehicle.truckId}>
-                        <TruckRow
-                          vehicle={vehicle}
-                          isExpanded={expandedTruckIds.has(vehicle.truckId)}
-                          onToggleExpand={() => handleToggleExpand(vehicle.truckId)}
-                          onVehicleClick={handleVehicleClick}
-                        />
-                        <TruckRowExpanded
-                          vehicle={vehicle}
-                          isExpanded={expandedTruckIds.has(vehicle.truckId)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/*
+                  Phase 11's live board. This replaces the previous list view,
+                  which rendered `TruckRow` + `TruckRowExpanded` over the LEGACY
+                  vehicle feed and was substantially placeholder: the expansion
+                  panel's contact, load and activity blocks were hardcoded
+                  ("(555) 123-4567", "Load #1234", "Arrived at Stop 2 · 10:23
+                  AM") for every truck, `RouteTimeline` always received `[]`
+                  because no query populates `dispatch.stops`, and the row's ETA
+                  cell printed a literal "On Time" regardless of status. Those
+                  are fabricated operational facts on an owner's dashboard —
+                  the same class as the "dispatch has been notified" sentence
+                  quick-549 had to retract.
+
+                  The board reads the carrier tables instead, so it can show the
+                  trips this module actually commits.
+                */}
+                <LiveBoard />
               </motion.div>
             ) : (
               <motion.div

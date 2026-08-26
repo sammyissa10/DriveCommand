@@ -395,6 +395,20 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       </PermissionGuard>
+                      {/* Phase 11. Shares `performanceReport` deliberately — see
+                          the report page's own note on why this is not a new key. */}
+                      <PermissionGuard permission="performanceReport">
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === "/carrier/reports/todays-trips"}
+                          >
+                            <Link href="/carrier/reports/todays-trips" onClick={handleNavClick}>
+                              Today&apos;s Trips
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </PermissionGuard>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                 )}

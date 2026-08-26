@@ -638,3 +638,119 @@ value is not *used* in the same transaction — which this migration does not do
 Verified empirically with a throwaway enum rather than taken from the version
 number, and the probe type dropped afterwards. A fresh environment built from
 migrations therefore gets both enum values and both columns.
+
+---
+
+## DEC-18 — "Behind schedule" is invented here, and it borrows the performance report's two columns
+
+Phase 11 · 2026-08-26
+
+Nothing in the schema records whether a trip is behind schedule, and Section 13
+names the state without defining it. So this is a definition we are creating,
+and it will eventually be read out to a customer who disagrees with it. It is
+written down here rather than left implicit in a function.
+
+### The definition
+
+> A trip is **BEHIND SCHEDULE** when it is `in_progress` and at least one of its
+> **non-terminal** stops has **missed its appointment window**.
+>
+> A stop has missed its window when it has an `appointment_end` and either
+> the driver arrived after it (`arrived_at > appointment_end`), or the window
+> has closed with no arrival recorded (`arrived_at IS NULL AND appointment_end
+> < now()`).
+>
+> A trip with **no `appointment_end` on any stop is never behind schedule.** It
+> is unschedulable, which is a different thing and says so on screen.
+
+Non-terminal is `pending | arrived` — `stops_status_check` admits exactly
+`pending | arrived | completed | skipped`, read off production via
+`pg_constraint` per DEC-14 rather than inferred.
+
+### Why these two columns and no others
+
+`getPerformanceReport` already scores lateness, and it scores it on exactly
+`arrived_at` and `appointment_end`:
+
+```sql
+count(arrived_at <= appointment_end AND appointment_end IS NOT NULL)
+/ NULLIF(count(appointment_end IS NOT NULL), 0)
+```
+
+Reusing those two columns with the same meaning is the whole argument. Any other
+definition — a GPS-derived ETA, a "should have departed by now" heuristic, a
+routing call — would be a second mechanism for one word, and the board and the
+report would eventually tell a dispatcher different things about the same trip.
+Two mechanisms for one word is how a customer ends up arguing with a report.
+
+Note the inclusive comparison. The report's numerator is `<=`, so arriving
+exactly at the close is on time; `windowOutcome` matches it, and a test pins the
+boundary. An exclusive comparison here would make the two disagree about a stop
+that lands on the minute — a small enough difference to survive review and a
+real one to the driver it happens to.
+
+### One refinement on the approved wording, and what it excludes
+
+The ruling read *"any non-terminal stop has `appointment_end < now()`"*. Taken
+literally, that marks a stop the driver **arrived at inside its window** as late
+the moment the window closes — while they are standing on the dock, and while
+the performance report is counting that very stop as on time. That is precisely
+the disagreement the definition exists to prevent, so the predicate also
+requires that the window was actually missed.
+
+The case this excludes is real and it already has a name: a driver who arrived
+on time and is still there is in **detention**, which the performance report
+measures separately as `avg_dwell_minutes`. Folding detention into lateness
+would be one signal standing for two facts — the quick-550 defect class, where
+`handleRef.current?.toBlob()` made one check answer both "is there a pad" and
+"is the pad blank".
+
+### The attention state and the on-time column are allowed to differ
+
+`isBehindSchedule` is scoped to `in_progress` and to outstanding stops: it
+answers *"does this need me now"*. `deriveOnTime` is not scoped that way: it
+answers *"did this run to time"*, so a **completed** trip that missed a window
+reads "Behind schedule" in the on-time column while ranking `COMPLETED` in the
+sort. That is deliberate. Collapsing them would either lose the fact that a
+finished trip ran late, or park finished trips permanently at the top of a
+report that exists to show what still needs doing.
+
+### The unschedulable case is the DOMINANT path, not an edge case
+
+Measured on production at the time of writing:
+
+| | count |
+|---|---|
+| stops | 720 |
+| stops carrying an `appointment_end` | **16** (2.2%) |
+| trips (not deleted) | 308 |
+| trips with **any** stop window | **7** (2.3%) |
+
+So 301 of 308 trips cannot be scored at all. The on-time column therefore has a
+fourth state, `NO_WINDOWS`, rendered **neutral grey with a `CalendarOff` icon**
+and the words **"No windows set"** — never green, and never blank:
+
+> **No appointment windows on this trip — on-time can't be measured.**
+
+Green is the one colour a person reads without stopping, and on this data
+"On track" would be telling an owner their day is fine when the truth is that
+nobody set any windows. Blank is no better: an empty cell reads as a rendering
+bug, and the owner's next question is the one the sentence already answers.
+
+This is also the restraint the performance report has always shown without
+anybody writing it down — `NULLIF(count(...), 0)` makes `on_time_pct` **null**
+rather than 0% or 100% for a windowless trip. DEC-18 is the board saying the
+same thing in words instead of in a null.
+
+Cancelled and TONU trips get a fifth state, `NOT_APPLICABLE`. They are excluded
+from the live board entirely and rank last in the report, after completed
+(ruling 2): a cancelled trip is not a trip that needs attention, it is a trip
+that is over, and ranking it above a completed one would put noise at the top of
+the report for the first tenant who cancels a run.
+
+### Where it lives
+
+`lib/carrier/board-status.ts`, pure, no I/O. The ranks and every sentence live
+in `board-constants.ts` — one occurrence each, grep-verifiable, imported by the
+tests rather than restated in them, same discipline as `template-constants.ts`,
+`optimisation-constants.ts` and `inspection-constants.ts`.

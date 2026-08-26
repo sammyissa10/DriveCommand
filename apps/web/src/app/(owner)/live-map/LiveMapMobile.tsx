@@ -82,7 +82,18 @@ function fmtAgo(ts: Date | string | null): string | null {
 // Live Map — mobile-web design system view (carrier)
 // ---------------------------------------------------------------------------
 
-export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLocation[] }) {
+export function LiveMapMobile({
+  initialVehicles,
+  initialLoadFailed = false,
+}: {
+  initialVehicles: VehicleLocation[];
+  /**
+   * True when the page's server-side load THREW, as opposed to returning no
+   * trucks. The page used to swallow that into an empty array and this
+   * component had to guess the difference from `initialVehicles.length`.
+   */
+  initialLoadFailed?: boolean;
+}) {
   const router = useRouter();
   const [vehicles, setVehicles] = useState<VehicleLocation[]>(initialVehicles);
   const [filter, setFilter] = useState<VehicleStatusKey>('all');
@@ -93,12 +104,20 @@ export function LiveMapMobile({ initialVehicles }: { initialVehicles: VehicleLoc
   const [secondsAgo, setSecondsAgo] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   /**
-   * Whether we actually know the fleet yet. The page swallows server errors into
-   * an empty array (`getLatestVehicleLocations().catch(() => [])`), so an empty
-   * `initialVehicles` means "unknown", not "none" — without this the empty state
-   * confidently claims you own no trucks while the first fetch is still in flight.
+   * Whether we actually know the fleet yet.
+   *
+   * This used to be seeded from `initialVehicles.length > 0`, because the page
+   * swallowed server errors into an empty array and an empty `initialVehicles`
+   * therefore meant "unknown", not "none". The page now reports the failure
+   * (`initialLoadFailed`), so the seed can say what it means: a load that
+   * SUCCEEDED has told us the fleet even when the answer was zero trucks.
+   *
+   * That also closes the hole in the old heuristic. A tenant who genuinely owns
+   * no trucks produced an empty array from a perfectly good query, so
+   * `hasLoaded` stayed false and the empty state — the one screen that would
+   * have told them to go and add a truck — never rendered at all.
    */
-  const [hasLoaded, setHasLoaded] = useState(initialVehicles.length > 0);
+  const [hasLoaded, setHasLoaded] = useState(!initialLoadFailed);
   const mountedRef = useRef(true);
 
   useEffect(() => {
