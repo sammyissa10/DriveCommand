@@ -14,6 +14,7 @@ import KpiStrip from '@/components/tracking/KpiStrip';
 import FilterChips from '@/components/tracking/FilterChips';
 import ViewToggle from '@/components/tracking/ViewToggle';
 import { LiveBoard } from '@/components/tracking/LiveBoard';
+import { BoardToggle, type BoardView } from '@/components/tracking/BoardToggle';
 import { deriveKpis } from '@/lib/tracking/deriveKpis';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
 import { MapErrorBoundary } from './map-error-boundary';
@@ -60,6 +61,7 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   // New state for visual foundation
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatusKey>('all');
+  const [boardView, setBoardView] = useState<BoardView>('drivers');
 
   // Derive KPIs and status counts from vehicles
   const kpis = useMemo(() => deriveKpis(vehicles, []), [vehicles]);
@@ -160,6 +162,17 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
     setActiveTab('history');
   }, []);
 
+  /**
+   * Choosing a projection also REVEALS the board. The Drivers | Trucks control is
+   * the affordance that tells an owner the board exists, so a tap that selects a
+   * projection while the map stays up would be a control that appears to do
+   * nothing — quick-546's "a tap must produce visible feedback" in another shape.
+   */
+  const handleBoardViewChange = useCallback((next: BoardView) => {
+    setBoardView(next);
+    setViewMode('list');
+  }, []);
+
   return (
     <div className="h-full flex flex-col relative">
       {/* KPI Strip + Filter Bar — Live tab only */}
@@ -167,12 +180,32 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
         <div className="shrink-0 p-4 space-y-4 border-b bg-background">
           <KpiStrip kpis={kpis} />
           <div className="flex items-center justify-between gap-4">
-            <FilterChips
-              statusCounts={statusCounts}
-              activeStatus={activeStatusFilter}
-              onStatusChange={setActiveStatusFilter}
-            />
-            <ViewToggle view={viewMode} onViewChange={setViewMode} />
+            {/*
+              min-w-0 + flex-1: FilterChips already carries `overflow-x-auto`, but a
+              flex item's default min-width is `auto`, so it grows to content width
+              and pushes the controls out instead of scrolling. The zero-minimum
+              track is what makes the overflow rule take effect.
+            */}
+            <div className="min-w-0 flex-1">
+              <FilterChips
+                statusCounts={statusCounts}
+                activeStatus={activeStatusFilter}
+                onStatusChange={setActiveStatusFilter}
+              />
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              {/*
+                Dimmed while the map is up: the board's projection is selected but
+                not in effect, and a fully-lit segmented control beside a map reads
+                as "the map is filtered to drivers", which it is not.
+              */}
+              <div
+                className={`transition-opacity ${viewMode === 'map' ? 'opacity-60' : ''}`}
+              >
+                <BoardToggle view={boardView} onViewChange={handleBoardViewChange} />
+              </div>
+              <ViewToggle view={viewMode} onViewChange={setViewMode} />
+            </div>
           </div>
         </div>
       )}
@@ -288,7 +321,7 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
                   The board reads the carrier tables instead, so it can show the
                   trips this module actually commits.
                 */}
-                <LiveBoard />
+                <LiveBoard view={boardView} />
               </motion.div>
             ) : (
               <motion.div

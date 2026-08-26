@@ -28,9 +28,23 @@ import { logger } from '@/lib/logger';
 import { BOARD_EMPTY_COPY } from '@/lib/carrier/board-constants';
 import type { BoardRowData, LiveBoardPayload } from '@/lib/carrier/board-view';
 import { BoardRow } from './BoardRow';
-import { BoardToggle, type BoardView } from './BoardToggle';
+import type { BoardView } from './BoardToggle';
 
 const POLL_INTERVAL_MS = 15_000;
+
+/**
+ * Two sentences, deliberately, because there are two situations.
+ *
+ * A poll that fails while rows are already on screen is a REFRESH failure — the
+ * board is stale but usable. A first fetch that fails means nothing has ever
+ * loaded, and telling that person "we could not refresh" describes a state they
+ * have never been in. quick-550's collapse in one line: one string standing for
+ * two facts.
+ */
+const BOARD_REFRESH_FAILED_COPY = 'We could not refresh the board.';
+const BOARD_LOAD_FAILED_TITLE = 'We could not load the board.';
+const BOARD_LOAD_FAILED_BODY =
+  'Nothing has loaded yet. Check your connection, then try again.';
 
 function EmptyState({
   icon: Icon,
@@ -63,10 +77,25 @@ function RowSkeleton() {
   );
 }
 
-export function LiveBoard() {
+function rowCountLabel(view: BoardView, count: number): string {
+  const noun = view === 'drivers' ? 'driver' : 'truck';
+  return `${count} ${noun}${count === 1 ? '' : 's'}`;
+}
+
+/**
+ * `view` is a PROP, not state. It is owned by `live-map-wrapper.tsx` so that the
+ * Drivers | Trucks control can live in the KPI header row beside Map | List and
+ * be visible from a cold start — which is the whole point: this board used to be
+ * unreachable until someone found `List` first.
+ *
+ * The "toggle must not refetch" property in this file's header is unaffected:
+ * `/live-board` still returns BOTH projections in one response, and selecting a
+ * projection is still an array pick over state that is already in memory.
+ * Lifting the control did not add a fetch to that path.
+ */
+export function LiveBoard({ view }: { view: BoardView }) {
   const [payload, setPayload] = useState<LiveBoardPayload | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [view, setView] = useState<BoardView>('drivers');
+  const [failed, setFailed] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const mountedRef = useRef(true);
 
@@ -84,13 +113,13 @@ export function LiveBoard() {
       const json = await res.json();
       if (!mountedRef.current) return;
       setPayload(json.data as LiveBoardPayload);
-      setError(null);
+      setFailed(false);
     } catch (err) {
       logger.error('Live board fetch failed', err);
       if (!mountedRef.current) return;
       // Keep the last good payload on screen — a transient poll failure should
       // not blank a board someone is watching. The banner says it is stale.
-      setError('We could not refresh the board.');
+      setFailed(true);
     }
   }, []);
 
@@ -115,14 +144,12 @@ export function LiveBoard() {
       : payload.trucks
     : null;
 
-  const counts = payload
-    ? { drivers: payload.drivers.length, trucks: payload.trucks.length }
-    : undefined;
-
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3">
-        <BoardToggle view={view} onViewChange={setView} counts={counts} />
+        <p className="text-sm font-medium text-muted-foreground">
+          {rows === null ? '' : rowCountLabel(view, rows.length)}
+        </p>
         <button
           type="button"
           onClick={manualRefresh}
@@ -135,27 +162,47 @@ export function LiveBoard() {
         </button>
       </div>
 
-      {error && (
+      {failed && payload && (
         <div
           role="status"
           className="flex shrink-0 items-center gap-2 border-b bg-status-warning-bg px-4 py-2 text-xs text-status-warning-foreground"
         >
           <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          {payload
-            ? `${error} These rows were last updated at ${new Date(payload.computedAt).toLocaleTimeString()}.`
-            : error}
+          {`${BOARD_REFRESH_FAILED_COPY} These rows were last updated at ${new Date(payload.computedAt).toLocaleTimeString()}.`}
         </div>
       )}
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {rows === null ? (
-          !error ? (
+          failed ? (
+            <div className="flex h-64 flex-col items-center justify-center px-8 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-status-warning-bg">
+                <AlertCircle
+                  className="h-6 w-6 text-status-warning-foreground"
+                  aria-hidden="true"
+                />
+              </span>
+              <p className="mt-3 text-sm font-semibold">{BOARD_LOAD_FAILED_TITLE}</p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                {BOARD_LOAD_FAILED_BODY}
+              </p>
+              <button
+                type="button"
+                onClick={manualRefresh}
+                disabled={refreshing}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+              >
+                <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
+                Try again
+              </button>
+            </div>
+          ) : (
             <>
               <RowSkeleton />
               <RowSkeleton />
               <RowSkeleton />
             </>
-          ) : null
+          )
         ) : rows.length === 0 ? (
           <EmptyState
             icon={view === 'drivers' ? Users : Truck}
