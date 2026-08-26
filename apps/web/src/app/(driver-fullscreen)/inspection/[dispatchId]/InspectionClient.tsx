@@ -91,6 +91,9 @@ function BeginScreen({
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  // quick-546: held alongside the message so the driver has something short to
+  // read out to dispatch. Cleared with the message at the start of every attempt.
+  const [errorCode, setErrorCode] = useState<string | null>(null);
 
   return (
     <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
@@ -103,24 +106,41 @@ function BeginScreen({
           Walk around unit {truckUnitNumber} and answer each item. You can go back at any point
           before you sign.
         </p>
-        {error && (
-          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
-          </div>
-        )}
       </div>
 
       <div className="space-y-3">
+        {/*
+          quick-546: this banner used to live in the TOP block, above. The layout
+          is `min-h-dvh ... justify-between`, so on a phone it rendered roughly a
+          screen-height away from the button being tapped — the feedback existed
+          and was off-screen, which is why the failure was reported as "nothing
+          happens". A tap must produce visible feedback where the thumb already
+          is. Keep it in this block, immediately above the button.
+        */}
+        {error && (
+          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+            <div className="min-w-0">
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+              {errorCode && (
+                <p className="mt-1 font-mono text-xs text-red-600/70 dark:text-red-400/70">
+                  {errorCode}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
         <button
           type="button"
           disabled={pending}
           onClick={() =>
             startTransition(async () => {
               setError(null);
+              setErrorCode(null);
               const res = await openInspectionChecklist(dispatchId);
               if (!res.success) {
                 setError(res.error);
+                setErrorCode(res.code ?? null);
                 return;
               }
               onOpened();

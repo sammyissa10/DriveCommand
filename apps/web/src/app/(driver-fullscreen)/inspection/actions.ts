@@ -49,10 +49,19 @@ import {
  * is online-only by decision, and a client that can render "queued" is a client
  * that will eventually render it for something that never sent. Every failure
  * here is a failure the driver is told about and can retry.
+ *
+ * quick-546 added the OPTIONAL `code` on the failure arm. Optional because most
+ * failures here are prose-only and adding a required field would have forced a
+ * meaningless code onto every one of them. It is populated where the server has
+ * a real one to give — today `INSPECTION_INSTANCE_CONFLICT` and
+ * `INSPECTION_CREATE_FAILED` off `handleOpenChecklist` — so a driver who cannot
+ * open a checklist has something short to read out to dispatch over the phone.
+ * An unexpected throw carries no code, and inventing one for it would be worse
+ * than nothing: it would look like a diagnosis.
  */
 export type InspectionActionResult<T = undefined> =
   | { success: true; data: T }
-  | { success: false; error: string };
+  | { success: false; error: string; code?: string };
 
 async function guard(dispatchId: string) {
   const session = await getSession();
@@ -112,7 +121,10 @@ export async function openInspectionChecklist(
       dispatchId,
       userId: g.session.userId,
     });
-    if (!result.ok) return { success: false, error: result.error };
+    // quick-546: `result.code` used to be dropped here, so the server's reason
+    // reached the action and died one line short of the screen. The mobile route
+    // has always forwarded it; web had not.
+    if (!result.ok) return { success: false, error: result.error, code: result.code };
 
     refreshInspection(dispatchId);
     return { success: true, data: result.data };

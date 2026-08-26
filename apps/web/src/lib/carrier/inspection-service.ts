@@ -226,11 +226,49 @@ export async function ensureTripInspection(args: {
       playbookId: playbook.id,
       error: serializeError(err),
     });
+
+    // quick-546: a CONFLICT is not a transient failure and must not be answered
+    // like one. `generatePlaybookInstance` throws it when an instance already
+    // exists for `(playbookId, entityId, tenantId, status != COMPLETED)`, and
+    // nothing retires an inspection instance — so "Please try again" is an
+    // instruction that is GUARANTEED never to succeed, and a driver following it
+    // taps forever. Post-quick-546 the key is `(playbookId, dispatchId)`, so
+    // this can now only be reached by a genuinely stuck row (a leftover
+    // truck-scoped instance under a playbook still keyed that way elsewhere, or
+    // a concurrent double-tap). Either way the answer is a person, not a retry.
+    if (isConflictError(err)) {
+      return {
+        code: 'INSPECTION_INSTANCE_CONFLICT',
+        error:
+          'This truck has an inspection checklist that is stuck open from an earlier trip. It cannot be reopened here — contact dispatch and give them the code below.',
+      };
+    }
+
     return {
       code: 'INSPECTION_CREATE_FAILED',
       error: 'Could not open the inspection checklist. Please try again.',
     };
   }
+}
+
+/**
+ * Is this the `TRPCError` `generatePlaybookInstance` throws for a duplicate?
+ *
+ * By SHAPE, not `instanceof TRPCError`. `@trpc/server` can be resolved more than
+ * once in a monorepo, and an `instanceof` across two copies of a class silently
+ * answers false — which here would mean falling back to the "try again" lie for
+ * the one case it was written to replace. `code` is the stable signal; the
+ * message text (`'Active checklist already exists for this entity'`) is
+ * deliberately NOT matched, because a substring test on prose breaks the day
+ * somebody rewords it.
+ */
+function isConflictError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    (err as { code?: unknown }).code === 'CONFLICT'
+  );
 }
 
 // ---------------------------------------------------------------------------
