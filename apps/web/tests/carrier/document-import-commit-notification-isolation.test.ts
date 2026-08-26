@@ -448,6 +448,13 @@ describeWithDb('Phase 8 commit — a failing driver notification cannot undo the
       // with a foreign-key violation AFTER every assertion has already passed.
       // The tests were not wrong; the cleanup list simply predates the table
       // ever having rows in these fixtures.
+      // quick-551: `NotificationLog.tenantId` is a RESTRICT foreign key to Tenant,
+      // exactly like `in_app_notifications.org_id` below it, and it was NOT in this
+      // list. Rows landed here from the same Phase 10 emits. Omitting it re-creates
+      // the failure the line below was added to fix — every assertion passes and the
+      // FILE fails afterwards on a foreign-key violation, leaving an orphan tenant
+      // in production. (`TenantNotificationSettings` is CASCADE and correctly absent.)
+      await tx.notificationLog.deleteMany({ where: { tenantId } });
       await tx.inAppNotification.deleteMany({ where: { orgId: tenantId } });
       await tx.user.deleteMany({ where: { tenantId } });
       await tx.tenant.deleteMany({ where: { id: tenantId } });
@@ -466,6 +473,7 @@ describeWithDb('Phase 8 commit — a failing driver notification cannot undo the
       drivers: await tx.carrierDriver.count({ where: { orgId: tenantId } }),
       trucks: await tx.carrierTruck.count({ where: { orgId: tenantId } }),
       users: await tx.user.count({ where: { tenantId } }),
+      notificationLogs: await tx.notificationLog.count({ where: { tenantId } }),
     }));
 
     await prisma.$disconnect();
