@@ -565,3 +565,76 @@ Same family as DEC-1 (the `facility_type` CHECK widened a phase late) and DEC-2
 (the `PUSH` channel added to the enum while the surrounding code shipped without
 it) — three instances now of a vocabulary change landing in one layer and not
 the others.
+
+---
+
+## DEC-17 — `execute_sql` applies DDL but does not mirror it; DEC-3 is two halves
+
+Found by an audit of Phase 10's DDL, not by anything failing.
+
+Phase 10 added two columns and two enum values. All four were live in production
+and verified. The migration file was written, committed, and correct. And the
+newest row in `_prisma_migrations` was still
+`20260825120000_add_carrier_truck_defects` — the phase before it.
+
+**DEC-3 says DDL is applied deliberately via Supabase MCP and mirrored into the
+repo. That is TWO obligations, and it is easy to do the visible one and miss the
+other**, because the visible one is what makes the feature work. The schema was
+right, the app worked, the tests passed, the file was in git. Nothing was broken.
+The only thing missing was the row that says "this file has already been run
+here".
+
+### Why the omission is worth a decision entry rather than a fix
+
+`apply_migration` does both halves. `execute_sql` does one. They look
+interchangeable while you are working — both take SQL, both return success —
+and the difference only shows up in a table nobody reads until a deploy behaves
+oddly.
+
+What it would have cost here was small, because `scripts/migrate.mjs` skips by
+`migration_name` and this migration's SQL is entirely `IF NOT EXISTS` /
+`ADD VALUE IF NOT EXISTS`: the next deploy would have re-run it as a no-op and
+recorded the row itself. **That is luck, not design.** A migration with a plain
+`ALTER TABLE ... ADD COLUMN`, a `CREATE INDEX` without `IF NOT EXISTS`, or an
+`INSERT` of seed rows would have failed the deploy outright or duplicated data.
+The idempotent style is worth keeping for exactly this reason, but it is a
+second line of defence, not the mechanism.
+
+### The rule
+
+> **After applying DDL via `execute_sql`, write the `_prisma_migrations` row in
+> the same sitting.** Check it the way you would check a column: query the table
+> and read the newest row back. "The columns are live" is not evidence the
+> mirror is complete — it is evidence of the half that was never in doubt.
+
+Prefer `apply_migration` where it fits. Where it does not (multi-statement DDL,
+anything needing to be split across calls), the resolve row is a separate,
+explicit step.
+
+### The convention in this repo, for matching it
+
+Every manually-resolved row here looks the same, and it is not what
+`prisma migrate resolve` writes:
+
+| Column | Value |
+|---|---|
+| `checksum` | real SHA-256 of `migration.sql` |
+| `applied_steps_count` | **`0`** |
+| `logs` | `''` |
+| `started_at` / `finished_at` | identical timestamps |
+| `rolled_back_at` | `NULL` |
+
+**`applied_steps_count = 0` is the signature that distinguishes a resolved row
+from one `scripts/migrate.mjs` actually executed** — that script writes `1`. So
+the table itself records which migrations ran here and which were mirrored after
+the fact, and that distinction is worth preserving rather than normalising away.
+
+### One thing checked rather than assumed
+
+`scripts/migrate.mjs` wraps each migration in `BEGIN`/`COMMIT`, and
+`ALTER TYPE ... ADD VALUE` was forbidden inside a transaction block before
+PostgreSQL 12. This database is 17.6, where it is permitted so long as the new
+value is not *used* in the same transaction — which this migration does not do.
+Verified empirically with a throwaway enum rather than taken from the version
+number, and the probe type dropped afterwards. A fresh environment built from
+migrations therefore gets both enum values and both columns.

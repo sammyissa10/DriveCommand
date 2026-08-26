@@ -180,6 +180,23 @@ owners/managers) unconditionally. The catalogue emit runs alongside it.
 `20260825140000_notification_push_channel_and_categories`. `pg_constraint` read first (DEC-14) —
 **zero CHECK constraints** on any of the four notification tables.
 
+> **The resolve step was initially MISSED and is now done.** The DDL went in via `execute_sql`
+> rather than `apply_migration`, so the migration FILE was written and committed but no row was
+> written to `_prisma_migrations` — the newest row was still
+> `20260825120000_add_carrier_truck_defects`. DEC-3 is two halves, and only one of them had been
+> done. Corrected: the row now exists, matching the convention every other manually-resolved row
+> in this table uses — real SHA-256 of `migration.sql`
+> (`70bdfdd9…ecb28eff`), `applied_steps_count = 0`, `logs = ''`,
+> `started_at = finished_at` (2026-08-26 02:53:55 UTC). Note `applied_steps_count = 0` is the
+> signature that distinguishes a resolved row from one `scripts/migrate.mjs` actually ran, which
+> writes `1`.
+>
+> **Fresh-environment path verified, not assumed.** `scripts/migrate.mjs` wraps each migration in
+> `BEGIN`/`COMMIT`, and `ALTER TYPE … ADD VALUE` was forbidden inside a transaction block before
+> PostgreSQL 12. Tested on this database (17.6) with a throwaway enum: `ADD VALUE` inside an
+> explicit transaction succeeds, and the probe type was dropped afterwards. So a fresh environment
+> built from migrations gets both enum values and both columns.
+
 **DEC-16, all three changes:**
 
 1. **The type** — `ALTER TYPE "NotificationCategory" ADD VALUE 'TRIP' / 'IMPORT'`.
