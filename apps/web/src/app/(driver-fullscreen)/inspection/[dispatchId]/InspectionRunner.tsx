@@ -33,6 +33,10 @@ import {
   type OptimisticAnswers,
   type OptimisticVerb,
 } from '@/lib/carrier/inspection-optimistic';
+import {
+  planSignatureSubmission,
+  resolveRasterisedSignature,
+} from '@/lib/carrier/inspection-signature';
 import { SignaturePad, type SignaturePadHandle } from './SignaturePad';
 import {
   answerInspectionFail,
@@ -939,15 +943,55 @@ function SignatureScreen({
     setBusy(true);
     setError(null);
     try {
-      // 1. Rasterise.
-      const blob = await handleRef.current?.toBlob();
-      if (!blob) {
-        setError('The signature came out empty. Sign again.');
+      /**
+       * ONE CHECK MUST NOT STAND FOR TWO CONDITIONS.
+       *
+       * quick-550. This used to open with an unconditional
+       * `const blob = await handleRef.current?.toBlob()` and a bare
+       * `if (!blob)` reporting "The signature came out empty." — ABOVE a guard
+       * that already skipped the upload when the playbook has no SIGNATURE
+       * step. On such a playbook `<SignaturePad>` never mounts,
+       * `handleRef.current` is null, the optional chain yields `undefined`, and
+       * the driver was told to sign again on a screen with no canvas on it.
+       * `canSign` enabled the button and the validator then refused it, so the
+       * whole walkaround was unsubmittable in front of `Trip.start`.
+       *
+       * "There is no pad" and "the pad is blank" are different facts with
+       * different remedies. `planSignatureSubmission` returns a PLAN rather
+       * than a boolean so the canvas call lives inside the RASTERISE branch and
+       * cannot be hoisted back above it by a later edit.
+       */
+      const plan = planSignatureSubmission({ signatureNeeded, name });
+      if (plan.kind === 'REJECT') {
+        setError(plan.error);
         return;
       }
 
-      // 2. Grant, then PUT. Only a 2xx counts.
-      if (view.signature.required && view.signature.stepInstanceId) {
+      // 1. Rasterise — ONLY when a pad exists to rasterise.
+      let blob: Blob | null = null;
+      if (plan.kind === 'RASTERISE') {
+        blob = (await handleRef.current?.toBlob()) ?? null;
+        const outcome = resolveRasterisedSignature({
+          hasPad: handleRef.current !== null,
+          hasBlob: blob !== null,
+        });
+        if (outcome.kind === 'REJECT') {
+          setError(outcome.error);
+          return;
+        }
+      }
+
+      /**
+       * 2. Grant, then PUT. Only a 2xx counts.
+       *
+       * `view.signature.required` is deliberately NOT re-tested here: it is
+       * exactly what put us in the RASTERISE branch, so asking again would be a
+       * second statement of one fact. `blob` and `view.signature.stepInstanceId`
+       * are not redundant — they are the narrowings this block needs, from
+       * `Blob | null` to `Blob` for `blob.size` and the PUT body, and from
+       * `string | null` to `string` for the `signInspection` call.
+       */
+      if (blob && view.signature.stepInstanceId) {
         const grant = await requestSignatureUpload(view.dispatchId, {
           contentType: 'image/png',
           sizeBytes: blob.size,
@@ -1053,9 +1097,24 @@ function SignatureScreen({
               disabled={busy}
             />
           ) : (
+            /*
+             * quick-550 — this variant persists NOTHING.
+             *
+             * `signature.required` is false and `signature.stepInstanceId` is
+             * null, so the whole grant/PUT/`signInspection` block is skipped
+             * and only `submitInspectionChecklist` runs. The sentence here used
+             * to tell the driver their name and the time were stored against
+             * the checklist, which was a false storage claim: there is no
+             * SIGNATURE `StepInstance` to carry them and no other column that
+             * would (checked against `schema.prisma` — `Trip` has only
+             * `inspectionRequired` and the three `inspectionOverridden*`
+             * fields, `PlaybookInstance` has none). Keeping a typed
+             * confirmation needs a column, which is out of scope here; the copy
+             * now claims only what is true.
+             */
             <p className="text-sm leading-relaxed text-muted-foreground">
-              This checklist does not ask for a drawn signature. Your name and the time below are
-              recorded against it.
+              This checklist does not ask for a drawn signature. Your name is your attestation that
+              you completed this walkaround.
             </p>
           )}
 
@@ -1106,4 +1165,3 @@ function SignatureScreen({
     </div>
   );
 }
-
