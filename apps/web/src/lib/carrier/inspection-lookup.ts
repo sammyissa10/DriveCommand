@@ -32,6 +32,7 @@ import {
   INSPECTION_ITEM_STEP_TYPE,
   type InspectionBlockerCoverage,
 } from './inspection-coverage';
+import { TRIP_INSPECTION_ENTITY_TYPE } from './inspection-constants';
 
 /** `stepSnapshot`, as much of it as this module reads. */
 interface StepSnapshotShape {
@@ -169,6 +170,12 @@ const STEP_SELECT = {
  * `createTrip` already fires `ON_DISPATCH_CREATE`, so on a tenant with the
  * trigger configured this row exists before the driver ever opens the app. On a
  * tenant without it, this returns null and the service creates one on demand.
+ *
+ * quick-546: this is the CURRENT-instance lookup and it is paired with a writer,
+ * so it names exactly ONE shape and takes it from
+ * `TRIP_INSPECTION_ENTITY_TYPE` — the same constant `ensureTripInspection`
+ * writes. Reader and writer disagreeing about scope is the defect that made the
+ * "Start the walkaround" button dead on VEHICLE-authored tenants.
  */
 export async function findTripInspection(
   orgId: string,
@@ -180,7 +187,7 @@ export async function findTripInspection(
   const instance = await tenantPrisma.playbookInstance.findFirst({
     where: {
       tenantId: orgId,
-      entityType: 'DISPATCH',
+      entityType: TRIP_INSPECTION_ENTITY_TYPE,
       entityId: dispatchId,
       playbook: { category: 'VEHICLE_INSPECTION', deletedAt: null },
     },
@@ -210,6 +217,21 @@ export async function findTripInspection(
  *    by `StepInstance.completedByUserId`.
  *
  * The window is applied to `StepInstance.completedAt`, per fact 2 above.
+ *
+ * WHY THIS ONE STAYS SHAPE-TOLERANT WHILE `findTripInspection` DOES NOT
+ * (quick-546). This is a read of HISTORY, bounded to a rolling
+ * `INSPECTION_VALIDITY_HOURS`; it is not a second creation path and it is not
+ * paired with a writer. Production still holds VEHICLE-scoped instances written
+ * before quick-546 (the 2026-04-24 script's playbooks), and a walkaround a
+ * driver genuinely answered should still clear the gate for its 24 hours
+ * regardless of the shape it happens to be stored in. Narrowing this to the one
+ * constant would silently discard real, in-window evidence.
+ *
+ * `findTripInspection` is the opposite case: it is the CURRENT-instance lookup,
+ * it has exactly one writer, and a reader that accepts a shape its writer never
+ * produces is how the two drifted apart in the first place. So it names one
+ * shape and this one keeps its `OR`. The `OR` is deliberate — do not "unify"
+ * these two queries.
  */
 export async function findValidPriorInspection(args: {
   orgId: string;

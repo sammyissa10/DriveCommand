@@ -35,6 +35,7 @@ import { findTripInspection, findValidPriorInspection } from './inspection-looku
 import {
   INSPECTION_OVERRIDE_ENTITY_TYPE,
   OVERRIDE_REASON_MIN_LENGTH,
+  TRIP_INSPECTION_ENTITY_TYPE,
 } from './inspection-constants';
 
 // ---------------------------------------------------------------------------
@@ -178,10 +179,17 @@ export async function ensureTripInspection(args: {
       category: 'VEHICLE_INSPECTION',
       isActive: true,
       deletedAt: null,
+      // SELECTION FILTER ONLY (quick-546). A VEHICLE-authored checklist is
+      // still eligible to run; it just does not get to choose the instance's
+      // scope. Do not narrow this to the constant — that would make eight
+      // tenants' only inspection playbook ineligible and hand their drivers
+      // NO_INSPECTION_CHECKLIST instead of a walkaround.
       entityType: { in: ['DISPATCH', 'VEHICLE'] },
     },
     orderBy: { createdAt: 'asc' },
-    select: { id: true, entityType: true },
+    // `entityType` is deliberately NOT selected: nothing below reads it now that
+    // the instance's scope comes from TRIP_INSPECTION_ENTITY_TYPE.
+    select: { id: true },
   });
 
   if (!playbook) {
@@ -198,8 +206,12 @@ export async function ensureTripInspection(args: {
   try {
     const instance = await generatePlaybookInstance({
       playbookId: playbook.id,
-      entityType: playbook.entityType,
-      entityId: playbook.entityType === 'DISPATCH' ? dispatchId : truckId,
+      // ONE INSTANCE PER TRIP — see TRIP_INSPECTION_ENTITY_TYPE in
+      // `inspection-constants.ts` for why the playbook's authored entityType is
+      // deliberately ignored here, and why truck scope cannot work at all under
+      // generatePlaybookInstance's never-COMPLETED duplicate guard.
+      entityType: TRIP_INSPECTION_ENTITY_TYPE,
+      entityId: dispatchId,
       tenantId: orgId,
       triggeredBy: 'manual',
       // Header-less-safe: generatePlaybookInstance would otherwise call

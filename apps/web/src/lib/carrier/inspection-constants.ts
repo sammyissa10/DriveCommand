@@ -24,6 +24,45 @@
 export const INSPECTION_VALIDITY_HOURS = 24;
 
 /**
+ * The scope of a trip's inspection `PlaybookInstance`: one instance per TRIP.
+ *
+ * quick-546. Both the writer (`ensureTripInspection`) and the current-instance
+ * reader (`findTripInspection`) take their `entityType` from here, and neither
+ * may carry a string literal again.
+ *
+ * THE ASYMMETRY THIS REPLACES. `ensureTripInspection` used to pass
+ * `entityType: playbook.entityType` with `entityId` switching between
+ * `dispatchId` and `truckId`, while `findTripInspection` read a fixed
+ * `'DISPATCH'` / `dispatchId`. On the eight tenants whose inspection playbook is
+ * authored `entityType: 'VEHICLE'` (the 2026-04-24 script), the writer therefore
+ * produced a truck-keyed row the reader could never see. The driver's evidence
+ * of that was a button that did nothing.
+ *
+ * WHY VEHICLE SCOPE IS IMPOSSIBLE HERE, not merely undesirable.
+ * `generatePlaybookInstance` refuses a duplicate on
+ * `(playbookId, entityId, tenantId, status != COMPLETED)`, and **nothing in this
+ * repo ever sets an inspection instance to COMPLETED** — `PlaybookInstance`
+ * carries no `deletedAt` and `InstanceStatus` has no CANCELLED either, so there
+ * is no state that retires one. A truck-keyed instance is thus created once and
+ * can never be superseded: the second trip in that truck gets a `TRPCError`
+ * CONFLICT forever. One instance per TRIP is the only scope under which a
+ * per-trip inspection can be answered twice, which is the whole premise of a
+ * pre-trip inspection.
+ *
+ * THE PLAYBOOK'S OWN `entityType` REMAINS A SELECTION FILTER. The candidate
+ * query in `ensureTripInspection` still says `entityType: { in: ['DISPATCH',
+ * 'VEHICLE'] }`, so a VEHICLE-authored checklist is still eligible to RUN — it
+ * simply does not get to choose the instance's scope. Safe because
+ * `verifyEntity` has an explicit "DISPATCH and OTHER: no entity verification
+ * required" branch, and `resolveAssignee` returns the same thing for a
+ * DRIVER-role step under either scope. Nothing about assignment changes.
+ *
+ * Flipping this to `'VEHICLE'` re-creates the dead button. `inspection-scope.test.ts`
+ * fails if you do.
+ */
+export const TRIP_INSPECTION_ENTITY_TYPE = 'DISPATCH' as const;
+
+/**
  * `DispatchOverrideAudit.entityType` value for an inspection override.
  *
  * That column is a plain `String` with **no** CHECK constraint — verified
