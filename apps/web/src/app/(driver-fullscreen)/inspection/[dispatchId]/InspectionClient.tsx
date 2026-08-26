@@ -32,23 +32,45 @@ export function InspectionClient({
   const router = useRouter();
   const [outcome, setOutcome] = useState<InspectionGateView | null>(null);
 
+  /**
+   * quick-547 — the checklist `openInspectionChecklist` just handed back.
+   *
+   * `BeginScreen` used to answer a successful open with `router.refresh()` alone
+   * and hope the server tree came back with a non-null `checklist`. That is the
+   * same single point of failure as the missing ticks: one revalidation signal,
+   * and a screen that shows nothing at all if it does not arrive. The action has
+   * ALWAYS returned the built view — it was simply thrown away — so the button
+   * now renders from it directly and the refresh becomes a convergence step
+   * rather than the mechanism.
+   *
+   * The server still wins: `checklist ?? opened` prefers the prop the moment the
+   * page supplies one. Same rule as `applyOptimisticAnswers` — a locally held
+   * value is only ever a stand-in for a server value that has not arrived yet,
+   * and never something that can outrank one that has.
+   */
+  const [opened, setOpened] = useState<InspectionChecklistView | null>(null);
+  const active = checklist ?? opened;
+
   if (outcome) {
     return <OutcomeScreen dispatchId={dispatchId} gate={outcome} />;
   }
 
-  if (!checklist) {
+  if (!active) {
     return (
       <BeginScreen
         dispatchId={dispatchId}
         truckUnitNumber={truckUnitNumber}
-        onOpened={() => router.refresh()}
+        onOpened={(view) => {
+          setOpened(view);
+          router.refresh();
+        }}
       />
     );
   }
 
   return (
     <InspectionRunner
-      view={checklist}
+      view={active}
       onOutcome={(gate) => {
         if (gate.outcome === 'BLOCKED') {
           // A blocked trip is a different situation, not a different message —
@@ -87,7 +109,8 @@ function BeginScreen({
 }: {
   dispatchId: string;
   truckUnitNumber: string;
-  onOpened: () => void;
+  /** Handed the checklist the action returned, so the caller need not re-fetch it. */
+  onOpened: (view: InspectionChecklistView) => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -143,7 +166,7 @@ function BeginScreen({
                 setErrorCode(res.code ?? null);
                 return;
               }
-              onOpened();
+              onOpened(res.data);
             })
           }
           className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"

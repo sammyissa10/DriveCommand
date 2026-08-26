@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState, useTransition } from 'react';
+import { startTransition, useOptimistic, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   AlertTriangle,
@@ -22,6 +22,17 @@ import type {
   InspectionGateView,
   InspectionStepView,
 } from '@/lib/carrier/inspection-handlers';
+import {
+  applyOptimisticAnswers,
+  inspectionProgress,
+  isAnswered,
+  pendingVerbFor,
+  sectionRemainingCount,
+  STATUS_FOR_VERB,
+  type OptimisticAnswer,
+  type OptimisticAnswers,
+  type OptimisticVerb,
+} from '@/lib/carrier/inspection-optimistic';
 import { SignaturePad, type SignaturePadHandle } from './SignaturePad';
 import {
   answerInspectionFail,
@@ -45,13 +56,29 @@ import {
  * a green tick for an answer sitting in browser memory is worse than one that
  * admits it could not reach the server.
  *
- * ANSWERS LIVE ON THE SERVER. This component holds no answer state at all —
- * every tick you see comes from `view.sections[].steps[].status`, re-rendered
- * after each action's `revalidatePath`. Local state is only ever transient
- * input: the note being typed, the photo being uploaded, which section is on
- * screen. That is the same discipline stop review took in Phase 5, and for the
- * same reason: two copies of an answer eventually disagree, and the copy the
- * driver can see is the one that is wrong.
+ * THE SERVER IS AUTHORITATIVE; THE OVERLAY IS TRANSIENT AND SELF-DISCARDING.
+ * (quick-547 — this paragraph used to say "this component holds no answer state
+ * at all", which was the bug wearing an invariant's clothes.) Every tick still
+ * comes from `view.sections[].steps[].status`. What is added is a `useOptimistic`
+ * overlay of the answers that are IN FLIGHT RIGHT NOW, merged for rendering by
+ * `applyOptimisticAnswers`, so the driver sees the tap land instead of tapping
+ * a second time. It exists because `revalidatePath` was the only change signal
+ * this screen had and the client never applied it: the write succeeded, the
+ * chip kept reading "Not answered", and the whole walkaround was unusable.
+ *
+ * Nothing renders as recorded that is not recorded. React discards an
+ * optimistic value automatically when the transition that set it ends, so a
+ * FAILED write cannot leave a tick behind — the guarantee is structural rather
+ * than a `catch` block that a later edit could drop. The transition is
+ * deliberately kept alive past the action by calling `router.refresh()` inside
+ * it on success, so the overlay is handed over to the fresh server tree rather
+ * than dropped in front of it.
+ *
+ * This does NOT reintroduce the "two copies eventually disagree" problem the
+ * old paragraph was defending against, and for two reasons rather than one: the
+ * copy cannot outlive its transition, and while it lives a real server answer
+ * supersedes it by construction inside `applyOptimisticAnswers`. There is no
+ * state here that a stale answer could sit in.
  *
  * RE-ANSWERING IS ONE-DIRECTIONAL, and this is deliberate rather than a
  * limitation of the services it calls. A passed or N/A item can still be failed
@@ -217,45 +244,64 @@ type PhotoState =
   | { kind: 'uploaded'; name: string; previewUrl: string; s3Key: string }
   | { kind: 'error'; name: string; message: string };
 
+/**
+ * What the driver did, as the card reports it upwards.
+ *
+ * quick-547 lifted the SUBMISSION out of this component (see `submitAnswer` in
+ * the runner) and left the INPUT in it. The card no longer imports an answer
+ * action or owns a transition; it says what was tapped and what was typed, and
+ * the runner — which owns the optimistic overlay — decides what that claims and
+ * which action carries it.
+ */
+type AnswerRequest =
+  | { verb: 'pass' }
+  | { verb: 'fail'; note: string; photoKeys: string[] }
+  | { verb: 'na'; reason: string };
+
 function ItemCard({
   dispatchId,
   step,
   minNoteLength,
-  onError,
+  pendingVerb,
+  onAnswer,
 }: {
   dispatchId: string;
   step: InspectionStepView;
   minNoteLength: number;
-  onError: (message: string) => void;
+  /**
+   * Which of this card's buttons has a write in flight, read out of the
+   * overlay by the runner. It replaces the local `busyVerb`/`pending` pair: the
+   * overlay is created and discarded by React around exactly the window the
+   * spinner should cover, so there is nothing left to set or to clear.
+   */
+  pendingVerb: OptimisticVerb | null;
+  /** Resolves true when the answer was recorded, false when it was refused. */
+  onAnswer: (request: AnswerRequest) => Promise<boolean>;
 }) {
   const [mode, setMode] = useState<'idle' | 'fail' | 'na'>('idle');
   const [note, setNote] = useState('');
   const [reason, setReason] = useState('');
   const [photo, setPhoto] = useState<PhotoState>({ kind: 'none' });
-  const [pending, startTransition] = useTransition();
-  const [busyVerb, setBusyVerb] = useState<'pass' | 'fail' | 'na' | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const answered = step.status !== 'NOT_STARTED' && step.status !== 'IN_PROGRESS';
+  const pending = pendingVerb !== null;
+  const busyVerb = pendingVerb;
+  const answered = isAnswered(step);
   const isFailed = step.status === 'FAILED';
 
-  function run(verb: 'pass' | 'fail' | 'na', fn: () => Promise<{ success: boolean; error?: string }>) {
-    setBusyVerb(verb);
-    startTransition(async () => {
-      try {
-        const res = await fn();
-        if (!res.success) {
-          onError(res.error ?? 'That did not save. Try again.');
-          return;
-        }
-        setMode('idle');
-        setNote('');
-        setReason('');
-        setPhoto({ kind: 'none' });
-      } finally {
-        setBusyVerb(null);
-      }
-    });
+  /**
+   * The local cleanup that used to live at the end of `run`, unchanged in
+   * effect: the fail/N-A form closes and the typed note, reason and photo are
+   * dropped ONLY on success. A refused write leaves everything on screen so the
+   * driver can read the banner and tap again without retyping.
+   */
+  async function run(request: AnswerRequest) {
+    const recorded = await onAnswer(request);
+    if (!recorded) return;
+    setMode('idle');
+    setNote('');
+    setReason('');
+    setPhoto({ kind: 'none' });
   }
 
   /**
@@ -391,9 +437,7 @@ function ItemCard({
               label="Pass"
               busy={busyVerb === 'pass'}
               disabled={pending}
-              onClick={() =>
-                run('pass', () => answerInspectionPass(dispatchId, step.stepInstanceId))
-              }
+              onClick={() => void run({ verb: 'pass' })}
             />
           )}
           <AnswerButton
@@ -510,12 +554,11 @@ function ItemCard({
               type="button"
               disabled={pending || noteShort || photoMissing || photo.kind === 'uploading'}
               onClick={() =>
-                run('fail', () =>
-                  answerInspectionFail(dispatchId, step.stepInstanceId, {
-                    note: note.trim(),
-                    photoKeys: photo.kind === 'uploaded' ? [photo.s3Key] : [],
-                  }),
-                )
+                void run({
+                  verb: 'fail',
+                  note: note.trim(),
+                  photoKeys: photo.kind === 'uploaded' ? [photo.s3Key] : [],
+                })
               }
               className="flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 text-base font-semibold text-white hover:bg-red-700 disabled:opacity-40"
             >
@@ -563,11 +606,7 @@ function ItemCard({
             <button
               type="button"
               disabled={pending || reasonShort}
-              onClick={() =>
-                run('na', () =>
-                  answerInspectionNotApplicable(dispatchId, step.stepInstanceId, reason.trim()),
-                )
-              }
+              onClick={() => void run({ verb: 'na', reason: reason.trim() })}
               className="flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl bg-slate-700 text-base font-semibold text-white hover:bg-slate-800 disabled:opacity-40"
             >
               {busyVerb === 'na' ? <Loader2 className="h-5 w-5 shrink-0 animate-spin" /> : null}
@@ -584,6 +623,50 @@ function ItemCard({
 // The runner
 // ---------------------------------------------------------------------------
 
+/**
+ * The base the overlay reverts to. Hoisted so it is one stable reference rather
+ * than a fresh `[]` on every render.
+ */
+const NO_ANSWERS_IN_FLIGHT: OptimisticAnswers = [];
+
+/** What one tap claims, before the server has confirmed anything. */
+function claimFor(stepInstanceId: string, request: AnswerRequest): OptimisticAnswer {
+  const base = {
+    stepInstanceId,
+    status: STATUS_FOR_VERB[request.verb],
+    verb: request.verb,
+  };
+  if (request.verb === 'fail') {
+    // Both are honest, not hopeful: the note is travelling in this very request
+    // and `failInspectionItem` stores it as `result.note`, which is exactly what
+    // `handleGetChecklist` reads back; the photo bytes are already in R2,
+    // because upload-at-capture put them there before this claim existed.
+    return { ...base, note: request.note, photoKeys: request.photoKeys };
+  }
+  // N/A deliberately carries NO note. `markDriverTaskNotApplicable` delegates to
+  // `skipStep`, which records the reason in `StepInstance.skipReason` — and the
+  // checklist view's `note` is read from `result.note`, which that path never
+  // writes. Showing the reason optimistically would put a line of text on screen
+  // that the very next server tree silently removes, which is a flicker of
+  // precisely the kind this task exists to remove.
+  return base;
+}
+
+/** Which action carries this answer. The card no longer knows. */
+function callFor(dispatchId: string, stepInstanceId: string, request: AnswerRequest) {
+  switch (request.verb) {
+    case 'pass':
+      return answerInspectionPass(dispatchId, stepInstanceId);
+    case 'fail':
+      return answerInspectionFail(dispatchId, stepInstanceId, {
+        note: request.note,
+        photoKeys: request.photoKeys,
+      });
+    case 'na':
+      return answerInspectionNotApplicable(dispatchId, stepInstanceId, request.reason);
+  }
+}
+
 export function InspectionRunner({
   view,
   onOutcome,
@@ -593,41 +676,84 @@ export function InspectionRunner({
   onOutcome: (gate: InspectionGateView) => void;
 }) {
   const router = useRouter();
-  const sections = view.sections;
   const [index, setIndex] = useState(0);
   const [signing, setSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Progress counts ONLY steps this driver can answer (quick-543).
+   * The answers in flight. NOT the merged view.
    *
-   * A DISPATCHER-assigned step left NOT_STARTED would otherwise sit in the
-   * denominator forever: the bar would stop one short of full, "1 item still
-   * needs an answer" would never clear, and the driver would hunt for a step
-   * they are not allowed to touch. The gate already ignores these — its
-   * outcomes have always been INSPECTION_ITEM-only — so counting them here was
-   * the screen disagreeing with the verdict it was about to receive.
+   * Holding the overlay rather than the merged checklist is what lets the same
+   * value drive two different things: `applyOptimisticAnswers` turns it into
+   * what is rendered, and `pendingVerbFor` turns it into which button is
+   * spinning. Merging into the view here would have thrown the second one away
+   * and forced a parallel `busy` state back into every card.
    */
-  const totals = useMemo(() => {
-    const mine = sections.flatMap((s) => s.steps).filter((s) => s.answerableByDriver);
-    const answered = mine.filter(
-      (s) => s.status !== 'NOT_STARTED' && s.status !== 'IN_PROGRESS',
-    ).length;
-    return { total: mine.length, answered, remaining: mine.length - answered };
-  }, [sections]);
+  const [overlay, addOptimisticAnswer] = useOptimistic<OptimisticAnswers, OptimisticAnswer>(
+    NO_ANSWERS_IN_FLIGHT,
+    (current, claim) => [...current, claim],
+  );
+
+  // Everything below renders from this, including the header counter. One view,
+  // one derivation, so the chips and the progress bar cannot disagree.
+  const optimisticView = applyOptimisticAnswers(view, overlay);
+  const sections = optimisticView.sections;
+  const totals = inspectionProgress(optimisticView);
+
+  /**
+   * One tap: claim it, send it, and hold the claim until the truth arrives.
+   *
+   * THE TRANSITION MUST OUTLIVE THE ACTION. React discards an optimistic value
+   * when the transition that set it ends, so if this returned the moment the
+   * action resolved, the tick would vanish again in the gap before the fresh
+   * server tree landed — the same bug, in a shorter form. `router.refresh()` is
+   * therefore called INSIDE this transition on success. It is safe after the
+   * `await` even though React requires post-await updates to be re-wrapped:
+   * Next's `refresh()` wraps its own dispatch in `startTransition` (verified in
+   * next@16.2.1, `client/components/app-router-instance.js`), and because it is
+   * scheduled while this async action is still pending React entangles the two,
+   * so the overlay is handed over to the new tree rather than dropped in front
+   * of it.
+   *
+   * That is measured, not assumed. Driving this component in jsdom with the
+   * refresh stubbed to do nothing, the chip read "Passed" on tap and snapped
+   * back to "0 of 1 items answered" the instant the action resolved — the
+   * flicker, reproduced. With the refresh modelled as Next implements it, the
+   * chip held "Passed" continuously across the whole gap.
+   *
+   * On failure it does NOT refresh. The transition ends, React drops the claim,
+   * the item is visibly unanswered again, and the banner says why.
+   */
+  function submitAnswer(stepInstanceId: string, request: AnswerRequest): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      startTransition(async () => {
+        addOptimisticAnswer(claimFor(stepInstanceId, request));
+        const res = await callFor(view.dispatchId, stepInstanceId, request);
+        if (!res.success) {
+          setError(res.error ?? 'That did not save. Try again.');
+          resolve(false);
+          return;
+        }
+        setError(null);
+        router.refresh();
+        resolve(true);
+      });
+    });
+  }
 
   const section = sections[index];
-  const sectionRemaining =
-    section?.steps.filter(
-      (s) => s.answerableByDriver && (s.status === 'NOT_STARTED' || s.status === 'IN_PROGRESS'),
-    ).length ?? 0;
+  const sectionRemaining = sectionRemainingCount(section);
 
   const isLastSection = index >= sections.length - 1;
 
   if (signing) {
     return (
       <SignatureScreen
-        view={view}
+        // The optimistic view, deliberately: `remaining` is already computed
+        // from it, and handing the signature screen the raw `view` would let the
+        // two screens disagree about the same checklist for the width of one
+        // round trip.
+        view={optimisticView}
         remaining={totals.remaining}
         onBack={() => setSigning(false)}
         onOutcome={onOutcome}
@@ -699,7 +825,8 @@ export function InspectionRunner({
               dispatchId={view.dispatchId}
               step={step}
               minNoteLength={view.failNoteMinLength}
-              onError={setError}
+              pendingVerb={pendingVerbFor(overlay, step.stepInstanceId)}
+              onAnswer={(request) => submitAnswer(step.stepInstanceId, request)}
             />
           ))}
         </ul>
@@ -979,3 +1106,4 @@ function SignatureScreen({
     </div>
   );
 }
+
