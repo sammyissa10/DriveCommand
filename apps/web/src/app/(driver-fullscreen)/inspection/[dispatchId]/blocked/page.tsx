@@ -16,10 +16,28 @@ export const dynamic = 'force-dynamic';
  *   1. WHAT FAILED. Named items, with the driver's own note, and critical ones
  *      marked. "Inspection failed" on its own tells a driver nothing they can
  *      act on and nothing they can repeat down a phone.
- *   2. THAT DISPATCH HAS BEEN TOLD. `notifyDispatchOfBlock` has already run
- *      inside `handleSubmitInspection` by the time this page renders, so this
- *      is a statement of fact rather than a promise. A driver who thinks nobody
- *      knows will sit in the yard waiting.
+ *   2. HOW DISPATCH FINDS OUT, AND WHAT TO DO MEANWHILE. This block used to
+ *      assert that dispatch HAD been told, on the grounds that
+ *      `notifyDispatchOfBlock` must already have run inside
+ *      `handleSubmitInspection`. That invariant is exactly what failed: until
+ *      quick-549 this page was also reachable by a render-time redirect from
+ *      the walkaround, on a path where `handleSubmitInspection` had never run
+ *      and no notification had been attempted. So the page now states how
+ *      dispatch is alerted and points the driver at Contact dispatch, rather
+ *      than asserting a delivery it cannot verify. A driver who thinks nobody
+ *      knows must not sit in the yard waiting — hence "message them here"
+ *      rather than silence.
+ *
+ *      No notified-count is carried, and three routes to one were rejected:
+ *      passing `effects.dispatchNotified` through from submit survives only the
+ *      immediate post-submit render (reload, direct URL and this page's own
+ *      `Check again` all re-render from the pure `handleGetGate`, so it would
+ *      not fix the stated problem); reading `in_app_notifications` is
+ *      purity-safe but `notifyDispatchOfBlock` writes the shared
+ *      `type: 'dispatch_assigned'`, so telling it from a genuine assignment
+ *      means matching a title string, and asserting a safety fact off a brittle
+ *      string match is worse than not asserting it; and a stored flag is DDL,
+ *      which this task forbids.
  *   3. SOMETHING TO DO. Contact dispatch, and a re-check.
  *
  * NEVER A DEAD END. Every path off this page is a real one: messages, a
@@ -142,9 +160,9 @@ export default async function InspectionBlockedPage({
           </ul>
         </section>
 
-        {/* 2 — Dispatch has been told */}
+        {/* 2 — How dispatch finds out, and what to do meanwhile */}
         <p className="rounded-2xl bg-muted/60 p-4 text-sm leading-relaxed text-foreground">
-          {inspectionCopy.dispatchNotified}
+          {inspectionCopy.dispatchAlerted}
         </p>
       </div>
 

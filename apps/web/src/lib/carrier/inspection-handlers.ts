@@ -150,7 +150,27 @@ export const inspectionCopy = {
       ? 'This trip cannot start. 1 critical item failed inspection.'
       : `This trip cannot start. ${n} critical items failed inspection.`,
 
-  dispatchNotified: 'Your dispatcher has been notified and can clear this.',
+  /**
+   * quick-549 renamed this from `dispatchNotified`, and the rename is
+   * load-bearing rather than cosmetic: that name is what invited the old
+   * sentence, "Your dispatcher has been notified and can clear this." — a claim
+   * of DELIVERY that this screen cannot verify. Nothing on a page render knows
+   * whether `notifyDispatchOfBlock` ran, let alone whether it landed; the page
+   * was even reachable (before quick-549) by a render-time redirect on a path
+   * where `handleSubmitInspection` had never run at all.
+   *
+   * The replacement is deliberately true whether or not any channel succeeded,
+   * keeps the real information that the system does alert dispatch, and turns
+   * "wait" into "act" — the Contact dispatch button sits directly beneath it.
+   *
+   * ONE string for ONE sentence (the quick-517 rule): a sentence with internal
+   * structure must never be reassembled from JSX children.
+   *
+   * Not to be confused with `effects.dispatchNotified`, the count returned by
+   * `applyVerdictSideEffects`. Same word, different thing; that one is untouched.
+   */
+  dispatchAlerted:
+    'Dispatch is alerted automatically when a trip is blocked, but do not wait on a call — message them here.',
 } as const;
 
 function hoursSince(then: Date, now: Date): number {
