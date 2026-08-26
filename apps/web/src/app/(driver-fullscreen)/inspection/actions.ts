@@ -25,6 +25,7 @@ import {
   resolveInspectionAccess,
   INSPECTION_ACCESS_DENIED_MESSAGE,
 } from '@/lib/carrier/inspection-access';
+import { SIGNATURE_BLANK_NAME_ERROR } from '@/lib/carrier/inspection-signature';
 import {
   handleOpenChecklist,
   handleSubmitInspection,
@@ -349,7 +350,7 @@ export async function signInspection(
   }
 
   const name = (input.signedByName ?? '').trim();
-  if (!name) return { success: false, error: 'Type the name you are signing under.' };
+  if (!name) return { success: false, error: SIGNATURE_BLANK_NAME_ERROR };
 
   // Parsed rather than trusted: an unparseable timestamp would be stored and
   // then rendered as "Invalid Date" beneath a legal signature.
