@@ -94,8 +94,23 @@ function sliceFunctionBody(source: string, name: string): string | null {
   return source.slice(start, end + 3);
 }
 
+/**
+ * Read a module's source with newlines NORMALISED to `\n`.
+ *
+ * The normalisation is load-bearing, not tidiness. This repo has no
+ * `.gitattributes` and Windows checkouts run `core.autocrlf=true`, so the same
+ * committed file is LF in the index and CRLF in the working tree. The slicer's
+ * end marker is the column-zero `\n}\n`, which does not exist in a CRLF file —
+ * so without this the slice returns null on every Windows clone, every
+ * `git checkout` of these files, and every branch switch.
+ *
+ * That failure mode was observed, and it is worse than a plain red: the "no
+ * hardcoded literal" assertion passes VACUOUSLY against an empty slice. Only the
+ * integrity floor above catches it. Normalising here removes the whole class
+ * rather than trusting the floor to keep catching it.
+ */
 function readModule(relPath: string): string {
-  return readFileSync(join(process.cwd(), relPath), 'utf8');
+  return readFileSync(join(process.cwd(), relPath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 // ---------------------------------------------------------------------------
