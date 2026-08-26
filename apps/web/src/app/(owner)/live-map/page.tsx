@@ -8,8 +8,21 @@ import { LiveMapMobile } from './LiveMapMobile';
 // Force dynamic rendering for real-time data
 export const fetchCache = 'force-no-store';
 
-export default async function LiveMapPage() {
+export default async function LiveMapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  /**
+   * `?view=board` is how the sidebar's Live Board entry lands on the board. It is
+   * read here rather than with `useSearchParams()` in the client wrapper so that
+   * no component in this tree acquires a Suspense requirement. Anything other than
+   * the literal 'board' falls through to the map, which stays the default.
+   */
+  const { view } = await searchParams;
+  const initialViewMode = view === 'board' ? ('list' as const) : ('map' as const);
 
   /**
    * WHY THIS IS NOT `.catch(() => [])` ANY MORE.
@@ -59,7 +72,7 @@ export default async function LiveMapPage() {
 
       {/* Desktop */}
       <div className="hidden lg:block lg:h-[calc(100vh-8rem)]">
-        <LiveMapWrapper initialVehicles={vehicles} />
+        <LiveMapWrapper initialVehicles={vehicles} initialViewMode={initialViewMode} />
       </div>
     </>
   );

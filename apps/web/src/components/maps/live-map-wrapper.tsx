@@ -39,11 +39,13 @@ type TabId = 'live' | 'history' | 'trips';
 
 interface LiveMapWrapperProps {
   initialVehicles: VehicleLocation[];
+  /** 'list' only when the URL asked for the board. Defaults to 'map'. */
+  initialViewMode?: 'map' | 'list';
 }
 
 const POLL_INTERVAL_MS = 15_000;
 
-export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps) {
+export default function LiveMapWrapper({ initialVehicles, initialViewMode = 'map' }: LiveMapWrapperProps) {
   const [vehicles, setVehicles] = useState<VehicleLocation[]>(initialVehicles);
   const [activeTab, setActiveTab] = useState<TabId>('live');
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   const [historyPrefillDate, setHistoryPrefillDate] = useState<string | undefined>(undefined);
 
   // New state for visual foundation
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [viewMode, setViewMode] = useState<'map' | 'list'>(initialViewMode);
   const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatusKey>('all');
   const [boardView, setBoardView] = useState<BoardView>('drivers');
 

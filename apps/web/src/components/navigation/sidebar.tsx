@@ -132,6 +132,22 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+                  {/*
+                    quick-551. The board is a view of this same page, reached with
+                    ?view=board. No `isActive` prop: resolving it would need
+                    `useSearchParams`, and this sidebar renders on every owner page,
+                    where that hook risks a Next 16 prerender/Suspense build failure.
+                    `Live Map` staying lit while the board is open is honest — it is
+                    that page.
+                  */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Live Board">
+                      <Link href="/live-map?view=board" onClick={handleNavClick}>
+                        <ListChecks />
+                        <span>Live Board</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
