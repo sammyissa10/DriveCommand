@@ -248,3 +248,54 @@ Nothing pushed — the orchestrator pushes once at the end.
 
 All created/modified files verified present on disk; all three commit hashes verified present in
 `git log`.
+
+---
+
+## Orchestrator verification pass — one real defect found and fixed
+
+The three task commits above were re-verified independently rather than accepted as
+reported. tsc was re-probed in **both** apps (injected `const __probe546: number = 'x'`
+into `inspection-constants.ts` and `inspection-copy.ts` respectively; both gates reported
+the injected error, both clean after removal, probe sweep clean). The carrier suite was
+re-run: **10 files / 105 tests / 0 failures**, matching the reported AFTER count. The
+divergence guard was independently proven red twice — constant flipped to `'VEHICLE'`,
+and `entityType: 'VEHICLE'` reintroduced into the writer.
+
+That last check is what exposed the defect.
+
+### `inspection-scope.test.ts` was line-ending dependent — commit `07e18146`
+
+Restoring `inspection-service.ts` with `git checkout --` after the regression check turned
+the working-tree file **CRLF**. The slicer's end marker is the column-zero `'\n}\n'`, which
+does not exist in a CRLF file, so `sliceFunctionBody` returned null and the guard went red
+on unmodified, correct source.
+
+This is not a local accident. The repo has **no `.gitattributes`** and `core.autocrlf=true`
+(both verified), so `git ls-files --eol` reports the file as `i/lf w/crlf`: LF in the index,
+CRLF in the working tree. **The guard would have failed on every Windows clone, every
+`git checkout` of these two files, and every branch switch** — and a test everyone learns to
+ignore protects nothing, which the test's own doc comment says about a different case.
+
+Worse than a plain red: with the slice null, the `carries no hardcoded entityType literal`
+assertion **passed vacuously** against an empty string. Only the integrity floor caught it.
+That is the floor working exactly as designed, and also the reason not to leave it as the
+sole defence.
+
+Fixed by normalising in `readModule` (`.replace(/\r\n/g, '\n')`), with the reasoning recorded
+in the file. Verified against a genuinely CRLF working tree: 8/8 green, and still red —
+**non-vacuously**, the slice found — when the writer's literal is reintroduced.
+
+Git printed `warning: LF will be replaced by CRLF the next time Git touches it` on the commit
+of the fix, which is the same fact stated by the tooling.
+
+### Final state
+
+| Check | Result |
+|---|---|
+| `tsc --noEmit` apps/web | 0 errors, gate probed |
+| `tsc --noEmit` apps/mobile | 0 errors, gate probed |
+| Carrier suite BEFORE | 9 files / 97 tests / 0 failures |
+| Carrier suite AFTER | 10 files / 105 tests / 0 failures |
+| Delta | +1 file, +8 assertions — exactly the new guard |
+| Leftover `__probe` | none (swept) |
+| Working tree | clean |
