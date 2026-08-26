@@ -240,6 +240,22 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
         label: "Live Map",
         href: "/live-map",
         icon: MapPin,
+        // Live Board (quick-551) is a CHILD of Live Map rather than a third
+        // INTELLIGENCE item, deliberately: this section is capped at two, and
+        // the board is not a peer of the map — it is the same page rendered as
+        // a list (`/live-map?view=board`, the same route, the same data, a
+        // different view). A submenu says exactly that; a third top-level entry
+        // would claim a separate destination and break the cap.
+        //
+        // Gated on `liveMap` because it IS the live map: a manager who may not
+        // see the map may not see the board.
+        children: [
+          {
+            label: "Live Board",
+            href: "/live-map?view=board",
+            icon: ListChecks,
+          },
+        ],
       })
     }
 
