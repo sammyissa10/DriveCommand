@@ -83,12 +83,28 @@ export default async function DriverInspectionPage({
 
   const view = gate.data;
 
-  // A blocked trip has its own screen. Sending the driver into a checklist they
-  // have already failed would be a loop with no exit.
-  if (view.outcome === 'BLOCKED') {
-    redirect(`/inspection/${dispatchId}/blocked`);
-  }
-
+  // ── There is deliberately NO redirect on BLOCKED here (quick-549) ──────────
+  //
+  // This page used to send a BLOCKED trip straight to `./blocked` during render.
+  // It must not, and each of the following is a reason someone would otherwise
+  // put it back:
+  //
+  //   1. Every BLOCKED side effect hangs off SUBMIT, not off the gate read.
+  //      `recordInspectionDefects`, `notifyDispatchOfBlock` and the
+  //      `inspection.failed` catalogue emit all live in `applyVerdictSideEffects`,
+  //      which is called from `handleSubmitInspection` — never from a render.
+  //   2. A render-time redirect skipped every one of them (quick-548). The
+  //      evidence was production: zero `carrier_truck_defects` rows across all
+  //      tenants, while FAILED steps and BLOCKED instances existed. A failed
+  //      brake check left nothing durable against the truck.
+  //   3. The driver must therefore be allowed to reach `Review & sign` and
+  //      submit. BLOCKED has `canStart: false` and a non-null
+  //      `playbookInstanceId`, so it falls through below and renders the
+  //      checklist — which is the intent, not an oversight.
+  //   4. The blocked screen is still reached, from `InspectionClient.onOutcome`,
+  //      AFTER the submit that ran the side effects. That is the only route to
+  //      it now, and it is the correct one.
+  //
   // Already clear — inspection not required, overridden, a valid one earlier
   // today, or this one already passed. Say which, and offer the road.
   if (view.canStart) {
