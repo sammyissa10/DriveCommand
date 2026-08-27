@@ -371,14 +371,39 @@ function PickerRow({
   selected: boolean;
   onSelect: () => void;
 }) {
+  /*
+    quick-561 — a blocked option cannot be chosen.
+
+    It used to be fully selectable: `onClick` fired unconditionally and the
+    refusal only surfaced further down the page, as a disabled Create button
+    with a `blockedReason` beneath it. So a dispatcher could pick a truck whose
+    insurance had expired, get no feedback at the point of the tap, and find out
+    at the bottom of the form. The verdict was always right; it just arrived
+    after the decision instead of on it.
+
+    NOT `disabled={blocked}` — `blocked && !selected`. Availability is a
+    function of the planned day and these pickers re-fetch on every change, so
+    an option that was legal when it was picked can become blocked when the
+    start time moves. Disabling it outright would leave that selection on screen
+    and unremovable, which is worse than the problem being fixed. A selected
+    row stays live so it can always be changed or, for the optional trailer,
+    toggled off.
+
+    The refusal logic itself is untouched: `validateCommit` on the server is
+    still the only thing that decides, exactly as this file's header describes.
+    This stops the selection; it does not re-derive the verdict.
+  */
+  const unselectable = blocked && !selected;
+
   return (
     <button
       type="button"
       onClick={onSelect}
+      disabled={unselectable}
       aria-pressed={selected}
       className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors ${
         selected ? 'bg-primary/10 ring-1 ring-inset ring-primary' : 'bg-muted/40 hover:bg-muted'
-      }`}
+      } ${unselectable ? 'cursor-not-allowed opacity-55 hover:bg-muted/40' : ''}`}
     >
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
