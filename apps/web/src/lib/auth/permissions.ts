@@ -221,6 +221,23 @@ export const PERMISSION_GATED_PATHS: Array<{
   { path: '/carrier/reports/driver-pay', permission: 'driverPayReport' },
   { path: '/carrier/reports/aging', permission: 'arAgingReport' },
   { path: '/carrier/reports/performance', permission: 'performanceReport' },
+  // quick-554. quick-553 gave Today's Trips a sidebar link gated on
+  // `performanceReport` and this list was not updated, so the link vanished for a
+  // restricted MANAGER while the page stayed reachable by typing the URL.
+  //
+  // It SHARES `performanceReport` rather than getting a key of its own — the
+  // report page's own header argues that, and a new key would ship granting
+  // nothing: `getPermissions()` merges stored permissions over
+  // DEFAULT_MANAGER_PERMISSIONS and `hasPermission` is default-all-true, so every
+  // existing manager in every tenant would read as permitted on the deploy that
+  // added it, while three hand-written pickers gained a row and only one of them
+  // is type-checked. That is DEC-16's failure mode exactly.
+  //
+  // NOTE: this list gates PAGES only. The middleware matcher never sees
+  // `/api/v1/carrier/...` as a `/carrier/...` prefix, so an entry here does
+  // NOTHING for the API behind the page — which is why every report route
+  // handler now checks `hasPermission` itself.
+  { path: '/carrier/reports/todays-trips', permission: 'performanceReport' },
   { path: '/live-map', permission: 'liveMap' },
   { path: '/ai-documents', permission: 'aiDocuments' },
 ];

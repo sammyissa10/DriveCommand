@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/supabase';
+import { resolveReportAccess } from '@/lib/carrier/report-access';
 import { logger } from '@/lib/logger';
 import { getPerformanceReport } from '@/lib/carrier/reports';
 
 export async function GET(req: NextRequest) {
-  const session = await getSession();
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const orgId = session.tenantId;
-  if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
+  // quick-554: 401 no session / 403 wrong role or missing permission / 403 no tenant.
+  // Middleware gates the PAGE at /carrier/reports/...; it never sees this path.
+  const access = await resolveReportAccess('performanceReport');
+  if (!access.ok) return access.response;
+  const { orgId } = access;
 
   try {
     const { searchParams } = req.nextUrl;
