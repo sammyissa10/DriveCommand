@@ -43,7 +43,11 @@ export async function GET(req: NextRequest) {
           ...(unreadOnly ? { read: false } : {}),
           OR: userFilter,
         },
-        orderBy: { createdAt: 'desc' },
+        // Unread first, then newest — the driver twin of the same one-line
+        // change on `/api/v1/carrier/notifications` (quick-561). Fixing the
+        // owner bell and leaving this one would have been arbitrary: same
+        // query shape, same defect, same remedy. Limit unchanged.
+        orderBy: [{ read: 'asc' }, { createdAt: 'desc' }],
         take: limit,
       }),
       tenantPrisma.inAppNotification.count({

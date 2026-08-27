@@ -26,7 +26,27 @@ export async function GET(req: NextRequest) {
           ...(unreadOnly ? { read: false } : {}),
           OR: userFilter,
         },
-        orderBy: { createdAt: 'desc' },
+        /*
+          Unread first, then newest — quick-561.
+
+          This was `createdAt: 'desc'` alone, and on the demo tenant that meant
+          the panel's 20 rows were 20 read `Dispatch Generated` notices, the
+          newest of them from 16 June, while all five unread items — every one
+          of them a blocked trip, a failed brake check or a new trip — sat
+          outside the window. 71 notifications, 5 unread, none of the 5 visible.
+
+          `read: 'asc'` puts false before true, so the unread set leads and the
+          remainder of the budget still fills with the most recent read items.
+
+          The LIMIT IS DELIBERATELY UNCHANGED at 20. It was never the problem —
+          a smaller window would have hidden the same five items slightly
+          faster. What was wrong was the order they competed in.
+
+          Note this is a genuinely new capability, not a flag that already
+          existed: `?unread=true` is a FILTER and is what the bell calls for its
+          badge count. Nothing before this could sort.
+        */
+        orderBy: [{ read: 'asc' }, { createdAt: 'desc' }],
         take: limit,
       }),
       tenantPrisma.inAppNotification.count({
