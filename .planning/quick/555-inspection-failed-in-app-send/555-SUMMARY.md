@@ -241,6 +241,22 @@ Audience resolution, subscriptions, `defaultRecipients` and
    migration, one user cannot receive two differently-triggered notifications
    about one trip. Needs new enum values — DDL, and a product decision.
 5. **Every `FAILED` row in production history was recoverable** only because
-   `errorMessage` is populated. Nothing queries it. A periodic check on
+   `errorMessage` is populated. ~~Nothing queries it. A periodic check on
    `NotificationSendLog WHERE status='FAILED'` would have surfaced all eleven
-   instances of this defect class years earlier; there is no such check.
+   instances of this defect class years earlier; there is no such check.~~
+
+   > **CORRECTED by quick-556 — the claim above was wrong.** Two surfaces *do*
+   > read that column, and both were reachable the whole time: the SysAdmin
+   > send log at `/notifications` (filter by status, tenant, trigger, recipient
+   > and date; click a FAILED row to expand its `errorMessage`) and a
+   > tenant-scoped equivalent on the owner's own `/settings/notifications` page.
+   >
+   > The real defect was narrower and less obvious: **both surfaces are
+   > pull-only**, and the one push-ish signal — the sysadmin health tile — had a
+   > **24-hour window** and a **`failureRate > 5%` gate** on its warning banner.
+   > 8 failures across 357 sends is 2.24%, so the gate suppressed every failure
+   > this system has ever had, and the window made each one invisible the day
+   > after it happened. Nobody looked because there was nothing telling them to.
+   >
+   > quick-556 fixed the tile rather than building anything new. Details in
+   > `.planning/quick/556-surface-notification-failures/556-SUMMARY.md`.
