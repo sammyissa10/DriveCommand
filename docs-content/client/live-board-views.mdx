@@ -1,0 +1,64 @@
+---
+slug: live-board-views
+title: Reading the Live Board
+summary: The live map as a list — every driver, or every truck, on one screen, with the trip, the next stop, how far through they are, and anything that needs you.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Reading the Live Board
+
+<Callout variant="info">
+The map answers *where is everyone*. The board answers *how is everyone doing* — which is the question you actually have at nine in the morning. It is the same information, listed instead of pinned.
+</Callout>
+
+## Getting there
+
+In the left-hand menu, under **Intelligence**, choose **Live Board**. If you are already on the Live Map, the **List** control switches you across without losing your filters.
+
+## The two views
+
+At the top of the list you can switch between **Drivers** and **Trucks**. It is the same day either way — only what each row leads with, and what it thinks is worth telling you, changes.
+
+<ComparisonTable
+  headers={["", "Drivers", "Trucks"]}
+  rows={[
+    ["Each row leads with", "The driver, and their phone number", "The unit number and what it is"],
+    ["The middle column shows", "Current or next stop", "Current location"],
+    ["Then", "Stops done out of total, and when the next window closes", "Hours on duty today, and the next date something expires"]
+  ]}
+/>
+
+Use **Drivers** when you are working the day. Use **Trucks** when you are asking which vehicles are tied up, or what is coming due.
+
+<Callout variant="warning">
+The **Next due** column on the Trucks view is about paperwork — licence, registration, insurance — and it says which one it is showing. It is not a service schedule. If nothing is on file it says **Nothing on file** rather than implying everything is fine.
+</Callout>
+
+## Reading a row
+
+| What you see | What it means |
+|---|---|
+| **Planned** / **In Progress** | Whether the driver has started |
+| **Current or next stop** | Where they are, or where they are heading, from what they have marked done |
+| **Stops** | How far through the run they are — 4 / 12 |
+| **Window closes** | When the appointment at the next stop runs out |
+| Inspection | Whether a pre-trip walkaround was needed, and how it went |
+| On time | Whether they are running to their appointment times |
+| **GPS** | How recently the truck reported its position |
+
+<Callout variant="tip">
+Every badge on this screen is a colour **and** a symbol **and** a word. Cover the colour with your thumb and it still reads — which matters on a bright screen in a yard, and matters to anyone who does not see red and green as different.
+</Callout>
+
+## Two things it will not pretend to know
+
+- **Where the truck is** comes from the stops the driver has marked, not from a guess. When there is nothing to go on it says so rather than naming a town it is not sure about. The GPS age is a separate figure so it is never mistaken for position.
+- **Window closes** is the appointment time, not an estimated arrival. Nothing here is predicting when the driver will get there.
+
+## When the board cannot load
+
+If the vehicle positions cannot be fetched, the board says so. It will not show you an empty list as though your fleet were idle — an empty list means empty, and a failure says failure.
+
+<FeatureCard slug="todays-trips-report" />
+<FeatureCard slug="live-map" />

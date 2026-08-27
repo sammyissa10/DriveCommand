@@ -1,0 +1,70 @@
+---
+slug: todays-trips-report
+title: Reading the Today's Trips report
+summary: Every trip going out today, plus anything still running from yesterday, sorted so the ones that need you are already at the top.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Reading the Today's Trips report
+
+<Callout variant="info">
+One screen, once a morning. It lists every trip departing today plus anything still running from earlier, and it puts the problems first so you do not have to go looking for them.
+</Callout>
+
+## Getting there
+
+On a phone or a narrow window: **More**, then under Reports, **Today's Trips**. On a wide screen, search for *Today's Trips* with the command search (<KeyboardShortcut keys="Cmd+K" />) or go to Reports.
+
+## The order is the point
+
+The report is sorted by how much attention each trip needs, not by time or by name:
+
+<ProcessDiagram steps={[
+  { label: "Failed inspection", description: "Something critical failed. The trip cannot start." },
+  { label: "Not started", description: "The departure time has come and the driver has not rolled." },
+  { label: "Behind schedule", description: "Running, and an appointment window has been missed." },
+  { label: "On track", description: "Running, nothing outstanding." },
+  { label: "Completed", description: "Done. Nothing left to do." }
+]} />
+
+Cancelled trips sit last. A cancelled trip is not a trip that needs attention — it is a trip that is over.
+
+## What each column tells you
+
+| Column | What it is |
+|---|---|
+| Attention | The one-word summary the sort is based on |
+| Trip / Client / Driver / Truck | Who is doing what, for whom |
+| Planned start / Actual start | What you asked for, and what happened. **Not started** where they have not rolled |
+| Inspection | Whether a walkaround was required and how it went |
+| Stops | Stops completed out of the total |
+| On time | Whether the appointments are being met |
+| Exceptions | Missed windows, skipped stops and failed inspection items, counted |
+| Current location | Where they are, or where they are heading |
+| Status | Planned, in progress, completed |
+
+## "No windows set"
+
+<Callout variant="warning">
+Where a trip has no appointment times on any of its stops, the on-time column says **No windows set** in plain grey — never green, and never blank.
+</Callout>
+
+This matters more than it looks. Green would be telling you the day is fine when the truth is that nobody set any times, and blank reads as a bug. If you want on-time figures for a customer, the appointment windows have to be on the stops in the first place; the report will not invent them.
+
+## Behind schedule, precisely
+
+A trip is behind schedule when it is running and a stop that is not finished has missed its appointment window — either the driver arrived after the window closed, or the window has closed and they have not arrived.
+
+A driver who arrived **inside** the window and is still sitting there is not behind schedule. They are waiting to be unloaded, which is a different problem with a different answer, and calling it lateness would put the delay on the driver instead of on the dock. Arriving exactly as the window closes counts as on time, the same way it does in your performance report — the two screens use the same rule so they can never tell you different things about the same trip.
+
+## A finished trip that ran late
+
+A completed trip that missed a window still says **Behind schedule** in the on-time column while sorting to the bottom with the other finished work. That is deliberate: it did run late, and that is worth keeping — but there is nothing left to do about it this morning.
+
+## Narrowing it down
+
+Filter by status, driver, client or inspection outcome. **Columns** hides what you do not want to see, and **Export** takes what is on screen out to a file.
+
+<FeatureCard slug="live-board-views" />
+<FeatureCard slug="carrier-reports-performance" />

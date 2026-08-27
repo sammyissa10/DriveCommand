@@ -1,0 +1,76 @@
+---
+slug: facility-matching
+title: What to do when a stop address is not recognised
+summary: How DriveCommand decides it already knows a delivery point, what to do when it is not sure, and why it never adds a new place to your list without you.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# What to do when a stop address is not recognised
+
+<Callout variant="info">
+Every stop on an imported document has to point at a place you already have on file, or at a new one you create. Most of them sort themselves out. This article is about the ones that do not.
+</Callout>
+
+## What you will see
+
+On the stop list, each stop shows one of two things on the right:
+
+- **Linked** — the place was recognised. Nothing for you to do.
+- **New**, with **needs a look** beside the name — it was not recognised, and it is waiting for you.
+
+The count at the top says the same thing in one line: *6 matched*, or *1 needs a look*.
+
+<Callout variant="warning">
+A stop with no place attached will stop you creating the trip. The button at the bottom says **1 stop needs a facility** and will not let you past. This is the only kind of problem on that screen that blocks you — everything else is a note you can read and move on from.
+</Callout>
+
+## Fixing one
+
+<StepFlow>
+  <StepFlow.Step title="Tap the stop">
+    On the stop list, tap the row marked **needs a look**. The stop opens with everything the document said about it.
+  </StepFlow.Step>
+  <StepFlow.Step title="Press Resolve">
+    Beside the address you will see **Resolve**. Press it.
+  </StepFlow.Step>
+  <StepFlow.Step title="Pick a match, or create the place">
+    If there are near matches in your list, you get them with what differs about each one and how close it is. Nothing is linked until you pick one. If there is nothing close, you get a short form already filled in from the document — you only ever see the boxes the document actually filled.
+  </StepFlow.Step>
+  <StepFlow.Step title="Confirm">
+    Press **Link** on the match you want, or **Create and link** on the form. The stop turns to **Linked** and the count at the top goes down by one.
+  </StepFlow.Step>
+</StepFlow>
+
+If none of the offered matches is right, there is a **None of these — create a facility** link that takes you to the form, and **Back to matches** to change your mind.
+
+## Why it does not just create the place for you
+
+<Callout variant="danger">
+DriveCommand will **never** add a place to your facility list on its own. It always waits for you to tap.
+</Callout>
+
+That is deliberate, and it is the most important rule in this part of the product. A facility list quietly filled with near-duplicates — the same dealership under three slightly different spellings — cannot be untangled afterwards, and it poisons everything that depends on it: your route matching, your reports, your mileage. One extra tap on the first day is cheaper than that, permanently.
+
+## Why it gets faster
+
+When you confirm a place for a stop that carries a customer's own code for it, DriveCommand remembers the pairing. The next time that code appears on a document from that customer, the stop is linked with no question asked.
+
+<ProcessDiagram steps={[
+  { label: "First time", description: "The code is new. You confirm the place once." },
+  { label: "Next time", description: "The same code arrives. The stop links itself, silently." },
+  { label: "From then on", description: "That stop never asks you again." }
+]} />
+
+This is why a run that took real work on day one takes almost none by the end of the week. It also means the first import from a new customer is the one worth slowing down for — what you confirm there is what you never have to confirm again.
+
+## When two places look the same
+
+If the document's address matches two of your places equally well, DriveCommand will not choose. It asks, because guessing between two real addresses is exactly the case where a wrong guess sends a truck to the wrong door.
+
+## A note on street numbers
+
+Matching pays attention to the things that actually distinguish an address — the street number and the postcode, not just the street name. *4141 S 108th St* and *4155 S 108th St* are two different customers, and *N Green Bay Rd* is not *W Green Bay Rd*. If a match looks obviously wrong to you, trust yourself and create the place instead.
+
+<FeatureCard slug="document-import" />
+<FeatureCard slug="carrier-facilities" />

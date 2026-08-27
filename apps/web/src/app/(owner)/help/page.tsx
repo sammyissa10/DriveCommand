@@ -1,6 +1,7 @@
 import { HelpHeader } from "@/components/help/HelpHeader"
 import { HelpSearchInline } from "@/components/help/HelpSearchInline"
 import { HelpCategoryGrid } from "@/components/help/HelpCategoryGrid"
+import { HelpGuides } from "@/components/help/HelpGuides"
 import { ContactSupportCard } from "@/components/help/ContactSupportCard"
 import { ReplayTourButton } from "@/components/onboarding/tour/ReplayTourButton"
 
@@ -34,6 +35,15 @@ export default function HelpPage() {
 
       {/* Category grid */}
       <HelpCategoryGrid />
+
+      {/*
+        The written articles. Until Phase 12 nothing on this page — or anywhere
+        else in the app — linked to them: the grid above points only at the
+        stub articles, which render "Article content coming soon." See the
+        header of HelpGuides for how that was found and why the list is built
+        from the feature registry rather than from the directory.
+      */}
+      <HelpGuides />
 
       {/* Contact Support CTA */}
       <ContactSupportCard />

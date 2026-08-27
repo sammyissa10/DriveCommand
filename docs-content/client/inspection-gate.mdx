@@ -1,0 +1,85 @@
+---
+slug: inspection-gate
+title: Turning the pre-trip inspection on or off
+summary: Make drivers walk the truck before a trip can start, decide whether a critical failure stops them, and override it when you need the load to move.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Turning the pre-trip inspection on or off
+
+<Callout variant="info">
+When this is on, a driver cannot start a trip until they have walked the truck and answered every item on your checklist. What they found is kept against the vehicle, so a defect raised on Tuesday morning is still there on Friday when somebody asks.
+</Callout>
+
+## Where the settings are
+
+Open **Settings**, then **Operations**. There are two switches on that page and they work together.
+
+### Require a pre-trip inspection
+
+Off by default. Turn it on and, in the app's own words: *drivers complete a full-screen walkaround before a trip can start. An inspection stays valid for 24 hours on the same truck, so a second trip the same day does not ask again.*
+
+<Callout variant="tip">
+Twenty-four hours means twenty-four hours — not "today". A driver who inspects at 23:50 is not asked again at ten past midnight. That is on purpose: the alternative punishes the night shift for doing it right.
+</Callout>
+
+### Block the trip when a critical item fails
+
+On by default, and it only does anything while the first switch is on.
+
+- **On** — a failed critical item stops the trip and alerts dispatch. An owner or manager can still override it from the trip, with a written reason that stays on the record.
+- **Off** — a critical failure is written against the truck, and the driver carries on.
+
+## Deciding which items are critical
+
+Being on the checklist and being able to stop a trip are two different things. An item stops a trip only if it is marked as one that blocks dispatch, which you do when you build the checklist under **Checklists**.
+
+<Callout variant="warning">
+If none of your inspection items is marked that way, the Operations page tells you so directly — turning both switches on protects nothing, because there is no item that can fail hard enough to stop anybody. Worth checking before you rely on it.
+</Callout>
+
+## What happens on the day
+
+<ProcessDiagram steps={[
+  { label: "Everything passes", description: "The trip starts. Nothing else happens." },
+  { label: "Something non-critical fails", description: "The trip starts and the fault is logged against the truck." },
+  { label: "Something critical fails", description: "The trip is blocked, dispatch is alerted, and the driver is told what failed." }
+]} />
+
+## Overriding a blocked trip
+
+Sometimes the load has to move and you know the truck is safe — the failed item was a mis-tap, or it has already been fixed on the yard.
+
+<StepFlow>
+  <StepFlow.Step title="Open the trip">
+    Find it on the Today's Trips report or the Live Board — a blocked trip is sorted to the top of both — and open the trip itself.
+  </StepFlow.Step>
+  <StepFlow.Step title="Find the Pre-trip inspection section">
+    It sits near the top of the trip, under the driver and truck. It tells you where the inspection stands, and what failed if something did.
+  </StepFlow.Step>
+  <StepFlow.Step title="Press Override inspection">
+    Only an owner or a manager sees this. It says what it does: it lets this trip start without a passing inspection.
+  </StepFlow.Step>
+  <StepFlow.Step title="Write the reason">
+    A reason is required, and a one-word reason will not be accepted. Your name, your reason and the time are kept on the trip permanently — for example *Mechanic replaced the marker lamp on site at 05:10*.
+  </StepFlow.Step>
+  <StepFlow.Step title="The driver can start">
+    The failed item stays on the record. The override sits beside it, not instead of it.
+  </StepFlow.Step>
+</StepFlow>
+
+## Who this affects
+
+| Person | What changes |
+|---|---|
+| Drivers | They get a walkaround to complete before the trip will start |
+| Dispatchers and managers | They are alerted when a trip is blocked, and can override with a reason |
+| Owners | Same as managers, plus the two switches |
+
+## Turning it off again
+
+Switching **Require a pre-trip inspection** off stops any new trip asking for one. It does not delete what has already been recorded — inspections that were done, and defects that were found, stay on the record.
+
+<FeatureCard slug="driver-trip-start" />
+<FeatureCard slug="checklists" />

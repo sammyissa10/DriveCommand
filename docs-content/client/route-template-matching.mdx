@@ -1,0 +1,86 @@
+---
+slug: route-template-matching
+title: Using and updating route templates
+summary: How DriveCommand spots that today's import is a run you already have saved, what applying that saved run changes, and how to save a new one.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Using and updating route templates
+
+<Callout variant="info">
+A route template is a run you drive regularly, saved once — the order of the stops, the appointment windows, the paperwork each stop needs, and any standing instruction like *call ahead 30 minutes*. When today's document turns out to be that same run, you should not have to set any of it up again.
+</Callout>
+
+## What you will see on the summary card
+
+The **Route** row on the import summary tells you one of three things.
+
+<ComparisonTable
+  headers={["What it says", "What it means", "What to do"]}
+  rows={[
+    ["A route name, with a Change link", "One of your saved runs is a clear match for today's stops", "Read the line underneath, then press Use this template"],
+    ["A short list of routes to choose from", "Two or three could fit and none of them is obvious", "Pick one, or carry on without"],
+    ["Nothing saved looks like today's run", "No saved run is close enough to be worth offering", "Press Continue without a template"]
+  ]}
+/>
+
+Underneath a matched route you get the comparison in one line — for example *6 matched · 1 not on today's manifest* — so you can see what the difference is before you commit to anything.
+
+<Callout variant="warning">
+Offering you a route and **applying** it are two different things. Nothing about your stop list changes until you press **Use this template**. If you never press it, the import stays exactly as the document read.
+</Callout>
+
+## What applying a template changes
+
+When you press **Use this template**, the confirmation tells you exactly what is about to happen, stop by stop. In plain terms:
+
+**The saved route decides**
+
+- the order the stops are driven in
+- the appointment windows
+- which paperwork each stop needs
+- any standing note that belongs to that stop every time
+
+**Today's document decides**
+
+- the quantities
+- the reference numbers
+- the notes written on today's sheet
+
+That split is the whole point. The route is what is always true about the run; the document is what is true about today.
+
+<Callout variant="tip">
+A window printed on today's document is kept as printed. The saved route only supplies a window where the document had none.
+</Callout>
+
+### Stops that do not line up
+
+- A stop on today's document that is **not** on the saved route goes to the end of the list badged **New**, and you can move it to where it belongs.
+- A stop on the saved route that is **not** on today's document stays in the list marked skipped. It is not driven, but one tap keeps it if the customer just forgot to list it.
+
+## How it decides two runs are the same
+
+It compares the actual places, not the names printed on the page. *Russ Darrow Honda* can be three dealerships in one city, so a name would match the wrong one sooner or later; the recognised place cannot.
+
+Two things follow from that, and they are worth knowing because they explain behaviour that otherwise looks odd:
+
+- **A stop you have not recognised yet counts against the match.** Sort the unrecognised stops out first and the route match usually improves on its own.
+- **Stop counts matter.** A saved run of four stops and a document of twelve are not the same run, even if all four appear in the twelve, and the match is marked down for it.
+
+The order of the stops is deliberately ignored when comparing — the order is something the saved route decides, not something the document should be judged on.
+
+## Saving today's run as a route
+
+If no saved route fitted and the run is one you will drive again, you are offered **Save this run as a route template** once the trip has been created. One tap. It saves the stops in the order you actually put them in.
+
+<Callout variant="info">
+There is also a workspace setting that creates a route automatically after every import that did not use one. **It is off, and there is currently no screen to switch it on** — see [Setting where your trips end](/help/end-stop-policy) for the same situation with two other settings. Ask support if you want it enabled for your workspace.
+</Callout>
+
+## Changing your mind
+
+The **Change** link beside a matched route opens the full list of routes that could apply — not just the top few — so you can pick a different one. If you have already told an import to use no route at all and want to think again, use that same control; going back to the page will not undo the decision, because a decision you made is deliberately kept rather than recalculated behind you.
+
+<FeatureCard slug="document-import" />
+<FeatureCard slug="route-templates" />

@@ -1,5 +1,5 @@
 # DriveCommand — Technical Documentation
-*Last updated: April 5, 2026*
+*Last updated: August 26, 2026*
 
 ---
 
@@ -462,3 +462,130 @@ Driver-facing carrier operations are surfaced in the mobile app. The driver sees
 4. **Computed fields stored, not recomputed** — Revenue, pay amounts, and distances are calculated once and stored. No re-computation at query time.
 5. **BOL/POD enforcement at API level** — Document requirements are enforced in API route handlers (returning 422), not via database constraints.
 6. **Orphan loads blocked** — Every CarrierLoad must have a client_id. The API rejects loads without client association.
+
+---
+
+## 11. Document Import
+
+*Added v6.0.0. Spec: `docs/specs/DocumentImport_TechnicalSpec_v1.md`. Decisions: `.planning/document-import/DECISIONS.md` (DEC-1 … DEC-18). Per-phase records: `.planning/document-import/`.*
+
+### Overview
+
+Document Import turns the paperwork a carrier is sent — a photographed manifest, a rate confirmation PDF, a CSV export — into a `CarrierDispatch` with its stops, quantities, references and documents already populated. It is the fastest path from a 5:30am photo to a dispatched trip, and it exists because typing a twelve-stop manifest by hand is the single largest daily data-entry cost a small carrier has.
+
+Everything it does is a **resolution**: reading a document produces names and addresses, and each one has to be resolved onto an entity the tenant already owns (a client, a contract, a facility, a route template) or onto one a human explicitly creates. No resolution ever creates an entity on its own except where an exact, unambiguous match exists.
+
+### Entity flow
+
+```
+ upload (1..n files)  ->  DocumentImport row (UPLOADED)
+        |                        |
+        |                        v
+        |                 DocumentImportPage (one per page, SHA-256 keyed cache)
+        v
+ extraction (vision model or CSV parse)
+        |
+        v
+ rawExtraction  ->  canonical shape  ->  reviewedExtraction   <- every human edit
+        |                                      |
+        |                        resolution_provenance (jsonb)
+        |                          · client   · contract
+        |                          · template · endStop
+        |                          · stops[]  (facility links + fingerprints)
+        v
+ COMMIT (one transaction)
+   1 facilities + external references
+   2 CarrierDispatch
+   3 CarrierStop rows in sequence, end stop last (is_end_stop)
+   4 CarrierLoad
+   5 CarrierDocument rows (trip level + per-stop page slices)
+   6 import -> COMMITTED, created ids recorded
+   7 route template create / update
+   ---- outside the transaction ----
+   8 notifications (trip.assigned)
+```
+
+Lifecycle: `UPLOADED → EXTRACTING → NEEDS_REVIEW → READY → COMMITTING → COMMITTED`, with `FAILED` and `CANCELLED` as terminal branches and a full rollback returning a failed commit to `NEEDS_REVIEW`.
+
+**New tables:** `document_imports`, `document_import_pages`, `facility_external_references`, `document_profiles`, `carrier_truck_defects`, `route_matrix_cache`.
+
+**Extended:** `Tenant` (5 settings columns), `route_templates` (`end_stop_policy`, `end_stop_facility_id`, `source_import_id`, `last_applied_at`, `application_count`), `dispatches` (`source_import_id`, `end_stop_policy`, `inspection_required`, three `inspection_overridden_*`), `stops` (`is_end_stop`, `appointment_is_firm`, references/line items/page numbers), `facilities` (`is_driver_residence`, `resident_driver_id`, `driver_residence` type).
+
+### Tenant settings
+
+All five are columns on `Tenant` — there is no tenant-settings table in this schema (audit B3). Defaults verified against `information_schema` on production, per DEC-17.
+
+| Setting | Default | What it changes | Who it affects | UI |
+|---|---|---|---|---|
+| `requirePreTripInspection` | `false` | A driver must complete the walkaround before `Trip.start` is allowed | Drivers (gated), dispatchers (alerted) | `/settings/operations` |
+| `blockTripStartOnFailedInspection` | `true` | A **critical** failure blocks the start; owner/manager may override with a reason. Off = the defect is logged and the trip proceeds. Inert while inspections are off | Drivers, dispatchers | `/settings/operations` |
+| `defaultEndStopPolicy` | `'NONE'` | The first rung of end-stop resolution: `RETURN_TO_ORIGIN` · `HOME_BASE` · `DESIGNATED_PARKING` · `DRIVER_RESIDENCE` · `NONE` | Every trip created from an import | **None — database only** |
+| `homeBaseFacilityId` | `null` | The facility `HOME_BASE` resolves to | Every trip using `HOME_BASE` | **None — database only** |
+| `autoCreateRouteTemplatesFromImports` | `false` | After a commit that used no template, creates one from the committed stops, guarded against near-duplicates | Owners/dispatchers (a new template appears) | **None — database only** |
+
+Three of the five have no settings screen. That is a product gap, recorded in the Phase 12 deferred list, and the help articles say so rather than describing a screen that does not exist.
+
+### API routes added
+
+Every route is mirrored on both surfaces from one transport-neutral handler module (`lib/document-import/handlers.ts`, `lib/carrier/inspection-handlers.ts`): `/api/v1/carrier/*` authenticates by session cookie, `/api/mobile/carrier/*` by Bearer token. 49 route files in total.
+
+| Route (v1; mobile mirrors under `/api/mobile/carrier/owner/`) | Purpose |
+|---|---|
+| `document-imports` | List · create (dedupe check, 409 on duplicate) |
+| `document-imports/upload-url` | Presigned single PUT, tenant-prefixed key, 25MB cap |
+| `document-imports/[id]` | Read · cancel |
+| `document-imports/[id]/extract` | Run or resume extraction (rate-limited per tenant) |
+| `document-imports/[id]/pages` | Re-shoot / replace one page |
+| `document-imports/[id]/resolution` | The whole computed view: client, contract, template, end stop, stops |
+| `document-imports/[id]/resolution/client` · `/contract` | Select, create-and-select, spot contract |
+| `document-imports/[id]/stops` | Facility link (T3 pick) |
+| `document-imports/[id]/stops/facility` | Create-and-link (T4) |
+| `document-imports/[id]/stops/review` | The 11-field editor writes |
+| `document-imports/[id]/stops/bulk` | Bulk apply over `stopIndexes[]` |
+| `document-imports/[id]/stops/order` | Reorder (server write; array order *is* running order) |
+| `document-imports/[id]/template` · `/template/offer` | Select · apply · reset · post-commit offer |
+| `document-imports/[id]/end-stop` | `select` · `reset` (delete the stored key) |
+| `document-imports/[id]/optimisation` | Suggestion (GET) · accept (POST) |
+| `document-imports/[id]/commit` | The atomic commit |
+| `dispatches/[id]/inspection` | Gate state |
+| `dispatches/[id]/inspection/checklist` | Open / answer / submit |
+| `dispatches/[id]/inspection/override` | Owner-or-manager override with reason |
+| `templates/[id]/optimisation` | Template-level suggestion + accept |
+| `live-board` | Board facts, three projections |
+| `reports/todays-trips` | The report |
+| `cron/trip-reminders` | Daily `trip.reminder` |
+
+### Microflows
+
+1. **Extraction with a per-page cache** — each page is hashed independently; a re-run re-reads only the pages that changed. Photos are per-page; a PDF is a single cache unit (no rasteriser on the hot path).
+2. **Consignment merge** — same shipment reference on two pages → one stop, quantities summed, page span kept; different reference → repeated stop, not summed; no reference → warn and do not sum.
+3. **Dedupe at extraction, not at commit** — SHA-256 over source bytes plus tenant, document number and document date, enforced by a database index. A duplicate offers *open existing* or *import as a correction* (the earlier import is superseded).
+4. **Client/contract resolution** — only an exact normalised name match auto-selects (fuzzy is capped at 0.99 and can never reach 1.0). A rate confirmation with no standing contract offers a one-time spot contract, derived-labelled from its one-day term, never from its name or its provenance (DEC-12).
+5. **Facility ladder (T1–T4)** — learned external reference → normalised address match (with reference backfilled) → fuzzy proposal requiring a tap → pre-filled create form requiring a tap.
+6. **Template matching** — Jaccard over resolved facility IDs, order ignored, ×0.8 when stop counts differ by more than 30%; ≥0.75 auto-selects, 0.45–0.75 offers candidates, below that offers only *continue without*.
+7. **End stop** — tenant default → template override → per-trip choice; derived on read, committed at the mutation boundary, materialised at commit as a real `CarrierStop` (`stop_type='layover'`, `is_end_stop=true`, sequence last).
+8. **Optimisation** — OSRM `/table` over the resolved facility set, cached L1 (in-process, 24h) + L2 (`route_matrix_cache`, 30 days, written only by the two accept mutations). Offered only above a floor of 5 miles **or** 20 minutes.
+9. **Atomic commit** — validation (blocking vs warning), one transaction, full rollback to `NEEDS_REVIEW` on any failure, notifications enqueued outside it.
+10. **Inspection gate** — required? → owner override? → a valid one within the rolling 24 hours for this truck by this driver? → otherwise the full-screen walkaround. Outcomes: pass starts · non-critical starts and logs defects · critical blocks when the tenant setting says so.
+11. **Notification triggers** — ten on the existing catalogue, dispatched after the response, deduplicated on a rolling 5-minute lookback that fails open.
+12. **Board and report** — one data source (`loadBoardFacts`) → three projections; attention rank is a derived number, not a comparator.
+
+### Critical architectural rules
+
+1. **T3 and T4 never create a facility without a human tap.** Enforced by the shape of the verdict union — the T3/T4 members carry no facility id — not by a check an edit could drop. A polluted facility table is unrecoverable and destroys the external-reference table's value permanently.
+2. **The end stop is never a consignment.** It is derived, committed at a mutation, and materialised at commit. Putting it in `reviewedExtraction.consignments` breaks template scoring, the template-ghost predicate and reorder, all three at once.
+3. **Array order in `reviewedExtraction.consignments` IS the running order.** Reorder is a server write that permutes `resolution_provenance.stops` alongside it, carrying each `stopFingerprint` untouched so a stale link is still dropped.
+4. **A skipped stop must not reach the scorer; an unresolved one must.** Opposite rules on the same function. Dropping unresolved stops lets a half-read manifest score 1.0 against a template covering only the half that was read.
+5. **Template *selection* auto-collapses; template *application* is always an explicit tap.** Applying rewrites the running order, so reading collapse as apply would put the module's largest write on a GET.
+6. **A stored slot decision short-circuits the view on the key's presence, so undoing one means deleting the key.** Client, contract, template and end stop all work this way: a control that changes a stored decision is a POST, never a re-fetch.
+7. **Read `pg_constraint` before writing any enum-ish carrier column.** These tables carry CHECKs seeded in early migrations that do not track the app's vocabulary. `facility_external_references.resolved_via` admits only `T1|T2|T3|T4`; `stops.stop_type` admits five values, `route_template_stops.stop_type` only four; `shipper` and `receiver` do not exist as facility types. A faked database in a unit test is not evidence about SQL.
+8. **Filter a picker; mask a trip's own stops.** A driver residence is dropped from pickers, but on a trip it stays and is masked — name, street, city, postcode **and coordinates**. Dropping the row would delete the end stop and hide the untracked return leg the feature exists to track.
+9. **`driverResidences` is the one default-FALSE permission** and does not go through `hasPermission`, which resolves a manager as default-allow. `fullAccess` does not grant it either.
+10. **Optimisation never mutates.** Both accept paths recompute the suggestion server-side rather than applying an order the request carried. Declining is the absence of a request.
+11. **A `@db.Date` column is a calendar date.** Render with `formatDateOnly`/`formatDateOnlyShort` and compare with `daysUntilDateOnly`/`isExpiredDateOnly`; `toLocaleDateString` on a Prisma `Date` shows the previous day in every negative UTC offset, and the same defect makes a valid document read as expired for the whole day it was still valid.
+12. **A trip inspection is DISPATCH-scoped: one instance per trip.** Truck scope is impossible, not merely undesirable — nothing in this repo ever completes a `PlaybookInstance`, so a truck-keyed instance can never be superseded.
+13. **Reads must not write.** The trip gate is a pure read; every side effect of a verdict hangs off the submit. A render-time redirect that skips the submit skips all of them, and no row assertion will ever see it (quick-548/549).
+14. **The screen must not assert what it cannot know.** A page rendered from a pure gate read cannot claim a notification was delivered; a checklist with no signature step cannot claim a name was recorded. Both were fixed by changing the sentence, not by fabricating a record.
+15. **Every sentence containing a count is built as one string** in `template-copy.ts` / `inspection-handlers.ts`, never assembled from JSX children.
+16. **Thresholds and tuned values live in one constants file each** — `facility-constants.ts`, `template-constants.ts`, `optimisation-constants.ts`, `end-stop-constants.ts`, `inspection-constants.ts`, `board-constants.ts`, `notification-constants.ts` — grep-verified single occurrence, imported by the tests rather than restated.
+17. **A model that scopes by `orgId` must be added to `EXEMPT_MODELS`** in the same change that adds it to `schema.prisma`, or the tenant extension injects `tenantId` and no query against it can ever succeed.

@@ -1,0 +1,87 @@
+---
+slug: end-stop-policy
+title: Setting where your trips end
+summary: Choose whether a truck finishes the day back at the yard, at the pickup, at the driver's home, or nowhere — so the run home is tracked instead of guessed.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Setting where your trips end
+
+<Callout variant="info">
+Most trips finish somewhere the paperwork never mentions — the yard, the shop, the driver's house. If nobody records it, the last leg of every day is invisible: the miles are not counted, the hours do not close out, and the trip looks finished at a customer's dock when the truck is still an hour from home.
+</Callout>
+
+The end stop fixes that. As the app puts it on the screen: *where this truck finishes the day. It becomes a real stop, so the arrival is tracked and the miles and hours close out.*
+
+## The five choices
+
+| Choice | Where the truck finishes |
+|---|---|
+| **Back to the pickup** | The place the load came from |
+| **Home base** | Your workspace's home base |
+| **Designated parking** | A yard or terminal you pick |
+| **Driver's home** | The driver's home address |
+| **No end stop** | The trip ends at the last delivery |
+
+## Setting it for one trip
+
+<StepFlow>
+  <StepFlow.Step title="Open the import">
+    On the import summary card, find the **Ends at** row. It already shows the answer your workspace would give.
+  </StepFlow.Step>
+  <StepFlow.Step title="Tap the row">
+    The five choices open underneath it.
+  </StepFlow.Step>
+  <StepFlow.Step title="Choose one">
+    If you choose **Designated parking** you are then asked **Which yard?** and shown the yards and terminals you have set up. If you have none, it says so and tells you to add one under Facilities.
+  </StepFlow.Step>
+  <StepFlow.Step title="Press Done">
+    The **Ends at** row now shows your choice. It is remembered for this trip.
+  </StepFlow.Step>
+</StepFlow>
+
+You can also reach it from the last screen before you create the trip — the **Ends at** line there has a **Change where this trip ends** link that takes you back to the card.
+
+### Undoing a choice
+
+Once you have chosen for a particular trip, a **Use my company default** button appears beside **Done**. That is what puts the trip back on your workspace's normal answer. Simply choosing the same option again is not the same thing — it records a decision, it does not remove one. The button only appears when there is a decision to remove.
+
+## Where the answer comes from
+
+Three things decide it, and each one beats the one above it:
+
+<ProcessDiagram steps={[
+  { label: "Your workspace default", description: "What every trip gets unless something says otherwise" },
+  { label: "The saved route", description: "A route template can set its own answer for that run" },
+  { label: "This trip", description: "What you choose on the import wins over both" }
+]} />
+
+## The driver's home
+
+<Callout variant="danger">
+A driver's home address is treated as private. It is not offered in the general place picker, it is never suggested for anyone else's trip, and to everyone who is not the driver, the owner, or a dispatcher given that permission explicitly, the stop shows only as **Driver's home** — no street, no city, no postcode, and no pin on the map.
+</Callout>
+
+The stop itself is never hidden, because hiding it would delete the last leg and make the day look like it finished at the last delivery — the exact problem the end stop exists to solve.
+
+Permission to see driver home addresses is off for everyone by default, including managers with full access. It has to be granted deliberately, per person, under Team & Permissions.
+
+## Being offered a better order
+
+When the stops have all been recognised, DriveCommand may offer a different order for the day — for example *saves 18 miles and 34 minutes*. It is only ever an offer:
+
+- Nothing is reordered unless you accept it.
+- It is only offered when the saving is worth the change; small ones are not mentioned at all.
+- An appointment window that was marked firm is treated as fixed, not as a preference.
+- The end stop stays last.
+- If some stops have not been recognised yet, no order is suggested at all — rearranging half a day around a gap is worse than leaving it alone.
+
+## Two settings with no screen yet
+
+<Callout variant="warning">
+Your workspace default, and which place counts as your **home base**, are set for you when your workspace is configured. **There is no settings screen for either of them yet.** If you want them changed, ask support. Everything else in this article — the per-trip choice, the saved-route answer, the yard picker — you can do yourself.
+</Callout>
+
+<FeatureCard slug="document-import" />
+<FeatureCard slug="carrier-facilities" />

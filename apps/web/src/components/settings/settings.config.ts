@@ -10,7 +10,7 @@
  * - PLATFORM: Integrations, Billing (external connections & subscription)
  *
  * CONSTRAINTS:
- * - Maximum 8 sub-nav items total (current: 8)
+ * - Maximum 8 sub-nav items total (current: 9 — see the Operations note below)
  * - No icons in sub-nav (text-only, subordinate to main sidebar)
  * - Keyword aliases power Cmd+K search
  */
@@ -100,6 +100,34 @@ export const SETTINGS_NAV_SECTIONS: SettingsNavSection[] = [
         label: "Notifications",
         href: "/settings/notifications",
         keywords: ["notifications", "alerts", "email", "sms", "in-app"],
+      },
+      /**
+       * Phase 12 — this page has existed since Phase 9 and had no nav entry.
+       *
+       * SETTINGS_PAGE_META below already carried an `operations` entry, so the
+       * page rendered its own header correctly and looked finished; the half
+       * that makes a page reachable was simply missing, and nothing failed.
+       * `/settings/operations` owns both pre-trip inspection settings, so the
+       * only route to them was a typed URL.
+       *
+       * This takes the section to nine items against a stated cap of eight. The
+       * cap exists to force the discussion rather than to forbid the item, and
+       * the alternative — documenting a settings page a customer cannot open —
+       * is not one. If a tenth is ever wanted, this section needs splitting.
+       */
+      {
+        id: "operations",
+        label: "Operations",
+        href: "/settings/operations",
+        keywords: [
+          "operations",
+          "inspection",
+          "pre-trip",
+          "walkaround",
+          "dvir",
+          "block trip",
+          "safety",
+        ],
       },
     ],
   },

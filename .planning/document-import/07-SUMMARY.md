@@ -392,8 +392,18 @@ phase wrote no migration and needed none.
    issue", and a passing unit test is evidence about a function, not about a
    deployment.
 
-2. **The matrix cache is in process.** There is no cache table and no DDL was
-   written. It is genuinely sufficient for the stated requirement (a dispatcher
+2. ~~**The matrix cache is in process.**~~ **CLOSED by quick-520 — corrected
+   2026-08-26 (Phase 12).** `route_matrix_cache` exists in production and is the
+   L2 tier behind the in-process L1 described below; the table it proposes was
+   built with that shape. Read order is L1 → L2 → provider, and **only the two
+   accept mutations write L2** (`persist: true`), so a view never writes on a
+   read path. L2 carries its own 30-day ceiling rather than L1's 24 hours,
+   because the only thing the key cannot see is a re-geocoded facility. One
+   caveat that is *not* closed: the table ships with RLS off and no `app_user`
+   grant, so it will silently stop caching at the RLS cutover.
+
+   *Original text, as written at Phase 7 close:* There is no cache table and no
+   DDL was written. It is genuinely sufficient for the stated requirement (a dispatcher
    optimising a template, tweaking it, optimising again is one process), but it
    does not survive a deploy or a serverless cold start, so the first
    optimisation after either pays for a routing call again. The fix, when it is
@@ -402,12 +412,29 @@ phase wrote no migration and needed none.
    where `facility_key` is the same sorted-id string `matrixCacheKey` already
    produces. **Not written here** — DDL goes through Supabase MCP separately.
 
-3. **A template's DESIGNATED_PARKING facility has nowhere to live.** Section 9
-   says the policy is "per template **or** trip". The per-trip half works fully
-   (stored in `resolution_provenance.endStop.facilityId`). The per-template half
-   would need a column: **`route_templates.end_stop_facility_id UUID NULL
-   REFERENCES facilities(id) ON DELETE SET NULL`**. Until it exists, a template
-   whose `end_stop_policy` is `DESIGNATED_PARKING` renders `NEEDS_CHOICE` and the
+3. ~~**A template's DESIGNATED_PARKING facility has nowhere to live.**~~
+   **CLOSED by quick-520 — corrected 2026-08-26 (Phase 12).**
+
+   > **This item was stale for two weeks and misled at least one later task.**
+   > `route_templates.end_stop_facility_id` **exists in production** (verified
+   > against `information_schema`: `uuid`, nullable) and is wired end to end.
+   > Anyone reading the original text below planned around a gap that had
+   > already been closed. It is struck through rather than deleted so the
+   > correction is visible; the same correction is in the spec's v1.1 changelog,
+   > entry 6.
+   >
+   > Two things to know about the column as built, both from quick-520: a
+   > facility may only be written in the same payload that states
+   > `DESIGNATED_PARKING`, and writing any other policy **clears** it; and every
+   > full-payload re-save must re-send it, or the save nulls it. The per-trip
+   > choice still outranks the template rung.
+
+   *Original text, as written at Phase 7 close:* Section 9 says the policy is
+   "per template **or** trip". The per-trip half works fully (stored in
+   `resolution_provenance.endStop.facilityId`). The per-template half would need
+   a column: **`route_templates.end_stop_facility_id UUID NULL REFERENCES
+   facilities(id) ON DELETE SET NULL`**. Until it exists, a template whose
+   `end_stop_policy` is `DESIGNATED_PARKING` renders `NEEDS_CHOICE` and the
    dispatcher picks the yard once per trip — correct behaviour, one extra tap.
    Reported rather than migrated, per the phase's own instruction. *(The policy
    column itself, `route_templates.end_stop_policy`, exists and is wired.)*

@@ -1,13 +1,16 @@
 {
   "version": 1,
-  "lastUpdated": "2026-05-09T00:00:00Z",
+  "lastUpdated": "2026-08-26T00:00:00Z",
   "clientHubs": [
     {
       "id": "getting-started",
       "name": "Getting Started",
       "description": "Set up your account and learn the basics",
       "icon": "Rocket",
-      "features": ["carrier-operations", "getting-started"]
+      "features": [
+        "carrier-operations",
+        "getting-started"
+      ]
     },
     {
       "id": "daily-dispatch",
@@ -25,7 +28,11 @@
         "route-templates",
         "driver-dashboard",
         "driver-my-load",
-        "driver-my-route"
+        "driver-my-route",
+        "document-import",
+        "facility-matching",
+        "route-template-matching",
+        "end-stop-policy"
       ]
     },
     {
@@ -68,7 +75,9 @@
         "driver-documents",
         "driver-incidents",
         "ifta-reporting",
-        "safety-analytics"
+        "safety-analytics",
+        "inspection-gate",
+        "driver-trip-start"
       ]
     },
     {
@@ -94,7 +103,9 @@
         "lane-analytics",
         "profit-predictor",
         "ai-document-reader",
-        "carrier-reports-performance"
+        "carrier-reports-performance",
+        "live-board-views",
+        "todays-trips-report"
       ]
     },
     {
@@ -128,7 +139,9 @@
       "name": "Get Help",
       "description": "Contact support and troubleshoot issues",
       "icon": "LifeBuoy",
-      "features": ["support-tickets"]
+      "features": [
+        "support-tickets"
+      ]
     }
   ],
   "sysadminHubs": [
@@ -160,7 +173,9 @@
       "name": "Feature Reference",
       "description": "Technical docs for all features",
       "icon": "BookOpen",
-      "features": ["*"]
+      "features": [
+        "*"
+      ]
     }
   ]
 }

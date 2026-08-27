@@ -1,0 +1,87 @@
+---
+slug: document-import
+title: Importing your morning manifest
+summary: Photograph or upload the sheet the shipper sent you, check what DriveCommand read off it, and turn it into a trip with the stops already filled in.
+lastReviewed: "2026-08-26T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Importing your morning manifest
+
+<Callout variant="info">
+This is for the paperwork that lands before the day starts — a manifest, a rate confirmation, a delivery schedule, or a list a customer emailed you. Instead of typing every stop into a trip, you hand DriveCommand the sheet and check its work.
+</Callout>
+
+## What you need
+
+The document itself. That can be photos taken on a phone, a PDF, or a CSV file saved out of a spreadsheet. Nothing has to be tidy — photos can be taken out of order and put in the right order before anything is read.
+
+## Doing it
+
+<StepFlow>
+  <StepFlow.Step title="Open Document Imports">
+    In the left-hand menu, under **Trips**, open **Document Imports**. Press **New import**.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add the pages">
+    Choose **Take photos** (one per page), **Upload file** for a PDF or a CSV, or **Choose recent** to pick up something you started earlier. Pages can be added in any order and arranged before anything is read.
+  </StepFlow.Step>
+  <StepFlow.Step title="Press Read document">
+    It works through the pages one at a time and shows you how far it has got.
+  </StepFlow.Step>
+  <StepFlow.Step title="Check the summary">
+    When it finishes you get a card headed **We found this**, with the customer, the agreement, a suggested route, where the day ends, the date, and how many stops were found. Each of those has a small **why** link that shows what on the page it matched.
+  </StepFlow.Step>
+  <StepFlow.Step title="Press Review stops">
+    Go through the stops. This is the part worth your attention — the quantities, the order, and whether each place has been recognised.
+  </StepFlow.Step>
+  <StepFlow.Step title="Pick a driver and a truck, then create the trip">
+    The last screen lists your drivers and trucks with a note beside each one saying whether they are free, already out that day, or have something expired. Choose both, set the planned start time, and press **Create trip**.
+  </StepFlow.Step>
+</StepFlow>
+
+## Reading the summary card
+
+Everything DriveCommand is confident about is shown as a single line you can accept at a glance. Anything it is not confident about asks you a question instead — you will only ever be asked about the things it could not settle on its own.
+
+| Row | What it means |
+|---|---|
+| Customer | Who the freight is for. It fills this in only when the name on the document matches one of your customers exactly. Otherwise it asks. |
+| Agreement | The rate agreement to bill against. If a customer has exactly one live agreement it is chosen for you. |
+| Route | A saved route that looks like today's run. See [Using and updating route templates](/help/route-template-matching). |
+| Ends at | Where the truck finishes the day. See [Setting where your trips end](/help/end-stop-policy). |
+| Stops | How many stops were found, and how many of those places were recognised. |
+
+Under that you may see a short list of notes — things the reader could not make out, such as a barcode with no printed number beneath it. They do not stop you. They are there so you know what to check on the page.
+
+<Callout variant="tip">
+**You do not have to finish in one go.** An import you leave sits waiting under Document Imports marked **Needs review**, exactly where you left it. The card even says so: *leave this for now — it will be waiting on the Trips page.*
+</Callout>
+
+## The same customer twice on one document
+
+If the same delivery point appears twice — very common where a manifest is split across pages — it becomes **one** stop with the quantities added together and both references and both page numbers kept. You do not get two stops to merge by hand.
+
+## When the same document is uploaded twice
+
+If you or a colleague uploads a document that has already been through the system, it is stopped before anything is read, so you never end up with two trips for one run. You get two choices:
+
+- **Open the existing import** — or **Open the trip**, if it already became one.
+- **Import as a correction** — use this when the shipper sent a revised sheet. The earlier import steps aside and this one takes its place.
+
+## What can go in
+
+- **Photos** — one per page.
+- **PDFs.**
+- **CSV files.** If the customer sends you a spreadsheet, open it and save it as CSV first. Excel files are refused with that message rather than silently failing.
+- **Up to 25MB per page.** Anything larger is refused when you add it, with the reason.
+
+## If it cannot read the document
+
+You will see it marked **Failed** with a plain reason. The usual causes are a photo too blurred to read, or a page that turned out to be blank. Take that page again and start a new import.
+
+## Who can do this
+
+Owners, and managers with permission to see trips. An import only ever ends in a trip, so anyone who cannot see trips has no use for it.
+
+<FeatureCard slug="facility-matching" />
+<FeatureCard slug="route-template-matching" />

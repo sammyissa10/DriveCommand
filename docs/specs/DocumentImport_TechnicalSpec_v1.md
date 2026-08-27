@@ -1,5 +1,41 @@
 # Document Import to Trip — Build Guide v1
 
+> ## Changelog — v1.1, 26 August 2026
+>
+> **Corrected against the build as shipped, at the close of Phase 12.** The build is
+> authoritative where the two disagree; each entry says what changed and why. Sections
+> corrected in place are marked **[v1.1 — as built]** where the original wording would
+> mislead. Everything not listed here shipped as specified.
+>
+> | # | Section | Specified | Built | Why |
+> |---|---|---|---|---|
+> | 1 | 5, 14 | Spreadsheet upload | **CSV only.** `.xlsx` refused up front with save-as-CSV guidance | No spreadsheet library in the monorepo and Section 15 forbids installing one (DEC-4) |
+> | 2 | 7 | Consignees → `receiver`, origin → `shipper`, residence → `other` | `customer_site` · `warehouse` · a new `driver_residence` type | `shipper`/`receiver` were deleted from the live CHECK by TKT-0016; writing either is a Postgres 23514 (DEC-1) |
+> | 3 | 6 | "Tenant settings" | Five columns on `Tenant` | There is no tenant-settings table in this schema (audit B3) |
+> | 4 | 6, 9 | The end stop as a stop on the import | Derived on read, committed at a mutation, materialised at commit as `stop_type='layover'` + `is_end_stop` | No stop type means "return to base" (audit B5), and a synthetic consignment breaks template scoring, the ghost predicate and reorder at once |
+> | 5 | 9 | "Cache the matrix per **ordered** facility set" | Key is the **sorted** id list; two tiers (in-process 24h, `route_matrix_cache` 30 days) | Order-insensitive so an unchanged template hits daily; set-sensitive so invalidation is structural. L2 added by quick-520 |
+> | 6 | 9 | End stop "per template or trip" | Both halves work — `route_templates.end_stop_facility_id` exists and is wired | Reported as a gap at Phase 7 close; **closed by quick-520**. The Phase 7 summaries have been corrected too |
+> | 7 | 12 | "a valid one already **today**" | A rolling **24 hours** | A calendar day expires a 23:50 walkaround at midnight, penalising the night driver who did it right |
+> | 8 | 12 | "Works offline and queues" | **Online-only on both surfaces**; inspection photos upload at capture | The offline queue is JSON-only and cannot carry a photo. A client that can render "queued" will eventually render it for something that never sent |
+> | 9 | 13 | "Next scheduled maintenance" on the Trucks board | The nearest of licence/registration/insurance expiry, **labelled for what it is** | `CarrierTruck` has no maintenance relation; the legacy `Truck` owns those tables. Closing it needs a column |
+> | 10 | 13 | "on-time" | A fourth state, **"No windows set"**, neutral grey, never green | 7 of 308 production trips carry any appointment window. Green would say the day is fine when it means nobody set times (DEC-18) |
+> | 11 | 13 | "behind schedule", undefined | Defined from the performance report's two columns with the same inclusive boundary | One word must not have two mechanisms, or the board and the report eventually disagree in front of a customer (DEC-18) |
+> | 12 | 10 | Five blocking conditions at stop review | Three block at review; driver/truck and hard compliance block at commit | Both need the driver and truck, which do not exist until the assignment screen |
+> | 13 | 4.1, 10 | Drag to reorder on both surfaces | Drag on web, **arrow buttons on mobile** | No gesture handler is installed and no phase may install one (audit D4) |
+> | 14 | 4.1 | Date and window pickers | Typed fields on both surfaces | No date-picker package is installed |
+> | 15 | 11 | "loads" | **One load per committed import** | `document_imports` carries one client, so a manifest split across two clients is not modelled |
+> | 16 | 8 | "top 3 with diffs" | Three in the summary band; the **Change** chooser is uncapped | A chooser that hides the option you want is a chooser that declines (quick-516) |
+> | 17 | 6, 9 | `DocumentProfile.defaultEndStopPolicy` | The column exists and is **deliberately unwired** | Section 9 names three layers; a fourth was not Phase 7's to invent |
+> | 18 | 15 | "Retention window on `rawExtraction`" | **NOT BUILT.** Nothing purges it, on any schedule | No phase implemented it. This is an open item, not a decision — it holds third-party PII |
+> | 19 | 15 | "Tenant column and RLS on every new table" | `route_matrix_cache` ships with RLS off and no `app_user` grant | quick-520; it silently stops caching when the role flips. Recorded, not fixed |
+> | 20 | 16 | The 18-step acceptance test, "under 90 sec, 3 taps" | **Never run end to end, and never measured** | No test manifest and no storage credentials in any build session. Unverified, not passed |
+>
+> Also corrected in v1.1: Section 7's fuzzy tier is **0.70**, a number the original left unstated.
+> The full deferred list — product gaps, known defects and pre-launch items — is in
+> `.planning/document-import/12-SUMMARY.md`.
+
+---
+
 **Module:** Document Import
 **Save to:** `docs/specs/DocumentImport_TechnicalSpec_v1.md`
 **Companion file:** `DocumentImport_Prompts.md` — the same twelve prompts on their own, for copying
@@ -502,6 +538,8 @@ How the four document types land in the same shape:
 
 Spreadsheets skip vision extraction entirely: parse the sheet, map columns once per client, save the mapping to the document profile, reuse silently.
 
+**[v1.1 — as built]** CSV only. `.xlsx` is refused at intake with a distinct failure code and save-as-CSV guidance, because no spreadsheet library exists in the monorepo and Section 15 forbids adding one (DEC-4).
+
 ---
 
 # Section 6 — Data model
@@ -616,7 +654,11 @@ Edits live in `reviewedExtraction`, not a normalised staging table — resume-af
 
 **Normalisation** must handle: case, punctuation, street suffixes, directionals, suite/unit split, postal codes. One shared utility, tested against 30+ real pairs including negatives.
 
-**Facility types:** reuse the existing set. Consignees to receiver. Origin to shipper. Yard and parking to terminal. Driver residence to other, with `isDriverResidence`.
+**Facility types:** reuse the existing set.
+
+**[v1.1 — as built]** `shipper` and `receiver` do not exist — they were deleted from `facilities_facility_type_check` by TKT-0016, and writing either raises a Postgres 23514. The mapping is: consignee → `customer_site`, origin → `warehouse`, yard and parking → `yard` | `terminal` | `drop_yard`, driver residence → a new `driver_residence` type added by this module (DEC-1). Privacy semantics live on the `is_driver_residence` flag, never on the type.
+
+**[v1.1 — as built]** The Tier 3 threshold is **0.70**, defined once in `facility-constants.ts` and pinned by a 31-pair address fixture that includes 11 negatives.
 
 ---
 
@@ -655,6 +697,8 @@ Both thresholds in one constants file.
 
 When off, offer one-tap **Save as route template** on the success screen.
 
+**[v1.1 — as built]** `autoCreateRouteTemplatesFromImports` exists and works, and there is **no settings screen for it** — it can only be changed in the database. The created template is flagged and the columns for a *Suggested templates* section exist; that section was not built on the Templates screen.
+
 ---
 
 # Section 9 — End stop and optimisation
@@ -690,7 +734,9 @@ Resolution order: tenant default, then template override, then per-trip choice.
  +---------------------------------------------+
 ```
 
-Runs on the **template** when created or edited — optimise once, reuse daily. Runs on a **trip** only when stops changed relative to the template. Constraints: pickups precede their deliveries, firm windows are hard, soft windows are penalties, end stop pinned last. Below a configurable floor, do not offer it at all — noise erodes trust. Cache the matrix per ordered facility set.
+Runs on the **template** when created or edited — optimise once, reuse daily. Runs on a **trip** only when stops changed relative to the template. Constraints: pickups precede their deliveries, firm windows are hard, soft windows are penalties, end stop pinned last. Below a configurable floor, do not offer it at all — noise erodes trust.
+
+**[v1.1 — as built]** The floor is 5 miles **or** 20 minutes, combined with OR so that "same miles, half an hour earlier home" is still offered. The matrix cache key is the **sorted** facility-id list, not the ordered one — order-insensitive so an unchanged template hits daily, set-sensitive so invalidation is structural. Two tiers: in-process for 24 hours, and `route_matrix_cache` for 30 days, written only by the two accept mutations so a view never writes. An unresolved stop suppresses the suggestion entirely rather than optimising around a gap.
 
 ---
 
@@ -752,6 +798,8 @@ Bulk apply: select stops, then apply note, required documents, appointment windo
 
 Page slicing means the driver at stop 5 opens page 4, not a sixteen-page scan.
 
+**[v1.1 — as built]** One load per committed import, with every non-end stop pointed at it. A manifest split across two clients is not modelled — the import row carries one client.
+
 ---
 
 # Section 12 — Driver flow
@@ -796,7 +844,11 @@ Page slicing means the driver at stop 5 opens page 4, not a sixteen-page scan.
                                    permanently visible)
 ```
 
-Full screen means full screen — not a sheet, not a modal. Works offline and queues, consistent with existing mobile behaviour. Back navigation preserved so the driver can review before signing.
+Full screen means full screen — not a sheet, not a modal. Back navigation preserved so the driver can review before signing.
+
+**[v1.1 — as built]** *"A valid one already today"* is implemented as a **rolling 24 hours**, not a calendar day: read literally, a calendar day expires a 23:50 walkaround at midnight and penalises the night driver who did everything right.
+
+**[v1.1 — as built]** It does **not** work offline, on either surface. The existing mutation queue is JSON-only and cannot carry a photo, so inspection photos upload at capture and every answer is a server round trip. A failed write names what failed and offers a retry; nothing ever renders as recorded that is not recorded. An offline capture is reported to the driver by name, and the required note still records the failure.
 
 ---
 
@@ -859,7 +911,7 @@ Per-page caching: hash each page independently. Re-running sixteen pages where o
 
 # Section 15 — Security and design rules
 
-**Security:** tenant column and RLS on every new table · tenant-prefixed storage keys validated server-side · retention window on `rawExtraction` (it holds third-party PII; committed entities are the record of truth) · driver residences restricted per Section 9 · dispatcher-or-above to commit · rate-limit extraction per tenant.
+**Security:** tenant column and RLS on every new table · tenant-prefixed storage keys validated server-side · retention window on `rawExtraction` **[v1.1 — NOT BUILT: nothing purges `rawExtraction` on any schedule. It holds third-party PII. Open item, not a decision.]** (it holds third-party PII; committed entities are the record of truth) · driver residences restricted per Section 9 · dispatcher-or-above to commit · rate-limit extraction per tenant.
 
 **Design:** no borders on cards, elevation via surface contrast · one accent colour on one primary action · spacing on 8/12/16/20/24 · no FABs, add is the top-right tinted circle · identical field order in view and edit · status = colour + icon + text · red only for errors and destructive actions (a failed inspection qualifies, a "new" badge does not) · web light tokens, mobile iOS dark · text never clips.
 
@@ -899,6 +951,8 @@ Run the whole thing after Phase 11, before Phase 12.
 ```
 
 **Step 18 is the product.** Everything above it is the machinery that makes it possible.
+
+**[v1.1 — NOT RUN]** This test has never been executed end to end, and step 18 has never been timed. No build session had a test manifest or storage credentials. Treat every step above as unverified rather than as passed — the module was verified by unit tests, live-schema diffs, and screen-by-screen walkthroughs of real imports, which is not the same thing.
 
 ---
 ---
