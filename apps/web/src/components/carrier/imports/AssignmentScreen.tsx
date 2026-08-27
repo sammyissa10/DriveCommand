@@ -7,18 +7,45 @@
  *  +--------------------------------------------------+
  *  | <- Finish trip                          12 stops |
  *  +--------------------------------------------------+
- *  | Driver    Marcus Webb    Available · 6h 30m left |
- *  |           Dana Okoro     On a trip that day      |  <- blocked
- *  | Truck     104            Ready                   |
- *  | Trailer   T-22           optional                |
- *  | Starts    Tue 26 Aug, 05:30                      |
- *  | Ends at   Home base — Waukesha Yard              |
+ *  | Driver   [ Marcus Webb                       v ] |  <- SearchableSelect
+ *  |          Available · 6h 30m left                 |  <- the selection, said
+ *  | Truck    [ 104 — Freightliner Cascadia       v ] |     in full
+ *  |          Available                               |
+ *  | Starts   Tue 26 Aug, 05:30                       |
+ *  | Ends at  Home base — Waukesha Yard               |
  *  +--------------------------------------------------+
  *  | ! 2 things to know                        [ x ]  |  <- one dismissible
  *  +--------------------------------------------------+   summary, never modal
  *        +-> [ Create trip ]  disabled
  *            "Marcus Webb's CDL expired on 12 Aug 2026"
+ *
+ *  opened:  [ Search by name...                      ]
+ *           v Marcus Webb   Available · 6h 30m left    (Available)
+ *             Dana Okoro    On a trip that day · …     (On Trip)   dimmed
  * ```
+ *
+ * ---------------------------------------------------------------------------
+ * THE PICKERS ARE `SearchableSelect`, AND THE DRAWING ABOVE IS WHAT SHIPS
+ * ---------------------------------------------------------------------------
+ * quick-563. This block used to draw a compact two-column form with availability
+ * inline while the code beneath rendered fifteen trucks and seven drivers as
+ * flat, unsearchable, unsorted, full-height lists — so both choices could never
+ * be on screen at once. **The file disagreed with itself, and the drawing was
+ * the half that was right.**
+ *
+ * Every complaint filed against this screen names something
+ * `@/components/ui/searchable-select` already ships: search, per-option
+ * `disabled`, status badges, and `sortByStatus`. No new component was written
+ * and the shared one was not modified — `DispatchLoadModal` is its other
+ * consumer and uses it for exactly this job, four times.
+ *
+ * The option mapping lives in `lib/document-import/assignment-options.ts`, with
+ * the reasoning for each badge and the two things `SearchableSelect` cannot
+ * express. One of those two shaped this screen: **the trigger renders `label`
+ * and nothing else**, so collapsing a list would have deleted the availability,
+ * hours and compliance text for the option actually chosen. That is what the
+ * line under each picker is for. It is not a new feature — it is the inline
+ * information the flat rows used to carry, kept where it can still be read.
  *
  * ---------------------------------------------------------------------------
  * THE VALIDATION SHOWN HERE IS NOT THE VALIDATION THAT MATTERS
@@ -49,8 +76,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, ArrowRight, Check, ChevronLeft, Loader2, X } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ChevronLeft, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SearchableSelect } from '@/components/ui/searchable-select';
+import {
+  driverOptions,
+  selectedDriver,
+  selectedTruck,
+  truckOptions,
+  type AssignmentSelection,
+} from '@/lib/document-import/assignment-options';
 import type {
   AssignmentInput,
   CommitOutcome,
@@ -185,58 +220,86 @@ export function AssignmentScreen({
         </span>
       </div>
 
-      {/* ---- Driver. Availability inline, so there is no second screen. ---- */}
-      <section className="rounded-xl bg-card p-4 shadow-sm">
-        <h2 className="mb-3 text-sm font-medium text-foreground">Driver</h2>
-        <div className="space-y-2">
+      {/* ---- Driver and truck. Both on screen at once, which is the point. ---- */}
+      <section className="space-y-4 rounded-xl bg-card p-4 shadow-sm">
+        <div>
+          <h2 className="mb-1.5 text-sm font-medium text-foreground">Driver</h2>
           {view.drivers.length === 0 ? (
             <p className="text-sm text-muted-foreground">No active drivers on the roster.</p>
-          ) : null}
-          {view.drivers.map((d) => (
-            <PickerRow
-              key={d.id}
-              label={d.name}
-              meta={`${d.availabilityLabel} · ${d.hoursLabel}${
-                d.complianceFlags.length > 0 ? ` · ${d.complianceFlags.join(' · ')}` : ''
-              }`}
-              blocked={d.blocked}
-              selected={assignment.primaryDriverId === d.id}
-              onSelect={() => set('primaryDriverId', d.id)}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* ---- Truck and trailer ---- */}
-      <section className="rounded-xl bg-card p-4 shadow-sm">
-        <h2 className="mb-3 text-sm font-medium text-foreground">Truck</h2>
-        <div className="space-y-2">
-          {view.trucks.map((t) => (
-            <TruckPickerRow
-              key={t.id}
-              truck={t}
-              selected={assignment.truckId === t.id}
-              onSelect={() => set('truckId', t.id)}
-            />
-          ))}
+          ) : (
+            <>
+              <SearchableSelect
+                options={driverOptions(view.drivers, assignment.primaryDriverId)}
+                value={assignment.primaryDriverId ?? ''}
+                onValueChange={(id) => set('primaryDriverId', id || null)}
+                placeholder="Choose a driver…"
+                searchPlaceholder="Search by name…"
+                emptyMessage="No drivers found."
+                disabled={committing}
+                showStatus
+                sortByStatus
+              />
+              <SelectionLine
+                selection={selectedDriver(view.drivers, assignment.primaryDriverId)}
+                empty="Nobody assigned yet."
+              />
+            </>
+          )}
         </div>
 
+        <div>
+          <h2 className="mb-1.5 text-sm font-medium text-foreground">Truck</h2>
+          {view.trucks.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No trucks in the fleet.</p>
+          ) : (
+            <>
+              <SearchableSelect
+                options={truckOptions(view.trucks, assignment.truckId)}
+                value={assignment.truckId ?? ''}
+                onValueChange={(id) => set('truckId', id || null)}
+                placeholder="Choose a truck…"
+                searchPlaceholder="Search by unit number…"
+                emptyMessage="No trucks found."
+                disabled={committing}
+                showStatus
+                sortByStatus
+              />
+              <SelectionLine
+                selection={selectedTruck(view.trucks, assignment.truckId)}
+                empty="No truck assigned yet."
+              />
+            </>
+          )}
+        </div>
+
+        {/*
+          Always empty today — `TRAILER_TYPES` is `new Set([])`, a reported gap
+          rather than a silent removal, so this branch does not render. Kept
+          because `trailerId` still round-trips and still writes
+          `dispatches.trailer_id`; when a real trailer signal arrives this is
+          already on the same picker as the other two.
+        */}
         {view.trailers.length > 0 ? (
-          <>
-            <h2 className="mb-3 mt-5 text-sm font-medium text-foreground">
+          <div>
+            <h2 className="mb-1.5 text-sm font-medium text-foreground">
               Trailer <span className="font-normal text-muted-foreground">— optional</span>
             </h2>
-            <div className="space-y-2">
-              {view.trailers.map((t) => (
-                <TruckPickerRow
-                  key={t.id}
-                  truck={t}
-                  selected={assignment.trailerId === t.id}
-                  onSelect={() => set('trailerId', assignment.trailerId === t.id ? null : t.id)}
-                />
-              ))}
-            </div>
-          </>
+            <SearchableSelect
+              options={truckOptions(view.trailers, assignment.trailerId)}
+              value={assignment.trailerId ?? ''}
+              onValueChange={(id) => set('trailerId', id || null)}
+              placeholder="None"
+              searchPlaceholder="Search by unit number…"
+              emptyMessage="No trailers found."
+              disabled={committing}
+              showStatus
+              sortByStatus
+            />
+            <SelectionLine
+              selection={selectedTruck(view.trailers, assignment.trailerId)}
+              empty="No trailer — optional."
+            />
+          </div>
         ) : null}
       </section>
 
@@ -352,95 +415,50 @@ export function AssignmentScreen({
 }
 
 /**
- * One picker row.
+ * What the collapsed picker cannot say about the option it is showing.
  *
- * `min-w-0` + `truncate` on the label, per quick-519: a `truncate`d string's
- * min-content is the WHOLE string, so without the zero-minimum a long facility
- * or driver name widens the row past its own card.
+ * `SearchableSelect`'s trigger renders `selectedOption.label` and nothing else —
+ * no badge, no `secondaryLabel` — so without this line, choosing a driver would
+ * HIDE the availability, hours and compliance text that the flat rows showed
+ * inline. Section 11's requirement is that the picker shows availability inline
+ * "so no second screen is needed", and a collapsed trigger is a second screen
+ * with extra steps. The text is `driverMeta` / `truckMeta`, the same functions
+ * that fill `secondaryLabel`, so the line and the open list can never describe
+ * the same option differently.
+ *
+ * `blocked` is marked here and NOT by disabling the option, which is the
+ * visible half of quick-561's guard: availability re-fetches per planned day, so
+ * a selection that was legal when it was made can go bad when the start time
+ * moves. The option stays selectable so it can be changed; this is where a
+ * dispatcher sees that it needs to be. `min-w-0` per quick-519.
  */
-function PickerRow({
-  label,
-  meta,
-  blocked,
-  selected,
-  onSelect,
+function SelectionLine({
+  selection,
+  empty,
 }: {
-  label: string;
-  meta: string;
-  blocked: boolean;
-  selected: boolean;
-  onSelect: () => void;
+  selection: AssignmentSelection | null;
+  empty: string;
 }) {
-  /*
-    quick-561 — a blocked option cannot be chosen.
-
-    It used to be fully selectable: `onClick` fired unconditionally and the
-    refusal only surfaced further down the page, as a disabled Create button
-    with a `blockedReason` beneath it. So a dispatcher could pick a truck whose
-    insurance had expired, get no feedback at the point of the tap, and find out
-    at the bottom of the form. The verdict was always right; it just arrived
-    after the decision instead of on it.
-
-    NOT `disabled={blocked}` — `blocked && !selected`. Availability is a
-    function of the planned day and these pickers re-fetch on every change, so
-    an option that was legal when it was picked can become blocked when the
-    start time moves. Disabling it outright would leave that selection on screen
-    and unremovable, which is worse than the problem being fixed. A selected
-    row stays live so it can always be changed or, for the optional trailer,
-    toggled off.
-
-    The refusal logic itself is untouched: `validateCommit` on the server is
-    still the only thing that decides, exactly as this file's header describes.
-    This stops the selection; it does not re-derive the verdict.
-  */
-  const unselectable = blocked && !selected;
+  if (!selection) {
+    return <p className="mt-1.5 text-xs text-muted-foreground">{empty}</p>;
+  }
 
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      disabled={unselectable}
-      aria-pressed={selected}
-      className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors ${
-        selected ? 'bg-primary/10 ring-1 ring-inset ring-primary' : 'bg-muted/40 hover:bg-muted'
-      } ${unselectable ? 'cursor-not-allowed opacity-55 hover:bg-muted/40' : ''}`}
-    >
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-2">
-          <span className="min-w-0 truncate text-sm font-medium text-foreground">{label}</span>
-          {selected ? <Check className="h-4 w-4 shrink-0 text-primary" /> : null}
-        </span>
-        <span className="mt-0.5 block truncate text-xs text-muted-foreground">{meta}</span>
-      </span>
-      {blocked ? (
-        <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" aria-label="Not available" />
-      ) : null}
-    </button>
-  );
-}
-
-function TruckPickerRow({
-  truck,
-  selected,
-  onSelect,
-}: {
-  truck: TruckOption;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <PickerRow
-      label={truck.label}
-      meta={`${truck.assignedToday ? 'On a trip that day' : 'Available'}${
-        truck.complianceFlags.length > 0 ? ` · ${truck.complianceFlags.join(' · ')}` : ''
+    <p
+      className={`mt-1.5 flex min-w-0 items-start gap-1.5 text-xs ${
+        selection.blocked ? 'text-destructive' : 'text-muted-foreground'
       }`}
-      blocked={truck.blocked}
-      selected={selected}
-      onSelect={onSelect}
-    />
+    >
+      {selection.blocked ? (
+        <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+      ) : null}
+      <span className="min-w-0">
+        {selection.blocked ? `Not available — ${selection.meta}` : selection.meta}
+      </span>
+    </p>
   );
 }
 
-// Re-exported for the driver row's type, so a change to the server shape is a
+// Re-exported for the pickers' types, so a change to the server shape is a
 // compile error here rather than a silently missing field.
-export type { DriverOption };
+export type { DriverOption, TruckOption };
