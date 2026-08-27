@@ -36,7 +36,9 @@ import {
   Building2,
   ListChecks,
   CalendarDays,
+  CalendarClock,
   FileScan,
+  BarChart3,
 } from "lucide-react"
 import { DispatchBadge } from "@/components/navigation/dispatch-badge"
 import { MessagesBadge } from "@/components/navigation/messages-badge"
@@ -417,6 +419,79 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       navGroups.push({
         label: "Resources",
         items: resourcesItems,
+      })
+    }
+  }
+
+  // ============================================================================
+  // REPORTS — "What happened, and how did it go?"
+  //
+  // RESTORED BY quick-553. This group is not new: it existed, fully written, in
+  // `components/navigation/sidebar.tsx` — the orphaned file nothing imported.
+  // quick-552 deleted that file (its orphan scanner was right to flag it) and
+  // carried `Live Board` across into this mounted sidebar, but left the Reports
+  // group behind. The scanner asks "does anything import this file"; it has no
+  // way to ask "did a destination die with it".
+  //
+  // The cost was five report pages with no link on any desktop screen. Four of
+  // them appear in the MOBILE more-menu (`owner-more-menu.tsx`), which is
+  // `lg:hidden` — so an owner on a laptop could reach Today's Trips and
+  // Performance only by typing the URL, and AR Aging by no route at all.
+  //
+  // FLAT, not a parent with children, even though quick-553 just made a parent
+  // with children clickable: `/carrier/reports` has NO page.tsx. A parent item
+  // would have no href to give.
+  // ============================================================================
+  if (isOwnerOrManager) {
+    const reportsItems = []
+
+    if (managerHasPermission(perms, "revenueReport")) {
+      reportsItems.push({
+        label: "Revenue",
+        href: "/carrier/reports/revenue",
+        icon: BarChart3,
+      })
+    }
+
+    if (managerHasPermission(perms, "driverPayReport")) {
+      reportsItems.push({
+        label: "Driver Pay",
+        href: "/carrier/reports/driver-pay",
+        icon: BarChart3,
+      })
+    }
+
+    if (managerHasPermission(perms, "arAgingReport")) {
+      reportsItems.push({
+        label: "AR Aging",
+        href: "/carrier/reports/aging",
+        icon: BarChart3,
+      })
+    }
+
+    if (managerHasPermission(perms, "performanceReport")) {
+      reportsItems.push({
+        label: "Performance",
+        href: "/carrier/reports/performance",
+        icon: BarChart3,
+      })
+
+      // Phase 11's report. Shares `performanceReport` deliberately — the report
+      // page's own header explains why it is not a new permission key, and
+      // DEC-16 records what adding a value to a hand-maintained vocabulary with
+      // three separate pickers actually costs. Gated in the same branch as
+      // Performance so the two cannot drift apart.
+      reportsItems.push({
+        label: "Today's Trips",
+        href: "/carrier/reports/todays-trips",
+        icon: CalendarClock,
+      })
+    }
+
+    if (reportsItems.length > 0) {
+      navGroups.push({
+        label: "Reports",
+        items: reportsItems,
       })
     }
   }
