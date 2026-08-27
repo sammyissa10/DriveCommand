@@ -39,6 +39,8 @@ interface NotificationsTabsProps {
   sendLogStats: SendLogStats;
   sendLogRows: SendLogRow[];
   sendLogTotal: number;
+  /** quick-556: set when arriving via ?status=… so the log opens pre-filtered. */
+  initialSendLogStatus?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -53,6 +55,7 @@ export function NotificationsTabs({
   sendLogStats,
   sendLogRows,
   sendLogTotal,
+  initialSendLogStatus,
 }: NotificationsTabsProps) {
   return (
     <Tabs defaultValue={initialTab}>
@@ -75,6 +78,7 @@ export function NotificationsTabs({
           initialStats={sendLogStats}
           initialRows={sendLogRows}
           initialTotal={sendLogTotal}
+          initialStatus={initialSendLogStatus}
         />
       </TabsContent>
     </Tabs>

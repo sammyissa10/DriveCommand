@@ -62,13 +62,20 @@ interface SendLogTabProps {
   initialStats: SendLogStats;
   initialRows: SendLogRow[];
   initialTotal: number;
+  /**
+   * quick-556: pre-selects the status dropdown when the health tile links here.
+   * The server already fetched `initialRows` with this same filter, so there is
+   * nothing to re-fetch on mount and no flicker — the dropdown simply agrees
+   * with the rows that are already on screen.
+   */
+  initialStatus?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function SendLogTab({ initialStats, initialRows, initialTotal }: SendLogTabProps) {
+export function SendLogTab({ initialStats, initialRows, initialTotal, initialStatus }: SendLogTabProps) {
   const [rows, setRows] = useState<SendLogRow[]>(initialRows);
   const [total, setTotal] = useState(initialTotal);
   const [page, setPage] = useState(1);
@@ -78,7 +85,7 @@ export function SendLogTab({ initialStats, initialRows, initialTotal }: SendLogT
   // Filter state
   const [tenantId, setTenantId] = useState('');
   const [triggerKey, setTriggerKey] = useState('');
-  const [status, setStatus] = useState<string>('all');
+  const [status, setStatus] = useState<string>(initialStatus ?? 'all');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [recipient, setRecipient] = useState('');

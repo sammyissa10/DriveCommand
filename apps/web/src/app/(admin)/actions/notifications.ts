@@ -294,11 +294,28 @@ export type SendLogStats = {
   sent30d: number;
   failureRate: number;
   /**
+   * FAILED rows in the last 30 days, and over the whole life of the log.
+   *
+   * quick-556: `failed30d` was already being computed here and thrown away —
+   * only `failedToday` reached the tile, so a failed send became invisible at
+   * local midnight. Eight failures accumulated between 2026-05-17 and
+   * 2026-08-27, including driver and manager invitations that never arrived,
+   * and none was visible the day after it happened.
+   *
+   * `failedAllTime` exists because 30 days is still a window: the two
+   * `manager.invited` failures from May are outside it and are still unresolved.
+   * A count that can silently return to zero while the problem stands is the
+   * thing being fixed, so the tile shows one number that never expires.
+   */
+  failed30d: number;
+  failedAllTime: number;
+  /**
    * The triggerKey with the most FAILED rows in the last 24 hours.
    * Only populated when at least one failure exists; null otherwise.
-   * Used by the HealthTile to surface the top failing trigger when failure rate > 5%.
    */
   topFailingTrigger: string | null;
+  /** The triggerKey with the most FAILED rows over the whole log. */
+  topFailingTriggerAllTime: string | null;
 };
 
 /**
@@ -317,7 +334,15 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(now.getDate() - 30);
 
-  const [sentToday, failedToday, sent30d, failed30d, failedByTrigger] = await Promise.all([
+  const [
+    sentToday,
+    failedToday,
+    sent30d,
+    failed30d,
+    failedAllTime,
+    failedByTrigger,
+    failedByTriggerAllTime,
+  ] = await Promise.all([
     prisma.notificationSendLog.count({
       where: { status: 'SENT', createdAt: { gte: todayStart } },
     }),
@@ -330,10 +355,20 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
     prisma.notificationSendLog.count({
       where: { status: 'FAILED', createdAt: { gte: thirtyDaysAgo } },
     }),
+    // quick-556: no date bound. A failure that scrolls out of a window while
+    // still unresolved is a count that lies by expiring.
+    prisma.notificationSendLog.count({ where: { status: 'FAILED' } }),
     // Group FAILED rows by triggerKey in the last 24h to find the top offender
     prisma.notificationSendLog.groupBy({
       by: ['triggerKey'],
       where: { status: 'FAILED', createdAt: { gte: last24h } },
+      _count: { triggerKey: true },
+      orderBy: { _count: { triggerKey: 'desc' } },
+      take: 1,
+    }),
+    prisma.notificationSendLog.groupBy({
+      by: ['triggerKey'],
+      where: { status: 'FAILED' },
       _count: { triggerKey: true },
       orderBy: { _count: { triggerKey: 'desc' } },
       take: 1,
@@ -345,7 +380,18 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
 
   const topFailingTrigger =
     failedByTrigger.length > 0 ? failedByTrigger[0].triggerKey : null;
+  const topFailingTriggerAllTime =
+    failedByTriggerAllTime.length > 0 ? failedByTriggerAllTime[0].triggerKey : null;
 
-  return { sentToday, failedToday, sent30d, failureRate, topFailingTrigger };
+  return {
+    sentToday,
+    failedToday,
+    sent30d,
+    failureRate,
+    failed30d,
+    failedAllTime,
+    topFailingTrigger,
+    topFailingTriggerAllTime,
+  };
 }
 

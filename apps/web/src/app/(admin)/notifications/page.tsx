@@ -9,6 +9,7 @@ import {
   getNotificationSendLogStats,
 } from '@/app/(admin)/actions/notifications';
 import { NotificationsTabs } from './notifications-tabs';
+import type { NotificationSendStatus } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
 // Auth guard
@@ -27,7 +28,7 @@ async function requireAdminAccess() {
 // ---------------------------------------------------------------------------
 
 interface NotificationsPageProps {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; status?: string }>;
 }
 
 export default async function NotificationsPage({ searchParams }: NotificationsPageProps) {
@@ -37,11 +38,26 @@ export default async function NotificationsPage({ searchParams }: NotificationsP
   const validTabs = ['templates', 'email-config', 'send-log'];
   const tab = validTabs.includes(params.tab ?? '') ? (params.tab ?? 'templates') : 'templates';
 
+  // quick-556: the health tile links here as ?tab=send-log&status=FAILED, so
+  // "something failed" lands on the list of what failed rather than on an
+  // unfiltered log the reader then has to filter themselves. Validated against
+  // the real status vocabulary rather than passed through — this value reaches
+  // a Prisma where clause.
+  const validStatuses = ['SENT', 'FAILED', 'PENDING', 'SKIPPED_DISABLED', 'SKIPPED_USER_PREF', 'SKIPPED_IDEMPOTENT'];
+  const initialStatus = validStatuses.includes(params.status ?? '')
+    ? (params.status as NotificationSendStatus)
+    : undefined;
+
+  // When the caller asked for a status, the FIRST page must already be that
+  // status. Otherwise the tab renders unfiltered rows and then replaces them,
+  // which reads as a flicker and briefly shows the wrong answer.
+  const sendLogQuery = initialStatus ? { page: 1, status: initialStatus } : { page: 1 };
+
   // Fetch all initial data in parallel — all tabs are cheap to load upfront
   const [templates, emailConfigResult, sendLogResult, sendLogStats] = await Promise.all([
     listNotificationTemplates(),
     getNotificationEmailConfig(),
-    listNotificationSendLog({ page: 1 }),
+    listNotificationSendLog(sendLogQuery),
     getNotificationSendLogStats(),
   ]);
 
@@ -63,6 +79,7 @@ export default async function NotificationsPage({ searchParams }: NotificationsP
       {/* Tabs */}
       <NotificationsTabs
         initialTab={tab}
+        initialSendLogStatus={initialStatus}
         templates={templates}
         emailConfig={emailConfigResult.config}
         resendConfigured={emailConfigResult.resendConfigured}
