@@ -59,18 +59,40 @@ export function SidebarFlyout({
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+      {/*
+        The trigger is a LINK, not a button.
+
+        A parent item with children has its own route — `Trips` owns
+        `/carrier/trips`, and `Document Imports` is merely nested under it — and
+        while this was a <button> that route had no <a href> anywhere in a
+        collapsed sidebar. Fixing only the expanded branch in SidebarGroup would
+        have left the page unreachable for anyone who collapses the rail.
+        Hover and focus still open the flyout; a click now also navigates.
+
+        The focus ring moves out here with it. It was on the inner `trigger` div,
+        which is not focusable and never received one — so keyboard focus on this
+        item was invisible under the <button> too.
+      */}
       <Tooltip>
         <TooltipTrigger asChild>
           <Popover.Trigger asChild>
-            <button
-              className="w-full"
+            <Link
+              href={item.href}
+              className={cn(
+                "block w-full rounded-lg",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1"
+              )}
+              onClick={() => {
+                setIsOpen(false)
+                onNavigate()
+              }}
               onMouseEnter={() => setIsOpen(true)}
               onMouseLeave={() => setIsOpen(false)}
               onFocus={() => setIsOpen(true)}
               onBlur={() => setIsOpen(false)}
             >
               {trigger}
-            </button>
+            </Link>
           </Popover.Trigger>
         </TooltipTrigger>
         <TooltipContent side="right" sideOffset={8}>

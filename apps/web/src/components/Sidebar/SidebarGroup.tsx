@@ -76,25 +76,34 @@ export function SidebarGroup({
           }
 
           if (hasChildren && isExpanded) {
-            // Expanded with children: render parent item + inline submenu
+            // Expanded with children: parent LINK + inline submenu.
+            //
+            // The parent goes through SidebarItem — which is a <Link> — rather
+            // than being hand-rolled. It used to be a plain <div> here, and that
+            // is how `/carrier/trips` lost its only sidebar link the moment
+            // Document Imports was nested under it: a parent with children was
+            // rendered as unclickable text. quick-552 hit the same edge from the
+            // other side, when adding Live Board as a child of Live Map deleted
+            // the link to the live map.
+            //
+            // Reusing SidebarItem also restores two things the hand-rolled div
+            // silently dropped: `item.badge` (the Trips DispatchBadge had never
+            // rendered) and the active pill.
+            //
+            // The children stay INLINE and always visible — deliberately no
+            // chevron disclosure toggle. A toggle would turn a currently-visible
+            // child link into a click-to-reveal target, which is the same "trade
+            // one unreachable page for another" this branch exists to stop, and
+            // it would put a second interactive element inside a 36px row.
             return (
               <div key={item.href} className="space-y-1">
-                <div className="flex items-center gap-3 p-2 rounded-lg">
-                  <item.icon
-                    className="shrink-0 text-[hsl(var(--sidebar-fg-muted))]"
-                    size={16}
-                    strokeWidth={1.75}
-                    aria-hidden="true"
-                  />
-                  <motion.span
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.02, duration: 0.15 }}
-                    className="text-[13px] font-normal text-[hsl(var(--sidebar-fg-muted))]"
-                  >
-                    {item.label}
-                  </motion.span>
-                </div>
+                <SidebarItem
+                  item={item}
+                  isExpanded={isExpanded}
+                  isActive={isActive}
+                  index={index}
+                  onNavigate={onNavigate}
+                />
                 <div className="ml-6 space-y-1 border-l border-sidebar-border pl-3">
                   {item.children?.map((child, childIndex) => {
                     const isChildActive = activePath.startsWith(child.href)
