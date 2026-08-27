@@ -12,6 +12,7 @@ import {
   listActiveTemplatesForTenant,
 } from '@/app/(owner)/actions/tenant-notification-settings';
 import { TenantNotificationsTabs } from './tenant-notifications-tabs';
+import type { NotificationSendStatus } from '@/generated/prisma';
 import { SettingsHeader } from "@/components/settings/SettingsHeader"
 import { SETTINGS_PAGE_META } from "@/components/settings/settings.config"
 
@@ -31,11 +32,26 @@ export default async function NotificationsSettingsPage() {
     redirect('/unauthorized');
   }
 
-  const [settings, subscribers, sendLog, stats, users, triggers] = await Promise.all([
+  // quick-556: stats first, because whether this tenant has undelivered
+  // notifications decides which page of the send log is worth fetching.
+  const stats = await getTenantSendLogStats();
+  const hasFailures = (stats.failedAllTime ?? 0) > 0;
+
+  const [settings, subscribers, sendLog, users, triggers] = await Promise.all([
     listTenantNotificationSettings(),
     listTenantSubscribers(),
-    listTenantSendLog({ page: 1, pageSize: 25 }),
-    getTenantSendLogStats(),
+    // When something failed to send, the log's most useful first page is the
+    // failures — and the banner above the tabs points straight at them, so the
+    // rows and the status dropdown must already agree. Fetching unfiltered here
+    // and letting the client re-filter on mount would show the wrong answer
+    // first and then correct itself, which reads as a glitch and is exactly the
+    // "not loaded yet vs nothing to show" conflation this codebase keeps hitting.
+    // The dropdown is visible and one click clears it.
+    listTenantSendLog(
+      hasFailures
+        ? { page: 1, pageSize: 25, status: 'FAILED' as NotificationSendStatus }
+        : { page: 1, pageSize: 25 }
+    ),
     listTenantUsers(),
     listActiveTemplatesForTenant(),
   ]);

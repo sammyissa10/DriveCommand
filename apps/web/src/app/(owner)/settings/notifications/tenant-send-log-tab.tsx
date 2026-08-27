@@ -68,13 +68,19 @@ function KpiCard({ label, value }: { label: string; value: string | number }) {
 interface TenantSendLogTabProps {
   initialSendLog: SendLogPaginatedResult;
   initialStats: SendLogStats;
+  /**
+   * quick-556: pre-selects the status dropdown when the failure banner above
+   * the tabs sends the reader here, so the first thing they see is the failures
+   * rather than an unfiltered log they then have to filter themselves.
+   */
+  initialStatus?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function TenantSendLogTab({ initialSendLog, initialStats }: TenantSendLogTabProps) {
+export function TenantSendLogTab({ initialSendLog, initialStats, initialStatus }: TenantSendLogTabProps) {
   const [rows, setRows] = useState(initialSendLog.rows);
   const [total, setTotal] = useState(initialSendLog.total);
   const [page, setPage] = useState(initialSendLog.page);
@@ -83,7 +89,7 @@ export function TenantSendLogTab({ initialSendLog, initialStats }: TenantSendLog
 
   // Filter state
   const [triggerKey, setTriggerKey] = useState('');
-  const [status, setStatus] = useState<string>('all');
+  const [status, setStatus] = useState<string>(initialStatus ?? 'all');
   const [channel, setChannel] = useState<string>('all');
 
   const pageSize = initialSendLog.pageSize;

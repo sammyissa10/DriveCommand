@@ -105,6 +105,20 @@ export type SendLogStats = {
   failed: number;
   skipped: number;
   pending: number;
+  /**
+   * FAILED rows for this tenant over the whole life of the log, ignoring the
+   * 30-day window every other figure here uses.
+   *
+   * quick-556: six of the eight notification failures this system has ever had
+   * were TENANT-scoped — driver invitations that were never delivered, in two
+   * different carriers. Those are a carrier's problem to see, not a platform
+   * administrator's, and the carrier could not see them: the `failed` count
+   * above is 30 days wide and lives inside the Send Log tab, which an owner has
+   * no reason to open. The oldest of those invitations is now three months
+   * stale and would have expired out of a 30-day count long ago while the
+   * person still had not been invited.
+   */
+  failedAllTime: number;
 };
 
 export type TenantUserRow = {
@@ -528,14 +542,19 @@ export async function getTenantSendLogStats(): Promise<SendLogStats> {
   const where = { tenantId, createdAt: { gte: thirtyDaysAgo } };
   const tenantDb = createTenantClient(tenantId);
 
-  const [total, sent, failed, pending] = await Promise.all([
+  const [total, sent, failed, pending, failedAllTime] = await Promise.all([
     tenantDb.notificationSendLog.count({ where }),
     tenantDb.notificationSendLog.count({ where: { ...where, status: NotificationSendStatus.SENT } }),
     tenantDb.notificationSendLog.count({ where: { ...where, status: NotificationSendStatus.FAILED } }),
     tenantDb.notificationSendLog.count({ where: { ...where, status: NotificationSendStatus.PENDING } }),
+    // quick-556: deliberately NOT date-bounded. Same tenant scoping, no
+    // `createdAt` — an undelivered invitation does not stop mattering on day 31.
+    tenantDb.notificationSendLog.count({
+      where: { tenantId, status: NotificationSendStatus.FAILED },
+    }),
   ]);
 
   const skipped = total - sent - failed - pending;
 
-  return { total, sent, failed, skipped: skipped > 0 ? skipped : 0, pending };
+  return { total, sent, failed, skipped: skipped > 0 ? skipped : 0, pending, failedAllTime };
 }
