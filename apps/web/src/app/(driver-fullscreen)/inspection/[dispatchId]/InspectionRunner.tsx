@@ -37,6 +37,7 @@ import {
   planSignatureSubmission,
   resolveRasterisedSignature,
 } from '@/lib/carrier/inspection-signature';
+import { TakeoverAlert, TakeoverRunner } from '../../TakeoverScreen';
 import { SignaturePad, type SignaturePadHandle } from './SignaturePad';
 import {
   answerInspectionFail,
@@ -787,120 +788,117 @@ export function InspectionRunner({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      {/* Progress across the top — Section 12's "#####----- section 3 of 6" */}
-      <header className="sticky top-0 z-10 bg-background/95 px-4 pb-3 pt-4 backdrop-blur">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              {copy.sectionProgress(index + 1, sections.length)}
-            </p>
-            <h1 className="truncate text-lg font-bold leading-tight text-foreground">
-              {section?.title ?? 'Walkaround'}
-            </h1>
+    <TakeoverRunner
+      /* Progress across the top — Section 12's "#####----- section 3 of 6" */
+      header={
+        <>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {copy.sectionProgress(index + 1, sections.length)}
+              </p>
+              <h1 className="truncate text-lg font-bold leading-tight text-foreground">
+                {section?.title ?? 'Walkaround'}
+              </h1>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push('/home')}
+              className="flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4 shrink-0" />
+              Save &amp; exit
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => router.push('/home')}
-            className="flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4 shrink-0" />
-            Save &amp; exit
-          </button>
-        </div>
 
-        <div
-          className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={totals.total}
-          aria-valuenow={totals.answered}
-          aria-label={copy.itemsAnswered(totals.answered, totals.total)}
-        >
           <div
-            className="h-full rounded-full bg-primary transition-all duration-300"
-            style={{ width: totals.total ? `${(totals.answered / totals.total) * 100}%` : '0%' }}
-          />
-        </div>
-        <p className="mt-1.5 text-xs text-muted-foreground">
-          {copy.itemsAnswered(totals.answered, totals.total)}
-        </p>
-      </header>
-
-      {error && (
-        <div className="mx-4 mb-2 flex items-start gap-2 rounded-xl bg-red-50 p-3 dark:bg-red-950/50">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
-          <p className="flex-1 text-sm text-red-700 dark:text-red-300">{error}</p>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            className="shrink-0 text-red-700 dark:text-red-300"
-            aria-label="Dismiss"
+            className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={totals.total}
+            aria-valuenow={totals.answered}
+            aria-label={copy.itemsAnswered(totals.answered, totals.total)}
           >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
-      <main className="flex-1 px-4 pb-4">
-        <ul className="space-y-3">
-          {section?.steps.map((step) => (
-            <ItemCard
-              key={step.stepInstanceId}
-              dispatchId={view.dispatchId}
-              step={step}
-              minNoteLength={view.failNoteMinLength}
-              pendingVerb={pendingVerbFor(overlay, step.stepInstanceId)}
-              onAnswer={(request) => submitAnswer(step.stepInstanceId, request)}
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-300"
+              style={{ width: totals.total ? `${(totals.answered / totals.total) * 100}%` : '0%' }}
             />
-          ))}
-        </ul>
-
-        {sectionRemaining > 0 && (
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {copy.unansweredInSection(sectionRemaining)}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {copy.itemsAnswered(totals.answered, totals.total)}
           </p>
-        )}
-      </main>
-
-      {/*
-        Back navigation is always live, on every section including the first,
-        and it is never gated on the current screen being complete. Section 12
-        requires the driver be able to review before signing, and a Back button
-        that switches off is a Back button that is not there when it is needed.
-      */}
-      <footer className="sticky bottom-0 z-10 flex gap-2 bg-background/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <button
-          type="button"
-          onClick={() => setIndex((i) => Math.max(0, i - 1))}
-          disabled={index === 0}
-          className="flex min-h-[56px] items-center justify-center gap-2 rounded-xl bg-muted px-5 text-base font-semibold text-foreground hover:bg-muted/80 disabled:opacity-30"
-        >
-          <ArrowLeft className="h-5 w-5 shrink-0" />
-          Back
-        </button>
-
-        {isLastSection ? (
+        </>
+      }
+      /*
+        quick-562 — this banner used to render between the sticky header and
+        `<main>`, which is the quick-546 defect in its other direction. The
+        controls that raise it are the Pass / Fail / N-A buttons on an ItemCard,
+        anywhere down a scrolling list; the banner sat above the list and, not
+        being sticky itself, scrolled off the top the moment the driver was more
+        than one card down. A tap on item nine reported itself above item one.
+        In the sticky footer it is always on screen and always adjacent to a
+        control, whichever item was tapped.
+      */
+      feedback={error && <TakeoverAlert message={error} onDismiss={() => setError(null)} />}
+      actions={
+        /*
+          Back navigation is always live, on every section including the first,
+          and it is never gated on the current screen being complete. Section 12
+          requires the driver be able to review before signing, and a Back button
+          that switches off is a Back button that is not there when it is needed.
+        */
+        <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setSigning(true)}
-            className="flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            disabled={index === 0}
+            className="flex min-h-[56px] items-center justify-center gap-2 rounded-xl bg-muted px-5 text-base font-semibold text-foreground hover:bg-muted/80 disabled:opacity-30"
           >
-            <PenLine className="h-5 w-5 shrink-0" />
-            Review &amp; sign
+            <ArrowLeft className="h-5 w-5 shrink-0" />
+            Back
           </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setIndex((i) => Math.min(sections.length - 1, i + 1))}
-            className="flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Next
-            <ArrowRight className="h-5 w-5 shrink-0" />
-          </button>
-        )}
-      </footer>
-    </div>
+
+          {isLastSection ? (
+            <button
+              type="button"
+              onClick={() => setSigning(true)}
+              className="flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              <PenLine className="h-5 w-5 shrink-0" />
+              Review &amp; sign
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIndex((i) => Math.min(sections.length - 1, i + 1))}
+              className="flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              Next
+              <ArrowRight className="h-5 w-5 shrink-0" />
+            </button>
+          )}
+        </div>
+      }
+    >
+      <ul className="space-y-3">
+        {section?.steps.map((step) => (
+          <ItemCard
+            key={step.stepInstanceId}
+            dispatchId={view.dispatchId}
+            step={step}
+            minNoteLength={view.failNoteMinLength}
+            pendingVerb={pendingVerbFor(overlay, step.stepInstanceId)}
+            onAnswer={(request) => submitAnswer(step.stepInstanceId, request)}
+          />
+        ))}
+      </ul>
+
+      {sectionRemaining > 0 && (
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          {copy.unansweredInSection(sectionRemaining)}
+        </p>
+      )}
+    </TakeoverRunner>
   );
 }
 
@@ -1064,24 +1062,53 @@ function SignatureScreen({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-10 bg-background/95 px-4 pb-3 pt-4 backdrop-blur">
+    <TakeoverRunner
+      header={
+        <>
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={busy}
+            className="flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-40"
+          >
+            <ArrowLeft className="h-4 w-4 shrink-0" />
+            Back to the checklist
+          </button>
+          <h1 className="mt-2 text-xl font-bold leading-tight text-foreground">
+            Sign the inspection
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {view.playbookName} · Unit {view.truckUnitNumber}
+          </p>
+        </>
+      }
+      /*
+        quick-562 — this was the last child of `<main>`, which reads as "next to
+        the button" in the source and is not: `main` scrolls and the footer does
+        not. On a checklist with several failures the signature card alone
+        overflows the viewport, so a driver scrolled up to re-read what they are
+        signing under got an upload failure rendered below the fold, beneath the
+        button that never moved. In the footer it sits directly above `Sign and
+        submit` at every scroll position.
+      */
+      feedback={error && <TakeoverAlert message={error} />}
+      actions={
         <button
           type="button"
-          onClick={onBack}
-          disabled={busy}
-          className="flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-40"
+          onClick={() => void submit()}
+          disabled={!canSign}
+          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
         >
-          <ArrowLeft className="h-4 w-4 shrink-0" />
-          Back to the checklist
+          {busy ? (
+            <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+          ) : (
+            <ShieldCheck className="h-5 w-5 shrink-0" />
+          )}
+          Sign and submit
         </button>
-        <h1 className="mt-2 text-xl font-bold leading-tight text-foreground">Sign the inspection</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {view.playbookName} · Unit {view.truckUnitNumber}
-        </p>
-      </header>
-
-      <main className="flex-1 space-y-4 px-4 pb-4">
+      }
+    >
+      <div className="space-y-4">
         {remaining > 0 && (
           <div className="flex items-start gap-2 rounded-2xl bg-amber-50 p-4 dark:bg-amber-950/50">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-400" />
@@ -1159,30 +1186,7 @@ function SignatureScreen({
             </p>
           </div>
         </div>
-
-        {error && (
-          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
-          </div>
-        )}
-      </main>
-
-      <footer className="sticky bottom-0 z-10 bg-background/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <button
-          type="button"
-          onClick={() => void submit()}
-          disabled={!canSign}
-          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
-        >
-          {busy ? (
-            <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-          ) : (
-            <ShieldCheck className="h-5 w-5 shrink-0" />
-          )}
-          Sign and submit
-        </button>
-      </footer>
-    </div>
+      </div>
+    </TakeoverRunner>
   );
 }

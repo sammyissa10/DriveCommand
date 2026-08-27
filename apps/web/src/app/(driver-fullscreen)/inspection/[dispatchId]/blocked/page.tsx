@@ -5,6 +5,7 @@ import { getSession, getRole } from '@/lib/auth/supabase';
 import { logger, serializeError } from '@/lib/logger';
 import { resolveInspectionAccess } from '@/lib/carrier/inspection-access';
 import { handleGetGate, inspectionCopy } from '@/lib/carrier/inspection-handlers';
+import { TakeoverScreen } from '../../../TakeoverScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,12 +73,15 @@ export default async function InspectionBlockedPage({
       reason: access.reason,
     });
     return (
-      <Frame title="This trip is not yours">
-        <p className="text-base leading-relaxed text-muted-foreground">
-          It may have been reassigned. Your dispatcher can tell you which trip you are on.
-        </p>
-        <HomeLink />
-      </Frame>
+      <Frame
+        title="This trip is not yours"
+        body={
+          <p className="text-base leading-relaxed text-muted-foreground">
+            It may have been reassigned. Your dispatcher can tell you which trip you are on.
+          </p>
+        }
+        actions={<HomeLink />}
+      />
     );
   }
 
@@ -91,23 +95,35 @@ export default async function InspectionBlockedPage({
       error: serializeError(err),
     });
     return (
-      <Frame title="Could not load this trip">
-        <p className="text-base leading-relaxed text-muted-foreground">
-          Something went wrong reading the inspection. Nothing has changed either way.
-        </p>
-        <RecheckLink dispatchId={dispatchId} />
-        <HomeLink />
-      </Frame>
+      <Frame
+        title="Could not load this trip"
+        body={
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Something went wrong reading the inspection. Nothing has changed either way.
+          </p>
+        }
+        actions={
+          <>
+            <RecheckLink dispatchId={dispatchId} />
+            <HomeLink />
+          </>
+        }
+      />
     );
   }
 
   if (!gate.ok) {
     return (
-      <Frame title="Could not load this trip">
-        <p className="text-base leading-relaxed text-muted-foreground">{gate.error}</p>
-        <RecheckLink dispatchId={dispatchId} />
-        <HomeLink />
-      </Frame>
+      <Frame
+        title="Could not load this trip"
+        body={<p className="text-base leading-relaxed text-muted-foreground">{gate.error}</p>}
+        actions={
+          <>
+            <RecheckLink dispatchId={dispatchId} />
+            <HomeLink />
+          </>
+        }
+      />
     );
   }
 
@@ -120,70 +136,77 @@ export default async function InspectionBlockedPage({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
-      <div className="space-y-5">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-950">
-          <XCircle className="h-7 w-7 text-red-700 dark:text-red-400" />
-        </div>
+    <TakeoverScreen
+      top={
+        // `space-y-5` deliberately, over the shell's `space-y-4`: this top block
+        // carries four stacked blocks rather than three lines of copy.
+        <div className="space-y-5">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-950">
+            <XCircle className="h-7 w-7 text-red-700 dark:text-red-400" />
+          </div>
 
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold leading-tight text-foreground">This trip cannot start</h1>
-          {/* The gate's own sentence, whole. */}
-          <p className="text-base leading-relaxed text-muted-foreground">{view.message}</p>
-        </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold leading-tight text-foreground">
+              This trip cannot start
+            </h1>
+            {/* The gate's own sentence, whole. */}
+            <p className="text-base leading-relaxed text-muted-foreground">{view.message}</p>
+          </div>
 
-        {/* 1 — What failed */}
-        <section className="rounded-2xl bg-card p-4 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            What failed
-          </h2>
-          <ul className="mt-3 space-y-3">
-            {view.failures.map((f) => (
-              <li key={f.stepInstanceId} className="flex items-start gap-2.5">
-                {f.isCritical ? (
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
-                ) : (
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-foreground">
-                    {f.name}
-                    {f.isCritical ? ' · critical' : ''}
-                  </p>
-                  {f.note && <p className="mt-0.5 text-sm text-muted-foreground">{f.note}</p>}
-                  {f.photoCount > 0 && (
-                    <p className="mt-0.5 text-xs text-muted-foreground">Photo attached</p>
+          {/* 1 — What failed */}
+          <section className="rounded-2xl bg-card p-4 shadow-sm">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              What failed
+            </h2>
+            <ul className="mt-3 space-y-3">
+              {view.failures.map((f) => (
+                <li key={f.stepInstanceId} className="flex items-start gap-2.5">
+                  {f.isCritical ? (
+                    <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+                  ) : (
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                   )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-foreground">
+                      {f.name}
+                      {f.isCritical ? ' · critical' : ''}
+                    </p>
+                    {f.note && <p className="mt-0.5 text-sm text-muted-foreground">{f.note}</p>}
+                    {f.photoCount > 0 && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">Photo attached</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        {/* 2 — How dispatch finds out, and what to do meanwhile */}
-        <p className="rounded-2xl bg-muted/60 p-4 text-sm leading-relaxed text-foreground">
-          {inspectionCopy.dispatchAlerted}
-        </p>
-      </div>
-
-      {/* 3 — Something to do */}
-      <div className="mt-6 space-y-3">
-        {/*
-          Messages, not a phone number. It is in-app, it is logged against the
-          tenant, and it does not depend on the driver having a dispatcher's
-          number saved — the same call mobile's blocked screen makes.
-        */}
-        <Link
-          href="/messages"
-          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
-        >
-          <MessageSquare className="h-5 w-5 shrink-0" />
-          Contact dispatch
-        </Link>
-        <RecheckLink dispatchId={dispatchId} />
-        <HomeLink />
-      </div>
-    </div>
+          {/* 2 — How dispatch finds out, and what to do meanwhile */}
+          <p className="rounded-2xl bg-muted/60 p-4 text-sm leading-relaxed text-foreground">
+            {inspectionCopy.dispatchAlerted}
+          </p>
+        </div>
+      }
+      /* 3 — Something to do. No `feedback`: every control here is a `Link`. */
+      actions={
+        <>
+          {/*
+            Messages, not a phone number. It is in-app, it is logged against the
+            tenant, and it does not depend on the driver having a dispatcher's
+            number saved — the same call mobile's blocked screen makes.
+          */}
+          <Link
+            href="/messages"
+            className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            <MessageSquare className="h-5 w-5 shrink-0" />
+            Contact dispatch
+          </Link>
+          <RecheckLink dispatchId={dispatchId} />
+          <HomeLink />
+        </>
+      }
+    />
   );
 }
 
@@ -212,16 +235,37 @@ function HomeLink() {
   );
 }
 
-function Frame({ title, children }: { title: string; children: React.ReactNode }) {
+/**
+ * The error frames on this page.
+ *
+ * `body` and `actions` are separate props now, and that is the fix rather than
+ * tidying: this used to take one `children` and render it all inside the top
+ * block, so its `justify-between` had a single flex item and nothing to
+ * distribute. The way out sat directly under the sentence at the top of the
+ * screen while every other screen in the group put it at the bottom, under the
+ * thumb — the string was copied, the shape it describes was not.
+ */
+function Frame({
+  title,
+  body,
+  actions,
+}: {
+  title: string;
+  body: React.ReactNode;
+  actions: React.ReactNode;
+}) {
   return (
-    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
-      <div className="space-y-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950">
-          <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
-        </div>
-        <h1 className="text-2xl font-bold leading-tight text-foreground">{title}</h1>
-        {children}
-      </div>
-    </div>
+    <TakeoverScreen
+      top={
+        <>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950">
+            <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
+          </div>
+          <h1 className="text-2xl font-bold leading-tight text-foreground">{title}</h1>
+          {body}
+        </>
+      }
+      actions={actions}
+    />
   );
 }

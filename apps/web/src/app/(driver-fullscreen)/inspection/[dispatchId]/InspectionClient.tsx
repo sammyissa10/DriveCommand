@@ -8,6 +8,7 @@ import type {
   InspectionChecklistView,
   InspectionGateView,
 } from '@/lib/carrier/inspection-handlers';
+import { TakeoverAlert, TakeoverScreen } from '../../TakeoverScreen';
 import { InspectionRunner } from './InspectionRunner';
 import { openInspectionChecklist } from '../actions';
 import { startTrip } from '@/app/(driver)/actions/driver-routes';
@@ -119,69 +120,61 @@ function BeginScreen({
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   return (
-    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
-      <div className="space-y-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-          <ClipboardCheck className="h-7 w-7 text-primary" />
-        </div>
-        <h1 className="text-2xl font-bold leading-tight text-foreground">Pre-trip inspection</h1>
-        <p className="text-base leading-relaxed text-muted-foreground">
-          Walk around unit {truckUnitNumber} and answer each item. You can go back at any point
-          before you sign.
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        {/*
-          quick-546: this banner used to live in the TOP block, above. The layout
-          is `min-h-dvh ... justify-between`, so on a phone it rendered roughly a
-          screen-height away from the button being tapped — the feedback existed
-          and was off-screen, which is why the failure was reported as "nothing
-          happens". A tap must produce visible feedback where the thumb already
-          is. Keep it in this block, immediately above the button.
-        */}
-        {error && (
-          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-            <div className="min-w-0">
-              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
-              {errorCode && (
-                <p className="mt-1 font-mono text-xs text-red-600/70 dark:text-red-400/70">
-                  {errorCode}
-                </p>
-              )}
-            </div>
+    <TakeoverScreen
+      top={
+        <>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+            <ClipboardCheck className="h-7 w-7 text-primary" />
           </div>
-        )}
-        <button
-          type="button"
-          disabled={pending}
-          onClick={() =>
-            startTransition(async () => {
-              setError(null);
-              setErrorCode(null);
-              const res = await openInspectionChecklist(dispatchId);
-              if (!res.success) {
-                setError(res.error);
-                setErrorCode(res.code ?? null);
-                return;
-              }
-              onOpened(res.data);
-            })
-          }
-          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
-        >
-          {pending ? <Loader2 className="h-5 w-5 shrink-0 animate-spin" /> : null}
-          Start the walkaround
-        </button>
-        <Link
-          href="/home"
-          className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
-        >
-          Not now
-        </Link>
-      </div>
-    </div>
+          <h1 className="text-2xl font-bold leading-tight text-foreground">Pre-trip inspection</h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Walk around unit {truckUnitNumber} and answer each item. You can go back at any point
+            before you sign.
+          </p>
+        </>
+      }
+      /*
+        quick-546: this banner used to live in the TOP block. The layout is
+        `min-h-dvh ... justify-between`, so on a phone it rendered roughly a
+        screen-height away from the button being tapped — the feedback existed
+        and was off-screen, which is why the failure was reported as "nothing
+        happens". quick-562 turned that fix into the shell's rule: `feedback` is
+        rendered as the first child of the action region, so it can no longer be
+        put anywhere else without leaving the shell.
+      */
+      feedback={error && <TakeoverAlert message={error} code={errorCode} />}
+      actions={
+        <>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() =>
+              startTransition(async () => {
+                setError(null);
+                setErrorCode(null);
+                const res = await openInspectionChecklist(dispatchId);
+                if (!res.success) {
+                  setError(res.error);
+                  setErrorCode(res.code ?? null);
+                  return;
+                }
+                onOpened(res.data);
+              })
+            }
+            className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+          >
+            {pending ? <Loader2 className="h-5 w-5 shrink-0 animate-spin" /> : null}
+            Start the walkaround
+          </button>
+          <Link
+            href="/home"
+            className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
+          >
+            Not now
+          </Link>
+        </>
+      }
+    />
   );
 }
 
@@ -197,86 +190,92 @@ function OutcomeScreen({ dispatchId, gate }: { dispatchId: string; gate: Inspect
   const withDefects = gate.outcome === 'PASSED_WITH_DEFECTS';
 
   return (
-    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
-      <div className="space-y-4">
-        <div
-          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-            withDefects ? 'bg-amber-100 dark:bg-amber-950' : 'bg-green-100 dark:bg-green-950'
-          }`}
-        >
-          {withDefects ? (
-            <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
-          ) : (
-            <CheckCircle2 className="h-7 w-7 text-green-700 dark:text-green-400" />
-          )}
-        </div>
-
-        <h1 className="text-2xl font-bold leading-tight text-foreground">
-          {withDefects ? 'Inspection complete, with faults' : 'Inspection complete'}
-        </h1>
-
-        {/*
-          The gate's own sentence, rendered whole. `inspectionCopy` builds it
-          server-side as one string precisely so it is never reassembled from
-          fragments here.
-        */}
-        <p className="text-base leading-relaxed text-muted-foreground">{gate.message}</p>
-
-        {gate.failures.length > 0 && (
-          <ul className="space-y-2 rounded-2xl bg-card p-4 shadow-sm">
-            {gate.failures.map((f) => (
-              <li key={f.stepInstanceId} className="text-sm">
-                <span className="font-medium text-foreground">{f.name}</span>
-                {f.note ? <span className="text-muted-foreground"> — {f.note}</span> : null}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {error && (
-          <div className="flex items-start gap-2 rounded-2xl bg-red-50 p-4 dark:bg-red-950/50">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+    <TakeoverScreen
+      top={
+        <>
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+              withDefects ? 'bg-amber-100 dark:bg-amber-950' : 'bg-green-100 dark:bg-green-950'
+            }`}
+          >
+            {withDefects ? (
+              <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
+            ) : (
+              <CheckCircle2 className="h-7 w-7 text-green-700 dark:text-green-400" />
+            )}
           </div>
-        )}
-      </div>
 
-      <div className="space-y-3">
-        {/*
-          Starting is a SEPARATE, explicit tap. `handleSubmitInspection` never
-          starts the trip, so a driver who finishes a walkaround at 04:50 is not
-          put on the road at 04:50.
-        */}
-        <button
-          type="button"
-          disabled={pending}
-          onClick={() =>
-            startTransition(async () => {
-              setError(null);
-              const res = (await startTrip(dispatchId)) as { error?: string };
-              if (res?.error) {
-                setError(res.error);
-                return;
-              }
-              router.replace('/my-route');
-            })
-          }
-          className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
-        >
-          {pending ? (
-            <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-          ) : (
-            <Truck className="h-5 w-5 shrink-0" />
+          <h1 className="text-2xl font-bold leading-tight text-foreground">
+            {withDefects ? 'Inspection complete, with faults' : 'Inspection complete'}
+          </h1>
+
+          {/*
+            The gate's own sentence, rendered whole. `inspectionCopy` builds it
+            server-side as one string precisely so it is never reassembled from
+            fragments here.
+          */}
+          <p className="text-base leading-relaxed text-muted-foreground">{gate.message}</p>
+
+          {gate.failures.length > 0 && (
+            <ul className="space-y-2 rounded-2xl bg-card p-4 shadow-sm">
+              {gate.failures.map((f) => (
+                <li key={f.stepInstanceId} className="text-sm">
+                  <span className="font-medium text-foreground">{f.name}</span>
+                  {f.note ? <span className="text-muted-foreground"> — {f.note}</span> : null}
+                </li>
+              ))}
+            </ul>
           )}
-          Start trip
-        </button>
-        <Link
-          href="/home"
-          className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
-        >
-          Back to my trips
-        </Link>
-      </div>
-    </div>
+        </>
+      }
+      /*
+        quick-562 — this banner was in the TOP block, which is the defect
+        quick-546 fixed one screen away and did not carry across. `startTrip`
+        can fail (HOS, a licence, a truck), and its message rendered at the end
+        of a block that already holds an icon, a heading, the gate's sentence
+        and the whole defect list, while the button that produced it sits at the
+        other end of a `justify-between` viewport. Same layout, same distance,
+        same "nothing happens".
+      */
+      feedback={error && <TakeoverAlert message={error} />}
+      actions={
+        <>
+          {/*
+            Starting is a SEPARATE, explicit tap. `handleSubmitInspection` never
+            starts the trip, so a driver who finishes a walkaround at 04:50 is not
+            put on the road at 04:50.
+          */}
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() =>
+              startTransition(async () => {
+                setError(null);
+                const res = (await startTrip(dispatchId)) as { error?: string };
+                if (res?.error) {
+                  setError(res.error);
+                  return;
+                }
+                router.replace('/my-route');
+              })
+            }
+            className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+          >
+            {pending ? (
+              <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+            ) : (
+              <Truck className="h-5 w-5 shrink-0" />
+            )}
+            Start trip
+          </button>
+          <Link
+            href="/home"
+            className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
+          >
+            Back to my trips
+          </Link>
+        </>
+      }
+    />
   );
 }

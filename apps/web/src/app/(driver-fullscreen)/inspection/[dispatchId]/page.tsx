@@ -9,6 +9,7 @@ import {
   handleGetGate,
   type InspectionChecklistView,
 } from '@/lib/carrier/inspection-handlers';
+import { TakeoverScreen } from '../../TakeoverScreen';
 import { InspectionClient } from './InspectionClient';
 
 export const dynamic = 'force-dynamic';
@@ -177,6 +178,14 @@ function AlreadyClear({ message }: { message: string }) {
   return <Shell tone="ok" title="No walkaround needed" body={message} homeLabel="Back to my trips" />;
 }
 
+/**
+ * A terminal statement, on the group's shell.
+ *
+ * There is no transient feedback here — the message IS the screen, and every
+ * control on it is a `Link` that cannot fail in place — so no `feedback` is
+ * passed. The shell still owns where one would go if a later edit adds a
+ * control that can.
+ */
 function Shell({
   tone,
   title,
@@ -191,39 +200,42 @@ function Shell({
   homeLabel?: string;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col justify-between px-5 py-8">
-      <div className="space-y-4">
-        <div
-          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-            tone === 'ok' ? 'bg-green-100 dark:bg-green-950' : 'bg-amber-100 dark:bg-amber-950'
-          }`}
-        >
-          {tone === 'ok' ? (
-            <CheckCircle2 className="h-7 w-7 text-green-700 dark:text-green-400" />
-          ) : (
-            <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
-          )}
-        </div>
-        <h1 className="text-2xl font-bold leading-tight text-foreground">{title}</h1>
-        <p className="text-base leading-relaxed text-muted-foreground">{body}</p>
-      </div>
-
-      <div className="space-y-3">
-        {retryHref && (
-          <Link
-            href={retryHref}
-            className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+    <TakeoverScreen
+      top={
+        <>
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+              tone === 'ok' ? 'bg-green-100 dark:bg-green-950' : 'bg-amber-100 dark:bg-amber-950'
+            }`}
           >
-            Try again
+            {tone === 'ok' ? (
+              <CheckCircle2 className="h-7 w-7 text-green-700 dark:text-green-400" />
+            ) : (
+              <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
+            )}
+          </div>
+          <h1 className="text-2xl font-bold leading-tight text-foreground">{title}</h1>
+          <p className="text-base leading-relaxed text-muted-foreground">{body}</p>
+        </>
+      }
+      actions={
+        <>
+          {retryHref && (
+            <Link
+              href={retryHref}
+              className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              Try again
+            </Link>
+          )}
+          <Link
+            href="/home"
+            className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
+          >
+            {homeLabel}
           </Link>
-        )}
-        <Link
-          href="/home"
-          className="flex min-h-[56px] w-full items-center justify-center rounded-xl bg-muted text-base font-semibold text-foreground hover:bg-muted/80"
-        >
-          {homeLabel}
-        </Link>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 }
