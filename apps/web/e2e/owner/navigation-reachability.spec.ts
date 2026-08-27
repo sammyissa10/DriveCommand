@@ -17,13 +17,26 @@ import path from 'path';
  *     type-checked, reviewed correctly, and rendered nowhere.
  *
  *  2. **The edit rendered, and silently deleted a different link.**
- *     `SidebarGroup.tsx` renders a parent that HAS CHILDREN as a plain `<div>`,
- *     not a `<Link>`. quick-552's first attempt added Live Board as a child of
- *     Live Map — which removed the sidebar's only link to the live map. One
- *     unreachable page traded for another.
+ *     `SidebarGroup.tsx` USED TO render a parent that has children as a plain
+ *     `<div>`, not a `<Link>` — and `SidebarFlyout.tsx` used a `<button>` for the
+ *     same thing on the collapsed rail. quick-552's first attempt added Live
+ *     Board as a child of Live Map, which removed the sidebar's only link to the
+ *     live map. One unreachable page traded for another.
  *
- * Reading the source cannot catch either. Only asking a real browser what is in
- * the DOM can, which is what this file does.
+ *     **quick-553 fixed the components** — both branches now render the parent
+ *     through `SidebarItem`/`<Link>`. `/carrier/trips` had been the standing
+ *     casualty of this since Document Imports was nested under Trips. The two
+ *     tests below are what keep it fixed.
+ *
+ *  3. **The destination died with the file that described it — quick-553.**
+ *     quick-552 deleted the orphaned `navigation/sidebar.tsx` and carried only
+ *     `Live Board` into the mounted sidebar. The Reports group in that file went
+ *     with it, and five report pages lost every desktop link they had. The orphan
+ *     scanner cannot see this: it asks whether anything imports a file, not
+ *     whether a live destination was described inside one being removed.
+ *
+ * Reading the source cannot catch any of these. Only asking a real browser what
+ * is in the DOM can, which is what this file does.
  *
  * ─── HOW TO EXTEND ──────────────────────────────────────────────────────────
  *
@@ -49,6 +62,24 @@ const REQUIRED_SIDEBAR_HREFS = [
   '/carrier/loads',
   '/carrier/fleet/drivers',
   '/carrier/fleet/trucks',
+
+  // quick-553 — failure mode 2, the one this list was written for. `Trips` has a
+  // `Document Imports` child, so `SidebarGroup` rendered it as a plain <div> and
+  // `/carrier/trips` had no link while `/carrier/imports` did. The child was in
+  // the DOM and the parent was not.
+  '/carrier/trips',
+  '/carrier/imports',
+
+  // quick-553 — failure mode 1, one commit later than the header describes. The
+  // Reports group was written in the orphaned `navigation/sidebar.tsx`; quick-552
+  // deleted that file and carried only `Live Board` across. Five report pages had
+  // no desktop link at all until this group was restored. AR Aging had none on
+  // ANY surface — it is not in the mobile more-menu either.
+  '/carrier/reports/revenue',
+  '/carrier/reports/driver-pay',
+  '/carrier/reports/aging',
+  '/carrier/reports/performance',
+  '/carrier/reports/todays-trips',
 ];
 
 test('every required sidebar destination is a real link in the DOM', async ({ page }) => {
@@ -71,4 +102,43 @@ test('every required sidebar destination is a real link in the DOM', async ({ pa
       'Either the entry was added to a component nothing mounts, or it was added as a child ' +
       'of a parent item — which turns the PARENT into a non-clickable div. See this file header.',
   ).toEqual([]);
+});
+
+/**
+ * The COLLAPSED rail — quick-553.
+ *
+ * The test above runs with the sidebar expanded, which is the default, and it
+ * cannot see the other half of the parent-with-children bug. When the rail is
+ * collapsed, a parent that has children is rendered by `SidebarFlyout` instead
+ * of `SidebarGroup`, and that component's trigger was a `<button>`. So
+ * `/carrier/trips` had no `<a href>` in EITHER state, and a fix to the expanded
+ * branch alone would have left this one green and the page still unreachable.
+ *
+ * Only the parent is asserted here. The children live in a Radix popover that is
+ * mounted on hover, so they are legitimately absent from a resting DOM — that is
+ * the flyout working, not a missing link.
+ */
+test('a parent item with children is still a link on the collapsed rail', async ({ page, context }) => {
+  // `useSidebarState` reads the `sidebar:state` cookie first and it wins over
+  // localStorage. Setting it up front is deterministic; clicking the toggle
+  // would race the hydration effect that reads it.
+  await context.addCookies([
+    { name: 'sidebar:state', value: 'false', url: 'http://localhost:3000' },
+  ]);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/carrier/dashboard');
+
+  await page.waitForSelector('a[href="/live-map?view=board"]', { timeout: 30_000 });
+
+  const hrefs = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('aside a')).map((a) => a.getAttribute('href') || ''),
+  );
+
+  expect(
+    hrefs,
+    'The Trips parent has no link on the collapsed rail. `SidebarFlyout`\'s trigger ' +
+      'must be a <Link href={item.href}>, not a <button> — a parent item owns its own ' +
+      'route, and nesting a child under it must not take that route away.',
+  ).toContain('/carrier/trips');
 });
