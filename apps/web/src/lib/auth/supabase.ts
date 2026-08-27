@@ -12,6 +12,7 @@
 
 import { cache } from 'react';
 import type { UserPermissions } from './permissions';
+import { hasPermission } from './permissions';
 import { prisma } from '../db/prisma';
 import { UserRole } from './roles';
 
@@ -159,13 +160,35 @@ export async function getCurrentUser() {
  * Use after requireRole() in server actions that should be accessible to MANAGER
  * but gated by specific permissions. OWNER users always pass through.
  *
- * - OWNER: always allowed (returns immediately)
- * - MANAGER: checks session.permissions — throws PERMISSION_DENIED if not granted
+ * - OWNER: always allowed
+ * - MANAGER: `fullAccess` bypasses; otherwise default-all-true — only an
+ *   explicit `false` denies
  * - All other roles: throws Unauthorized
  *
- * @throws {Error} 'Unauthorized' if not authenticated
- * @throws {Error} 'PERMISSION_DENIED: ...' if MANAGER lacks the required permission
- * @throws {Error} 'Unauthorized' if any other role
+ * ─── ONE DEFINITION, DELIBERATELY (quick-554) ───────────────────────────────
+ *
+ * The verdict is `hasPermission()` and nothing else. This function used to
+ * inline its own copy, and that copy did NOT honour `fullAccess` — so it
+ * disagreed with `middleware.ts`, which does. The divergence had never bitten
+ * because this function had exactly ONE caller in the whole repo
+ * (`actions/ai-documents.ts`).
+ *
+ * It would have bitten the moment quick-554 wired the report APIs to it.
+ * `fullAccess: true` alongside an explicit `revenueReport: false` is a NORMAL
+ * stored state, not a corrupt one: the team-permissions UI greys the granular
+ * toggles out when Full Access is on and never clears their values. Under the
+ * old copy such a manager would have been waved through the middleware onto a
+ * report page whose API then answered 403 — a screen that loads and cannot
+ * fetch.
+ *
+ * BEHAVIOUR CHANGE, stated rather than buried: that same manager previously got
+ * PERMISSION_DENIED from `ai-documents.ts`. They are now allowed, which is what
+ * the master toggle claims and what the middleware guarding that page already
+ * did.
+ *
+ * @throws {Error} 'Unauthorized' if not authenticated, or if the role is
+ *   neither OWNER nor MANAGER
+ * @throws {Error} 'PERMISSION_DENIED: ...' if a MANAGER lacks the permission
  *
  * @example
  * export async function getPayrollRecords() {
@@ -180,21 +203,15 @@ export async function requirePermission(key: keyof UserPermissions): Promise<voi
     throw new Error('Unauthorized');
   }
 
-  // OWNER always has access
-  if (session.role === 'OWNER') {
+  if (hasPermission(session.permissions ?? null, key, session.role)) {
     return;
   }
 
-  // MANAGER: check the specific permission from the session
-  // Default-all-true: if permission not set or not explicitly false, allow access
+  // hasPermission() is false for two different reasons, and they are different
+  // answers to the caller: a MANAGER who is merely missing this one permission,
+  // versus a role that has no business here at all.
   if (session.role === 'MANAGER') {
-    const perms = (session.permissions ?? {}) as UserPermissions;
-    if (perms[key] === false) {
-      throw new Error('PERMISSION_DENIED: You do not have access to this feature');
-    }
-    return;
+    throw new Error('PERMISSION_DENIED: You do not have access to this feature');
   }
-
-  // All other roles are not authorized
   throw new Error('Unauthorized');
 }

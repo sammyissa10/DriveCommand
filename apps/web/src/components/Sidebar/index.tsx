@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserRole } from "@/lib/auth/roles"
 import type { UserPermissions } from "@/lib/auth/permissions"
+import { hasPermission } from "@/lib/auth/permissions"
 import Link from "next/link"
 import { useSidebarState } from "./useSidebarState"
 import { useMotionConfig, sidebarVariants } from "./motion"
@@ -49,15 +50,26 @@ interface AnimatedSidebarProps {
 }
 
 /**
- * Check if a manager has access to a specific permission key.
- * Default-all-true: returns true unless explicitly set to false.
+ * Whether this sidebar should render a link for `key`.
+ *
+ * quick-554: delegates to `hasPermission()` — the same verdict the middleware
+ * and every gated API now use. This used to be a fourth hand-written copy of
+ * the predicate and it did NOT honour `fullAccess`, so a manager with the
+ * master toggle on and one stale granular `false` had a link hidden from a page
+ * the middleware would happily serve them. Sidebar and server must agree in
+ * BOTH directions: a link to a 403 is a broken product, and a hidden link to a
+ * page that loads is a permission model nobody can reason about.
+ *
+ * `role` is passed through rather than assumed: `hasPermission` returns true for
+ * OWNER unconditionally, which is what the previous `if (!permissions)` early
+ * return was really standing in for.
  */
 function managerHasPermission(
   permissions: UserPermissions | undefined,
-  key: keyof UserPermissions
+  key: keyof UserPermissions,
+  role: string | undefined
 ): boolean {
-  if (!permissions) return true
-  return permissions[key] !== false
+  return hasPermission(permissions ?? null, key, role ?? "")
 }
 
 /**
@@ -256,7 +268,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   if (isOwnerOrManager) {
     const intelligenceItems = []
 
-    if (managerHasPermission(perms, "liveMap")) {
+    if (managerHasPermission(perms, "liveMap", userRole)) {
       intelligenceItems.push({
         label: "Live Map",
         href: "/live-map",
@@ -272,7 +284,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "carrierDashboard")) {
+    if (managerHasPermission(perms, "carrierDashboard", userRole)) {
       intelligenceItems.push({
         label: "Carrier Dashboard",
         href: "/carrier/dashboard",
@@ -296,7 +308,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   if (isOwnerOrManager) {
     const operationsItems = []
 
-    if (managerHasPermission(perms, "clients")) {
+    if (managerHasPermission(perms, "clients", userRole)) {
       operationsItems.push({
         label: "Clients",
         href: "/carrier/clients",
@@ -304,7 +316,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "contracts")) {
+    if (managerHasPermission(perms, "contracts", userRole)) {
       operationsItems.push({
         label: "Contracts",
         href: "/carrier/contracts",
@@ -321,7 +333,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       icon: Route,
     })
 
-    if (managerHasPermission(perms, "carrierLoads")) {
+    if (managerHasPermission(perms, "carrierLoads", userRole)) {
       operationsItems.push({
         label: "Loads",
         href: "/carrier/loads",
@@ -329,7 +341,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "dispatches")) {
+    if (managerHasPermission(perms, "dispatches", userRole)) {
       operationsItems.push({
         label: "Trips",
         href: "/carrier/trips",
@@ -372,7 +384,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   if (isOwnerOrManager) {
     const resourcesItems = []
 
-    if (managerHasPermission(perms, "carrierDrivers")) {
+    if (managerHasPermission(perms, "carrierDrivers", userRole)) {
       resourcesItems.push({
         label: "Drivers",
         href: "/carrier/fleet/drivers",
@@ -380,7 +392,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "carrierTrucks")) {
+    if (managerHasPermission(perms, "carrierTrucks", userRole)) {
       resourcesItems.push({
         label: "Fleet",
         href: "/carrier/fleet/trucks",
@@ -390,7 +402,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
 
     // Facilities — operational memory of every facility (pickup, delivery, or stop)
     // Carrier owners need to see who they've worked with, where, how often, and any operational notes
-    if (managerHasPermission(perms, "facilities")) {
+    if (managerHasPermission(perms, "facilities", userRole)) {
       resourcesItems.push({
         label: "Facilities",
         href: "/carrier/facilities",
@@ -445,7 +457,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   if (isOwnerOrManager) {
     const reportsItems = []
 
-    if (managerHasPermission(perms, "revenueReport")) {
+    if (managerHasPermission(perms, "revenueReport", userRole)) {
       reportsItems.push({
         label: "Revenue",
         href: "/carrier/reports/revenue",
@@ -453,7 +465,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "driverPayReport")) {
+    if (managerHasPermission(perms, "driverPayReport", userRole)) {
       reportsItems.push({
         label: "Driver Pay",
         href: "/carrier/reports/driver-pay",
@@ -461,7 +473,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "arAgingReport")) {
+    if (managerHasPermission(perms, "arAgingReport", userRole)) {
       reportsItems.push({
         label: "AR Aging",
         href: "/carrier/reports/aging",
@@ -469,7 +481,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       })
     }
 
-    if (managerHasPermission(perms, "performanceReport")) {
+    if (managerHasPermission(perms, "performanceReport", userRole)) {
       reportsItems.push({
         label: "Performance",
         href: "/carrier/reports/performance",
@@ -500,7 +512,7 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   // MESSAGES — Standalone item (no section header, floats between RESOURCES and footer)
   // Former COMMUNICATIONS section had only one item — section header removed per IA fix
   // ============================================================================
-  if (isOwnerOrManager && managerHasPermission(perms, "carrierDrivers")) {
+  if (isOwnerOrManager && managerHasPermission(perms, "carrierDrivers", userRole)) {
     navGroups.push({
       label: "", // Empty label = no section header, just a divider
       items: [
