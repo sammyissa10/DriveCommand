@@ -1,16 +1,9 @@
 /**
  * Types for Trips DataGrid
+ *
+ * The row shape is defined once, next to the payload it is built from, in
+ * `lib/carrier/trip-list-row.ts` — see quick-557 for why the two must share a
+ * vocabulary rather than translate between one another.
  */
 
-export interface DispatchRow {
-  id: string;
-  dispatchNumber: string | null;
-  driverId: string | null;
-  driverName: string | null;
-  truckId: string | null;
-  truckUnit: string | null;
-  scheduledDate: string;
-  status: string;
-  loadCount: number;
-  notes: string | null;
-}
+export type { TripListRow as DispatchRow } from '@/lib/carrier/trip-list-row';

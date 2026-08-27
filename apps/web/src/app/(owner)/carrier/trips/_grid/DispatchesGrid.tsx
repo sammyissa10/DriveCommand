@@ -25,6 +25,7 @@ import { GridShell, QuickActions } from '@/components/data-grid/shell';
 import type { QuickAction } from '@/components/data-grid/shell';
 import { dispatchesColumns } from './columns';
 import type { DispatchRow } from './types';
+import { toTripListRow, type TripListApiItem } from '@/lib/carrier/trip-list-row';
 import { useSoftDelete } from '@/hooks/useSoftDelete';
 import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
 
@@ -32,22 +33,6 @@ interface DispatchesGridProps {
   driverMap: Record<string, string>;
   truckMap: Record<string, string>;
   userRole?: string | null;
-}
-
-interface ApiDispatch {
-  id: string;
-  driverId: string | null;
-  truckId: string | null;
-  scheduledDate: string;
-  status: string;
-  notes: string | null;
-  _count?: { loads: number };
-}
-
-function extractDispatchNumber(notes: string | null): string | null {
-  if (!notes) return null;
-  const match = notes.match(/\[DISPATCH_NUMBER=([^\]]+)\]/);
-  return match ? match[1] : null;
 }
 
 export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGridProps) {
@@ -92,22 +77,13 @@ export function DispatchesGrid({ driverMap, truckMap, userRole }: DispatchesGrid
       if (!res.ok) throw new Error('Failed to load trips');
 
       const json = await res.json();
-      const items = (json.data?.items ?? json.data ?? []) as ApiDispatch[];
+      const items = (json.data?.items ?? json.data ?? []) as TripListApiItem[];
       const tot = json.data?.total ?? items.length;
 
-      // Transform to DispatchRow format
-      const rows: DispatchRow[] = items.map((item) => ({
-        id: item.id,
-        dispatchNumber: extractDispatchNumber(item.notes),
-        driverId: item.driverId,
-        driverName: item.driverId ? driverMap[item.driverId] || null : null,
-        truckId: item.truckId,
-        truckUnit: item.truckId ? truckMap[item.truckId] || null : null,
-        scheduledDate: item.scheduledDate,
-        status: item.status,
-        loadCount: item._count?.loads || 0,
-        notes: item.notes,
-      }));
+      // Payload → row mapping lives in one shared place (quick-557); the two
+      // lanes of this page each had their own copy and both had drifted onto
+      // legacy `Route` field names.
+      const rows: DispatchRow[] = items.map((item) => toTripListRow(item, { driverMap, truckMap }));
 
       setDispatches(rows);
       setTotal(tot);

@@ -6,17 +6,18 @@ import Link from 'next/link';
 import type { ColumnDef } from '@tanstack/react-table';
 import { StatusBadge } from '@/components/data-grid/shell';
 import type { DispatchRow } from './types';
+import { extractDispatchNumber } from '@/lib/carrier/trip-list-row';
 
+/**
+ * `Trip.scheduledDeparture` is `@db.Timestamptz` — a real instant — so local
+ * rendering is correct here (quick-541: the date-only helpers are the inverse
+ * bug on a timestamptz column).
+ */
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '—';
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '—';
   return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-}
-
-function extractDispatchNumber(notes: string | null): string | null {
-  if (!notes) return null;
-  const match = notes.match(/\[DISPATCH_NUMBER=([^\]]+)\]/);
-  return match ? match[1] : null;
 }
 
 export const dispatchesColumns: ColumnDef<DispatchRow, unknown>[] = [
@@ -44,8 +45,10 @@ export const dispatchesColumns: ColumnDef<DispatchRow, unknown>[] = [
     },
   },
   {
+    // Column id is a PERSISTED key (grid_preference, gridId "dispatches-overview"),
+    // so it stays as-is; only the field it reads was wrong. quick-557.
     id: 'scheduledDate',
-    accessorKey: 'scheduledDate',
+    accessorFn: (row) => row.scheduledDeparture,
     header: 'Date',
     meta: {
       dataType: 'date',

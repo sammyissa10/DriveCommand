@@ -19,35 +19,22 @@ import {
   type StatusTone,
 } from '@/components/ui/ds';
 import type { ImportListItem } from '@/lib/document-import/intake';
+import { toTripListRow, type TripListApiItem } from '@/lib/carrier/trip-list-row';
 
 // ---------------------------------------------------------------------------
-// Data — same endpoint + shape the desktop DispatchesGrid uses
+// Data — same endpoint and the SAME shared mapping the desktop DispatchesGrid
+// uses. quick-557: this lane kept its own copy of the payload shape and it had
+// drifted onto legacy `Route` field names, exactly as the desktop one had.
 // ---------------------------------------------------------------------------
-
-interface ApiDispatch {
-  id: string;
-  driverId: string | null;
-  truckId: string | null;
-  scheduledDate: string;
-  status: string;
-  notes: string | null;
-  _count?: { loads: number };
-}
 
 interface TripRow {
   id: string;
   number: string;
   driver: string | null;
   truck: string | null;
-  scheduledDate: string;
+  scheduledDeparture: string;
   status: string;
   loadCount: number;
-}
-
-function dispatchNumberFromNotes(notes: string | null): string | null {
-  if (!notes) return null;
-  const m = notes.match(/\[DISPATCH_NUMBER=([^\]]+)\]/);
-  return m ? m[1] : null;
 }
 
 const STATUS_META: Record<string, { tone: StatusTone; label: string }> = {
@@ -162,17 +149,20 @@ export function TripsMobile({
     fetch(`/api/v1/carrier/dispatches?${params.toString()}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((json) => {
-        const items = (json?.data?.items ?? json?.data ?? []) as ApiDispatch[];
+        const items = (json?.data?.items ?? json?.data ?? []) as TripListApiItem[];
         setRows(
-          items.map((it) => ({
-            id: it.id,
-            number: dispatchNumberFromNotes(it.notes) ?? `Trip ${it.id.slice(0, 8).toUpperCase()}`,
-            driver: it.driverId ? driverMap[it.driverId] ?? null : null,
-            truck: it.truckId ? truckMap[it.truckId] ?? null : null,
-            scheduledDate: it.scheduledDate,
-            status: it.status,
-            loadCount: it._count?.loads ?? 0,
-          })),
+          items.map((it) => {
+            const row = toTripListRow(it, { driverMap, truckMap });
+            return {
+              id: row.id,
+              number: row.dispatchNumber ?? `Trip ${row.id.slice(0, 8).toUpperCase()}`,
+              driver: row.driverName,
+              truck: row.truckUnit,
+              scheduledDeparture: row.scheduledDeparture,
+              status: row.status,
+              loadCount: row.loadCount,
+            };
+          }),
         );
       })
       .catch(() => setRows([]));
@@ -197,7 +187,7 @@ export function TripsMobile({
       const now = new Date();
       const todayK = dateKey(now);
       list = list.filter((r) => {
-        const d = new Date(r.scheduledDate);
+        const d = new Date(r.scheduledDeparture);
         if (isNaN(d.getTime())) return false;
         if (scope === 'today') return dateKey(d) === todayK;
         // upcoming — scheduled after today
@@ -216,7 +206,7 @@ export function TripsMobile({
       );
     }
     // Soonest-relevant first: newest scheduled date at the top.
-    return [...list].sort((a, b) => new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime());
+    return [...list].sort((a, b) => new Date(b.scheduledDeparture).getTime() - new Date(a.scheduledDeparture).getTime());
   }, [rows, status, scope, query]);
 
   const isFiltering = query.trim().length > 0 || status !== null || scope !== 'all';
@@ -325,7 +315,7 @@ export function TripsMobile({
           {visible.map((r) => {
             const s = statusMeta(r.status);
             const subline = [r.driver ?? 'Unassigned', r.truck ? `Unit ${r.truck}` : null].filter(Boolean).join(' · ');
-            const day = fmtDay(r.scheduledDate);
+            const day = fmtDay(r.scheduledDeparture);
             const meta = [day, r.loadCount > 0 ? `${r.loadCount} load${r.loadCount === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ');
             return (
               <EntityRow

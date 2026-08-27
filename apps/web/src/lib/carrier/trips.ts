@@ -137,7 +137,10 @@ export async function listTrips(orgId: string, filters: ListTripsFilters = {}) {
           select: { unitNumber: true },
         },
         _count: {
-          select: { stops: true },
+          // `carrierLoads` backs the trips list's "Loads" column. It used to read
+          // a `_count.loads` the query never selected, so every trip reported 0
+          // loads (quick-557). Additive — existing consumers read `stops`.
+          select: { stops: true, carrierLoads: true },
         },
       },
     }),
