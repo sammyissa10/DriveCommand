@@ -193,6 +193,15 @@ with nothing to refresh from and needs handling rather than ignoring.
   docs-only), so that is the correct baseline. The 18 are the standing
   workflows/tRPC, driver-pay exporter, notifications-dispatcher and `tests/unit`
   failures — none touched here. The new guard's 7 tests are additional.
+
+  > **Corrected by quick-561.** The "after" figures above were measured *before*
+  > this task wrote its own guard file, so they undercount it. Re-measured at
+  > `74350e09` by `git stash`, the true post-quick-559 state is **18 failed /
+  > 127 passed files, 66 failed / 1,560 passed tests** — the 126/1,553 row is
+  > this task's own tree minus its guard. The conclusion is unchanged (zero
+  > regressions, +7 passing from the guard); only the arithmetic was stale.
+  > Lesson worth keeping: **run the full suite after the last commit of a task,
+  > not before it**, or the number recorded is not the number that shipped.
 - **Guard proven red by two verified mutations**, not by reasoning: re-adding a
   local `POLL_INTERVAL_MS` to `LiveBoard` fails the single-constant test;
   restoring the `lg:hidden` / `hidden lg:block` pair fails the dual-mount test.
