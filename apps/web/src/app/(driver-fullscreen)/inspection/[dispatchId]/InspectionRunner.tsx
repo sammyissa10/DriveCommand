@@ -211,7 +211,7 @@ function AnswerButton({
   disabled,
   busy,
 }: {
-  tone: 'pass' | 'fail' | 'na';
+  tone: 'pass' | 'fail' | 'na' | 'correct';
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
@@ -219,18 +219,39 @@ function AnswerButton({
   busy?: boolean;
 }) {
   const tones: Record<typeof tone, string> = {
-    pass: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800',
+    pass: 'flex-1 bg-green-600 text-white hover:bg-green-700 active:bg-green-800',
     // Red is reserved for errors and destructive actions. A failed inspection
     // item is exactly what Section 15 names as qualifying.
-    fail: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
-    na: 'bg-slate-200 text-slate-900 hover:bg-slate-300 active:bg-slate-400 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
+    fail: 'flex-1 bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
+    na: 'flex-1 bg-slate-200 text-slate-900 hover:bg-slate-300 active:bg-slate-400 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
+    /*
+      quick-561 — "Change to fail" on an item that is ALREADY answered.
+
+      It is not a louder button than Pass / Fail by any deliberate choice: it is
+      the same button, and it looked louder because it is the ONLY one rendered
+      once an item is answered. `flex-1` in a one-child row means full width, so
+      a solid red bar three times the width of the unanswered choices below it
+      sat against the item the driver had already dealt with — the loudest thing
+      on screen attached to the least urgent thing on it.
+
+      So this tone drops `flex-1` (it sizes to its label instead of stretching)
+      and trades the solid fill for a tinted, ringed surface. Red STAYS, because
+      the destination is still a failure and Section 15 reserves red for exactly
+      that — what changes is fill weight, not meaning.
+
+      The 56px height is deliberately NOT reduced. This is tapped with a glove
+      on, outdoors; `min-h-[56px]` is above the design system's 48pt floor and
+      shrinking a control to make it quieter is the wrong axis.
+    */
+    correct:
+      'self-start bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-100 active:bg-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900 dark:hover:bg-red-950/60',
   };
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled || busy}
-      className={`flex min-h-[56px] flex-1 items-center justify-center gap-2 rounded-xl px-3 text-base font-semibold transition-colors disabled:opacity-40 ${tones[tone]}`}
+      className={`flex min-h-[56px] items-center justify-center gap-2 rounded-xl px-3 text-base font-semibold transition-colors disabled:opacity-40 ${tones[tone]}`}
     >
       {busy ? <Loader2 className="h-5 w-5 shrink-0 animate-spin" /> : icon}
       {label}
@@ -445,7 +466,7 @@ function ItemCard({
             />
           )}
           <AnswerButton
-            tone="fail"
+            tone={answered ? 'correct' : 'fail'}
             icon={<X className="h-5 w-5 shrink-0" />}
             label={answered ? 'Change to fail' : 'Fail'}
             disabled={pending}
