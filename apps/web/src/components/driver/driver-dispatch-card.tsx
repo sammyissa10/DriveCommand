@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ClipboardCheck, MapPin } from 'lucide-react';
+import { ClipboardCheck, Flag, MapPin } from 'lucide-react';
 import {
   TripStartRefusalDialog,
   type TripStartRefusal,
@@ -133,6 +133,30 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
     ? stops.indexOf(nextPendingStop) + 1
     : null;
 
+  /*
+    quick-561 — where the day ends.
+
+    The card said where the driver is going NEXT and never where they finish, so
+    a driver could not answer "am I home tonight?" from the screen they land on.
+    Nothing is fetched for this: `getMyActiveDispatch` already selects the whole
+    stops array with `orderBy: { sequenceOrder: 'asc' }`, so the last element IS
+    the last stop of the day — including the end stop Phase 7 materialises as a
+    real `CarrierStop` with `stop_type = 'layover'`, sequenced last.
+
+    Suppressed when it would be noise rather than information:
+      - a single-stop trip, where the last stop is also the next one;
+      - when it IS the next stop (the final leg — the card already says it);
+      - when there is no facility to name.
+
+    No residence mask here, and that is correct rather than an oversight: Phase
+    7's mask exists to keep a driver's home address from STAFF. This is the
+    driver's own trip on their own dashboard, and hiding their own address from
+    them would be the mask pointed the wrong way.
+  */
+  const lastStop = stops.length > 0 ? stops[stops.length - 1] : null;
+  const endOfDayStop =
+    lastStop && lastStop.facility && lastStop !== nextStop && totalStops > 1 ? lastStop : null;
+
   function handleStartTrip() {
     if (!startAction) return;
     startTransition(async () => {
@@ -239,6 +263,24 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
               )}
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Where the day ends — quick-561. Quieter than the next stop by design:
+          it is orientation, not the instruction. */}
+      {endOfDayStop && endOfDayStop.facility && (
+        <div className="flex items-center gap-2 mb-4 -mt-2 px-1">
+          <Flag className="h-3.5 w-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
+          <p className="text-xs text-muted-foreground truncate">
+            Day ends at{' '}
+            <span className="font-medium text-foreground">{endOfDayStop.facility.name}</span>
+            {[endOfDayStop.facility.city, endOfDayStop.facility.state].filter(Boolean).length > 0 && (
+              <>
+                {' · '}
+                {[endOfDayStop.facility.city, endOfDayStop.facility.state].filter(Boolean).join(', ')}
+              </>
+            )}
+          </p>
         </div>
       )}
 
