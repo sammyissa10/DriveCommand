@@ -230,7 +230,26 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
 
   // ============================================================================
   // INTELLIGENCE — "What's happening right now?" (situational awareness)
-  // Max 2 items: Live Map, Dashboard
+  // Max 3 items: Live Map, Live Board, Dashboard
+  //
+  // RAISED FROM 2 TO 3 BY quick-552, DELIBERATELY, AND HERE IS THE COST OF THE
+  // ALTERNATIVE. The board was first added the way "Document Imports" hangs off
+  // "Trips" — as a `children` entry, which respects a cap of two and reads
+  // nicely, because the board really is the same page in a different view.
+  //
+  // It was verified in a real browser and it does not work.
+  // `SidebarGroup.tsx:79-95` renders a parent that HAS CHILDREN as a plain
+  // `<div>`, not a `<Link>`. So making Live Map a parent silently DELETED the
+  // sidebar's only link to the live map — traded one unreachable page for
+  // another, which is the exact bug this task exists to fix.
+  //
+  // (The same thing has already happened to "Trips": it has a Document Imports
+  // child, so `/carrier/trips` has no sidebar link either. Pre-existing, not
+  // introduced here, and reported rather than fixed silently.)
+  //
+  // A third top-level item keeps both destinations clickable and puts the board
+  // in the DOM whether the sidebar is expanded or collapsed — children are
+  // hover-flyout-only when collapsed. That is worth one slot over the cap.
   // ============================================================================
   if (isOwnerOrManager) {
     const intelligenceItems = []
@@ -240,22 +259,14 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
         label: "Live Map",
         href: "/live-map",
         icon: MapPin,
-        // Live Board (quick-551) is a CHILD of Live Map rather than a third
-        // INTELLIGENCE item, deliberately: this section is capped at two, and
-        // the board is not a peer of the map — it is the same page rendered as
-        // a list (`/live-map?view=board`, the same route, the same data, a
-        // different view). A submenu says exactly that; a third top-level entry
-        // would claim a separate destination and break the cap.
-        //
-        // Gated on `liveMap` because it IS the live map: a manager who may not
-        // see the map may not see the board.
-        children: [
-          {
-            label: "Live Board",
-            href: "/live-map?view=board",
-            icon: ListChecks,
-          },
-        ],
+      })
+
+      // Gated on `liveMap` because it IS the live map, rendered as a list:
+      // a manager who may not see the map may not see the board.
+      intelligenceItems.push({
+        label: "Live Board",
+        href: "/live-map?view=board",
+        icon: ListChecks,
       })
     }
 
