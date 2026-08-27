@@ -152,6 +152,23 @@ export async function dispatchNotification<K extends TriggerKey>(
     console.log(`[notif-trace] content:picked source=${tenantSettings?.customHtmlCache != null ? 'custom' : 'default'}`);
 
     if (!cachedHtml) {
+      // quick-555 found this one — it was not in the task's brief, the source
+      // guard in `in-app-failure-visibility.test.ts` named it on its first run.
+      //
+      // This is the loudest failure in the file and was the quietest: it records
+      // ONE audit row against EMAIL and then RETURNS, so every channel and every
+      // recipient is abandoned — the in-app notification included. Two
+      // `manager.invited` rows in production carry it. `defaultHtmlCache` is
+      // only ever written by the seed or by a human pressing Save in the block
+      // editor, so this fires for a whole trigger at a time, not for one send.
+      const reason =
+        'No cached HTML available for trigger — seed migration missing or save flow not run';
+      logger.error('[notifications] dispatch aborted — no cached HTML for trigger', undefined, {
+        triggerKey,
+        tenantId: options.tenantId,
+        recipientCount: recipients.length,
+        reason,
+      });
       audits.push({
         tenantId: options.tenantId,
         triggerKey,
@@ -160,7 +177,7 @@ export async function dispatchNotification<K extends TriggerKey>(
         idempotencyKey: `no-cached-html:${triggerKey}:${Date.now()}`,
         relatedEntityType: options.relatedEntity?.type ?? null,
         relatedEntityId: options.relatedEntity?.id ?? null,
-        errorMessage: 'No cached HTML available for trigger — seed migration missing or save flow not run',
+        errorMessage: reason,
       });
       failed++;
       return { sent, skipped, failed };
@@ -367,6 +384,17 @@ export async function dispatchNotification<K extends TriggerKey>(
               }
             } catch (emailErr) {
               // Network-level throw (Resend only throws here, not on API errors).
+              //
+              // quick-555: this catch was silent too. Same gap as IN_APP, same
+              // file — the standing rule had been applied to PUSH alone. Error
+              // SECOND (DEC-11 §3).
+              logger.error('[notifications] email dispatch failed', emailErr, {
+                triggerKey,
+                tenantId: options.tenantId,
+                recipientUserId: r.userId ?? null,
+                recipientEmail: r.email,
+                error: serializeError(emailErr),
+              });
               audits.push({
                 tenantId: options.tenantId,
                 triggerKey,
@@ -440,7 +468,7 @@ export async function dispatchNotification<K extends TriggerKey>(
             continue;
           }
           try {
-            await writeInAppNotification(db, {
+            const result = await writeInAppNotification(db, {
               tenantId: options.tenantId,
               userId: r.userId,
               triggerKey,
@@ -448,19 +476,78 @@ export async function dispatchNotification<K extends TriggerKey>(
               message: stripHtml(html),
               relatedEntity: options.relatedEntity,
             });
-            audits.push({
+
+            const auditBase = {
               tenantId: options.tenantId,
               triggerKey,
               recipientUserId: r.userId,
-              channel: 'IN_APP',
+              channel: 'IN_APP' as const,
               subject: subjectFinal,
-              status: 'SENT',
               idempotencyKey: idemKeyApp,
               relatedEntityType: options.relatedEntity?.type ?? null,
               relatedEntityId: options.relatedEntity?.id ?? null,
-            });
-            sent++;
+            };
+
+            if (result.outcome === 'written') {
+              audits.push({ ...auditBase, status: 'SENT' });
+              sent++;
+            } else if (result.isSameNotification) {
+              // quick-555: the row occupying (org_id, entity_id, type) is the
+              // same notification for the same person. That IS the dedupe the
+              // constraint was built for, so it is a skip and not a failure —
+              // and calling it FAILED is what buried the real losses among the
+              // benign ones.
+              audits.push({ ...auditBase, status: 'SKIPPED_IDEMPOTENT' });
+              skipped++;
+            } else {
+              // quick-555: a DIFFERENT notification — somebody else's row, or a
+              // different trigger's — holds the only slot this tenant has for
+              // (entity, type). This recipient's notification is LOST, and on
+              // `inspection.failed` that is a blocked truck nobody was told
+              // about. It stays FAILED, but it says so in words instead of a
+              // Prisma stack, and it is LOUD.
+              const occupant = result.occupant;
+              const reason =
+                'in-app slot already held: in_app_notifications is UNIQUE (org_id, entity_id, type) ' +
+                'and that key has no user_id, so this tenant gets one row per (entity, type). ' +
+                `Occupied by ${occupant ? `notification ${occupant.id} for user ${occupant.userId ?? 'unknown'} ("${occupant.title}")` : 'a row that has since been removed'}. ` +
+                'This notification was NOT delivered in-app. Restoring delivery needs a migration — see quick-555.';
+
+              logger.error('[notifications] in-app notification dropped — slot already held', undefined, {
+                triggerKey,
+                tenantId: options.tenantId,
+                recipientUserId: r.userId,
+                relatedEntityType: options.relatedEntity?.type ?? null,
+                relatedEntityId: options.relatedEntity?.id ?? null,
+                occupantId: occupant?.id ?? null,
+                occupantUserId: occupant?.userId ?? null,
+                occupantTitle: occupant?.title ?? null,
+                reason,
+              });
+
+              audits.push({
+                ...auditBase,
+                status: 'FAILED',
+                errorMessage: reason.slice(0, 1000),
+              });
+              failed++;
+            }
           } catch (inAppErr) {
+            // quick-555: this catch used to be silent. The reason reached
+            // NotificationSendLog.errorMessage and nowhere else — no Sentry
+            // event, no console line — so `inspection.failed` recorded IN_APP
+            // FAILED for a blocked truck and nothing anywhere said why. PUSH has
+            // carried the correct call since it was written; EMAIL and IN_APP
+            // did not. `logger.error(message, error, context)` takes the error
+            // SECOND (DEC-11 §3).
+            logger.error('[notifications] in-app dispatch failed', inAppErr, {
+              triggerKey,
+              tenantId: options.tenantId,
+              recipientUserId: r.userId,
+              relatedEntityType: options.relatedEntity?.type ?? null,
+              relatedEntityId: options.relatedEntity?.id ?? null,
+              error: serializeError(inAppErr),
+            });
             audits.push({
               tenantId: options.tenantId,
               triggerKey,
