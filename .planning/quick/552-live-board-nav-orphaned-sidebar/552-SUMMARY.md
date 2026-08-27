@@ -124,3 +124,44 @@ None - no external service configuration required.
 - FOUND: `.planning/quick/552-live-board-nav-orphaned-sidebar/552-SUMMARY.md`
 - FOUND commit: `dc6a1805`
 - FOUND commit: `5952ad92`
+
+---
+
+## Addendum — orchestrator verification (af0beb17)
+
+The plan's child-item shape was **verified in a real browser and reverted.**
+
+`SidebarGroup.tsx:79-95` renders a parent that has `children` as a plain `<div>`,
+not a `<Link>`. Adding Live Board as a child of Live Map therefore removed the
+sidebar's only link to `/live-map` — one unreachable page traded for another.
+Neither `tsc`, the orphan guard, nor reading the diff can see this; only the DOM
+can. Live Board is now a third top-level INTELLIGENCE item and the section's
+"Max 2" comment is raised to 3 with the reasoning recorded inline.
+
+**DOM proof** — OWNER (`demo@drivecommand.com`) on `/carrier/dashboard`,
+`document.querySelectorAll('a')` filtered `/live|board/i`:
+
+```
+  "DriveCommand"      -> /carrier/dashboard
+  "Live Map"          -> /live-map                 <- sidebar, still clickable
+  "Live Board"        -> /live-map?view=board      <- the fix
+  "Carrier Dashboard" -> /carrier/dashboard
+  "Carrier"           -> /carrier/dashboard
+  "Dashboard"         -> /carrier/dashboard
+  "Live Map"          -> /live-map                 <- bottom nav
+```
+
+**A false negative worth recording.** The first DOM runs reported the link
+missing *after* the fix was correct. The sidebar hydrates from `useAuth()` and
+renders no links on first paint, so `waitForLoadState('networkidle')` returned
+while only the bottom nav existed — and the bottom nav also contains a
+`/live-map` link, so the dump looked like a plausible sidebar. Two wrong
+conclusions followed (a stale Turbopack cache, then a broken fix) before waiting
+on a sidebar-only selector showed the truth. **When asserting a nav element is
+absent, first prove the component that owns it has rendered at all.**
+
+**Also found, reported not fixed:** `Trips` has the identical defect from its
+Document Imports child — `/carrier/trips` has no sidebar link either.
+
+**New permanent guard:** `e2e/owner/navigation-reachability.spec.ts`, proven red
+against a deliberately missing href before being trusted.
