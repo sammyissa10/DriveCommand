@@ -18,6 +18,7 @@ import { BoardToggle, type BoardView } from '@/components/tracking/BoardToggle';
 import { deriveKpis } from '@/lib/tracking/deriveKpis';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
 import { MapErrorBoundary } from './map-error-boundary';
+import { LIVE_MAP_VEHICLES_POLL_INTERVAL_MS } from '@/lib/carrier/live-map-constants';
 
 // Dynamic import of LiveMap with ssr: false (required for Leaflet)
 const LiveMapDynamic = dynamic(
@@ -42,8 +43,6 @@ interface LiveMapWrapperProps {
   /** 'list' only when the URL asked for the board. Defaults to 'map'. */
   initialViewMode?: 'map' | 'list';
 }
-
-const POLL_INTERVAL_MS = 15_000;
 
 export default function LiveMapWrapper({ initialVehicles, initialViewMode = 'map' }: LiveMapWrapperProps) {
   const [vehicles, setVehicles] = useState<VehicleLocation[]>(initialVehicles);
@@ -118,7 +117,7 @@ export default function LiveMapWrapper({ initialVehicles, initialViewMode = 'map
       if (document.visibilityState === 'hidden') return;
       if (activeTabRef.current !== 'live') return;
       fetchVehicles();
-    }, POLL_INTERVAL_MS);
+    }, LIVE_MAP_VEHICLES_POLL_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [activeTab, fetchVehicles]);

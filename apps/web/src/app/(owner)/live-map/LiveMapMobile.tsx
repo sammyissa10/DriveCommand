@@ -19,6 +19,7 @@ import {
 import type { VehicleLocation } from '@/lib/maps/map-utils';
 import { deriveStatusCounts, type VehicleStatusKey } from '@/lib/tracking/deriveStatusCounts';
 import { logger } from '@/lib/logger';
+import { LIVE_MAP_VEHICLES_POLL_INTERVAL_MS } from '@/lib/carrier/live-map-constants';
 
 // Leaflet can't render on the server. A dark ds surface stands in while it loads
 // — content-shaped, never a spinner (§1).
@@ -26,8 +27,6 @@ const LiveMapDynamic = dynamic(() => import('@/components/maps/live-map'), {
   ssr: false,
   loading: () => <Skeleton className="h-full w-full rounded-none" />,
 });
-
-const POLL_INTERVAL_MS = 15_000;
 
 /**
  * Tones deliberately track STATUS_COLORS (the map markers): moving=green,
@@ -166,7 +165,7 @@ export function LiveMapMobile({
     const interval = setInterval(() => {
       if (document.visibilityState === 'hidden') return;
       void fetchVehicles();
-    }, POLL_INTERVAL_MS);
+    }, LIVE_MAP_VEHICLES_POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [fetchVehicles]);
 

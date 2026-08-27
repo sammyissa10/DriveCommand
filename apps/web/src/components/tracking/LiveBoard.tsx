@@ -26,11 +26,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, RotateCw, Truck, Users } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { BOARD_EMPTY_COPY } from '@/lib/carrier/board-constants';
+import { LIVE_BOARD_POLL_INTERVAL_MS } from '@/lib/carrier/live-map-constants';
 import type { BoardRowData, LiveBoardPayload } from '@/lib/carrier/board-view';
 import { BoardRow } from './BoardRow';
 import type { BoardView } from './BoardToggle';
-
-const POLL_INTERVAL_MS = 15_000;
 
 /**
  * Two sentences, deliberately, because there are two situations.
@@ -128,7 +127,7 @@ export function LiveBoard({ view }: { view: BoardView }) {
     const interval = setInterval(() => {
       if (document.visibilityState === 'hidden') return;
       void fetchBoard();
-    }, POLL_INTERVAL_MS);
+    }, LIVE_BOARD_POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [fetchBoard]);
 
