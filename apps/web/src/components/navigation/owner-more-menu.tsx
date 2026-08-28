@@ -52,9 +52,15 @@ interface MenuSection {
  * question, and the phone was giving the more generous one.
  *
  * Deliberate alignment changes, not incidental:
- *  - AR Aging is ADDED. It was the one report with no entry here, so the menu
- *    was missing a destination the sidebar offers. That was the only legitimate
- *    difference between the two, and it is removed rather than preserved.
+ *  - AR Aging: quick-554 ADDED it here to align with the sidebar, which was
+ *    then the one surface offering it. quick-566 REMOVED the sidebar entry;
+ *    quick-567 removes this one too, so the two surfaces agree again — now at
+ *    "no nav entry, direct URL only" rather than at "both have it". The route,
+ *    page, API, the `arAgingReport` permission key and its
+ *    `PERMISSION_GATED_PATHS` row are all untouched — `/carrier/reports/aging`
+ *    still works for a permitted owner, just unlinked. Restoring it is
+ *    re-adding the one line below, in the same one-line-reversible shape
+ *    quick-566 used on the sidebar.
  *  - Team Permissions is marked `ownerOnly`. `OWNER_ONLY_PATHS` in middleware.ts
  *    redirects a MANAGER away from `/settings/team-permissions` outright, so this
  *    menu was showing managers a link that bounces them to the dashboard.
@@ -93,7 +99,11 @@ const menuSections: MenuSection[] = [
     items: [
       { label: 'Revenue', href: '/carrier/reports/revenue', icon: BarChart3, permission: 'revenueReport' },
       { label: 'Driver Pay', href: '/carrier/reports/driver-pay', icon: BarChart3, permission: 'driverPayReport' },
-      { label: 'AR Aging', href: '/carrier/reports/aging', icon: BarChart3, permission: 'arAgingReport' },
+      // AR Aging is deliberately absent — quick-567. Route, page, API, the
+      // arAgingReport permission key and its PERMISSION_GATED_PATHS row are all
+      // untouched; only this nav entry is gone, matching the sidebar
+      // (quick-566). Reversing this is one line:
+      // { label: 'AR Aging', href: '/carrier/reports/aging', icon: BarChart3, permission: 'arAgingReport' },
       { label: 'Performance', href: '/carrier/reports/performance', icon: BarChart3, permission: 'performanceReport' },
       // Shares `performanceReport` — see PERMISSION_GATED_PATHS and the report
       // page's own header for why it is not a key of its own.
