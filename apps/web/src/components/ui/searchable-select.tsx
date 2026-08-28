@@ -11,6 +11,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  useCommandState,
 } from '@/components/ui/command';
 import {
   Popover,
@@ -124,6 +125,99 @@ function getStatusConfig(status: string | undefined) {
 }
 
 // ---------------------------------------------------------------------------
+// What the search took away
+// ---------------------------------------------------------------------------
+
+/**
+ * Shown when the list has nothing in it AT ALL, as opposed to nothing matching.
+ *
+ * Those two states used to render the same sentence: `emptyMessage` is the
+ * caller's, and it is written for a search that found nothing ("No drivers
+ * found."), so an empty roster borrowed it and read as though a search had
+ * happened. This component does not know whether its options are drivers,
+ * trucks or trips, so it does not name a noun.
+ */
+export const NO_OPTIONS_MESSAGE = 'Nothing to choose from.';
+
+/**
+ * Which of the two empty states this is.
+ *
+ * `CommandEmpty` fires whenever cmdk's filtered count is zero, which is true
+ * BOTH when a search matched nothing and when there was never anything to
+ * match. Exported so the distinction is pinned by a test rather than living as
+ * an inline ternary nobody can assert.
+ */
+export function emptyMessageFor(total: number, emptyMessage: string): string {
+  return total === 0 ? NO_OPTIONS_MESSAGE : emptyMessage;
+}
+
+/**
+ * The footer's whole sentence, or `null` when there should be no footer.
+ *
+ * Pure and exported because this is the actual decision — when to speak, and
+ * what to say — and there is no jsdom or testing-library in this app, so a
+ * mounted cmdk assertion is not available. Same shape as `assignment-options.ts`:
+ * the judgement lives in a function a test can drive, the component is a thin
+ * consumer.
+ *
+ * ONE STRING PER SENTENCE, never assembled from JSX children — quick-517.
+ * `<p>{n} of {m} hidden</p>` is five children, three of them whitespace
+ * sensitive, and that shape rendered "4 stopswill" on screen across two
+ * investigations that both blamed JSX trimming and were both wrong.
+ */
+export function hiddenBySearchText(
+  search: string,
+  shown: number,
+  total: number,
+): string | null {
+  const hidden = total - shown;
+  // Nothing typed, or nothing removed: say nothing. A footer permanently
+  // reading "0 of 14 hidden" is noise that teaches people to stop reading it.
+  if (!search.trim() || hidden <= 0) return null;
+  return `${hidden} of ${total} hidden by your search`;
+}
+
+/**
+ * The count of options the search removed.
+ *
+ * WHY THIS EXISTS. cmdk hides a non-matching item outright, leaving no trace of
+ * it. On the assignment screen the truck list carries three BLOCKED trucks
+ * sorted last, so a term that excludes them gives a dispatcher no signal they
+ * were ever there — and blocked options are exactly the ones worth knowing
+ * about. Silently omitting them is this component's worst failure mode.
+ *
+ * WHY IT IS A SUBCOMPONENT AND NOT A PROP. `useCommandState` reads Command's
+ * context, so this must render inside `<Command>` — and that is the point: the
+ * filter term stays where the filtering happens. Lifting it into a prop would
+ * hand every caller a piece of state they neither own nor should re-implement.
+ *
+ * WHERE IT SITS. Outside `<CommandList>`, which is `max-h-[300px]
+ * overflow-y-auto`. Inside it, the count would scroll away from the results it
+ * describes on any list long enough to need it — which is every list long
+ * enough to need it.
+ *
+ * `role="status"` announces the change to a screen reader, which is chatty by
+ * keystroke but is the only signal a non-sighted user gets that the list is
+ * incomplete. Silence was judged the worse trade.
+ */
+function HiddenCount({ total }: { total: number }) {
+  const search = useCommandState((state) => state.search);
+  const shown = useCommandState((state) => state.filtered.count);
+
+  const text = hiddenBySearchText(search, shown, total);
+  if (text === null) return null;
+
+  return (
+    <div
+      role="status"
+      className="border-t border-border px-3 py-2 text-xs text-muted-foreground"
+    >
+      {text}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -177,7 +271,13 @@ export function SearchableSelect({
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
-            <CommandEmpty>{emptyMessage}</CommandEmpty>
+            {/*
+              Two states that used to look identical. `CommandEmpty` fires
+              whenever cmdk's filtered count is zero, which happens BOTH when a
+              search matched nothing and when there was never anything to match.
+              `emptyMessage` is the caller's and is written for the first.
+            */}
+            <CommandEmpty>{emptyMessageFor(options.length, emptyMessage)}</CommandEmpty>
             <CommandGroup>
               {sortedOptions.map((option) => {
                 const statusConfig = showStatus ? getStatusConfig(option.status) : null;
@@ -223,6 +323,8 @@ export function SearchableSelect({
               })}
             </CommandGroup>
           </CommandList>
+          {/* Outside the scroll area on purpose — see `HiddenCount`. */}
+          <HiddenCount total={options.length} />
         </Command>
       </PopoverContent>
     </Popover>

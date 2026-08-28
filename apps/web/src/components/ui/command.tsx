@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
-import { Command as CommandPrimitive } from "cmdk"
+import { Command as CommandPrimitive, useCommandState } from "cmdk"
 import { Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -150,4 +150,11 @@ export {
   CommandItem,
   CommandShortcut,
   CommandSeparator,
+  // Re-exported so this file stays the single door to `cmdk`, the way every
+  // other primitive here already is. `useCommandState(selector)` reads the
+  // live filter state — `search` and `filtered.count` — from Command's own
+  // context, so a component that needs it must be rendered INSIDE <Command>.
+  // That is what lets a consumer show what search removed without the filter
+  // term ever being lifted into a prop.
+  useCommandState,
 }
