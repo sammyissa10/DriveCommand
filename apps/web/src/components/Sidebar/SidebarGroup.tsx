@@ -104,7 +104,7 @@ export function SidebarGroup({
                   index={index}
                   onNavigate={onNavigate}
                 />
-                <div className="ml-2 space-y-1 border-l border-sidebar-border pl-3">
+                <div className="ml-1 space-y-1 border-l border-sidebar-border pl-3">
                   {item.children?.map((child, childIndex) => {
                     const isChildActive = activePath.startsWith(child.href)
                     return (
