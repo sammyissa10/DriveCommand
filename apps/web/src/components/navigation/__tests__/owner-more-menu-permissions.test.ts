@@ -48,9 +48,26 @@ describe('mobile More menu permission filtering', () => {
   it('an OWNER sees everything, Team Permissions included', () => {
     const hrefs = hrefsFor({ role: 'OWNER' });
     expect(hrefs).toContain('/carrier/reports/revenue');
-    expect(hrefs).toContain('/carrier/reports/aging');
     expect(hrefs).toContain('/carrier/reports/todays-trips');
     expect(hrefs).toContain('/settings/team-permissions');
+  });
+
+  it('AR Aging has no entry for an OWNER, but the other four reports still do — quick-567', () => {
+    // Pinned as a decision, not left as a deleted line: quick-566 removed the
+    // desktop sidebar entry and this menu is the mirror. The href must be
+    // absent for the MOST permissive viewer — an OWNER — so this cannot be
+    // satisfied by a permission simply being switched off, and it must be
+    // paired with the positive half (quick-563's rule) or a passing assertion
+    // would equally describe a Reports section that had vanished entirely.
+    // Route, page, API, the arAgingReport permission key and its
+    // PERMISSION_GATED_PATHS row are untouched — reversing this is re-adding
+    // one line to owner-more-menu.tsx's Reports section.
+    const hrefs = hrefsFor({ role: 'OWNER' });
+    expect(hrefs).not.toContain('/carrier/reports/aging');
+    expect(hrefs).toContain('/carrier/reports/revenue');
+    expect(hrefs).toContain('/carrier/reports/driver-pay');
+    expect(hrefs).toContain('/carrier/reports/performance');
+    expect(hrefs).toContain('/carrier/reports/todays-trips');
   });
 
   it('a MANAGER never sees Team Permissions — middleware bounces them off it', () => {
@@ -65,7 +82,6 @@ describe('mobile More menu permission filtering', () => {
   it.each([
     ['revenueReport', '/carrier/reports/revenue'],
     ['driverPayReport', '/carrier/reports/driver-pay'],
-    ['arAgingReport', '/carrier/reports/aging'],
     ['performanceReport', '/carrier/reports/performance'],
     ['clients', '/carrier/clients'],
     ['contracts', '/carrier/contracts'],

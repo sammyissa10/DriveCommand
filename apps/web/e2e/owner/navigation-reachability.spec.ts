@@ -75,14 +75,16 @@ const REQUIRED_SIDEBAR_HREFS = [
   // deleted that file and carried only `Live Board` across. Five report pages had
   // no desktop link at all until this group was restored. quick-554 later added
   // AR Aging to the mobile more-menu, so by the time quick-566 ran it had a link
-  // on ONE surface, not zero.
+  // on ONE surface, not zero — quick-567 then removed that one too.
   //
   // AR Aging is deliberately absent from this list — quick-566 removed its
-  // desktop sidebar entry on request. The route, page, API, permission key and
-  // PERMISSION_GATED_PATHS row are untouched, and it is still reachable from the
-  // mobile more-menu's Reports section. See the negative assertion below, which
-  // pins the absence as a decision rather than leaving it to be re-added by an
-  // edit that does not know it was intentional.
+  // desktop sidebar entry on request, and quick-567 removed the mobile
+  // more-menu entry the same way, closing the split quick-566 reopened. The
+  // route, page, API, permission key and PERMISSION_GATED_PATHS row are
+  // untouched; it has no nav entry on either surface and is reachable only by
+  // direct URL. See the negative assertion below, which pins the absence as a
+  // decision rather than leaving it to be re-added by an edit that does not
+  // know it was intentional.
   '/carrier/reports/revenue',
   '/carrier/reports/driver-pay',
   '/carrier/reports/performance',
