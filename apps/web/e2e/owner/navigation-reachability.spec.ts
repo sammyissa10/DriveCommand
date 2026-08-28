@@ -73,11 +73,18 @@ const REQUIRED_SIDEBAR_HREFS = [
   // quick-553 — failure mode 1, one commit later than the header describes. The
   // Reports group was written in the orphaned `navigation/sidebar.tsx`; quick-552
   // deleted that file and carried only `Live Board` across. Five report pages had
-  // no desktop link at all until this group was restored. AR Aging had none on
-  // ANY surface — it is not in the mobile more-menu either.
+  // no desktop link at all until this group was restored. quick-554 later added
+  // AR Aging to the mobile more-menu, so by the time quick-566 ran it had a link
+  // on ONE surface, not zero.
+  //
+  // AR Aging is deliberately absent from this list — quick-566 removed its
+  // desktop sidebar entry on request. The route, page, API, permission key and
+  // PERMISSION_GATED_PATHS row are untouched, and it is still reachable from the
+  // mobile more-menu's Reports section. See the negative assertion below, which
+  // pins the absence as a decision rather than leaving it to be re-added by an
+  // edit that does not know it was intentional.
   '/carrier/reports/revenue',
   '/carrier/reports/driver-pay',
-  '/carrier/reports/aging',
   '/carrier/reports/performance',
   '/carrier/reports/todays-trips',
 ];
@@ -102,6 +109,44 @@ test('every required sidebar destination is a real link in the DOM', async ({ pa
       'Either the entry was added to a component nothing mounts, or it was added as a child ' +
       'of a parent item — which turns the PARENT into a non-clickable div. See this file header.',
   ).toEqual([]);
+});
+
+/**
+ * AR Aging is deliberately absent from the desktop sidebar — quick-566.
+ *
+ * This is a POSITIVE + NEGATIVE pair, not just a deleted line: asserting only
+ * the absence would pass just as well if the whole REPORTS group vanished, which
+ * says nothing about the actual decision (quick-563's rule). So this also
+ * re-asserts the other four report hrefs are present, scoped to `aside a` so an
+ * unrelated in-page link elsewhere on the dashboard cannot trip either half.
+ */
+test('AR Aging has no sidebar link, but the other four reports still do', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/carrier/dashboard');
+
+  await page.waitForSelector('a[href="/live-map?view=board"]', { timeout: 30_000 });
+
+  const sidebarHrefs = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('aside a')).map((a) => a.getAttribute('href') || ''),
+  );
+
+  expect(
+    sidebarHrefs,
+    'AR Aging should not have a link in the desktop sidebar (quick-566). If this is ' +
+      'intentional, restore the `arAgingReport` block in Sidebar/index.tsx and remove this ' +
+      'assertion; if not, the desktop entry regressed.',
+  ).not.toContain('/carrier/reports/aging');
+
+  const otherReportHrefs = [
+    '/carrier/reports/revenue',
+    '/carrier/reports/driver-pay',
+    '/carrier/reports/performance',
+    '/carrier/reports/todays-trips',
+  ];
+
+  for (const href of otherReportHrefs) {
+    expect(sidebarHrefs, `Expected the sidebar to still link to ${href}`).toContain(href);
+  }
 });
 
 /**
