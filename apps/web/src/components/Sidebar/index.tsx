@@ -445,14 +445,23 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
   // group behind. The scanner asks "does anything import this file"; it has no
   // way to ask "did a destination die with it".
   //
-  // The cost was five report pages with no link on any desktop screen. Four of
-  // them appear in the MOBILE more-menu (`owner-more-menu.tsx`), which is
-  // `lg:hidden` — so an owner on a laptop could reach Today's Trips and
-  // Performance only by typing the URL, and AR Aging by no route at all.
+  // The cost was five report pages with no link on any desktop screen. All
+  // five now appear in the MOBILE more-menu (`owner-more-menu.tsx`, `lg:hidden`)
+  // — AR Aging was added there by quick-554 — so an owner on a laptop could
+  // reach Today's Trips, Performance and (until quick-566) AR Aging only by
+  // typing the URL if this desktop group were ever empty.
   //
   // FLAT, not a parent with children, even though quick-553 just made a parent
   // with children clickable: `/carrier/reports` has NO page.tsx. A parent item
   // would have no href to give.
+  //
+  // AR AGING — quick-566 removed it from THIS list only, on request: the owner
+  // does not want it in the primary desktop nav. The route, page, API,
+  // `arAgingReport` permission key and its `PERMISSION_GATED_PATHS` row are all
+  // untouched — `/carrier/reports/aging` still works by URL for a permitted
+  // user, and it is still reachable from the mobile more-menu's Reports
+  // section. Restoring the desktop entry is re-adding the `arAgingReport`
+  // block below, in the same shape as Revenue/Driver Pay/Performance.
   // ============================================================================
   if (isOwnerOrManager) {
     const reportsItems = []
@@ -469,14 +478,6 @@ export function AnimatedSidebar(_props: AnimatedSidebarProps) {
       reportsItems.push({
         label: "Driver Pay",
         href: "/carrier/reports/driver-pay",
-        icon: BarChart3,
-      })
-    }
-
-    if (managerHasPermission(perms, "arAgingReport", userRole)) {
-      reportsItems.push({
-        label: "AR Aging",
-        href: "/carrier/reports/aging",
         icon: BarChart3,
       })
     }
