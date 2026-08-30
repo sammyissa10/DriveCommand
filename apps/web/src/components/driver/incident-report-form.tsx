@@ -48,6 +48,25 @@ export function IncidentReportForm() {
           )}
         </div>
 
+        {/* Severity is REQUIRED by `DriverIncident` and was not collected here
+            before quick-570. It is asked rather than derived from the incident
+            type or defaulted to MEDIUM: either of those would have the product
+            state a safety-critical value the driver never gave, which is the
+            same defect as the old "Dispatch has been notified." Mobile's
+            SeverityToggle has always asked. */}
+        <div>
+          <label htmlFor="severity" className={labelClass}>How serious is it?</label>
+          <select id="severity" name="severity" disabled={isPending} className={inputClass} required>
+            <option value="">Select severity...</option>
+            <option value="LOW">Low — no injury, no damage, still driveable</option>
+            <option value="MEDIUM">Medium — damage or delay, no injury</option>
+            <option value="HIGH">High — injury, or the truck cannot move</option>
+          </select>
+          {state?.error && typeof state.error !== 'string' && state.error.severity && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.severity}</p>
+          )}
+        </div>
+
         <div>
           <label htmlFor="location" className={labelClass}>Location</label>
           <input
