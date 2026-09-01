@@ -615,6 +615,47 @@ So `lib/carrier/notifications.ts`, `server/services/workflows/notifications.ts` 
 
 ---
 
+## Addendum — the cached HTML is a fourth moving part, and it has gone stale before
+
+The seven findings above are scoped to `apps/web/src` as briefed. One file **outside** that scope
+bears directly on a shell redesign and is recorded here rather than left out:
+`apps/web/scripts/refresh-notification-html-cache.ts`.
+
+Its header documents a real, already-shipped instance of the exact bug class a shell change creates:
+
+```
+ * Background: The seed `headerText` for driver.invited was previously 'DriveCommand',
+ * producing an <h2>DriveCommand</h2> in the cached HTML body. That duplicated the
+ * shell brand banner in the DynamicTemplateEmail component. The seed was later
+ * corrected to 'Driver invitation' but defaultHtmlCache was never regenerated.
+```
+
+Three consequences for Path B specifically:
+
+- **The shell's header and the cached body can collide, and nothing prevents it.** The body HTML is
+  authored independently of the shell — in the browser block editor, or by a seed — so any change to
+  what the shell renders in its header requires re-checking every cached row for duplication.
+- **`defaultHtmlCache` does not track its own source.** It is written on seed INSERT and by a
+  SysAdmin pressing Save, and otherwise goes stale silently against `defaultBlockJson`.
+  `TenantNotificationSettings.customHtmlCache` has the same property per tenant.
+- **There is no general refresh.** This script is deliberately scoped to one row —
+  *"updates ONLY the `driver.invited` row"* — and prints, at line 224, a note that other stale
+  templates were detected and left alone:
+
+```ts
+        '\nNOTE: Other stale templates detected (not updated by this script — scope is driver.invited only):'
+```
+
+Also worth recording because it affects where a redesign's markup rules would have to be repeated:
+there are now **three separate Tiptap-to-HTML serializers** in the repo — the browser block editor's
+`editor.getHTML()` (the normal write path), `@tiptap/html/server` in the seed, and a fourth-party
+dependency-free one written inline in this script (*"Tiptap JSON -> HTML serializer
+(dependency-free, no @tiptap/html import) · Covers: doc, heading (h1-h6), paragraph, text with
+bold/italic/link marks"*). They are not guaranteed to agree.
+
+No importer of `DynamicTemplateEmail` exists outside `apps/web/src` — a repo-wide grep confirms the
+one-importer finding in §1. This script only mentions the shell in a comment.
+
 ## Would one shell change propagate?
 
-**No.** A change to `DynamicTemplateEmail` would reach only Path B — the dispatcher-rendered, tenant-configurable notifications, which is one file's worth of work covering roughly 45 `NotificationTemplate` rows including `trip.reminder`, and it is genuinely a single edit there. It would reach **none** of the 29 files under `src/emails/`, because not one of them imports it: every one opens its own `<Html>`, carries its own ~90-line `const styles` object, and hand-writes its own header, content and footer. They agree on `#1e40af` and a 600px container by copy-paste convention, not by a shared dependency, and three of them already diverge on header colour. So a brand redesign is two distinct pieces of work: one edit to the shell for the dispatcher path, plus a per-file migration of 29 templates onto a shell that does not yet exist for them — and the missing pieces identified above (no logo image anywhere, preheaders in 2 of 30, no dark-mode handling, no unsubscribe link, no postal address, no plain-text part on either path, and a `NotificationEmailConfig` table the send path never reads) are all absent from **both** paths, so each has to be built once in the new shared shell and once at the transport layer in `resend-client.ts` / `dispatcher.ts`, not solved by the component swap alone.
+**No.** A change to `DynamicTemplateEmail` would reach only Path B — the dispatcher-rendered, tenant-configurable notifications, which is one file's worth of work covering roughly 45 `NotificationTemplate` rows including `trip.reminder`, and it is genuinely a single edit there. It would reach **none** of the 29 files under `src/emails/`, because not one of them imports it: every one opens its own `<Html>`, carries its own ~90-line `const styles` object, and hand-writes its own header, content and footer. They agree on `#1e40af` and a 600px container by copy-paste convention, not by a shared dependency, and three of them already diverge on header colour. So a brand redesign is two distinct pieces of work: one edit to the shell for the dispatcher path, plus a per-file migration of 29 templates onto a shell that does not yet exist for them — and the missing pieces identified above (no logo image anywhere, preheaders in 2 of 30, no dark-mode handling, no unsubscribe link, no postal address, no plain-text part on either path, and a `NotificationEmailConfig` table the send path never reads) are all absent from **both** paths, so each has to be built once in the new shared shell and once at the transport layer in `resend-client.ts` / `dispatcher.ts`, not solved by the component swap alone. And on Path B the shell edit is necessary but not sufficient on its own terms: per the addendum, the body HTML is cached independently of the shell and has already collided with it once, so changing what the shell's header renders means auditing every `defaultHtmlCache` and `customHtmlCache` row for duplication — with no general refresh in the repo to do it.

@@ -64,3 +64,24 @@ once in the new shell and once at the transport layer.
 - Feature counts are greps over the whole directory reported as `n of 30`, not impressions.
 - Every quoted block copied from an opened file; no file described from its name.
 - `git status` shows one added report plus these planning artifacts. No source file touched.
+
+## Addendum (same task, added after a wider grep completed)
+
+A repo-wide grep — run beyond the briefed `apps/web/src` scope — surfaced
+`apps/web/scripts/refresh-notification-html-cache.ts`. It confirms the §1 one-importer finding (no
+importer of `DynamicTemplateEmail` exists outside `src/`; the script only mentions it in a comment),
+and it adds a fourth moving part to Path B that the seven findings did not cover:
+
+- **The shell header and the cached body have already collided once.** The `driver.invited` seed's
+  `headerText: 'DriveCommand'` produced an `<h2>DriveCommand</h2>` duplicating the shell's brand
+  banner; the seed was corrected and `defaultHtmlCache` was never regenerated.
+- **`defaultHtmlCache` does not track its source** and goes stale silently against
+  `defaultBlockJson`. Same for `customHtmlCache` per tenant.
+- **There is no general refresh.** That script is scoped to one row and prints a note that other
+  stale templates were detected and left alone.
+- **Three Tiptap-to-HTML serializers exist** — the block editor's `getHTML()`, `@tiptap/html/server`
+  in the seed, and a dependency-free one written inline in the script — not guaranteed to agree.
+
+Effect on the conclusion: unchanged in direction, sharper in degree. On Path B the shell edit is
+necessary but not sufficient — changing what the header renders means auditing every cached row for
+duplication, with no tool in the repo to do it.
