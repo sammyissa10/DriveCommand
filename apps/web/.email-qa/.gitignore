@@ -1,0 +1,4 @@
+# Regenerated on every `npx tsx scripts/email-render-qa.ts` run.
+# The four PNGs are committed as the reviewed QA evidence; these are not.
+preview.html
+*.mjs

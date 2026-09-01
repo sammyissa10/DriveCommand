@@ -1,116 +1,121 @@
 /**
  * DynamicTemplateEmail — React Email shell for dispatcher-rendered notifications.
  *
- * This is the ONLY place `dangerouslySetInnerHTML` is used in the notification system.
- * The `bodyHtml` prop must be Tiptap-generated and variable-substituted by the
- * template renderer BEFORE being passed here. Never pass raw user input.
+ * The markup now lives in `@/emails/_system`; this file is the thin adapter
+ * between the dispatcher's render call and that design system.
+ *
+ * The `dangerouslySetInnerHTML` warning still stands and has simply moved down
+ * one level: `bodyHtml` must be Tiptap-generated and variable-substituted by
+ * template-renderer.ts BEFORE it reaches here, and Shell.tsx injects it in
+ * exactly one place. Never pass raw user input.
+ *
+ * ---------------------------------------------------------------------------
+ * COMPATIBILITY
+ * ---------------------------------------------------------------------------
+ * The exported name, the default export and the original prop signature are
+ * unchanged, so `React.createElement(DynamicTemplateEmail, { bodyHtml })` in
+ * template-renderer.ts compiles and behaves exactly as before. Everything new
+ * is optional and additive.
+ *
+ * Two of the original props are now inert, and that is a behaviour change worth
+ * stating rather than burying:
+ *
+ *   `brandName`      — the header is a fixed brand lockup (the mark asset plus
+ *                      the wordmark as live text). It was only ever called with
+ *                      its default, 'DriveCommand'; no caller passes it.
+ *   `footerAddress`  — the postal address is now read from
+ *                      EMAIL_FOOTER_ADDRESS in Footer.tsx. The old prop was
+ *                      never passed by any caller, so the address line was dead
+ *                      code that read as though the requirement had been met.
+ *
+ * Both are still accepted so no call site breaks; neither is read.
  */
 
-import {
-  Body,
-  Container,
-  Head,
-  Hr,
-  Html,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components';
-import React from 'react';
+import * as React from 'react';
+import { Shell, type StatusTone } from './_system';
+import { getAppBaseUrl } from '@/lib/app-url';
+
+/** Trim the derived preview to something an inbox will actually show. */
+const PREHEADER_MAX = 90;
 
 export type DynamicTemplateEmailProps = {
   /** Already-substituted, Tiptap-generated HTML. The sole HTML injection site. */
   bodyHtml: string;
-  /** Defaults to "DriveCommand" */
+  /** @deprecated Inert — the header lockup is fixed. Accepted for compatibility. */
   brandName?: string;
-  /** Optional postal address line; rendered only when provided. */
+  /** @deprecated Inert — the address comes from EMAIL_FOOTER_ADDRESS. */
   footerAddress?: string;
+
+  /**
+   * Inbox preview line. When omitted it is DERIVED from the body text.
+   *
+   * The shell this replaces used a constant here, so every dispatcher email
+   * previewed as "DriveCommand notification" — a trip reminder and a failed
+   * brake inspection were indistinguishable in the message list. Deriving from
+   * the body is worse than a purpose-written line and far better than a
+   * constant, so there is deliberately no constant fallback.
+   */
+  preheader?: string;
+  /** Optional glanceable strip under the header. */
+  statusBar?: { tone: StatusTone; label: string };
+  /** Overrides the 3px accent rule under the header band. */
+  accentColor?: string;
+  /** Absolute URL to notification preferences. Omitted if absent. */
+  preferencesUrl?: string;
+  /**
+   * Absolute origin for the logo asset. Defaults to the app base URL.
+   *
+   * This MUST be absolute: a relative src resolves against the mail client's
+   * own origin and is simply a broken image.
+   */
+  logoBaseUrl?: string;
 };
 
-const bodyStyle: React.CSSProperties = {
-  backgroundColor: '#f6f7f9',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  margin: 0,
-  padding: '40px 0',
-};
+/**
+ * Derive a preview line from body HTML.
+ *
+ * Strips tags, collapses whitespace, decodes the handful of entities Tiptap
+ * actually emits, then cuts on a word boundary so the preview does not end
+ * mid-word. Returns '' for empty input — the Preheader then renders only its
+ * padding, which is still better than a misleading constant.
+ */
+export function derivePreheader(bodyHtml: string, maxLength = PREHEADER_MAX): string {
+  const text = bodyHtml
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
 
-const containerStyle: React.CSSProperties = {
-  backgroundColor: '#ffffff',
-  borderRadius: '8px',
-  maxWidth: '600px',
-  margin: '0 auto',
-  padding: '0',
-  overflow: 'hidden',
-};
+  if (text.length <= maxLength) return text;
 
-const headerStyle: React.CSSProperties = {
-  backgroundColor: '#0f62fe',
-  padding: '24px 32px',
-};
-
-const brandStyle: React.CSSProperties = {
-  color: '#ffffff',
-  fontSize: '20px',
-  fontWeight: '700',
-  margin: '0',
-  letterSpacing: '-0.3px',
-};
-
-const bodySectionStyle: React.CSSProperties = {
-  padding: '32px 32px 24px 32px',
-  color: '#1a1a1a',
-  fontSize: '15px',
-  lineHeight: '1.6',
-};
-
-const hrStyle: React.CSSProperties = {
-  borderColor: '#e5e7eb',
-  margin: '0 32px',
-};
-
-const footerStyle: React.CSSProperties = {
-  padding: '16px 32px 24px 32px',
-};
-
-const footerTextStyle: React.CSSProperties = {
-  color: '#6b7280',
-  fontSize: '12px',
-  margin: '0 0 4px 0',
-  lineHeight: '1.5',
-};
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(' ');
+  // Only honour the word boundary if it is not so early that we lose the line.
+  const base = lastSpace > maxLength * 0.6 ? cut.slice(0, lastSpace) : cut;
+  return `${base.replace(/[,.;:]$/, '')}…`;
+}
 
 export const DynamicTemplateEmail: React.FC<DynamicTemplateEmailProps> = ({
   bodyHtml,
-  brandName = 'DriveCommand',
-  footerAddress,
-}) => {
-  return (
-    <Html lang="en">
-      <Head />
-      <Preview>{brandName} notification</Preview>
-      <Body style={bodyStyle}>
-        <Container style={containerStyle}>
-          <Section style={headerStyle}>
-            <Text style={brandStyle}>{brandName}</Text>
-          </Section>
-
-          <Section style={bodySectionStyle}>
-            {/* eslint-disable-next-line react/no-danger */}
-            <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
-          </Section>
-
-          <Hr style={hrStyle} />
-
-          <Section style={footerStyle}>
-            <Text style={footerTextStyle}>Sent by {brandName}</Text>
-            {footerAddress ? (
-              <Text style={footerTextStyle}>{footerAddress}</Text>
-            ) : null}
-          </Section>
-        </Container>
-      </Body>
-    </Html>
-  );
-};
+  preheader,
+  statusBar,
+  accentColor,
+  preferencesUrl,
+  logoBaseUrl,
+}) => (
+  <Shell
+    preheader={preheader ?? derivePreheader(bodyHtml)}
+    bodyHtml={bodyHtml}
+    statusBar={statusBar}
+    accentColor={accentColor}
+    preferencesUrl={preferencesUrl}
+    logoBaseUrl={logoBaseUrl ?? getAppBaseUrl()}
+  />
+);
 
 export default DynamicTemplateEmail;

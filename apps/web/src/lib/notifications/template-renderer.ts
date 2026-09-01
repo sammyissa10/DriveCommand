@@ -16,6 +16,7 @@
 import { render } from '@react-email/render';
 import React from 'react';
 import DynamicTemplateEmail from '@/emails/dynamic-template';
+import type { StatusTone } from '@/emails/_system';
 
 /**
  * Pure variable substitution.
@@ -53,11 +54,32 @@ export async function renderTemplate(
   cachedHtml: string,
   payload: Record<string, string>,
   subject: string,
+  /**
+   * Optional presentation options threaded straight through to the shell.
+   *
+   * Every field is optional and nothing here changes what is SENT — the
+   * subject and the body HTML are computed exactly as before. This exists so a
+   * caller that knows something the body does not (that a trip is unstarted,
+   * where the recipient can change their preferences) can say so, rather than
+   * the shell guessing.
+   */
+  options?: {
+    preheader?: string;
+    statusBar?: { tone: StatusTone; label: string };
+    accentColor?: string;
+    preferencesUrl?: string;
+  },
 ): Promise<{ html: string; subjectFinal: string }> {
   const bodyHtml = substituteVariables(cachedHtml, payload);
   const subjectFinal = substituteVariables(subject, payload);
   const html = await render(
-    React.createElement(DynamicTemplateEmail, { bodyHtml }),
+    React.createElement(DynamicTemplateEmail, {
+      bodyHtml,
+      preheader: options?.preheader,
+      statusBar: options?.statusBar,
+      accentColor: options?.accentColor,
+      preferencesUrl: options?.preferencesUrl,
+    }),
   );
   return { html, subjectFinal };
 }
