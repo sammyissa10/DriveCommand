@@ -43,6 +43,7 @@ import { Body, Container, Head, Html } from '@react-email/components';
 import {
   colors,
   darkColors,
+  darkTints,
   fonts,
   fontSizes,
   lineHeights,
@@ -132,9 +133,19 @@ const CSS = `
     .dc-dark-footer { background-color:${darkColors.cardBg} !important;
                       border-color:${darkColors.border} !important; }
 
+    /* StatusBar attention tone. The 4px orange border is NOT overridden —
+       the accent is the signal and must read identically in both themes. */
+    .dc-status-attention { background-color:${darkTints.attention.background} !important;
+                           color:${darkTints.attention.text} !important; }
+
     .dc-body h1, .dc-body h2 { color:${darkColors.textPrimary} !important; }
     .dc-body p, .dc-body li, .dc-body strong { color:${darkColors.textPrimary} !important; }
     .dc-body a { color:${darkColors.link} !important; }
+    /* …but NOT the CTA button. Its anchor sits inside .dc-body once the CTA
+       transform runs, and the rule above is !important, so it repainted white
+       button text to link-blue on a Signal Blue fill — unreadable. Seen in the
+       dark QA screenshot, not reasoned about. */
+    .dc-body a.dc-btn { color:${colors.white} !important; }
   }
 `;
 

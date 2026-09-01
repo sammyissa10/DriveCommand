@@ -76,6 +76,19 @@ export const tints = {
   success: '#E8F6EE',
 } as const;
 
+/**
+ * Dark-mode tints. Only `attention` is redefined today, because it is the only
+ * tone in use and a cream strip on a #161C27 card is the one that actually
+ * jars. The left border stays `orange` in both themes deliberately — the accent
+ * IS the signal, and changing it would weaken the thing the strip exists for.
+ */
+export const darkTints = {
+  attention: {
+    background: '#3A2A08',
+    text: '#FFD79A',
+  },
+} as const;
+
 export const tintAccents = {
   info: colors.signalBlue,
   attention: colors.orange,

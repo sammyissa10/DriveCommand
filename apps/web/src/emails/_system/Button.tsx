@@ -38,6 +38,7 @@ import {
   colors,
   fonts,
   fontSizes,
+  lineHeights,
   metrics,
   space,
   styles,
@@ -69,7 +70,7 @@ function escText(s: string): string {
 const VML_HEIGHT = metrics.minTapHeight + 6;
 const VML_WIDTH = 220;
 
-function buildButtonHtml(href: string, label: string): string {
+export function buildButtonHtml(href: string, label: string): string {
   const h = escAttr(href);
   const t = escText(label);
 
@@ -108,13 +109,40 @@ function buildButtonHtml(href: string, label: string): string {
     '<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;">',
     '<tbody><tr>',
     `<td bgcolor="${colors.signalBlue}" style="${cellStyle}">`,
-    `<a href="${h}" target="_blank" style="${linkStyle}">${t}</a>`,
+    `<a class="dc-btn" href="${h}" target="_blank" style="${linkStyle}">${t}</a>`,
     '</td>',
     '</tr></tbody></table>',
     '<!--<![endif]-->',
   ].join('');
 
   return vml + standard;
+}
+
+/**
+ * The full CTA block as an HTML string: the bulletproof button plus the
+ * plain-text URL line beneath it.
+ *
+ * Exported because `body-html-transform.ts` upgrades a bare <a> in cached
+ * Tiptap HTML into this exact markup. Two sources of truth for the CTA would
+ * drift the moment either is restyled, so the transform calls this rather than
+ * carrying its own copy.
+ */
+export function buildButtonBlockHtml(href: string, label: string): string {
+  const urlNoteStyle = [
+    `font-family:${fonts.bodyStack}`,
+    `font-size:${fontSizes.fine}`,
+    `line-height:${lineHeights.fine}`,
+    `color:${colors.textSecondary}`,
+    `margin:${space[3]} 0 0 0`,
+    'word-break:break-all',
+  ].join(';');
+
+  return [
+    `<div style="margin:${space[6]} 0 0 0">`,
+    `<div>${buildButtonHtml(href, label)}</div>`,
+    `<p class="dc-dark-muted" style="${urlNoteStyle}">${escText(href)}</p>`,
+    '</div>',
+  ].join('');
 }
 
 export const Button: React.FC<ButtonProps> = ({ href, label }) => (

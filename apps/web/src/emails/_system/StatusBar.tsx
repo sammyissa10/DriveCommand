@@ -27,6 +27,9 @@ export type StatusBarProps = {
 export const StatusBar: React.FC<StatusBarProps> = ({ tone, label }) => {
   const background = tints[tone];
   const accent = tintAccents[tone];
+  // Only `attention` has a dark variant today; the others fall through to their
+  // light tint, which is the honest state rather than a guessed colour.
+  const darkClass = tone === 'attention' ? ' dc-status-attention' : '';
 
   return (
           <table
@@ -40,6 +43,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({ tone, label }) => {
         <tbody>
           <tr>
             <td
+              className={`dc-status${darkClass}`}
               bgcolor={background}
               style={{
                 ...styles.statusCellBase,

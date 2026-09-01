@@ -44,6 +44,7 @@ import { dirname, extname, join, normalize, sep } from 'path';
 import { fileURLToPath } from 'url';
 
 import DynamicTemplateEmail from '../src/emails/dynamic-template';
+import { transformBodyHtml } from '../src/lib/notifications/body-html-transform';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(__dirname, '../.email-qa');
@@ -158,7 +159,9 @@ async function main(): Promise<void> {
   try {
     box.html = await render(
       React.createElement(DynamicTemplateEmail, {
-        bodyHtml: BODY_HTML,
+        // Through the transform, exactly as template-renderer.ts does — otherwise
+      // the screenshot would show a shape the dispatcher never actually sends.
+      bodyHtml: transformBodyHtml(BODY_HTML).html,
         statusBar: {
           tone: 'attention' as const,
           label: 'Not started — departs in under 24 hours',

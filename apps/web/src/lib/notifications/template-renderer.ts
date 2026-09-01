@@ -15,8 +15,10 @@
 
 import { render } from '@react-email/render';
 import React from 'react';
-import DynamicTemplateEmail from '@/emails/dynamic-template';
+import DynamicTemplateEmail, { derivePreheader } from '@/emails/dynamic-template';
 import type { StatusTone } from '@/emails/_system';
+import { transformBodyHtml } from './body-html-transform';
+import { logger } from '@/lib/logger';
 
 /**
  * Pure variable substitution.
@@ -64,18 +66,33 @@ export async function renderTemplate(
    * the shell guessing.
    */
   options?: {
+    /** Only used to label the transform log line. */
+    triggerKey?: string;
     preheader?: string;
     statusBar?: { tone: StatusTone; label: string };
     accentColor?: string;
     preferencesUrl?: string;
   },
 ): Promise<{ html: string; subjectFinal: string }> {
-  const bodyHtml = substituteVariables(cachedHtml, payload);
+  const substituted = substituteVariables(cachedHtml, payload);
   const subjectFinal = substituteVariables(subject, payload);
+
+  // Post-processing runs AFTER substitution so the transforms see final text —
+  // a greeting only looks like a greeting once {{driverName}} is a real name.
+  const { html: bodyHtml, notes } = transformBodyHtml(substituted);
+  if (notes.length > 0) {
+    logger.debug('[notifications] body transforms applied', {
+      triggerKey: options?.triggerKey,
+      notes,
+    });
+  }
   const html = await render(
     React.createElement(DynamicTemplateEmail, {
       bodyHtml,
-      preheader: options?.preheader,
+      // Derived from the PRE-transform HTML on purpose: the CTA upgrade appends
+      // the destination URL as visible text, and that URL must never leak into
+      // the inbox preview line.
+      preheader: options?.preheader ?? derivePreheader(substituted),
       statusBar: options?.statusBar,
       accentColor: options?.accentColor,
       preferencesUrl: options?.preferencesUrl,
