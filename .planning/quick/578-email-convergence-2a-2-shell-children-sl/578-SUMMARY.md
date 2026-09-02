@@ -412,3 +412,93 @@ None - no external service configuration required.
 - FOUND commit 7aa4aec0 (Task 5)
 - FOUND commit 5ba60720 (Task 6)
 - FOUND commit ab010a25 (Task 7)
+
+---
+
+## Orchestrator verification pass (post-execution)
+
+Re-derived independently rather than accepted from the execution report.
+
+**Byte-identity of the dispatcher path — proven a second way, with no normalisation.**
+The execution proof went through the QA harness and had to normalise an ephemeral port. I
+re-proved it without a server at all: rendered `DynamicTemplateEmail` directly through
+`@react-email/render` with fixed props, once with the pre-578 `Shell.tsx` checked out over the
+new one and once at HEAD.
+
+```
+old Shell in place; 'children' occurrences: 0   -> 8650 bytes
+new Shell restored; 'children' occurrences: 5   -> 8650 bytes
+diff  ->  empty
+md5   ->  6bd5bfad51d086e3c2e6a28f57aaa4f9   (both)
+```
+
+Identical hash, nothing normalised away. `dynamic-template.tsx` is not in the diff for this
+task at all — `git diff --name-only 2cb784c0..HEAD` lists exactly one `_system/` file,
+`Shell.tsx`.
+
+**Type-level mutual exclusion — proven by compiling a violation.**
+
+```
+src/emails/__probe578union.tsx(4,4): error TS2322:
+  Type '{ children: Element; preheader: string; logoBaseUrl: string; bodyHtml: string; }'
+  is not assignable to type 'IntrinsicAttributes & ShellProps'.
+```
+
+Probe deleted; `tsc --noEmit` then exits 0.
+
+**Migration completeness, measured not counted.** Zero `const styles =` declarations remain in
+`src/emails/*.tsx`; 20 of 20 root templates import `_system`; none opens its own `<Html>`; none
+is `async`. `sysadmin-invoice.tsx`'s surviving object is `const tableStyles`, which is the
+approved exception and is token-only — an earlier grep of mine flagged it as a violation, but
+that grep had matched the explanatory comment, not a declaration.
+
+**Hex recount with a filter that filters PATHS** (file list collected first, then counted):
+
+| | before | after |
+|---|---|---|
+| root-only | 296 | **0** |
+| carrier | 113 | **113** (8 files) |
+| total | 409 | 113 |
+
+Carrier holding at exactly 113 is the scope assertion that `src/emails/carrier/**` was never
+touched.
+
+**Preheaders:** 20 expressions, 20 distinct, every one interpolating real props.
+
+### A defect I found in the screenshots and fixed
+
+**All 20 first-run screenshots rendered with a BROKEN logo, and were reviewed in that state.**
+The header showed a missing-image placeholder where the original dispatcher screenshots show
+the mark. The cause is worth recording because it is not what it looks like:
+
+The harness renders each template with `{ ...t.props, logoBaseUrl: origin }`. But the 20
+migrated templates **take no `logoBaseUrl` prop** — their prop signatures were deliberately
+left untouched, which is exactly what this task required — so they resolve the origin
+themselves via `getAppBaseUrl()` and emit `src="http://localhost:3000/email/logo-2x.png"`.
+The injected `logoBaseUrl` is a silent no-op, and port 3000 was correctly killed at the start
+of the task, so every request 404'd.
+
+So the templates are right and the harness was wrong. Fixing it by giving templates a
+test-only `logoBaseUrl` prop would break the one invariant the task exists to protect, so the
+fix is in the harness: a Playwright `page.route('**/email/logo-2x.png', …)` interception that
+fulfils the asset from `public/` whatever origin the template chooses. Re-ran; the logo now
+renders on all 20, and the screenshots are re-reviewed in that state.
+
+This is the class of thing that passes every automated check — tsc, build, byte-size,
+preheader distinctness all stayed green throughout — and is only visible by opening the image.
+
+### Cosmetic issue left unfixed, reported
+
+Templates that place prose AFTER a `<Button>` have that prose butting directly against the
+button's URL note with no separating space — visible as `— Sammy` in `add-driver-nudge` and
+the "You are receiving this because…" line in `workflow-safety-digest`. It comes from
+`Button.tsx` ending in a `<p style={styles.buttonUrlNote}>` with no bottom margin. Not fixed:
+`Button.tsx` is outside this task's single permitted `_system/` edit, and the alternative —
+adding a spacer in each affected template — is a per-file workaround for a shared component's
+spacing. Worth one line in `Button.tsx` in a follow-up.
+
+### Agreement with the execution report's own flag
+
+`workflow-safety-digest` does read less well than before: its three counts were a stat grid and
+are now a bullet list. Legible, but it has lost the at-a-glance quality. That was flagged
+honestly by the execution pass and I agree with it on the image.

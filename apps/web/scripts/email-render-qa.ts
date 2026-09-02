@@ -494,6 +494,23 @@ async function runTemplatesPhase(): Promise<void> {
           colorScheme: 'light',
         });
         const page = await context.newPage();
+        /*
+         * The 20 migrated templates take NO `logoBaseUrl` prop — their prop
+         * signatures were deliberately left untouched by the migration, so they
+         * resolve the origin themselves via `getAppBaseUrl()` and emit
+         * `src="http://localhost:3000/email/logo-2x.png"`. Spreading
+         * `logoBaseUrl: origin` into them above is therefore a silent no-op,
+         * and the first screenshot run produced 20 images with a BROKEN logo —
+         * reviewed, and nearly signed off, in that state.
+         *
+         * Serving the asset by interception rather than by origin fixes it for
+         * any origin the template happens to choose, and keeps the fix in the
+         * harness where it belongs: making the templates accept a test-only
+         * prop would change the signatures this task exists to preserve.
+         */
+        await page.route('**/email/logo-2x.png', (route) =>
+          route.fulfill({ path: join(PUBLIC_DIR, 'email', 'logo-2x.png'), contentType: 'image/png' }),
+        );
         await page.goto(`${origin}/${t.name}`, { waitUntil: 'networkidle' });
         await page.screenshot({ path: join(TEMPLATES_OUT_DIR, `${t.name}.png`), fullPage: true });
         await context.close();
