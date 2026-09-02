@@ -1,13 +1,6 @@
-import {
-  Html,
-  Head,
-  Body,
-  Container,
-  Section,
-  Text,
-  Button,
-  Hr,
-} from '@react-email/components';
+import * as React from 'react';
+import { Shell, Button, colors, fonts, fontSizes, lineHeights, space } from './_system';
+import { getAppBaseUrl } from '@/lib/app-url';
 
 interface SupportTicketReplyToAdminEmailProps {
   ticketNumber: string;
@@ -16,6 +9,19 @@ interface SupportTicketReplyToAdminEmailProps {
   submitterEmail: string;
   ticketUrl: string;
 }
+
+// No explicit `color` — see fleet-message-notification.tsx for why an inline
+// colour here would defeat the body cell's dark-mode override.
+const quoteStyle: React.CSSProperties = {
+  fontFamily: fonts.bodyStack,
+  fontSize: fontSizes.small,
+  lineHeight: lineHeights.small,
+  margin: `0 0 ${space[4]} 0`,
+  padding: `${space[3]} ${space[4]}`,
+  borderLeft: `3px solid ${colors.signalBlue}`,
+  backgroundColor: colors.bone,
+  whiteSpace: 'pre-wrap',
+};
 
 export function SupportTicketReplyToAdminEmail({
   ticketNumber,
@@ -28,177 +34,19 @@ export function SupportTicketReplyToAdminEmail({
   const preview = body.length > 300 ? body.slice(0, 300) + '...' : body;
 
   return (
-    <Html>
-      <Head />
-      <Body style={styles.body}>
-        <Container style={styles.container}>
-          <Section style={styles.header}>
-            <Text style={styles.headerText}>Owner Reply — Support Ticket</Text>
-          </Section>
-
-          <Section style={styles.content}>
-            <Text style={styles.message}>
-              An owner has replied to their support ticket.
-            </Text>
-
-            <Section style={styles.detailsBox}>
-              <table style={styles.table}>
-                <tbody>
-                  <tr>
-                    <td style={styles.labelCell}>Ticket</td>
-                    <td style={styles.valueCell}>{ticketNumber}</td>
-                  </tr>
-                  <tr>
-                    <td style={styles.labelCell}>Title</td>
-                    <td style={styles.valueCell}>{title}</td>
-                  </tr>
-                  <tr>
-                    <td style={styles.labelCell}>From</td>
-                    <td style={styles.valueCell}>{submitterEmail}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </Section>
-
-            <Text style={styles.previewLabel}>Message Preview:</Text>
-            <Section style={styles.quoteBox}>
-              <Text style={styles.quoteText}>{preview}</Text>
-            </Section>
-
-            <Section style={styles.ctaSection}>
-              <Button href={ticketUrl} style={styles.button}>
-                View Thread
-              </Button>
-            </Section>
-          </Section>
-
-          <Section style={styles.footer}>
-            <Hr style={styles.divider} />
-            <Text style={styles.footerText}>
-              DriveCommand - Fleet Management
-            </Text>
-            <Text style={styles.footerSubtext}>
-              This is an automated notification from the DriveCommand support system.
-            </Text>
-          </Section>
-        </Container>
-      </Body>
-    </Html>
+    <Shell
+      preheader={`Owner reply on ticket ${ticketNumber} — ${title}`}
+      logoBaseUrl={getAppBaseUrl()}
+    >
+      <h2>Owner reply — support ticket</h2>
+      <p>An owner has replied to their support ticket.</p>
+      <p><strong>Ticket:</strong> {ticketNumber}</p>
+      <p><strong>Title:</strong> {title}</p>
+      <p><strong>From:</strong> {submitterEmail}</p>
+      <p><strong>Message preview:</strong></p>
+      <blockquote style={quoteStyle}>{preview}</blockquote>
+      <Button href={ticketUrl} label="View thread" />
+      <p>This is an automated notification from the DriveCommand support system.</p>
+    </Shell>
   );
 }
-
-const styles = {
-  body: {
-    backgroundColor: '#f6f9fc',
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  },
-  container: {
-    margin: '0 auto',
-    padding: '20px 0',
-    maxWidth: '600px',
-  },
-  header: {
-    backgroundColor: '#1e40af',
-    padding: '20px',
-    borderRadius: '8px 8px 0 0',
-  },
-  headerText: {
-    color: '#ffffff',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    margin: '0',
-    textAlign: 'center' as const,
-  },
-  content: {
-    backgroundColor: '#ffffff',
-    padding: '32px',
-    borderRadius: '0 0 8px 8px',
-  },
-  message: {
-    fontSize: '14px',
-    lineHeight: '24px',
-    margin: '0 0 24px',
-    color: '#374151',
-  },
-  detailsBox: {
-    backgroundColor: '#f9fafb',
-    border: '1px solid #e5e7eb',
-    borderRadius: '6px',
-    padding: '16px',
-    marginBottom: '24px',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse' as const,
-  },
-  labelCell: {
-    fontSize: '13px',
-    fontWeight: 'bold' as const,
-    color: '#6b7280',
-    padding: '6px 12px 6px 0',
-    verticalAlign: 'top' as const,
-    whiteSpace: 'nowrap' as const,
-    width: '90px',
-  },
-  valueCell: {
-    fontSize: '13px',
-    color: '#111827',
-    padding: '6px 0',
-    verticalAlign: 'top' as const,
-  },
-  previewLabel: {
-    fontSize: '13px',
-    fontWeight: 'bold' as const,
-    color: '#6b7280',
-    margin: '0 0 8px',
-  },
-  quoteBox: {
-    backgroundColor: '#f3f4f6',
-    borderLeft: '3px solid #1e40af',
-    padding: '12px 16px',
-    borderRadius: '0 6px 6px 0',
-    marginBottom: '24px',
-  },
-  quoteText: {
-    fontSize: '13px',
-    lineHeight: '22px',
-    color: '#374151',
-    margin: '0',
-    whiteSpace: 'pre-wrap' as const,
-  },
-  ctaSection: {
-    textAlign: 'center' as const,
-    marginTop: '24px',
-    marginBottom: '8px',
-  },
-  button: {
-    backgroundColor: '#1e40af',
-    color: '#ffffff',
-    padding: '12px 32px',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-  },
-  divider: {
-    borderColor: '#e5e7eb',
-    margin: '16px 0',
-  },
-  footer: {
-    marginTop: '32px',
-  },
-  footerText: {
-    fontSize: '14px',
-    color: '#6b7280',
-    textAlign: 'center' as const,
-    margin: '16px 0 8px',
-  },
-  footerSubtext: {
-    fontSize: '12px',
-    color: '#9ca3af',
-    textAlign: 'center' as const,
-    margin: '0',
-  },
-};
