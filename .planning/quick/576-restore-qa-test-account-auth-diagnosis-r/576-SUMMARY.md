@@ -192,3 +192,79 @@ Also passed identically on the `mobile` project. The OWNER pin ran as `demo@driv
 ## Self-Check: PASSED
 
 All four modified/created source files confirmed present on disk (`apps/web/e2e/auth.setup.ts`, `apps/web/e2e/fixtures/auth-helpers.ts`, `apps/web/src/components/navigation/user-menu.tsx`, `apps/web/e2e/settings/user-menu-gating.spec.ts`), and all three task commits (`6aa3f5b2`, `11f0895c`, `7f567cf2`) confirmed present in `git log --oneline --all`.
+
+---
+
+## Orchestrator verification pass (post-execution)
+
+Every claim below was re-run independently rather than taken from the execution report.
+
+**Playwright, both spec files, both projects: 17/17 passed (48.5s).** Includes quick-575's
+four reachability tests, which are now EXECUTED and GREEN — the outcome that task could
+not reach.
+
+**Requirement 7 proven live, not asserted.** Two independent demonstrations:
+
+1. In the clean 17/17 run the **sysadmin login still fails** (`TEST_SYSADMIN_EMAIL` is
+   unset), the summary prints
+   `AUTH SETUP FAILED — sysadmin (no email configured): status=n/a reason=no credentials configured`,
+   and all 12 dependent tests still ran. Under the old single-project design that one
+   unset env var took the whole suite down on its own.
+2. Forced a broken account with `TEST_DRIVER_PASSWORD=deliberately-wrong`:
+
+```
+2 failed
+  ... DRIVER reaches /settings/my-notifications ...
+  ... DRIVER is still blocked from /settings/notifications ...
+    Error: requireRoleAuth('driver') failed — auth.setup.ts could not authenticate
+    driver@test.com (status: 401, reason: {"error":"Invalid email or password"}).
+    See .playwright/auth/status.json.
+7 passed
+```
+
+   The driver's own specs fail with a **named diagnosis**; the seven owner/manager specs
+   pass regardless. That is exactly "fail its own specs loudly, not silently disable the
+   suite", demonstrated rather than described.
+
+**`/profile` 404 confirmed independently** — replayed the owner storageState cookies
+against the running dev server: `GET /profile -> 404`. Dead for every role, gating cannot
+fix it, left in place as the plan decided.
+
+**Gate shape checked by reading, not by the diff summary.**
+`canSeeOwnerSettings = !!user && PORTAL_ROLES.owner.includes(user.role)` gates
+`/settings/notifications` and `/help`; `/profile` and `/settings/my-notifications` are
+ungated. The `!!user` term means the owner-only links are hidden while the role is still
+unknown — fail-closed, which is the correct direction.
+
+**Do-not-touch list verified:** `git diff --name-only ed00d95e..HEAD` matches none of
+`middleware.ts`, `route-access.ts`, `src/emails/`, the dispatcher, or `schema.prisma`.
+Four files changed, all in scope.
+
+### One gap closed by the orchestrator
+
+`my-notifications-reachability.spec.ts` (quick-575's) did not call `requireRoleAuth`, so a
+broken account there would still have failed on an opaque `ENOENT` on the storageState
+path — the exact failure mode requirement 7 exists to remove, left live in the one spec
+file this whole task was undertaken to unblock. Added a
+`test.beforeAll(() => requireRoleAuth('<role>'))` to each of its four `describe` blocks,
+naming the role that block's `storageState` consumes. The forced-failure run above is that
+change working.
+
+### Verification after the orchestrator's edit
+
+- `npx tsc --noEmit` **probed** — `const __probe576: number = 'x'` in the edited spec
+  produced exactly `my-notifications-reachability.spec.ts(127,7): error TS2322` and nothing
+  else, so the gate is live. Probe removed; clean run exits **0**.
+- Playwright re-run after the edit: **17/17 passed**.
+- Vitest `--silent`: **1806 total / 1679 passed / 63 failed / 61 skipped / 3 todo** —
+  byte-identical to the quick-575 baseline. Correct: Playwright specs are not in the
+  Vitest suite, so this change should move nothing, and it moved nothing. The 63 failures
+  are the pre-existing `stepTemplate.test.ts` tenant-isolation set, unrelated.
+
+### Still open, and it is the user's call
+
+`TEST_SYSADMIN_EMAIL` / `TEST_SYSADMIN_PASSWORD` are set nowhere, so `sysadmin.json` is
+never written and any sysadmin-scoped spec cannot run. This is now correctly isolated —
+it no longer harms other roles — but it is still an unusable role. quick-183 seeded only
+owner/manager/driver; the sysadmin account was never part of that seed. Not fixed here:
+Part A was scoped read-only and account provisioning is the user's decision.

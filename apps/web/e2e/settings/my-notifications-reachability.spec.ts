@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import { requireRoleAuth } from '../fixtures/auth-helpers';
 
 /**
  * /settings/my-notifications reachability — quick-575.
@@ -60,6 +61,10 @@ async function expectPreferencesScreenRendered(page: import('@playwright/test').
 test.describe('DRIVER reaches /settings/my-notifications — this is the fix', () => {
   test.use({ storageState: path.join(AUTH_DIR, 'driver.json') });
 
+  // quick-576: fail with a named diagnosis when this role's setup login
+  // failed, rather than an opaque ENOENT on the storageState path above.
+  test.beforeAll(() => requireRoleAuth('driver'));
+
   test('a driver session is not redirected away from /settings/my-notifications', async ({ page }) => {
     await page.goto('/settings/my-notifications');
 
@@ -74,6 +79,10 @@ test.describe('DRIVER reaches /settings/my-notifications — this is the fix', (
 test.describe('MANAGER still reaches /settings/my-notifications — regression pin, not a fix', () => {
   test.use({ storageState: path.join(AUTH_DIR, 'manager.json') });
 
+  // quick-576: fail with a named diagnosis when this role's setup login
+  // failed, rather than an opaque ENOENT on the storageState path above.
+  test.beforeAll(() => requireRoleAuth('manager'));
+
   test('a manager session still renders the preferences screen', async ({ page }) => {
     await page.goto('/settings/my-notifications');
 
@@ -87,6 +96,10 @@ test.describe('MANAGER still reaches /settings/my-notifications — regression p
 test.describe('OWNER still reaches /settings/my-notifications — regression pin, not a fix', () => {
   test.use({ storageState: path.join(AUTH_DIR, 'owner.json') });
 
+  // quick-576: fail with a named diagnosis when this role's setup login
+  // failed, rather than an opaque ENOENT on the storageState path above.
+  test.beforeAll(() => requireRoleAuth('owner'));
+
   test('an owner session still renders the preferences screen', async ({ page }) => {
     await page.goto('/settings/my-notifications');
 
@@ -99,6 +112,10 @@ test.describe('OWNER still reaches /settings/my-notifications — regression pin
 test.describe('DRIVER is still blocked from /settings/notifications (tenant-level) — proves no over-widening', () => {
   test.use({ storageState: path.join(AUTH_DIR, 'driver.json') });
 
+  // quick-576: fail with a named diagnosis when this role's setup login
+  // failed, rather than an opaque ENOENT on the storageState path above.
+  test.beforeAll(() => requireRoleAuth('driver'));
+
   test('a driver session requesting the tenant-level settings page is redirected to /home', async ({ page }) => {
     await page.goto('/settings/notifications');
 
@@ -106,3 +123,4 @@ test.describe('DRIVER is still blocked from /settings/notifications (tenant-leve
     expect(page.url()).not.toContain('/settings/notifications');
   });
 });
+
