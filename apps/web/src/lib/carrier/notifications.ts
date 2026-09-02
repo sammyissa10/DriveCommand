@@ -18,7 +18,7 @@ import React from 'react';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger, serializeError } from '@/lib/logger';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { getAppBaseUrl } from '@/lib/app-url';
 import {
   wasNotificationAlreadySent,

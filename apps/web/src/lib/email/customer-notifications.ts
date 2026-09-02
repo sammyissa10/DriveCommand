@@ -5,7 +5,7 @@
  * two weeks of stable production operation.
  */
 
-import { sendEmail } from './gmail-client';
+import { sendEmail } from './resend-client';
 import { LoadStatusNotificationEmail } from '@/emails/load-status-notification';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 

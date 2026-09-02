@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { WorkflowSafetyDigestEmail } from '@/emails/workflow-safety-digest';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';

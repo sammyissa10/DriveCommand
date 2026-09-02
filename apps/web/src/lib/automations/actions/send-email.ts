@@ -10,7 +10,7 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { TEMPLATE_REGISTRY, TemplateContext } from '@/lib/automations/template-registry';
 import type { AutomationRun } from '@/generated/prisma';
 

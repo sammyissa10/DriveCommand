@@ -6,7 +6,7 @@
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { sendEmail } from './gmail-client';
+import { sendEmail } from './resend-client';
 import { GeofenceArrivalAlert } from '@/emails/geofence-arrival-alert';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 

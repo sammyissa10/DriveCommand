@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { FleetMessageNotificationEmail } from '@/emails/fleet-message-notification';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';

@@ -6,7 +6,9 @@
  *     node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
  *
  * Optional:
- *   GMAIL_FROM_NAME — Display name for outbound email (e.g. "Tom from DriveCommand")
+ *   RESEND_FROM_NAME — Display name for outbound email, composed with
+ *                      RESEND_FROM_EMAIL by sender-config.ts. The
+ *                      NotificationEmailConfig row overrides both.
  *   SUPPORT_REPLY_TO — Reply-To address for welcome emails
  */
 import { NextRequest, NextResponse } from 'next/server';

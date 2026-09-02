@@ -22,7 +22,10 @@
 
 import type { PrismaClient } from '@/generated/prisma/client';
 import { prisma as defaultPrisma } from '@/lib/db/prisma';
-import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '@/lib/email/resend-client';
+import { resend } from '@/lib/email/resend-client';
+import { resolveSenderConfig } from '@/lib/email/sender-config';
+import { htmlToPlainText } from '@/lib/email/html-to-text';
+import { buildUnsubscribeHeaders } from '@/lib/email/unsubscribe';
 import type { TriggerKey, NotificationPayload, DefaultRecipientRule } from './types';
 import { resolveRecipients } from './recipient-resolver';
 import { renderTemplate } from './template-renderer';
@@ -191,6 +194,14 @@ export async function dispatchNotification<K extends TriggerKey>(
     );
     console.log(`[notif-trace] render:done html_length=${html.length}`);
 
+    // Resolved ONCE for the whole fan-out, not per recipient: a 200-recipient
+    // broadcast must perform one config read and one text conversion, not 200.
+    // `resolveSenderConfig` never throws — it falls back to env internally — so
+    // a config problem degrades the FROM line rather than aborting the send.
+    const sender = await resolveSenderConfig();
+    const textBody = htmlToPlainText(html);
+    const unsubscribeHeaders = buildUnsubscribeHeaders();
+
     // -----------------------------------------------------------------------
     // Step 6c (Phase 10): PUSH channel.
     //
@@ -342,11 +353,13 @@ export async function dispatchNotification<K extends TriggerKey>(
           } else {
             try {
               const { error: sendError } = await resend.emails.send({
-                from: FROM_EMAIL,
+                from: sender.from,
                 to: r.email,
                 subject: subjectFinal,
                 html: html,
-                replyTo: REPLY_TO_EMAIL,
+                text: textBody,
+                replyTo: sender.replyTo,
+                headers: unsubscribeHeaders,
               });
 
               if (sendError) {

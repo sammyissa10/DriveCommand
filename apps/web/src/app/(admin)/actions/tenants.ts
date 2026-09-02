@@ -7,7 +7,7 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import React from 'react';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';

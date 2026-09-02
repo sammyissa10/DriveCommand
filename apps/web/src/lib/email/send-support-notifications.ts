@@ -1,4 +1,4 @@
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { SupportTicketCreatedEmail } from '@/emails/support-ticket-created';
 import { SupportTicketReplyToAdminEmail } from '@/emails/support-ticket-reply-to-admin';
 import React from 'react';

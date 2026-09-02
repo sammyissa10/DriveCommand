@@ -9,7 +9,7 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import React from 'react';
 import Decimal from 'decimal.js';
 import { SysAdminInvoiceEmail } from '@/emails/sysadmin-invoice';

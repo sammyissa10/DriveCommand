@@ -5,7 +5,7 @@
  * two weeks of stable production operation.
  */
 
-import { sendEmail } from './gmail-client';
+import { sendEmail } from './resend-client';
 import { OwnerInvitationEmail } from '@/emails/owner-invitation';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 

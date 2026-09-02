@@ -11,7 +11,7 @@ import { provisionTenant } from '@/lib/onboarding/provision-tenant';
 import { prisma } from '@/lib/db/prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { ConfirmEmailTemplate } from '@/emails/confirm-email';
 import { getAppBaseUrl } from '@/lib/app-url';
 import bcrypt from 'bcryptjs';

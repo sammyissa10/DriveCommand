@@ -5,7 +5,7 @@
  * two weeks of stable production operation.
  */
 
-import { sendEmail } from './gmail-client';
+import { sendEmail } from './resend-client';
 import { DocumentExpiryReminderEmail } from '@/emails/document-expiry-reminder';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 

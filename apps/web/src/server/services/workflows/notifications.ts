@@ -16,7 +16,7 @@
  */
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendPushToUser } from '@/lib/notifications/send-push';
-import { sendEmail } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { logger } from '@/lib/logger';
 import { WorkflowInstanceBlockedEmail } from '@/emails/workflow-instance-blocked';
 import { getAppBaseUrl } from '@/lib/app-url';

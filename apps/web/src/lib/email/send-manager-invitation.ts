@@ -5,7 +5,7 @@
  * Legacy Gmail SMTP path is preserved as the fallback inside the try/catch.
  */
 
-import { sendEmail } from './gmail-client';
+import { sendEmail } from './resend-client';
 import { DriverInvitationEmail } from '@/emails/driver-invitation';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 

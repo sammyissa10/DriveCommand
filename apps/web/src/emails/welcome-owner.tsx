@@ -1,7 +1,8 @@
 //
-// Sent via gmail-client.ts with:
-//   from: "Sammy from DriveCommand <...>" (set via GMAIL_FROM_NAME=Sammy from DriveCommand)
-//   replyTo: SUPPORT_REPLY_TO env var (or GMAIL_USER as fallback)
+// Sent via resend-client.ts with:
+//   from: resolved by sender-config.ts — the NotificationEmailConfig row if
+//         one exists, otherwise RESEND_FROM_NAME / RESEND_FROM_EMAIL.
+//   replyTo: the resolved sender config, or an explicit replyTo argument.
 //
 import {
   Html,
