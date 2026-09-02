@@ -404,3 +404,82 @@ No occurrence of `notifications.ts`, `dispatch-assigned-email.ts`, `Shell.tsx`, 
 ## Self-Check: PASSED
 
 All 16 claimed files found on disk; all 5 feature commits (`c8c13b01`, `dc1da323`, `7d2046c9`, `69d788fd`, `0756f5c3`) found in git history.
+
+---
+
+## Orchestrator verification pass (post-execution)
+
+Re-derived independently. Two of my own first attempts were wrong before they were right, and
+both mistakes are recorded because they are reusable traps.
+
+**The dispatcher gate — re-proved by isolating the actual risk.**
+My first attempt rendered the whole dispatcher email and diffed it, and it "DIFFERED" — but the
+failure was mine twice over: `transformBodyHtml` returns a `TransformResult` object, not a
+string, so the body rendered as the literal `[object Object]`; and the `git checkout` pathspec
+was relative to `apps/web` while the shell's cwd was the repo root, so the "before" tree was
+never actually checked out and the old render produced zero bytes. **A diff against an empty
+file looks exactly like a catastrophic regression.**
+
+Re-done against the thing that actually carries the risk — `buildButtonBlockHtml`, the
+dispatcher's CTA, which `body-html-transform.ts:36` imports:
+
+```
+pre-579  2331 bytes   md5 eb191e5681c123f64cfa465ad0b9ad4e
+HEAD     2331 bytes   md5 eb191e5681c123f64cfa465ad0b9ad4e
+diff -> empty
+```
+
+Byte-identical. The `Button.tsx` diff confirms why: line 141's string builder is untouched and
+only the React component's wrapper margin moved from `${space[6]} 0 0 0` to
+`${space[6]} 0 ${space[6]} 0`. The comment added above it names the reason, so a later edit
+cannot "tidy" the two into agreement without reading why they differ.
+
+**Scope.** `git diff --name-only e2053086..HEAD` lists exactly the permitted set: `StatGrid.tsx`
+(new), `_system/index.ts`, `_system/Button.tsx`, `_system/tokens.ts`, `workflow-safety-digest.tsx`,
+the 8 carrier files, `scripts/email-render-qa.ts`, `.email-qa/`, `.planning/`. `Shell.tsx`,
+`Header.tsx`, `Footer.tsx`, `StatusBar.tsx`, `Preheader.tsx`, `carrier/notifications.ts`,
+`body-html-transform.ts` and `dispatch-assigned-email.ts` are all absent.
+
+**Hex, path-filtered (file list collected first, then counted within it):**
+
+| | before | after |
+|---|---|---|
+| carrier | 113 (8 files) | **0** |
+| root | 0 | 0 |
+| `_system/*.tsx` | 0 | 0 |
+
+**`src/emails/` now contains zero hex literals anywhere** — every colour resolves through
+`tokens.ts`. That is the end state the convergence was for.
+
+Also verified structurally: no `const styles` block survives in `carrier/`, no carrier template
+opens its own `<Html>`, none is `async`.
+
+**Screenshots — logo confirmed first, as required.** I opened `workflow-safety-digest.png`
+before any other and confirmed the DriveCommand mark renders in the header band, not the
+missing-image placeholder that made quick-578's first review worthless. Then reviewed the
+carrier images.
+
+- `workflow-safety-digest` — **the regression quick-578 introduced is repaired.** The three
+  counts are a real stat row again: large navy numerals over uppercase letterspaced labels,
+  hairline dividers between cells. Glanceable in a way the bullet list was not.
+- `compliance-alert` — the strongest of the eight. StatGrid carries 3 / 2 / 1, the attention
+  StatusBar carries the headline, and Critical/Warnings remain separate headed sections, so
+  severity survives as structure rather than as colour.
+- **The Button bottom-margin fix is visible and works.** On the digest, "You are receiving this
+  because…" now sits clear of the button's URL line instead of butting against it — the exact
+  defect quick-578 reported and could not fix inside its own scope.
+
+**Gates re-run by me:** tsc PROBED — `const __probe579b: number = 'x'` in `StatGrid.tsx`
+produced `StatGrid.tsx(115,7): error TS2322` and nothing else, so the gate is live; removed,
+clean run exits 0. Full Vitest **1806 / 1679 / 63 / 61 / 3**, an exact baseline match.
+`dispatch-assigned-email.test.ts` green at 4/4, which is the test that constrained
+`dispatch-assigned.tsx` away from StatGrid. Port 3000 free.
+
+### Carried forward for the user to decide
+
+- **`EmphasisRow` is proposed, not built.** The old pay/invoice templates had a bold emphasis
+  line for Net Pay and Invoice Total; no `_system` component expresses it, so those values are
+  currently prose. Correctly reported rather than solved with a local style block.
+- **The "no DetailRows" reading** taken here is the conservative one — none introduced anywhere.
+  If the intent was only "do not convert prose to DetailRows" while permitting it for genuinely
+  tabular carrier data, that is a redirect worth making explicitly.
