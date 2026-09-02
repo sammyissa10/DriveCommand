@@ -30,7 +30,12 @@
  * browser sizes, default-blue underlined links — which is why the body reads as
  * a wall of text no matter how good the frame around it is. The `.dc-body`
  * descendant selectors below are what make the injected markup part of the
- * brand.
+ * brand. `children` is the JSX twin of the same slot — real React elements
+ * from a migrated template land in the exact same `.dc-body` div as Tiptap's
+ * HTML string does, so both paths share one stylesheet, one Header, one
+ * Footer and one dark ruleset. `bodyHtml` and `children` are mutually
+ * exclusive at the type level (see `ShellProps` below): a template supplies
+ * one or the other, never both.
  *
  * Those selectors are embedded CSS, so Outlook Windows applies only the subset
  * Word understands (it does handle simple descendant selectors for colour and
@@ -56,11 +61,9 @@ import { Footer } from './Footer';
 import { Preheader } from './Preheader';
 import { StatusBar, type StatusBarProps } from './StatusBar';
 
-export type ShellProps = {
+type ShellBase = {
   /** Inbox preview line. Required — a constant here is a wasted signal. */
   preheader: string;
-  /** Tiptap-generated, already variable-substituted HTML. */
-  bodyHtml: string;
   /** Optional glanceable strip under the header. */
   statusBar?: StatusBarProps;
   /** Overrides the 3px rule under the header band. */
@@ -70,6 +73,10 @@ export type ShellProps = {
   /** Absolute origin for the logo asset. */
   logoBaseUrl: string;
 };
+
+export type ShellProps =
+  | (ShellBase & { /** Tiptap-generated, already variable-substituted HTML. */ bodyHtml: string; children?: never })
+  | (ShellBase & { bodyHtml?: never; /** JSX twin of `bodyHtml` — a migrated template's own markup. */ children: React.ReactNode });
 
 const CSS = `
   /* Client resets — these are structural and must not be theme-dependent. */
@@ -149,14 +156,10 @@ const CSS = `
   }
 `;
 
-export const Shell: React.FC<ShellProps> = ({
-  preheader,
-  bodyHtml,
-  statusBar,
-  accentColor,
-  preferencesUrl,
-  logoBaseUrl,
-}) => (
+export function Shell(props: ShellProps) {
+  const { preheader, statusBar, accentColor, preferencesUrl, logoBaseUrl } = props;
+
+  return (
   <Html lang="en">
     <Head>
       <meta name="color-scheme" content="light dark" />
@@ -214,10 +217,14 @@ export const Shell: React.FC<ShellProps> = ({
                   <tbody>
                     <tr>
                       <td className="dc-dark-text" style={styles.bodyCell}>
-                        <div
-                          className="dc-body"
-                          dangerouslySetInnerHTML={{ __html: bodyHtml }}
-                        />
+                        {props.bodyHtml === undefined ? (
+                          <div className="dc-body">{props.children}</div>
+                        ) : (
+                          <div
+                            className="dc-body"
+                            dangerouslySetInnerHTML={{ __html: props.bodyHtml }}
+                          />
+                        )}
                       </td>
                     </tr>
                   </tbody>
@@ -231,6 +238,7 @@ export const Shell: React.FC<ShellProps> = ({
       </table>
     </Body>
   </Html>
-);
+  );
+}
 
 export default Shell;
