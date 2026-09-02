@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Shell, Button } from './_system';
+import { Shell, Button, StatGrid } from './_system';
 import { getAppBaseUrl } from '@/lib/app-url';
 
 interface WorkflowSafetyDigestEmailProps {
@@ -38,17 +38,13 @@ export function WorkflowSafetyDigestEmail({
       <p>
         {tenantName} · {date}
       </p>
-      <ul>
-        <li>
-          <strong>{overdueCount}</strong> overdue step{overdueCount !== 1 ? 's' : ''}
-        </li>
-        <li>
-          <strong>{completedTodayCount}</strong> completed today
-        </li>
-        <li>
-          <strong>{activeInstanceCount}</strong> active checklist{activeInstanceCount !== 1 ? 's' : ''}
-        </li>
-      </ul>
+      <StatGrid
+        stats={[
+          { value: String(overdueCount), label: overdueCount === 1 ? 'Overdue step' : 'Overdue steps' },
+          { value: String(completedTodayCount), label: 'Completed today' },
+          { value: String(activeInstanceCount), label: activeInstanceCount === 1 ? 'Active checklist' : 'Active checklists' },
+        ]}
+      />
       {overdueCount > 0 && (
         <p>
           {overdueCount} step{overdueCount !== 1 ? 's are' : ' is'} past due and
