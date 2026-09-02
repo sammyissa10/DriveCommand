@@ -413,3 +413,61 @@ FOUND: commit 8afdad4b (test(quick-575): manager auth setup + reachability specs
 FOUND: commit 86340a0b (fix(quick-575): keep a plain-text footer label glued to its URL...)
 
 ## Self-Check: PASSED
+
+---
+
+## 8. Orchestrator verification pass (post-execution)
+
+Re-verified independently rather than taken from the executor's report:
+
+- `git status` clean; four commits present (`08d63619`, `8afdad4b`, `86340a0b`, `6a2a8f45`).
+- `middleware.ts` diff reviewed line by line: the ONLY behavioural change is
+  `OWNER_PATHS.some(...)` → `isDriverBlockedPath(pathname)` and
+  `OWNER_ONLY_PATHS.some(...)` → `isManagerBlockedPath(pathname)`. Both arrays moved
+  verbatim. `PUBLIC_PATHS`, `ADMIN_ALLOWED_PATHS`, the CSRF branch, the onboarding
+  branch, the sysadmin branch and the `PERMISSION_GATED_PATHS` branch are untouched.
+- `npx vitest run` over the three affected files: **45/45 passed**
+  (route-access 22, html-to-text-wrap 7, transport 16 — transport is the
+  pre-existing suite that also imports `htmlToPlainText`, run to prove the wrap
+  change did not regress it).
+- `npx tsc --noEmit` **probed**: `const __probe575: number = 'x';` appended to
+  `src/lib/email/unsubscribe.ts` produced exactly
+  `src/lib/email/unsubscribe.ts(84,7): error TS2322` and nothing else — the gate
+  is reporting semantic errors in the files this task edited, so it is not blind.
+  Probe removed; clean run exits 0.
+
+### Two findings the execution pass missed
+
+**8a. The defect had a SECOND live entry point, not just the email footer.**
+`src/components/navigation/user-menu.tsx:143` links to `/settings/my-notifications`,
+and the component has **no role gating at all** (grep for `role`/`OWNER`/`DRIVER` in
+that file returns only the three `href` lines). It is mounted by
+`src/app/(driver)/layout.tsx`. So every driver's own account dropdown has carried a
+`My Notifications` item that bounced them to `/home`. The brief framed this as a
+quick-574 email-footer regression; it was in fact broken from whenever that menu item
+shipped, and the footer link only made it reachable by a second route. This task fixes
+both at once, because both go through the same middleware guard.
+
+**8b. `unsubscribe.ts` documented the defect as live, and that comment is now false.**
+Its header block listed two limitations on the app-level https URL, the second being
+*"It sits under `OWNER_PATHS` in middleware.ts, so a DRIVER who follows it is
+redirected to `/home` and never reaches a preferences screen at all."* That sentence
+is what motivated this whole task, and leaving it in place would be the exact failure
+mode CLAUDE.md records from quick-547/548/549/562 — a comment asserting an invariant
+that no longer holds, believed by the next reader. Corrected in place: limitation 2 is
+struck and replaced with a note that quick-575 closed it, naming
+`ANY_AUTHENTICATED_PATHS`. Limitation 1 (the page requires a login) still stands, and
+the `mailto:` entry stays listed FIRST — that ordering was always justified by
+limitation 1 and by the RFC 8058 reason in the same file, not only by the DRIVER
+redirect, so the ordering is unchanged. No behaviour changed; comment only.
+
+### Still-broken link deliberately NOT fixed (out of scope, reported)
+
+The same ungated `user-menu.tsx` also renders `/settings/notifications` — the
+TENANT-level page — at line 157. A DRIVER who taps it is still redirected to `/home`,
+and after this task that is *correct guard behaviour*: the brief's constraint is
+"Do not widen any other route's role access. One route moves, nothing else", and the
+negative spec exists specifically to prove that route still redirects. The defect is
+therefore in the MENU, not the guard — an item offered to a viewer who cannot open it.
+Fixing it means role-gating `user-menu.tsx`, which touches a component shared by the
+admin, driver and owner shells. Left for its own task.

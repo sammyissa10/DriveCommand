@@ -10,17 +10,24 @@
  * `UserNotificationPreference` are keyed by an authenticated session, not by a
  * token. Building one is DDL plus a public route, both out of scope here.
  *
- * So the https URL is APP-LEVEL — the notification preferences screen — and two
- * limitations come with it, reported rather than papered over:
+ * So the https URL is APP-LEVEL — the notification preferences screen — and ONE
+ * limitation still comes with it, reported rather than papered over:
  *
  *   1. `/settings/my-notifications` requires a login, so the recipient must
  *      sign in before they can act on it.
- *   2. It sits under `OWNER_PATHS` in middleware.ts, so a DRIVER who follows it
- *      is redirected to `/home` and never reaches a preferences screen at all.
  *
- * The `mailto:` entry is therefore the one that actually works for every
- * recipient today, which is why it is listed FIRST — clients prefer the earlier
- * usable method.
+ * quick-575 CLOSED the second limitation this comment used to name. The screen
+ * sat behind the bare `'/settings'` prefix in `OWNER_PATHS`, so a DRIVER who
+ * followed this link was redirected to `/home` and never reached a preferences
+ * screen at all — which broke the link for the app's highest-volume recipient
+ * class, and broke the `My Notifications` item in the driver's own account menu
+ * along with it. `ANY_AUTHENTICATED_PATHS` in `lib/auth/route-access.ts` now
+ * carves that one leaf out of the prefix, and the DRIVER guard consults it
+ * first. Every authenticated role reaches the page.
+ *
+ * The `mailto:` entry is still listed FIRST, for the reason in point 1 and for
+ * the RFC 8058 reason below: it is the only method that needs no session at
+ * all, and clients prefer the earlier usable method.
  *
  * ===========================================================================
  * WHY List-Unsubscribe-Post IS OFF BY DEFAULT
@@ -73,3 +80,4 @@ export function buildUnsubscribeHeaders(preferencesUrl?: string): UnsubscribeHea
 }
 
 export { PREFERENCES_PATH };
+
