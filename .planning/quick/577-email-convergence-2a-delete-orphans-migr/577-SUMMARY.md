@@ -307,3 +307,66 @@ Session 2B cannot proceed with the template migration until the user decides how
 - FOUND commit: 4d7db2d6
 - FOUND commit: d78ec00b
 - FOUND commit: da4f47f1
+
+---
+
+## 8. Orchestrator verification pass (post-execution)
+
+Every figure below was re-derived independently rather than taken from the execution report.
+
+**Deletions.** `git diff --name-status ed00d95e..HEAD` shows exactly four `D` entries and no
+others. The near-miss LIVE pair — `src/emails/driver-document-expiry-reminder.tsx` and
+`src/lib/email/send-driver-document-expiry-reminder.ts` — both still exist on disk. Grep for
+`sendDocumentExpiryReminder` and `sendMaintenanceReminder` across `src scripts e2e tests`
+returns nothing.
+
+**The hex reconciliation, and a correction to how it is measured.** The re-measured
+409 / 296 root / 113 carrier / 27 files is correct, and it reconciles exactly:
+
+```
+document-expiry-reminder.tsx    22 literals
+maintenance-reminder.tsx        17 literals
+                            -------
+448 (audit baseline) − 39   =  409 (measured now)
+```
+
+My first attempt to check this appeared to be off by two, because `grep -oc` counts matching
+LINES, not occurrences — a line carrying two hex values counts once. `grep -oh … | wc -l` is
+the correct form and is what both the 448 and the 409 were produced with. Worth writing down:
+the audit's own baseline command ended in `| grep -v "_system"`, which with `-h` filters
+matched STRINGS, not file paths, and so filtered nothing. It happened not to matter —
+`_system/*.tsx` contributes **0** hex literals, because its colours live in `tokens.ts`, a
+`.ts` file the `--include=*.tsx` glob never reads — but the next task should not inherit the
+belief that that filter works.
+
+**`/profile` is gone in the only sense that matters.** Grep across `src` and `e2e` finds it in
+exactly three places, all deliberate: the explanatory comment in `user-menu.tsx`, and two
+lines in `user-menu-gating.spec.ts` (the rationale comment and the OWNER absence assertion).
+The `./profiles` hits are `src/lib/document-import/profiles.ts`, an unrelated module caught by
+substring.
+
+**Specs re-run independently against a live dev server: 17/17 passed** (`user-menu-gating` +
+`my-notifications-reachability`, chromium + mobile). The titles moved with the assertions —
+`OWNER session — user menu carries all three links … omits Profile` — so the count in the name
+cannot drift away from the list being asserted.
+
+**`e2e/.env.example` is safe and reachable.** `grep -c TestPass123` returns 0;
+`git check-ignore -v` reports the path is not ignored.
+
+### One judgement call worth flagging rather than burying
+
+The six keys ship with **empty** values, not placeholder ones. The brief asked for placeholders.
+Empty is defensible here and I have left it: the file's header explicitly says "fill in the
+values that script actually created — do not guess them", and a fake-but-plausible placeholder
+is the precise shape of the quick-575 failure this file exists to prevent — someone copies
+`driver1234`, gets a 401, and reports a broken account. The three **emails** are not secret and
+could reasonably be pre-filled; only the passwords must not be. If the next task prefers
+pre-filled emails with empty passwords, that is a one-line change and a better file.
+
+### Scope confirmation
+
+`git diff --stat ed00d95e..HEAD` touches: the 4 deleted files, `user-menu.tsx`,
+`user-menu-gating.spec.ts`, `e2e/.env.example`, and `.planning/`. No file on the do-not-touch
+list appears — `src/emails/carrier/**`, `src/emails/_system/**`, the 19 root templates,
+`dynamic-template.tsx`, the renderer/dispatcher/transport modules, `middleware.ts`,
+`route-access.ts`, seeds, `schema.prisma` and both `vercel.json` are all unmodified.
