@@ -2,3 +2,6 @@
 # The four PNGs are committed as the reviewed QA evidence; these are not.
 preview.html
 *.mjs
+# The 20 templates' rendered HTML is a byproduct of the same run; the 20 PNGs
+# are the reviewed evidence and stay tracked, matching the convention above.
+templates/*.html

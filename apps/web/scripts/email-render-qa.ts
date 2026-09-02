@@ -46,6 +46,29 @@ import { fileURLToPath } from 'url';
 import DynamicTemplateEmail from '../src/emails/dynamic-template';
 import { transformBodyHtml } from '../src/lib/notifications/body-html-transform';
 
+// --- quick-578 Task 7: the 20 migrated templates, rendered + screenshotted
+// in a second phase below. The dispatcher run above is untouched.
+import { WelcomeOwnerEmail } from '../src/emails/welcome-owner';
+import { ActivationCelebrationEmail } from '../src/emails/activation-celebration';
+import { NoProgressNudgeEmail } from '../src/emails/no-progress-nudge';
+import { AddDriverNudgeEmail } from '../src/emails/add-driver-nudge';
+import { DispatchLoadNudgeEmail } from '../src/emails/dispatch-load-nudge';
+import { TrialEndingSoonEmail } from '../src/emails/trial-ending-soon';
+import { ConfirmEmailTemplate } from '../src/emails/confirm-email';
+import { DriverInvitationEmail } from '../src/emails/driver-invitation';
+import { OwnerInvitationEmail } from '../src/emails/owner-invitation';
+import { AccountExistsEmail } from '../src/emails/account-exists';
+import { DriverDocumentExpiryReminderEmail } from '../src/emails/driver-document-expiry-reminder';
+import { FleetMessageNotificationEmail } from '../src/emails/fleet-message-notification';
+import { GeofenceArrivalAlert } from '../src/emails/geofence-arrival-alert';
+import { LoadStatusNotificationEmail } from '../src/emails/load-status-notification';
+import { SysAdminInvoiceEmail } from '../src/emails/sysadmin-invoice';
+import { SupportTicketCreatedEmail } from '../src/emails/support-ticket-created';
+import { SupportTicketReplyToAdminEmail } from '../src/emails/support-ticket-reply-to-admin';
+import { SupportTicketReplyToOwnerEmail } from '../src/emails/support-ticket-reply-to-owner';
+import { WorkflowInstanceBlockedEmail } from '../src/emails/workflow-instance-blocked';
+import { WorkflowSafetyDigestEmail } from '../src/emails/workflow-safety-digest';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(__dirname, '../.email-qa');
 const PUBLIC_DIR = join(__dirname, '../public');
@@ -150,6 +173,368 @@ async function shoot(
   return intercepted;
 }
 
+// ---------------------------------------------------------------------------
+// quick-578 Task 7: the 20 migrated templates.
+// ---------------------------------------------------------------------------
+// Representative props, not placeholders — the screenshots are only worth
+// reviewing if the data is shaped like real data. A few entries deliberately
+// carry their optional prop (fleet-message routeName, load-status
+// estimatedDelivery, invoice notes) so the conditional branches render, and
+// workflow-safety-digest's overdueCount is > 0 so its attention path fires.
+const TEMPLATES: Array<{
+  name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous props across 20 distinct components
+  Component: React.ComponentType<any>;
+  props: Record<string, unknown>;
+}> = [
+  {
+    name: 'welcome-owner',
+    Component: WelcomeOwnerEmail,
+    props: {
+      firstName: 'Maria',
+      companyName: 'Rodriguez Logistics',
+      trialEndsAt: 'March 15, 2027',
+      dashboardUrl: 'https://app.drivecommand.com/dashboard',
+    },
+  },
+  {
+    name: 'activation-celebration',
+    Component: ActivationCelebrationEmail,
+    props: {
+      firstName: 'Maria',
+      companyName: 'Rodriguez Logistics',
+      dashboardUrl: 'https://app.drivecommand.com/dashboard',
+    },
+  },
+  {
+    name: 'no-progress-nudge',
+    Component: NoProgressNudgeEmail,
+    props: {
+      firstName: 'Carlos',
+      companyName: 'Carlos Trucking LLC',
+      dashboardUrl: 'https://app.drivecommand.com/dashboard',
+    },
+  },
+  {
+    name: 'add-driver-nudge',
+    Component: AddDriverNudgeEmail,
+    props: {
+      firstName: 'Denise',
+      companyName: 'Ironclad Freight',
+      driversUrl: 'https://app.drivecommand.com/carrier/drivers',
+    },
+  },
+  {
+    name: 'dispatch-load-nudge',
+    Component: DispatchLoadNudgeEmail,
+    props: {
+      firstName: 'Tyrell',
+      companyName: 'Summit Hauling',
+      loadsUrl: 'https://app.drivecommand.com/carrier/loads',
+    },
+  },
+  {
+    name: 'trial-ending-soon',
+    Component: TrialEndingSoonEmail,
+    props: {
+      firstName: 'Priya',
+      companyName: 'Blue Ridge Transport',
+      daysLeft: 3,
+      subscriptionUrl: 'https://app.drivecommand.com/settings/billing',
+    },
+  },
+  {
+    name: 'confirm-email',
+    Component: ConfirmEmailTemplate,
+    props: {
+      firstName: 'Jordan',
+      confirmUrl: 'https://app.drivecommand.com/confirm?token=abc123',
+    },
+  },
+  {
+    name: 'driver-invitation',
+    Component: DriverInvitationEmail,
+    props: {
+      firstName: 'Miguel',
+      lastName: 'Torres',
+      organizationName: 'Lonestar Freight Co',
+      acceptUrl: 'https://app.drivecommand.com/accept-invite?token=xyz',
+      expiresAt: 'March 10, 2027',
+    },
+  },
+  {
+    name: 'owner-invitation',
+    Component: OwnerInvitationEmail,
+    props: {
+      firstName: 'Angela',
+      lastName: 'Kim',
+      organizationName: 'Kim Family Trucking',
+      acceptUrl: 'https://app.drivecommand.com/accept-invite?token=abc',
+      expiresAt: 'March 10, 2027',
+    },
+  },
+  {
+    name: 'account-exists',
+    Component: AccountExistsEmail,
+    props: {
+      signInUrl: 'https://app.drivecommand.com/sign-in',
+    },
+  },
+  {
+    name: 'driver-document-expiry-reminder',
+    Component: DriverDocumentExpiryReminderEmail,
+    props: {
+      driverName: 'Miguel Torres',
+      documentType: 'Driver License',
+      expiryDate: 'March 5, 2027',
+      daysUntilExpiry: 5,
+      dashboardUrl: 'https://app.drivecommand.com/carrier/drivers/drv_123',
+    },
+  },
+  {
+    name: 'fleet-message-notification',
+    Component: FleetMessageNotificationEmail,
+    props: {
+      recipientName: 'Angela Kim',
+      senderName: 'Miguel Torres',
+      senderRole: 'DRIVER',
+      messagePreview:
+        'Running about 20 minutes behind schedule due to traffic on I-80, should still make the delivery window.',
+      routeName: 'Chicago → Indianapolis',
+    },
+  },
+  {
+    name: 'geofence-arrival-alert',
+    Component: GeofenceArrivalAlert,
+    props: {
+      loadNumber: 'DC-2026-00512',
+      stopType: 'delivery',
+      stopAddress: '4501 W Diversey Ave, Chicago, IL',
+      driverName: 'Miguel Torres',
+      licensePlate: 'IL-TRK4821',
+      loadUrl: 'https://app.drivecommand.com/carrier/loads/load_512',
+    },
+  },
+  {
+    name: 'load-status-notification',
+    Component: LoadStatusNotificationEmail,
+    props: {
+      customerName: 'Acme Manufacturing',
+      loadNumber: 'DC-2026-00512',
+      status: 'IN_TRANSIT',
+      origin: 'Chicago, IL',
+      destination: 'Indianapolis, IN',
+      driverName: 'Miguel Torres',
+      truckInfo: 'T-104 · IL-TRK4821',
+      estimatedDelivery: 'March 3, 2027, 2:00 PM',
+      trackingUrl: 'https://app.drivecommand.com/track/tok_abc123',
+    },
+  },
+  {
+    name: 'sysadmin-invoice',
+    Component: SysAdminInvoiceEmail,
+    props: {
+      invoiceNumber: 'INV-2027-0142',
+      tenantName: 'Kim Family Trucking',
+      ownerName: 'Angela Kim',
+      issueDate: 'March 1, 2027',
+      dueDate: 'March 15, 2027',
+      items: [
+        { description: 'DriveCommand Pro — Monthly Subscription', quantity: '1', unitPrice: '$249.00', amount: '$249.00' },
+        { description: 'Additional driver seats (3)', quantity: '3', unitPrice: '$15.00', amount: '$45.00' },
+      ],
+      subtotal: '$294.00',
+      total: '$294.00',
+      notes: 'Thank you for your business — reach out with any billing questions.',
+    },
+  },
+  {
+    name: 'support-ticket-created',
+    Component: SupportTicketCreatedEmail,
+    props: {
+      ticketNumber: 'TCK-4821',
+      title: 'Unable to upload rate confirmation PDF',
+      category: 'Document Import',
+      priority: 'High',
+      submitterEmail: 'angela@kimtrucking.com',
+      ticketUrl: 'https://app.drivecommand.com/sysadmin/support/tck_4821',
+    },
+  },
+  {
+    name: 'support-ticket-reply-to-admin',
+    Component: SupportTicketReplyToAdminEmail,
+    props: {
+      ticketNumber: 'TCK-4821',
+      title: 'Unable to upload rate confirmation PDF',
+      body: 'Thanks for looking into this — I tried again this morning and the upload succeeded. Feel free to close this out.',
+      submitterEmail: 'angela@kimtrucking.com',
+      ticketUrl: 'https://app.drivecommand.com/sysadmin/support/tck_4821',
+    },
+  },
+  {
+    name: 'support-ticket-reply-to-owner',
+    Component: SupportTicketReplyToOwnerEmail,
+    props: {
+      ticketNumber: 'TCK-4821',
+      title: 'Unable to upload rate confirmation PDF',
+      body: 'We identified the issue — a file size limit — and shipped a fix. Please try your upload again and let us know if it still fails.',
+      ownerEmail: 'angela@kimtrucking.com',
+      ticketUrl: 'https://app.drivecommand.com/support/tck_4821',
+    },
+  },
+  {
+    name: 'workflow-instance-blocked',
+    Component: WorkflowInstanceBlockedEmail,
+    props: {
+      driverName: 'Miguel Torres',
+      stepName: 'Pre-trip brake inspection',
+      playbookName: 'DVIR — Pre-Trip Walkaround',
+      tenantName: 'Kim Family Trucking',
+      hoursBlocked: 6,
+      dashboardUrl: 'https://app.drivecommand.com/carrier/drivers/drv_123',
+    },
+  },
+  {
+    name: 'workflow-safety-digest',
+    Component: WorkflowSafetyDigestEmail,
+    props: {
+      tenantName: 'Kim Family Trucking',
+      date: 'March 2, 2027',
+      overdueCount: 2,
+      completedTodayCount: 9,
+      activeInstanceCount: 14,
+      dashboardUrl: 'https://app.drivecommand.com/carrier/workflows',
+    },
+  },
+];
+
+/** Extracts the `.dc-preheader` text content, stripped of the ZWNJ/hair-space
+ * padding run Preheader.tsx appends (see that file's header). React inserts
+ * an HTML comment between the two adjacent JSX expressions, so cutting at the
+ * first `<!--` after the opening tag yields exactly the preheader sentence. */
+function extractPreheader(html: string): string {
+  const match = html.match(/<div class="dc-preheader"[^>]*>([\s\S]*?)<!--/);
+  return match ? match[1] : 'NOT FOUND';
+}
+
+/** Serves an arbitrary map of path -> html, for the templates phase. Kept
+ * separate from `startServer` above so the dispatcher's existing four-state
+ * run is untouched by this addition. */
+function startTemplateServer(pages: Record<string, string>): Promise<{ server: Server; origin: string }> {
+  const server = createServer((req, res) => {
+    const url = (req.url ?? '/').split('?')[0];
+
+    if (pages[url]) {
+      res.writeHead(200, { 'Content-Type': MIME['.html'] });
+      res.end(pages[url]);
+      return;
+    }
+
+    const filePath = normalize(join(PUBLIC_DIR, decodeURIComponent(url)));
+    if (filePath !== PUBLIC_DIR && !filePath.startsWith(PUBLIC_DIR + sep)) {
+      res.writeHead(403).end();
+      return;
+    }
+    try {
+      const buf = readFileSync(filePath);
+      res.writeHead(200, {
+        'Content-Type': MIME[extname(filePath)] ?? 'application/octet-stream',
+      });
+      res.end(buf);
+    } catch {
+      res.writeHead(404).end();
+    }
+  });
+
+  return new Promise((resolve) => {
+    server.listen(0, '127.0.0.1', () => {
+      const addr = server.address();
+      const port = typeof addr === 'object' && addr ? addr.port : 0;
+      resolve({ server, origin: `http://127.0.0.1:${port}` });
+    });
+  });
+}
+
+async function runTemplatesPhase(): Promise<void> {
+  const TEMPLATES_OUT_DIR = join(OUT_DIR, 'templates');
+  mkdirSync(TEMPLATES_OUT_DIR, { recursive: true });
+
+  console.log('\n=== Phase 2: the 20 migrated templates ===\n');
+
+  const pages: Record<string, string> = {};
+  const rendered: Array<{ name: string; html: string; bytes: number }> = [];
+
+  const { server, origin } = await startTemplateServer(pages);
+  try {
+    for (const t of TEMPLATES) {
+      const html = await render(React.createElement(t.Component, { ...t.props, logoBaseUrl: origin }));
+      pages[`/${t.name}`] = html;
+      writeFileSync(join(TEMPLATES_OUT_DIR, `${t.name}.html`), html, 'utf8');
+      const bytes = Buffer.byteLength(html, 'utf8');
+      rendered.push({ name: t.name, html, bytes });
+    }
+
+    console.log('Byte size vs Gmail clip limit (102 KB):');
+    let anyOverLimit = false;
+    for (const r of rendered) {
+      const pass = r.bytes < GMAIL_CLIP_LIMIT;
+      if (!pass) anyOverLimit = true;
+      console.log(
+        `  ${r.name}: ${r.bytes} bytes (${(r.bytes / 1024).toFixed(1)} KB) — ${pass ? 'PASS' : 'FAIL — Gmail will clip this'}`,
+      );
+    }
+
+    console.log('\nScreenshots (light mode):');
+    const browser = await chromium.launch();
+    try {
+      for (const t of TEMPLATES) {
+        const context = await browser.newContext({
+          viewport: VIEWPORT,
+          deviceScaleFactor: SCALE,
+          colorScheme: 'light',
+        });
+        const page = await context.newPage();
+        await page.goto(`${origin}/${t.name}`, { waitUntil: 'networkidle' });
+        await page.screenshot({ path: join(TEMPLATES_OUT_DIR, `${t.name}.png`), fullPage: true });
+        await context.close();
+        console.log(`  ${t.name}.png`);
+      }
+    } finally {
+      await browser.close();
+    }
+
+    console.log('\nPreheaders (name -> preheader):');
+    const preheaders: Array<{ name: string; preheader: string }> = [];
+    for (const r of rendered) {
+      const preheader = extractPreheader(r.html);
+      preheaders.push({ name: r.name, preheader });
+      console.log(`  ${r.name} -> "${preheader}"`);
+    }
+
+    const seen = new Map<string, string[]>();
+    for (const p of preheaders) {
+      const list = seen.get(p.preheader) ?? [];
+      list.push(p.name);
+      seen.set(p.preheader, list);
+    }
+    const duplicates = [...seen.entries()].filter(([, names]) => names.length > 1);
+    if (duplicates.length > 0) {
+      console.log('\nFAIL — duplicate preheaders found:');
+      for (const [preheader, names] of duplicates) {
+        console.log(`  "${preheader}" shared by: ${names.join(', ')}`);
+      }
+    } else {
+      console.log('\nPASS — all 20 preheaders are distinct');
+    }
+
+    console.log(`\nWrote ${TEMPLATES.length} HTML + ${TEMPLATES.length} PNG files to ${TEMPLATES_OUT_DIR}`);
+
+    if (anyOverLimit || duplicates.length > 0) process.exitCode = 1;
+  } finally {
+    server.close();
+  }
+}
+
 async function main(): Promise<void> {
   mkdirSync(OUT_DIR, { recursive: true });
 
@@ -224,10 +609,12 @@ async function main(): Promise<void> {
     );
     console.log(`Wrote 4 PNGs + preview.html to ${OUT_DIR}`);
 
-    if (bytes >= GMAIL_CLIP_LIMIT) process.exit(1);
+    if (bytes >= GMAIL_CLIP_LIMIT) process.exitCode = 1;
   } finally {
     server.close();
   }
+
+  await runTemplatesPhase();
 }
 
 main().catch((err) => {
