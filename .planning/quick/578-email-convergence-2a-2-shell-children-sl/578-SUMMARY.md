@@ -397,3 +397,18 @@ None - no external service configuration required.
 ---
 *Phase: quick-578*
 *Completed: 2026-09-02*
+
+## Self-Check: PASSED
+
+- FOUND: apps/web/src/emails/_system/Shell.tsx
+- FOUND: apps/web/src/emails/account-exists.tsx
+- FOUND: apps/web/scripts/email-render-qa.ts
+- FOUND: apps/web/.email-qa/templates/welcome-owner.png (and all 19 sibling PNGs)
+- FOUND: .planning/quick/578-email-convergence-2a-2-shell-children-sl/578-SUMMARY.md
+- FOUND commit ba0d0a5c (Task 1)
+- FOUND commit 0d2bc0bd (Task 2)
+- FOUND commit db08d6bb (Task 3)
+- FOUND commit 67d0c67c (Task 4)
+- FOUND commit 7aa4aec0 (Task 5)
+- FOUND commit 5ba60720 (Task 6)
+- FOUND commit ab010a25 (Task 7)
