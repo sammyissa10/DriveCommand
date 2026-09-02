@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth/auth-context"
-import { LogOut, User, Settings, Bell, HelpCircle, ChevronDown } from "lucide-react"
+import { LogOut, Settings, Bell, HelpCircle, ChevronDown } from "lucide-react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { cn } from "@/lib/utils"
 import { PORTAL_ROLES, type UserRole } from "@/lib/auth/roles"
@@ -27,7 +27,9 @@ interface UserMenuProps {
 }
 
 /**
- * UserMenu - Top-right account dropdown with Profile, Settings, My Notifications, Sign Out
+ * UserMenu - Top-right account dropdown with My Notifications, Settings, Help & Support, Sign Out
+ * (quick-577: the dead /profile link — reported by quick-576 as a 404 for
+ * every role — was removed; there was never a route to gate.)
  * - Uses Radix DropdownMenu for accessibility
  * - Glass treatment on dropdown
  * - Smooth transitions
@@ -154,29 +156,6 @@ export function UserMenu({ dropdownDirection = "down", compactOnMobile = false }
           <DropdownMenu.Separator className="h-px bg-border/50 my-1" />
 
           {/* Navigation items */}
-          {/* quick-576: /profile is a 404 for EVERY role (verified empirically —
-              signed-out gives a 307 to /sign-in via the auth guard; signed in
-              as OWNER it is a real 404). `find src/app -iname "*profile*"`
-              returns nothing, next.config.ts has no rewrite/redirect for it,
-              and this href is the only occurrence of the string in src/.
-              Gating cannot fix a route that doesn't exist, and it's broken
-              for OWNER too — so it is left in and reported as a known dead
-              link pending a product decision (removing a nav entry is a call
-              the user reserves), rather than silently deleted. */}
-          <DropdownMenu.Item asChild>
-            <Link
-              href="/profile"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground cursor-pointer",
-                "hover:bg-muted focus:bg-muted outline-none",
-                "transition-colors duration-150"
-              )}
-            >
-              <User className="size-4 text-muted-foreground" aria-hidden="true" />
-              Profile
-            </Link>
-          </DropdownMenu.Item>
-
           <DropdownMenu.Item asChild>
             <Link
               href="/settings/my-notifications"

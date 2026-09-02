@@ -42,12 +42,26 @@ import { requireRoleAuth } from '../fixtures/auth-helpers';
  * This spec was run once with the gate physically removed from
  * `user-menu.tsx` (both items rendered unconditionally) to confirm it fails
  * for the right reason. See 576-SUMMARY.md for the captured failure output.
+ *
+ * ─── QUICK-577 UPDATE ───────────────────────────────────────────────────────
+ *
+ * The four-link menu above described a `/profile` link that was a 404 for
+ * every role (reported by quick-576, since there was never a route to gate —
+ * `find src/app -iname "*profile*"` returns nothing, no rewrite/redirect
+ * exists for it). quick-577 removed the link entirely; this is a DELIBERATE
+ * unlink, not the accidental kind quick-552/553 spent two tasks recovering.
+ * The menu now carries three links total. `UNGATED_HREFS` drops to just
+ * `/settings/my-notifications`, and the OWNER describe below gained an
+ * explicit absence assertion for `/profile` — paired with its existing
+ * positive assertions in the same test — so a future re-add is caught
+ * (quick-566/567's rule: deleting a nav entry records nothing unless the
+ * absence is asserted).
  */
 
 const AUTH_DIR = path.join(__dirname, '..', '..', '.playwright', 'auth');
 
 const GATED_HREFS = ['/settings/notifications', '/help'];
-const UNGATED_HREFS = ['/profile', '/settings/my-notifications'];
+const UNGATED_HREFS = ['/settings/my-notifications'];
 
 /** Opens the user menu via the stable testid and returns the open menu's hrefs. */
 async function openMenuAndGetHrefs(page: import('@playwright/test').Page): Promise<string[]> {
@@ -77,7 +91,7 @@ test.describe('DRIVER session — user menu omits owner-only links', () => {
     requireRoleAuth('driver');
   });
 
-  test('shows Profile and My Notifications, omits Settings and Help & Support', async ({ page }) => {
+  test('shows My Notifications, omits Settings and Help & Support', async ({ page }) => {
     await page.goto('/my-route');
     await page.waitForLoadState('domcontentloaded');
 
@@ -97,21 +111,29 @@ test.describe('DRIVER session — user menu omits owner-only links', () => {
   });
 });
 
-test.describe('OWNER session — user menu carries all four links', () => {
+test.describe('OWNER session — user menu carries all three links', () => {
   test.use({ storageState: path.join(AUTH_DIR, 'owner.json') });
 
   test.beforeAll(() => {
     requireRoleAuth('owner');
   });
 
-  test('shows Profile, My Notifications, Settings and Help & Support', async ({ page }) => {
+  test('shows My Notifications, Settings and Help & Support, omits Profile', async ({ page }) => {
     await page.goto('/carrier/dashboard');
     await page.waitForLoadState('domcontentloaded');
 
     const hrefs = await openMenuAndGetHrefs(page);
 
+    // Positive half — the menu opened with real content, for the most
+    // permissive viewer there is (an OWNER's menu must not be missing a
+    // link merely because a permission happens to be off).
     for (const href of [...UNGATED_HREFS, ...GATED_HREFS]) {
       expect(hrefs, `expected ${href} to be present for OWNER`).toContain(href);
     }
+
+    // Negative half — /profile is gone for good, not merely ungated. Pinned
+    // against OWNER specifically so it can't be satisfied by a permission
+    // being switched off (quick-566/567).
+    expect(hrefs, 'expected /profile to be ABSENT for OWNER — the route does not exist').not.toContain('/profile');
   });
 });
