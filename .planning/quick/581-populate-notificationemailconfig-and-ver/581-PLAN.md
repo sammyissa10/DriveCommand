@@ -104,6 +104,20 @@ this list** — that is the point of Task 1.
    `_prisma_migrations`, and they are different tables.** DEC-17's rule is the one that
    binds: *query the table and read the newest row back*. Task 2 does exactly that and
    writes the resolved row if `apply_migration` did not. Do not assume it did.
+
+6. **`_prisma_migrations` has RLS ENABLED with ZERO policies, and Task 2.4 reads it.**
+   `20260328000001_enable_rls_prisma_migrations_and_tenant` turns RLS on and says outright
+   that no permissive policy is added. It is never FORCED (grepped: no `FORCE ROW LEVEL` for
+   this table anywhere), so the owner still bypasses it — but any role that is *not* the
+   owner sees **zero rows on SELECT, with no error**. That matters in one specific and
+   expensive way: a blind read makes the resolved row look ABSENT, the operator writes it,
+   and now there are two. Distinguish "the row is missing" from "the reader cannot see this
+   table" with a known-good sentinel before concluding anything — see Task 2.4.
+
+   Same shape as quick-520’s `route_matrix_cache` (RLS on, no `app_user` grant, returns zero
+   rows and silently stops caching), and the same family as the tsc-blind-gate rule: when a
+   check comes back empty, first ask whether the check can see anything at all.
+
 </preflight_findings>
 
 <tasks>
@@ -239,6 +253,23 @@ FROM "_prisma_migrations"
 ORDER BY finished_at DESC NULLS LAST
 LIMIT 3;
 ```
+
+**First confirm the read is not blind.** `_prisma_migrations` has RLS enabled with zero
+policies (preflight finding 6), so a role that is not the table owner gets an empty result
+and no error — indistinguishable from "the row was never written", and acting on it writes
+a duplicate. Use the previous phase’s row as a sentinel:
+
+```sql
+SELECT current_user,
+       (SELECT count(*) FROM "_prisma_migrations") AS visible_rows,
+       (SELECT count(*) FROM "_prisma_migrations"
+         WHERE migration_name = '20260825140000_notification_push_channel_and_categories')
+         AS sentinel;
+```
+
+`sentinel` **must be 1** — that row is confirmed present by the Phase 10 summary. If it is 0,
+or `visible_rows` is 0, the read is blind and **nothing about the new row has been
+established**. Stop and resolve the role question; do not insert.
 
 If the newest row is **not** `20260902120000_seed_notification_email_config` (the expected
 outcome — before this task it is `20260825140000_notification_push_channel_and_categories`),
@@ -385,6 +416,9 @@ Named explicitly so they are checked rather than discovered.
   cost of missing it is **not** the usual harmless one — this migration is a seed `INSERT`,
   exactly the shape DEC-17 names as duplicating data on a re-run. The `WHERE NOT EXISTS`
   guard is a second line of defence, not the mechanism.
+- **A blind read of `_prisma_migrations` duplicates the resolved row.** RLS is enabled with
+  zero policies and is not FORCED; a non-owner SELECT returns zero rows and no error. Confirm
+  the sentinel row is visible before treating an empty result as "the row is not there".
 - **DEC-14 — read `pg_constraint` before writing any vocabulary-bearing column.** Task 1
   does. And read `pg_indexes` alongside it: this table's singleton guard is a *partial
   unique index*, invisible to a constraint-only query, and the reason a bare `ON CONFLICT`

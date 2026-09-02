@@ -330,3 +330,48 @@ recorded.
 2. **`app_user` has no grant on `NotificationEmailConfig`** — silently reverts the sender to
    env under RLS Phase 2 (§1.5).
 3. **987 orphaned `NotificationSendLog` rows** and the missing FK that allows them (§4.1).
+
+---
+
+## 7. Post-hoc: the `_prisma_migrations` blind-read hazard, and why §2.2 still holds
+
+The plan was amended after execution with a sixth preflight finding worth keeping:
+**`_prisma_migrations` has RLS ENABLED with zero policies** (migration
+`20260328000001_enable_rls_prisma_migrations_and_tenant`) and is never FORCED. The owner
+bypasses it; **any non-owner role gets zero rows on SELECT with no error.**
+
+That is dangerous in one specific way for this task: a blind read makes the resolved row
+look *absent*, the operator writes it, and now there are **two**. Same shape as quick-520's
+`route_matrix_cache` (RLS on, no `app_user` grant, returns zero rows and silently stops
+caching), and the same family as the tsc-blind-gate rule — when a check comes back empty,
+first ask whether the check can see anything at all.
+
+**§2.2's conclusion was not reached from an empty result and is therefore unaffected.** The
+read that established "`apply_migration` did not write the row" returned *three real rows*,
+the newest being Phase 10's `20260825140000_notification_push_channel_and_categories` — the
+sentinel itself. Verified explicitly afterwards:
+
+| check | result |
+|---|---|
+| `current_user` | **postgres** — the owner, which bypasses RLS |
+| rows visible in `_prisma_migrations` | **141** |
+| sentinel (Phase 10 row) visible | **1** |
+| rows for `20260902120000_seed_notification_email_config` | **1** — exactly one, no duplicate |
+| `NotificationEmailConfig` rows | **1** |
+
+So the read was demonstrably sighted, and the resolved row was written once.
+
+## 8. Consequence worth stating plainly
+
+**From this row forward, the SysAdmin `NotificationEmailConfig` editing screen is live in
+effect.** Before it, that screen wrote a row nothing read — finding 7 of
+`docs/diagnostics/email-rendering-inventory.md`, and the reason quick-574 exists. Now an
+edit there changes the `From` and `Reply-To` that every recipient sees, on the next send
+after the 60-second cache expires.
+
+That is the intended outcome of quick-574, not a side effect of this task — but it is the
+**first moment it becomes true in production**, and it is worth knowing before someone
+edits that screen casually. The specific hazard: `fromEmail` must stay on a
+Resend-**verified** domain. `drivecommand.app` is verified; `drivecommand.io` is not, so
+setting `fromEmail` to an `@drivecommand.io` address makes every send fail with a 550.
+`replyTo` on `drivecommand.io` is fine and is what the row uses.
