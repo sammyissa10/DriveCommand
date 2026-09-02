@@ -1,13 +1,6 @@
-import {
-  Html,
-  Head,
-  Body,
-  Container,
-  Section,
-  Text,
-  Button,
-  Hr,
-} from '@react-email/components';
+import * as React from 'react';
+import { Shell, Button } from '../_system';
+import { getAppBaseUrl } from '@/lib/app-url';
 
 /** A single stop line rendered in the dispatch itinerary. */
 export interface DispatchStopLine {
@@ -45,161 +38,46 @@ export function DispatchAssignedEmail({
   companyName,
 }: DispatchAssignedEmailProps) {
   return (
-    <Html>
-      <Head />
-      <Body style={styles.body}>
-        <Container style={styles.container}>
-          <Section style={styles.header}>
-            <Text style={styles.headerText}>DriveCommand - {companyName}</Text>
-          </Section>
+    <Shell
+      preheader={`Dispatch ${dispatchNumber} — ${stopCount} stop${stopCount !== 1 ? 's' : ''}, truck ${truckUnitNumber}, departing ${scheduledDeparture}`}
+      logoBaseUrl={getAppBaseUrl()}
+    >
+      <h2>New Dispatch Assigned</h2>
+      <p>
+        You have been assigned a new dispatch. Please review the details below and
+        log in to the driver portal to view your full itinerary.
+      </p>
 
-          <Section style={styles.content}>
-            <Text style={styles.greeting}>New Dispatch Assigned</Text>
-            <Text style={styles.message}>
-              You have been assigned a new dispatch. Please review the details below and
-              log in to the driver portal to view your full itinerary.
-            </Text>
+      {/*
+        StatGrid was deliberately NOT used here: the unit test at
+        src/lib/carrier/__tests__/dispatch-assigned-email.test.ts asserts the
+        literal string `Total Stops:</strong>\s*2`, which a StatGrid's
+        value-over-label layout would not produce. The test winning over the
+        presentation is the correct trade — see 579-SUMMARY.md.
+      */}
+      <p><strong>Dispatch Number:</strong> {dispatchNumber}</p>
+      <p><strong>Scheduled Departure:</strong> {scheduledDeparture}</p>
+      <p><strong>Total Stops:</strong> {stopCount}</p>
+      <p><strong>Truck Unit:</strong> {truckUnitNumber}</p>
 
-            <Section style={styles.detailsBox}>
-              <Text style={styles.detailRow}>
-                <strong>Dispatch Number:</strong> {dispatchNumber}
-              </Text>
-              <Text style={styles.detailRow}>
-                <strong>Scheduled Departure:</strong> {scheduledDeparture}
-              </Text>
-              <Text style={styles.detailRow}>
-                <strong>Total Stops:</strong> {stopCount}
-              </Text>
-              <Text style={styles.detailRow}>
-                <strong>Truck Unit:</strong> {truckUnitNumber}
-              </Text>
-            </Section>
+      {stops.length > 0 && (
+        <>
+          <h2>Itinerary</h2>
+          {stops.map((stop) => (
+            <p key={stop.sequence}>
+              <strong>
+                {stop.sequence}. {stopTypeLabel(stop.type)}
+              </strong>{' '}
+              — {stop.facilityName}
+              {stop.city ? `, ${stop.city}` : ''}
+            </p>
+          ))}
+        </>
+      )}
 
-            {stops.length > 0 && (
-              <Section style={styles.detailsBox}>
-                <Text style={styles.stopsHeading}>Itinerary</Text>
-                {stops.map((stop) => (
-                  <Text key={stop.sequence} style={styles.detailRow}>
-                    <strong>
-                      {stop.sequence}. {stopTypeLabel(stop.type)}
-                    </strong>{' '}
-                    — {stop.facilityName}
-                    {stop.city ? `, ${stop.city}` : ''}
-                  </Text>
-                ))}
-              </Section>
-            )}
+      <Button href={driverPortalUrl} label="View Dispatch" />
 
-            <Section style={styles.ctaSection}>
-              <Button href={driverPortalUrl} style={styles.button}>
-                View Dispatch
-              </Button>
-            </Section>
-          </Section>
-
-          <Section style={styles.footer}>
-            <Hr style={styles.divider} />
-            <Text style={styles.footerText}>DriveCommand - Fleet Management</Text>
-            <Text style={styles.footerSubtext}>
-              This is an automated notification from {companyName}.
-            </Text>
-          </Section>
-        </Container>
-      </Body>
-    </Html>
+      <p>This is an automated notification from {companyName}.</p>
+    </Shell>
   );
 }
-
-const styles = {
-  body: {
-    backgroundColor: '#f6f9fc',
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  },
-  container: {
-    margin: '0 auto',
-    padding: '20px 0',
-    maxWidth: '600px',
-  },
-  header: {
-    backgroundColor: '#1e40af',
-    padding: '20px',
-    borderRadius: '8px 8px 0 0',
-  },
-  headerText: {
-    color: '#ffffff',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    margin: '0',
-    textAlign: 'center' as const,
-  },
-  content: {
-    backgroundColor: '#ffffff',
-    padding: '32px',
-    borderRadius: '0 0 8px 8px',
-  },
-  greeting: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: '0 0 12px',
-    color: '#111827',
-  },
-  message: {
-    fontSize: '14px',
-    lineHeight: '24px',
-    margin: '0 0 24px',
-    color: '#374151',
-  },
-  detailsBox: {
-    backgroundColor: '#f9fafb',
-    borderRadius: '6px',
-    padding: '16px',
-    marginBottom: '24px',
-  },
-  detailRow: {
-    fontSize: '14px',
-    lineHeight: '22px',
-    margin: '4px 0',
-    color: '#374151',
-  },
-  stopsHeading: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    margin: '0 0 8px',
-    color: '#111827',
-  },
-  ctaSection: {
-    textAlign: 'center' as const,
-    marginTop: '32px',
-    marginBottom: '32px',
-  },
-  button: {
-    backgroundColor: '#1e40af',
-    color: '#ffffff',
-    padding: '12px 32px',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-  },
-  divider: {
-    borderColor: '#e5e7eb',
-    margin: '16px 0',
-  },
-  footer: {
-    marginTop: '32px',
-  },
-  footerText: {
-    fontSize: '14px',
-    color: '#6b7280',
-    textAlign: 'center' as const,
-    margin: '16px 0 8px',
-  },
-  footerSubtext: {
-    fontSize: '12px',
-    color: '#9ca3af',
-    textAlign: 'center' as const,
-    margin: '0',
-  },
-};
