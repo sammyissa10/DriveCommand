@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@/lib/supabase/middleware';
 import { PERMISSION_GATED_PATHS, UserPermissions } from '@/lib/auth/permissions';
 import { validateOrigin } from '@/lib/security/csrf';
+import { isDriverBlockedPath, isManagerBlockedPath } from '@/lib/auth/route-access';
 
 /**
  * Next.js middleware that resolves tenant context from the Supabase session
@@ -65,33 +66,6 @@ const PUBLIC_PATHS = [
   '/favicon.svg',
   '/site.webmanifest',
 ];
-
-// Paths that belong to the owner portal — drivers navigating here get redirected to /home
-const OWNER_PATHS = [
-  '/dashboard',
-  '/trucks',
-  '/drivers',
-  '/routes',
-  '/loads',
-  '/invoices',
-  '/payroll',
-  '/crm',
-  '/settings',
-  '/compliance',
-  '/ai-documents',
-  '/profit-predictor',
-  '/lane-analytics',
-  '/ifta',
-  '/live-map',
-  '/fuel',
-  '/safety',
-  '/tags',
-  '/subscription',
-  '/carrier',
-];
-
-// Owner-only pages — MANAGER is always blocked, redirect to /carrier/dashboard
-const OWNER_ONLY_PATHS = ['/settings/team-permissions', '/subscription'];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
@@ -160,14 +134,14 @@ export default async function middleware(request: NextRequest) {
   }
 
   // Driver guard: redirect DRIVER role away from owner-only paths
-  if (appMeta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
+  if (appMeta.role === 'DRIVER' && isDriverBlockedPath(pathname)) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
   // MANAGER permission guard
   if (appMeta.role === 'MANAGER') {
     // Owner-only pages — always blocked for MANAGER regardless of permissions
-    if (OWNER_ONLY_PATHS.some((p) => pathname.startsWith(p))) {
+    if (isManagerBlockedPath(pathname)) {
       return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
     }
 
