@@ -69,6 +69,16 @@ import { SupportTicketReplyToOwnerEmail } from '../src/emails/support-ticket-rep
 import { WorkflowInstanceBlockedEmail } from '../src/emails/workflow-instance-blocked';
 import { WorkflowSafetyDigestEmail } from '../src/emails/workflow-safety-digest';
 
+// --- quick-579: the 8 carrier/ templates, migrated onto the same Shell.
+import { LoadDeliveredEmail } from '../src/emails/carrier/load-delivered';
+import { StopCompletedEmail } from '../src/emails/carrier/stop-completed';
+import { ClientShipmentUpdateEmail } from '../src/emails/carrier/client-shipment-update';
+import { PayRecordReadyEmail } from '../src/emails/carrier/pay-record-ready';
+import { InvoiceGeneratedEmail } from '../src/emails/carrier/invoice-generated';
+import { ClientInvoiceReadyEmail } from '../src/emails/carrier/client-invoice-ready';
+import { ComplianceAlertEmail } from '../src/emails/carrier/compliance-alert';
+import { DispatchAssignedEmail } from '../src/emails/carrier/dispatch-assigned';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(__dirname, '../.email-qa');
 const PUBLIC_DIR = join(__dirname, '../public');
@@ -183,7 +193,7 @@ async function shoot(
 // workflow-safety-digest's overdueCount is > 0 so its attention path fires.
 const TEMPLATES: Array<{
   name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous props across 20 distinct components
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous props across 29 distinct components
   Component: React.ComponentType<any>;
   props: Record<string, unknown>;
 }> = [
@@ -406,6 +416,117 @@ const TEMPLATES: Array<{
       dashboardUrl: 'https://app.drivecommand.com/carrier/workflows',
     },
   },
+
+  // --- quick-579: the 8 carrier/ templates, migrated onto the same Shell.
+  {
+    name: 'load-delivered',
+    Component: LoadDeliveredEmail,
+    props: {
+      loadNumber: 'DC-2027-00812',
+      clientName: 'Acme Manufacturing',
+      originStop: 'Chicago Warehouse, Chicago, IL',
+      destinationStop: 'Dallas DC, Dallas, TX',
+      deliveredAt: 'March 2, 2027, 3:40 PM',
+      loadDetailUrl: 'https://app.drivecommand.com/carrier/loads/load_812',
+      companyName: 'Kim Family Trucking',
+    },
+  },
+  {
+    name: 'stop-completed',
+    Component: StopCompletedEmail,
+    props: {
+      driverName: 'Miguel Torres',
+      stopType: 'delivery',
+      facilityName: 'Dallas DC',
+      completionTime: 'March 2, 2027, 3:40 PM',
+      dispatchNumber: 'DC-2027-00812',
+      companyName: 'Kim Family Trucking',
+      dispatchDetailUrl: 'https://app.drivecommand.com/carrier/dispatches/dsp_812',
+    },
+  },
+  {
+    name: 'client-shipment-update',
+    Component: ClientShipmentUpdateEmail,
+    props: {
+      status: 'delivered',
+      loadNumber: 'DC-2027-00812',
+      companyName: 'Kim Family Trucking',
+      facilityName: 'Dallas DC',
+      timestamp: 'March 2, 2027, 3:40 PM',
+      driverName: 'Miguel Torres',
+      truckUnitNumber: 'T-104',
+      referenceNumbers: 'PO-88213, BOL-44921',
+      commodity: 'Palletized dry goods',
+      podNote: 'Signed by J. Alvarez, dock 4',
+      portalUrl: 'https://app.drivecommand.com/track/tok_812',
+    },
+  },
+  {
+    name: 'pay-record-ready',
+    Component: PayRecordReadyEmail,
+    props: {
+      driverName: 'Miguel Torres',
+      dispatchNumber: 'DC-2027-00812',
+      payPeriod: 'Feb 23 – Mar 1, 2027',
+      netPayAmount: 1842.5,
+      payRecordsUrl: 'https://app.drivecommand.com/carrier/payroll/pay_9921',
+      companyName: 'Kim Family Trucking',
+    },
+  },
+  {
+    name: 'invoice-generated',
+    Component: InvoiceGeneratedEmail,
+    props: {
+      loadNumber: 'DC-2027-00812',
+      contractName: 'Acme Manufacturing — Lane Contract 4',
+      invoiceTotal: 3250,
+      dueDate: 'March 30, 2027',
+      clientPortalUrl: 'https://app.drivecommand.com/client-portal/invoices/inv_2141',
+      companyName: 'Kim Family Trucking',
+    },
+  },
+  {
+    name: 'client-invoice-ready',
+    Component: ClientInvoiceReadyEmail,
+    props: {
+      loadNumber: 'DC-2027-00812',
+      companyName: 'Kim Family Trucking',
+      invoiceTotal: 3250,
+      dueDate: 'March 30, 2027',
+      lineItemsSummary: 'Linehaul $2,900.00, FSC $250.00, Detention $100.00',
+      paymentInstructions: 'Remit via ACH to the account on file, or pay online through the client portal.',
+      portalUrl: 'https://app.drivecommand.com/client-portal/invoices/inv_2141',
+    },
+  },
+  {
+    name: 'compliance-alert',
+    Component: ComplianceAlertEmail,
+    props: {
+      companyName: 'Kim Family Trucking',
+      alerts: [
+        { type: 'cdl_expiry', message: "Miguel Torres's CDL expires in 3 days", severity: 'critical', link: 'https://app.drivecommand.com/carrier/drivers/drv_123' },
+        { type: 'insurance_expiry', message: 'Truck T-104 insurance expires in 5 days', severity: 'critical', link: 'https://app.drivecommand.com/carrier/trucks/trk_104' },
+        { type: 'medical_card', message: "Angela Kim's medical card expires in 12 days", severity: 'warning', link: 'https://app.drivecommand.com/carrier/drivers/drv_456' },
+      ],
+      dashboardUrl: 'https://app.drivecommand.com/carrier/compliance',
+    },
+  },
+  {
+    name: 'dispatch-assigned',
+    Component: DispatchAssignedEmail,
+    props: {
+      dispatchNumber: 'DC-2027-00812',
+      scheduledDeparture: 'March 2, 2027, 6:30 AM CDT',
+      stopCount: 2,
+      stops: [
+        { sequence: 1, type: 'pickup', facilityName: 'Chicago Warehouse', city: 'Chicago' },
+        { sequence: 2, type: 'delivery', facilityName: 'Dallas DC', city: null },
+      ],
+      truckUnitNumber: 'T-104',
+      driverPortalUrl: 'https://app.drivecommand.com/driver/dispatches/dsp_812',
+      companyName: 'Kim Family Trucking',
+    },
+  },
 ];
 
 /** Extracts the `.dc-preheader` text content, stripped of the ZWNJ/hair-space
@@ -459,7 +580,7 @@ async function runTemplatesPhase(): Promise<void> {
   const TEMPLATES_OUT_DIR = join(OUT_DIR, 'templates');
   mkdirSync(TEMPLATES_OUT_DIR, { recursive: true });
 
-  console.log('\n=== Phase 2: the 20 migrated templates ===\n');
+  console.log(`\n=== Phase 2: the ${TEMPLATES.length} migrated templates ===\n`);
 
   const pages: Record<string, string> = {};
   const rendered: Array<{ name: string; html: string; bytes: number }> = [];
@@ -541,7 +662,7 @@ async function runTemplatesPhase(): Promise<void> {
         console.log(`  "${preheader}" shared by: ${names.join(', ')}`);
       }
     } else {
-      console.log('\nPASS — all 20 preheaders are distinct');
+      console.log(`\nPASS — all ${TEMPLATES.length} preheaders are distinct`);
     }
 
     console.log(`\nWrote ${TEMPLATES.length} HTML + ${TEMPLATES.length} PNG files to ${TEMPLATES_OUT_DIR}`);
