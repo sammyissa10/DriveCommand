@@ -13,33 +13,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email/resend-client';
 import { ConfirmEmailTemplate } from '@/emails/confirm-email';
+import { AccountExistsEmail } from '@/emails/account-exists';
 import { getAppBaseUrl } from '@/lib/app-url';
 import bcrypt from 'bcryptjs';
-import {
-  Html,
-  Body,
-  Container,
-  Text,
-  Button,
-} from '@react-email/components';
-
-// Minimal inline template for duplicate-email path
-function AccountExistsEmail({ signInUrl }: { signInUrl: string }) {
-  return (
-    <Html>
-      <Body>
-        <Container>
-          <Text>
-            Hi there — someone just tried to sign up for DriveCommand using your email address.
-          </Text>
-          <Text>If that was you, you already have an account. Sign in below:</Text>
-          <Button href={signInUrl}>Sign in to DriveCommand</Button>
-          <Text>If it wasn&apos;t you, no action is needed. Your account is safe.</Text>
-        </Container>
-      </Body>
-    </Html>
-  );
-}
 
 // ── In-memory rate limiter (10 req / IP / hour) ─────────────────────────────
 interface RateBucket {
