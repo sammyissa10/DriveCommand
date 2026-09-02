@@ -16,6 +16,7 @@ export { Footer, type FooterProps } from './Footer';
 export { Preheader, type PreheaderProps } from './Preheader';
 export { Button, type ButtonProps } from './Button';
 export { DetailRows, type DetailRow, type DetailRowsProps } from './DetailRows';
+export { StatGrid, type Stat, type StatGridProps } from './StatGrid';
 export { StatusBar, type StatusBarProps } from './StatusBar';
 
 export {

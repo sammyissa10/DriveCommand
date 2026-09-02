@@ -146,7 +146,11 @@ export function buildButtonBlockHtml(href: string, label: string): string {
 }
 
 export const Button: React.FC<ButtonProps> = ({ href, label }) => (
-  <div style={{ margin: `${space[6]} 0 0 0` }}>
+  // The string builder above deliberately keeps `0` bottom: its output is the
+  // dispatcher's CTA, always the last block in a Tiptap body, and
+  // `body-html-transform.ts` is byte-identity-gated. This React Button is
+  // followed by prose in 8+ templates, which is what the bottom margin is for.
+  <div style={{ margin: `${space[6]} 0 ${space[6]} 0` }}>
     <div dangerouslySetInnerHTML={{ __html: buildButtonHtml(href, label) }} />
     <p className="dc-dark-muted" style={styles.buttonUrlNote}>
       {href}

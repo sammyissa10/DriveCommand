@@ -112,6 +112,12 @@ export const fontSizes = {
   button: '16px',
   small: '13px',
   fine: '12px',
+  /** StatGrid value. Large enough to read at arm's length — restores the 28px
+   *  centred numerals workflow-safety-digest had before quick-578 flattened it. */
+  stat: '28px',
+  /** StatGrid label. Deliberately below `fine`, because it is uppercase and
+   *  letter-spaced — the same treatment `styles.detailLabel` gives a label. */
+  micro: '11px',
 } as const;
 
 export const lineHeights = {
@@ -119,6 +125,8 @@ export const lineHeights = {
   body: '24px',
   small: '20px',
   fine: '18px',
+  stat: '34px',
+  micro: '16px',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -265,6 +273,35 @@ export const styles: Record<string, Style> = {
     color: colors.textPrimary,
     verticalAlign: 'top',
     textAlign: 'left',
+  },
+
+  // --- stat grid ----
+  statTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    margin: `${space[2]} 0 ${space[6]} 0`,
+  },
+  statValue: {
+    padding: `${space[4]} ${space[2]} 0 ${space[2]}`,
+    fontFamily: fonts.headingStack,
+    fontSize: fontSizes.stat,
+    lineHeight: lineHeights.stat,
+    fontWeight: 700,
+    color: colors.navy,
+    // Known CSSProperties key — see the file header note about `mso-hide`.
+    // Stops digit widths jittering between counts. React emits this fine.
+    fontVariantNumeric: 'tabular-nums',
+    textAlign: 'center',
+  },
+  statLabel: {
+    padding: `${space[1]} ${space[2]} ${space[4]} ${space[2]}`,
+    fontFamily: fonts.bodyStack,
+    fontSize: fontSizes.micro,
+    lineHeight: lineHeights.micro,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: '0.4px',
+    textAlign: 'center',
   },
 
   // --- button ------------------------------------------------------------
