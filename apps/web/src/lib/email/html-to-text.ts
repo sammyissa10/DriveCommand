@@ -48,8 +48,27 @@ function decodeEntities(s: string): string {
 }
 
 /**
+ * True for a word that is a parenthesised URL — the shape step 4 of
+ * `htmlToPlainText` produces for every anchor: `${text} (${href})`. Deliberately
+ * narrow (starts with `(` AND contains `://`) so an ordinary parenthetical like
+ * "(optional)" is untouched and keeps wrapping normally.
+ */
+function isParenthesisedUrl(word: string): boolean {
+  return word.startsWith('(') && word.includes('://');
+}
+
+/**
  * Wrap to `width`, preserving existing line structure and never breaking a long
  * token (a URL must stay clickable, so an over-long line is the lesser evil).
+ *
+ * quick-575 — the same policy applied one token wider: when the next word is a
+ * parenthesised URL, it is kept on the CURRENT line even though the line then
+ * exceeds `width`, rather than starting a fresh line as an oversized word on
+ * its own. Without this, a label whose line is already near the limit gets
+ * pushed out alone and the URL starts the next line — a label orphaned from
+ * its destination is a link the recipient cannot act on, which is worse than
+ * one over-long line. This only ever fires on a `(...://...)` word, so
+ * ordinary prose (including ordinary parentheticals) wraps exactly as before.
  */
 function hardWrap(text: string, width: number): string {
   return text
@@ -65,6 +84,8 @@ function hardWrap(text: string, width: number): string {
         if (!current) {
           current = word;
         } else if (`${current} ${word}`.length <= width) {
+          current += ` ${word}`;
+        } else if (isParenthesisedUrl(word)) {
           current += ` ${word}`;
         } else {
           out.push(current);
