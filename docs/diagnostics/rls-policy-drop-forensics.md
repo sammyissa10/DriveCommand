@@ -120,6 +120,37 @@ and refuses to run as the privileged role.
   hypothetical.
 - `.env.local`'s `DATABASE_URL` points at the **production** pooler.
 
+### The repo's own developer documentation still instructs `db push`
+
+This is stronger than "it happened historically", and it is the finding to act on regardless
+of what caused this incident. Four current docs tell a developer to run it:
+
+| file | instruction |
+|---|---|
+| `apps/web/docs/database.md:155-160` | *"**For local development**, apply schema changes directly with: `npx prisma db push`… Do not use `prisma migrate dev` — the project uses the manual migration runner pattern."* |
+| `apps/web/docs/setup.md:90-94` | *"## 3. Database Setup — Push the Prisma schema to your Supabase database: `npx prisma db push`"* — unqualified, part of first-time setup |
+| **`apps/web/docs/setup.md:161-162`** | *"**`npx prisma db push` fails with 'drift detected'** … run `npx prisma migrate resolve --applied <migration-name>` to mark the existing state as resolved, then retry `db push`."* |
+| `apps/web/docs/stack.md:41`, `docs/troubleshooting.md:35` | `npx prisma db push` |
+
+Three things make this serious rather than merely untidy:
+
+1. **`database.md` scopes it to "local development", but there is no local database** (DEC-3),
+   and `.env.local`'s `DATABASE_URL` is the production pooler. Following the instruction as
+   written runs `db push` **against production**.
+2. **`setup.md`'s troubleshooting entry instructs a developer to force past the exact safety
+   check that would have stopped this.** "Drift detected" is Prisma noticing the database
+   contains objects the schema does not describe — which is precisely what RLS policies are.
+   The documented remedy is to mark the drift resolved and retry.
+3. **The docs contradict each other on the core workflow.** `database.md:160` says *"Do not
+   use `prisma migrate dev`"*; `troubleshooting.md:50` says *"Always create migrations via
+   `npx prisma migrate dev`"*, as does `CONTRIBUTING.md:166`. A developer following one page
+   is violating another.
+
+This does not prove `db push` caused the loss — the footprint objection in the conclusion
+still stands, and no log survives to confirm it. But it means the leading unfalsified
+hypothesis is not a lapse someone would have to make against the documentation; **it is what
+the documentation currently tells them to do.**
+
 **This remains the most plausible unfalsified mechanism**, because `db push` reconciles the
 database to `schema.prisma`, and **RLS policies never appear in `schema.prisma`** — but see
 §5, where the footprint does not cleanly match it either. It cannot be confirmed without the
@@ -268,10 +299,13 @@ and the footprint does not uniquely identify one. What is established:
   surviving non-standard-named policies) and a point-in-time restore (no single instant
   produces the observed ordering).
 - The most plausible **unfalsified** hypothesis remains a manual `prisma db push` against
-  the production `DATABASE_URL` — the practice is documented in this repo's own history,
-  `.env.local` points at production, and `db push` reconciles to `schema.prisma`, which
-  never contains RLS policies. **It cannot be confirmed**, and it does not obviously explain
-  why the 2026-05-15 policies survived while the 2026-05-27 ones did not.
+  the production `DATABASE_URL`. **It cannot be confirmed**, and it does not obviously
+  explain why the 2026-05-15 policies survived while the 2026-05-27 ones did not. But it is
+  materially more likely than "someone made a mistake": **four current developer docs
+  instruct `db push`, one of them scoped to a "local development" that does not exist
+  (DEC-3: `.env.local` is production), and one of them explicitly tells the developer to
+  resolve a "drift detected" warning and retry** — drift being exactly Prisma's name for
+  "the database holds objects your schema does not describe", i.e. the RLS policies. See §4.
 
 **The surface that would have answered this is `log_statement = 'ddl'`, which was enabled and
 did capture the statements. Supabase's log retention (~24 hours reachable; oldest row
