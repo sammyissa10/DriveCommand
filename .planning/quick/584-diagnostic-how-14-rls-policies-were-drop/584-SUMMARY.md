@@ -67,12 +67,12 @@ scheme (`*_org_select/insert/update/delete`, `*_driver_*`, `*_owner_*`).
   comments), and `406b-resolve-blockers.ts` (snippets are markdown output; no `query(`
   begins with a DDL verb). **The brief's "test suite pointed at production" hypothesis is
   specifically falsified.**
-- **No script or CI uses `db push` / `migrate reset` / `migrate dev`.** Every hit is inside
-  `.planning/` narrative. But the practice is documented in this repo's history (quick-102,
-  quick-14, ROADMAP §115) and `.env.local` points at production — so a manual `db push`
-  remains the most plausible **unfalsified** path, since RLS policies never appear in
-  `schema.prisma`. It cannot be confirmed, and it does not obviously explain why the
-  2026-05-15 policies survived.
+- **No script or CI uses `db push` / `migrate reset` / `migrate dev`.** But the practice is
+  documented in this repo's history (quick-102, quick-14, ROADMAP §115) **and — see the
+  Amendment below — in four current developer docs under `apps/web/docs/`**, and
+  `.env.local` points at production. So a manual `db push` remains the most plausible
+  **unfalsified** path, since RLS policies never appear in `schema.prisma`. It cannot be
+  confirmed, and it does not obviously explain why the 2026-05-15 policies survived.
 
 ## Step 6's premise was false and is corrected in the open
 
@@ -94,6 +94,29 @@ quick-410's 2026-05-27 policies would have sat; nothing occupies it.
 statements, all four the paired CREATE/DROP from `20260825120000_add_carrier_truck_defects`.
 **So no unexplained policy DDL has run since 2026-08-24**, which brackets the event to
 **after 2026-05-28 and before 2026-08-24** and confirms nothing is dropping policies now.
+
+## Amendment — the repo's own docs still instruct `db push`
+
+A slower background grep completed after this report was first written and surfaced hits a
+faster scoped sweep had missed. It changes how strong `db push` is as a hypothesis, so the
+report was corrected rather than left standing.
+
+Four current developer docs instruct it: `docs/database.md:155-160`, `docs/setup.md:90-94`,
+`docs/stack.md:41`, `docs/troubleshooting.md:35`. Three aggravating details:
+
+1. `database.md` scopes it to "local development" — but **there is no local database**
+   (DEC-3) and `.env.local` is the production pooler, so following it as written targets
+   production.
+2. **`setup.md:161-162` tells the developer to force past the one safety check that would
+   have stopped this**: on "drift detected", run `migrate resolve --applied` and *retry
+   `db push`*. Drift is precisely Prisma's term for "the database holds objects your schema
+   does not describe" — which is what an RLS policy is.
+3. The docs **contradict each other**: `database.md:160` says "Do not use
+   `prisma migrate dev`"; `troubleshooting.md:50` and `CONTRIBUTING.md:166` say always use it.
+
+This still does not prove the mechanism — the footprint objection stands and no log
+survives. But the leading hypothesis is no longer a lapse against the documentation; it is
+what the documentation currently tells a developer to do. Actionable regardless of cause.
 
 ## Monitoring that would catch a recurrence
 
