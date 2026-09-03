@@ -29,8 +29,12 @@ import { resolve } from 'path';
 const REPO_ROOT = resolve(__dirname, '../../..');
 const APP_ROOT = resolve(__dirname, '..');
 
-loadEnv({ path: resolve(REPO_ROOT, '.env') });
-loadEnv({ path: resolve(REPO_ROOT, '.env.local') });
+// `quiet: true` suppresses dotenv's injection banner. That is not cosmetic: the
+// banner is written to STDOUT, so without it any script with a machine-readable
+// mode (e.g. `rls-policy-drift.ts --json`) emits three non-JSON lines ahead of its
+// payload and piping into `jq` fails. Found in quick-585.
+loadEnv({ path: resolve(REPO_ROOT, '.env'), quiet: true });
+loadEnv({ path: resolve(REPO_ROOT, '.env.local'), quiet: true });
 
 // THREE files, not two. The repo-root pair carries DATABASE_URL / DIRECT_URL /
 // ANTHROPIC_API_KEY; the S3 credentials live only in `apps/web/.env.local`,
@@ -44,7 +48,7 @@ loadEnv({ path: resolve(REPO_ROOT, '.env.local') });
 // so the repo-root DATABASE_URL still wins. That matters — `apps/web/.env.local`
 // may point DATABASE_URL at the RLS-enforced `app_user` role, and silently
 // switching a script onto it would make every query return zero rows.
-loadEnv({ path: resolve(APP_ROOT, '.env.local') });
+loadEnv({ path: resolve(APP_ROOT, '.env.local'), quiet: true });
 
 if (process.env.DIRECT_URL) {
   process.env.DATABASE_URL = process.env.DIRECT_URL;
