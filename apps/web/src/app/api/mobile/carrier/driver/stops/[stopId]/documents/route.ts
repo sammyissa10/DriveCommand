@@ -99,9 +99,9 @@ export async function POST(
 
   try {
     /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * SCOPE: Accesses only data belonging to the authenticated user's tenant.
      *        Stop is validated to belong to a dispatch in the same org as the authenticated driver.
      * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
@@ -110,7 +110,6 @@ export async function POST(
     // Step 1: Verify stop belongs to a dispatch in driver's org
     const tenantPrisma = await getTenantPrismaForOrg(auth.tenantId, auth.userId);
     const stop = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierStop.findFirst({
         where: {
           id: stopId,
@@ -156,7 +155,6 @@ export async function POST(
 
     // Step 4: Create CarrierDocument record
     const doc = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierDocument.create({
         data: {
           parentType: 'stop',

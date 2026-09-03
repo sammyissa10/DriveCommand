@@ -272,7 +272,6 @@ export async function arriveAtStop(stopId: string) {
 
   const tenantPrisma = await getTenantPrisma();
   const owned = await tenantPrisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
     const carrierDriver = await tx.carrierDriver.findFirst({
       where: { userId: session.userId, orgId: session.tenantId },
@@ -317,7 +316,6 @@ export async function completeCurrentStop(stopId: string) {
 
   const tenantPrisma = await getTenantPrisma();
   const owned = await tenantPrisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
     const carrierDriver = await tx.carrierDriver.findFirst({
       where: { userId: session.userId, orgId: session.tenantId },

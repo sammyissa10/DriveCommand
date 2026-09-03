@@ -30,7 +30,9 @@ export async function GET(
 
   try {
     /**
-     * @bypass_rls reason: driver-web-api
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * SCOPE: Stop must belong to a dispatch where primaryDriverId = this driver's carrierDriver.id
      *        and orgId = session.tenantId.
      * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
@@ -38,7 +40,6 @@ export async function GET(
 
     const tenantPrisma = await getTenantPrisma();
     const result = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       // Verify driver identity and stop ownership
       const carrierDriver = await tx.carrierDriver.findFirst({
@@ -173,14 +174,15 @@ export async function POST(
 
   try {
     /**
-     * @bypass_rls reason: driver-web-api
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * Same rationale as GET handler above.
      */
 
     // Verify driver identity and stop ownership, get dispatchId
     const tenantPrisma = await getTenantPrisma();
     const context = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({
         where: { userId: session.userId, orgId: session.tenantId },

@@ -105,9 +105,9 @@ export async function POST(
 
   try {
     /**
-     * @bypass_rls reason: driver-web-api
-     * WHY: Session cookie auth context — Carrier Ops tables require bypass_rls for
-     *      server-side reads outside the RLS-scoped tenant connection.
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * SCOPE: Stop is validated to belong to a dispatch where primaryDriverId matches
      *        the authenticated driver's carrierDriver record AND orgId = session.tenantId.
      * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
@@ -116,7 +116,6 @@ export async function POST(
     // Step 1: Resolve the driver and verify stop ownership
     const tenantPrisma = await getTenantPrisma();
     const stopOwned = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({
         where: { userId: session.userId, orgId: session.tenantId },
@@ -175,7 +174,6 @@ export async function POST(
 
     // Step 4: Create CarrierDocument record (does NOT change stop status)
     const doc = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierDocument.create({
         data: {
           parentType: 'stop',
@@ -236,12 +234,13 @@ export async function GET(
 
   try {
     /**
-     * @bypass_rls reason: driver-web-api
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * Same rationale as POST handler above.
      */
     const tenantPrisma = await getTenantPrisma();
     const docs = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({
         where: { userId: session.userId, orgId: session.tenantId },

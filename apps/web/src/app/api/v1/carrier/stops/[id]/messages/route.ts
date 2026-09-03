@@ -27,7 +27,9 @@ export async function GET(
 
   try {
     /**
-     * @bypass_rls reason: server-side session-authed web route
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * SCOPE: Only data belonging to the authenticated user's tenant.
      * SAFETY: Gated by getSession() above; stop ownership verified via dispatch.orgId.
      */
@@ -35,7 +37,6 @@ export async function GET(
     // Verify stop belongs to this tenant
     const tenantPrisma = await getTenantPrisma();
     const stop = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierStop.findFirst({
         where: { id: stopId, dispatch: { orgId: tenantId } },
         select: { id: true, dispatchId: true },
@@ -159,7 +160,9 @@ export async function POST(
 
   try {
     /**
-     * @bypass_rls reason: server-side session-authed web route
+     * NO bypass_rls (flag removed, quick-587): tenant-scoped access on a tenant-scoped
+     *      client. stops / carrier_documents / route_template_stops get NO bypass_rls_policy,
+     *      so the flag could never apply to them. Do not re-add it.
      * SCOPE: Only data belonging to the authenticated user's tenant.
      * SAFETY: Gated by getSession() above.
      */
@@ -167,7 +170,6 @@ export async function POST(
     // Resolve stop -> dispatch -> primaryDriver -> userId
     const tenantPrisma = await getTenantPrisma();
     const stopData = await tenantPrisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierStop.findFirst({
         where: { id: stopId, dispatch: { orgId: tenantId } },
         select: {
