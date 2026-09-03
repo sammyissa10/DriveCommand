@@ -1,0 +1,96 @@
+{
+  "$comment": "Explicit, SHRINKING baseline. NOT a tolerance and NOT a suppression flag. Every entry is a fully-qualified table.policy_name known-bad state recorded by quick-584. As a policy is rebuilt its entry MUST be deleted or the check fails with 'stale baseline entry'. When every list is empty, DELETE THIS FILE and remove the baseline load from rls-policy-drift.ts.",
+  "reference": "docs/diagnostics/rls-policy-drop-forensics.md (quick-584)",
+  "recordedAt": "2026-09-03",
+  "missing": {
+    "$why": "59 policies removed from production between 2026-05-28 and 2026-08-24, mechanism undetermined (quick-584). Every policy created by 20260404100013_carrier_rls_policies and 20260527000001_quick410_advisor_rls_fix is gone; every policy from 20260515000001_db_security_standardization survives. Rebuilding them is out of scope for quick-585 — this task builds the detector only.",
+    "entries": [
+      "carrier_documents.carrier_documents_insert",
+      "carrier_documents.carrier_documents_org_delete",
+      "carrier_documents.carrier_documents_org_update",
+      "carrier_documents.carrier_documents_select",
+      "carrier_drivers.carrier_drivers_driver_self_select",
+      "carrier_drivers.carrier_drivers_org_delete",
+      "carrier_drivers.carrier_drivers_org_insert",
+      "carrier_drivers.carrier_drivers_org_select",
+      "carrier_drivers.carrier_drivers_org_update",
+      "carrier_expenses.carrier_expenses_driver_insert",
+      "carrier_expenses.carrier_expenses_driver_select",
+      "carrier_expenses.carrier_expenses_org_delete",
+      "carrier_expenses.carrier_expenses_org_insert",
+      "carrier_expenses.carrier_expenses_org_select",
+      "carrier_expenses.carrier_expenses_org_update",
+      "carrier_trucks.carrier_trucks_org_delete",
+      "carrier_trucks.carrier_trucks_org_insert",
+      "carrier_trucks.carrier_trucks_org_select",
+      "carrier_trucks.carrier_trucks_org_update",
+      "clients.clients_org_select",
+      "clients.clients_owner_delete",
+      "clients.clients_owner_insert",
+      "clients.clients_owner_manager_update",
+      "contracts.contracts_org_select",
+      "contracts.contracts_owner_delete",
+      "contracts.contracts_owner_insert",
+      "contracts.contracts_owner_update",
+      "dispatches.dispatches_org_delete",
+      "dispatches.dispatches_org_insert",
+      "dispatches.dispatches_org_select",
+      "dispatches.dispatches_org_update",
+      "driver_pay_records.driver_pay_records_driver_select",
+      "driver_pay_records.driver_pay_records_org_delete",
+      "driver_pay_records.driver_pay_records_org_insert",
+      "driver_pay_records.driver_pay_records_org_select",
+      "driver_pay_records.driver_pay_records_org_update",
+      "facilities.facilities_org_delete",
+      "facilities.facilities_org_insert",
+      "facilities.facilities_org_select",
+      "facilities.facilities_org_update",
+      "loads.loads_driver_select",
+      "loads.loads_org_delete",
+      "loads.loads_org_insert",
+      "loads.loads_org_select",
+      "loads.loads_org_update",
+      "route_template_stops.route_template_stops_org_delete",
+      "route_template_stops.route_template_stops_org_insert",
+      "route_template_stops.route_template_stops_org_select",
+      "route_template_stops.route_template_stops_org_update",
+      "route_templates.route_templates_org_delete",
+      "route_templates.route_templates_org_insert",
+      "route_templates.route_templates_org_select",
+      "route_templates.route_templates_org_update",
+      "stops.stops_driver_select",
+      "stops.stops_driver_update",
+      "stops.stops_org_delete",
+      "stops.stops_org_insert",
+      "stops.stops_org_select",
+      "stops.stops_org_update"
+    ]
+  },
+  "unexpected": {
+    "$why": "8 policies on four document_import* tables created by a DO/EXECUTE format() block that the line-anchored parser deliberately does not see (quick-584 §5, quick-585 parser header). Not drift; a known parser boundary — these were applied by Supabase MCP during Document Import Phase 1 and never mirrored as a plain CREATE POLICY statement a static parser can see (a separate DEC-17 case).",
+    "entries": [
+      "document_import_pages.bypass_rls_policy",
+      "document_import_pages.tenant_isolation_policy",
+      "document_imports.bypass_rls_policy",
+      "document_imports.tenant_isolation_policy",
+      "document_profiles.bypass_rls_policy",
+      "document_profiles.tenant_isolation_policy",
+      "facility_external_references.bypass_rls_policy",
+      "facility_external_references.tenant_isolation_policy"
+    ]
+  },
+  "zeroPolicyForced": {
+    "$why": "FORCE RLS = true and zero live policies — the severe class (quick-582: this is how carrier_documents was invisible to a grant-only audit; forced RLS with no policies denies every row to every role). These are three of the 13 tables in the missing list above, at their most severe: all of their expected policies are gone with nothing surviving.",
+    "entries": [
+      "carrier_documents",
+      "route_template_stops",
+      "stops"
+    ]
+  },
+  "zeroPolicyEnabled": {
+    "$why": "_prisma_migrations is RLS-enabled with zero policies and NOT forced, by deliberate design (20260328000001_enable_rls_prisma_migrations_and_tenant) — not a quick-584 loss. Verified: it is a migration ledger table, not tenant data; RLS is enabled to satisfy the Supabase linter but intentionally carries no policy and no app_user grant.",
+    "entries": [
+      "_prisma_migrations"
+    ]
+  }
+}

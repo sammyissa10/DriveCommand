@@ -18,6 +18,7 @@
     "seed:notifications": "tsx --env-file=.env.local prisma/seeds/seed-notifications.ts && tsx --env-file=.env.local scripts/backfill-notification-html-cache.ts",
     "generate:openapi": "npx tsx scripts/generate-openapi.ts",
     "audit:raw-prisma": "tsx scripts/audit/raw-prisma-usage.ts",
+    "audit:rls-policy-drift": "tsx scripts/audit/rls-policy-drift.ts",
     "check:docs": "tsx scripts/check-doc-drift.ts",
     "backfill:carrier-driver-cdl": "tsx scripts/backfill/encrypt-carrier-driver-cdl.ts",
     "backfill:driver-invitation-pii": "tsx --env-file=.env.local scripts/backfill/backfill-driver-invitation-pii.ts"
