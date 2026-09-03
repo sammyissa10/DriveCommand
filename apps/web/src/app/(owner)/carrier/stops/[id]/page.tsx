@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getStop } from '@/lib/carrier/stops';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { StopDocumentsSection } from '@/components/carrier/stops/StopDocumentsSection';
 import { StopDetailMessages } from '@/components/carrier/stops/StopDetailMessages';
 import { StopDetailTimestampEditor } from '@/components/carrier/stops/StopDetailTimestampEditor';
@@ -69,9 +70,11 @@ export default async function StopDetailPage({ params }: Props) {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
+  const tenantPrisma = await getTenantPrisma();
+
   const [stop, stopAudit] = await Promise.all([
     getStop(orgId, id),
-    prisma.carrierStop.findUnique({
+    tenantPrisma.carrierStop.findUnique({
       where: { id },
       select: {
         createdBy: { select: { firstName: true, lastName: true, email: true } },

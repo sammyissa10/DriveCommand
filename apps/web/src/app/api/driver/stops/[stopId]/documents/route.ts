@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { generateUploadUrl } from '@/lib/storage/presigned';
@@ -113,7 +114,8 @@ export async function POST(
      */
 
     // Step 1: Resolve the driver and verify stop ownership
-    const stopOwned = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrisma();
+    const stopOwned = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({
@@ -172,7 +174,7 @@ export async function POST(
     }
 
     // Step 4: Create CarrierDocument record (does NOT change stop status)
-    const doc = await prisma.$transaction(async (tx) => {
+    const doc = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierDocument.create({
         data: {
@@ -237,7 +239,8 @@ export async function GET(
      * @bypass_rls reason: driver-web-api
      * Same rationale as POST handler above.
      */
-    const docs = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrisma();
+    const docs = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({

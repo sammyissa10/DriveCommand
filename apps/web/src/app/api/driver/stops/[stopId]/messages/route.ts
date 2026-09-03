@@ -2,6 +2,7 @@ import { NextRequest, NextResponse, after } from 'next/server';
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
@@ -35,7 +36,8 @@ export async function GET(
      * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
      */
 
-    const result = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrisma();
+    const result = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       // Verify driver identity and stop ownership
@@ -176,7 +178,8 @@ export async function POST(
      */
 
     // Verify driver identity and stop ownership, get dispatchId
-    const context = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrisma();
+    const context = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({

@@ -12,6 +12,7 @@
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { handleStartTrip } from '@/lib/carrier/inspection-handlers';
 import { arriveStop, completeStop } from '@/lib/carrier/stop-completion';
 import { logger, serializeError } from '@/lib/logger';
@@ -269,7 +270,8 @@ export async function arriveAtStop(stopId: string) {
   const session = await getSession();
   if (!session) throw new Error('Unauthorized');
 
-  const owned = await prisma.$transaction(async (tx) => {
+  const tenantPrisma = await getTenantPrisma();
+  const owned = await tenantPrisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
     const carrierDriver = await tx.carrierDriver.findFirst({
@@ -313,7 +315,8 @@ export async function completeCurrentStop(stopId: string) {
   const session = await getSession();
   if (!session) throw new Error('Unauthorized');
 
-  const owned = await prisma.$transaction(async (tx) => {
+  const tenantPrisma = await getTenantPrisma();
+  const owned = await tenantPrisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
     const carrierDriver = await tx.carrierDriver.findFirst({

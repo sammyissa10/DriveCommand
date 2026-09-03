@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { facilityVisibilityWhere, maskFacilitiesForViewer, staffViewer } from '@/lib/carrier/facility-visibility';
 import { getLoad } from '@/lib/carrier/loads';
 import type { StopInput } from '@/lib/carrier/loads';
@@ -43,6 +44,8 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
+
+  const tenantPrisma = await getTenantPrisma();
 
   const { id } = await params;
 
@@ -130,7 +133,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let stopsForMapping = load.stops as any[];
   if (stopsForMapping.length === 0 && load.dispatchId) {
-    const dispatchStops = await prisma.carrierStop.findMany({
+    const dispatchStops = await tenantPrisma.carrierStop.findMany({
       where: {
         dispatchId: load.dispatchId,
         OR: [
@@ -252,7 +255,7 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   // Count pending stops for this load (used by CancelLoadModal)
   const pendingStopCount = load.dispatchId
-    ? await prisma.carrierStop.count({
+    ? await tenantPrisma.carrierStop.count({
         where: { loadId: id, status: 'pending' },
       })
     : 0;

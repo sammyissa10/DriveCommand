@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { generateUploadUrl } from '@/lib/storage/presigned';
@@ -107,7 +108,8 @@ export async function POST(
      */
 
     // Step 1: Verify stop belongs to a dispatch in driver's org
-    const stop = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrismaForOrg(auth.tenantId, auth.userId);
+    const stop = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierStop.findFirst({
         where: {
@@ -153,7 +155,7 @@ export async function POST(
     }
 
     // Step 4: Create CarrierDocument record
-    const doc = await prisma.$transaction(async (tx) => {
+    const doc = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierDocument.create({
         data: {

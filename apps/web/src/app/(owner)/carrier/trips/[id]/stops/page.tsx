@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getTrip } from '@/lib/carrier/trips';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { maskFacilitiesForViewer, staffViewer } from '@/lib/carrier/facility-visibility';
 
 interface Props {
@@ -64,6 +65,8 @@ export default async function StopsOverviewPage({ params }: Props) {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
+  const tenantPrisma = await getTenantPrisma();
+
   const dispatch = await getTrip(orgId, id);
   if (!dispatch) notFound();
 
@@ -98,7 +101,7 @@ export default async function StopsOverviewPage({ params }: Props) {
   const stopIds = dispatch.stops.map((s) => s.id);
   const docCountMap: Record<string, number> = {};
   if (stopIds.length) {
-    const docs = await prisma.carrierDocument.groupBy({
+    const docs = await tenantPrisma.carrierDocument.groupBy({
       by: ['stopId'],
       where: { stopId: { in: stopIds } },
       _count: { id: true },

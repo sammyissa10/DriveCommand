@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
@@ -32,7 +33,8 @@ export async function GET(
      */
 
     // Verify stop belongs to this tenant
-    const stop = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrisma();
+    const stop = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierStop.findFirst({
         where: { id: stopId, dispatch: { orgId: tenantId } },
@@ -163,7 +165,8 @@ export async function POST(
      */
 
     // Resolve stop -> dispatch -> primaryDriver -> userId
-    const stopData = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrisma();
+    const stopData = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.carrierStop.findFirst({
         where: { id: stopId, dispatch: { orgId: tenantId } },

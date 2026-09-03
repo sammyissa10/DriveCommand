@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -94,7 +95,8 @@ export async function POST(
      *        Filtered to a single dispatch where the user is primary or co-driver.
      * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
      */
-    const result = await prisma.$transaction(async (tx) => {
+    const tenantPrisma = await getTenantPrismaForOrg(auth.tenantId, auth.userId);
+    const result = await tenantPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const carrierDriver = await tx.carrierDriver.findFirst({

@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getTrip } from '@/lib/carrier/trips';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { facilityVisibilityWhere, maskFacilitiesForViewer, staffViewer } from '@/lib/carrier/facility-visibility';
 import { hasPermission } from '@/lib/auth/permissions';
 import { DispatchHeader } from '@/components/carrier/dispatches/DispatchHeader';
@@ -31,6 +32,8 @@ export default async function DispatchDetailPage({ params }: Props) {
   const { id } = await params;
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
+
+  const tenantPrisma = await getTenantPrisma();
 
   const [dispatch, dispatchAudit] = await Promise.all([
     getTrip(orgId, id),
@@ -89,7 +92,7 @@ export default async function DispatchDetailPage({ params }: Props) {
 
   // Fetch route template stops for BOL/POD requirements (if dispatch has a routeTemplateId)
   const routeTemplateStops = dispatch.routeTemplateId
-    ? await prisma.routeTemplateStop.findMany({
+    ? await tenantPrisma.routeTemplateStop.findMany({
         where: { routeTemplateId: dispatch.routeTemplateId },
         select: { sequenceOrder: true, bolRequired: true, podRequired: true },
       })
@@ -106,12 +109,12 @@ export default async function DispatchDetailPage({ params }: Props) {
   const stopIds = dispatch.stops.map((s) => s.id);
   const stopDocCounts: Record<string, { bolCount: number; podCount: number }> = {};
   if (stopIds.length) {
-    const bolDocs = await prisma.carrierDocument.groupBy({
+    const bolDocs = await tenantPrisma.carrierDocument.groupBy({
       by: ['stopId'],
       where: { stopId: { in: stopIds }, documentType: 'bol' },
       _count: { id: true },
     });
-    const podDocs = await prisma.carrierDocument.groupBy({
+    const podDocs = await tenantPrisma.carrierDocument.groupBy({
       by: ['stopId'],
       where: { stopId: { in: stopIds }, documentType: 'pod' },
       _count: { id: true },
