@@ -27,7 +27,6 @@
  * behaviour.
  */
 
-import { prisma } from '@/lib/db/prisma'; // kept for $transaction — see below
 import type { PrismaClient } from '@/generated/prisma';
 import { diagnoseFacilityUnavailable, facilityUnavailableMessage } from '@/lib/carrier/facility-errors';
 
@@ -136,13 +135,17 @@ export interface SaveRouteTemplateOutcome {
 /**
  * Validate and write a route template and its stops.
  *
- * `db` is the tenant-scoped client used for every ownership check;
- * `prisma.$transaction` is used for the write itself, which is what the action
- * did before this file existed. The comment it carried — *"kept for
- * $transaction"* — is the reason: the RLS extension wraps model operations, and
- * the interactive transaction is opened on the base client so the two statements
- * land together. Every `where` inside it still carries `orgId` explicitly, which
- * is what tenant isolation actually rests on here (DEC-11).
+ * `db` is the tenant-scoped client, used for every ownership check AND (as of
+ * quick-586) for the write transaction itself — `db.$transaction(...)`. It
+ * previously ran on the bare `prisma` singleton ("kept for $transaction — see
+ * below" on the old import), which meant this write's `routeTemplate`/
+ * `routeTemplateStop` rows never had `app.current_tenant_id` set on the pooled
+ * connection at all. Both tx bodies here touch only `routeTemplate` and
+ * `routeTemplateStop` — both exempt from the app-layer tenantId injection
+ * (`EXEMPT_MODELS`) — so swapping the transaction root to `db` changes
+ * nothing about the query, only which client executes it. Every `where`
+ * inside it still carries `orgId` explicitly, which is what tenant isolation
+ * actually rests on here (DEC-11).
  */
 export async function saveRouteTemplateCore(
   db: PrismaClient,
@@ -345,7 +348,7 @@ export async function saveRouteTemplateCore(
   if (templateId) {
     // Edit mode: update template + replace stops in a single transaction
     // (ownership check and update are atomic to prevent TOCTOU).
-    const notFound = await prisma.$transaction(async (tx) => {
+    const notFound = await db.$transaction(async (tx) => {
       const existing = await tx.routeTemplate.findFirst({ where: { id: templateId, orgId } });
       if (!existing) return true;
 
@@ -368,7 +371,7 @@ export async function saveRouteTemplateCore(
   }
 
   // Create mode: create template then stops in a transaction
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await db.$transaction(async (tx) => {
     const template = await tx.routeTemplate.create({
       data: {
         orgId,

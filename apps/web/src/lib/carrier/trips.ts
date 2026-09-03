@@ -1030,9 +1030,9 @@ export async function reorderTripStops(
   }
 
   // Update sequence_order for each stop in transaction
-  await prisma.$transaction(
+  await tenantPrisma.$transaction(
     stopOrder.map((stopId, index) =>
-      prisma.carrierStop.update({
+      tenantPrisma.carrierStop.update({
         where: { id: stopId },
         data: { sequenceOrder: index + 1 },
       })

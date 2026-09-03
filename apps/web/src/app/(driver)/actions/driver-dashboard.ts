@@ -82,7 +82,7 @@ export async function getDriverQuickActionBadges(): Promise<DriverQuickActionBad
     const [stopsRemaining, unreadMessages, hosResult, expiringDocs] = await Promise.all([
       // Stops remaining on active dispatch
       carrierDriver
-        ? prisma.$transaction(async (tx) => {
+        ? tenantPrisma.$transaction(async (tx) => {
             await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
             const activeDispatch = await tx.trip.findFirst({

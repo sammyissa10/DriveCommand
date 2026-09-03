@@ -202,13 +202,77 @@ const GROUP_1_2_SITES: Site[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Group 3 — sites 11-14 (added in the second commit, Task 3). Left as an
-// empty array here; Task 3 fills this in and bumps the SITES.length
-// assertion below in the SAME commit as the Group 3 code conversion, which is
-// what makes that commit independently revertible (plan Task 3, Part B).
+// Group 3 — sites 11-14, added in the second commit (Task 3), independently
+// revertible from the Group 1/2 commit because both the code conversion and
+// these rows land in the same commit.
 // ---------------------------------------------------------------------------
 
-const GROUP_3_SITES: Site[] = [];
+const GROUP_3_SITES: Site[] = [
+  {
+    id: 'site-11-driver-dashboard',
+    path: 'src/app/(driver)/actions/driver-dashboard.ts',
+    minBytes: 4000,
+    mustContain: [
+      /const tenantPrisma = await getTenantPrisma\(\);/,
+      /\? tenantPrisma\.\$transaction\(async \(tx\) => \{/,
+      /tx\.carrierStop\.count\(/,
+    ],
+    mustNotContain: [
+      // Only the carrierStop-bearing branch is converted. The carrierDriver-only
+      // transaction above it (`const carrierDriver = await prisma.$transaction`)
+      // stays on the bare client (out of scope, SITE-AUDIT.md §4/§7) — no
+      // blanket `prisma.$transaction` ban in this file.
+      /\? prisma\.\$transaction\(async \(tx\) => \{\s*\n\s*await tx\.\$executeRaw`SELECT set_config\('app\.bypass_rls', 'on', TRUE\)`;\s*\n\s*\n\s*const activeDispatch/,
+    ],
+  },
+  {
+    id: 'site-12-trips-reorder',
+    path: 'src/lib/carrier/trips.ts',
+    minBytes: 20000,
+    mustContain: [
+      /await tenantPrisma\.\$transaction\(\s*\n\s*stopOrder\.map/,
+      /tenantPrisma\.carrierStop\.update\(/,
+    ],
+    mustNotContain: [
+      /await prisma\.\$transaction\(\s*\n\s*stopOrder\.map/,
+      /\n\s*prisma\.carrierStop\.update\(/,
+    ],
+  },
+  {
+    id: 'site-13-dispatch-generator',
+    path: 'src/lib/carrier/dispatch-generator.ts',
+    minBytes: 10000,
+    mustContain: [
+      /const \{ newDispatch, loadCreated, stopsCreatedCount \} = await tenantPrisma\.\$transaction\(async \(tx\) => \{/,
+      /tx\.carrierStop\.create\(/,
+    ],
+    mustNotContain: [
+      /const \{ newDispatch, loadCreated, stopsCreatedCount \} = await prisma\.\$transaction\(async \(tx\) => \{/,
+      // The bare `prisma` import itself must be gone — it became genuinely
+      // unused once this was the only remaining usage (SITE-AUDIT.md §4).
+      /^import \{ prisma \} from '@\/lib\/db\/prisma';$/m,
+    ],
+  },
+  {
+    id: 'site-14-route-template-save',
+    path: 'src/lib/carrier/route-template-save.ts',
+    minBytes: 10000,
+    mustContain: [
+      /const notFound = await db\.\$transaction\(async \(tx\) => \{/,
+      /const result = await db\.\$transaction\(async \(tx\) => \{/,
+      /tx\.routeTemplateStop\.deleteMany\(/,
+      /tx\.routeTemplateStop\.create\(/,
+      /tx\.routeTemplateStop\.createMany\(/,
+    ],
+    mustNotContain: [
+      /const notFound = await prisma\.\$transaction/,
+      /const result = await prisma\.\$transaction/,
+      // The bare `prisma` import became genuinely unused once both tx roots
+      // moved to `db` — must be gone, not merely unreferenced.
+      /^import \{ prisma \} from '@\/lib\/db\/prisma';/m,
+    ],
+  },
+];
 
 const SITES: Site[] = [...GROUP_1_2_SITES, ...GROUP_3_SITES];
 
@@ -217,10 +281,8 @@ const SITES: Site[] = [...GROUP_1_2_SITES, ...GROUP_3_SITES];
 // ---------------------------------------------------------------------------
 
 describe('tenant-client-stop-access guard — integrity floor', () => {
-  it('SITES enumerates exactly 11 entries (10 Group 1/2 conversion sites + the NEEDS-DECISION counter-assertion)', () => {
-    // 10 Group 1/2 sites + 1 counter-assertion row (site-3b) = 11.
-    // Task 3 bumps this to 15 when it adds the 4 Group 3 rows.
-    expect(SITES.length).toBe(11);
+  it('SITES enumerates exactly 15 entries (10 Group 1/2 conversion sites + the NEEDS-DECISION counter-assertion + 4 Group 3 sites)', () => {
+    expect(SITES.length).toBe(15);
   });
 
   it('every site source is over its own per-file byte floor (a bad path would return a tiny/empty read)', () => {

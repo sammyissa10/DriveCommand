@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/db/prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
@@ -328,7 +327,7 @@ export async function generateDispatches(
       const scheduledDeparture = applyTimeToDate(dateStr, template.scheduledDepartureTime);
 
       // 4d. Wrap dispatch + load + stops in a single transaction per date
-      const { newDispatch, loadCreated, stopsCreatedCount } = await prisma.$transaction(async (tx) => {
+      const { newDispatch, loadCreated, stopsCreatedCount } = await tenantPrisma.$transaction(async (tx) => {
         // Create dispatch
         const dispatch = await tx.trip.create({
           data: {
