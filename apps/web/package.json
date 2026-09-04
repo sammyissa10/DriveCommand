@@ -19,6 +19,7 @@
     "generate:openapi": "npx tsx scripts/generate-openapi.ts",
     "audit:raw-prisma": "tsx scripts/audit/raw-prisma-usage.ts",
     "audit:rls-policy-drift": "tsx scripts/audit/rls-policy-drift.ts",
+    "audit:app-user-harness": "tsx scripts/audit/app-user-connection-harness.ts",
     "check:docs": "tsx scripts/check-doc-drift.ts",
     "backfill:carrier-driver-cdl": "tsx scripts/backfill/encrypt-carrier-driver-cdl.ts",
     "backfill:driver-invitation-pii": "tsx --env-file=.env.local scripts/backfill/backfill-driver-invitation-pii.ts"
