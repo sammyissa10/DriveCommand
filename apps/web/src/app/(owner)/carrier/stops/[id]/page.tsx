@@ -115,42 +115,57 @@ export default async function StopDetailPage({ params }: Props) {
       }, TX_OPTIONS)
     : null;
 
-  // Fetch documents with uploader names
-  const documents = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    const docs = await tx.carrierDocument.findMany({
-      where: { stopId: id },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        documentType: true,
-        filename: true,
-        fileSizeBytes: true,
-        fileUrl: true,
-        uploadedBy: true,
-        createdAt: true,
-      },
-    });
+  // Fetch documents with uploader names.
+  //
+  // quick-588: this read is split across two clients, deliberately, and
+  // merging it back to one client breaks whichever half you merge it onto:
+  //   - carrierDocument is tenant-scoped (tenantPrisma, reusing the instance
+  //     already declared above — no second getTenantPrisma() call). It needs
+  //     no bypass flag: CarrierDocument is in EXEMPT_MODELS, so the
+  //     tenant-RLS extension injects nothing, and carrier_documents will get
+  //     no bypass_rls_policy once the drafted RLS policies ship. Putting it
+  //     on the bare client would leave it fail-closed after cutover.
+  //   - user is NOT in EXEMPT_MODELS, so running it on tenantPrisma would
+  //     newly inject a `tenantId` filter — User has no such column. It stays
+  //     on the bare `prisma` client, inside its own `prisma.$transaction`,
+  //     with the bypass flag intact (set_config(..., TRUE) is
+  //     transaction-local, so a bare `prisma.user.findMany` outside a
+  //     transaction would not carry it at all).
+  const docs = await tenantPrisma.carrierDocument.findMany({
+    where: { stopId: id },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      documentType: true,
+      filename: true,
+      fileSizeBytes: true,
+      fileUrl: true,
+      uploadedBy: true,
+      createdAt: true,
+    },
+  });
 
-    // Resolve uploader names
-    const uploaderIds = [...new Set(docs.map((d) => d.uploadedBy).filter(Boolean) as string[])];
-    const uploaderMap = new Map<string, string>();
-    if (uploaderIds.length) {
-      const users = await tx.user.findMany({
+  // Resolve uploader names
+  const uploaderIds = [...new Set(docs.map((d) => d.uploadedBy).filter(Boolean) as string[])];
+  const uploaderMap = new Map<string, string>();
+  if (uploaderIds.length) {
+    const users = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.user.findMany({
         where: { id: { in: uploaderIds } },
         select: { id: true, firstName: true, lastName: true, email: true },
       });
-      for (const u of users) {
-        uploaderMap.set(u.id, [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email);
-      }
+    }, TX_OPTIONS);
+    for (const u of users) {
+      uploaderMap.set(u.id, [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email);
     }
+  }
 
-    return docs.map((d) => ({
-      ...d,
-      uploaderName: d.uploadedBy ? (uploaderMap.get(d.uploadedBy) ?? 'Unknown') : null,
-      createdAt: d.createdAt.toISOString(),
-    }));
-  }, TX_OPTIONS);
+  const documents = docs.map((d) => ({
+    ...d,
+    uploaderName: d.uploadedBy ? (uploaderMap.get(d.uploadedBy) ?? 'Unknown') : null,
+    createdAt: d.createdAt.toISOString(),
+  }));
 
   const dispatchNumber = extractDispatchNumber(dispatch.notes ?? null);
   const driverUserId = dispatch.primaryDriver.userId ?? null;

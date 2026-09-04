@@ -95,22 +95,31 @@ const GROUP_1_2_SITES: Site[] = [
       /tenantPrisma\.carrierStop\.findUnique\(/,
     ],
     mustNotContain: [
-      // Only the standalone findUnique is converted. The NEEDS-DECISION
-      // transaction (CarrierDocument + User, SITE-AUDIT.md §5) must remain on
-      // the bare client — asserted as a POSITIVE below, not just omitted.
+      // The standalone findUnique is converted, as is the carrierDocument
+      // half of the former NEEDS-DECISION transaction (see site-3b below,
+      // quick-588). The User half is what stays on the bare client.
     ],
   },
   {
-    id: 'site-3b-needs-decision-untouched',
+    // quick-588: the former single `const documents = await prisma.$transaction`
+    // (carrierDocument + user in one bare-client transaction, NEEDS-DECISION
+    // per SITE-AUDIT.md §5) is split in two — carrierDocument moved to the
+    // tenant client (CarrierDocument is EXEMPT_MODELS, no flag needed), user
+    // stays on the bare client in its own flagged transaction (User is NOT
+    // exempt, so a tenant client would newly inject a tenantId filter it has
+    // no column for). Both halves are asserted so a later merge fails
+    // whichever direction it is merged back.
+    id: 'site-3b-documents-split',
     path: 'src/app/(owner)/carrier/stops/[id]/page.tsx',
     minBytes: 5000,
     mustContain: [
-      // The NEEDS-DECISION transaction (carrierDocument + user) is still on
-      // the bare prisma client — this is the counter-assertion that Task 2/3
-      // did NOT convert it.
+      /const docs = await tenantPrisma\.carrierDocument\.findMany\(\{/,
+      /const users = await prisma\.\$transaction\(async \(tx\) => \{\s*\n\s*await tx\.\$executeRaw`SELECT set_config\('app\.bypass_rls', 'on', TRUE\)`;\s*\n\s*return tx\.user\.findMany\(/,
+    ],
+    mustNotContain: [
+      // The old single-transaction shape must not come back.
       /const documents = await prisma\.\$transaction\(async \(tx\) => \{/,
     ],
-    mustNotContain: [],
   },
   {
     id: 'site-4-trips-detail-page',
@@ -281,7 +290,7 @@ const SITES: Site[] = [...GROUP_1_2_SITES, ...GROUP_3_SITES];
 // ---------------------------------------------------------------------------
 
 describe('tenant-client-stop-access guard — integrity floor', () => {
-  it('SITES enumerates exactly 15 entries (10 Group 1/2 conversion sites + the NEEDS-DECISION counter-assertion + 4 Group 3 sites)', () => {
+  it('SITES enumerates exactly 15 entries (10 Group 1/2 conversion sites + the documents-split counter-assertion (quick-588) + 4 Group 3 sites)', () => {
     expect(SITES.length).toBe(15);
   });
 
