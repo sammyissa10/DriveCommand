@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -26,16 +27,16 @@ export async function GET(req: NextRequest) {
 
   try {
     /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Filtered to dispatches where the user is primary or co-driver.
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     * quick-588: tenant-scoped client (getTenantPrismaForOrg — /api/mobile/*
+     * sends no x-tenant-id header, per DEC-11, so the header-reading
+     * getTenantPrisma() would throw). CarrierDriver, Trip and their nested
+     * CarrierStop/CarrierDocument relations are all EXEMPT_MODELS, so this
+     * swap is receiver-only and the emitted SQL is unchanged. Scoping is
+     * still validateMobileToken()'s verified auth.tenantId/auth.userId in
+     * every query's where clause, unchanged from before this conversion.
      */
-    const dispatches = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(auth.tenantId, auth.userId);
+    const dispatches = await tenantPrisma.$transaction(async (tx) => {
       // Look up the CarrierDriver record — validateMobileToken returns User.id,
       // but CarrierDriver uses its own UUID as FK on dispatches.
       const carrierDriver = await tx.carrierDriver.findFirst({

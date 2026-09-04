@@ -63,7 +63,13 @@ interface FileSpec {
 }
 
 const FILES: FileSpec[] = [
-  { path: 'app/(driver)/actions/driver-routes.ts', retainedFlags: 3, removedFlags: 2, minBytes: 4000 },
+  // quick-588: driver-routes.ts had two more bare-`prisma` transactions
+  // (getMyActiveDispatch @L46, getMyDispatchHistory @L122 pre-quick-588)
+  // converted to tenantPrisma and their flags removed, on top of quick-587's
+  // two. retainedFlags 3→1 (only startTrip's ownership check keeps one —
+  // it reaches none of stops/carrier_documents/route_template_stops and is
+  // out of quick-588's scope), removedFlags 2→4. Measured, not assumed.
+  { path: 'app/(driver)/actions/driver-routes.ts', retainedFlags: 1, removedFlags: 4, minBytes: 4000 },
   { path: 'app/(owner)/carrier/stops/[id]/page.tsx', retainedFlags: 3, removedFlags: 0, minBytes: 3000 },
   { path: 'app/(owner)/carrier/trips/[id]/page.tsx', retainedFlags: 1, removedFlags: 0, minBytes: 3000 },
   { path: 'app/(owner)/carrier/trips/[id]/stops/page.tsx', retainedFlags: 1, removedFlags: 0, minBytes: 2000 },
@@ -74,8 +80,13 @@ const FILES: FileSpec[] = [
   { path: 'app/api/v1/carrier/stops/[id]/messages/route.ts', retainedFlags: 4, removedFlags: 2, minBytes: 4000 },
 ];
 
-const TOTAL_REMOVED = 12;
-const TOTAL_RETAINED = 17;
+// quick-588 raised TOTAL_REMOVED 12→14 and lowered TOTAL_RETAINED 17→15 via
+// driver-routes.ts's two additional conversions above. stops/[id]/page.tsx
+// stays at retainedFlags: 3 — its documents transaction loses a flag but the
+// new split-off User-only prisma.$transaction (Task 2) gains one, net zero
+// for that file.
+const TOTAL_REMOVED = 14;
+const TOTAL_RETAINED = 15;
 
 function read(rel: string): string {
   const src = readFileSync(join(SRC, rel), 'utf8').replace(/\r\n/g, '\n');

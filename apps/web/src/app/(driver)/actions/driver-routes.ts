@@ -34,18 +34,21 @@ export async function getMyActiveDispatch() {
   if (!session) throw new Error('Unauthorized');
 
   /**
-   * @bypass_rls reason: driver-server-action
-   * WHY: Server actions use Supabase session auth, not the RLS-scoped tenant
-   *      connection. The Carrier Ops tables (dispatches, stops, facilities, etc.)
-   *      require bypass_rls for server-side reads in this auth context.
-   * SCOPE: Reads only dispatches where carrierDriver.userId = session.userId
-   *        AND orgId = session.tenantId. Double-scoped.
-   * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
+   * quick-588: this transaction now runs on a tenant-scoped Prisma client
+   * (app.current_tenant_id set for the session's tenant), not a bypass one.
+   * Every model this transaction touches (CarrierDriver, Trip, and their
+   * nested CarrierStop/CarrierDocument relations) is in EXEMPT_MODELS, so the
+   * tenant-RLS extension injects nothing and the emitted SQL is unchanged —
+   * the bypass was never required for this transaction's own tables, and the
+   * three tables gaining RLS policies (stops, route_template_stops,
+   * carrier_documents) have no bypass_rls_policy to fall back on once those
+   * policies ship. The `requireRole([DRIVER]) + getSession()` gate above,
+   * plus this query's explicit `orgId: session.tenantId` predicate, are what
+   * scope it — unchanged from before this conversion.
    */
+  const tenantPrisma = await getTenantPrisma();
 
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+  return tenantPrisma.$transaction(async (tx) => {
     const carrierDriver = await tx.carrierDriver.findFirst({
       where: { userId: session.userId, orgId: session.tenantId },
     });
@@ -119,9 +122,15 @@ export async function getMyDispatchHistory() {
   const session = await getSession();
   if (!session) throw new Error('Unauthorized');
 
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+  /**
+   * quick-588: tenant-scoped client, see getMyActiveDispatch above for the
+   * full reasoning. CarrierDriver, Trip, and their nested CarrierStop/
+   * CarrierDocument/CarrierLoad relations are all EXEMPT_MODELS, so this
+   * swap is receiver-only — the emitted SQL is unchanged.
+   */
+  const tenantPrisma = await getTenantPrisma();
 
+  return tenantPrisma.$transaction(async (tx) => {
     const carrierDriver = await tx.carrierDriver.findFirst({
       where: { userId: session.userId, orgId: session.tenantId },
     });

@@ -11,7 +11,8 @@
 
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
 // ---------------------------------------------------------------------------
 // getMyLoads
@@ -29,16 +30,16 @@ export async function getMyLoads() {
   if (!session) throw new Error('Unauthorized');
 
   /**
-   * @bypass_rls reason: driver-server-action
-   * WHY: Server actions use Supabase session auth, not the RLS-scoped tenant
-   *      connection. Carrier Ops tables require bypass_rls for server-side reads.
-   * SCOPE: Reads only loads linked to dispatches where carrierDriver.userId = session.userId
-   *        AND orgId = session.tenantId. Double-scoped.
-   * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
+   * quick-588: tenant-scoped client, not a bypass one. CarrierDriver, Trip
+   * and CarrierLoad (plus the nested CarrierStop relation) are all
+   * EXEMPT_MODELS, so this swap is receiver-only and the emitted SQL is
+   * unchanged. Scoping is still the explicit `orgId: session.tenantId`
+   * predicate on every query, gated by requireRole([DRIVER]) + getSession()
+   * above — unchanged from before this conversion.
    */
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+  const tenantPrisma = await getTenantPrisma();
 
+  return tenantPrisma.$transaction(async (tx) => {
     const carrierDriver = await tx.carrierDriver.findFirst({
       where: { userId: session.userId, orgId: session.tenantId },
     });
