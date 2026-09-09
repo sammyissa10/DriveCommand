@@ -284,15 +284,32 @@ describe('real migration corpus (quick-584 reproduction)', () => {
     expect(files.length).toBeGreaterThanOrEqual(130);
   });
 
-  it('parses exactly 328 statements and computes exactly 230 expected policies', () => {
+  it('parses exactly 403 statements and computes exactly 179 expected policies', () => {
     const files = loadCorpus();
     expect(files.length).toBeGreaterThan(0); // "was it actually found"
 
     const { statements, expected } = replayPolicyStatements(files);
 
-    // quick-584 reproduction numbers — see docs/diagnostics/rls-policy-drop-forensics.md §5
-    expect(statements.length).toBe(328);
-    expect(expected.size).toBe(230);
+    /**
+     * These are exact-equality assertions on purpose: they are the tripwire that
+     * notices any change to the policy corpus, including one nobody meant to make.
+     *
+     * They were 328 / 230 — the quick-584 reproduction numbers, recorded when the
+     * repo expected 230 policies and only 179 were live
+     * (docs/diagnostics/rls-policy-drop-forensics.md §5).
+     *
+     * quick-591 / Phase 0 Prompt 0.5 added
+     * 20260909120000_reconcile_rls_policy_drift, which carries 67 DROP POLICY and
+     * 8 CREATE POLICY statements: 328 + 75 = 403. It records the removal of the 59
+     * inert JWT policies and adopts the 8 out-of-band Document Import policies, so
+     * the expected set becomes 230 − 59 + 8 = 179 — exactly the live count, which
+     * is what let the drift detector's suppression baseline be deleted.
+     *
+     * If this test fails, the corpus changed. Work out why before editing the
+     * numbers; do not treat it as arithmetic to be re-fitted.
+     */
+    expect(statements.length).toBe(403);
+    expect(expected.size).toBe(179);
 
     // The integrity floors must also hold against the real corpus.
     expect(() =>

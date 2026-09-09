@@ -359,9 +359,26 @@ export function classifyZeroPolicyTables(rows: TableRlsRow[]): ZeroPolicyClassif
  * corpus growing, never shrinking below a floor meant to catch it going to
  * (near) zero.
  */
+/**
+ * Anti-vacuity floors. A silent parse failure or an unreadable migrations
+ * directory looks like either "everything is missing" or "everything is fine",
+ * and both are indistinguishable from a real answer without these.
+ *
+ * RECALIBRATED by quick-591 / Phase 0 Prompt 0.5.
+ * `MIN_EXPECTED_POLICIES` was 200, set when the replay expected 230 policies.
+ * 20260909120000_reconcile_rls_policy_drift records the removal of the 59 inert
+ * JWT policies and adopts the 8 out-of-band Document Import policies, so the
+ * expected set is now 179 — and the old floor tripped on a correct corpus.
+ *
+ * Lowered to 150, holding roughly the same margin below the true value that 200
+ * held below 230 (~84% vs ~87%). It still catches the failure it exists for: a
+ * broken parse yields single digits, not 150. It is NOT set to 179 — a floor
+ * equal to the current value fails on the next legitimate policy removal and
+ * teaches people to edit the floor rather than read the finding.
+ */
 export const INTEGRITY_FLOORS = {
   MIN_STATEMENTS: 300,
-  MIN_EXPECTED_POLICIES: 200,
+  MIN_EXPECTED_POLICIES: 150,
   MIN_MIGRATION_FILES: 130,
 } as const;
 

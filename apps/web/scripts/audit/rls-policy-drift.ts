@@ -31,10 +31,30 @@ import '../_bootstrap-env';
  *     TRUNCATE, no migration run — this script cannot and does not modify
  *     the database in any way.
  *   - Never prints a connection string or password.
- *   - There is no `--write-baseline`, `--ignore` or `--allow` flag. The
- *     baseline in rls-policy-baseline.json is loaded read-only; nothing in
- *     this script can write to it. Regenerating the baseline is a manual,
- *     reviewed edit — see the file's own header comment.
+ *
+ * NO BASELINE — quick-591 / Phase 0 Prompt 0.5.
+ *
+ * This script used to load a suppression baseline from
+ * rls-policy-baseline.json, which recorded 59 missing and 8 unexpected
+ * policies and reported CLEAN while every one of them was outstanding. It was
+ * described as a SHRINKING baseline that must be emptied as policies were
+ * rebuilt, and it never shrank. A gate that runs and reports success without
+ * checking is worse than no gate, because it is trusted.
+ *
+ * 20260909120000_reconcile_rls_policy_drift reconciled the repository with the
+ * live database — recording the 59 inert JWT policies as dropped, and adopting
+ * the 8 out-of-band Document Import policies — so the true replay drift is
+ * zero. The baseline file is deleted and there is nothing here that can
+ * suppress a finding. Any non-zero missing or unexpected count now fails.
+ *
+ * WHAT GATES AND WHAT DOES NOT, stated rather than left to be discovered:
+ *   - GATES (exit 1): missing (expected−live) and unexpected (live−expected).
+ *   - DOES NOT GATE: the zero-policy table classification. `stops`,
+ *     `route_template_stops` and `carrier_documents` run FORCE RLS with zero
+ *     policies, and `_prisma_migrations` has RLS enabled with none. Those are
+ *     real and are Prompt 1's work; they are not replay drift, and they are
+ *     printed as a standing WARNING every run rather than suppressed. When
+ *     Prompt 1 closes them the warning disappears on its own.
  *
  * Run from apps/web/:
  *   npm run audit:rls-policy-drift
@@ -51,13 +71,11 @@ import {
   parsePolicyStatements as _parsePolicyStatements, // re-exported name kept for header doc only
   replayPolicyStatements,
   diffPolicySets,
-  applyBaseline,
   classifyZeroPolicyTables,
   assertCorpusIntegrity,
   CorpusIntegrityError,
   policyKey,
   type MigrationFile,
-  type PolicyBaseline,
   type TableRlsRow,
 } from './rls-policy-replay';
 
@@ -85,16 +103,6 @@ interface TableMetaRow {
   rls_enabled: boolean;
   rls_forced: boolean;
   policy_count: number;
-}
-
-interface RawBaselineFile {
-  $comment?: string;
-  reference?: string;
-  recordedAt?: string;
-  missing: { $why?: string; entries: string[] };
-  unexpected: { $why?: string; entries: string[] };
-  zeroPolicyForced: { $why?: string; entries: string[] };
-  zeroPolicyEnabled: { $why?: string; entries: string[] };
 }
 
 // ---------------------------------------------------------------------------
@@ -140,51 +148,6 @@ function loadMigrationCorpus(): MigrationFile[] {
     migration,
     sql: readFileSync(join(migrationsDir, migration, 'migration.sql'), 'utf8'),
   }));
-}
-
-// ---------------------------------------------------------------------------
-// Baseline (disk read — JSON.parse, never `import`, to avoid depending on
-// resolveJsonModule for something loaded at runtime, not compiled in)
-// ---------------------------------------------------------------------------
-
-function loadBaseline(): { raw: RawBaselineFile; asPolicyBaselines: { missing: PolicyBaseline['missing']; unexpected: PolicyBaseline['unexpected']; zeroPolicyForced: string[]; zeroPolicyEnabled: string[] } } {
-  const baselinePath = join(__dirname, 'rls-policy-baseline.json');
-
-  let text: string;
-  try {
-    text = readFileSync(baselinePath, 'utf8');
-  } catch (err) {
-    throw new OperationalFailure(
-      `Could not read baseline file at ${baselinePath}: ${(err as Error).message}`
-    );
-  }
-
-  let raw: RawBaselineFile;
-  try {
-    raw = JSON.parse(text);
-  } catch (err) {
-    throw new OperationalFailure(
-      `Baseline file at ${baselinePath} is not valid JSON: ${(err as Error).message}`
-    );
-  }
-
-  for (const key of ['missing', 'unexpected', 'zeroPolicyForced', 'zeroPolicyEnabled'] as const) {
-    if (!raw[key] || !Array.isArray(raw[key].entries)) {
-      throw new OperationalFailure(
-        `Baseline file is malformed: expected raw.${key}.entries to be an array.`
-      );
-    }
-  }
-
-  return {
-    raw,
-    asPolicyBaselines: {
-      missing: raw.missing.entries,
-      unexpected: raw.unexpected.entries,
-      zeroPolicyForced: raw.zeroPolicyForced.entries,
-      zeroPolicyEnabled: raw.zeroPolicyEnabled.entries,
-    },
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -237,18 +200,6 @@ interface JsonSummary {
   missingByTable: Record<string, { expected: number; live: number; missing: number }>;
   zeroPolicyForced: string[];
   zeroPolicyEnabled: string[];
-  baseline: {
-    suppressedMissing: number;
-    suppressedUnexpected: number;
-    staleMissing: string[];
-    staleUnexpected: string[];
-  };
-  newMissing: string[];
-  newUnexpected: string[];
-  newZeroPolicyForced: string[];
-  newZeroPolicyEnabled: string[];
-  staleZeroPolicyForced: string[];
-  staleZeroPolicyEnabled: string[];
   exitCode: number;
 }
 
@@ -283,7 +234,7 @@ function computeMissingByTable(
 // Human-readable output
 // ---------------------------------------------------------------------------
 
-function printHumanReport(summary: JsonSummary, baselineRaw: RawBaselineFile): void {
+function printHumanReport(summary: JsonSummary): void {
   console.log('RLS Policy Drift — replay diff against live pg_policy');
   console.log('='.repeat(72));
   console.log('');
@@ -318,60 +269,40 @@ function printHumanReport(summary: JsonSummary, baselineRaw: RawBaselineFile): v
     console.log('');
   }
 
-  console.log('ZERO-POLICY TABLES:');
+  // Reported every run, NOT gating. These are Prompt 1's work, not replay
+  // drift — no migration claims to create a policy on them, so they cannot
+  // appear as `missing`. Printing them unconditionally is deliberate: the old
+  // baseline suppressed exactly this and called the result CLEAN.
+  console.log('ZERO-POLICY TABLES (reported, not gating — Prompt 1 owns these):');
   console.log(
     `  FORCE RLS + zero policies (severe)     : ${summary.zeroPolicyForced.join(', ') || 'none'}`
   );
   console.log(
     `  RLS enabled, not forced, zero policies : ${summary.zeroPolicyEnabled.join(', ') || 'none'}`
   );
-  console.log('');
-
-  console.log('BASELINE:');
-  console.log(`  Reference   : ${baselineRaw.reference ?? '(none)'}`);
-  console.log(`  Recorded at : ${baselineRaw.recordedAt ?? '(none)'}`);
-  console.log(`  Suppressed missing entries    : ${summary.baseline.suppressedMissing}`);
-  console.log(`  Suppressed unexpected entries  : ${summary.baseline.suppressedUnexpected}`);
-
-  const staleTotal =
-    summary.baseline.staleMissing.length +
-    summary.baseline.staleUnexpected.length +
-    summary.staleZeroPolicyForced.length +
-    summary.staleZeroPolicyEnabled.length;
-
-  if (staleTotal > 0) {
+  if (summary.zeroPolicyForced.length > 0) {
     console.log('');
     console.log(
-      '  STALE baseline entries — these are no longer actually missing/unexpected live.'
+      `  WARNING: ${summary.zeroPolicyForced.length} table(s) enforce RLS with no policy at all.`
     );
-    console.log('  Delete each line below from rls-policy-baseline.json:');
-    for (const key of summary.baseline.staleMissing) console.log(`    - missing: ${key}`);
-    for (const key of summary.baseline.staleUnexpected) console.log(`    - unexpected: ${key}`);
-    for (const key of summary.staleZeroPolicyForced) console.log(`    - zeroPolicyForced: ${key}`);
-    for (const key of summary.staleZeroPolicyEnabled) console.log(`    - zeroPolicyEnabled: ${key}`);
+    console.log('           Every row is denied to any role without BYPASSRLS.');
   }
+  console.log('');
 
-  const newTotal =
-    summary.newMissing.length +
-    summary.newUnexpected.length +
-    summary.newZeroPolicyForced.length +
-    summary.newZeroPolicyEnabled.length;
-
-  if (newTotal > 0) {
-    console.log('');
-    console.log('  NEW findings — not in the baseline:');
-    for (const key of summary.newMissing) console.log(`    - missing: ${key}`);
-    for (const key of summary.newUnexpected) console.log(`    - unexpected: ${key}`);
-    for (const key of summary.newZeroPolicyForced) console.log(`    - zeroPolicyForced: ${key}`);
-    for (const key of summary.newZeroPolicyEnabled) console.log(`    - zeroPolicyEnabled: ${key}`);
-  }
+  console.log('BASELINE: none — this check has no suppression list.');
+  console.log('  Any missing or unexpected policy fails the run.');
 
   console.log('');
   console.log('='.repeat(72));
   if (summary.exitCode === EXIT_CLEAN) {
-    console.log(`RESULT: CLEAN (exit ${EXIT_CLEAN}) — no drift beyond the baseline.`);
+    console.log(`RESULT: CLEAN (exit ${EXIT_CLEAN}) — repo and database agree exactly.`);
   } else {
     console.log(`RESULT: DRIFT DETECTED (exit ${EXIT_DRIFT})`);
+    console.log('');
+    console.log('  The repository and the database disagree about which RLS policies');
+    console.log('  exist. Either a policy was removed outside a migration, or a');
+    console.log('  migration created one that is not live. Do not add a suppression');
+    console.log('  list — reconcile with a new forward migration.');
   }
 }
 
@@ -397,13 +328,6 @@ async function main(): Promise<number> {
 
   const diff = diffPolicySets(expected, live);
 
-  const { raw: baselineRaw, asPolicyBaselines } = loadBaseline();
-
-  const policyBaselineApplication = applyBaseline(diff, {
-    missing: asPolicyBaselines.missing,
-    unexpected: asPolicyBaselines.unexpected,
-  });
-
   const rlsMetaRows: TableRlsRow[] = metaRows.map((r) => ({
     table: r.table_name,
     rlsEnabled: r.rls_enabled,
@@ -413,24 +337,8 @@ async function main(): Promise<number> {
 
   const zeroClassification = classifyZeroPolicyTables(rlsMetaRows);
 
-  const zeroForcedApplication = applyBaseline(
-    { missing: zeroClassification.forcedZero, unexpected: [] },
-    { missing: asPolicyBaselines.zeroPolicyForced, unexpected: [] }
-  );
-  const zeroEnabledApplication = applyBaseline(
-    { missing: zeroClassification.enabledZero, unexpected: [] },
-    { missing: asPolicyBaselines.zeroPolicyEnabled, unexpected: [] }
-  );
-
-  const hasDrift =
-    policyBaselineApplication.newMissing.length > 0 ||
-    policyBaselineApplication.newUnexpected.length > 0 ||
-    policyBaselineApplication.staleMissing.length > 0 ||
-    policyBaselineApplication.staleUnexpected.length > 0 ||
-    zeroForcedApplication.newMissing.length > 0 ||
-    zeroForcedApplication.staleMissing.length > 0 ||
-    zeroEnabledApplication.newMissing.length > 0 ||
-    zeroEnabledApplication.staleMissing.length > 0;
+  // The whole gate, with nothing between the diff and the verdict.
+  const hasDrift = diff.missing.length > 0 || diff.unexpected.length > 0;
 
   const exitCode = hasDrift ? EXIT_DRIFT : EXIT_CLEAN;
 
@@ -445,26 +353,13 @@ async function main(): Promise<number> {
     missingByTable: computeMissingByTable(expected, live),
     zeroPolicyForced: zeroClassification.forcedZero,
     zeroPolicyEnabled: zeroClassification.enabledZero,
-    baseline: {
-      suppressedMissing: asPolicyBaselines.missing.length - policyBaselineApplication.staleMissing.length,
-      suppressedUnexpected:
-        asPolicyBaselines.unexpected.length - policyBaselineApplication.staleUnexpected.length,
-      staleMissing: policyBaselineApplication.staleMissing,
-      staleUnexpected: policyBaselineApplication.staleUnexpected,
-    },
-    newMissing: policyBaselineApplication.newMissing,
-    newUnexpected: policyBaselineApplication.newUnexpected,
-    newZeroPolicyForced: zeroForcedApplication.newMissing,
-    newZeroPolicyEnabled: zeroEnabledApplication.newMissing,
-    staleZeroPolicyForced: zeroForcedApplication.staleMissing,
-    staleZeroPolicyEnabled: zeroEnabledApplication.staleMissing,
     exitCode,
   };
 
   if (jsonMode) {
     console.log(JSON.stringify(summary, null, 2));
   } else {
-    printHumanReport(summary, baselineRaw);
+    printHumanReport(summary);
   }
 
   return exitCode;
