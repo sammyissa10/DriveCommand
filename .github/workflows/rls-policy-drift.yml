@@ -1,23 +1,33 @@
 # RLS Policy Drift
 #
-# quick-585. This check is inert today. `RLS_AUDIT_DATABASE_URL` does not
-# exist as a repository/organization secret, and quick-585 deliberately did
-# NOT create one — creating a credential was explicitly out of scope for
-# that task (see docs/diagnostics/rls-policy-drift-detector.md §5, "CI
-# credential gap"). Until a read-only Postgres connection string is added
-# under that name, the "Credential absent" step below fires on every run,
-# emits a GitHub notice, and exits 0 — the build never fails for a missing
-# credential.
+# Replays the repo's migrations in order and diffs the resulting expected RLS
+# policy set against live pg_policy, exactly as `npm run audit:rls-policy-drift`
+# does locally. This is the detector that would have caught quick-584's silent
+# loss of 59 policies the day after it happened.
 #
-# What it does once the secret exists: replays the repo's migrations
-# in order and diffs the resulting expected RLS policy set against live
-# pg_policy, exactly as `npm run audit:rls-policy-drift` does locally. This
-# is the detector that would have caught quick-584's silent loss of 59
-# policies the day after it happened.
+# quick-591 / Phase 0 Prompt 0.5 changed two things:
+#   1. Runs on every pull request, not only on push to master.
+#   2. The check itself no longer has a suppression baseline. Any missing or
+#      unexpected policy exits 1 and fails the job. There is nothing to edit
+#      to make a finding go away except a forward migration.
+#
+# STILL INERT WITHOUT A CREDENTIAL, AND THIS IS THE ONE REMAINING GAP.
+# `RLS_AUDIT_DATABASE_URL` does not exist as a repository or organization
+# secret. quick-585 deliberately did not create one and quick-591 did not
+# either — minting a database credential is not something a task should do on
+# its own. Until it exists the "Credential absent" step fires and the job
+# passes without checking anything.
+#
+# That is the §3.5 failure mode this phase exists to remove, so it is a loud
+# ::warning:: annotation on every pull request rather than the ::notice:: it
+# used to be. It is deliberately NOT a hard failure: making it one would turn
+# every pull request red today for a missing secret nobody asked for. Adding
+# the secret is a human step — see docs/audits/policy-drift-gate.md.
 
 name: RLS Policy Drift
 
 on:
+  pull_request:
   push:
     branches: [master]
   workflow_dispatch:
@@ -60,7 +70,14 @@ jobs:
           # secret below is the connection actually used, unmodified.
           DATABASE_URL: ${{ secrets.RLS_AUDIT_DATABASE_URL }}
 
-      - name: Credential absent — check skipped
+      - name: Credential absent — check DID NOT RUN
         if: steps.cred.outputs.present != 'true'
         run: |
-          echo "::notice title=RLS policy drift check skipped::RLS_AUDIT_DATABASE_URL is not configured as a repository secret, so the RLS policy drift check did not run. See docs/diagnostics/rls-policy-drift-detector.md for what is needed to enable it. This step does not fail the build."
+          echo "::warning title=RLS policy drift check DID NOT RUN::RLS_AUDIT_DATABASE_URL is not configured, so no drift check was performed. A green tick on this job does NOT mean the RLS policies are intact - it means nothing was checked. This is the exact failure mode that let 59 policies vanish unnoticed for three months. Add a read-only Postgres connection string as the RLS_AUDIT_DATABASE_URL secret to arm it. See docs/audits/policy-drift-gate.md."
+          echo ""
+          echo "=================================================================="
+          echo " RLS POLICY DRIFT CHECK DID NOT RUN — NO CREDENTIAL"
+          echo "=================================================================="
+          echo " A passing job here is not evidence of anything."
+          echo " Add secret RLS_AUDIT_DATABASE_URL to arm this gate."
+          echo "=================================================================="
