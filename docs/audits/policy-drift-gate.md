@@ -174,3 +174,54 @@ The contradiction was resolved in favour of `database.md`, because
 directory order, skips by `migration_name`, and is what `npm start` and the
 Vercel build run. `prisma migrate deploy` reads the same directory and the same
 `_prisma_migrations` table and remains compatible for preview-branch use.
+
+---
+
+## 7. The preview branch is not available on this plan — affects all of Phase 0
+
+Attempted 2026-09-09, with cost confirmed at $0.01344/hour:
+
+```
+create_branch(project_id=oqdhberkghtnszrkdvfm, name=phase0-prompt05-verify)
+=> PaymentRequiredException: "Branching is supported only on the Pro plan or above"
+```
+
+**Nothing was billed and no preview branch exists.** One side effect worth
+recording: the attempt registered a default branch record named `main` whose
+`project_ref` is the production project itself
+(`67db06c8-6e48-4f6c-80e0-fb67bd1456b2`, `is_default: true`). That is Supabase's
+branching bookkeeping, not a preview database. It was deliberately **not**
+deleted, because deleting a branch record that points at the production project
+ref is not a safe operation to attempt on a hunch.
+
+This is not a Prompt 0.5 problem. `.planning/phase-0-revised.md` §1.5 states that
+**all four prompts target a Supabase preview branch**, and §1.4 specifies
+applying migrations to it with `prisma migrate deploy`. On the current plan tier
+that route does not exist, so Prompts 1, 2 and 3 need a different plan for how
+their migrations get verified before production.
+
+There is also no local alternative: DEC-3 records that there is no local
+database, and this machine has no Docker, no `psql`, and nothing listening on
+5432.
+
+**Two further things a branch would not have given us even on Pro**, both
+measured rather than assumed:
+
+1. It would not have lifted the superuser ceiling in §3 — a branch hands you the
+   same non-superuser `postgres` role.
+2. It would not have been a faithful replica. Supabase builds a branch by
+   replaying **its own** migration ledger, which holds 36 entries under different
+   names from this repo's 141. `20260404100013_carrier_rls_policies`,
+   `20260515000001_db_security_standardization` and
+   `20260527000001_quick410_advisor_rls_fix` are all absent from it. A branch
+   would therefore not carry the policies whose absence this migration records,
+   and `DROP POLICY IF EXISTS ... ON public.stops` errors outright if the table
+   itself is missing — `IF EXISTS` covers the policy, not the relation.
+
+**Consequence for this task.** The reconciliation migration is committed and
+unapplied. It is a no-op against production by construction, and the drift
+detector already reports 0 missing / 0 unexpected against production read-only,
+because the detector computes its expected set from migration files rather than
+from what has been applied. What remains unproven is only that the file applies
+without error, which will first be exercised by `scripts/migrate.mjs` on the next
+deploy.
