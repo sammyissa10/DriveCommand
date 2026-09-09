@@ -31,8 +31,8 @@ npx prisma migrate diff \
   --to-schema-datasource prisma/schema.prisma \
   --shadow-database-url $SHADOW_DATABASE_URL
 
-# Push schema directly (dev only — skips migration history)
-npx prisma db push
+# Apply pending migrations (hand-written SQL under prisma/migrations/)
+node scripts/migrate.mjs
 
 # Regenerate the Prisma client
 npx prisma generate
@@ -47,7 +47,7 @@ npx prisma migrate deploy
 npx prisma generate
 ```
 
-**Prevention:** Never modify the production database schema via the Supabase Dashboard directly. Always create migrations via `npx prisma migrate dev --name description`.
+**Prevention:** Never modify the production database schema via the Supabase Dashboard directly, and never run `prisma db push`, `prisma migrate dev` or `prisma migrate reset` against it. Create migrations by hand-writing `prisma/migrations/<UTC timestamp>_<name>/migration.sql` and applying them with `node scripts/migrate.mjs`. See [Database](./database.md).
 
 ---
 

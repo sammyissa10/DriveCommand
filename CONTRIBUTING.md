@@ -162,11 +162,12 @@ The database is PostgreSQL hosted on Supabase. Prisma is the ORM.
 cd apps/web
 npx prisma generate
 
-# Create a new migration
-npx prisma migrate dev --name describe-the-change
+# Create a new migration: hand-write the SQL. Do NOT use prisma migrate dev.
+mkdir -p prisma/migrations/$(date -u +%Y%m%d%H%M%S)_describe_the_change
+$EDITOR prisma/migrations/*_describe_the_change/migration.sql
 
-# Deploy migrations to production (CI/CD)
-npx prisma migrate deploy
+# Apply pending migrations
+node scripts/migrate.mjs
 ```
 
 **RLS (Row-Level Security):** All tables have RLS enabled. Mobile API routes must call `bypass_rls` in transactions (see `docs/glossary.md#bypass_rls`).

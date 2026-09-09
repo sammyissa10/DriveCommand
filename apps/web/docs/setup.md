@@ -88,11 +88,15 @@ Then fill in the values. The table below documents every variable in `.env.examp
 
 ## 3. Database Setup
 
-Push the Prisma schema to your Supabase database:
+Apply the existing migrations to your Supabase database:
 
 ```bash
-npx prisma db push
+node scripts/migrate.mjs
 ```
+
+**Do not run `npx prisma db push`.** It reconciles the database to
+`schema.prisma`, and RLS policies are not in `schema.prisma` — it can drop them
+silently. See [Database](./database.md) for the migration workflow.
 
 Generate the Prisma client:
 
@@ -157,9 +161,6 @@ npm run test:e2e:ui
 
 **Prisma query errors / RLS violations**
 Ensure `DATABASE_URL` points to your Supabase project with the correct credentials. For local dev, use the direct connection URL (port 5432). The Session Mode pooler (port 6543) is for Vercel only.
-
-**`npx prisma db push` fails with "drift detected"**
-This can happen if the schema and database are out of sync. Run `npx prisma migrate resolve --applied <migration-name>` to mark the existing state as resolved, then retry `db push`.
 
 **Email not sending**
 The active email client requires `GMAIL_USER` and `GMAIL_APP_PASSWORD` in `.env.local`. The App Password is a 16-character code from Google's security settings — not your Gmail login password. See [Email docs](./email.md).

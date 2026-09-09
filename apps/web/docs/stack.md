@@ -37,8 +37,12 @@ Prisma is the database ORM. Prisma 7 requires a driver adapter for PostgreSQL co
 **Common commands:**
 
 ```bash
-# Apply schema changes to the database (dev only — replaces migrations)
-npx prisma db push
+# Apply pending migrations (hand-written SQL under prisma/migrations/)
+node scripts/migrate.mjs
+
+# NEVER: prisma db push / migrate dev / migrate reset.
+# They reconcile the DB to schema.prisma, and RLS policies are not in
+# schema.prisma, so they can drop them silently. See docs/database.md.
 
 # Regenerate the Prisma client after any schema change
 npx prisma generate

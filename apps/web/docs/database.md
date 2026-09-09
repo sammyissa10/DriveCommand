@@ -152,12 +152,39 @@ node scripts/migrate.mjs && prisma generate && next build
 
 The migration script runs each SQL file in alphabetical order inside an atomic transaction. If any migration fails, the build fails with a non-zero exit code and Vercel aborts the deployment.
 
-**For local development**, apply schema changes directly with:
+### Making a schema change — the only supported workflow
+
+Write the SQL by hand and let the runner apply it:
+
 ```bash
-npx prisma db push
+# 1. Create the migration directory. The name must sort after the last one.
+mkdir -p prisma/migrations/$(date -u +%Y%m%d%H%M%S)_describe_the_change
+
+# 2. Write migration.sql in it by hand, alongside your schema.prisma edit.
+
+# 3. Apply it.
+node scripts/migrate.mjs
+
+# 4. Regenerate the client.
+npx prisma generate
 ```
 
-This pushes the `schema.prisma` state directly to the database without creating migration files. Do not use `prisma migrate dev` — the project uses the manual migration runner pattern.
+**Never run `prisma db push`, `prisma migrate dev`, or `prisma migrate reset`
+against this project.** All three reconcile the database to `schema.prisma`,
+and **RLS policies do not appear in `schema.prisma`** — so from their point of
+view every policy is an object the schema does not describe. This is the leading
+unfalsified cause of the 2026 loss of 59 carrier RLS policies; see
+[`docs/diagnostics/rls-policy-drop-forensics.md`](../../../docs/diagnostics/rls-policy-drop-forensics.md) §4.
+
+There is no local database ([DEC-3](./decisions.md)) — `.env.local`'s
+`DATABASE_URL` is the production pooler, so a command described as "local only"
+runs against production here. `npm run db:push` exists but is guarded by
+`scripts/guard-no-prod-db-push.mjs`, which refuses a production target.
+
+`prisma migrate deploy` reads the same directory and the same
+`_prisma_migrations` table, so it is compatible and is what Phase 0 uses against
+a Supabase preview branch. In this repo the applier is `scripts/migrate.mjs`,
+which is what `npm start` and the Vercel build run.
 
 ---
 
