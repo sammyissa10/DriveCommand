@@ -225,3 +225,81 @@ because the detector computes its expected set from migration files rather than
 from what has been applied. What remains unproven is only that the file applies
 without error, which will first be exercised by `scripts/migrate.mjs` on the next
 deploy.
+
+---
+
+## 8. Verification by inspection (2026-09-09)
+
+The migration ships unapplied. Since no branch was available and production is
+not written, Part 2 was verified by diffing every statement against the live
+definitions read from `pg_policies`, mechanically rather than by eye.
+
+Canonical live shape, identical across all four tables:
+
+```
+tenant_isolation_policy  ALL  {public}
+  USING      (org_id = current_tenant_id())
+  WITH CHECK (org_id = current_tenant_id())
+
+bypass_rls_policy        ALL  {public}
+  USING      (current_setting('app.bypass_rls', true) = 'on')
+  WITH CHECK (null)
+```
+
+Result — **all 8 match on cmd, roles, USING and WITH CHECK**:
+
+```
+match  document_import_pages.tenant_isolation_policy        cmd=ALL roles=public USING=ok WITH CHECK=ok
+match  document_import_pages.bypass_rls_policy              cmd=ALL roles=public USING=ok WITH CHECK=omitted -> null
+match  document_imports.tenant_isolation_policy             cmd=ALL roles=public USING=ok WITH CHECK=ok
+match  document_imports.bypass_rls_policy                   cmd=ALL roles=public USING=ok WITH CHECK=omitted -> null
+match  document_profiles.tenant_isolation_policy            cmd=ALL roles=public USING=ok WITH CHECK=ok
+match  document_profiles.bypass_rls_policy                  cmd=ALL roles=public USING=ok WITH CHECK=omitted -> null
+match  facility_external_references.tenant_isolation_policy cmd=ALL roles=public USING=ok WITH CHECK=ok
+match  facility_external_references.bypass_rls_policy       cmd=ALL roles=public USING=ok WITH CHECK=omitted -> null
+
+RESULT: all 8 match the live shape exactly.
+```
+
+Two representational points, stated because the comparison normalised them and
+a reader diffing by eye would otherwise see a difference that is not one:
+
+1. **`::text` casts.** The migration writes
+   `current_setting('app.bypass_rls'::text, true) = 'on'::text`, which is how
+   `pg_policies` rendered the live expression when it was read. The casts are
+   Postgres's own rendering of a text literal in that context; writing the
+   expression with or without them stores the identical parse tree. The
+   comparison stripped `::text` from both sides.
+
+2. **`WITH CHECK` omitted for `bypass_rls_policy`.** Live `with_check` is
+   `null`, and the migration omits the clause entirely, which is what produces
+   `polwithcheck = null` in the catalog. That is a match, not an approximation.
+   For a `FOR ALL` policy Postgres falls back to the `USING` expression when
+   `WITH CHECK` is absent, so behaviour is identical too. Writing
+   `WITH CHECK (current_setting(...) = 'on')` explicitly would have produced a
+   non-null `polwithcheck` and therefore a real difference from live.
+
+## 9. The stray `main` branch record — left in place
+
+The failed `create_branch` attempt registered this row:
+
+```
+id                   67db06c8-6e48-4f6c-80e0-fb67bd1456b2
+name                 main
+project_ref          oqdhberkghtnszrkdvfm      <-- the production project
+parent_project_ref   oqdhberkghtnszrkdvfm      <-- the production project
+is_default           true
+persistent           false
+preview_project_status ACTIVE_HEALTHY
+```
+
+**It was not deleted, because it cannot be confirmed to be bookkeeping only.**
+Its own `project_ref` and `parent_project_ref` are the production project ref,
+and `is_default` is true — so by the only evidence available it *is* a pointer
+to production, not a detached record. `delete_branch` takes a branch id and
+there is no read-only call that reveals what it would do to a default branch
+whose ref is the production project. The downside of guessing wrong is
+irreversible and the upside is tidiness.
+
+To remove it deliberately: disable branching from the Supabase dashboard, where
+the consequences are shown before confirming.

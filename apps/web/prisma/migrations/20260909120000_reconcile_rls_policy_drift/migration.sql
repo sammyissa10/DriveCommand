@@ -13,6 +13,35 @@
 -- suppression baseline can be deleted.
 --
 -- ---------------------------------------------------------------------------
+-- STATUS: UNAPPLIED AS OF 2026-09-09
+-- ---------------------------------------------------------------------------
+--
+-- This migration has not been run against any database. It will be applied by
+-- `scripts/migrate.mjs` on the next deploy, like every other migration here.
+--
+-- It was never applied to a preview branch because Supabase branching requires
+-- the Pro plan (`create_branch` returns PaymentRequiredException on this tier),
+-- and production is not written from a Phase 0 session. There is no local
+-- database either — DEC-3. Verification was therefore by inspection: all eight
+-- Part 2 statements were diffed against the live definitions read from
+-- pg_policies and match exactly on cmd, roles, USING and WITH CHECK. See
+-- docs/audits/policy-drift-gate.md §7.
+--
+-- WHY THE DRIFT GATE ALREADY READS ZERO WITH THIS FILE UNAPPLIED — this looks
+-- wrong at first glance and is not. `scripts/audit/rls-policy-drift.ts` computes
+-- its EXPECTED set by parsing and replaying the migration FILES on disk, then
+-- diffs that against live `pg_policy`. It never consults `_prisma_migrations`
+-- and has no notion of which migrations have run. Adding this file changes the
+-- expected set from 230 to 179, which equals the live count — so the detector
+-- reports 0 missing / 0 unexpected immediately.
+--
+-- That is exactly the property that makes this file safe: the database state it
+-- describes is the state the database is already in. Applying it changes
+-- nothing; not applying it changes nothing. Confirm with a per-table policy
+-- count before and after the next deploy — the counts must be identical, and if
+-- any table's count moves, this file is wrong and should be reverted.
+--
+-- ---------------------------------------------------------------------------
 -- PART 1 — why the 59 April / quick-410 policies are NOT restored
 -- ---------------------------------------------------------------------------
 --
