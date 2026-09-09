@@ -1,28 +1,144 @@
 import { headers } from 'next/headers';
 import { PrismaClient } from '../../generated/prisma/client';
 import { getSession } from '@/lib/auth/supabase';
+import { logger } from '@/lib/logger';
 import { prisma, TX_OPTIONS } from '../db/prisma';
 import { createTenantClient } from '../db/tenant-client';
 
 /**
- * Extract tenant ID from request headers.
- * Returns null if not found (unauthenticated or no tenant assigned).
+ * ─── THE TENANT IDENTITY TRUST BOUNDARY (quick-590) ─────────────────────────
+ *
+ * The tenant is derived from the AUTHENTICATED SESSION and from nothing else.
+ *
+ * It used to be read straight off the `x-tenant-id` request header, which was
+ * trustworthy only because `middleware.ts:167` overwrites that header — and
+ * three earlier returns in middleware never reach that line and never strip the
+ * inbound value (`:79` public paths, `:103` unauthenticated `/api/*`, `:124`
+ * authenticated-with-no-tenant on `/api`). An account in the third state is
+ * created by the product's own sign-up flow, so a forged header selected an
+ * arbitrary tenant's rows. Worse, BOTH enforcement layers read the same value:
+ * the Prisma filter injected by `withTenantRLS` and the `app.current_tenant_id`
+ * GUC that the RLS policies consult. One forged header defeated both at once.
+ *
+ * The header is now a VETO, never a source. It can cause a request to be
+ * rejected; it can never cause a tenant to be selected. Concretely:
+ *
+ *   - no session                  -> throw (never fall back to the header)
+ *   - session with no tenant      -> throw (never fall back to the header)
+ *   - header absent               -> use the session tenant
+ *   - header === session tenant   -> use the session tenant (the normal path,
+ *                                    because middleware sets it to exactly this)
+ *   - header !== session tenant   -> log a security event and throw
+ *
+ * A mismatch is deliberately NOT silently overwritten. Once the header stopped
+ * being an input there was no functional need to read it at all, but a request
+ * that names a tenant other than its own is the signature of this exact attack,
+ * and it is the only place in the stack able to see it. Overwriting would make
+ * the attempt indistinguishable from ordinary traffic.
+ *
+ * SCOPE: this is the fix for every caller at once. `requireTenantId()` has ~90
+ * call sites across server actions and pages, all of which read the header
+ * before this change. Fixing only `getTenantPrisma()` would have left them.
+ *
+ * NOT the escape hatch: `getTenantPrismaForOrg(tenantId)` below still takes an
+ * explicit tenant, because cron jobs, `/api/mobile/*` (Bearer token, no cookie,
+ * no header — DEC-11) and the pre-auth invitation flow have no session to read.
+ * Those callers pass a value they have already verified.
  */
-export async function getTenantId(): Promise<string | null> {
-  const headersList = await headers();
-  return headersList.get('x-tenant-id');
+
+/** Thrown when there is no authenticated tenant to act as. */
+export class TenantContextError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TenantContextError';
+  }
+}
+
+/** Thrown when a request names a tenant that is not the session's. */
+export class TenantMismatchError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TenantMismatchError';
+  }
 }
 
 /**
- * Require tenant ID from request headers.
- * Throws an error if not found — use this in protected routes that require tenant context.
+ * Read `x-tenant-id` for COMPARISON ONLY.
+ *
+ * Wrapped because `headers()` throws outside a request scope. A missing header
+ * store must not break the session-derived path — the header can only ever veto,
+ * so failing to read it is safe by construction.
+ */
+async function readTenantHeaderForComparison(): Promise<string | null> {
+  try {
+    return (await headers()).get('x-tenant-id');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The single resolver. Session in, tenant id out, or it throws.
+ */
+async function resolveSessionTenantId(): Promise<string> {
+  const session = await getSession();
+  if (!session) {
+    throw new TenantContextError(
+      'Tenant context is required but there is no authenticated session.'
+    );
+  }
+
+  const sessionTenantId = session.tenantId;
+  if (!sessionTenantId) {
+    throw new TenantContextError(
+      'Tenant context is required but this account has no tenant assigned.'
+    );
+  }
+
+  const headerTenantId = await readTenantHeaderForComparison();
+  if (headerTenantId && headerTenantId !== sessionTenantId) {
+    logger.error(
+      '[security] x-tenant-id does not match the session tenant — request rejected',
+      new TenantMismatchError('x-tenant-id / session tenant mismatch'),
+      {
+        event: 'tenant_header_mismatch',
+        userId: session.userId,
+        sessionTenantId,
+        requestedTenantId: headerTenantId,
+        role: session.role,
+      }
+    );
+    throw new TenantMismatchError(
+      'Requested tenant does not match the authenticated session.'
+    );
+  }
+
+  return sessionTenantId;
+}
+
+/**
+ * Current tenant id, derived from the authenticated session.
+ * Returns null when there is no session or the account has no tenant.
+ *
+ * A header that disagrees with the session still throws here rather than
+ * returning null — a mismatch is an attack signature, not an absence.
+ */
+export async function getTenantId(): Promise<string | null> {
+  try {
+    return await resolveSessionTenantId();
+  } catch (err) {
+    if (err instanceof TenantMismatchError) throw err;
+    return null;
+  }
+}
+
+/**
+ * Require the session's tenant id.
+ * Throws when unauthenticated, when the account has no tenant, or when the
+ * request names a different tenant.
  */
 export async function requireTenantId(): Promise<string> {
-  const tenantId = await getTenantId();
-  if (!tenantId) {
-    throw new Error('Tenant context is required but not found. Ensure middleware.ts is injecting x-tenant-id header.');
-  }
-  return tenantId;
+  return resolveSessionTenantId();
 }
 
 /**
@@ -33,6 +149,11 @@ export async function requireTenantId(): Promise<string> {
  * Forwards the current session's userId to the audit-columns extension so createdById/updatedById
  * are auto-populated on writes. Pass-through is null for unauthenticated/system contexts.
  *
+ * TENANT SOURCE (quick-590): the tenant comes from `requireTenantId()`, which reads
+ * the authenticated session and never the request header. See the trust-boundary
+ * note at the top of this file. This function throws rather than ever returning an
+ * unscoped client, so a caller cannot accidentally hold a client with no filter.
+ *
  * TENANT GUC (quick-411): Before returning the extended client, fires a session-scope
  * set_config to write the caller's tenantId into app.current_tenant_id on the pooled
  * connection. RLS policies that call current_tenant_id() read this GUC. Uses FALSE
@@ -41,6 +162,9 @@ export async function requireTenantId(): Promise<string> {
  * physical connection. The $executeRawUnsafe runs as a single autocommit statement on
  * the bare prisma client — NOT inside a $transaction — so it cannot deadlock against
  * any outer transaction opened by the caller. See quick-411 plan for full rationale.
+ *
+ * The GUC name and its session scope (FALSE) are locked decisions — see
+ * .planning/phase-0-revised.md §2. quick-590 did not change either.
  *
  * Use this in API routes and server actions to ensure queries are scoped to the current tenant.
  */

@@ -1,12 +1,17 @@
 /**
  * Tenant identity trust boundary — quick-590.
  *
- * PROVES the vector described in docs/audits/role-guard-storage-audit.md finding 2:
- * `getTenantPrisma()` derives the tenant from the client-supplied `x-tenant-id`
- * request header and never compares it to the authenticated session. An account in
- * the "authenticated but no tenant" state reaches `/api/*` handlers with its own
- * header intact (middleware.ts:124 returns before the line that overwrites it), so
- * a forged header selects an arbitrary tenant's rows.
+ * REGRESSION GUARD for the vector described in docs/audits/role-guard-storage-audit.md
+ * finding 2. `getTenantPrisma()` used to derive the tenant from the client-supplied
+ * `x-tenant-id` header and never compare it to the session. An account in the
+ * "authenticated but no tenant" state reaches `/api/*` handlers with its own header
+ * intact (middleware.ts:124 returns before the line that overwrites it), so a forged
+ * header selected an arbitrary tenant's rows.
+ *
+ * These assertions were first written INVERTED, asserting the hole, and committed
+ * red in 0e1911bc so the vector was demonstrated before any fix existed. That run
+ * returned production row ac724a1f-00ab-465a-84be-aede5732d617 belonging to tenant
+ * 37c5a354 to a session carrying no tenant at all. They now assert the closed state.
  *
  * ─── HOW THIS FILE IS BUILT ─────────────────────────────────────────────────
  *
@@ -121,34 +126,36 @@ describe('getTenantPrisma() tenant resolution (no DB — gates the build)', () =
     return { mod, gucWrites, tenantClientCalls };
   }
 
-  it('VECTOR: a forged x-tenant-id must not select the tenant (fails before the fix)', async () => {
+  it('a tenantless account cannot borrow a tenant from a forged header', async () => {
     sessionTenantId = ''; // orphaned OWNER — no tenant of their own
     forgedHeader = '73c69018-9047-40d0-9203-631985ca1ccd'; // victim tenant
 
     const { mod, gucWrites, tenantClientCalls } = await loadResolver();
 
-    // STEP 2 (pre-fix): the resolver honours the forged header outright.
-    const client = (await mod.getTenantPrisma()) as unknown as { __scopedTo: string };
+    // An account with no tenant of its own cannot borrow one from a header.
+    await expect(mod.getTenantPrisma()).rejects.toThrow(/no tenant assigned/i);
 
-    console.log('[quick-590][VECTOR] session tenant =', JSON.stringify(sessionTenantId));
-    console.log('[quick-590][VECTOR] forged header  =', forgedHeader);
-    console.log('[quick-590][VECTOR] client scoped to =', client.__scopedTo);
-    console.log('[quick-590][VECTOR] GUC write =', JSON.stringify(gucWrites[0]));
-
-    expect(tenantClientCalls[0].tenantId).toBe(forgedHeader);
-    expect(gucWrites[0].params[0]).toBe(forgedHeader);
+    // No client was built and no GUC was written — the request never reached
+    // the database at all, rather than reaching it scoped to the wrong tenant.
+    expect(tenantClientCalls).toHaveLength(0);
+    expect(gucWrites).toHaveLength(0);
   });
 
-  it('VECTOR: a header disagreeing with the session wins (fails before the fix)', async () => {
+  it('a header disagreeing with the session is rejected, not honoured', async () => {
     sessionTenantId = '37c5a354-ea02-46d8-a134-a3f552b397f0';
     forgedHeader = '73c69018-9047-40d0-9203-631985ca1ccd';
 
-    const { mod, tenantClientCalls } = await loadResolver();
-    await mod.getTenantPrisma();
+    const { mod, gucWrites, tenantClientCalls } = await loadResolver();
 
-    console.log('[quick-590][VECTOR] session', sessionTenantId, '-> scoped to', tenantClientCalls[0].tenantId);
-    expect(tenantClientCalls[0].tenantId).toBe(forgedHeader);
-    expect(tenantClientCalls[0].tenantId).not.toBe(sessionTenantId);
+    await expect(mod.getTenantPrisma()).rejects.toThrow(
+      /does not match the authenticated session/i
+    );
+
+    // Critically: it is rejected, NOT silently overwritten with the session
+    // tenant. A request naming someone else's tenant is an attack signature and
+    // must not be served as if it were ordinary traffic.
+    expect(tenantClientCalls).toHaveLength(0);
+    expect(gucWrites).toHaveLength(0);
   });
 
   it('resolves the session tenant when the header agrees', async () => {
@@ -183,7 +190,7 @@ describe('getTenantPrisma() tenant resolution (no DB — gates the build)', () =
 const hasDatabase = !!process.env.DATABASE_URL;
 
 describe.skipIf(!hasDatabase)('forged header against the real database (read-only)', () => {
-  it('VECTOR: forged x-tenant-id returns the other tenant rows (fails before the fix)', async () => {
+  it('a forged header reads zero rows of the victim tenant', async () => {
     const { prisma } = await import('@/lib/db/prisma');
 
     // Find two tenants that each own at least one LoadDriverAssignment. That model
@@ -210,19 +217,13 @@ describe.skipIf(!hasDatabase)('forged header against the real database (read-onl
 
     const mod = await import('@/lib/context/tenant-context');
 
-    // STEP 2 (pre-fix): resolves a client scoped to `victim` and returns their rows
-    // through the REAL withTenantRLS extension.
-    const scoped = await mod.getTenantPrisma();
-    const rows = await scoped.loadDriverAssignment.findMany({
-      where: { deletedAt: null },
-      select: { id: true, tenantId: true, payStatus: true },
-    });
+    // Before the fix this returned the victim's rows through the real
+    // withTenantRLS extension. Now the resolver refuses to hand back a client at
+    // all, so no query is ever built and zero victim rows can be read.
+    await expect(mod.getTenantPrisma()).rejects.toThrow(/no tenant assigned/i);
 
-    console.log('[quick-590][LIVE] session tenant  =', JSON.stringify(sessionTenantId));
-    console.log('[quick-590][LIVE] forged header   =', victim);
-    console.log('[quick-590][LIVE] rows returned   =', JSON.stringify(rows, null, 1));
-
-    expect(rows.length).toBeGreaterThan(0);
-    for (const r of rows) expect(r.tenantId).toBe(victim);
+    console.log('[quick-590][LIVE] session tenant =', JSON.stringify(sessionTenantId));
+    console.log('[quick-590][LIVE] forged header  =', victim);
+    console.log('[quick-590][LIVE] result         = rejected, 0 rows readable');
   });
 });

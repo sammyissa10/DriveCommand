@@ -74,9 +74,26 @@ function isPublicPath(pathname: string): boolean {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  /**
+   * STRIP THE INBOUND TENANT HEADER BEFORE ANY BRANCH (quick-590).
+   *
+   * `x-tenant-id` is a value this middleware PRODUCES, never one it accepts. It
+   * used to be set only on the fully-authenticated path at the bottom of this
+   * function, while three earlier returns handed the request to the route
+   * handler with the caller's own header still attached — and the tenant
+   * resolver trusted it. Sanitising once, here, means no branch added later can
+   * reintroduce the hole by forgetting to strip it.
+   *
+   * `NextResponse.next()` with no argument forwards the ORIGINAL request
+   * headers, so every pass-through below must pass `sanitizedRequest` explicitly.
+   */
+  const sanitizedHeaders = new Headers(request.headers);
+  sanitizedHeaders.delete('x-tenant-id');
+  const sanitizedRequest = { request: { headers: sanitizedHeaders } };
+
   // Allow public paths without auth
   if (isPublicPath(pathname)) {
-    return NextResponse.next();
+    return NextResponse.next(sanitizedRequest);
   }
 
   // CSRF: validate Origin header on state-changing requests
@@ -99,8 +116,10 @@ export default async function middleware(request: NextRequest) {
   if (!user) {
     // API routes handle their own auth (mobile uses Bearer tokens, not cookies).
     // Pass through so the route handler can validate Authorization header itself.
+    // quick-590: pass the SANITISED request — an unauthenticated caller must not
+    // be able to hand a tenant id to a handler downstream.
     if (pathname.startsWith('/api/')) {
-      return NextResponse.next();
+      return NextResponse.next(sanitizedRequest);
     }
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect_url', request.url);
@@ -119,6 +138,31 @@ export default async function middleware(request: NextRequest) {
 
     if (!isOnboardingPath && !isApiPath) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+
+    /**
+     * REFUSE THE API SURFACE FOR A TENANTLESS ACCOUNT (quick-590).
+     *
+     * This branch used to `return response`, forwarding the caller's own
+     * `x-tenant-id` to the handler. It is the reachable half of the forgery
+     * vector: sign-up creates the auth user before the tenant exists, so a
+     * failed provision leaves a durable authenticated account in exactly this
+     * state, and ~36 `/api` handlers scope solely on the resolver.
+     *
+     * A tenantless account is never legitimate. `/onboarding` provisions
+     * nothing — it is a dead-end page telling the user to contact an
+     * administrator — and `provisionTenant` is called only from sign-up. So
+     * there is no flow that needs the API surface while tenantless, and 403 is
+     * the honest answer rather than a pass-through the resolver then rejects.
+     *
+     * The page redirect above is untouched, and `/api/auth/logout` is a public
+     * path handled earlier, so the user can still read the message and sign out.
+     */
+    if (isApiPath) {
+      return NextResponse.json(
+        { error: 'Account setup is incomplete. No organization is assigned.' },
+        { status: 403 }
+      );
     }
 
     return response;

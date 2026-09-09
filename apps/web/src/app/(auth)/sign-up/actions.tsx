@@ -164,17 +164,66 @@ export async function signUpAction(
   }
 
   // ── Step 2: Patch auth user's app_metadata now that tenantId is known ──────
-  const { error: metaError } = await admin.auth.admin.updateUserById(authUserId, {
-    app_metadata: {
-      role: 'OWNER',
-      tenantId: result.tenantId,
-      isSystemAdmin: false,
-    },
-  });
+  /**
+   * THIS STEP IS FATAL ON FAILURE (quick-590).
+   *
+   * It used to be "non-fatal", logged, and the flow continued. That is precisely
+   * how a durable authenticated account with no tenant was created: the auth user
+   * exists and can sign in, but `app_metadata.tenantId` is never written, so
+   * `getSession()` returns `tenantId: ''` forever. Such an account reached the
+   * `/api` surface through `middleware.ts`'s tenantless branch carrying its own
+   * `x-tenant-id`, which the tenant resolver then trusted.
+   *
+   * True atomicity is not available here and cannot be: Supabase Auth and Postgres
+   * are separate systems with no shared transaction, so there is no way to make
+   * "create auth user" and "create tenant" commit or abort together. What IS
+   * available is compensation — retry once, and if the patch still fails, delete
+   * the auth user so no signable-in account survives without a tenant.
+   *
+   * The Prisma tenant provisioned in step 1 is deliberately left in place. It is
+   * unreachable without an auth user, and the retry path handles it: a repeat
+   * sign-up with the same email hits `EMAIL_TAKEN`, which already returns the
+   * enumeration-safe response. Deleting a freshly created tenant from a failure
+   * handler is a destructive write on a path that is already failing.
+   *
+   * Defence in depth, not instead of: `middleware.ts` now refuses `/api` for a
+   * tenantless account, and `requireTenantId()` refuses to resolve one. This
+   * closes the source; those two close what already exists in production.
+   */
+  const patchAppMetadata = () =>
+    admin.auth.admin.updateUserById(authUserId, {
+      app_metadata: {
+        role: 'OWNER',
+        tenantId: result.tenantId,
+        isSystemAdmin: false,
+      },
+    });
+
+  let { error: metaError } = await patchAppMetadata();
   if (metaError) {
-    // Non-fatal: the Prisma User exists; sign-in will still work via the
-    // Prisma-side session flow. Log loudly so we notice in dev.
-    console.error('[signUpAction] updateUserById app_metadata failed:', metaError.message);
+    console.error(
+      '[signUpAction] updateUserById app_metadata failed, retrying once:',
+      metaError.message,
+    );
+    ({ error: metaError } = await patchAppMetadata());
+  }
+
+  if (metaError) {
+    console.error(
+      '[signUpAction] updateUserById app_metadata failed twice — rolling back auth user:',
+      metaError.message,
+    );
+    await admin.auth.admin.deleteUser(authUserId).catch((e) =>
+      // If this also fails the account exists with no tenant. It cannot use the
+      // API (middleware refuses it) and cannot resolve a tenant client, so it is
+      // inert rather than exploitable — but it is still wrong, so log loudly.
+      console.error(
+        '[signUpAction] CRITICAL: rollback deleteUser failed; auth user has no tenant:',
+        authUserId,
+        e,
+      ),
+    );
+    return { message: 'Something went wrong. Please try again.' };
   }
 
   // ── Step 3: Emit tenant.created event (Phase D automation hook) ───────────
