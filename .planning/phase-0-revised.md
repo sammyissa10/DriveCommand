@@ -2,7 +2,7 @@
 
 Supersedes `phase-0-tenant-isolation.md` (Prompts A1–A4).
 Last updated: 2026-09-09
-Status: **Prompt 0 complete. Prompt 0.5 awaiting approval.**
+Status: **Prompts 0 and 0.5 complete. Prompt 0.75 awaiting approval.**
 
 ---
 
@@ -14,22 +14,24 @@ Status: **Prompt 0 complete. Prompt 0.5 awaiting approval.**
    `SELECT` through `execute_sql` is fine. No DDL, no DML, ever.
 3. **No write of any kind to production originates from a session.** Every
    production change is a migration file in the repo, applied by a human.
-4. **One artifact, one path.** Migrations are applied to the preview branch
-   with `prisma migrate deploy` using the branch connection string, so the
-   file that ran on the branch is byte-identical to the file a human later
-   runs on production. `apply_migration` and resolved-not-run mirrors are not
-   used in this phase.
+4. **One artifact, one applier.** Migrations are applied with
+   `node scripts/migrate.mjs` — the applier this repo actually deploys with —
+   against a session-mode connection string. The file that ran on staging is
+   byte-identical to the file that later runs on production, applied by the
+   same code. `apply_migration`, `prisma migrate deploy`, and resolved-not-run
+   mirrors are not used in this phase. See §3.6.
 5. **Never edit a migration that has already run.** Prisma verifies
    checksums. A correction is always a new forward migration, never an edit
    to history.
-6. All prompts target a **Supabase preview branch**. Production cutover is a
-   separate, human-run step.
+6. All prompts target a **second Supabase project** seeded from the repo's
+   own migrations. Preview branches do not work here — see §3.6. Production
+   cutover is a separate, human-run step.
 7. One branch and one PR per prompt. No prompt starts until the previous PR
    is merged.
 8. The drift detector runs immediately before and immediately after each
    prompt. Both raw outputs go in the PR description.
 
-**Execution order: 0 (done) → 0.5 → 1 → 2 → 3.**
+**Execution order: 0 (done) → 0.5 (done) → 0.75 → 1 → 2 → 3.**
 
 ---
 
@@ -45,7 +47,7 @@ Status: **Prompt 0 complete. Prompt 0.5 awaiting approval.**
 | Tenant identity source | Authenticated session only | `x-tenant-id` is a veto, never a source. See §3.2 |
 | `getAdminDb()` refactor | Dropped | Churn |
 | Index creation | Plain `CREATE INDEX`, no `CONCURRENTLY` | Largest affected table is 757 rows |
-| Connection routing | Supavisor session mode, existing pooler host | Change the role, not the route |
+| Connection routing | Runtime moves 6543 → 5432 at cutover | Session-scoped GUC needs session semantics. See §3.7 |
 | 211 `app.bypass_rls` calls | Neutralised by dropping the policy, deleted separately | See §5 |
 
 ---
@@ -191,6 +193,95 @@ Failures group as: workflow engine 45 across 7 files (separate subsystem, out
 of Phase 0 scope), auth guards 10 across 3 files (§3.3), driver-pay 8 across 5
 files, validation schemas 1.
 
+### 3.6 Preview branches cannot serve as a verification target
+
+Measured, not inferred. A branch was created, inspected, and deleted in
+session (`1d18c48c`, `docs/audits/branch-viability.md`).
+
+A preview branch came up with **zero tables in `public`**, against
+production's 98. Not an incomplete replica — an empty one. None of the
+thirteen carrier tables exist, including `stops`, `route_template_stops` and
+`carrier_documents`, which are exactly the three tables Prompt 1 targets.
+
+The cause is that Supabase seeds a branch from its own migration ledger,
+never from a production schema snapshot and never with data. Established
+from three sources: the branching documentation's Pull and Migrate steps
+plus its "Data-less" note, `create_branch` returning `with_data: false`, and
+the absence of any `supabase/` directory, `config.toml` or `seed.sql` in this
+repo.
+
+**That ledger could not rebuild the schema regardless of how complete it
+was, because it has no baseline.** Its earliest entry is an
+`ALTER TABLE "Customer"` against a table nothing in the ledger creates.
+
+The two ledgers, for the record:
+
+| | entries | earliest | authoritative |
+|---|---|---|---|
+| `_prisma_migrations` | 141 | `00000000000000_init` | Yes — `scripts/migrate.mjs` reads and writes only this |
+| `supabase_migrations.schema_migrations` | 36 | an `ALTER TABLE` with no baseline | No — no runner in this repo references it |
+
+Zero names match exactly; 27 match on descriptive suffix alone. Supabase
+stamps `version` with the wall-clock time of the `apply_migration` call while
+the repo directory carries its authored timestamp, so the same migration is
+one key in the repo and a different key in the Supabase ledger. All three
+carrier RLS migrations are absent from the Supabase ledger entirely.
+
+**Decision.** Stand up a second Supabase project and seed it by running
+`node scripts/migrate.mjs` against it. That is the applier this repo deploys
+with, it starts from `00000000000000_init`, and it builds the roles, the
+carrier tables and the RLS migrations in order. Rejected alternatives:
+backfilling the Supabase ledger (reconstructing 141 entries into a second
+ledger no runner reads, creating a permanent drift surface); a scrubbed
+production snapshot (more work, and the repo migrations are the thing being
+verified); verify-by-inspection only (covers Prompt 1, does nothing for
+Prompt 2's click-through).
+
+Inferred rather than measured: `app_user` is created by a repo migration
+absent from the Supabase ledger, and roles are per-cluster, so a branch would
+not have carried it. Moot now.
+
+### 3.7 Production runs on the transaction pooler, not session mode
+
+I had this wrong in an earlier revision. `application_name = Supavisor` in
+`pg_stat_activity` does not distinguish the two modes, and I did not check
+the port. `.env.local` settles it:
+
+```
+DATABASE_URL  → aws-1-us-west-1.pooler.supabase.com:6543  ?pgbouncer=true
+DIRECT_URL    → aws-1-us-west-1.pooler.supabase.com:5432
+```
+
+`6543` is Supavisor **transaction mode**, serving runtime queries. `5432` is
+Supavisor **session mode**, used for migrations. This is the standard
+Prisma-on-Supabase arrangement and is correct as configured.
+
+**Consequence for the cutover.** Session-scoped `set_config(..., FALSE)`
+requires session semantics. On a transaction pooler the server connection
+returns to the pool after every transaction, so session state is either
+discarded or carried onto a connection handed to a different tenant. The
+combination the plan calls dangerous is what production runs on today.
+
+It is **not currently exploitable**: the app connects as `postgres`, which
+has `BYPASSRLS`, so no policy evaluates and the GUC does nothing. Tenant
+scoping today comes entirely from the Prisma extension's `where` clauses. The
+GUC is defence-in-depth that is presently inert. It becomes live at the
+`app_user` cutover.
+
+So Prompt 2 must change **the route as well as the role**: runtime moves from
+6543 to 5432. That is a materially bigger change than the earlier "change the
+role, not the route" framing, and it raises a capacity question that must be
+measured rather than assumed. Session mode holds a server connection for the
+life of the client connection, against a 60-connection instance ceiling, with
+Vercel scaling lambda instances independently. Connection capacity is now the
+central risk in Prompt 2, and the second project is where it gets measured.
+
+Also unverified: Supavisor addresses roles as `<role>.<project_ref>`, so
+`app_user` would connect as `app_user.oqdhberkghtnszrkdvfm`. Whether Supavisor
+accepts a non-`postgres` role on this project must be confirmed on the second
+project before the production cutover, not during it.
+
+
 ---
 
 ## 4. Evidence gathered 2026-09-09 (production, read-only)
@@ -275,10 +366,12 @@ an explicit transaction. Still one artifact on one path.
 ### 4.6 Connection ceiling
 
 `max_connections = 60`, 3 superuser-reserved,
-`idle_in_transaction_session_timeout = 0`. Direct port 5432 from Vercel
-serverless is not viable. Supavisor session mode preserves the session
-semantics session-scoped `set_config` requires; transaction mode (6543) does
-not and is dangerous with this design.
+`idle_in_transaction_session_timeout = 0`.
+
+Direct port 5432 on the database host is not viable from Vercel serverless.
+Supavisor session mode on the pooler host is the route the cutover targets —
+see §3.7 for why the route must change, and for the capacity question that
+change opens. Transaction mode (6543) cannot carry a session-scoped GUC.
 
 ### 4.7 Storage
 
@@ -320,128 +413,141 @@ policy gone. Those move to the privileged connection before cutover.
 | 4 | Role guard and storage audit | `docs/audits/role-guard-storage-audit.md` | Complete, `cc995ab1` |
 | — | Auth guard triage | `docs/audits/auth-guard-test-triage.md` | Complete, `d193b877` |
 | 0 | Tenant identity trust boundary | Resolver + middleware + signup | Complete, `b10e9020` |
-| 0.5 | Close the recurrence path | Reconciliation migration + guards + docs | **Next** |
+| 0.5 | Arm the drift gate, close recurrence | Reconciliation migration + guards + docs | Complete, `54f7b4cc` |
+| — | Branch viability | `docs/audits/branch-viability.md` | Complete, `1d18c48c` |
+| 0.75 | Stand up the staging project | Seeded second project + connection strings | **Next** |
 | 1 | Policies, grants, bypass drop | Migration | Pending |
-| 2 | `app_user` cutover | Env + assertion + smoke | Pending |
+| 2 | `app_user` cutover + route change | Env + assertion + capacity measurement | Pending |
 | 3 | Suite repair + cross-tenant matrix | Tests + CI | Pending |
+
+**Prompt 0.5 outstanding items.** `RLS_AUDIT_DATABASE_URL` is set. The
+`sql_drop` event trigger is a **post-deploy** step: `policy_drop_audit_fn()`
+is created by the unapplied reconciliation migration, so running
+`CREATE EVENT TRIGGER` before the next deploy fails with
+`42883: function does not exist` — confirmed against production 2026-09-09.
+Re-run it after the migration lands, at which point the superuser ceiling
+gets tested for the first time. pgaudit is deferred: it writes to the same
+Postgres log that already failed, ~24h retention against a loss found three
+months later, so it earns nothing until a log drain exists.
 
 ---
 
-## 7. Prompt 0.5 — Close the recurrence path
+## 7. Prompt 0.5 — complete
 
-Arms the detector at zero and closes the most plausible mechanism, **before**
-Prompt 1 performs significant policy DDL. The migration in this prompt is a
-deliberate no-op against live state: it drops policies that are already absent
-and recreates policies that are already present, purely so the repo and the
-database agree.
+Shipped at `54f7b4cc`. Prompt body retained in git history; not reproduced
+here. What it delivered: a reconciliation migration recording the 59 JWT
+policies as not-restored and mirroring the 8 out-of-band `document_import*`
+policies; the drift gate armed at zero with no suppression list, proven
+non-vacuous by a probe; a `db push` guard blocking production across seven
+cases and failing closed; CI wired on every pull request; five documents
+reconciled onto one migration workflow; `policy_drop_audit` table and
+function created.
+
+The migration is **unapplied**. `scripts/migrate.mjs` applies it on the next
+deploy. The drift gate reads zero because the detector computes its expected
+set by replaying migration files and never consults `_prisma_migrations`.
+Post-deploy check: if any table's policy count moves, the file is wrong and
+should be reverted.
+
+The stray `main` branch record was left in place. Its `project_ref` and
+`parent_project_ref` both point at the production project and `is_default` is
+true. No read-only call reveals what deleting a default branch does to the
+project it points at, so it is a dashboard action with visible consequences,
+not a session action.
+
+---
+
+## 7.5 Prompt 0.75 — Stand up the staging project
 
 ```
-Task: Arm the policy drift gate at zero and close the path that most
-plausibly caused the 2026 policy loss.
+Task: Create and seed a second Supabase project to serve as the
+verification target for Prompts 1, 2 and 3.
 
 Use the GSD skill to build this.
 
-Target: a Supabase preview branch. Production is never written from this
+Target: a new Supabase project. Production is never written from this
 session.
 
 Before you start:
-- Run from the repo root. Confirm apps/web, apps/web/prisma/schema.prisma,
-  and .planning are visible.
-- Read .planning/phase-0-revised.md sections 3.1, 3.5 and 5.
-- Read docs/diagnostics/rls-policy-drop-forensics.md, sections 4 and 5.
-- Run npm run --workspace apps/web audit:rls-policy-drift and paste the raw
-  output. This is the pre-baseline.
+- Run from the repo root.
+- Read .planning/phase-0-revised.md sections 3.6 and 3.7, and
+  docs/audits/branch-viability.md.
+- Call get_cost for a new project on org smtxeyavhusrpylmpywu, state the
+  cost, and stop for confirmation before creating anything.
 - Do not install any package.
 - Briefly explain your approach in 2-3 sentences, then build.
 
-Context: the detector reports CLEAN with 59 missing and 8 unexpected
-policies suppressed against a 2026-09-03 baseline. The 59 are JWT-based
-policies from 20260404100013_carrier_rls_policies and
-20260527000001_quick410_advisor_rls_fix that reference auth.jwt() and
-auth.uid(). Those return null on a Prisma connection, and no code in
-apps/web or apps/mobile reads carrier tables through the Supabase client,
-so the policies were inert before they were removed. They are not being
-restored. The 8 unexpected are live policies on document_imports,
-document_import_pages, document_profiles and facility_external_references
-applied out of band via Supabase MCP and never mirrored (DEC-17).
+Context: preview branches come up with zero tables because Supabase seeds
+them from its own 36-entry ledger, which has no baseline. The repo's
+141-entry _prisma_migrations ledger and scripts/migrate.mjs are
+authoritative. Production runs runtime queries through Supavisor
+transaction mode on 6543 and migrations through session mode on 5432.
 
 Build:
 
-1. A reconciliation migration that brings the repo into agreement with the
-   database without changing live state:
-   - DROP POLICY IF EXISTS for each of the 59 named April and quick-410
-     policies, on their tables. They are already absent; these statements
-     record the decision and zero the detector's expected set.
-   - For each of the 8 out-of-band policies, DROP POLICY IF EXISTS then
-     CREATE POLICY with the definition currently live, read from
-     pg_policies. They are already present; this makes the repo their
-     source of truth.
-   - A header comment stating why the 59 are not restored: JWT-based,
-     structurally inert on the Prisma connection, superseded by
-     20260515000001_db_security_standardization, verified no Supabase
-     client path reads these tables. Reference this file and the forensics
-     document.
-   Do NOT edit either historical migration file. Prisma verifies
-   checksums; a correction is a new forward migration.
+1. Create a Supabase project named drivecommand-staging in org
+   smtxeyavhusrpylmpywu, same region as production (us-west-1), after
+   the user confirms cost.
 
-2. Remove the suppression baseline from scripts/audit/rls-policy-drift.ts
-   entirely. After step 1 the true drift is zero, so the gate no longer
-   needs a baseline and must fail on any future non-zero result. Confirm
-   the script exits non-zero when drift exists by introducing one
-   deliberate discrepancy, observing the failure, and reverting it.
+2. Seed it by running node scripts/migrate.mjs with the connection
+   pointed at the new project's session-mode string on port 5432. Use the
+   repo's own applier. Do not use prisma migrate deploy, apply_migration,
+   or db push.
 
-3. Wire audit:rls-policy-drift into CI on every pull request, failing the
-   build on non-zero.
+3. Verify the seed: report the table count in public against production's
+   98, and confirm all thirteen carrier tables exist, naming stops,
+   route_template_stops and carrier_documents individually. Report the
+   _prisma_migrations row count against production's 141. If any
+   migration fails, stop and report which one and why — a failure here is
+   a real defect in the migration chain, not a staging problem.
 
-4. A guard script that refuses prisma db push when DATABASE_URL resolves to
-   the production host. Wire it so it runs before any db push invocation
-   reachable from package.json.
+4. Confirm the app_user role exists on the new project, with
+   rolsuper = false and rolbypassrls = false. It should be created by a
+   repo migration. If it is absent, say so — that means role creation is
+   not in the migration chain and production's app_user was created out
+   of band.
 
-5. An event trigger on sql_drop recording DROP POLICY into a durable table
-   with statement, role, and timestamp. This is the only monitoring option
-   that survives log rotation. Include it in the same migration.
+5. Set a password for app_user on the staging project and record BOTH
+   connection strings in apps/web/.env.staging, gitignored:
+   - STAGING_DATABASE_URL      postgres role, 6543, transaction mode
+   - STAGING_DIRECT_URL        postgres role, 5432, session mode
+   - STAGING_DATABASE_URL_APP_USER   app_user, 5432, session mode,
+     connection_limit=1, pool_timeout=20
+   Do not put any of these in .env.local and do not commit them.
 
-6. Enable the pgaudit extension and set pgaudit.log = 'ddl'. It is already
-   in shared_preload_libraries. If this requires a privilege the branch
-   role lacks, say so and leave it as a documented manual step rather than
-   failing the prompt.
+6. Confirm Supavisor accepts app_user. The tenant format is
+   <role>.<project_ref>, so app_user connects as app_user.<staging_ref>.
+   Open a connection as app_user through the 5432 pooler host and run
+   SELECT current_user. If Supavisor rejects a non-postgres role, stop
+   and report it — that finding blocks Prompt 2's production cutover and
+   must be known now rather than during it.
 
-7. Fix the four documents that instruct prisma db push:
-   - apps/web/docs/database.md:155-160 — scoped to "local development",
-     but there is no local database and .env.local is production.
-   - apps/web/docs/setup.md:90-94 — unqualified, in first-time setup.
-   - apps/web/docs/setup.md:161-162 — instructs resolving a "drift
-     detected" warning and retrying. DELETE this entry outright. Drift is
-     Prisma reporting that the database holds objects the schema does not
-     describe, which is exactly what an RLS policy is.
-   - apps/web/docs/stack.md:41 and docs/troubleshooting.md:35.
-   Reconcile the contradiction: database.md:160 says do not use
-   prisma migrate dev; troubleshooting.md:50 and CONTRIBUTING.md:166 say
-   always use it. Pick the one that matches scripts/migrate.mjs and make
-   all five documents agree.
+7. Load minimum test data: two tenants, each with an owner, a dispatcher,
+   two drivers, a client, a truck, a load with stops, a route template,
+   and one document row. Prompt 2's click-through and Prompt 3's driver
+   visibility tests both need populated tenants. Use the repo's existing
+   seed helper if one exists; if not, say so and write the smallest one
+   that serves both prompts.
+
+8. Write docs/audits/staging-environment.md recording: project ref,
+   region, table count, migration count, which env keys were created,
+   the Supavisor app_user result from step 6, and what test data exists.
 
 Do not:
-- Restore any of the 59 policies.
-- Edit any migration file that has already been applied.
-- Point prisma migrate deploy at the production project ref.
-- Change any application code.
-- Touch bypass_rls_policy, grants, or the three zero-policy tables. That
-  is Prompt 1.
+- Write anything to the production project.
+- Put staging strings in .env.local or commit any connection string.
+- Use prisma migrate deploy, apply_migration, or prisma db push.
+- Copy production data.
 
 Check before finishing:
-- prisma migrate deploy applies the reconciliation migration cleanly to
-  the branch.
-- Confirm live state is unchanged: policy counts per table before and
-  after are identical. Paste both.
-- npm run --workspace apps/web audit:rls-policy-drift reports zero missing,
-  zero unexpected, and no baseline. Paste the raw post output.
-- The deliberate-discrepancy probe from step 2 failed the gate. Paste it.
-- The db push guard blocks against a production-shaped DATABASE_URL. Prove
-  it.
-- The sql_drop trigger records a test DROP POLICY on a throwaway policy on
-  the branch. Paste the recorded row, then clean up.
-- All five documents agree on the migration workflow. List them.
-- The 17 existing isolation tests still pass.
+- Table count and migration count reported against production's 98 and
+  141, with any difference explained.
+- All thirteen carrier tables confirmed present, named individually.
+- app_user exists with rolsuper = false and rolbypassrls = false.
+- SELECT current_user through the 5432 pooler as app_user returns
+  app_user, or the rejection is reported.
+- Both tenants and their rows exist; give counts per table.
+- git status shows only the audit file and a .gitignore change.
 
 If the approach does not work, say what failed and suggest an alternative
 before stopping. Commit at the end with a clear message.
@@ -457,14 +563,17 @@ app_user bypass path.
 
 Use the GSD skill to build this.
 
-Target: a Supabase preview branch. Production is never written from this
-session. The deliverable is a migration file a human later applies to
-production unchanged.
+Target: the drivecommand-staging project. Production is never written
+from this session. The deliverable is a migration file a human later
+applies to production unchanged.
 
 Before you start:
 - Run from the repo root.
-- Read .planning/phase-0-revised.md sections 4 and 5, and
-  docs/audits/role-guard-storage-audit.md.
+- Read .planning/phase-0-revised.md sections 3.6, 4 and 5, and
+  docs/audits/role-guard-storage-audit.md and
+  docs/audits/staging-environment.md.
+- Confirm Prompt 0.75's PR is merged and staging has all thirteen carrier
+  tables. If staging is not seeded, stop.
 - Confirm Prompt 0.5's PR is merged and the drift detector reports zero
   with no baseline. If a baseline still exists, stop.
 - Run the drift detector and paste the raw pre output.
@@ -529,14 +638,16 @@ Build, as one migration file, idempotent, with a rollback section:
 9. Handle dual column naming by reading the actual column from
    information_schema per table. Do not assume tenantId or org_id.
 
-10. Apply to the branch with prisma migrate deploy using the branch
-    connection string. The committed file must be the exact file that ran.
+10. Apply to staging with node scripts/migrate.mjs against
+    STAGING_DIRECT_URL. Use the repo's own applier — not
+    prisma migrate deploy, not apply_migration. The committed file must be
+    the exact file that ran.
 
 Do not:
 - Restore any of the 59 JWT policies.
 - Edit any already-applied migration.
-- Point prisma migrate deploy at the production project ref.
-- Use apply_migration or execute_sql for DDL.
+- Point any applier at the production project ref.
+- Use prisma migrate deploy, apply_migration, or execute_sql for DDL.
 - Delete the 211 app.bypass_rls calls.
 - Change application code beyond moving CROSS_TENANT paths to the
   privileged connection and adding the two EXEMPT_MODELS entries. Both are
@@ -544,8 +655,8 @@ Do not:
 - Modify the tenant context resolver, the RLS extension, or middleware.
 
 Check before finishing:
-- prisma migrate deploy applies cleanly; _prisma_migrations on the branch
-  holds the row.
+- scripts/migrate.mjs applies cleanly against staging;
+  _prisma_migrations on staging holds the row.
 - The committed migration file is the exact file that ran. State its path.
 - The drift detector reports zero. Paste the raw post output.
 - Zero tables have FORCE RLS with zero policies.
@@ -563,70 +674,102 @@ before stopping. Commit at the end with a clear message.
 
 ---
 
-## 9. Prompt 2 — `app_user` cutover
+## 9. Prompt 2 — `app_user` cutover and route change
+
+Rewritten. The earlier version assumed runtime already ran on session mode.
+It does not — see §3.7. This prompt now changes the route as well as the
+role, and connection capacity is its central risk.
 
 ```
-Task: Cut the application's runtime database connection from postgres to
-app_user, on the preview branch.
+Task: Move the application's runtime database connection from postgres on
+the transaction pooler to app_user on the session pooler, and measure
+whether the connection ceiling holds.
 
 Use the GSD skill to build this.
 
-Target: the preview branch only. Production cutover is a later human-run
-env flip and is not part of this prompt.
+Target: the drivecommand-staging project only. Production cutover is a
+later human-run step and is not part of this prompt.
 
 Before you start:
 - Run from the repo root.
+- Read .planning/phase-0-revised.md section 3.7 and
+  docs/audits/staging-environment.md.
 - Confirm Prompt 1's PR is merged and the drift detector reports zero
-  against the branch. If not, stop. Cutting over with a missing grant
-  produces permission-denied errors; with a missing policy, silently empty
-  pages.
+  against staging. If not, stop. Cutting over with a missing grant
+  produces permission-denied errors; with a missing policy, silently
+  empty pages.
 - Confirm every CROSS_TENANT path from
   docs/audits/bypass-call-classification.md is on the privileged
   connection. If any is not, stop.
-- Confirm DATABASE_URL_APP_USER is present in apps/web/.env.local and
-  points at the branch. If absent, stop. Do not fall back to DATABASE_URL.
+- Confirm STAGING_DATABASE_URL_APP_USER exists in .env.staging and that
+  Prompt 0.75 step 6 proved Supavisor accepts app_user. If Supavisor
+  rejects the role, stop — nothing else in this prompt matters.
 - Do not install any package.
 - Briefly explain your approach in 2-3 sentences, then build.
 
+Context: runtime currently uses Supavisor transaction mode on 6543 with
+pgbouncer=true, as postgres. The tenant GUC is session-scoped, so it needs
+session semantics that transaction mode does not provide. Today this is
+inert because postgres has BYPASSRLS and no policy evaluates. It becomes
+live under app_user. So the route must change from 6543 to 5432 at the
+same time as the role.
+
 Build:
-1. Point the runtime Prisma datasource at DATABASE_URL_APP_USER. Keep the
-   privileged DATABASE_URL for migrations and the sysadmin cross-tenant
-   read path only.
-2. The connection string uses Supavisor session mode on the existing
-   pooler host with connection_limit=1 and pool_timeout=20. Do not use
-   direct port 5432 — max_connections is 60 and Vercel serverless will
-   exhaust it. Do not use transaction mode on 6543 — it breaks
-   session-scoped set_config.
-3. A startup assertion querying pg_roles for the connected role, checking
-   rolbypassrls and rolsuper. Gate on DB_ROLE_ENFORCEMENT: "strict" throws,
-   "warn" logs and continues. The gate exists so rollback is possible;
-   postgres has rolbypassrls = true and a hard throw would refuse to boot
-   on rollback.
-4. Activate the app_user measurement harness scaffolded in quick-589.
-5. A smoke script connecting as app_user with no tenant context, running a
-   bare SELECT against loads, carrier_drivers, driver_settlements,
+1. Point the runtime Prisma datasource at the app_user session-mode
+   string: port 5432 on the pooler host, connection_limit=1,
+   pool_timeout=20, no pgbouncer=true. Keep the privileged postgres
+   string for migrations and the sysadmin cross-tenant read path only.
+2. A startup assertion querying pg_roles for the connected role, checking
+   rolbypassrls and rolsuper, AND asserting the port is 5432 rather than
+   6543. Gate on DB_ROLE_ENFORCEMENT: "strict" throws, "warn" logs and
+   continues. The gate exists so rollback is possible; postgres has
+   rolbypassrls = true and a hard throw would refuse to boot on rollback.
+3. Activate the app_user measurement harness scaffolded in quick-589.
+4. A smoke script connecting as app_user with no tenant context, running
+   a bare SELECT against loads, carrier_drivers, driver_settlements,
    carrier_documents, and stops, asserting zero rows on each.
+5. CONNECTION CAPACITY MEASUREMENT. This is the load-bearing part of this
+   prompt. Session mode holds a server connection for the life of the
+   client connection. max_connections on a Supabase instance of this size
+   is 60, three superuser-reserved. Vercel scales lambda instances
+   independently, each holding its own pool.
+   - Determine the Supavisor session-mode pool size for the staging
+     project and state where you read it.
+   - Drive concurrent load against staging at increasing concurrency and
+     record where connections saturate: what concurrency level produces
+     the first pool_timeout, and what the error surfaces as to a user.
+   - State the maximum concurrent lambda count the production
+     configuration can support before saturation, and compare it against
+     observed production concurrency if any telemetry exists.
+   - If capacity is insufficient, say so plainly and stop. Do not
+     proceed to the click-through. The alternatives are raising the
+     compute tier, or moving the GUC to transaction scope, which is
+     blocked by the P2028 deadlock and would need its own investigation.
 
 Do not:
 - Change query logic, repositories, or route handlers.
 - Change getTenantPrisma or the RLS extension internals.
-- Modify the GUC name or its session scope.
+- Change the GUC name or switch it to transaction scope.
 - Point anything at the production project ref.
+- Modify .env.local.
 
 Check before finishing:
 - The no-context smoke script returns zero rows on all five tables.
 - With app.current_tenant_id set to tenant A, zero tenant B rows visible,
   and the reverse.
-- The startup assertion fires in strict mode against postgres. Prove it,
-  then revert.
-- Manual click-through on the branch. Report each individually as pass or
-  fail, not as one line: Loads, Drivers, Live Tracking, Settlements,
+- The startup assertion fires in strict mode against postgres, and
+  against a 6543 string. Prove both, then revert.
+- Capacity numbers from step 5, with the saturation concurrency stated as
+  a number and the source of the pool size cited.
+- Manual click-through against staging. Report each individually as pass
+  or fail, not as one line: Loads, Drivers, Live Tracking, Settlements,
   Driver Portal, SysAdmin, public tracking page, login, document upload,
   document download, and one cron digest.
 - List every file changed.
-- State the rollback explicitly: DATABASE_URL_APP_USER reverted and
-  DB_ROLE_ENFORCEMENT set to warn. Two environment variables, no code
-  change, no rebuild.
+- State the rollback explicitly: the runtime string reverted to the
+  postgres 6543 transaction-mode value and DB_ROLE_ENFORCEMENT set to
+  warn. Two environment variables, no code change, no rebuild. Confirm
+  the assertion's port check does not block this — it must not.
 
 If the approach does not work, say what failed and suggest an alternative
 before stopping. Report exactly which surfaces broke. Commit at the end
@@ -644,7 +787,7 @@ the endpoint level.
 
 Use the GSD skill to build this.
 
-Target: test database only. Never production, never the branch's live data.
+Target: the drivecommand-staging project. Never production.
 
 Before you start:
 - Run from the repo root.
@@ -701,10 +844,9 @@ Build:
    skipped security tests. Report which fail and fix the underlying guard,
    never the test.
 
-6. Seed two tenants A and B, each with an owner, dispatcher, driver,
-   client, truck, load, trip with stops, route template, checklist,
-   compensation template, settlement, and one uploaded document. Test
-   database only — never write a disposable tenant to production.
+6. Use the two tenants seeded on staging by Prompt 0.75, extending them
+   with a checklist, compensation template and settlement if absent.
+   Never write a disposable tenant to production.
 
 7. As each role in tenant A, for every tRPC procedure and route handler
    touching a tenant-scoped model: attempt read, list, update,
@@ -731,7 +873,7 @@ Build:
 12. Wire the suite into CI on every pull request.
 
 Do not:
-- Run against production or the branch's data.
+- Run against production.
 - Weaken any guard to make a test pass. Fix the guard and report it.
 - Change the GUC name or switch it to transaction scope.
 - Touch the workflow engine tests, the driver-pay exporter tests, or the
@@ -763,18 +905,27 @@ before stopping. Commit at the end with a clear message.
 
 Human-run, not from a session.
 
-1. Run `prisma migrate deploy` against production in a low-traffic window,
-   using the same migration files that ran on the branch, unchanged.
+1. Run `node scripts/migrate.mjs` against production in a low-traffic
+   window, using the same migration files that ran on staging, unchanged,
+   with the connection pointed at `DIRECT_URL` (5432, session mode).
 2. Re-run the drift detector against production; expect zero, no baseline.
-3. Set `DATABASE_URL_APP_USER` to the production `app_user` Supavisor
-   session-mode string. `DATABASE_URL` stays on the privileged `postgres`
-   string for migrations and the sysadmin cross-tenant read path.
-4. Set `DB_ROLE_ENFORCEMENT=warn`. Watch for 24 hours.
-5. Set `DB_ROLE_ENFORCEMENT=strict`.
+3. Re-run the `CREATE EVENT TRIGGER` statement from
+   `docs/audits/policy-drift-gate.md` §3.1. It now has a function to
+   attach to. This is where the superuser ceiling gets tested.
+4. Set `DATABASE_URL_APP_USER` to the production `app_user` Supavisor
+   **session-mode** string — 5432, `connection_limit=1`,
+   `pool_timeout=20`, no `pgbouncer=true`. `DIRECT_URL` stays on the
+   privileged `postgres` string for migrations and the sysadmin
+   cross-tenant read path. Note this moves runtime off the transaction
+   pooler; do not do it until Prompt 2's capacity measurement says the
+   ceiling holds.
+5. Set `DB_ROLE_ENFORCEMENT=warn`. Watch for 24 hours, specifically for
+   `pool_timeout` errors.
+6. Set `DB_ROLE_ENFORCEMENT=strict`.
 
-Rollback at any point: point `DATABASE_URL_APP_USER` back at the `postgres`
-string and set `DB_ROLE_ENFORCEMENT=warn`. Two environment variables, no code
-change, no rebuild.
+Rollback at any point: point the runtime string back at the `postgres`
+6543 transaction-mode value and set `DB_ROLE_ENFORCEMENT=warn`. Two
+environment variables, no code change, no rebuild.
 
 ---
 
@@ -805,5 +956,21 @@ Tracked, not scheduled here.
   `requireAdminAccess` definitions with the ninth divergent;
   `markCongratsShown` is the only tenant-touching server action with no
   guard.
-- **Install `pgaudit` and ship Postgres logs off-platform** if Prompt 0.5
-  leaves either as a manual step. Current DDL log retention is ~24 hours.
+- **Ship Postgres logs off-platform**, then install `pgaudit`. Current DDL
+  log retention is ~24 hours; pgaudit writes to that same log, so it earns
+  nothing until a drain exists. The `policy_drop_audit` table is the option
+  that survives rotation.
+- **`sql_drop` event trigger** — post-deploy step, then a superuser question.
+  `postgres` has `rolsuper = false` and Postgres exposes no grantable
+  privilege for `CREATE EVENT TRIGGER`. If the dashboard cannot create it,
+  the fallback is calling `policy_drop_audit_fn()` explicitly from any
+  migration that drops a policy, which covers the sanctioned path and leaves
+  out-of-band drops unrecorded.
+- **`apps/web/.env.local` has every key duplicated**, identically. Dotenv
+  takes the last, so behaviour is unaffected today, but a file edited into
+  that state will eventually duplicate a key with two different values.
+- **The stray `main` branch record** on the production project. Dashboard
+  action, not a session action.
+- **`supabase_migrations.schema_migrations` drift** — 36 entries against the
+  repo's 141, zero exact name matches, no baseline. Harmless while nothing
+  reads it; a trap for anyone who assumes it is authoritative.
