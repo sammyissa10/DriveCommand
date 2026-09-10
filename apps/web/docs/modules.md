@@ -162,7 +162,7 @@ Color labels for organizing trucks and drivers. Tags are tenant-scoped. Can be a
 
 ### 17. Settings — `/settings`
 
-Tenant configuration. Set tenant name, timezone, and profit margin threshold. Manage third-party integrations (QuickBooks, Samsara, KeepTruckin/Motive, factoring services, email providers). Only accessible to users with the `OWNER` role.
+Tenant configuration. Set tenant name, timezone, and profit margin threshold. Manage third-party integrations (QuickBooks, Samsara, KeepTruckin/Motive, factoring services, email providers). Includes operations settings (pre-trip inspection requirements). Only accessible to users with the `OWNER` role.
 
 **Key files:**
 - `src/app/(owner)/settings/`
@@ -178,22 +178,62 @@ Owner submits support tickets to the DriveCommand team. Each ticket has a title,
 
 ---
 
+### 19. Carrier Operations — `/carrier/*`
+
+The carrier operations module covers the full dispatch workflow using the `Trip`/`CarrierLoad`/`CarrierStop` data model (as distinct from the legacy `Route`/`Load` model). Includes: trip management, live board (driver + truck views), document import, facility management, client/contract management, route templates, driver pay, and the pre-trip inspection gate.
+
+**Key files:**
+- `src/app/(owner)/carrier/`
+
+---
+
+### 20. Checklists & Workflows — `/checklists`
+
+Owner-facing management of playbooks (checklist templates), step templates, and automation triggers. Owners configure pre-trip inspection checklists, onboarding workflows, and DVIR requirements. Backed by the Workflow Engine (see `docs/specs/workflow-engine.md`).
+
+**Key files:**
+- `src/app/(owner)/checklists/`
+
+---
+
+### 21. Help — `/help`
+
+In-app help center with feature documentation articles. Articles are rendered from `docs-content/client/` MDX files. Article index is driven by the feature registry; only articles with a registered entry and a matching file are linked.
+
+**Key files:**
+- `src/app/(owner)/help/`
+
+---
+
+### 22. Subscription — `/subscription`
+
+Owner-facing subscription and billing management. Displays the current plan, usage, and allows upgrading or managing the tenant's subscription.
+
+**Key files:**
+- `src/app/(owner)/subscription/`
+
+---
+
 ## Driver Portal
 
 Driver portal modules live under `src/app/(driver)/` and are accessible to users with the `DRIVER` role.
 
 ---
 
-### 19. Driver Portal — `/my-route`, `/my-load`, `/my-tickets`, `/hours`, `/incidents`, `/messages`
+### 23. Driver Portal — `/home`, `/my-route`, `/my-load`, `/my-tickets`, `/hours`, `/incidents`, `/messages`, `/documents`, `/pay`, `/tasks`
 
 Driver-facing interface for active operations:
 
+- **Home** (`/home`) — driver dashboard: active load card, stat chips, alerts.
 - **My Route** (`/my-route`) — current assigned route with stop timeline; Mark Departed button for each stop.
 - **My Load** (`/my-load`) — current load status with forward-only status advancement buttons (`DISPATCHED` → `PICKED_UP` → `IN_TRANSIT` → `DELIVERED`).
 - **My Tickets** (`/my-tickets`) — driver's support tickets and message threads.
 - **Hours** (`/hours`) — log Hours of Service (HOS) records.
 - **Incidents** (`/incidents`) — report safety incidents with description and severity.
 - **Messages** (`/messages`) — in-app messaging.
+- **Documents** (`/documents`) — view and upload driver compliance documents.
+- **Pay** (`/pay`) — view driver pay records and settlements.
+- **Tasks** (`/tasks`) — driver task list from workflow engine (checklists, pre-trip inspections).
 - **GPS** — browser geolocation tracked in the background and submitted to `/api/gps` on an interval.
 
 **Key files:**
@@ -207,13 +247,20 @@ SysAdmin portal lives under `src/app/(admin)/`. Login is at `/admin/login` using
 
 ---
 
-### 20. SysAdmin Portal — `/admin-dashboard`, `/admin-support`, `/tenants`
+### 24. SysAdmin Portal — `/admin-dashboard`, `/admin-support`, `/tenants`, `/users`, `/billing`, `/plans`, `/promos`, `/automations`, `/notifications`, `/docs`
 
 DriveCommand internal tools for the platform team:
 
 - **Dashboard** (`/admin-dashboard`) — platform metrics: total tenants, active users, system health.
 - **Tenants** (`/tenants`) — view all tenants with status (Pending / Active / Suspended). Create new tenants with owner invitation flow. Activate, suspend, or reactivate tenants.
 - **Support** (`/admin-support`) — cross-tenant support ticket queue. Filter by status (Open / In Progress / Closed). Reply to tickets and update status on behalf of the DriveCommand team.
+- **Users** (`/users`) — cross-tenant user management.
+- **Billing** (`/billing`) — platform billing management.
+- **Plans** (`/plans`) — manage subscription plan definitions.
+- **Promos** (`/promos`) — manage promotional discount codes.
+- **Automations** (`/automations`) — platform-level automation rule management.
+- **Notifications** (`/notifications`) — platform notification template management.
+- **Docs** (`/docs`) — internal documentation viewer.
 
 Access requires the `ADMIN_SECRET_KEY` env var to be set. The admin session is managed separately from tenant sessions and uses a cookie named `admin_session`.
 
@@ -222,7 +269,7 @@ Access requires the `ADMIN_SECRET_KEY` env var to be set. The admin session is m
 
 ---
 
-### 21. SysAdmin Invoicing — `/admin-dashboard` (invoices section)
+### 25. SysAdmin Invoicing — `/admin-dashboard` (invoices section)
 
 Billing management for DriveCommand to charge tenants. Create, edit, and send invoices from DriveCommand to fleet operators. Supports line items, recurring billing flags, and status lifecycle (`DRAFT` → `SENT` → `PAID` → `OVERDUE`). Uses the `SysAdminInvoice` and `SysAdminInvoiceItem` models.
 
@@ -233,7 +280,7 @@ Billing management for DriveCommand to charge tenants. Create, edit, and send in
 
 ## Shared / Public
 
-### 22. Shipment Tracking — `/track/[token]`
+### 26. Shipment Tracking — `/track/[token]`
 
 Public page (no login required) for customers to track their shipment. Accessible via a unique `trackingToken` on each load. Shows GPS map position, status timeline, and estimated delivery info. Polling updates the map every 30 seconds.
 

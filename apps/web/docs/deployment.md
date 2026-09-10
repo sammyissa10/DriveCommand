@@ -50,19 +50,20 @@ All other variables (`ADMIN_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC
 
 ## Build Command
 
-Defined in `vercel.json`:
+The build command is defined in the npm `build` script in `apps/web/package.json`:
 
-```json
-{
-  "buildCommand": "node scripts/migrate.mjs && prisma generate && next build"
-}
+```
+npm run build:search-index && npm run build:admin-search && prisma generate && next build
 ```
 
-This runs three steps in sequence:
+This runs four steps in sequence:
 
-1. **`node scripts/migrate.mjs`** — runs SQL migration files atomically. Fails fast with a non-zero exit code if any migration fails (which stops the Vercel build).
-2. **`prisma generate`** — generates the Prisma client to `src/generated/prisma/`.
-3. **`next build`** — compiles the Next.js application.
+1. **`npm run build:search-index`** — builds the help/docs search index from `docs-content/`.
+2. **`npm run build:admin-search`** — builds the admin docs search index.
+3. **`prisma generate`** — generates the Prisma client to `src/generated/prisma/`.
+4. **`next build`** — compiles the Next.js application.
+
+SQL migrations are applied at startup via `scripts/migrate.mjs`, which runs as part of the `start` script (`node scripts/migrate.mjs && next start`), not the build command.
 
 If any step fails, the build fails and the current deployment is not replaced.
 
@@ -84,9 +85,7 @@ Defined in `vercel.json`. Vercel schedules these automatically:
 
 | Path | Schedule | Purpose |
 |---|---|---|
-| `/api/cron/send-reminders` | Daily at 14:00 UTC (`0 14 * * *`) | Sends document expiry alerts and maintenance reminder emails to owners |
-| `/api/warmup` | Daily at 08:00 UTC (`0 8 * * *`) | Keeps serverless functions warm to reduce cold start latency |
-| `/api/cron/auto-close-tickets` | Daily at 02:00 UTC (`0 2 * * *`) | Auto-closes support tickets that have been resolved for 7+ days |
+| `/api/cron/cleanup-quarantine` | Every hour (`0 * * * *`) | Cleans up quarantined/stale data |
 
 Cron routes are protected by checking the `Authorization: Bearer <CRON_SECRET>` header. Vercel injects this header automatically when triggering cron jobs.
 
