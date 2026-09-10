@@ -43,19 +43,21 @@ npx prisma generate
 
 ## Schema Overview — Models
 
-The schema has 37 models covering all platform features.
+The schema has 96 models covering all platform features across legacy fleet ops, carrier operations, workflow engine, driver pay, notification system, and document import.
+
+### Legacy Fleet Operations
 
 | Model | Purpose | Key Fields |
 |---|---|---|
-| `Tenant` | Fleet operator account | `id`, `name`, `slug`, `isActive`, `profitMarginThreshold` |
-| `User` | Owner, Manager, or Driver | `id`, `tenantId`, `email`, `passwordHash`, `role`, `isSystemAdmin`, `isActive` |
+| `Tenant` | Fleet operator account | `id`, `name`, `slug`, `isActive`, `profitMarginThreshold`, `requirePreTripInspection`, `blockTripStartOnFailedInspection` |
+| `User` | Owner, Manager, or Driver | `id`, `tenantId`, `email`, `role`, `isSystemAdmin`, `isActive`, `isDispatchReady` |
 | `Truck` | Vehicle in the fleet | `id`, `tenantId`, `make`, `model`, `year`, `vin`, `licensePlate`, `odometer`, `documentMetadata` (JSONB), `createdById?` |
 | `DriverInvitation` | Email invite for new drivers or owners | `id`, `tenantId`, `email`, `role` (defaults DRIVER), `status` (PENDING/ACCEPTED/EXPIRED/CANCELLED), `expiresAt` |
 | `Route` | Assigned trip with driver + truck | `id`, `tenantId`, `driverId`, `truckId`, `origin`, `destination`, `status` (PLANNED/IN_PROGRESS/COMPLETED), `version` (optimistic locking), `createdById?` |
 | `RouteStop` | Multi-stop waypoints on a route | `id`, `routeId`, `tenantId`, `position` (1-based), `type` (PICKUP/DELIVERY), `status` (PENDING/ARRIVED/DEPARTED), `geofenceHit` |
 | `RouteDriver` | Co-driver assignment on a route | `id`, `routeId`, `driverId`, `role` (default "co-driver") |
 | `DriverRouteJoin` | Driver-route payment assignment | `id`, `tenantId`, `routeId`, `driverId`, `isMainDriver`, `paymentMethod`, `fixedAmount?`, `hourlyRate?`, `perMileRate?` |
-| `Document` | Uploaded file metadata | `id`, `tenantId`, `truckId?`, `routeId?`, `driverId?`, `s3Key`, `documentType?`, `expiryDate?` |
+| `Document` | Uploaded file metadata | `id`, `tenantId`, `truckId?`, `routeId?`, `driverId?`, `loadId?`, `s3Key`, `documentType?`, `isRestricted`, `expiryDate?` |
 | `MaintenanceEvent` | Completed service record | `id`, `tenantId`, `truckId`, `serviceType`, `serviceDate`, `odometerAtService`, `cost` |
 | `ScheduledService` | Upcoming service by interval | `id`, `tenantId`, `truckId`, `intervalDays?`, `intervalMiles?`, `isCompleted` |
 | `GPSLocation` | Truck GPS ping | `id`, `tenantId`, `truckId`, `latitude`, `longitude`, `speed`, `timestamp` |
@@ -84,6 +86,93 @@ The schema has 37 models covering all platform features.
 | `TenantIntegration` | Third-party integration config | `id`, `tenantId`, `provider`, `category`, `enabled`, `configJson` (JSONB) |
 | `SupportTicket` | Help ticket from tenant owner or driver | `id`, `ticketNumber` (unique, TKT-NNNN), `tenantId`, `category`, `priority`, `status` |
 | `TicketMessage` | Message thread on a support ticket | `id`, `ticketId`, `senderType` (OWNER/ADMIN), `body` |
+| `AuditLog` | PII access audit trail | `id`, `tenantId`, `userId`, `action`, `resourceType`, `resourceId`, `metadata` |
+| `GridPreference` | Saved column/sort settings for data tables | `id`, `userId`, `gridId`, `columns` (JSONB) |
+| `GridView` | Saved named filter views for data tables | `id`, `userId`, `tenantId`, `gridId`, `name`, `filters` (JSONB) |
+
+### Carrier Operations
+
+| Model | Purpose | Key Fields |
+|---|---|---|
+| `CarrierClient` | Customer/broker in the carrier workflow | `id`, `tenantId`, `name`, `status`, `creditTerms`, `creditLimit` |
+| `CarrierClientContact` | Contact person at a carrier client | `id`, `tenantId`, `clientId`, `name`, `email`, `phone` |
+| `CarrierContract` | Rate agreement between carrier and client | `id`, `tenantId`, `clientId`, `effectiveDate`, `expiryDate`, `status` |
+| `CarrierFacility` | Pickup/delivery facility with geocoded address | `id`, `tenantId`, `name`, `facilityType`, `address`, `latitude?`, `longitude?`, `isDriverResidence` |
+| `CarrierDriver` | Driver profile in the carrier ops module | `id`, `tenantId`, `userId`, `cdlExpiry` (`@db.Date`), `status` |
+| `CarrierTruck` | Truck in the carrier ops module | `id`, `tenantId`, `unitNumber`, `status`, `licenseExpiry` (`@db.Date`), `registrationExpiry` (`@db.Date`), `insuranceExpiry` (`@db.Date`) |
+| `CarrierTruckDefect` | Defect recorded from a pre-trip inspection | `id`, `tenantId`, `truckId`, `stepInstanceId` (partial unique), `severity`, `description`, `resolvedAt?` |
+| `RouteTemplate` | Saved route template for recurring trips | `id`, `tenantId`, `clientId`, `name`, `scheduleType`, `equipmentType`, `endStopFacilityId?` |
+| `RouteTemplateStop` | Stop on a route template | `id`, `templateId`, `facilityId`, `stopType`, `sequence` |
+| `RouteMatrixCache` | Cached OSRM distance matrix for a facility set | `id`, `cacheKey` (unique), `matrix` (JSONB), `computedAt` |
+| `Trip` | A dispatched carrier run (replaces Route in carrier ops) | `id`, `tenantId`, `primaryDriverId`, `truckId`, `status`, `scheduledDeparture`, `inspectionRequired`, `inspectionOverriddenById?` |
+| `CarrierLoad` | Freight load within a trip | `id`, `tenantId`, `tripId`, `clientId?`, `contractId?`, `referenceNumber`, `status` |
+| `CarrierStop` | A stop on a trip itinerary | `id`, `tenantId`, `tripId`, `facilityId`, `sequence`, `stopType`, `status`, `appointmentStart?`, `appointmentEnd?`, `arrivedAt?`, `isEndStop` |
+| `CarrierExpense` | Expense on a carrier trip | `id`, `tenantId`, `tripId`, `category`, `amount`, `approvedById?` |
+| `CarrierDocument` | Document/file attached to a carrier trip or driver | `id`, `tenantId`, `s3Key`, `documentTypeId?`, `entityType`, `entityId` |
+| `CarrierDocumentType` | Tenant-defined document type for carrier docs | `id`, `tenantId`, `name`, `storageCategory`, `isExpirable` |
+| `DriverPayRecord` | Pay record for a driver per trip | `id`, `tenantId`, `driverId`, `tripId`, `grossPay`, `status`, `approvedById?` |
+| `InAppNotification` | In-app notification shown in the bell icon | `id`, `tenantId`, `userId?`, `type`, `title`, `body`, `isRead`, `entityType?`, `entityId?` |
+
+### Workflow Engine (Checklists & Playbooks)
+
+| Model | Purpose | Key Fields |
+|---|---|---|
+| `StepTemplate` | Reusable step definition | `id`, `tenantId`, `name`, `stepType`, `isDispatchBlocker`, `defaultConfig` (JSONB) |
+| `Playbook` | A checklist template composed of step templates | `id`, `tenantId`, `name`, `entityType`, `category`, `playbookType` |
+| `PlaybookStep` | A step within a playbook with ordering | `id`, `playbookId`, `stepTemplateId`, `sequence`, `overrideConfig` (JSONB) |
+| `PlaybookTrigger` | Auto-start rule that fires a playbook on an event | `id`, `tenantId`, `playbookId`, `eventName`, `entityType` |
+| `PlaybookInstance` | A running instance of a playbook for a specific entity | `id`, `tenantId`, `playbookId`, `entityType`, `entityId`, `status`, `assigneeId?` |
+| `StepInstance` | A single step within a playbook instance | `id`, `playbookInstanceId`, `stepTemplateId`, `status`, `result` (JSONB), `completedAt?` |
+| `PlaybookNotification` | Notification config for a playbook event | `id`, `playbookId`, `eventType`, `recipientType`, `templateId?` |
+| `DispatchOverrideAudit` | Audit record when dispatch is force-started despite a block | `id`, `tenantId`, `entityType`, `entityId`, `overriddenById`, `reason`, `overriddenAt` |
+
+### Driver Pay
+
+| Model | Purpose | Key Fields |
+|---|---|---|
+| `DriverCompensationTemplate` | Pay rate template for a driver | `id`, `tenantId`, `driverId`, `payType`, `rateAmount`, `isActive` |
+| `LoadDriverAssignment` | Links a driver to a carrier load for pay purposes | `id`, `tenantId`, `loadId`, `driverId`, `isPrimary` |
+| `LoadPayComponent` | A pay line item on a load assignment | `id`, `tenantId`, `assignmentId`, `payType`, `amount`, `units?` |
+| `DriverBonus` | Ad-hoc bonus for a driver | `id`, `tenantId`, `driverId`, `amount`, `reason`, `settlementId?` |
+| `DriverDeduction` | Deduction from a driver's pay | `id`, `tenantId`, `driverId`, `amount`, `reason`, `settlementId?` |
+| `DriverSettlement` | A finalized pay settlement for a period | `id`, `tenantId`, `driverId`, `periodStart`, `periodEnd`, `grossPay`, `netPay`, `status` |
+| `PayComponentAttachment` | File attached to a pay component | `id`, `tenantId`, `payComponentId`, `s3Key`, `fileName` |
+| `DriverDispute` | Driver dispute on a pay component | `id`, `tenantId`, `driverId`, `payComponentId`, `reason`, `status` |
+| `DriverPayAuditLog` | Immutable audit trail for pay record changes | `id`, `tenantId`, `entityType`, `entityId`, `action`, `changedById`, `beforeState` (JSONB), `afterState` (JSONB) |
+
+### Notification System
+
+| Model | Purpose | Key Fields |
+|---|---|---|
+| `NotificationTemplate` | HTML/text template for a notification trigger | `id`, `tenantId?`, `triggerKey`, `subject`, `defaultHtmlCache`, `bodyDoc` (JSONB) |
+| `TenantNotificationSettings` | Per-trigger enabled/disabled flag for a tenant | `id`, `tenantId`, `triggerKey`, `enabled` |
+| `NotificationSubscription` | User's opt-in subscription to a notification trigger | `id`, `tenantId`, `userId`, `triggerKey` |
+| `UserNotificationPreference` | Per-channel preference (email/push) for a user + trigger | `id`, `tenantId`, `userId`, `triggerKey`, `emailEnabled`, `pushEnabled` |
+| `NotificationSendLog` | Audit log of every notification send attempt | `id`, `tenantId`, `triggerKey`, `recipientId`, `channel`, `status`, `idempotencyKey` (unique) |
+| `NotificationEmailConfig` | Tenant-level SMTP/from-address override | `id`, `tenantId`, `fromAddress`, `smtpHost`, `smtpPort` |
+
+### Document Import
+
+| Model | Purpose | Key Fields |
+|---|---|---|
+| `DocumentImport` | A document upload undergoing extraction and review | `id`, `tenantId`, `createdById`, `status` (8-state lifecycle), `sourceFileKeys` (JSONB), `reviewedExtraction` (JSONB), `sha256` (dedupe index) |
+| `DocumentImportPage` | Per-page extraction cache for a document import | `id`, `importId`, `pageNumber`, `rawExtraction` (JSONB), `cachedAt` |
+| `FacilityExternalReference` | Learned mapping of a client-specific facility code to a facility | `id`, `tenantId`, `clientId`, `facilityId`, `code`, `resolvedVia` (T1/T2/T3/T4) |
+| `DocumentProfile` | Learned document-level metadata (aliases, default settings) | `id`, `tenantId`, `clientId?`, `documentType`, `aliases` (JSONB), `defaultEndStopPolicy?` |
+
+### Plans & Subscriptions
+
+| Model | Purpose | Key Fields |
+|---|---|---|
+| `Plan` | Billing plan definition | `id`, `name`, `price`, `interval`, `features` (JSONB) |
+| `Promo` | Promotional discount code | `id`, `code` (unique), `discountType`, `discountValue`, `expiresAt?`, `maxUses?` |
+| `Subscription` | Active subscription for a tenant | `id`, `tenantId` (unique), `planId`, `status`, `currentPeriodEnd` |
+| `ActivationProgress` | Tracks onboarding checklist completion for a tenant | `id`, `tenantId` (unique), `steps` (JSONB) |
+| `AutomationRule` | Trigger-action automation rule for a tenant | `id`, `tenantId`, `triggerEvent`, `actionType`, `actionConfig` (JSONB), `isEnabled` |
+| `AutomationRun` | Execution log for an automation rule | `id`, `tenantId`, `ruleId`, `status`, `triggeredAt`, `completedAt?` |
+| `AppEvent` | Structured event log for automation triggers | `id`, `tenantId`, `eventType`, `entityType`, `entityId`, `payload` (JSONB), `createdAt` |
+| `TenantMetricsDaily` | Daily aggregated KPI snapshot per tenant | `id`, `tenantId`, `date` (`@db.Date`), `metrics` (JSONB) |
+| `TenantHealthScore` | Computed health score for a tenant | `id`, `tenantId` (unique), `score`, `breakdown` (JSONB), `computedAt` |
 
 ---
 
