@@ -2614,6 +2614,11 @@ model CarrierDocument {
   @@index([loadId])
   @@index([dispatchId])
   @@index([contractId])
+  // quick-595: covers the tenant_isolation_policy subquery
+  // (uploaded_by -> "User"."tenantId"). Name pinned with map: so it matches
+  // the SQL in 20260912130000_tenant_policy_grant_and_default_privilege_closure
+  // exactly rather than relying on Prisma's name derivation.
+  @@index([uploadedBy], map: "carrier_documents_uploaded_by_idx")
   @@map("carrier_documents")
 }
 
@@ -3981,5 +3986,10 @@ model GridView {
 
   @@unique([gridId, userId, name])
   @@index([gridId, userId])
+  // quick-595: the (gridId, userId) index above cannot serve a userId-leading
+  // lookup, and userId is the column the application's where clauses use.
+  // Name pinned with map: so it matches the SQL in
+  // 20260912130000_tenant_policy_grant_and_default_privilege_closure exactly.
+  @@index([userId], map: "grid_view_userId_idx")
   @@map("grid_view")
 }

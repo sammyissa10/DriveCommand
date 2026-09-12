@@ -124,6 +124,18 @@ const EXEMPT_MODELS = new Set([
   // isolation is the explicit `orgId` filter in `inspection-service.ts` plus the
   // `tenant_isolation_policy` written in its own migration, not this list.
   'CarrierTruckDefect', // uses orgId instead of tenantId
+  //
+  // FOURTH AND FIFTH MODELS OF THE SAME CLASS (quick-595). Both grid models
+  // are USER-scoped, not tenant-scoped: neither has a `tenantId` column, so
+  // every operation on them had `{ tenantId }` injected into a model that has
+  // no such field.
+  //
+  // EXEMPTION FROM TENANT POLICY IS NOT EXEMPTION FROM ACCESS CONTROL. Both
+  // tables have RLS DISABLED today and rely entirely on application `where`
+  // clauses on `userId`. User-scoped RLS on these two is a Phase 1 item,
+  // logged in `docs/audits/rls-policy-grant-closure.md`.
+  'GridView', // no tenantId — user-scoped on "userId" (camelCase column)
+  'GridPreference', // no tenantId — user-scoped on "userId" (camelCase column)
   // RouteDriver — removed: now has tenantId (quick-327)
   // SysAdminInvoiceItem — removed: now has tenantId (quick-327)
   // PushToken — removed: now has tenantId (quick-327)
