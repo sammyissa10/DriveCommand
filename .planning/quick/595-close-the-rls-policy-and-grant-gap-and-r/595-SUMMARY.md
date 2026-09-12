@@ -470,4 +470,10 @@ They are tracked, so leaving them dirty would put the generated client out of st
 
 Verified after writing: all four created files exist on disk, all four modified files carry the
 intended change, the staging database returns the stated values, and the commit hash is recorded
-below. **PASSED.**
+`c360b35f`. **PASSED.**
+
+- All 4 created files: FOUND
+- All 4 modified files carry the intended change: CONFIRMED
+- `app.bypass_rls` raw grep still 213 matches (211 executable + 2 prose): UNCHANGED
+- `deferred-bypass-drop.sql`: 86 column-0 DROP statements
+- Commit `c360b35f` exists; working tree clean; NOT pushed
