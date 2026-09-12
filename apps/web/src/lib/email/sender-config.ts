@@ -129,14 +129,28 @@ export async function resolveSenderConfig(): Promise<SenderConfig> {
   const envConfig = resolveFromEnv();
 
   try {
-    const row = await prisma.$transaction(async (tx) => {
-      // @bypass_rls reason: NotificationEmailConfig is a global singleton with
-      // no tenant column; the send path runs outside any tenant context.
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.notificationEmailConfig.findFirst({
-        orderBy: { updatedAt: 'desc' },
-        select: { fromName: true, fromEmail: true, replyTo: true },
-      });
+    // ─── NO TRANSACTION, AND NO BYPASS (quick-596) ──────────────────────────
+    // This used to be a $transaction whose only purpose was to scope
+    //   set_config('app.bypass_rls', 'on', TRUE)
+    // to the read. Both were removed because the bypass was a NO-OP: RLS is
+    // not enabled on NotificationEmailConfig (`relrowsecurity = false`, zero
+    // policies) and `app_user` holds a plain `GRANT SELECT` on it, so the read
+    // succeeds under every role with or without the GUC. Verified against the
+    // catalogue, not inferred from the table having no tenant column.
+    //
+    // Removing it matters beyond tidiness: under `withTenantContext` a
+    // tenant-scoped unit of work is ONE transaction, and a helper that opens
+    // its own inside it deadlocks (P2028, 6/6 at max:1 — see
+    // docs/audits/guc-binding-fix.md §4). This helper is reached from 14 such
+    // units, all through the call chain where a grep cannot see it
+    // (docs/audits/wrapper-migration-scope.md §1b).
+    //
+    // If NotificationEmailConfig ever gains RLS, the fix is NOT to reinstate a
+    // transaction here — that puts the deadlock back. Give it a policy that
+    // admits app_user, or read it on a privileged connection.
+    const row = await prisma.notificationEmailConfig.findFirst({
+      orderBy: { updatedAt: 'desc' },
+      select: { fromName: true, fromEmail: true, replyTo: true },
     });
 
     // Field-by-field fallback, not row-or-nothing: a row with a blank replyTo

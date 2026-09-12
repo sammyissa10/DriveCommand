@@ -136,6 +136,23 @@ export async function isSystemAdmin(): Promise<boolean> {
  * SCOPE: Reads a single User row by primary key (session.userId — the authenticated user's own ID).
  * SAFETY: Gated by getSession() — only runs for authenticated users. The query is
  *         scoped to a specific userId derived from the verified session cookie.
+ *
+ * ─── THE $transaction IS A BYPASS SCOPE, NOT AN ATOMICITY WRAPPER (quick-596) ──
+ * `set_config(..., TRUE)` is transaction-local, so the transaction is the only
+ * thing that confines the bypass to this one read. In autocommit a bare
+ * TRUE-scoped set_config applies to its own statement and nothing else, so
+ * deleting the transaction does not "simplify" this — it silently removes the
+ * bypass, and `User` is FORCE-RLS, so the bootstrap read (which runs before any
+ * tenant GUC is set) would return null and log nobody in.
+ *
+ * It is ALSO why the obvious `withTenantContext` remedy is wrong here. Passing
+ * a caller's transaction in and setting the bypass on it leaves
+ * `app.bypass_rls = on` for the REMAINDER OF THAT CALLER'S UNIT OF WORK — every
+ * later query in the request stops being tenant-filtered. A deadlock is loud;
+ * that is silent. Do not add an optional client parameter that sets the bypass
+ * on it. Nine call-chain units reach a transaction through this function
+ * (docs/audits/wrapper-migration-scope.md §1b); closing them needs a privileged
+ * connection or a policy that admits this read, not a signature change.
  */
 export async function getCurrentUser() {
   const session = await getSession();

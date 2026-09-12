@@ -305,6 +305,19 @@ export async function sendStepOverdue({
 /**
  * INSTANCE_BLOCKED — in-app push alert to dispatchers when a checklist transitions to BLOCKED.
  * Push to dispatchers (OWNER/MANAGER).
+ *
+ * ─── THE $transaction IS A BYPASS SCOPE, NOT AN ATOMICITY WRAPPER (quick-596) ──
+ * The read is a single findUnique and needs no atomicity, but it does need the
+ * bypass: `PlaybookInstance` is FORCE-RLS and this runs from workflow events that
+ * may carry no session, hence no tenant GUC. `set_config(..., TRUE)` is
+ * transaction-local, so deleting the transaction removes the bypass with it and
+ * the instance read returns null — the function then logs "instance not found"
+ * and no dispatcher is ever told a driver is blocked.
+ *
+ * Do NOT replace it with an optional client parameter that sets the bypass on a
+ * caller's transaction: that leaves `app.bypass_rls = on` for the rest of the
+ * caller's unit of work. Five call-chain units reach a transaction through this
+ * function (docs/audits/wrapper-migration-scope.md §1b).
  */
 export async function sendInstanceBlocked(args: {
   playbookInstanceId: string;

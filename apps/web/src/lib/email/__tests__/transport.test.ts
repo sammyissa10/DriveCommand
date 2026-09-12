@@ -138,18 +138,17 @@ describe('sender-config — resolveSenderConfig', () => {
 
   it('prefers the database row over env', async () => {
     vi.doMock('@/lib/db/prisma', () => ({
+      // quick-596: resolveSenderConfig no longer opens a $transaction — the
+      // bypass it used to scope was a no-op (NotificationEmailConfig has RLS
+      // disabled). The double reads the client directly, as the code now does.
       prisma: {
-        $transaction: async (fn: (tx: unknown) => unknown) =>
-          fn({
-            $executeRaw: async () => 0,
-            notificationEmailConfig: {
-              findFirst: async () => ({
-                fromName: 'Fleet Ops',
-                fromEmail: 'ops@drivecommand.app',
-                replyTo: 'reply@drivecommand.io',
-              }),
-            },
+        notificationEmailConfig: {
+          findFirst: async () => ({
+            fromName: 'Fleet Ops',
+            fromEmail: 'ops@drivecommand.app',
+            replyTo: 'reply@drivecommand.io',
           }),
+        },
       },
     }));
     vi.stubEnv('RESEND_FROM_EMAIL', 'EnvName <env@drivecommand.app>');
@@ -166,11 +165,7 @@ describe('sender-config — resolveSenderConfig', () => {
   it('falls back to env when there is no row, keeping the display name', async () => {
     vi.doMock('@/lib/db/prisma', () => ({
       prisma: {
-        $transaction: async (fn: (tx: unknown) => unknown) =>
-          fn({
-            $executeRaw: async () => 0,
-            notificationEmailConfig: { findFirst: async () => null },
-          }),
+        notificationEmailConfig: { findFirst: async () => null },
       },
     }));
     vi.stubEnv('RESEND_FROM_EMAIL', 'team@drivecommand.app');
@@ -188,8 +183,10 @@ describe('sender-config — resolveSenderConfig', () => {
   it('falls back to env rather than throwing when the read fails', async () => {
     vi.doMock('@/lib/db/prisma', () => ({
       prisma: {
-        $transaction: async () => {
-          throw new Error('connection refused');
+        notificationEmailConfig: {
+          findFirst: async () => {
+            throw new Error('connection refused');
+          },
         },
       },
     }));

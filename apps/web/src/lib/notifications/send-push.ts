@@ -12,6 +12,23 @@ const expo = new Expo();
  *
  * Notifications are best-effort — errors are logged but never thrown.
  * Use with after() in serverless routes to ensure delivery survives context freezing.
+ *
+ * ─── THE $transaction IS A BYPASS SCOPE, NOT AN ATOMICITY WRAPPER (quick-596) ──
+ * The bypass here is STRICTLY load-bearing, more so than anywhere else in this
+ * family. `PushToken` is FORCE-RLS and its isolation policy reads
+ *   USING ("userId"::text = current_setting('app.current_user_id', true))
+ * and **nothing in this repository ever sets `app.current_user_id`** — the sole
+ * occurrence is a comment in lib/auth/mobile-auth.ts noting it is not set from
+ * the HTTP context. That policy can never pass, so the bypass is the only reason
+ * this query returns rows at all. Remove it and every push notification silently
+ * stops: zero tokens found, early return, no error, no log.
+ *
+ * `set_config(..., TRUE)` is transaction-local, so the transaction is what
+ * confines the bypass. Do NOT swap it for an optional client parameter that sets
+ * the bypass on a caller's transaction — that leaves `app.bypass_rls = on` for
+ * the rest of the caller's unit of work. Thirteen call-chain units reach a
+ * transaction through this function (docs/audits/wrapper-migration-scope.md §1b);
+ * the real fix is a privileged connection, or repairing the dead policy.
  */
 export async function sendPushToUser(
   userId: string,

@@ -35,6 +35,27 @@ const FIELD_MAP: Record<ActivationEventType, string> = {
  *
  * All DB writes use bypass_rls to operate outside tenant RLS context, which is
  * required because some callers (e.g. accept-invitation) have no active session.
+ *
+ * ─── THE $transaction IS LOAD-BEARING TWICE OVER (quick-596) ──────────────────
+ * 1. BYPASS SCOPE. `set_config(..., TRUE)` is transaction-local, so the
+ *    transaction is what confines the bypass to these statements. Both
+ *    `ActivationProgress` and `AppEvent` are FORCE-RLS, and sessionless callers
+ *    have no tenant GUC, so without the bypass the writes are rejected outright.
+ * 2. REAL ATOMICITY. This is the one helper in its family where the writes must
+ *    also succeed or fail together, and the reason is the idempotency: the
+ *    progress update sets a step timestamp AND recomputes completionPct, then an
+ *    AppEvent is written for that step. Because each timestamp is written only
+ *    once, a partial failure between the two leaves completionPct advanced with
+ *    NO event recorded — and the retry takes the idempotent early-exit and never
+ *    writes the missing event. The activation funnel loses that step
+ *    permanently, and tenant.activated can fire against a progress row whose
+ *    events do not add up. Only a manual backfill recovers it.
+ *
+ * So do not remove this transaction to reduce the withTenantContext deadlock
+ * count, and do not replace it with an optional client parameter that sets the
+ * bypass on a caller's transaction (that leaks the bypass across the caller's
+ * whole unit of work). Five call-chain units reach a transaction through this
+ * function; closing them needs a privileged connection.
  */
 export async function recordActivationEvent(
   tenantId: string,
