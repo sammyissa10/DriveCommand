@@ -2928,10 +2928,11 @@ model DriverPayRecord {
   percentageApplied Decimal?  @map("percentage_applied") @db.Decimal(5, 4)
   flatAmount        Decimal?  @map("flat_amount") @db.Decimal(10, 2)
   basePay           Decimal   @default(0) @map("base_pay") @db.Decimal(10, 2)
-  bonuses           Decimal   @default(0)
-  tips              Decimal   @default(0)
-  deductions        Decimal   @default(0)
-  reimbursements    Decimal   @default(0)
+  // (12,2) matches grossRevenue above, driver_settlements and driver_bonuses.amount, and deliberately supersedes the (8,2) declared by 20260404100012_driver_pay_records. Unannotated, these four drifted to numeric(65,30) in production. See migration 20260912120000_driver_pay_records_money_precision.
+  bonuses           Decimal   @default(0) @db.Decimal(12, 2)
+  tips              Decimal   @default(0) @db.Decimal(12, 2)
+  deductions        Decimal   @default(0) @db.Decimal(12, 2)
+  reimbursements    Decimal   @default(0) @db.Decimal(12, 2)
   netPay            Decimal   @default(0) @map("net_pay") @db.Decimal(10, 2)
   payPeriodStart    DateTime? @map("pay_period_start") @db.Date
   payPeriodEnd      DateTime? @map("pay_period_end") @db.Date
