@@ -128,7 +128,7 @@ DriveCommand/
 - **SysAdminInvoice** — billing from sysadmin to tenants
 - **SupportTicket** — in-app support with screenshot capture + file attachment
 
-Migration strategy: Prisma migrate deploy via hook on every migration.sql write.
+Migration strategy: raw SQL in prisma/migrations/<ts>_<name>/migration.sql, applied by scripts/migrate.mjs at next start. No auto-deploy hook exists — writing migration.sql applies nothing. Verified 2026-09-11 (quick-593).
 
 ---
 
