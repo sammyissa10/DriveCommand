@@ -1,0 +1,36 @@
+-- REPAIR MIGRATION (quick-593, repair 6)
+--
+-- Missing object: app_user DML grants on "TicketMessage"
+--
+-- Why it was missing: 20260602000001_phase1_grant_app_user_dml ends with a
+-- self-check that every FORCE-RLS table in public, outside a small allowlist,
+-- carries SELECT/INSERT/UPDATE/DELETE for app_user, and raises otherwise:
+--   quick-419: % tenant-scoped table(s) still missing app_user grants after migration
+-- On a rebuild it raises with a count of 1. "TicketMessage" is that table: it
+-- is the only member of the filtered set that NO migration in this repository
+-- grants. Established by scanning every migration:
+--   grep -rhoE 'ON +"?[A-Za-z_]+"? +TO app_user' prisma/migrations
+-- yields 88 distinct tables; the filtered set at this point in the chain has
+-- 83; the single difference is "TicketMessage". The three carrier tables that
+-- also look like candidates -- carrier_documents, route_template_stops and
+-- stops -- are granted by 20260527000001_quick410_advisor_rls_fix.
+--
+-- This gap is already known: quick-413 recorded "TicketMessage missing app_user
+-- GRANT" and it was fixed in production by hand, never in the chain.
+--
+-- How production's state was established: read from production
+-- (project oqdhberkghtnszrkdvfm), read-only, on 2026-09-12.
+--
+--   information_schema.role_table_grants, grantee 'app_user', "TicketMessage":
+--     DELETE, INSERT, SELECT, UPDATE
+--   pg_class: relrowsecurity = true, relforcerowsecurity = true
+--   _prisma_migrations: 20260602000001 has applied_steps_count = 1, so the
+--     migration did run there -- its check passed only because the grant had
+--     already been applied out of band.
+--
+-- No-op against production: GRANT in PostgreSQL is idempotent. Re-granting a
+-- privilege the role already holds succeeds and changes nothing; there is no
+-- IF NOT EXISTS form because none is needed. Production already holds all four
+-- privileges, as quoted above, so this statement is a no-op there.
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON "TicketMessage" TO app_user;

@@ -1,0 +1,33 @@
+-- REPAIR MIGRATION (quick-593, repair 5)
+--
+-- Missing object: "Document"."documentType"
+--
+-- Why it was missing: no migration in this repository creates this column.
+-- 20260516100002_restricted_documents_column READS it:
+--   UPDATE "Document" SET is_restricted = TRUE
+--   WHERE "documentType"::text IN ('SSN_CARD', ... ,'I9') AND is_restricted = FALSE;
+-- but never adds it, and no other migration does either. Production has the
+-- column, so that migration succeeds there and fails on a rebuild with
+--   column "documentType" does not exist
+--
+-- How production's definition was established: read from production
+-- (project oqdhberkghtnszrkdvfm), read-only, on 2026-09-12.
+--
+--   information_schema.columns:
+--     table_name='Document', column_name='documentType',
+--     udt_name='DocumentType', is_nullable='YES', column_default=NULL
+--
+--   It is the only column in the database using that enum type.
+--
+-- Directory name: this sorts after 20260516100001_restricted_documents (which
+-- adds the eight PII enum values) and before 20260516100002_restricted_documents_column
+-- (which reads the column). Under the lexicographic readdirSync().sort() that
+-- migrate.mjs uses, '_' (0x5F) sorts before 'a' (0x61), so
+-- '20260516100001_restricted_documents' < '20260516100001a_...' <
+-- '20260516100002_...'. The trailing letter is deliberate; a numeric suffix
+-- could not be placed between two adjacent timestamps.
+--
+-- No-op against production: the column already exists there, so
+-- ADD COLUMN IF NOT EXISTS does nothing.
+
+ALTER TABLE "Document" ADD COLUMN IF NOT EXISTS "documentType" "DocumentType";

@@ -1,66 +1,97 @@
 # quick-593 — Make the migration chain replay from zero
 
 **Date:** 2026-09-12
-**Outcome:** **Blocked on a credential. Zero of the 10 repair cycles ran.**
-One repair migration is written and its no-op property proven, but nothing was
-applied, so the number of chain gaps remains unknown.
+**Outcome: the chain now replays from zero.** `Migrations complete`, exit 0.
+**7 of 10 repair cycles used.**
 
 Log: [`docs/audits/migration-chain-repair.md`](../../../docs/audits/migration-chain-repair.md)
 
 ---
 
-## Baseline confirmed
+## The finding
 
-Staging had not drifted: **37** applied migrations, **0** unfinished ledger
-rows, **38** tables, last applied `20260329000001_add_load_sequence`.
+**Seven defects, of four distinct kinds, stood between this repository and its
+own database.**
 
-## What was produced
+| # | Kind | Object |
+|---|---|---|
+| 1 | missing column | `"Document"."driverId"` |
+| 2 | **invalid SQL** | `20260417100001` — window function in `UPDATE … SET` |
+| 3 | missing column | `"FleetMessage"."recipientId"` |
+| 4 | missing table | `carrier_compliance_alert_log` |
+| 5 | missing enum type | `"DocumentType"` |
+| 6 | missing column | `"Document"."documentType"` |
+| 7 | missing grant | `app_user` DML on `TicketMessage` |
 
-- **`20260330000001_repair_document_driver_id`** — adds `"Document"."driverId"`
-  plus its foreign key. Sorts between the last applied migration and the
-  failing one. Both halves are guarded, and both are **provably no-ops against
-  production** because both objects were read back from production first:
-  the column from `information_schema.columns` (`uuid`, nullable, no default)
-  and the constraint from `pg_get_constraintdef`
-  (`FOREIGN KEY ("driverId") REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE SET NULL`).
-  `ADD CONSTRAINT` has no `IF NOT EXISTS` in PostgreSQL, so the FK is guarded by
-  a `DO` block testing `pg_constraint` rather than by a bare statement.
-- **The repair log**, with cycle 1 recorded in full and the budget stated.
-- **`apps/web/.env.staging`** (gitignored, not committed) — now persists both
-  `postgres` keys with the right host, ports and pooler conventions.
+Six were closed with new forward migrations, each `IF NOT EXISTS` or equivalently
+guarded and each **proved a no-op against production by reading the object back
+from production first**. Two needed a `DO` block rather than a bare guard,
+because `ADD CONSTRAINT` and `CREATE TYPE` have no `IF NOT EXISTS` form.
 
-## Why it blocked
+## The one edited file
 
-Two credential failures in a row, neither of them a chain problem.
+`20260417100001_add_vehicle_id_display_name` used `ROW_NUMBER() OVER (…)` inside
+`UPDATE … SET`, which PostgreSQL rejects at parse-analysis. No forward migration
+could repair it, because the error precedes any data access.
 
-1. The password lived only in a scratchpad file outside the repo and was
-   deleted between sessions.
-2. The replacement was the literal text `PASTE_PASSWORD_HERE`, which failed
-   authentication on both ports. Diagnosed without printing the secret: 19
-   characters of `[A-Z_]` only, which is not the shape of a Supabase password,
-   then an exact match against a known placeholder. A field-based connection
-   bypassing URL encoding failed identically, ruling out an encoding fault.
+The exemption rested on production's ledger row, quoted in full in the file
+header and the log: `applied_steps_count = 0`, empty logs, `started_at =
+finished_at`, a real SHA-256 checksum. That is the hand-mirrored
+**resolved-not-run** signature (DEC-17), so the file has never executed
+anywhere; the real change reached production as
+`20260418184001_...` through the Supabase MCP path.
 
-## Judgement corrected from quick-592
+The edit was the minimum that makes it valid: a correlated subquery, ordered on
+`("created_at", "id")` rather than `created_at` alone, because `COUNT(*)` gives
+ties equal ranks and the same file later creates a **unique** index on
+`vehicle_id`. Nothing else in the file was touched.
 
-quick-592 declined to write `.env.staging` on the grounds that a file with one
-real key and two placeholders was worse than none. That was wrong in one
-respect: it also discarded the key that did exist, and the cost appeared
-immediately as a blocked session. The file now exists with the two knowable
-keys; the unknown password is the literal token `PASSWORD_NOT_SET` so the
-strings fail loudly rather than looking usable. `STAGING_DATABASE_URL_APP_USER`
-is absent rather than tokenised, because that role genuinely does not exist.
+## Final state
 
-## Safety check worth keeping
+| | Production | Rebuilt staging |
+|---|---|---|
+| Ledger rows | 141 | **147** |
+| Repo migration directories | — | **147** |
+| Unfinished ledger rows | — | **0** |
+| Tables in `public` | 98 | **98** |
+
+147 = 141 + 6 repairs, and the repo directory count matches the ledger exactly,
+so nothing was skipped and no ledger row was hand-inserted.
+
+## Schema diff, by query
+
+91 of 97 shared tables have identical column sets once audit columns of both
+casings are excluded. What remains:
+
+- **Missing from the rebuild:** the table `grid_preference` (an eighth
+  out-of-band object — no migration creates it; it appears only inside an
+  allowlist of *names*, which is why it never caused a failure), plus **21
+  columns across 6 tables** (`ActivationProgress`, `Document`,
+  `DriverInvitation`, `FleetMessage`, `PayrollRecord`, `SupportTicket`).
+  `FleetMessage.isBroadcast` is notable: `CLAUDE.md` documents it as part of the
+  messaging model and no migration creates it.
+- **Extra in the rebuild:** `policy_drop_audit`, expected, from quick-591's
+  migration which production's ledger does not contain. Plus the TKT-0015
+  camelCase audit columns, which the chain applies and production largely lacks.
+
+**The real conclusion is not that seven defects were fixed.** It is that
+production and this repository describe **different databases, and neither is a
+superset of the other.**
+
+The 21 columns and `grid_preference` are reported, not fixed — closing them is
+eight more repair migrations and was beyond the remit of making the chain
+replay.
+
+## Left for the owner
+
+`apps/web/.env.staging` carries **different passwords** in its two keys.
+`STAGING_DIRECT_URL` authenticates on both ports and is what this task used;
+`STAGING_DATABASE_URL` is untested. Not touched, as instructed. It should be
+reconciled before Prompt 2 uses the transaction-mode key.
+
+## Correction to a standing note
 
 Project memory records a hook firing on every `migration.sql` write that runs
-`prisma migrate deploy`. **No such hook is configured** — only a GSD
-session-start update check. This was verified *before* writing any migration
-file, since such a hook would have applied repair migrations to production.
-The memory note is stale.
-
-## Next
-
-Supply the real password, either in the scratchpad handoff file or by replacing
-`PASSWORD_NOT_SET` in `apps/web/.env.staging` directly, then re-run. Cycle 1 is
-ready to apply and the loop continues from there.
+`prisma migrate deploy`. **No such hook exists** — only a GSD session-start
+check. Verified before writing the first migration, since such a hook would
+have applied all six repairs straight to production. The note is stale.

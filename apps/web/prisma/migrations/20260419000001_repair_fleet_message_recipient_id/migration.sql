@@ -1,0 +1,28 @@
+-- REPAIR MIGRATION (quick-593, repair 2)
+--
+-- Missing object: "FleetMessage"."recipientId"
+--
+-- Why it was missing: "FleetMessage" is created by 20260314000001_add_fleet_message
+-- without a recipientId column, and no migration in this repository adds it
+-- (grep -rn 'ADD COLUMN[^;]*recipientId' prisma/migrations returns nothing).
+-- 20260419100001_add_dispatch_id_read_at_to_fleet_message nonetheless indexes it:
+--   CREATE INDEX "FleetMessage_recipientId_idx" ON "FleetMessage"("recipientId");
+-- Production has the column, so that migration succeeded there and fails on any
+-- database rebuilt from this repository.
+--
+-- How production's definition was established: read from production
+-- (project oqdhberkghtnszrkdvfm), read-only, on 2026-09-12.
+--
+--   information_schema.columns:
+--     column_name='recipientId', data_type='uuid', udt_name='uuid',
+--     is_nullable='YES', column_default=NULL,
+--     character_maximum_length=NULL, is_identity='NO', is_generated='NEVER'
+--
+--   pg_constraint: NO constraint on production references this column.
+--     The query returned zero rows, so no foreign key is created here.
+--     This differs from repair 1, where Document.driverId did carry an FK.
+--
+-- No-op against production: the column already exists there, so
+-- ADD COLUMN IF NOT EXISTS does nothing.
+
+ALTER TABLE "FleetMessage" ADD COLUMN IF NOT EXISTS "recipientId" UUID;
