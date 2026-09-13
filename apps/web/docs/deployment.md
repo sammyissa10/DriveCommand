@@ -84,16 +84,14 @@ Defined in `vercel.json`. Vercel schedules these automatically:
 
 | Path | Schedule | Purpose |
 |---|---|---|
-| `/api/cron/send-reminders` | Daily at 14:00 UTC (`0 14 * * *`) | Sends document expiry alerts and maintenance reminder emails to owners |
-| `/api/warmup` | Daily at 08:00 UTC (`0 8 * * *`) | Keeps serverless functions warm to reduce cold start latency |
-| `/api/cron/auto-close-tickets` | Daily at 02:00 UTC (`0 2 * * *`) | Auto-closes support tickets that have been resolved for 7+ days |
+| `/api/cron/cleanup-quarantine` | Hourly (`0 * * * *`) | Cleans up quarantined document import records |
 
 Cron routes are protected by checking the `Authorization: Bearer <CRON_SECRET>` header. Vercel injects this header automatically when triggering cron jobs.
 
 To trigger a cron manually for testing:
 
 ```bash
-curl -X POST https://your-domain.vercel.app/api/cron/send-reminders \
+curl -X POST https://your-domain.vercel.app/api/cron/cleanup-quarantine \
   -H "Authorization: Bearer <CRON_SECRET>"
 ```
 
@@ -131,7 +129,7 @@ After deploying:
 The `DATABASE_URL` may be wrong or unreachable from Vercel's build environment. Confirm the Supabase project is not paused and the connection string is correct.
 
 **502 / Function timeout errors in production**
-The serverless function may be hitting cold start latency. The warmup cron at 08:00 UTC mitigates this. If the issue persists, check Vercel's function duration limits.
+The serverless function may be hitting cold start latency. Check Vercel's function duration limits and consider adding a warmup endpoint if needed.
 
 **"Invalid DATABASE_URL" or Prisma P1000 errors**
 Ensure `DATABASE_URL` uses the Session Mode pooler (port 6543). The direct connection (port 5432) is not supported in Vercel's serverless environment.
