@@ -79,19 +79,23 @@ For `$queryRaw` calls (outside a transaction), RLS is bypassed entirely because 
 
 The middleware (`src/middleware.ts`) runs on every request except static assets. It enforces authentication, tenant context, and role-based routing.
 
-**5-step flow:**
+**7-step flow:**
 
 1. **Public paths pass through.** Requests to `/sign-in`, `/sign-up`, `/api/auth/*`, `/api/warmup`, `/api/webhooks`, `/track`, `/accept-invitation`, and static files (`/_next/static`, `/_next/image`, `/favicon.*`) skip all checks.
 
-2. **Unauthenticated requests are redirected.** If no valid `session` cookie exists (or decryption fails), the user is redirected to `/sign-in?redirect_url=<original path>`.
+2. **CSRF validation on state-changing requests.** `POST`, `PUT`, `DELETE`, and `PATCH` requests are checked for a valid `Origin` header. Mobile API routes (`/api/mobile/*`, `/api/gps/*`), webhooks, and cron routes are exempt.
 
-3. **Authenticated users with no `tenantId` are redirected to `/onboarding`.** A session without a `tenantId` means the user exists but has not been assigned to a tenant yet (e.g., sysadmin in a broken state, or an edge case during tenant creation). API paths and `/onboarding` itself are excluded from this redirect.
+3. **Unauthenticated requests are redirected.** If no valid session cookie exists, the user is redirected to `/sign-in?redirect_url=<original path>`. API routes pass through so their handlers can validate the `Authorization` header themselves.
 
-4. **System admins are restricted to the admin portal.** If `session.isSystemAdmin` is true, the user may only access paths starting with `/admin`, `/admin-support`, `/admin-dashboard`, `/tenants`, `/unauthorized`, `/onboarding`, or `/api`. Any other path redirects to `/admin-support`.
+4. **Authenticated users with no `tenantId` are redirected to `/onboarding`.** A session without a `tenantId` means the user exists but has not been assigned to a tenant yet. API paths and `/onboarding` itself are excluded from this redirect. System admins are exempt (they have no `tenantId` by design).
 
-5. **DRIVER role users are redirected away from owner paths.** If the session role is `DRIVER` and the requested path matches the `OWNER_PATHS` list (`/dashboard`, `/trucks`, `/drivers`, `/routes`, `/loads`, `/invoices`, `/payroll`, `/crm`, `/settings`, `/compliance`, `/ai-documents`, `/profit-predictor`, `/lane-analytics`, `/ifta`, `/live-map`, `/fuel`, `/safety`, `/tags`), the user is redirected to `/my-route`.
+5. **System admins are restricted to the admin portal.** If `session.isSystemAdmin` is true, the user may only access paths starting with `/admin`, `/admin-support`, `/admin-dashboard`, `/tenants`, `/users`, `/billing`, `/plans`, `/promos`, `/docs`, `/unauthorized`, `/onboarding`, `/api`, `/automations`, or `/notifications`. Any other path redirects to `/admin-support`.
 
-6. **Authenticated tenant users get `x-tenant-id` injected.** All authenticated requests that pass the above checks have `x-tenant-id: <tenantId>` added as a request header before being forwarded to the Next.js server.
+6. **DRIVER role users are redirected away from owner-only paths.** If the session role is `DRIVER` and the requested path is an owner-only path, the user is redirected to `/home`.
+
+7. **MANAGER role users are checked for granular permissions.** If the session role is `MANAGER`, owner-only paths redirect to `/carrier/dashboard`. For other gated routes, the manager's `permissions` object is checked. A missing permission key is treated as allowed (default-allow); only an explicit `false` blocks access and redirects to `/carrier/dashboard`.
+
+8. **Authenticated tenant users get `x-tenant-id` injected.** All requests that pass the above checks have `x-tenant-id: <tenantId>` added as a request header before being forwarded to the Next.js server.
 
 ---
 

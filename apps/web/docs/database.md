@@ -43,47 +43,141 @@ npx prisma generate
 
 ## Schema Overview — Models
 
-The schema has 37 models covering all platform features.
+The schema has approximately 100+ models organised into logical groups below.
 
-| Model | Purpose | Key Fields |
-|---|---|---|
-| `Tenant` | Fleet operator account | `id`, `name`, `slug`, `isActive`, `profitMarginThreshold` |
-| `User` | Owner, Manager, or Driver | `id`, `tenantId`, `email`, `passwordHash`, `role`, `isSystemAdmin`, `isActive` |
-| `Truck` | Vehicle in the fleet | `id`, `tenantId`, `make`, `model`, `year`, `vin`, `licensePlate`, `odometer`, `documentMetadata` (JSONB), `createdById?` |
-| `DriverInvitation` | Email invite for new drivers or owners | `id`, `tenantId`, `email`, `role` (defaults DRIVER), `status` (PENDING/ACCEPTED/EXPIRED/CANCELLED), `expiresAt` |
-| `Route` | Assigned trip with driver + truck | `id`, `tenantId`, `driverId`, `truckId`, `origin`, `destination`, `status` (PLANNED/IN_PROGRESS/COMPLETED), `version` (optimistic locking), `createdById?` |
-| `RouteStop` | Multi-stop waypoints on a route | `id`, `routeId`, `tenantId`, `position` (1-based), `type` (PICKUP/DELIVERY), `status` (PENDING/ARRIVED/DEPARTED), `geofenceHit` |
-| `RouteDriver` | Co-driver assignment on a route | `id`, `routeId`, `driverId`, `role` (default "co-driver") |
-| `DriverRouteJoin` | Driver-route payment assignment | `id`, `tenantId`, `routeId`, `driverId`, `isMainDriver`, `paymentMethod`, `fixedAmount?`, `hourlyRate?`, `perMileRate?` |
-| `Document` | Uploaded file metadata | `id`, `tenantId`, `truckId?`, `routeId?`, `driverId?`, `s3Key`, `documentType?`, `expiryDate?` |
-| `MaintenanceEvent` | Completed service record | `id`, `tenantId`, `truckId`, `serviceType`, `serviceDate`, `odometerAtService`, `cost` |
-| `ScheduledService` | Upcoming service by interval | `id`, `tenantId`, `truckId`, `intervalDays?`, `intervalMiles?`, `isCompleted` |
-| `GPSLocation` | Truck GPS ping | `id`, `tenantId`, `truckId`, `latitude`, `longitude`, `speed`, `timestamp` |
-| `SafetyEvent` | Harsh driving event from ELD/telematics | `id`, `tenantId`, `truckId`, `driverId?`, `eventType`, `severity`, `gForce?`, `speed?`, `timestamp` |
-| `DriverHOSEntry` | Driver hours-of-service log entry | `id`, `tenantId`, `driverId`, `status` (OFF_DUTY/SLEEPER_BERTH/DRIVING/ON_DUTY), `startTime`, `endTime?`, `notes?` |
-| `DriverIncident` | Driver-reported incident | `id`, `tenantId`, `driverId`, `category`, `severity`, `description`, `latitude?`, `longitude?`, `photoS3Key?`, `reportedAt` |
-| `FleetMessage` | In-app messaging between drivers and owners | `id`, `tenantId`, `routeId?`, `loadId?`, `senderId`, `senderRole`, `body`, `recipientId?`, `isBroadcast` |
-| `FuelRecord` | Fuel fill-up record | `id`, `tenantId`, `truckId`, `fuelType`, `quantity`, `totalCost?`, `odometer`, `timestamp` |
-| `NotificationLog` | Email send audit log | `id`, `tenantId`, `idempotencyKey` (unique), `notificationType`, `status` (PENDING/SENT/FAILED) |
-| `PushToken` | Mobile push notification token | `id`, `userId`, `token`, `platform` (ios/android) |
-| `Tag` | Color label for trucks/drivers | `id`, `tenantId`, `name`, `color` |
-| `TagAssignment` | Tag applied to a Truck or User | `id`, `tenantId`, `tagId`, `truckId?`, `userId?` |
-| `ExpenseCategory` | Named expense bucket | `id`, `tenantId`, `name`, `isSystemDefault` |
-| `RouteExpense` | Expense on a route (soft delete) | `id`, `tenantId`, `routeId`, `categoryId`, `amount`, `deletedAt?` |
-| `ExpenseTemplate` | Reusable expense preset | `id`, `tenantId`, `name` |
-| `ExpenseTemplateItem` | Line item in an expense template | `id`, `templateId`, `categoryId`, `tenantId`, `amount`, `description` |
-| `RoutePayment` | Revenue received for a route (soft delete) | `id`, `tenantId`, `routeId`, `amount`, `status` (PENDING/PAID), `paidAt?` |
-| `Customer` | CRM contact / shipper | `id`, `tenantId`, `companyName`, `priority`, `status`, `totalRevenue`, `emailNotifications` |
-| `CustomerInteraction` | CRM activity log | `id`, `tenantId`, `customerId`, `type`, `subject`, `isAutomated` |
-| `Invoice` | Invoice to a customer | `id`, `tenantId`, `customerId?`, `routeId?`, `loadId?`, `invoiceNumber`, `amount`, `status` (DRAFT/SENT/PAID/OVERDUE/CANCELLED), `createdById?` |
-| `InvoiceItem` | Line item on an invoice | `id`, `invoiceId`, `tenantId`, `description`, `quantity`, `unitPrice`, `amount` |
-| `SysAdminInvoice` | Invoice from DriveCommand to a tenant | `id`, `tenantId`, `invoiceNumber` (unique), `status` (DRAFT/SENT/PAID/OVERDUE/CANCELLED), `issueDate`, `dueDate`, `subtotal`, `total`, `isRecurring` |
-| `SysAdminInvoiceItem` | Line item on a SysAdmin invoice | `id`, `invoiceId`, `chargeType?`, `description`, `quantity`, `unitPrice`, `amount` |
-| `PayrollRecord` | Driver pay period record | `id`, `tenantId`, `driverId`, `periodStart`, `periodEnd`, `totalPay`, `status` (DRAFT/APPROVED/PAID), `createdById?` |
-| `Load` | Dispatched load/shipment | `id`, `tenantId`, `loadNumber`, `customerId`, `routeId?`, `status` (PENDING→DISPATCHED→PICKED_UP→IN_TRANSIT→DELIVERED→INVOICED), `trackingToken?`, `createdById?` |
-| `TenantIntegration` | Third-party integration config | `id`, `tenantId`, `provider`, `category`, `enabled`, `configJson` (JSONB) |
-| `SupportTicket` | Help ticket from tenant owner or driver | `id`, `ticketNumber` (unique, TKT-NNNN), `tenantId`, `category`, `priority`, `status` |
-| `TicketMessage` | Message thread on a support ticket | `id`, `ticketId`, `senderType` (OWNER/ADMIN), `body` |
+### Core / Legacy Models
+
+| Model | Purpose |
+|---|---|
+| `Tenant` | Fleet operator account |
+| `User` | Owner, Manager, or Driver |
+| `Truck` | Vehicle in the fleet (legacy — carrier operations use `CarrierTruck`) |
+| `DriverInvitation` | Email invite for new drivers or owners |
+| `Route` | Legacy route with driver + truck (carrier operations use `Trip`) |
+| `RouteStop` | Multi-stop waypoints on a legacy route |
+| `RouteDriver` | Co-driver assignment on a legacy route |
+| `DriverRouteJoin` | Driver-route payment assignment |
+| `Document` | Uploaded file metadata (legacy — carrier operations use `CarrierDocument`) |
+| `MaintenanceEvent` | Completed service record (legacy truck) |
+| `ScheduledService` | Upcoming service by interval (legacy truck) |
+| `GPSLocation` | Truck GPS ping (legacy) |
+| `GpsReport` | Mobile app GPS ping from `expo-task-manager` background task |
+| `SafetyEvent` | Harsh driving event from ELD/telematics |
+| `DriverHOSEntry` | Driver hours-of-service log entry |
+| `DriverIncident` | Driver-reported incident with optional photo |
+| `FleetMessage` | In-app messaging between drivers and owners |
+| `FuelRecord` | Fuel fill-up record |
+| `NotificationLog` | Email send audit log (idempotency key, PENDING/SENT/FAILED) |
+| `PushToken` | Expo push notification token per user |
+| `Tag` | Color label for trucks/drivers |
+| `TagAssignment` | Tag applied to a Truck or User |
+| `ExpenseCategory` | Named expense bucket |
+| `RouteExpense` | Expense on a legacy route (soft delete) |
+| `ExpenseTemplate` | Reusable expense preset |
+| `ExpenseTemplateItem` | Line item in an expense template |
+| `RoutePayment` | Revenue received for a legacy route (soft delete) |
+| `Customer` | CRM contact / shipper |
+| `CustomerInteraction` | CRM activity log |
+| `Invoice` | Invoice to a customer |
+| `InvoiceItem` | Line item on an invoice |
+| `SysAdminInvoice` | Invoice from DriveCommand to a tenant |
+| `SysAdminInvoiceItem` | Line item on a SysAdmin invoice |
+| `PayrollRecord` | Driver pay period record |
+| `Load` | Dispatched load/shipment (legacy) |
+| `TenantIntegration` | Third-party integration config (JSONB) |
+| `SupportTicket` | Help ticket from tenant owner or driver |
+| `TicketMessage` | Message thread on a support ticket |
+| `AuditLog` | Immutable record of sensitive mutations |
+| `GridView` | Saved column configuration for data tables |
+| `GridPreference` | Per-user grid column preferences |
+| `DocFeedback` | User feedback on in-app help articles |
+
+### Carrier Operations Models
+
+The core operational data model for the Document Import and Trip Dispatch features.
+
+| Model | Purpose |
+|---|---|
+| `CarrierClient` | Customer / shipper in the carrier's book of business |
+| `CarrierClientContact` | Contact person at a carrier client |
+| `CarrierContract` | Rate agreement between carrier and client |
+| `CarrierFacility` | Physical location (warehouse, dealership, yard, etc.) |
+| `CarrierDriver` | Driver profile linked to a `User` |
+| `CarrierTruck` | Carrier-model truck with expiry dates (`licenseExpiry`, `registrationExpiry`, `insuranceExpiry`) |
+| `CarrierTruckDefect` | Defect recorded during a pre-trip inspection (partial unique index on `step_instance_id`) |
+| `Trip` (table: `dispatches`) | Active or completed dispatch/trip linking driver, truck, and a route template |
+| `CarrierLoad` | Individual load on a trip |
+| `CarrierStop` | Stop on a trip with pickup/delivery/fuel/layover type |
+| `CarrierDocument` | Document attached to a carrier entity (driver, truck, load) |
+| `CarrierDocumentType` | Tenant-configurable document type catalogue |
+| `CarrierExpense` | Expense tied to a dispatch, load, or stop |
+| `RouteTemplate` | Saved route template matching a regular lane |
+| `RouteTemplateStop` | Stop definition within a route template |
+| `RouteMatrixCache` | L2 distance-matrix cache keyed by sorted facility-id set |
+| `CarrierCatalogMeta` | Tenant-configurable display labels for enum values |
+
+### Document Import Models
+
+| Model | Purpose |
+|---|---|
+| `DocumentImport` | A single document import job (rate confirmation, invoice, load tender) with 8-state lifecycle |
+| `DocumentImportPage` | Per-page extraction cache with SHA-256 dedup |
+| `FacilityExternalReference` | Learned external reference (`tenant × client × source_code → facility`) for silent T1 resolution |
+| `DocumentProfile` | Per-tenant, per-client extraction hints and commit defaults |
+
+### Workflow Engine Models
+
+| Model | Purpose |
+|---|---|
+| `StepTemplate` | Reusable step definition (INSPECTION_ITEM, DOCUMENT_UPLOAD, SIGNATURE, etc.) |
+| `Playbook` | Named checklist/workflow (VEHICLE_INSPECTION, DRIVER_ONBOARDING, etc.) |
+| `PlaybookStep` | Ordered step within a playbook with `isDispatchBlocker` flag |
+| `PlaybookTrigger` | Auto-start rule: fires a playbook on `TriggerEvent` (ON_DRIVER_CREATE, ON_DISPATCH_CREATE, etc.) |
+| `PlaybookInstance` | Live run of a playbook against a specific entity (driver, dispatch) |
+| `StepInstance` | Single step answer within a playbook instance |
+| `PlaybookNotification` | Notification sent during a playbook run |
+| `DispatchOverrideAudit` | Immutable record of an owner overriding a blocked dispatch |
+
+### Notification System Models
+
+| Model | Purpose |
+|---|---|
+| `NotificationTemplate` | Tiptap-editable email/push template per trigger type |
+| `NotificationEmailConfig` | Per-tenant SMTP override |
+| `NotificationSendLog` | Per-send delivery record with dedup key |
+| `NotificationSubscription` | User opt-in for subscriber-only triggers |
+| `UserNotificationPreference` | Per-user, per-trigger channel preferences (email, push, in-app) |
+| `TenantNotificationSettings` | Tenant-level notification defaults |
+| `InAppNotification` | In-app notification record (bell icon) |
+
+### Driver Pay Models
+
+| Model | Purpose |
+|---|---|
+| `DriverCompensationTemplate` | Pay rate template per driver (CPM, percentage, hourly, flat) |
+| `LoadDriverAssignment` | Driver assignment to a load with pay details and status (DRAFT→APPROVED→PAID) |
+| `LoadPayComponent` | Individual pay line item on an assignment (linehaul, FSC, detention, bonus, etc.) |
+| `DriverBonus` | One-time or installment bonus record |
+| `DriverDeduction` | Recurring deduction (loan, equipment, etc.) |
+| `DriverSettlement` | Pay period settlement grouping assignments and bonuses |
+| `PayComponentAttachment` | File attachment on a pay component |
+| `DriverDispute` | Driver-raised dispute on a pay component |
+| `DriverPayAuditLog` | Immutable audit trail for pay mutations |
+| `DriverPayRecord` | Simplified pay summary per dispatch/load |
+
+### SaaS Platform Models (Phase 47)
+
+| Model | Purpose |
+|---|---|
+| `Plan` | Subscription tier definition (limits, pricing, Stripe product) |
+| `Promo` | Promotional code (bonus trial days, discount %) |
+| `Subscription` | Tenant subscription (TRIALING/ACTIVE/PAST_DUE/CANCELLED) |
+| `ActivationProgress` | Tracks onboarding milestone events for a tenant |
+| `AutomationRule` | System or tenant-scoped event-driven automation rule |
+| `AutomationRun` | Execution record for an automation rule |
+| `AppEvent` | General analytics event log |
+| `TenantMetricsDaily` | Daily roll-up metrics per tenant (DAU, loads, storage) |
+| `TenantHealthScore` | Computed engagement health score per tenant |
 
 ---
 
