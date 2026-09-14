@@ -54,10 +54,16 @@ export const STAGING_REF = 'wyixpgunnjmzguhggocz';
 const APP_ROOT = resolve(__dirname, '../..');
 const REPO_ROOT = resolve(APP_ROOT, '../..');
 
-export const FIXTURE_IDS_PATH = resolve(
-  REPO_ROOT,
-  '.planning/quick/597-fix-unsatisfiable-and-incorrect-rls-poli/evidence/fixture-ids.json'
-);
+// quick-598 follow-up — read the GITIGNORED runtime handshake file, not
+// quick-597's committed evidence copy.
+//
+// global-setup.ts seeds fixtures before every run and each seed mints fresh
+// UUIDs, so pointing this at the evidence file made every test run rewrite 23
+// lines of a committed artefact and leave the working tree dirty. That matters
+// beyond tidiness: "vercel --prod" ships the working directory rather than git
+// HEAD (CLAUDE.md), and it also silently corrupted the record quick-597's
+// conclusions rest on. The evidence copy stays frozen; this is the live one.
+export const FIXTURE_IDS_PATH = resolve(APP_ROOT, '.rls-fixture-ids.json');
 
 loadEnv({ path: resolve(APP_ROOT, '.env.staging'), quiet: true });
 

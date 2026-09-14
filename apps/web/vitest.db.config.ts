@@ -31,6 +31,12 @@ export default defineConfig({
     // to a transaction-mode pooler, and parallel files would compete for
     // backends while asserting on session GUCs.
     fileParallelism: false,
+    // Seed the two staging tenants before the run and tear them down after it,
+    // so `npm run test:rls-isolation` is self-contained. Without this the suite
+    // reports 68 failed / 82 passed on a clean staging — every failure being
+    // "tenant A has no rows" — which is indistinguishable at a glance from a
+    // real isolation regression. See tests-db/global-setup.ts.
+    globalSetup: ['./tests-db/global-setup.ts'],
   },
   resolve: {
     alias: {

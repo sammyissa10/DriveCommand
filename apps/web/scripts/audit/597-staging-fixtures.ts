@@ -42,7 +42,16 @@ const EVIDENCE_DIR = resolve(
   REPO_ROOT,
   '.planning/quick/597-fix-unsatisfiable-and-incorrect-rls-poli/evidence'
 );
-const FIXTURE_IDS_PATH = resolve(EVIDENCE_DIR, 'fixture-ids.json');
+// quick-598 follow-up — the RUNTIME handshake file is gitignored and lives
+// beside the app, NOT in quick-597's evidence directory.
+//
+// The suite seeds fixtures on every run (tests-db/global-setup.ts), and every
+// seed mints fresh UUIDs. Writing those into a committed evidence file meant
+// each test run rewrote 23 lines of quick-597's recorded evidence AND left the
+// working tree dirty — and "vercel --prod" ships the working directory, not
+// git HEAD (see CLAUDE.md). The evidence copy is a frozen historical record;
+// this is the live one.
+const FIXTURE_IDS_PATH = resolve(APP_ROOT, '.rls-fixture-ids.json');
 
 loadEnv({ path: resolve(APP_ROOT, '.env.staging'), quiet: true });
 

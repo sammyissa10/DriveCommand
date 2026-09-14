@@ -37,7 +37,7 @@
 
 import { config as loadEnv } from 'dotenv';
 import { Client } from 'pg';
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 // ---------------------------------------------------------------------------
@@ -100,7 +100,13 @@ interface FixtureIds {
   rows: Record<string, Record<'A' | 'B', string[]>>;
 }
 
-const FIXTURE_IDS_PATH = resolve(EVIDENCE_DIR, 'fixture-ids.json');
+// quick-598 follow-up — prefer the gitignored runtime handshake file that
+// --seed now writes; fall back to quick-597's frozen evidence copy so this
+// harness still reproduces against the record its own conclusions rest on.
+const RUNTIME_FIXTURE_IDS_PATH = resolve(APP_ROOT, '.rls-fixture-ids.json');
+const FIXTURE_IDS_PATH = existsSync(RUNTIME_FIXTURE_IDS_PATH)
+  ? RUNTIME_FIXTURE_IDS_PATH
+  : resolve(EVIDENCE_DIR, 'fixture-ids.json');
 let fixtures: FixtureIds;
 try {
   fixtures = JSON.parse(readFileSync(FIXTURE_IDS_PATH, 'utf8')) as FixtureIds;

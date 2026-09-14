@@ -1,2 +1,5 @@
 .vercel
 .env*.local
+
+# quick-598: runtime RLS fixture handshake, rewritten on every test run
+.rls-fixture-ids.json
