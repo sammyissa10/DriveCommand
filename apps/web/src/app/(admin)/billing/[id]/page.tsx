@@ -5,7 +5,7 @@ import { getSysAdminInvoiceById } from '@/app/(admin)/actions/sysadmin-invoices'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InvoiceActions } from './invoice-actions';
 import { AuditTrailFooter } from '@/components/audit-trail-footer';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -31,9 +31,13 @@ export default async function InvoiceDetailPage({
 }) {
   const { id } = await params;
 
+  // quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+  // 'sysadmin invoice audit trail'. Arbitrary invoice, arbitrary tenant.
+  const adminDb = await getAdminDb('sysadmin invoice audit trail');
+
   const [invoice, invoiceAudit] = await Promise.all([
     getSysAdminInvoiceById(id),
-    prisma.sysAdminInvoice.findUnique({
+    adminDb.sysAdminInvoice.findUnique({
       where: { id },
       select: {
         createdBy: { select: { firstName: true, lastName: true, email: true } },

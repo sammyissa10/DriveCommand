@@ -18,6 +18,15 @@ vi.mock('@/lib/db/prisma', () => ({
   TX_OPTIONS: {},
 }));
 
+// quick-600 (B5) — the POST handler's invitation lookup moved from
+// `prisma.$transaction` onto `getAdminDb('invitation lookup by token')`.
+// Reuses the SAME `tx` stub's `driverInvitation` methods so every existing
+// `tx.driverInvitation.findUnique.mockResolvedValue(...)` call below still
+// drives the route unchanged.
+vi.mock('@/lib/db/admin-prisma', () => ({
+  getAdminDb: vi.fn(async () => tx),
+}));
+
 const createUser = vi.fn();
 vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: () => ({ auth: { admin: { createUser } } }),

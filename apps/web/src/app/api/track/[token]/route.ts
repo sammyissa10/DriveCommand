@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { publicLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
@@ -19,21 +20,21 @@ export async function GET(
   const { token } = await params;
 
   // Look up load by tracking token — public endpoint, no tenant context.
-  // Quick-424: bypass_rls is the correct mechanism for cross-tenant token lookups (spec §2.3).
-  const load = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.load.findUnique({
-      where: { trackingToken: token },
-      include: {
-        truck: {
-          select: { id: true, make: true, model: true, licensePlate: true },
-        },
-        driver: {
-          select: { firstName: true, lastName: true },
-        },
+  // quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+  // 'public shipment tracking lookup'. The clearest genuine cross-tenant read
+  // in the codebase — the tracking token IS the credential.
+  const adminDb = await getAdminDb('public shipment tracking lookup');
+  const load = await adminDb.load.findUnique({
+    where: { trackingToken: token },
+    include: {
+      truck: {
+        select: { id: true, make: true, model: true, licensePlate: true },
       },
-    });
-  }, TX_OPTIONS);
+      driver: {
+        select: { firstName: true, lastName: true },
+      },
+    },
+  });
 
   if (!load) {
     return NextResponse.json(

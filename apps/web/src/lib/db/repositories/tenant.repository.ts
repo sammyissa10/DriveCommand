@@ -1,4 +1,5 @@
 import { prisma, TX_OPTIONS } from '../prisma';
+import { getAdminDb } from '../admin-prisma';
 import { randomUUID } from 'crypto';
 
 function generateSlug(name: string): string {
@@ -55,39 +56,35 @@ export class TenantProvisioningRepository {
   /**
    * Find tenant by user ID (database UUID).
    *
-   * @bypass_rls reason: pre-auth
+   * quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+   * 'tenant lookup by user id'.
    * WHY: Called during onboarding/session bootstrap before tenant context is set.
    *      Also used by the sysadmin portal to look up tenants for any user ID.
    * SCOPE: Reads one User + their Tenant (foreign key join) by primary key.
    * SAFETY: userId comes from the verified session cookie (requireAuth() in callers).
    */
   async findTenantByUserId(userId: string) {
-    return prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
-      const user = await tx.user.findUnique({
-        where: { id: userId },
-        include: { tenant: true },
-      });
-
-      return user?.tenant || null;
-    }, TX_OPTIONS);
+    const adminDb = await getAdminDb('tenant lookup by user id');
+    const user = await adminDb.user.findUnique({
+      where: { id: userId },
+      include: { tenant: true },
+    });
+    return user?.tenant || null;
   }
 
   /**
    * List all tenants (system admin operation).
    *
-   * @bypass_rls reason: cross-tenant
+   * quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+   * 'sysadmin tenant listing'.
    * WHY: System admin needs to see all tenants — this is intentionally cross-tenant.
    * SCOPE: Reads all Tenant rows with no filtering.
    * SAFETY: Gated by isSystemAdmin() check in the sysadmin actions caller.
    */
   async listAllTenants() {
-    return prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.tenant.findMany({
-        orderBy: { createdAt: 'desc' },
-      });
-    }, TX_OPTIONS);
+    const adminDb = await getAdminDb('sysadmin tenant listing');
+    return adminDb.tenant.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }

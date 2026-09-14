@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
@@ -32,7 +33,8 @@ export async function GET(req: NextRequest) {
   }
 
   /**
-   * @bypass_rls reason: pre-auth
+   * quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+   * 'invitation lookup by token'.
    * WHY: An unauthenticated user arriving via an invitation link needs to look up the
    *      invitation record to pre-populate the sign-up form. No session exists yet,
    *      so RLS would block this read entirely.
@@ -40,12 +42,10 @@ export async function GET(req: NextRequest) {
    * SAFETY: Returns only non-sensitive fields (email, firstName) to the client.
    *         The invitation ID is a UUID — not guessable by brute force.
    */
-  const invitation = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.driverInvitation.findUnique({
-      where: { id },
-    });
-  }, TX_OPTIONS);
+  const adminDb = await getAdminDb('invitation lookup by token');
+  const invitation = await adminDb.driverInvitation.findUnique({
+    where: { id },
+  });
 
   if (!invitation) {
     return NextResponse.json(
@@ -110,19 +110,18 @@ export async function POST(req: NextRequest) {
     }
 
     /**
-     * @bypass_rls reason: pre-auth
+     * quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+     * 'invitation lookup by token'.
      * WHY: No session exists at this point — the user is in the process of accepting
      *      an invitation (creating their account). RLS requires a session context.
      * SCOPE: Reads a single DriverInvitation by invitationId (UUID from request body).
      * SAFETY: invitationId is validated as a UUID. The invitation must be PENDING.
      */
-    // Look up invitation bypassing RLS (no session yet)
-    const invitation = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.driverInvitation.findUnique({
-        where: { id: invitationId },
-      });
-    }, TX_OPTIONS);
+    // Look up invitation on the admin connection (no session yet)
+    const adminDbInvitation = await getAdminDb('invitation lookup by token');
+    const invitation = await adminDbInvitation.driverInvitation.findUnique({
+      where: { id: invitationId },
+    });
 
     if (!invitation) {
       return NextResponse.json(

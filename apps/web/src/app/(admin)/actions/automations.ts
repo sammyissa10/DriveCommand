@@ -1,7 +1,8 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { revalidatePath } from 'next/cache';
 import { executeSendEmailAction } from '@/lib/automations/actions/send-email';
 
@@ -101,22 +102,21 @@ export async function manualTriggerRule(ruleId: string, tenantId: string) {
   if (!rule) return { error: 'Rule not found' };
 
   // Step 1: Create the PENDING run and capture its ID
+  // quick-600 (B5) — ROUTE. Sysadmin acting on an arbitrary tenant's rule.
   let newRunId: string | null = null;
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      const created = await tx.automationRun.create({
-        data: {
-          ruleId,
-          tenantId,
-          triggeredBy: 'manual:sysadmin',
-          status: 'PENDING',
-          scheduledAt: new Date(),
-        },
-        select: { id: true },
-      });
-      newRunId = created.id;
-    }, TX_OPTIONS);
+    const adminDb = await getAdminDb('sysadmin manual automation trigger');
+    const created = await adminDb.automationRun.create({
+      data: {
+        ruleId,
+        tenantId,
+        triggeredBy: 'manual:sysadmin',
+        status: 'PENDING',
+        scheduledAt: new Date(),
+      },
+      select: { id: true },
+    });
+    newRunId = created.id;
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Failed to create run' };
   }
@@ -136,24 +136,20 @@ export async function manualTriggerRule(ruleId: string, tenantId: string) {
           { id: newRunId, tenantId, ruleId },
           { templateKey: action.templateKey },
         );
-        // Mark SENT
-        await prisma.$transaction(async (tx) => {
-          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-          await tx.automationRun.updateMany({
-            where: { id: newRunId!, status: 'PENDING' },
-            data: { status: 'SENT', firedAt: new Date() },
-          });
-        }, TX_OPTIONS);
+        // Mark SENT — quick-600 (B5) ROUTE, same reason: same sysadmin unit of work.
+        const adminDbSent = await getAdminDb('sysadmin manual automation trigger');
+        await adminDbSent.automationRun.updateMany({
+          where: { id: newRunId!, status: 'PENDING' },
+          data: { status: 'SENT', firedAt: new Date() },
+        });
       } catch (err) {
-        // Mark FAILED and surface the error to SysAdmin
+        // Mark FAILED and surface the error to SysAdmin — quick-600 (B5) ROUTE.
         const errorMessage = err instanceof Error ? err.message : String(err);
-        await prisma.$transaction(async (tx) => {
-          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-          await tx.automationRun.updateMany({
-            where: { id: newRunId!, status: 'PENDING' },
-            data: { status: 'FAILED', firedAt: new Date(), errorMessage },
-          });
-        }, TX_OPTIONS);
+        const adminDbFailed = await getAdminDb('sysadmin manual automation trigger');
+        await adminDbFailed.automationRun.updateMany({
+          where: { id: newRunId!, status: 'PENDING' },
+          data: { status: 'FAILED', firedAt: new Date(), errorMessage },
+        });
         return { error: `Send failed: ${errorMessage}` };
       }
     }

@@ -4,7 +4,8 @@
  * Authentication: CRON_SECRET bearer token (timing-safe comparison)
  */
 import { NextRequest } from 'next/server';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { logger } from '@/lib/logger';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
@@ -41,7 +42,11 @@ export async function GET(request: NextRequest) {
     const ticketIds = tickets.map((t) => t.id);
 
     /**
-     * @bypass_rls reason: system-operation
+     * quick-600 (B5) — ROUTE. Genuinely cross-tenant: `ticketIds` can name
+     * tickets belonging to DIFFERENT tenants in this ONE `updateMany`
+     * statement (collected from the raw all-tenant scan above), so there is
+     * no single tenant to set a GUC to — unlike a per-row loop, this is a
+     * genuine batch and stays on the admin connection.
      * WHY: Cron job that closes stale support tickets across all tenants.
      *      No user session context — authenticated only by CRON_SECRET header.
      * SCOPE: Updates SupportTicket.status to CLOSED for specific ticket IDs
@@ -49,13 +54,11 @@ export async function GET(request: NextRequest) {
      * SAFETY: Gated by CRON_SECRET header check at the top of this handler.
      *         Ticket IDs come from the preceding raw SQL query, not user input.
      */
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      await tx.supportTicket.updateMany({
-        where: { id: { in: ticketIds } },
-        data: { status: 'CLOSED' },
-      });
-    }, TX_OPTIONS);
+    const adminDb = await getAdminDb('auto-close stale ticket sweep');
+    await adminDb.supportTicket.updateMany({
+      where: { id: { in: ticketIds } },
+      data: { status: 'CLOSED' },
+    });
 
     logger.info(`[CRON] auto-close-tickets: Closed ${tickets.length} ticket(s)`, { ticketNumbers: tickets.map(t => t.ticketNumber) });
     return Response.json({ success: true, closed: tickets.length, ticketNumbers: tickets.map(t => t.ticketNumber) });

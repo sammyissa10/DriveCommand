@@ -8,21 +8,31 @@
  * not the SysAdmin sender.
  */
 
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
+// Type-only: both the tenant and admin Prisma clients share the same
+// generated model types, so this reference does not pull in the tenant pool.
+import type { prisma } from '@/lib/db/prisma';
 import { sendEmail } from '@/lib/email/resend-client';
 import React from 'react';
 import Decimal from 'decimal.js';
 import { SysAdminInvoiceEmail } from '@/emails/sysadmin-invoice';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 
+/**
+ * quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+ * 'sysadmin invoice email lookup'. The tenant is not known to the caller —
+ * this function discovers it mid-flight from the invoice row — so both
+ * statements share one admin client for the whole unit of work.
+ */
 export async function sendSysAdminInvoice(invoiceId: string): Promise<{ sent: boolean; warning?: string }> {
-  const invoice = await prisma.sysAdminInvoice.findUnique({
+  const adminDb = await getAdminDb('sysadmin invoice email lookup');
+  const invoice = await adminDb.sysAdminInvoice.findUnique({
     where: { id: invoiceId },
     include: { items: true, tenant: { select: { name: true } } },
   });
   if (!invoice) throw new Error('Invoice not found');
 
-  const owner = await prisma.user.findFirst({
+  const owner = await adminDb.user.findFirst({
     where: { tenantId: invoice.tenantId, role: 'OWNER', isActive: true },
     select: { email: true, firstName: true, lastName: true },
   });

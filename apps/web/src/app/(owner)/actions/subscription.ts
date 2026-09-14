@@ -2,7 +2,7 @@
 
 import { getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 async function requireOwnerOrManager(): Promise<{ tenantId: string }> {
   const session = await getSession();
@@ -17,14 +17,22 @@ async function requireOwnerOrManager(): Promise<{ tenantId: string }> {
 
 /**
  * Fetch this tenant's SysAdmin invoices (read-only, OWNER/MANAGER only).
- * Uses base prisma client — SysAdminInvoice rows are denied under tenant RLS context
- * so we must bypass by using the global client and filtering by tenantId manually.
+ *
+ * quick-600 (B5) — CORRECT, not ROUTE. `session.tenantId` is already in hand
+ * from `requireOwnerOrManager()` before this query runs. `SysAdminInvoice`
+ * carries a live `tenant_isolation_policy` (`tenantId = current_tenant_id()`)
+ * alongside the two `sysadmin_invoices_deny_*` permissive policies (design
+ * §2.6) — a tenant-scoped GUC is admitted by the isolation policy regardless
+ * of what the deny policies say (permissive policies OR together). This never
+ * needed an admin connection; it needed the tenant GUC actually set, which
+ * `getTenantPrismaForOrg` now does.
  */
 export async function getMySubscriptionInvoices() {
   const { tenantId } = await requireOwnerOrManager();
   // Subscription page is owner-only — enforced via middleware + sidebar (OWNER_ONLY_PATHS)
 
-  return prisma.sysAdminInvoice.findMany({
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
+  return tenantDb.sysAdminInvoice.findMany({
     where: { tenantId, archivedAt: null },
     include: { items: true },
     orderBy: { createdAt: 'desc' },

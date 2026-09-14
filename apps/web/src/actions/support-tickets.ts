@@ -4,6 +4,7 @@ import { getAppBaseUrl } from '@/lib/app-url';
 import { requireAuth, isSystemAdmin, getSession } from '@/lib/auth/supabase';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
@@ -337,17 +338,16 @@ export async function updateTicketStatus(
   const resolvedAt = isResolved ? new Date() : null;
 
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      await tx.supportTicket.update({
-        where: { id: ticketId },
-        data: {
-          status,
-          resolution: resolution ?? null,
-          resolvedAt,
-        },
-      });
-    }, TX_OPTIONS);
+    // quick-600 (B5) — ROUTE. Sysadmin acting on any tenant's ticket.
+    const adminDb = await getAdminDb('sysadmin ticket status update');
+    await adminDb.supportTicket.update({
+      where: { id: ticketId },
+      data: {
+        status,
+        resolution: resolution ?? null,
+        resolvedAt,
+      },
+    });
 
     revalidatePath('/admin-support');
 
@@ -471,8 +471,10 @@ export async function addAdminReply(
     let ticketNumber = '';
     let ticketTitle = '';
 
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    // quick-600 (B5) — ROUTE. Sysadmin acting on any tenant's ticket; the
+    // raw email lookup is a genuine cross-tenant read too.
+    const adminDb = await getAdminDb('sysadmin ticket reply');
+    await adminDb.$transaction(async (tx) => {
       const ticket = await tx.supportTicket.findFirst({
         where: { id: ticketId },
         select: { id: true, ticketNumber: true, title: true, submittedBy: true, status: true },
@@ -538,13 +540,12 @@ export async function addAdminReply(
 export async function getTicketMessages(ticketId: string) {
   await requireAdminAccess();
 
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.ticketMessage.findMany({
-      where: { ticketId },
-      orderBy: { createdAt: 'asc' },
-    });
-  }, TX_OPTIONS);
+  // quick-600 (B5) — ROUTE. Sysadmin reading any tenant's ticket thread.
+  const adminDb = await getAdminDb('sysadmin ticket thread read');
+  return adminDb.ticketMessage.findMany({
+    where: { ticketId },
+    orderBy: { createdAt: 'asc' },
+  });
 }
 
 /**

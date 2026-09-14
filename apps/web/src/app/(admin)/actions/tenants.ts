@@ -4,6 +4,7 @@ import { getAppBaseUrl } from '@/lib/app-url';
 import { Prisma } from '@/generated/prisma';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
@@ -94,8 +95,10 @@ export async function createTenant(formData: FormData) {
   }
 
   try {
-    // Create tenant
-    const tenant = await prisma.tenant.create({
+    // Create tenant — quick-600 (B5) ROUTE. A tenant client cannot create
+    // another tenant by construction; no policy is meant to admit this.
+    const adminDb = await getAdminDb('sysadmin tenant create');
+    const tenant = await adminDb.tenant.create({
       data: {
         name: validation.data.name,
         slug: validation.data.slug,
@@ -187,7 +190,9 @@ export async function suspendTenant(tenantId: string) {
     throw new Error('Tenant ID is required');
   }
 
-  await prisma.tenant.update({
+  // quick-600 (B5) ROUTE.
+  const adminDbSuspend = await getAdminDb('sysadmin tenant status change');
+  await adminDbSuspend.tenant.update({
     where: { id: tenantId },
     data: { isActive: false },
   });
@@ -226,7 +231,9 @@ export async function reactivateTenant(tenantId: string) {
     throw new Error('Tenant ID is required');
   }
 
-  await prisma.tenant.update({
+  // quick-600 (B5) ROUTE.
+  const adminDbReactivate = await getAdminDb('sysadmin tenant status change');
+  await adminDbReactivate.tenant.update({
     where: { id: tenantId },
     data: { isActive: true },
   });
@@ -429,7 +436,9 @@ export async function updateTenant(
   }
 
   try {
-    await prisma.tenant.update({
+    // quick-600 (B5) ROUTE.
+    const adminDb = await getAdminDb('sysadmin tenant profile update');
+    await adminDb.tenant.update({
       where: { id: tenantId },
       data: { name: validation.data.name, slug: validation.data.slug },
     });
@@ -539,7 +548,9 @@ export async function updateTenantSettings(
   }
 
   try {
-    await prisma.tenant.update({
+    // quick-600 (B5) ROUTE.
+    const adminDb = await getAdminDb('sysadmin tenant settings update');
+    await adminDb.tenant.update({
       where: { id: tenantId },
       data: {
         contactEmail: validation.data.contactEmail || null,
@@ -570,7 +581,14 @@ export async function extendTrial(tenantId: string, additionalDays: number) {
     return { error: 'Days must be between 1 and 365' };
   }
 
-  const subscription = await prisma.subscription.findUnique({
+  // quick-600 (B5) ROUTE — one admin client for the whole unit of work.
+  // The setup read below was never `@bypass_rls`-flagged (out of the design
+  // doc's 211-site grep) but is the same sysadmin-on-an-arbitrary-tenant
+  // operation as the transaction beneath it — routed together rather than
+  // left half-fixed. See ROUTING-MANIFEST.md §1, row 15.
+  const adminDb = await getAdminDb('sysadmin trial extension');
+
+  const subscription = await adminDb.subscription.findUnique({
     where: { tenantId },
     select: { trialEndsAt: true },
   });
@@ -582,9 +600,7 @@ export async function extendTrial(tenantId: string, additionalDays: number) {
   );
 
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    await adminDb.$transaction(async (tx) => {
       await tx.subscription.update({
         where: { tenantId },
         data: { trialEndsAt: newTrialEndsAt },
@@ -622,7 +638,9 @@ export async function deleteTenant(tenantId: string) {
   }
 
   try {
-    await prisma.tenant.delete({
+    // quick-600 (B5) ROUTE.
+    const adminDb = await getAdminDb('sysadmin tenant delete');
+    await adminDb.tenant.delete({
       where: { id: tenantId },
     });
 

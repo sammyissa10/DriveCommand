@@ -18,7 +18,8 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { runEvaluator } from '@/lib/automations/evaluator';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export async function GET(request: NextRequest) {
@@ -175,18 +176,21 @@ async function scheduleCronDrivenRule(opts: CronRuleOptions): Promise<void> {
     }
 
     try {
-      await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        await tx.automationRun.create({
-          data: {
-            ruleId: rule.id,
-            tenantId,
-            triggeredBy: `cron:${ruleKey}`,
-            status: 'PENDING',
-            scheduledAt: new Date(),
-          },
-        });
-      }, TX_OPTIONS);
+      // quick-600 (B5) — CORRECT, not ROUTE. `tenantId` is the loop
+      // variable, already known per candidate row — same shape as
+      // workflow-notifications:81/:96 and evaluator.ts's optimistic status
+      // update. Not in the design doc's original snapshot (Fact #9); see
+      // ROUTING-MANIFEST.md §5.
+      const tenantDb = await getTenantPrismaForOrg(tenantId);
+      await tenantDb.automationRun.create({
+        data: {
+          ruleId: rule.id,
+          tenantId,
+          triggeredBy: `cron:${ruleKey}`,
+          status: 'PENDING',
+          scheduledAt: new Date(),
+        },
+      });
       console.log(`[cron] Scheduled PENDING run for ruleKey=${ruleKey} tenantId=${tenantId}`);
     } catch (err) {
       console.error(`[cron] Failed to schedule run for ruleKey=${ruleKey} tenantId=${tenantId}:`, err);

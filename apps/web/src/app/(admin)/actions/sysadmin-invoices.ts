@@ -2,6 +2,7 @@
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { revalidatePath } from 'next/cache';
 import { Decimal } from 'decimal.js';
 import { z } from 'zod';
@@ -21,9 +22,16 @@ async function requireAdminAccess() {
 /**
  * Generate the next unique invoice number in SINV-XXXX format.
  * Sequential, globally unique (not tenant-scoped).
+ *
+ * quick-600 (B5) — ROUTE. `lib/db/admin-prisma.ts`, reason:
+ * 'sysadmin invoice management'. Every statement in this file operates on an
+ * invoice or tenant selected by the sysadmin, never the caller's own tenant —
+ * see ROUTING-MANIFEST.md §3 for the full per-statement breakdown (18
+ * statements across this file's 10 functions).
  */
 export async function generateInvoiceNumber(): Promise<string> {
-  const last = await prisma.sysAdminInvoice.findFirst({
+  const adminDb = await getAdminDb('sysadmin invoice management');
+  const last = await adminDb.sysAdminInvoice.findFirst({
     orderBy: { invoiceNumber: 'desc' },
     select: { invoiceNumber: true },
   });
@@ -103,7 +111,8 @@ export async function createSysAdminInvoice(data: {
     const subtotal = subtotalDecimal.toFixed(2);
     const total = subtotal; // No tax for now
 
-    const invoice = await prisma.sysAdminInvoice.create({
+    const adminDb = await getAdminDb('sysadmin invoice management');
+    const invoice = await adminDb.sysAdminInvoice.create({
       data: {
         tenantId,
         invoiceNumber,
@@ -148,7 +157,8 @@ export async function getSysAdminInvoices(filters?: {
     where.status = filters.status;
   }
 
-  return prisma.sysAdminInvoice.findMany({
+  const adminDb = await getAdminDb('sysadmin invoice management');
+  return adminDb.sysAdminInvoice.findMany({
     where,
     include: {
       tenant: { select: { id: true, name: true } },
@@ -163,7 +173,8 @@ export async function getSysAdminInvoices(filters?: {
 export async function getSysAdminInvoiceById(id: string) {
   await requireAdminAccess();
 
-  const invoice = await prisma.sysAdminInvoice.findUnique({
+  const adminDb = await getAdminDb('sysadmin invoice management');
+  const invoice = await adminDb.sysAdminInvoice.findUnique({
     where: { id },
     include: {
       items: true,
@@ -173,7 +184,7 @@ export async function getSysAdminInvoiceById(id: string) {
 
   if (!invoice) return null;
 
-  const ownerUser = await prisma.user.findFirst({
+  const ownerUser = await adminDb.user.findFirst({
     where: { tenantId: invoice.tenantId, role: 'OWNER', isActive: true },
     select: { email: true, firstName: true, lastName: true },
   });
@@ -199,7 +210,8 @@ export async function updateSysAdminInvoice(
   try {
     await requireAdminAccess();
 
-    const invoice = await prisma.sysAdminInvoice.findUnique({ where: { id } });
+    const adminDb = await getAdminDb('sysadmin invoice management');
+    const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });
     if (!invoice) return { success: false, error: 'Invoice not found' };
     if (invoice.status !== 'DRAFT') {
       return { success: false, error: 'Cannot edit a sent or paid invoice' };
@@ -238,9 +250,9 @@ export async function updateSysAdminInvoice(
     const subtotal = subtotalDecimal.toFixed(2);
     const total = subtotal;
 
-    await prisma.$transaction([
-      prisma.sysAdminInvoiceItem.deleteMany({ where: { invoiceId: id } }),
-      prisma.sysAdminInvoice.update({
+    await adminDb.$transaction([
+      adminDb.sysAdminInvoiceItem.deleteMany({ where: { invoiceId: id } }),
+      adminDb.sysAdminInvoice.update({
         where: { id },
         data: {
           dueDate: new Date(dueDate),
@@ -272,12 +284,13 @@ export async function markInvoicePaid(id: string): Promise<{ success: true } | {
   try {
     await requireAdminAccess();
 
-    const invoice = await prisma.sysAdminInvoice.findUnique({ where: { id } });
+    const adminDb = await getAdminDb('sysadmin invoice management');
+    const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });
     if (!invoice) return { success: false, error: 'Invoice not found' };
     if (invoice.status === 'PAID') return { success: false, error: 'Invoice is already paid' };
     if (invoice.status === 'VOID') return { success: false, error: 'Cannot mark a voided invoice as paid' };
 
-    await prisma.sysAdminInvoice.update({
+    await adminDb.sysAdminInvoice.update({
       where: { id },
       data: { status: 'PAID', paidAt: new Date() },
     });
@@ -297,12 +310,13 @@ export async function voidInvoice(id: string): Promise<{ success: true } | { suc
   try {
     await requireAdminAccess();
 
-    const invoice = await prisma.sysAdminInvoice.findUnique({ where: { id } });
+    const adminDb = await getAdminDb('sysadmin invoice management');
+    const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });
     if (!invoice) return { success: false, error: 'Invoice not found' };
     if (invoice.status === 'PAID') return { success: false, error: 'Cannot void a paid invoice' };
     if (invoice.status === 'VOID') return { success: false, error: 'Invoice is already voided' };
 
-    await prisma.sysAdminInvoice.update({
+    await adminDb.sysAdminInvoice.update({
       where: { id },
       data: { status: 'VOID' },
     });
@@ -322,13 +336,14 @@ export async function archiveInvoice(id: string): Promise<{ success: true } | { 
   try {
     await requireAdminAccess();
 
-    const invoice = await prisma.sysAdminInvoice.findUnique({ where: { id } });
+    const adminDb = await getAdminDb('sysadmin invoice management');
+    const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });
     if (!invoice) return { success: false, error: 'Invoice not found' };
     if (invoice.status !== 'DRAFT') {
       return { success: false, error: 'Only DRAFT invoices can be archived' };
     }
 
-    await prisma.sysAdminInvoice.update({
+    await adminDb.sysAdminInvoice.update({
       where: { id },
       data: { archivedAt: new Date() },
     });
@@ -353,7 +368,8 @@ export async function sendInvoiceAction(
   try {
     await requireAdminAccess();
 
-    const invoice = await prisma.sysAdminInvoice.findUnique({
+    const adminDb = await getAdminDb('sysadmin invoice management');
+    const invoice = await adminDb.sysAdminInvoice.findUnique({
       where: { id: invoiceId },
       select: { status: true },
     });
@@ -363,7 +379,7 @@ export async function sendInvoiceAction(
     }
 
     // Update status to SENT before attempting email delivery
-    await prisma.sysAdminInvoice.update({
+    await adminDb.sysAdminInvoice.update({
       where: { id: invoiceId },
       data: { status: 'SENT' },
     });
@@ -396,7 +412,8 @@ export async function sendInvoiceAction(
 export async function markOverdueInvoices(): Promise<{ count: number }> {
   await requireAdminAccess();
 
-  const result = await prisma.sysAdminInvoice.updateMany({
+  const adminDb = await getAdminDb('sysadmin invoice management');
+  const result = await adminDb.sysAdminInvoice.updateMany({
     where: {
       status: 'SENT',
       dueDate: { lt: new Date() },

@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { prisma, TX_OPTIONS } from '../db/prisma';
 import { createTenantClient } from '../db/tenant-client';
+import { assertRoleBootGuard } from '../db/admin-prisma';
 
 /**
  * ─── THE TENANT IDENTITY TRUST BOUNDARY (quick-590) ─────────────────────────
@@ -201,6 +202,11 @@ export async function getTenantPrismaForOrg(
   tenantId: string,
   userId?: string | null,
 ): Promise<PrismaClient> {
+  // quick-600 (B5) — memoised once per process; a no-op when DB_ROLE_ASSERT
+  // is 'off' (the default today). Runs the tenant-direction half of the
+  // two-direction boot guard on ordinary tenant-scoped traffic, not only
+  // when an admin path happens to fire first in a given process.
+  await assertRoleBootGuard();
   await prisma.$executeRawUnsafe(
     "SELECT set_config('app.current_tenant_id', $1, false)",
     tenantId,

@@ -17,6 +17,7 @@
 import * as React from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { sendEmail } from '@/lib/email/resend-client';
 import { WorkflowSafetyDigestEmail } from '@/emails/workflow-safety-digest';
 import { getAppBaseUrl } from '@/lib/app-url';
@@ -44,16 +45,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const stats: DigestStats = { tenantsSent: 0, tenantsSkipped: 0, tenantsErrored: 0 };
 
   // Find all tenants with at least one active PlaybookInstance
+  // quick-600 (B5) — ROUTE. The four bypass-flagged statements later in this
+  // loop (dedup check, stats block, dedup pre-create read, dedup write) stay
+  // on the bare client, DECORATIVE and out of this task's scope — tenantId
+  // is already known at each of them. Only this sweep statement moves.
   let activeTenantIds: string[];
   try {
-    const rows = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.playbookInstance.findMany({
-        where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS'] } },
-        select: { tenantId: true },
-        distinct: ['tenantId'],
-      });
-    }, TX_OPTIONS);
+    const adminDb = await getAdminDb('workflow digest active-tenant sweep');
+    const rows = await adminDb.playbookInstance.findMany({
+      where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS'] } },
+      select: { tenantId: true },
+      distinct: ['tenantId'],
+    });
     activeTenantIds = rows.map((r) => r.tenantId);
   } catch (err) {
     logger.error('[CRON] workflow-digest: Failed to query active tenants', { error: err });

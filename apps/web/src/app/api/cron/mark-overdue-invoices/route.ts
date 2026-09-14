@@ -4,7 +4,7 @@
  * Authentication: CRON_SECRET bearer token (timing-safe comparison)
  */
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { logger } from '@/lib/logger';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
@@ -18,7 +18,11 @@ export async function GET(request: NextRequest) {
   const now = new Date();
 
   try {
-    const result = await prisma.sysAdminInvoice.updateMany({
+    // quick-600 (B5) — ROUTE. Batch across every tenant's SENT invoices in
+    // one statement — same shape as auto-close-tickets, cannot hang a single
+    // tenant GUC off it.
+    const adminDb = await getAdminDb('overdue invoice sweep');
+    const result = await adminDb.sysAdminInvoice.updateMany({
       where: {
         status: 'SENT',
         dueDate: { lt: now },

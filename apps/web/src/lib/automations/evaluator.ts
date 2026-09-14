@@ -44,6 +44,7 @@
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { executeSendEmailAction } from '@/lib/automations/actions/send-email';
 
 export interface EvaluatorResult {
@@ -197,24 +198,27 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
     }
 
     // Optimistic status update — prevents double-execution on concurrent ticks
+    // quick-600 (B5) — CORRECT, not ROUTE. `run.tenantId` is already in hand
+    // from the row `dueRuns` (the sweep above) just read — same shape as
+    // workflow-notifications:81/:96. Design doc originally listed this site
+    // as CROSS_TENANT (`evaluator.ts:203`); reclassified per
+    // ROUTING-MANIFEST.md §1, row 11.
     const newStatus = overallSuccess ? 'SENT' : 'FAILED';
     try {
-      await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        const updated = await tx.automationRun.updateMany({
-          where: { id: run.id, status: 'PENDING' },
-          data: {
-            status: newStatus,
-            firedAt: new Date(),
-            ...(errorMsg ? { errorMessage: errorMsg } : {}),
-          },
-        });
-        if (updated.count === 0) {
-          console.warn(
-            `[evaluator] Optimistic lock miss for runId=${run.id} — another tick already claimed it`,
-          );
-        }
-      }, TX_OPTIONS);
+      const tenantDb = await getTenantPrismaForOrg(run.tenantId);
+      const updated = await tenantDb.automationRun.updateMany({
+        where: { id: run.id, status: 'PENDING' },
+        data: {
+          status: newStatus,
+          firedAt: new Date(),
+          ...(errorMsg ? { errorMessage: errorMsg } : {}),
+        },
+      });
+      if (updated.count === 0) {
+        console.warn(
+          `[evaluator] Optimistic lock miss for runId=${run.id} — another tick already claimed it`,
+        );
+      }
 
       if (overallSuccess) {
         result.executed++;

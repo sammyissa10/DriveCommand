@@ -18,7 +18,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendStepOverdue, sendInstanceBlockedEmail } from '@/server/services/workflows/notifications';
 import { logger } from '@/lib/logger';
 import { verifyCronSecret } from '@/lib/security/cron-auth';
@@ -53,21 +54,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const overdueThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const overdueSteps = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.stepInstance.findMany({
-        where: {
-          status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
-          dueDate: { lt: overdueThreshold },
-          isOverdue: false,
-        },
-        select: {
-          id: true,
-          stepSnapshot: true, // needed to read overdueRecipient + dueWithinHours
-          playbookInstance: { select: { tenantId: true, entityId: true, entityType: true } },
-        },
-      });
-    }, TX_OPTIONS);
+    // quick-600 (B5) — ROUTE. Genuinely cross-tenant: the sweep is the list.
+    const adminDb = await getAdminDb('workflow overdue-step sweep');
+    const overdueSteps = await adminDb.stepInstance.findMany({
+      where: {
+        status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
+        dueDate: { lt: overdueThreshold },
+        isOverdue: false,
+      },
+      select: {
+        id: true,
+        stepSnapshot: true, // needed to read overdueRecipient + dueWithinHours
+        playbookInstance: { select: { tenantId: true, entityId: true, entityType: true } },
+      },
+    });
 
     logger.info(`[CRON] workflow-notifications: Found ${overdueSteps.length} overdue step(s)`);
 
@@ -77,10 +77,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
       // Steps created before phase 46 have no dueWithinHours — mark overdue but skip alert.
       if (!snap.dueWithinHours) {
-        await prisma.$transaction(async (tx) => {
-          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-          await tx.stepInstance.update({ where: { id: step.id }, data: { isOverdue: true } });
-        }, TX_OPTIONS);
+        // quick-600 (B5) — CORRECT, not ROUTE: `tenantId` is already in hand
+        // from the row the sweep above just read (playbookInstance.tenantId).
+        const tenantDb = await getTenantPrismaForOrg(tenantId);
+        await tenantDb.stepInstance.update({ where: { id: step.id }, data: { isOverdue: true } });
         continue;
       }
 
@@ -91,14 +91,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           overdueRecipient: (snap.overdueRecipient ?? 'OWNER') as 'DRIVER' | 'OWNER' | 'BOTH',
         });
 
-        // Mark isOverdue=true to prevent duplicate sends on subsequent cron runs
-        await prisma.$transaction(async (tx) => {
-          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-          await tx.stepInstance.update({
-            where: { id: step.id },
-            data: { isOverdue: true },
-          });
-        }, TX_OPTIONS);
+        // Mark isOverdue=true to prevent duplicate sends on subsequent cron runs.
+        // quick-600 (B5) — CORRECT, not ROUTE: same tenant, same row, already known.
+        const tenantDb = await getTenantPrismaForOrg(tenantId);
+        await tenantDb.stepInstance.update({
+          where: { id: step.id },
+          data: { isOverdue: true },
+        });
 
         stats.overdueSent++;
         logger.info(`[CRON] workflow-notifications: Sent STEP_OVERDUE for step ${step.id}`);
@@ -117,26 +116,25 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const blockedThreshold = new Date(Date.now() - 48 * 60 * 60 * 1000);
 
     // Find instances that have been BLOCKED for >48h and have NOT yet received an EMAIL notification
-    const blockedInstances = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.playbookInstance.findMany({
-        where: {
-          status: 'BLOCKED',
-          updatedAt: { lt: blockedThreshold },
-          // Exclude instances that already had an EMAIL escalation sent
-          notifications: {
-            none: {
-              notificationType: 'INSTANCE_BLOCKED',
-              channel: 'EMAIL',
-            },
+    // quick-600 (B5) — ROUTE. Genuinely cross-tenant: the sweep is the list.
+    const adminDb2 = await getAdminDb('workflow blocked-instance sweep');
+    const blockedInstances = await adminDb2.playbookInstance.findMany({
+      where: {
+        status: 'BLOCKED',
+        updatedAt: { lt: blockedThreshold },
+        // Exclude instances that already had an EMAIL escalation sent
+        notifications: {
+          none: {
+            notificationType: 'INSTANCE_BLOCKED',
+            channel: 'EMAIL',
           },
         },
-        select: {
-          id: true,
-          tenantId: true,
-        },
-      });
-    }, TX_OPTIONS);
+      },
+      select: {
+        id: true,
+        tenantId: true,
+      },
+    });
 
     logger.info(
       `[CRON] workflow-notifications: Found ${blockedInstances.length} instance(s) blocked >48h needing email escalation`

@@ -16,7 +16,8 @@
  */
 
 import { NextRequest } from 'next/server';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
@@ -34,14 +35,16 @@ export async function GET(request: NextRequest) {
   }
 
   /**
-   * @bypass_rls reason: system-operation
-   * Cross-tenant cron — fetches all tenants then scopes per-tenant via withTenantRLS.
+   * quick-600 (B5) — ROUTE. Cross-tenant cron — fetches all tenants then
+   * scopes per-tenant via withTenantRLS (DECORATIVE, left untouched — only
+   * this sweep statement moves onto the admin connection).
    * Gated by CRON_SECRET header check above.
    */
-  const tenants = await prisma.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.tenant.findMany({ where: { isActive: true }, select: { id: true, name: true } });
-  }, TX_OPTIONS);
+  const adminDb = await getAdminDb('weekly owner digest tenant sweep');
+  const tenants = await adminDb.tenant.findMany({
+    where: { isActive: true },
+    select: { id: true, name: true },
+  });
 
   logger.info(`[CRON] digest-weekly-owner: Found ${tenants.length} active tenant(s)`);
 

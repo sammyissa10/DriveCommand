@@ -20,7 +20,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { findUpcomingMaintenance } from '@/lib/notifications/check-upcoming-maintenance';
 import { findExpiringDocuments } from '@/lib/notifications/check-expiring-documents';
@@ -48,23 +48,21 @@ export async function GET(request: NextRequest) {
   }
 
   /**
-   * @bypass_rls reason: system-operation
+   * quick-600 (B5) — ROUTE.
    * WHY: This cron job runs cross-tenant to send document expiry reminders for ALL
    *      active tenants. It has no user context to scope RLS policies to a single tenant.
    * SCOPE: Reads Tenant.id and Tenant.name for all active tenants, then queries
-   *        compliance documents per tenant in separate transactions.
+   *        compliance documents per tenant (out of this task's scope — DECORATIVE).
    * SAFETY: Gated by CRON_SECRET header check above — only callable by Vercel Cron.
    */
-  // 2. Get all active tenants (bypass RLS - system operation)
+  // 2. Get all active tenants
   let tenants: Array<{ id: string; name: string }>;
   try {
-    tenants = await prisma.$transaction(async (tx: any) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.tenant.findMany({
-        where: { isActive: true },
-        select: { id: true, name: true },
-      });
-    }, TX_OPTIONS);
+    const adminDb = await getAdminDb('reminders cron tenant sweep');
+    tenants = await adminDb.tenant.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+    });
 
     logger.info(`[CRON] send-reminders: Found ${tenants.length} active tenant(s)`);
   } catch (error) {
