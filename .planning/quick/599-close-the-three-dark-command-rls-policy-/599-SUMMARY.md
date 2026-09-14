@@ -66,7 +66,9 @@ cross-tenant contract.**
 ## Performance
 
 - **Tasks:** 3 of 3
-- **Commits:** `85637ca2`, `98e7c671`, plus this task's docs/test commit
+- **Commits:** `85637ca2` (instrument + migration + BEFORE), `98e7c671` (apply + AFTER + gates),
+  `a2aeb423` (test:rls-isolation append-only fix), `7d0bd5d2` (doc corrections + closure audit),
+  `2e48be06` (plan + summary)
 - **Migration applied to:** **STAGING ONLY** (`wyixpgunnjmzguhggocz`). Production
   (`oqdhberkghtnszrkdvfm`) was never connected to, for a read or a write.
 
@@ -169,4 +171,4 @@ absorbed into "closed"), and `audit_log` was moved from `WRITE_PROBE_TARGETS` to
 - [x] `docs/audits/tenant-audit-automation-policy-closure.md` exists with the closure table
 - [x] `apps/web/tests-db/rls-isolation/` green (156 passed) with the append-only assertion added
 - [x] Staging verify-clean exits 0; `AutomationRule` at 6/6/6
-- [x] Commits `85637ca2`, `98e7c671` exist in `git log`
+- [x] Commits `85637ca2`, `98e7c671`, `a2aeb423`, `7d0bd5d2`, `2e48be06` exist in `git log`
