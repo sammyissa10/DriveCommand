@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-14T05:18:20.937Z",
+  "generatedAt": "2026-09-14T17:25:15.713Z",
   "projectRef": "wyixpgunnjmzguhggocz",
-  "corpusHash": "3905db0b79c9bfccd82c7eb698286e30eb27335e18b0fad309e0b663a11cc02e",
-  "definitionCount": 180,
-  "canonicalisedCount": 180,
+  "corpusHash": "aba17a06f740ac9c5390f4b6020088fd6bb640180cff5097f6be7c2f1584fa42",
+  "definitionCount": 183,
+  "canonicalisedCount": 183,
   "notCanonicalised": [],
   "policies": {
     "ActivationProgress.bypass_rls_policy": {
@@ -42,6 +42,15 @@
       "using": "(\"tenantId\" = current_tenant_id())",
       "withCheck": "(\"tenantId\" = current_tenant_id())"
     },
+    "audit_log.audit_log_append_policy": {
+      "cmd": "INSERT",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": null,
+      "withCheck": "true"
+    },
     "audit_log.bypass_rls_policy": {
       "cmd": "ALL",
       "permissive": true,
@@ -52,7 +61,7 @@
       "withCheck": null
     },
     "audit_log.tenant_isolation_policy": {
-      "cmd": "ALL",
+      "cmd": "SELECT",
       "permissive": true,
       "roles": [
         "public"
@@ -76,7 +85,7 @@
         "public"
       ],
       "using": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
-      "withCheck": null
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
     },
     "AutomationRun.bypass_rls_policy": {
       "cmd": "ALL",
@@ -1464,6 +1473,15 @@
       "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
       "withCheck": null
     },
+    "Tenant.tenant_bootstrap_insert": {
+      "cmd": "INSERT",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": null,
+      "withCheck": "(NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text) IS NULL)"
+    },
     "Tenant.tenant_self_read": {
       "cmd": "SELECT",
       "permissive": true,
@@ -1472,6 +1490,15 @@
       ],
       "using": "(id = current_tenant_id())",
       "withCheck": null
+    },
+    "Tenant.tenant_self_update": {
+      "cmd": "UPDATE",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(id = current_tenant_id())",
+      "withCheck": "(id = current_tenant_id())"
     },
     "TenantHealthScore.bypass_rls_policy": {
       "cmd": "ALL",

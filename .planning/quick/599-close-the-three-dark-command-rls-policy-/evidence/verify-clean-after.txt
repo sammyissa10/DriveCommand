@@ -1,0 +1,15 @@
+Connected to staging (wyixpgunnjmzguhggocz) as role "postgres".
+--- verify-clean (staging) ---
+  "Tenant"                 0
+  audit_log                0
+  "PushToken"              0
+  in_app_notifications     0
+  "SysAdminInvoice"        0
+  "SysAdminInvoiceItem"    0
+  stops                    0
+  carrier_documents        0
+  route_template_stops     0
+  "SupportTicket"          0
+  "Promo" (RLS597-PROMO)   0
+
+CLEAN — every table above is empty. Exit 0.

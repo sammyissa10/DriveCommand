@@ -1,0 +1,306 @@
+{
+  "phase": "after",
+  "capturedAt": "2026-09-14T17:22:46.480Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "policies": [
+    {
+      "schemaname": "public",
+      "tablename": "AutomationRule",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "AutomationRule",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "Tenant",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "Tenant",
+      "policyname": "tenant_bootstrap_insert",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text) IS NULL)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "Tenant",
+      "policyname": "tenant_self_read",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "SELECT",
+      "qual": "(id = current_tenant_id())",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "Tenant",
+      "policyname": "tenant_self_update",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "UPDATE",
+      "qual": "(id = current_tenant_id())",
+      "with_check": "(id = current_tenant_id())"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "audit_log",
+      "policyname": "audit_log_append_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "true"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "audit_log",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "audit_log",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "SELECT",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": null
+    }
+  ],
+  "totalPolicyCount": 183,
+  "bypassPolicies": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "Customer",
+    "CustomerInteraction",
+    "DispatchOverrideAudit",
+    "DocFeedback",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "DriverRouteJoin",
+    "ExpenseCategory",
+    "ExpenseTemplate",
+    "ExpenseTemplateItem",
+    "FleetMessage",
+    "FuelRecord",
+    "GPSLocation",
+    "Invoice",
+    "InvoiceItem",
+    "Load",
+    "MaintenanceEvent",
+    "NotificationLog",
+    "NotificationSendLog",
+    "NotificationSubscription",
+    "PayrollRecord",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PlaybookStep",
+    "PlaybookTrigger",
+    "PushToken",
+    "Route",
+    "RouteDriver",
+    "RouteExpense",
+    "RoutePayment",
+    "RouteStop",
+    "SafetyEvent",
+    "ScheduledService",
+    "StepInstance",
+    "StepTemplate",
+    "Subscription",
+    "SupportTicket",
+    "SysAdminInvoice",
+    "SysAdminInvoiceItem",
+    "Tag",
+    "TagAssignment",
+    "Tenant",
+    "TenantHealthScore",
+    "TenantIntegration",
+    "TenantMetricsDaily",
+    "TenantNotificationSettings",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "UserNotificationPreference",
+    "audit_log",
+    "carrier_compliance_alert_log",
+    "carrier_document_types",
+    "carrier_drivers",
+    "carrier_expenses",
+    "carrier_truck_defects",
+    "carrier_trucks",
+    "client_contacts",
+    "clients",
+    "contracts",
+    "dispatches",
+    "document_import_pages",
+    "document_imports",
+    "document_profiles",
+    "driver_bonuses",
+    "driver_compensation_templates",
+    "driver_deductions",
+    "driver_disputes",
+    "driver_pay_audit_logs",
+    "driver_pay_records",
+    "driver_settlements",
+    "facilities",
+    "facility_external_references",
+    "in_app_notifications",
+    "load_driver_assignments",
+    "load_pay_components",
+    "loads",
+    "pay_component_attachments",
+    "route_templates"
+  ],
+  "appUserGrants": {
+    "Tenant": [
+      "DELETE",
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+    ],
+    "audit_log": [
+      "INSERT",
+      "SELECT"
+    ],
+    "AutomationRule": [
+      "DELETE",
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+    ]
+  },
+  "automationRuleCensusBefore": {
+    "total": 6,
+    "system": 6,
+    "nullTenant": 6
+  },
+  "probes": {
+    "Tenant.update-cross.counter-read@postgres": {
+      "rows": 1
+    },
+    "Tenant.insert@guc-empty": {
+      "rows": 1
+    },
+    "audit_log.insert@guc-empty": {
+      "rows": 1
+    },
+    "AutomationRule.update-system@guc-empty": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      }
+    },
+    "Tenant.insert@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tenant\""
+      }
+    },
+    "Tenant.update-own@guc-A": {
+      "rows": 1
+    },
+    "Tenant.update-own.counter-read@guc-A": {
+      "rows": 1
+    },
+    "Tenant.update-cross@guc-A": {
+      "rows": 0
+    },
+    "Tenant.delete-own@guc-A": {
+      "rows": 0
+    },
+    "audit_log.insert-own@guc-A": {
+      "rows": 1
+    },
+    "audit_log.insert-cross@guc-A": {
+      "rows": 1
+    },
+    "audit_log.select-own@guc-A": {
+      "rows": 1
+    },
+    "audit_log.select-cross@guc-A": {
+      "rows": 0
+    },
+    "audit_log.update-own@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table audit_log"
+      }
+    },
+    "audit_log.delete-own@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table audit_log"
+      }
+    },
+    "audit_log.delete-cross@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table audit_log"
+      }
+    },
+    "AutomationRule.select-system@guc-A": {
+      "rows": 6
+    },
+    "AutomationRule.update-system@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      }
+    },
+    "AutomationRule.delete-system@guc-A": {
+      "rows": 6
+    },
+    "AutomationRule.insert-own@guc-A": {
+      "rows": 1
+    },
+    "AutomationRule.insert-system@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      }
+    },
+    "AutomationRule.insert-cross@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      }
+    }
+  },
+  "automationRuleCensusAfterRun": {
+    "total": 6,
+    "system": 6,
+    "nullTenant": 6
+  }
+}

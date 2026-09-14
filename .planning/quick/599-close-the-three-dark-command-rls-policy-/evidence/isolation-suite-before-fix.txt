@@ -1,0 +1,237 @@
+
+> @drivecommand/web@0.1.0 test:rls-isolation
+> vitest run --config vitest.db.config.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/sammy/Projects/DriveCommand/apps/web[39m
+
+
+[rls-isolation] seeding staging fixtures (idempotent)…
+(node:21788) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ [31m❯[39m tests-db/rls-isolation/behaviour.test.ts [2m([22m[2m89 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 74193[2mms[22m[39m
+     [32m✓[39m connects as a role RLS actually applies to[32m 2[2mms[22m[39m
+     [32m✓[39m the two fixture tenants are distinct[32m 2[2mms[22m[39m
+     [32m✓[39m User has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 1[2mms[22m[39m
+     [32m✓[39m PushToken has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoice has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoiceItem has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m audit_log has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m in_app_notifications has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m loads has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m dispatches has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m clients has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m facilities has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_drivers has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_trucks has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m route_templates has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m stops has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_documents has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 0[2mms[22m[39m
+     [32m✓[39m route_template_stops has fixture rows for BOTH tenants (otherwise its isolation test is vacuous)[32m 1[2mms[22m[39m
+     [32m✓[39m the GUC this suite sets is observed by the backend it queries[32m 0[2mms[22m[39m
+     [32m✓[39m User: GUC = tenant A sees A rows and ZERO B rows[32m 1[2mms[22m[39m
+     [32m✓[39m PushToken: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoice: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoiceItem: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m audit_log: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m in_app_notifications: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m loads: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m dispatches: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m clients: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m facilities: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_drivers: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_trucks: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m route_templates: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m stops: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_documents: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m route_template_stops: GUC = tenant A sees A rows and ZERO B rows[32m 0[2mms[22m[39m
+     [32m✓[39m User: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m PushToken: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoice: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoiceItem: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m audit_log: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m in_app_notifications: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m loads: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m dispatches: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m clients: GUC = tenant B sees B rows and ZERO A rows[32m 1[2mms[22m[39m
+     [32m✓[39m facilities: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_drivers: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_trucks: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m route_templates: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m stops: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_documents: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m route_template_stops: GUC = tenant B sees B rows and ZERO A rows[32m 0[2mms[22m[39m
+     [32m✓[39m User: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m PushToken: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoice: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoiceItem: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m audit_log: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m in_app_notifications: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m loads: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m dispatches: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m clients: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m facilities: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_drivers: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_trucks: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m route_templates: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m stops: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_documents: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m route_template_stops: GUC = '' returns zero rows WITHOUT raising[32m 0[2mms[22m[39m
+     [32m✓[39m User: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m PushToken: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoice: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoiceItem: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m audit_log: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m in_app_notifications: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m loads: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m dispatches: behaves as its catalogue says[32m 1[2mms[22m[39m
+     [32m✓[39m clients: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m facilities: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_drivers: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_trucks: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m route_templates: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m stops: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m carrier_documents: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m route_template_stops: behaves as its catalogue says[32m 0[2mms[22m[39m
+     [32m✓[39m at least one target does carry a bypass_rls_policy[32m 0[2mms[22m[39m
+[31m     [31m×[31m audit_log: a DELETE of tenant B rows under tenant A context affects ZERO rows[39m[32m 9[2mms[22m[39m
+     [32m✓[39m in_app_notifications: a DELETE of tenant B rows under tenant A context affects ZERO rows[32m 0[2mms[22m[39m
+     [32m✓[39m PushToken: a DELETE of tenant B rows under tenant A context affects ZERO rows[32m 0[2mms[22m[39m
+     [32m✓[39m SysAdminInvoiceItem: a DELETE of tenant B rows under tenant A context affects ZERO rows[32m 0[2mms[22m[39m
+     [33m[2m✓[22m[39m every fixture row still exists after the write probes [33m 4201[2mms[22m[39m
+[90mstdout[2m | tests-db/rls-isolation/coverage.test.ts
+[22m[39m
+RLS ISOLATION COVERAGE — every table carrying tenant_isolation_policy
+==============================================================================
+  tenant-scoped tables : 89
+  COVERED              : 16
+  NOT COVERED          : 73
+
+COVERED:
+  PushToken                  behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  SysAdminInvoice            behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  SysAdminInvoiceItem        behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  User                       behaviour probe runs against 4 tenant-A and 4 tenant-B fixture rows (direct ownership)
+  audit_log                  behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  carrier_documents          behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (derived ownership)
+  carrier_drivers            behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (direct ownership)
+  carrier_trucks             behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  clients                    behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  dispatches                 behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  facilities                 behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (direct ownership)
+  in_app_notifications       behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  loads                      behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  route_template_stops       behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (derived ownership)
+  route_templates            behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  stops                      behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (derived ownership)
+
+NOT COVERED:
+  ActivationProgress         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  AppEvent                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  AutomationRule             not seeded by the quick-597 fixture graph; note its policy also admits non-tenant-scoped rows
+  AutomationRun              not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Customer                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  CustomerInteraction        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DispatchOverrideAudit      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DocFeedback                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Document                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverHOSEntry             not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverIncident             not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverInvitation           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverRouteJoin            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ExpenseCategory            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ExpenseTemplate            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ExpenseTemplateItem        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  FleetMessage               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  FuelRecord                 not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  GPSLocation                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Invoice                    not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  InvoiceItem                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Load                       not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  MaintenanceEvent           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  NotificationLog            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  NotificationSendLog        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  NotificationSubscription   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PayrollRecord              not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Playbook                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookInstance           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookNotification       not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookStep               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookTrigger            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Route                      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RouteDriver                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RouteExpense               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RoutePayment               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RouteStop                  not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  SafetyEvent                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ScheduledService           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  StepInstance               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  StepTemplate               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Subscription               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  SupportTicket              not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Tag                        not seeded by the quick-597 fixture graph; note its policy compares the GUC TEXT directly rather than calling current_tenant_id()
+  TagAssignment              not seeded by the quick-597 fixture graph; note its policy compares the GUC TEXT directly rather than calling current_tenant_id()
+  TenantHealthScore          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TenantIntegration          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TenantMetricsDaily         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TenantNotificationSettings not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TicketMessage              no tenant column - ownership is an EXISTS subquery through a parent table, and the quick-597 fixture graph does not seed it
+  Truck                      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  UserNotificationPreference not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_compliance_alert_log not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_document_types     not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_expenses           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_truck_defects      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  client_contacts            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  contracts                  not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  document_import_pages      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  document_imports           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  document_profiles          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_bonuses             not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_compensation_templates not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_deductions          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_disputes            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_pay_audit_logs      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_pay_records         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_settlements         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  facility_external_references not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  load_driver_assignments    not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  load_pay_components        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  pay_component_attachments  not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  route_matrix_cache         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+
+
+ [32m✓[39m tests-db/rls-isolation/coverage.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 4733[2mms[22m[39m
+ [32m✓[39m tests-db/rls-isolation/catalogue.test.ts [2m([22m[2m47 tests[22m[2m)[22m[33m 2279[2mms[22m[39m
+ [32m✓[39m tests-db/rls-isolation/source-facts.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests-db/rls-isolation/behaviour.test.ts[2m > [22mcross-tenant writes as app_user[2m > [22maudit_log: a DELETE of tenant B rows under tenant A context affects ZERO rows
+[31m[1mError[22m: audit_log cross-tenant DELETE raised instead of returning a count: [42501] permission denied for table audit_log[39m
+[36m [2m❯[22m probeRows tests-db/rls-isolation/env.ts:[2m250:9[22m[39m
+    [90m248| [39m[35mexport[39m [35mfunction[39m [34mprobeRows[39m(p[33m:[39m [33mProbe[39m[33m,[39m context[33m:[39m string)[33m:[39m number {
+    [90m249| [39m  [35mif[39m ([32m'rows'[39m [35min[39m p) [35mreturn[39m p[33m.[39mrows[33m;[39m
+    [90m250| [39m  [35mthrow[39m [35mnew[39m [33mError[39m(
+    [90m   | [39m        [31m^[39m
+    [90m251| [39m    `${context} raised instead of returning a count: [${p.error.code}]…
+    [90m252| [39m  )[33m;[39m
+[90m [2m❯[22m tests-db/rls-isolation/behaviour.test.ts:[2m319:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m149 passed[39m[22m[90m (150)[39m
+[2m   Start at [22m 12:25:43
+[2m   Duration [22m 108.77s[2m (transform 255ms, setup 0ms, import 751ms, tests 81.22s, environment 1ms)[22m
+
+
+[rls-isolation] tearing down staging fixtures…
+npm error Lifecycle script `test:rls-isolation` failed with error:
+npm error code 1
+npm error path C:\Users\sammy\Projects\DriveCommand\apps\web
+npm error workspace @drivecommand/web@0.1.0
+npm error location C:\Users\sammy\Projects\DriveCommand\apps\web
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c vitest run --config vitest.db.config.ts

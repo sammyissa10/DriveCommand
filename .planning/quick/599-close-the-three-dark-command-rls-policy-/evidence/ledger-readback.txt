@@ -1,0 +1,19 @@
+Sentinel row visibility check (proves a non-owner-role empty result would be absence, not RLS-hidden):
+[
+  {
+    "migration_name": "20260913120000_rls_policy_satisfiability_fixes",
+    "applied_steps_count": 1,
+    "checksum": "manual"
+  }
+]
+
+Newest row:
+[
+  {
+    "migration_name": "20260914120000_tenant_audit_automation_policy_closure",
+    "applied_steps_count": 1,
+    "checksum": "manual",
+    "started_at": "2026-09-14T17:21:39.591Z",
+    "finished_at": "2026-09-14T17:21:39.956Z"
+  }
+]
