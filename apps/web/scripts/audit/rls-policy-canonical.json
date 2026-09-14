@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-14T17:25:15.713Z",
+  "generatedAt": "2026-09-14T20:08:05.734Z",
   "projectRef": "wyixpgunnjmzguhggocz",
-  "corpusHash": "aba17a06f740ac9c5390f4b6020088fd6bb640180cff5097f6be7c2f1584fa42",
+  "corpusHash": "d11f35e339f7d258519c465f24402f06976928e75299d4ff642a3e18cbca8212",
   "definitionCount": 183,
   "canonicalisedCount": 183,
   "notCanonicalised": [],
@@ -1480,7 +1480,7 @@
         "public"
       ],
       "using": null,
-      "withCheck": "(NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text) IS NULL)"
+      "withCheck": "(id = current_tenant_id())"
     },
     "Tenant.tenant_self_read": {
       "cmd": "SELECT",
