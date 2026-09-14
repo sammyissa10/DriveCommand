@@ -81,8 +81,9 @@ process.env.PG_CONNECT_TIMEOUT_MS ??= '30000';
 
 const phaseArg = process.argv.indexOf('--phase');
 const PHASE = phaseArg !== -1 ? process.argv[phaseArg + 1] : undefined;
-if (PHASE !== 'before' && PHASE !== 'after') {
-  refuse('--phase before | after is required');
+const DIFF_MODE = process.argv.includes('--diff');
+if (!DIFF_MODE && PHASE !== 'before' && PHASE !== 'after') {
+  refuse('--phase before | after  (or --diff) is required');
 }
 
 interface FixtureTenant {
@@ -637,7 +638,93 @@ function renderMd(r: Report): string {
 // Main
 // ---------------------------------------------------------------------------
 
+/**
+ * `--diff` — render evidence/diff.md straight out of before.json and after.json.
+ *
+ * Deliberately NOT hand-written. The claims this task makes are all of the form
+ * "N before, M after"; typing those into prose is exactly where a weakened
+ * assertion would get in unnoticed. This reads both artefacts and prints what they
+ * say, including the rows where nothing changed.
+ */
+function runDiff(): void {
+  const read = (p: string): Report =>
+    JSON.parse(readFileSync(resolve(EVIDENCE_DIR, p), 'utf8')) as Report;
+  const b = read('before.json');
+  const a = read('after.json');
+
+  const L: string[] = [];
+  L.push('# quick-597 — BEFORE → AFTER, as `app_user` against staging');
+  L.push('');
+  L.push(`Generated from \`before.json\` (${b.capturedAt}) and \`after.json\` (${a.capturedAt}) by`);
+  L.push('`597-policy-verify.ts --diff`. Nothing here is typed by hand.');
+  L.push('');
+  L.push(`- \`pg_policy\` total: **${b.totalPolicyCount} -> ${a.totalPolicyCount}**`);
+  L.push(
+    `- \`bypass_rls_policy\`: **${b.bypassPolicies.length} -> ${a.bypassPolicies.length}** ` +
+      `(identical table set: ${
+        JSON.stringify(b.bypassPolicies.map((x) => x.tablename).sort()) ===
+        JSON.stringify(a.bypassPolicies.map((x) => x.tablename).sort())
+          ? 'YES'
+          : 'NO'
+      })`
+  );
+  L.push('');
+
+  L.push('## Policies present on the target tables');
+  L.push('');
+  L.push('| table | policy | before | after |');
+  L.push('| --- | --- | --- | --- |');
+  const names = new Set<string>();
+  for (const p of [...b.policies, ...a.policies]) names.add(`${p.tablename}|${p.policyname}`);
+  for (const n of [...names].sort()) {
+    const [tbl, pol] = n.split('|');
+    const inB = b.policies.some((p) => p.tablename === tbl && p.policyname === pol);
+    const inA = a.policies.some((p) => p.tablename === tbl && p.policyname === pol);
+    L.push(`| \`${tbl}\` | \`${pol}\` | ${inB ? 'present' : '—'} | ${inA ? 'present' : '—'} |`);
+  }
+  L.push('');
+
+  L.push('## Read matrix');
+  L.push('');
+  L.push('| table | GUC | A rows before -> after | B rows before -> after | all before -> after |');
+  L.push('| --- | --- | --- | --- | --- |');
+  for (const t of TARGETS) {
+    for (const g of GUC_CASES) {
+      const cb = b.readMatrix[t.key]?.[g];
+      const ca = a.readMatrix[t.key]?.[g];
+      if (!cb || !ca) continue;
+      const label = g === 'empty' ? `''` : g;
+      L.push(
+        `| \`${t.key}\` | ${label} | ${fmtProbe(cb.tenantARows)} -> ${fmtProbe(ca.tenantARows)} | ` +
+          `${fmtProbe(cb.tenantBRows)} -> ${fmtProbe(ca.tenantBRows)} | ` +
+          `${fmtProbe(cb.totalVisible)} -> ${fmtProbe(ca.totalVisible)} |`
+      );
+    }
+  }
+  L.push('');
+
+  L.push('## Write probes');
+  L.push('');
+  L.push('| probe | before | after |');
+  L.push('| --- | --- | --- |');
+  for (const k of Object.keys({ ...b.writeProbes, ...a.writeProbes })) {
+    const pb = b.writeProbes[k];
+    const pa = a.writeProbes[k];
+    L.push(`| \`${k}\` | ${pb ? fmtProbe(pb) : '—'} | ${pa ? fmtProbe(pa) : '—'} |`);
+  }
+  L.push('');
+
+  const outPath = resolve(EVIDENCE_DIR, 'diff.md');
+  writeFileSync(outPath, L.join('\n') + '\n', 'utf8');
+  console.log(`Wrote ${outPath}`);
+}
+
 async function main(): Promise<void> {
+  if (DIFF_MODE) {
+    runDiff();
+    return;
+  }
+
   console.log(`597-policy-verify — phase=${PHASE}, project=${STAGING_REF}`);
 
   const snap = await snapshot();

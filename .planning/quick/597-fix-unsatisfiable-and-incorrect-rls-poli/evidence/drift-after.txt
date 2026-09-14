@@ -1,0 +1,28 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+
+> @drivecommand/web@0.1.0 audit:rls-policy-drift
+> tsx scripts/audit/rls-policy-drift.ts
+
+RLS Policy Drift — replay diff against live pg_policy
+========================================================================
+
+  Migration files read     : 151
+  Statements parsed        : 418
+  Policies expected (net)  : 180
+  Policies live            : 180
+  Missing (expected−live)  : 0
+  Unexpected (live−expect) : 0
+
+MISSING: none.
+
+UNEXPECTED: none.
+
+ZERO-POLICY TABLES (reported, not gating — Prompt 1 owns these):
+  FORCE RLS + zero policies (severe)     : none
+  RLS enabled, not forced, zero policies : _prisma_migrations
+
+BASELINE: none — this check has no suppression list.
+  Any missing or unexpected policy fails the run.
+
+========================================================================
+RESULT: CLEAN (exit 0) — repo and database agree exactly.
