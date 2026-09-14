@@ -133,11 +133,11 @@ tenant, or to none.
 | `api/cron/send-reminders/route.ts:62` | identical | identical |
 | `api/cron/workflow-digest/route.ts:50` | `playbookInstance.findMany({ distinct: ['tenantId'] })`, no tenant filter | `PlaybookInstance.tenant_isolation_policy` = `"tenantId" = current_tenant_id()` |
 | `api/cron/workflow-notifications/route.ts:57` | `stepInstance.findMany` over all tenants for `dueDate < now-24h` | `StepInstance.tenant_isolation_policy` |
-| `api/cron/workflow-notifications/route.ts:81` | `stepInstance.update({ where: { id } })` on a row from that sweep | the row belongs to whichever tenant the sweep found |
-| `api/cron/workflow-notifications/route.ts:96` | same, alert-sent branch | same |
+| ~~`api/cron/workflow-notifications/route.ts:81` | `stepInstance.update({ where: { id } })` on a row from that sweep | the row belongs to whichever tenant the sweep found~~ | **CORRECTED by quick-600 — not CROSS_TENANT.** `tenantId` is already in hand from the row the sweep read; routed to `getTenantPrismaForOrg`, not the admin connection. See `ROUTING-MANIFEST.md` §1 row 7. |
+| ~~`api/cron/workflow-notifications/route.ts:96` | same, alert-sent branch | same~~ | **CORRECTED — same reasoning, row 8.** |
 | `api/cron/workflow-notifications/route.ts:121` | `playbookInstance.findMany({ where: { status: 'BLOCKED' } })`, all tenants | `PlaybookInstance.tenant_isolation_policy` |
 | `api/cron/auto-close-tickets/route.ts:53` | `supportTicket.updateMany({ where: { id: { in: ids } } })` where `ids` came from a raw all-tenant scan | `SupportTicket.tenant_isolation_policy` |
-| `lib/automations/evaluator.ts:203` | `automationRun.update` by id, over runs collected from an all-tenant `appEvent`/`automationRule` scan | `AutomationRun.tenant_isolation_policy`. This is the one whose failure is not "nothing happens": runs never leave `PENDING`, so the same automation re-fires every tick. |
+| ~~`lib/automations/evaluator.ts:203` | `automationRun.update` by id, over runs collected from an all-tenant `appEvent`/`automationRule` scan | `AutomationRun.tenant_isolation_policy`. This is the one whose failure is not "nothing happens": runs never leave `PENDING`, so the same automation re-fires every tick.~~ | **CORRECTED by quick-600 — not CROSS_TENANT.** `run.tenantId` is already in hand from the row `dueRuns` (the sweep) just read — same shape as the two rows above. Routed to `getTenantPrismaForOrg`. The "re-fires every tick" failure mode this row named is real and is exactly why quick-600 checked this site's shape before routing it, per the plan's explicit instruction. See `ROUTING-MANIFEST.md` §1 row 11. |
 
 #### SysAdmin surfaces — 8 sites
 
@@ -781,12 +781,17 @@ Precedes `withTenantContext` unless marked otherwise. Steps map to
 
 ### Before the wrapper migration starts
 
-- [ ] **B1. Ship step 1's policies and grants to production.** Staging has 183 policies to
-      production's 179, and 7 tables carry `app_user` grants on staging that production lacks. Until
-      this lands, `stops` / `carrier_documents` / `route_template_stops` have **no policy at all** on
-      production and four bypass sites are already no-ops there. *Blocks: everything. This is the
-      largest single production/staging divergence and every later verification on staging is
-      measuring a database production does not have.*
+- [ ] **B1. Ship step 1's policies and grants to production.** ~~Staging has 183 policies to
+      production's 179, and 7 tables carry `app_user` grants on staging that production lacks.~~
+      **STALE — corrected by quick-599 (2026-09-14), the way quick-599 corrected its own
+      predecessors.** Production and staging are now **ALIGNED at 183 policies, byte-identical**,
+      digest `99abc8b7112e797944fe0df0855fd56a`, `bypass_rls_policy` 86 on both — quick-599's
+      migration was applied to production out of band between that task closing and quick-600
+      (this task) starting. Until this had landed, `stops` / `carrier_documents` /
+      `route_template_stops` had **no policy at all** on production and four bypass sites were
+      already no-ops there. *Blocked: everything. Was the largest single production/staging
+      divergence; every verification on staging before this correction was measuring a database
+      production did not have. No longer true — re-verify before relying on this being current.*
 - [ ] **B2. Add `GRANT UPDATE ON "Promo" TO app_user` — on staging too.** Staging grants `SELECT`
       only and `provision-tenant.ts:97` issues a raw `UPDATE`. *Sign-up with a promo code fails on
       the verification target itself without this.*
@@ -799,10 +804,25 @@ Precedes `withTenantContext` unless marked otherwise. Steps map to
       through `current_tenant_id()` — `.planning/phase-0-revised.md` step 3. B3 covers `audit_log`.
       Leave the two `SysAdminInvoice*` deny policies inline (they must pass on a null GUC) but
       **record §2.6's finding**: they are permissive and currently grant, not deny.
-- [ ] **B5. Build the admin connection** — `ADMIN_DATABASE_URL`, second pool without the tenant-GUC
-      initialiser, `adminPrisma`, `withAdminContext(reason, fn)` with a closed reason union, the
-      two-direction boot guard, and the CI call-site countdown. *Blocks: all 21 CROSS_TENANT sites, 3
-      BOOTSTRAP sites, `(admin)/actions/tenants.ts` x6, and the sysadmin `getCurrentUser` branch.*
+- [x] **B5. Build the admin connection — DONE on staging only, quick-600 (2026-09-14).** Names
+      differ from this line deliberately, recorded in the task: the env var is
+      `DATABASE_URL_ADMIN` (not `ADMIN_DATABASE_URL`), the accessor is `getAdminDb(reason)` (not
+      `withAdminContext(reason, fn)`), and `reason` is typed over a closed `AdminReason`
+      string-literal union rather than a plain `string`. A dedicated role, `app_admin`
+      (`BYPASSRLS`, `NOLOGIN` until a human sets `LOGIN`/password out of band), not `postgres` — the
+      decisive argument is the two-direction boot guard, which needs a role distinguishable from
+      the tenant connection by `current_user`. `getAdminDb`'s second pool carries no tenant-GUC
+      connect initialiser. The two-direction boot guard is flag-gated (`DB_ROLE_ASSERT`) and the
+      CI call-site countdown is `tests/security/admin-connection-allowlist.test.ts`, proven to fire
+      red on a deliberate out-of-allowlist import and a deliberate alias.
+      Of the things this line said B5 blocks: **16 of the 21 CROSS_TENANT sites are routed** (3
+      corrected to `getTenantPrismaForOrg` instead — the tenant was already in hand; 2 stay on the
+      existing bypass, owned by B7); **4 of the 7 BOOTSTRAP sites are routed** (3 stay open — 2
+      owned by B3/§4.1, 1 by B8); **all 6 `(admin)/actions/tenants.ts` writes are routed**; **the
+      sysadmin `getCurrentUser` branch is NOT routed — still B8's**, unchanged by this task. Full
+      accounting: `.planning/quick/600-build-the-privileged-admin-connection-b5/ROUTING-MANIFEST.md`
+      and `docs/audits/admin-connection.md`. **Not done: any part of the `app_user` cutover, and
+      production has no `app_admin` role at all yet — see `admin-connection.md` §6 for the runbook.**
 - [ ] **B6. Decide the `SupportTicket` null-tenant question** (§3.1 #5). Recommend routing the 4
       affected sites onto the admin connection now and revisiting when `app.current_user_id` exists.
       *Blocks: "My tickets", owner replies, and any ticket filed by the sysadmin.*

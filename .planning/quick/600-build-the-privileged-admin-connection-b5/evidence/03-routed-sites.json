@@ -1,0 +1,358 @@
+[
+  {
+    "shape": "S1 — Tenant active-tenant sweep",
+    "reason": "compliance/daily/weekly digest tenant sweep, reminders cron tenant sweep",
+    "callSites": [
+      "digest-compliance-30day/route.ts",
+      "digest-daily-driver/route.ts",
+      "digest-weekly-owner/route.ts",
+      "send-reminders/route.ts"
+    ],
+    "directionA": {
+      "rows": 2
+    },
+    "directionASpan": 2,
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin sees >=2 active tenants unscoped; tenant A cannot see tenant B by id."
+  },
+  {
+    "shape": "S2 — PlaybookInstance active-tenant sweep",
+    "reason": "workflow digest active-tenant sweep",
+    "callSites": [
+      "workflow-digest/route.ts"
+    ],
+    "directionA": {
+      "rows": 2
+    },
+    "directionASpan": 2,
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin sees the RLS600 NOT_STARTED rows for both A and B; tenant A cannot see B's."
+  },
+  {
+    "shape": "S3 — StepInstance overdue sweep",
+    "reason": "workflow overdue-step sweep",
+    "callSites": [
+      "workflow-notifications/route.ts (sweep 1)"
+    ],
+    "directionA": {
+      "rows": 2
+    },
+    "directionASpan": 2,
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin sees the RLS600 overdue StepInstance for both A and B; tenant A cannot see B's."
+  },
+  {
+    "shape": "S4 — PlaybookInstance blocked sweep",
+    "reason": "workflow blocked-instance sweep",
+    "callSites": [
+      "workflow-notifications/route.ts (sweep 2)"
+    ],
+    "directionA": {
+      "rows": 2
+    },
+    "directionASpan": 2,
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin sees the RLS600 BLOCKED rows for both A and B; tenant A cannot see B's."
+  },
+  {
+    "shape": "S5 — SupportTicket batch close (id IN (...))",
+    "reason": "auto-close stale ticket sweep",
+    "callSites": [
+      "auto-close-tickets/route.ts"
+    ],
+    "directionA": {
+      "rows": 2
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin closes tenant B's RLS600 ticket in a batch statement; tenant-A-scoped app_user affects 0 rows on the same id."
+  },
+  {
+    "shape": "S6 — AutomationRun create for an arbitrary tenant",
+    "reason": "sysadmin manual automation trigger (create)",
+    "callSites": [
+      "(admin)/actions/automations.ts:107 (manualTriggerRule, step 1)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRun\""
+      }
+    },
+    "pass": true,
+    "note": "Admin creates a PENDING run naming tenant B with no GUC set; tenant-A-scoped app_user's WITH CHECK refuses the same insert naming tenant B."
+  },
+  {
+    "shape": "S7 — AutomationRun status update by id",
+    "reason": "sysadmin manual automation trigger (SENT/FAILED)",
+    "callSites": [
+      "(admin)/actions/automations.ts:141 (manualTriggerRule, SENT branch)",
+      "(admin)/actions/automations.ts:151 (manualTriggerRule, FAILED branch)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin marks tenant B's RLS600 run SENT with no GUC set; tenant-A-scoped app_user affects 0 rows on the same id."
+  },
+  {
+    "shape": "S8 — Subscription update by tenantId (extendTrial)",
+    "reason": "sysadmin trial extension",
+    "callSites": [
+      "(admin)/actions/tenants.ts:586-615 (extendTrial)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin extends tenant B's trial with no GUC set; tenant-A-scoped app_user affects 0 rows on tenant B's subscription."
+  },
+  {
+    "shape": "S9 — Tenant listing, unfiltered",
+    "reason": "sysadmin tenant listing",
+    "callSites": [
+      "lib/db/repositories/tenant.repository.ts:87 (listAllTenants)"
+    ],
+    "directionA": {
+      "rows": 2
+    },
+    "directionASpan": 2,
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin lists every tenant with no GUC set (>=2 distinct, A and B both present); tenant A cannot see B by id."
+  },
+  {
+    "shape": "S10 — Tenant create (no tenant belongs to another tenant)",
+    "reason": "sysadmin tenant create",
+    "callSites": [
+      "(admin)/actions/tenants.ts:98-123 (createTenant)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tenant\""
+      }
+    },
+    "pass": true,
+    "note": "Admin creates a brand-new tenant with no GUC set; tenant-A-scoped app_user's INSERT is refused because a GUC is set (tenant_bootstrap_insert only admits an UNSET GUC)."
+  },
+  {
+    "shape": "S11 — Tenant UPDATE by id (status change / profile / settings)",
+    "reason": "sysadmin tenant status change, profile update, settings update",
+    "callSites": [
+      "(admin)/actions/tenants.ts:190 (suspendTenant)",
+      "(admin)/actions/tenants.ts:229 (reactivateTenant)",
+      "(admin)/actions/tenants.ts:432 (updateTenant)",
+      "(admin)/actions/tenants.ts:542 (updateTenantSettings)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin updates tenant B with no GUC set; tenant-A-scoped app_user affects 0 rows on the same id (tenant_self_update only admits id = current_tenant_id())."
+  },
+  {
+    "shape": "S12 — Tenant DELETE by id",
+    "reason": "sysadmin tenant delete",
+    "callSites": [
+      "(admin)/actions/tenants.ts:625 (deleteTenant)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin creates + deletes a THROWAWAY, dependent-free tenant with no GUC set (isolates the grant/RLS question from the real User_tenantId_fkey constraint, which real tenant B would trip under ANY role). Tenant-A-scoped app_user attempting DELETE on the REAL tenant B affects 0 rows — no DELETE policy exists on \"Tenant\" at all, deliberately (design §4.5): a tenant must never be able to delete itself."
+  },
+  {
+    "shape": "S13 — User + Tenant join, by userId",
+    "reason": "tenant lookup by user id",
+    "callSites": [
+      "lib/db/repositories/tenant.repository.ts:66 (findTenantByUserId)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin resolves tenant B's owner user id to its tenant with no GUC set; tenant-A-scoped app_user reads 0 rows for that user id."
+  },
+  {
+    "shape": "S14 — DriverInvitation lookup by id",
+    "reason": "invitation lookup by token",
+    "callSites": [
+      "api/auth/accept-invitation/route.ts:44 (GET)",
+      "api/auth/accept-invitation/route.ts:121 (POST)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin reads tenant B's RLS600 invitation by id with no GUC set; tenant-A-scoped app_user reads 0 rows for the same id."
+  },
+  {
+    "shape": "S15 — Load lookup by trackingToken",
+    "reason": "public shipment tracking lookup",
+    "callSites": [
+      "api/track/[token]/route.ts:24"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin reads tenant B's RLS600 load by trackingToken with no GUC set; tenant-A-scoped app_user reads 0 rows for the same token."
+  },
+  {
+    "shape": "S16 — SupportTicket status UPDATE by id",
+    "reason": "sysadmin ticket status update",
+    "callSites": [
+      "actions/support-tickets.ts:341 (updateTicketStatus)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin resolves tenant B's RLS600 ticket with no GUC set; tenant-A-scoped app_user affects 0 rows on the same id."
+  },
+  {
+    "shape": "S17 — TicketMessage create for an arbitrary tenant's ticket",
+    "reason": "sysadmin ticket reply",
+    "callSites": [
+      "actions/support-tickets.ts:475 (addAdminReply)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TicketMessage\""
+      }
+    },
+    "pass": true,
+    "note": "Admin posts a reply on tenant B's RLS600 ticket with no GUC set. The cross-tenant column runs the SAME insert as app_user scoped to tenant A, naming tenant B's ticketId — recorded as measured, not assumed; TicketMessage carries no tenant column of its own, so its write-side isolation (if any) can only come from a policy that subqueries SupportTicket, and whether one exists is exactly what this row measures."
+  },
+  {
+    "shape": "S18 — TicketMessage read by ticketId",
+    "reason": "sysadmin ticket thread read",
+    "callSites": [
+      "actions/support-tickets.ts:542 (getTicketMessages)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin reads tenant B's RLS600 ticket thread with no GUC set; tenant-A-scoped app_user reads 0 rows for the same ticketId (TicketMessage's policy is a subquery over SupportTicket.tenantId)."
+  },
+  {
+    "shape": "S19 — SysAdminInvoice create for an arbitrary tenant",
+    "reason": "sysadmin invoice management",
+    "callSites": [
+      "(admin)/actions/sysadmin-invoices.ts (createSysAdminInvoice and 9 sibling functions)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"SysAdminInvoice\""
+      }
+    },
+    "pass": true,
+    "note": "Admin creates an invoice for tenant B with no GUC set; tenant-A-scoped app_user's WITH CHECK refuses the same insert."
+  },
+  {
+    "shape": "S20 — SysAdminInvoice audit-trail read (createdBy/updatedBy) by id",
+    "reason": "sysadmin invoice audit trail",
+    "callSites": [
+      "(admin)/billing/[id]/page.tsx:36"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin reads tenant B's seeded invoice with no GUC set; tenant-A-scoped app_user reads 0 rows for the same id."
+  },
+  {
+    "shape": "S21 — SysAdminInvoice batch OVERDUE sweep",
+    "reason": "overdue invoice sweep",
+    "callSites": [
+      "api/cron/mark-overdue-invoices/route.ts",
+      "(admin)/actions/sysadmin-invoices.ts (markOverdueInvoices)"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin marks tenant B's seeded (DRAFT) invoice OVERDUE (batch shape) with no GUC set; tenant-A-scoped app_user affects 0 rows on the same id."
+  },
+  {
+    "shape": "S22 — SysAdminInvoice + User owner lookup",
+    "reason": "sysadmin invoice email lookup",
+    "callSites": [
+      "lib/email/send-sysadmin-invoice.ts"
+    ],
+    "directionA": {
+      "rows": 1
+    },
+    "directionB": {
+      "rows": 0
+    },
+    "pass": true,
+    "note": "Admin resolves tenant B's invoice + owner email with no GUC set; tenant-A-scoped app_user reads 0 rows for the same invoice id."
+  }
+]
