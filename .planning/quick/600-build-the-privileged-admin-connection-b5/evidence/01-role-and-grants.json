@@ -1,0 +1,165 @@
+{
+  "capturedAt": "2026-09-14T18:26:47.414Z",
+  "role": {
+    "rolname": "app_admin",
+    "rolsuper": false,
+    "rolbypassrls": true,
+    "rolcanlogin": false,
+    "rolconnlimit": -1
+  },
+  "grantsByTable": {
+    "AppEvent": [
+      "INSERT",
+      "SELECT"
+    ],
+    "AutomationRun": [
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+    ],
+    "DriverInvitation": [
+      "SELECT"
+    ],
+    "GPSLocation": [
+      "SELECT"
+    ],
+    "Load": [
+      "SELECT"
+    ],
+    "PlaybookInstance": [
+      "SELECT"
+    ],
+    "StepInstance": [
+      "SELECT"
+    ],
+    "Subscription": [
+      "SELECT",
+      "UPDATE"
+    ],
+    "SupportTicket": [
+      "SELECT",
+      "UPDATE"
+    ],
+    "SysAdminInvoice": [
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+    ],
+    "SysAdminInvoiceItem": [
+      "DELETE",
+      "INSERT",
+      "SELECT"
+    ],
+    "Tenant": [
+      "DELETE",
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+    ],
+    "TicketMessage": [
+      "INSERT",
+      "SELECT"
+    ],
+    "Truck": [
+      "SELECT"
+    ],
+    "User": [
+      "SELECT"
+    ]
+  },
+  "bypassPolicyCount": 86,
+  "bypassPolicyTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "Customer",
+    "CustomerInteraction",
+    "DispatchOverrideAudit",
+    "DocFeedback",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "DriverRouteJoin",
+    "ExpenseCategory",
+    "ExpenseTemplate",
+    "ExpenseTemplateItem",
+    "FleetMessage",
+    "FuelRecord",
+    "GPSLocation",
+    "Invoice",
+    "InvoiceItem",
+    "Load",
+    "MaintenanceEvent",
+    "NotificationLog",
+    "NotificationSendLog",
+    "NotificationSubscription",
+    "PayrollRecord",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PlaybookStep",
+    "PlaybookTrigger",
+    "PushToken",
+    "Route",
+    "RouteDriver",
+    "RouteExpense",
+    "RoutePayment",
+    "RouteStop",
+    "SafetyEvent",
+    "ScheduledService",
+    "StepInstance",
+    "StepTemplate",
+    "Subscription",
+    "SupportTicket",
+    "SysAdminInvoice",
+    "SysAdminInvoiceItem",
+    "Tag",
+    "TagAssignment",
+    "Tenant",
+    "TenantHealthScore",
+    "TenantIntegration",
+    "TenantMetricsDaily",
+    "TenantNotificationSettings",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "UserNotificationPreference",
+    "audit_log",
+    "carrier_compliance_alert_log",
+    "carrier_document_types",
+    "carrier_drivers",
+    "carrier_expenses",
+    "carrier_truck_defects",
+    "carrier_trucks",
+    "client_contacts",
+    "clients",
+    "contracts",
+    "dispatches",
+    "document_import_pages",
+    "document_imports",
+    "document_profiles",
+    "driver_bonuses",
+    "driver_compensation_templates",
+    "driver_deductions",
+    "driver_disputes",
+    "driver_pay_audit_logs",
+    "driver_pay_records",
+    "driver_settlements",
+    "facilities",
+    "facility_external_references",
+    "in_app_notifications",
+    "load_driver_assignments",
+    "load_pay_components",
+    "loads",
+    "pay_component_attachments",
+    "route_templates"
+  ],
+  "totalPolicyCount": 183,
+  "newestMigration": {
+    "migration_name": "20260914140000_admin_connection_role",
+    "applied_steps_count": 1,
+    "checksum": "manual"
+  }
+}
