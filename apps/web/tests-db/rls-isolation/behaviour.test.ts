@@ -50,6 +50,8 @@ import {
   probeRows,
   probeWriteThenRollback,
   WRITE_PROBE_TARGETS,
+  APPEND_ONLY_WRITE_PROBE_TARGETS,
+  ALL_WRITE_PROBE_TARGETS,
   type FixtureIds,
   type Probe,
   type TargetIds,
@@ -97,6 +99,73 @@ async function runWriteCase(): Promise<void> {
           client,
           `DELETE FROM ${target.sql} WHERE id::text = ANY($1::text[])`,
           [ids[key].A]
+        ),
+      };
+    }
+
+    await client.query('ROLLBACK');
+  } finally {
+    await client.end().catch(() => {});
+  }
+}
+
+/**
+ * quick-599 — `audit_log`'s append-only contract, measured directly rather
+ * than inferred from a DELETE returning zero rows. Every statement below runs
+ * inside a SAVEPOINT that is rolled back regardless of outcome, inside a
+ * transaction that is also rolled back (`probeWriteThenRollback`).
+ *
+ * Two refusals alone would pass identically on a table with no grants at all
+ * — or one that does not exist — so the two INSERTs are the counter-assertion
+ * that removes that reading. The cross-tenant INSERT is also the
+ * `writeAuditLog` contract itself, the whole reason
+ * `audit_log_append_policy` is `WITH CHECK (true)`.
+ */
+const appendOnlyResults: Record<
+  string,
+  { crossDelete: Probe; ownDelete: Probe; ownUpdate: Probe; ownInsert: Probe; crossInsert: Probe }
+> = {};
+
+async function runAppendOnlyCase(): Promise<void> {
+  const client: Client = await openAppUser();
+  try {
+    await client.query('BEGIN');
+    await client.query(`SELECT set_config('app.current_tenant_id', $1, false)`, [
+      fixtures.tenants.A.id,
+    ]);
+
+    for (const key of APPEND_ONLY_WRITE_PROBE_TARGETS) {
+      const target = ISOLATION_TARGETS.find((t) => t.key === key)!;
+
+      appendOnlyResults[key] = {
+        crossDelete: await probeWriteThenRollback(
+          client,
+          `DELETE FROM ${target.sql} WHERE id::text = ANY($1::text[])`,
+          [ids[key].B]
+        ),
+        ownDelete: await probeWriteThenRollback(
+          client,
+          `DELETE FROM ${target.sql} WHERE id::text = ANY($1::text[])`,
+          [ids[key].A]
+        ),
+        ownUpdate: await probeWriteThenRollback(
+          client,
+          `UPDATE ${target.sql} SET user_agent = 'RLS599_APPEND_ONLY_PROBE' WHERE id::text = ANY($1::text[])`,
+          [ids[key].A]
+        ),
+        // DEC-14: audit_log_action_check admits exactly eight literal actions.
+        // 'EXPORT' is used elsewhere in this repo's probes for the same reason.
+        ownInsert: await probeWriteThenRollback(
+          client,
+          `INSERT INTO ${target.sql} (tenant_id, user_id, action, resource_type, resource_id)
+           VALUES ($1, $2, 'EXPORT', 'RLS599_append_only_probe', gen_random_uuid())`,
+          [fixtures.tenants.A.id, fixtures.tenants.A.ownerUserId]
+        ),
+        crossInsert: await probeWriteThenRollback(
+          client,
+          `INSERT INTO ${target.sql} (tenant_id, user_id, action, resource_type, resource_id)
+           VALUES ($1, $2, 'EXPORT', 'RLS599_append_only_probe', gen_random_uuid())`,
+          [fixtures.tenants.B.id, fixtures.tenants.B.ownerUserId]
         ),
       };
     }
@@ -182,6 +251,7 @@ beforeAll(async () => {
   results.emptyGuc = await runCase('emptyGuc', '');
   results.bypass = await runCase('bypass', '');
   await runWriteCase();
+  await runAppendOnlyCase();
 });
 
 afterAll(() => {
@@ -328,15 +398,90 @@ describe('cross-tenant writes as app_user', () => {
   );
 });
 
+// ---------------------------------------------------------------------------
+// quick-599 — audit_log's append-only contract, measured directly.
+//
+// Two refusals alone (cross-tenant DELETE, own-tenant DELETE) would pass
+// identically on a table with no grants at all, or on a table that does not
+// exist — that is exactly the failure mode this suite exists to remove
+// (`env.ts` header). The two INSERTs are the counter-assertion: the table
+// really is writable as `app_user`, just only by INSERT. The cross-tenant
+// INSERT succeeding is also the `writeAuditLog` contract itself — the whole
+// reason `audit_log_append_policy` is `WITH CHECK (true)` rather than
+// tenant-scoped like every other write policy in this suite.
+// ---------------------------------------------------------------------------
+
+describe('audit_log is append-only for app_user', () => {
+  it.each(APPEND_ONLY_WRITE_PROBE_TARGETS)('%s: cross-tenant DELETE is refused with 42501', (key) => {
+    const p = appendOnlyResults[key].crossDelete;
+    expect('error' in p, `${key}: cross-tenant DELETE should have raised, got ${JSON.stringify(p)}`).toBe(
+      true
+    );
+    if ('error' in p) expect(p.error.code, `${key}: cross-tenant DELETE SQLSTATE`).toBe('42501');
+  });
+
+  it.each(APPEND_ONLY_WRITE_PROBE_TARGETS)(
+    '%s: own-tenant DELETE is ALSO refused with 42501 (append-only, not merely tenant-scoped)',
+    (key) => {
+      const p = appendOnlyResults[key].ownDelete;
+      expect(
+        'error' in p,
+        `${key}: own-tenant DELETE should have raised, got ${JSON.stringify(p)}`
+      ).toBe(true);
+      if ('error' in p) expect(p.error.code, `${key}: own-tenant DELETE SQLSTATE`).toBe('42501');
+    }
+  );
+
+  it.each(APPEND_ONLY_WRITE_PROBE_TARGETS)('%s: own-tenant UPDATE is refused with 42501', (key) => {
+    const p = appendOnlyResults[key].ownUpdate;
+    expect('error' in p, `${key}: own-tenant UPDATE should have raised, got ${JSON.stringify(p)}`).toBe(
+      true
+    );
+    if ('error' in p) expect(p.error.code, `${key}: own-tenant UPDATE SQLSTATE`).toBe('42501');
+  });
+
+  it.each(APPEND_ONLY_WRITE_PROBE_TARGETS)(
+    '%s: own-tenant INSERT succeeds (the counter-assertion — the table IS writable)',
+    (key) => {
+      const rows = probeRows(appendOnlyResults[key].ownInsert, `${key} own-tenant INSERT`);
+      expect(rows).toBe(1);
+    }
+  );
+
+  it.each(APPEND_ONLY_WRITE_PROBE_TARGETS)(
+    '%s: cross-tenant INSERT ALSO succeeds - the writeAuditLog contract',
+    (key) => {
+      const rows = probeRows(appendOnlyResults[key].crossInsert, `${key} cross-tenant INSERT`);
+      expect(rows).toBe(1);
+    }
+  );
+});
+
+// D1 — the move of `audit_log` from WRITE_PROBE_TARGETS to
+// APPEND_ONLY_WRITE_PROBE_TARGETS must be a MOVE, never a silent drop from
+// both. This is what makes deleting a table from both lists a test failure
+// rather than a quiet loss of coverage.
+describe('the write-probe lists cannot silently lose a table', () => {
+  it('WRITE_PROBE_TARGETS + APPEND_ONLY_WRITE_PROBE_TARGETS is exactly the original four tables', () => {
+    expect(ALL_WRITE_PROBE_TARGETS).toEqual(
+      ['PushToken', 'SysAdminInvoiceItem', 'audit_log', 'in_app_notifications'].sort()
+    );
+  });
+});
+
 describe('nothing was actually written', () => {
   it('every fixture row still exists after the write probes', async () => {
     // The guarantee is structural (rolled-back savepoint inside a rolled-back
     // transaction), but a deletion on a staging fixture is unrecoverable
-    // without a re-seed, so it is verified rather than trusted.
+    // without a re-seed, so it is verified rather than trusted. Iterates the
+    // UNION of both write-probe lists (quick-599) — as written before this
+    // change it iterated `WRITE_PROBE_TARGETS` only and would have quietly
+    // stopped checking `audit_log`'s fixture rows the moment the table moved
+    // lists.
     const admin = await openDirect();
     try {
       const fresh = await collectTargetIds(admin, fixtures.tenants);
-      for (const key of WRITE_PROBE_TARGETS) {
+      for (const key of ALL_WRITE_PROBE_TARGETS) {
         expect(fresh[key].A.length, `${key}: tenant A rows lost`).toBe(ids[key].A.length);
         expect(fresh[key].B.length, `${key}: tenant B rows lost`).toBe(ids[key].B.length);
       }

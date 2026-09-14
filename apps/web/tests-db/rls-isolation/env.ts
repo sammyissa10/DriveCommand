@@ -306,14 +306,43 @@ export async function probeWriteThenRollback(
  * the OWN-tenant DELETE does affect rows, and on a table with inbound foreign
  * keys that own-tenant delete raises 23503 instead of returning a count — which
  * would make the counter-assertion untestable rather than merely awkward.
- * These four have no dependants in the quick-597 fixture graph.
+ * These three have no dependants in the quick-597 fixture graph.
+ *
+ * quick-599 — `audit_log` moved OUT of this list and into
+ * `APPEND_ONLY_WRITE_PROBE_TARGETS` below. It is a MOVE, not a deletion:
+ * `20260914120000_tenant_audit_automation_policy_closure` gave `audit_log` a
+ * `FOR SELECT` policy, a separate `FOR INSERT WITH CHECK (true)` policy, NO
+ * UPDATE or DELETE policy, and REVOKEd the UPDATE/DELETE grant — so the
+ * "own-tenant DELETE affects N rows, cross-tenant affects 0" shape this list
+ * asserts is no longer what the table does: EVERY DELETE now raises 42501,
+ * own-tenant included. Weakening the guard by simply removing `audit_log`
+ * from probe coverage would be a task failure (CLAUDE.md); the replacement
+ * assertion lives in `behaviour.test.ts`'s new
+ * `'audit_log is append-only for app_user'` block.
  */
-export const WRITE_PROBE_TARGETS = [
-  'audit_log',
-  'in_app_notifications',
-  'PushToken',
-  'SysAdminInvoiceItem',
-] as const;
+export const WRITE_PROBE_TARGETS = ['in_app_notifications', 'PushToken', 'SysAdminInvoiceItem'] as const;
+
+/**
+ * quick-599 — `audit_log` after `20260914120000`: a `FOR SELECT` policy, a
+ * `FOR INSERT WITH CHECK (true)` policy, no UPDATE or DELETE policy, and no
+ * UPDATE or DELETE grant. Every DELETE and UPDATE issued as `app_user` raises
+ * 42501 regardless of which tenant's rows it names — there is no "own-tenant
+ * succeeds, cross-tenant is silently filtered" distinction left to assert,
+ * because there is no live write policy of either kind to derive one from.
+ */
+export const APPEND_ONLY_WRITE_PROBE_TARGETS = ['audit_log'] as const;
+
+/**
+ * The union of both write-probe lists, sorted. `behaviour.test.ts` asserts
+ * this equals the four original table names sorted — that equality is what
+ * makes moving a table between the two lists a deliberate edit rather than a
+ * silent drop: removing `audit_log` from BOTH lists (rather than moving it)
+ * would shrink this union and fail that assertion instead of quietly losing
+ * coverage.
+ */
+export const ALL_WRITE_PROBE_TARGETS = [...WRITE_PROBE_TARGETS, ...APPEND_ONLY_WRITE_PROBE_TARGETS]
+  .slice()
+  .sort();
 
 export async function openDirect(): Promise<Client> {
   const c = new Client({ connectionString: directUrl() });

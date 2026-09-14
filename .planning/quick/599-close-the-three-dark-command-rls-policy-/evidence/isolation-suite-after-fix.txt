@@ -1,0 +1,126 @@
+
+> @drivecommand/web@0.1.0 test:rls-isolation
+> vitest run --config vitest.db.config.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/sammy/Projects/DriveCommand/apps/web[39m
+
+
+[rls-isolation] seeding staging fixtures (idempotent)…
+(node:32236) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ [32m✓[39m tests-db/rls-isolation/behaviour.test.ts [2m([22m[2m94 tests[22m[2m)[22m[33m 85401[2mms[22m[39m
+     [33m[2m✓[22m[39m every fixture row still exists after the write probes [33m 4195[2mms[22m[39m
+[90mstdout[2m | tests-db/rls-isolation/coverage.test.ts
+[22m[39m
+RLS ISOLATION COVERAGE — every table carrying tenant_isolation_policy
+==============================================================================
+  tenant-scoped tables : 89
+  COVERED              : 16
+  NOT COVERED          : 73
+
+COVERED:
+  PushToken                  behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  SysAdminInvoice            behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  SysAdminInvoiceItem        behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  User                       behaviour probe runs against 4 tenant-A and 4 tenant-B fixture rows (direct ownership)
+  audit_log                  behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  carrier_documents          behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (derived ownership)
+  carrier_drivers            behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (direct ownership)
+  carrier_trucks             behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  clients                    behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  dispatches                 behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  facilities                 behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (direct ownership)
+  in_app_notifications       behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  loads                      behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  route_template_stops       behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (derived ownership)
+  route_templates            behaviour probe runs against 1 tenant-A and 1 tenant-B fixture rows (direct ownership)
+  stops                      behaviour probe runs against 2 tenant-A and 2 tenant-B fixture rows (derived ownership)
+
+NOT COVERED:
+  ActivationProgress         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  AppEvent                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  AutomationRule             not seeded by the quick-597 fixture graph; quick-599 closed INSERT and UPDATE with an explicit WITH CHECK, and its policy still admits non-tenant-scoped rows on SELECT and DELETE (D2 residue - no live command-split policy exists to close DELETE)
+  AutomationRun              not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Customer                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  CustomerInteraction        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DispatchOverrideAudit      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DocFeedback                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Document                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverHOSEntry             not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverIncident             not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverInvitation           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  DriverRouteJoin            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ExpenseCategory            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ExpenseTemplate            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ExpenseTemplateItem        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  FleetMessage               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  FuelRecord                 not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  GPSLocation                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Invoice                    not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  InvoiceItem                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Load                       not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  MaintenanceEvent           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  NotificationLog            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  NotificationSendLog        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  NotificationSubscription   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PayrollRecord              not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Playbook                   not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookInstance           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookNotification       not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookStep               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  PlaybookTrigger            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Route                      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RouteDriver                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RouteExpense               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RoutePayment               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  RouteStop                  not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  SafetyEvent                not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  ScheduledService           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  StepInstance               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  StepTemplate               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Subscription               not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  SupportTicket              not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  Tag                        not seeded by the quick-597 fixture graph; note its policy compares the GUC TEXT directly rather than calling current_tenant_id()
+  TagAssignment              not seeded by the quick-597 fixture graph; note its policy compares the GUC TEXT directly rather than calling current_tenant_id()
+  TenantHealthScore          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TenantIntegration          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TenantMetricsDaily         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TenantNotificationSettings not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  TicketMessage              no tenant column - ownership is an EXISTS subquery through a parent table, and the quick-597 fixture graph does not seed it
+  Truck                      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  UserNotificationPreference not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_compliance_alert_log not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_document_types     not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_expenses           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  carrier_truck_defects      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  client_contacts            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  contracts                  not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  document_import_pages      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  document_imports           not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  document_profiles          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_bonuses             not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_compensation_templates not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_deductions          not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_disputes            not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_pay_audit_logs      not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_pay_records         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  driver_settlements         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  facility_external_references not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  load_driver_assignments    not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  load_pay_components        not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  pay_component_attachments  not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+  route_matrix_cache         not seeded by the quick-597 fixture graph, so no behaviour probe reaches it
+
+
+ [32m✓[39m tests-db/rls-isolation/coverage.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 4481[2mms[22m[39m
+ [32m✓[39m tests-db/rls-isolation/catalogue.test.ts [2m([22m[2m47 tests[22m[2m)[22m[33m 897[2mms[22m[39m
+ [32m✓[39m tests-db/rls-isolation/source-facts.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m156 passed[39m[22m[90m (156)[39m
+[2m   Start at [22m 12:30:40
+[2m   Duration [22m 118.94s[2m (transform 244ms, setup 0ms, import 677ms, tests 90.79s, environment 1ms)[22m
+
+
+[rls-isolation] tearing down staging fixtures…

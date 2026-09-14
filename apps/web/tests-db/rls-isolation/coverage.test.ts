@@ -172,6 +172,25 @@ describe('per-table coverage', () => {
     expect(covered.length).toBeGreaterThanOrEqual(MIN_COVERED_TABLES);
   });
 
+  it('every ISOLATION_TARGETS key appears in the enumeration AT ALL (D1)', () => {
+    // `rows` is built by querying pg_policy for the literal policy name
+    // `tenant_isolation_policy`. A target whose policy is renamed (or
+    // dropped) leaves this enumeration entirely — it does not become
+    // NOT COVERED, it stops existing here. Without this assertion, the NEXT
+    // test (`'every behaviour target is classified COVERED'`) filters `rows`
+    // by target key, gets an EMPTY filter result for the missing target, and
+    // passes VACUOUSLY — exactly the trap quick-599's audit_log split
+    // narrowly avoided by keeping the SELECT policy's name unchanged. This
+    // test is what makes a future rename a loud failure instead of a silent
+    // hole in coverage-report.json.
+    const enumeratedTables = new Set(rows.map((r) => r.table));
+    const missing = ISOLATION_TARGETS.map((t) => t.key).filter((key) => !enumeratedTables.has(key));
+    expect(
+      missing,
+      `these behaviour targets carry no tenant_isolation_policy at all - renamed or dropped: ${missing.join(', ')}`
+    ).toEqual([]);
+  });
+
   it('every behaviour target is classified COVERED', () => {
     // Catches the case where a target is listed but its fixture rows vanished.
     const targetKeys = ISOLATION_TARGETS.map((t) => t.key);

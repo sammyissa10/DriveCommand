@@ -1,0 +1,34 @@
+quick-599 — deliberately breaking the new guard to prove it fires (quick-549 shape:
+a guard asserted without a witnessed red is not evidence).
+
+Temporarily set, in tests-db/rls-isolation/env.ts:
+  export const APPEND_ONLY_WRITE_PROBE_TARGETS = []; // simulates dropping audit_log
+                                                       // from BOTH lists, not moving it
+
+Ran: npx vitest run --config vitest.db.config.ts tests-db/rls-isolation/behaviour.test.ts
+
+RESULT: exit 1, 1 failed / 88 passed (89)
+
+ FAIL  tests-db/rls-isolation/behaviour.test.ts > the write-probe lists cannot silently lose a table > WRITE_PROBE_TARGETS + APPEND_ONLY_WRITE_PROBE_TARGETS is exactly the original four tables
+AssertionError: expected [ 'PushToken', …(2) ] to deeply equal [ 'PushToken', …(3) ]
+
+- Expected
++ Received
+
+  [
+    "PushToken",
+    "SysAdminInvoiceItem",
+-   "audit_log",
+    "in_app_notifications",
+  ]
+
+ ❯ tests-db/rls-isolation/behaviour.test.ts:466:37
+    464| describe('the write-probe lists cannot silently lose a table', () => {
+    465|   it('WRITE_PROBE_TARGETS + APPEND_ONLY_WRITE_PROBE_TARGETS is exactly…
+    466|     expect(ALL_WRITE_PROBE_TARGETS).toEqual(
+    467|       ['PushToken', 'SysAdminInvoiceItem', 'audit_log', 'in_app_notifi…
+    468|     );
+
+Restored APPEND_ONLY_WRITE_PROBE_TARGETS = ['audit_log'] as const; immediately after.
+Confirmed green again in the full run recorded in evidence/isolation-suite-after-fix.txt
+(156 passed, 0 failed, captured before this probe was run).

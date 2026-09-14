@@ -16,7 +16,7 @@
     {
       "table": "AutomationRule",
       "tenantColumn": "tenantId",
-      "reason": "not seeded by the quick-597 fixture graph; note its policy also admits non-tenant-scoped rows"
+      "reason": "not seeded by the quick-597 fixture graph; quick-599 closed INSERT and UPDATE with an explicit WITH CHECK, and its policy still admits non-tenant-scoped rows on SELECT and DELETE (D2 residue - no live command-split policy exists to close DELETE)"
     },
     {
       "table": "AutomationRun",
