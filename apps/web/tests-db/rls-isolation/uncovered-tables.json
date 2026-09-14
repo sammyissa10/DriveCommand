@@ -1,0 +1,372 @@
+{
+  "note": "CHECKED-IN EXPECTED LIST. coverage.test.ts asserts the live NOT COVERED set against this file IN BOTH DIRECTIONS: a new uncovered table fails (coverage silently shrank) and a stale entry fails (a table is now covered but still listed). Do not edit to make a run green - extend the fixture graph or record the reason.",
+  "generatedAgainst": "staging wyixpgunnjmzguhggocz",
+  "count": 73,
+  "tables": [
+    {
+      "table": "ActivationProgress",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "AppEvent",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "AutomationRule",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph; note its policy also admits non-tenant-scoped rows"
+    },
+    {
+      "table": "AutomationRun",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Customer",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "CustomerInteraction",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "DispatchOverrideAudit",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "DocFeedback",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Document",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "DriverHOSEntry",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "DriverIncident",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "DriverInvitation",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "DriverRouteJoin",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "ExpenseCategory",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "ExpenseTemplate",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "ExpenseTemplateItem",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "FleetMessage",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "FuelRecord",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "GPSLocation",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Invoice",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "InvoiceItem",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Load",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "MaintenanceEvent",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "NotificationLog",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "NotificationSendLog",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "NotificationSubscription",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "PayrollRecord",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Playbook",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "PlaybookInstance",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "PlaybookNotification",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "PlaybookStep",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "PlaybookTrigger",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Route",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "RouteDriver",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "RouteExpense",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "RoutePayment",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "RouteStop",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "SafetyEvent",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "ScheduledService",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "StepInstance",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "StepTemplate",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Subscription",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "SupportTicket",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "Tag",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph; note its policy compares the GUC TEXT directly rather than calling current_tenant_id()"
+    },
+    {
+      "table": "TagAssignment",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph; note its policy compares the GUC TEXT directly rather than calling current_tenant_id()"
+    },
+    {
+      "table": "TenantHealthScore",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "TenantIntegration",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "TenantMetricsDaily",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "TenantNotificationSettings",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "TicketMessage",
+      "tenantColumn": null,
+      "reason": "no tenant column - ownership is an EXISTS subquery through a parent table, and the quick-597 fixture graph does not seed it"
+    },
+    {
+      "table": "Truck",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "UserNotificationPreference",
+      "tenantColumn": "tenantId",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "carrier_compliance_alert_log",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "carrier_document_types",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "carrier_expenses",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "carrier_truck_defects",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "client_contacts",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "contracts",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "document_import_pages",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "document_imports",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "document_profiles",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_bonuses",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_compensation_templates",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_deductions",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_disputes",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_pay_audit_logs",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_pay_records",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "driver_settlements",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "facility_external_references",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "load_driver_assignments",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "load_pay_components",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "pay_component_attachments",
+      "tenantColumn": "tenant_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    },
+    {
+      "table": "route_matrix_cache",
+      "tenantColumn": "org_id",
+      "reason": "not seeded by the quick-597 fixture graph, so no behaviour probe reaches it"
+    }
+  ]
+}
