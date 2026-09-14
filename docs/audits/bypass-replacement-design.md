@@ -696,6 +696,29 @@ for them must be a row assertion or a log assertion, not the absence of an error
 
 ## 4. The tenant-creation path, specifically
 
+> **SUPERSEDED IN PART by quick-601 (2026-09-14).** §4.1's table below was a static read and three
+> of its rows do not survive measurement. Corrections, each executed as `app_user` against staging:
+>
+> 1. **Step 4's failure is not the only one, and the ordering §4.1 prescribes is impossible.**
+>    "Set the GUC immediately AFTER the insert" cannot work: the `AFTER INSERT FOR EACH ROW` trigger
+>    runs inside the same statement and needs the GUC already set, and Prisma's `RETURNING` clause
+>    makes `tenant_self_read` a second insert-time check with the same requirement. quick-601
+>    replaced `tenant_bootstrap_insert`'s body with `id = current_tenant_id()` and mints the tenant
+>    uuid in the application, so the GUC is set BEFORE the insert.
+> 2. **Steps 6, 6b and 6c do NOT fail.** `app_user` holds `SELECT` on `"Plan"`, and `SELECT` +
+>    `UPDATE` on `"Promo"`, on **both** databases — re-read from
+>    `information_schema.role_table_grants`. The grants named in "What makes it work" item 3 were
+>    applied and this table was not updated.
+> 3. **Item 4's admin-connection hoist was NOT taken.** The two probes became `SECURITY DEFINER`
+>    functions — the alternative the same item recommends — because sign-up is the product's
+>    highest-traffic unauthenticated surface. A third global read the design never named
+>    (`generateVehicleIds`, on the hydration path, with no `@bypass_rls` marker and therefore
+>    outside the 211-site grep) got the same treatment.
+>
+> §4.2 and §4.3 were correct and are implemented as written. `docs/audits/provisioning-path.md` is
+> the successor document.
+
+
 `Tenant` has no INSERT, UPDATE or DELETE policy — verified live on both databases. Three flows write
 to it before or around the moment a tenant exists. Here is what each does, statement by statement, and
 exactly what makes it work under `app_user`.

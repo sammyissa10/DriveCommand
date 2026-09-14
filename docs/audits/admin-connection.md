@@ -217,8 +217,21 @@ Named individually, with the checklist item that owns each:
   `isSystemAdmin` account needs an admin-connection fallback, and building that safely means
   restructuring a function with 9 call-chain units reaching it (`wrapper-migration-scope.md` §1b) —
   a bigger, separate task.
-- **`lib/onboarding/provision-tenant.ts:36` and its repository twin
-  (`lib/db/repositories/tenant.repository.ts:33`)** — **B3 / §4.1**. The two global bootstrap
+- ~~**`lib/onboarding/provision-tenant.ts:36` and its repository twin
+  (`lib/db/repositories/tenant.repository.ts:33`)** — **B3 / §4.1**~~ — **CLOSED by quick-601, and
+  deliberately NOT routed onto the admin connection.** The paragraph below described a GUC that had
+  to be "unset before the insert and set immediately after"; that ordering is impossible, because
+  the `AFTER INSERT` trigger runs inside the same statement and needs the GUC already set. quick-601
+  dissolved the constraint instead — `tenant_bootstrap_insert`'s body became
+  `id = current_tenant_id()` and the application mints the tenant uuid, so the GUC is declared
+  BEFORE the insert and every check on the path agrees. The two global probes became narrow
+  `SECURITY DEFINER` functions (plus a third the design never named,
+  `generateVehicleIds` on the hydration path), returning one scalar each. **An admin connection was
+  rejected for this path specifically:** sign-up is the highest-traffic unauthenticated surface in
+  the product, and a function that returns one boolean leaks strictly less than a `BYPASSRLS`
+  client. See `docs/audits/provisioning-path.md`.
+
+  *Original text, for the record:* The two global bootstrap
   probes (email uniqueness, slug uniqueness) need to be hoisted onto the admin connection AND the
   `Tenant` insert needs its GUC set precisely between "unset" (before insert, for
   `tenant_bootstrap_insert`) and "set to the new tenant's id" (immediately after, for every

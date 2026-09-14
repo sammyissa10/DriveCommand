@@ -1,0 +1,31 @@
+{
+  "phase": "before",
+  "generatedAt": "2026-09-14T20:22:55.556Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "probes": [
+    {
+      "label": "INSERT \"Tenant\" (no RETURNING) — the sweep's derived failure",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TenantNotificationSettings\""
+      }
+    },
+    {
+      "label": "INSERT \"Tenant\" RETURNING id — what Prisma actually emits",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tenant\""
+      }
+    },
+    {
+      "label": "INSERT \"Tenant\" RETURNING id with the bypass flag set",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    }
+  ]
+}

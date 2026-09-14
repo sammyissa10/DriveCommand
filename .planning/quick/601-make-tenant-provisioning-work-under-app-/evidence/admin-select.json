@@ -1,0 +1,22 @@
+{
+  "phase": "admin-select",
+  "generatedAt": "2026-09-14T20:26:56.145Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "probes": [
+    {
+      "label": "app_admin \"Tenant\" INSERT with SELECT HELD",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "app_admin \"Tenant\" INSERT with SELECT REVOKED",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table TenantNotificationSettings"
+      }
+    }
+  ]
+}

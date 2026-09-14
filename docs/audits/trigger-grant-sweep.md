@@ -50,10 +50,34 @@ before the INSERT, and if it could, setting the GUC is exactly what `tenant_boot
 
 ### Verdict list, severity order
 
+> **CORRECTED BY quick-601 (2026-09-14).** Verdicts 1 and 2 below stood until a task
+> permitted to write settled §8's first two items by measurement. Both were partly wrong, in
+> opposite directions, and the corrections are recorded inline rather than by rewriting the
+> rows — `docs/audits/provisioning-path.md` is the successor document.
+>
+> - **Verdict 1 was incomplete.** There is a SECOND failure and it fires FIRST. Executed as
+>   `app_user` on staging: the plain `INSERT INTO "Tenant"` fails `42501` on
+>   `"TenantNotificationSettings"` as derived — but the same insert **with a `RETURNING`
+>   clause** fails `42501` on **`"Tenant"` itself**, because a `RETURNING` clause makes
+>   PostgreSQL apply the table's SELECT policies (`tenant_self_read`, `USING (id =
+>   current_tenant_id())`) as an insert-time check, and that check runs before the AFTER
+>   trigger. **Prisma's `tenant.create()` always emits `RETURNING`.** This eliminates the
+>   `SECURITY DEFINER`-on-the-trigger option outright: it closes the derived failure and
+>   leaves the earlier one untouched. quick-601 took the third shape instead — replace
+>   `tenant_bootstrap_insert`'s body with `id = current_tenant_id()` and mint the tenant id
+>   in the application so the GUC can be declared before the insert.
+> - **Verdict 2's "probable over-grant" is WRONG.** With `SELECT` revoked from `app_admin`
+>   and two active templates present, the `"Tenant"` INSERT fails
+>   `42501 permission denied for table TenantNotificationSettings`; with it held, it succeeds
+>   and seeds 2 rows. `ON CONFLICT (cols) DO NOTHING` needs SELECT for the arbiter-index
+>   inference, independently of INSERT. **The grant stays.** The reasoning in §3.1 was sound
+>   and the premise it rested on — that the documented SELECT requirement attaches only to
+>   `DO UPDATE` — does not survive contact with the statement.
+
 | # | Trigger / mechanism | Verdict | What it needs |
 |---|---|---|---|
-| **1** | `trg_seed_tenant_notification_settings` on `"Tenant"`, reached as **`app_user`** | **WILL FAIL** — `42501 new row violates row-level security policy for table "TenantNotificationSettings"`. Structural, not a missing grant. | One of: route `provisionTenant` onto the admin connection (extends B5); make `seed_tenant_notification_settings()` `SECURITY DEFINER`; or add an INSERT policy on `"TenantNotificationSettings"` that admits the bootstrap case. **Naming the options only — §6 does not choose.** |
-| **2** | The same trigger reached as **`app_admin`** | **WORKS** (measured by B5), but carries a **probable over-grant**: `TenantNotificationSettings` SELECT. `ON CONFLICT … DO NOTHING` is not documented as requiring SELECT — only `DO UPDATE` is. | A write probe to confirm, then drop the grant if unneeded. On a `BYPASSRLS` role, grants are the only remaining control, so an unnecessary one is the one place over-granting is not free. |
+| **1** | `trg_seed_tenant_notification_settings` on `"Tenant"`, reached as **`app_user`** | **WILL FAIL** — `42501 new row violates row-level security policy for table "TenantNotificationSettings"`. Structural, not a missing grant. *(quick-601: true, and it is the SECOND of two failures — see the correction above.)* | One of: route `provisionTenant` onto the admin connection (extends B5); make `seed_tenant_notification_settings()` `SECURITY DEFINER`; or add an INSERT policy on `"TenantNotificationSettings"` that admits the bootstrap case. **Naming the options only — §6 does not choose.** *(quick-601 chose a fourth: change `tenant_bootstrap_insert`'s body. The `SECURITY DEFINER` option is now known to be insufficient.)* |
+| **2** | The same trigger reached as **`app_admin`** | **WORKS** (measured by B5), but carries a **probable over-grant**: `TenantNotificationSettings` SELECT. `ON CONFLICT … DO NOTHING` is not documented as requiring SELECT — only `DO UPDATE` is. *(quick-601: **measured, and it IS required**. Not an over-grant. See the correction above.)* | A write probe to confirm, then drop the grant if unneeded. On a `BYPASSRLS` role, grants are the only remaining control, so an unnecessary one is the one place over-granting is not free. *(Done. The grant is kept.)* |
 | **3** | `RI_FKey_cascade_del` / `RI_FKey_restrict_del` on **`"Tenant"` DELETE** — an **81-FK fan-out** (20 `CASCADE`, 61 `RESTRICT`) | **UNPROVEN, not failing.** Owner-privilege rule says it works, and `app_admin` holds DELETE on **none** of the 20 cascading tables. B5's `S12` probe passed against a **throwaway empty tenant**, where cascades delete nothing and restricts find nothing. | An exercise against a tenant that actually has rows. Nothing to change unless that fails. |
 | **4** | `RI_FKey_check_ins` on `"Tenant"."homeBaseFacilityId"` → `facilities` | **LATENT.** `app_admin` can INSERT `"Tenant"` and has **no SELECT on `facilities`**. Never exercised because the column is NULL on every insert B5 made. | Nothing, if the owner-privilege rule holds (§3.3 says it does). Named so it is not discovered later. |
 | **5** | 1292 internal RI triggers generally | **PASS.** Run as the table owner, exempt from RLS. Corroborated empirically, not just cited — §3.3. | — |
@@ -423,13 +447,15 @@ For completeness, the one `"Tenant"` write site that **is** among the 456 —
 
 ## 8. What this sweep did not measure
 
-1. **No write probe of any kind**, so §4's failure is derived from the policy corpus and the catalogue,
-   not executed. It is a construction argument over two quoted `WITH CHECK` expressions and a measured
-   column default, which is about as strong as a derivation gets — but it is a derivation. A task
-   permitted to write can settle it in one rolled-back transaction as `app_user` on staging:
-   `INSERT INTO "Tenant" (name, slug) VALUES (…)` with `app.current_tenant_id` unset.
-2. **§3.1's "SELECT is probably unnecessary" is unproven** for the same reason. It needs a probe with
-   the grant revoked.
+1. ~~**No write probe of any kind**~~ — **SETTLED by quick-601.** The derivation was right about the
+   failure it named and blind to an earlier one. Run as `app_user` on staging inside
+   `BEGIN … ROLLBACK`, with active `NotificationTemplate` rows seeded first (staging carries **zero**,
+   so without a fixture the trigger inserts nothing, its `WITH CHECK` is never evaluated, and the bug
+   does not reproduce at all — a green run proving nothing). Both probes, one clause apart, fail on
+   **different tables**: `RETURNING` → `"Tenant"`, no `RETURNING` → `"TenantNotificationSettings"`.
+   `docs/audits/provisioning-path.md` §1.
+2. ~~**§3.1's "SELECT is probably unnecessary" is unproven**~~ — **SETTLED by quick-601, and the
+   hypothesis was wrong.** The grant is required and is kept. See the correction block in §0.
 3. **The 81-FK `"Tenant"` DELETE fan-out was not exercised** — §6.2.
 4. **Scope was `public`.** The 4 `storage` and 1 `realtime` triggers were counted and dismissed on the
    grounds that the Prisma connection does not write those schemas; that was not tested.

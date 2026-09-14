@@ -1,0 +1,119 @@
+{
+  "phase": "after",
+  "generatedAt": "2026-09-14T20:26:42.031Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "bypassBefore": 86,
+  "bypassAfter": 86,
+  "droppedTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "Customer",
+    "Load",
+    "Subscription",
+    "Tenant",
+    "TenantNotificationSettings",
+    "Truck",
+    "User",
+    "carrier_drivers",
+    "carrier_trucks",
+    "clients",
+    "contracts",
+    "dispatches",
+    "loads"
+  ],
+  "probes": [
+    {
+      "label": "provisionTenant() — sign-up",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "tenantId=a687b099-ffd9-47fa-9902-5f1ce14d5111 planKey=starter"
+    },
+    {
+      "label": "trg_seed_tenant_notification_settings wrote its rows (the sweep's failure)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=2 (expected 2)"
+    },
+    {
+      "label": "confirmTenantEmail() — email confirmation",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "status=confirmed"
+    },
+    {
+      "label": "confirmTenantEmail() again — idempotency",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "status=already-confirmed"
+    },
+    {
+      "label": "hydrateTenant() — onboarding hydration + sample seed",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "phase=HYDRATED seeded=true"
+    },
+    {
+      "label": "getOnboardingFlags() — activation checklist",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "{\"hasClient\":false,\"hasContract\":false,\"hasLoad\":false,\"hasTrip\":false}"
+    },
+    {
+      "label": "counter-assertion: the seeded rows ARE readable as this tenant (all-false flags are the isSample filter, not RLS)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "clients=1 carrier_trucks=1 loads=2"
+    },
+    {
+      "label": "INSERT \"AppEvent\" tenant.created — sign-up actions.tsx step 3",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "INSERT \"Tenant\" whose id is NOT the declared GUC",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tenant\""
+      }
+    },
+    {
+      "label": "INSERT \"Tenant\" with NO GUC set at all (exactly what the old policy allowed)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tenant\""
+      }
+    },
+    {
+      "label": "SELECT the provisioned tenant from a DIFFERENT tenant context",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=0"
+    },
+    {
+      "label": "UPDATE the provisioned tenant from a DIFFERENT tenant context",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=0"
+    },
+    {
+      "label": "counter-read: the row IS there (so 0 rows above means refused, not absent)",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "INSERT \"TenantNotificationSettings\" for a tenant that is not ours",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TenantNotificationSettings\""
+      }
+    }
+  ]
+}
