@@ -1,0 +1,1630 @@
+{
+  "generatedAt": "2026-09-14T05:18:20.937Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "corpusHash": "3905db0b79c9bfccd82c7eb698286e30eb27335e18b0fad309e0b663a11cc02e",
+  "definitionCount": 180,
+  "canonicalisedCount": 180,
+  "notCanonicalised": [],
+  "policies": {
+    "ActivationProgress.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "ActivationProgress.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "AppEvent.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "AppEvent.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "audit_log.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "audit_log.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": null
+    },
+    "AutomationRule.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "AutomationRule.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
+      "withCheck": null
+    },
+    "AutomationRun.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "AutomationRun.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "carrier_compliance_alert_log.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "carrier_compliance_alert_log.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "carrier_document_types.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "carrier_document_types.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "carrier_documents.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(EXISTS ( SELECT 1\n   FROM \"User\" u\n  WHERE ((u.id = carrier_documents.uploaded_by) AND (u.\"tenantId\" = current_tenant_id()))))",
+      "withCheck": "(EXISTS ( SELECT 1\n   FROM \"User\" u\n  WHERE ((u.id = carrier_documents.uploaded_by) AND (u.\"tenantId\" = current_tenant_id()))))"
+    },
+    "carrier_drivers.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "carrier_drivers.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "carrier_expenses.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "carrier_expenses.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "carrier_truck_defects.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "carrier_truck_defects.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "carrier_trucks.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "carrier_trucks.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "client_contacts.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "client_contacts.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "clients.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "clients.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "contracts.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "contracts.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "Customer.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Customer.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "CustomerInteraction.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "CustomerInteraction.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "dispatches.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "dispatches.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "DispatchOverrideAudit.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "DispatchOverrideAudit.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "DocFeedback.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "DocFeedback.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "document_import_pages.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "document_import_pages.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "document_imports.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "document_imports.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "document_profiles.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "document_profiles.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "Document.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Document.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "driver_bonuses.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_bonuses.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "driver_compensation_templates.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_compensation_templates.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "driver_deductions.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_deductions.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "driver_disputes.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_disputes.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "driver_pay_audit_logs.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_pay_audit_logs.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "driver_pay_records.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_pay_records.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "driver_settlements.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "driver_settlements.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "DriverHOSEntry.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "DriverHOSEntry.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": null
+    },
+    "DriverIncident.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "DriverIncident.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": null
+    },
+    "DriverInvitation.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "DriverInvitation.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "DriverRouteJoin.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "DriverRouteJoin.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "ExpenseCategory.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "ExpenseCategory.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "ExpenseTemplate.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "ExpenseTemplate.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "ExpenseTemplateItem.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "ExpenseTemplateItem.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "facilities.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "facilities.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "facility_external_references.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "facility_external_references.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "FleetMessage.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "FleetMessage.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "FuelRecord.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "FuelRecord.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "GPSLocation.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "GPSLocation.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "in_app_notifications.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "in_app_notifications.in_app_notifications_insert_policy": {
+      "cmd": "INSERT",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": null,
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "in_app_notifications.in_app_notifications_select_policy": {
+      "cmd": "SELECT",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = ((auth.jwt() ->> 'org_id'::text))::uuid)",
+      "withCheck": null
+    },
+    "in_app_notifications.in_app_notifications_update_policy": {
+      "cmd": "UPDATE",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = ((auth.jwt() ->> 'org_id'::text))::uuid)",
+      "withCheck": null
+    },
+    "in_app_notifications.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "Invoice.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Invoice.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "InvoiceItem.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "InvoiceItem.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "load_driver_assignments.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "load_driver_assignments.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "load_pay_components.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "load_pay_components.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "Load.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Load.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "loads.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "loads.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "MaintenanceEvent.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "MaintenanceEvent.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "NotificationLog.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "NotificationLog.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "NotificationSendLog.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "NotificationSendLog.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "NotificationSubscription.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "NotificationSubscription.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "pay_component_attachments.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "pay_component_attachments.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(tenant_id = current_tenant_id())",
+      "withCheck": "(tenant_id = current_tenant_id())"
+    },
+    "PayrollRecord.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "PayrollRecord.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "Playbook.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Playbook.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "PlaybookInstance.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "PlaybookInstance.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "PlaybookNotification.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "PlaybookNotification.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "PlaybookStep.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "PlaybookStep.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "PlaybookTrigger.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "PlaybookTrigger.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "PushToken.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "PushToken.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "route_matrix_cache.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "route_template_stops.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(EXISTS ( SELECT 1\n   FROM route_templates rt\n  WHERE ((rt.id = route_template_stops.route_template_id) AND (rt.org_id = current_tenant_id()))))",
+      "withCheck": "(EXISTS ( SELECT 1\n   FROM route_templates rt\n  WHERE ((rt.id = route_template_stops.route_template_id) AND (rt.org_id = current_tenant_id()))))"
+    },
+    "route_templates.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "route_templates.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(org_id = current_tenant_id())",
+      "withCheck": "(org_id = current_tenant_id())"
+    },
+    "Route.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Route.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "RouteDriver.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "RouteDriver.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "RouteExpense.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "RouteExpense.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "RoutePayment.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "RoutePayment.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "RouteStop.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "RouteStop.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "SafetyEvent.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "SafetyEvent.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "ScheduledService.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "ScheduledService.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "StepInstance.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "StepInstance.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "StepTemplate.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "StepTemplate.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "stops.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(EXISTS ( SELECT 1\n   FROM dispatches d\n  WHERE ((d.id = stops.dispatch_id) AND (d.org_id = current_tenant_id()))))",
+      "withCheck": "(EXISTS ( SELECT 1\n   FROM dispatches d\n  WHERE ((d.id = stops.dispatch_id) AND (d.org_id = current_tenant_id()))))"
+    },
+    "Subscription.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Subscription.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "SupportTicket.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "SupportTicket.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": null
+    },
+    "SysAdminInvoice.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "SysAdminInvoice.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "SysAdminInvoiceItem.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "SysAdminInvoiceItem.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "Tag.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Tag.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+      "withCheck": null
+    },
+    "TagAssignment.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "TagAssignment.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+      "withCheck": null
+    },
+    "Tenant.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Tenant.tenant_self_read": {
+      "cmd": "SELECT",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(id = current_tenant_id())",
+      "withCheck": null
+    },
+    "TenantHealthScore.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "TenantHealthScore.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "TenantIntegration.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "TenantIntegration.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "TenantMetricsDaily.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "TenantMetricsDaily.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "TenantNotificationSettings.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "TenantNotificationSettings.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "TicketMessage.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "TicketMessage.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"ticketId\" IN ( SELECT \"SupportTicket\".id\n   FROM \"SupportTicket\"\n  WHERE (\"SupportTicket\".\"tenantId\" = current_tenant_id())))",
+      "withCheck": null
+    },
+    "Truck.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "Truck.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "User.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "User.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "UserNotificationPreference.bypass_rls_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "withCheck": null
+    },
+    "UserNotificationPreference.tenant_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "UserNotificationPreference.user_isolation_policy": {
+      "cmd": "ALL",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"userId\" = auth.uid())",
+      "withCheck": "(\"userId\" = auth.uid())"
+    }
+  }
+}

@@ -27,7 +27,8 @@
     "audit:app-user-harness": "tsx scripts/audit/app-user-connection-harness.ts",
     "check:docs": "tsx scripts/check-doc-drift.ts",
     "backfill:carrier-driver-cdl": "tsx scripts/backfill/encrypt-carrier-driver-cdl.ts",
-    "backfill:driver-invitation-pii": "tsx --env-file=.env.local scripts/backfill/backfill-driver-invitation-pii.ts"
+    "backfill:driver-invitation-pii": "tsx --env-file=.env.local scripts/backfill/backfill-driver-invitation-pii.ts",
+    "audit:rls-canonicalise": "tsx scripts/audit/598-canonicalise-policies.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.77.0",
