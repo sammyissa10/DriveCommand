@@ -57,10 +57,10 @@ live table, and a grant gap.** The flat per-table verdict hides them, so §5.2 s
 
 | # | Blocker | Evidence | What it needs |
 |---|---|---|---|
-| **1** | **`"Tenant"` has no INSERT, UPDATE or DELETE policy.** Its only non-bypass policy is `tenant_self_read` **FOR SELECT**. Eleven production write sites break, one of which is already inside the wrapper migration's 456 units. | §5.2, §7 | an UPDATE policy (`id = current_tenant_id()`), an INSERT policy for the bootstrap transaction, and the admin connection (B5) for the sysadmin and delete paths. `bypass-replacement-design.md` §3.1 items 1–3 already designs all three. |
+| **1** | **`"Tenant"` has no INSERT, UPDATE or DELETE policy.** Its only non-bypass policy is `tenant_self_read` **FOR SELECT**. Eleven production write sites break, one of which is already inside the wrapper migration's 456 units. **ADDRESSED ON STAGING 2026-09-14 (quick-599, `20260914120000_tenant_audit_automation_policy_closure`) — see `docs/audits/tenant-audit-automation-policy-closure.md`.** `tenant_bootstrap_insert` and `tenant_self_update` close 5 of the 11 sites (`saveOperationsSettings` proven directly: 0 rows/42501 before → 1 row after). **Residue named, not closed:** the 6 `(admin)/actions/tenants.ts` sysadmin sites remain unserved — deliberately, they route to B5 which does not exist — and `"Tenant"` still carries no DELETE policy, deliberately, so a tenant can never delete itself. **Production is PENDING.** | §5.2, §7 | an UPDATE policy (`id = current_tenant_id()`), an INSERT policy for the bootstrap transaction, and the admin connection (B5) for the sysadmin and delete paths. `bypass-replacement-design.md` §3.1 items 1–3 already designs all three. |
 | **2** | **`_prisma_migrations` — RLS enabled, zero policies, zero `app_user` grants.** Safe only while `DIRECT_URL` stays on `postgres`. `apps/web/vercel.json` runs `node scripts/migrate.mjs` as its `buildCommand`, and that script resolves `DIRECT_URL \|\| DATABASE_URL`: if the cutover moves both variables, **every deploy fails at the migration step**. | §5.1 | a decision, recorded: either keep `DIRECT_URL` on a privileged role (and say so in the cutover runbook) or grant `app_user` DML plus a policy. Nothing in the repo records the dependency today. |
 | **3** | **`SupportTicket` — 7 of 88 production rows are unreachable by any policy.** `tenantId` is nullable by design; `NULL = current_tenant_id()` is NULL at every GUC value. 3 are OPEN. | §5.3 | the product decision quick-597 §5(c) named and did not make. Unchanged: still 7 rows, still one hard-deleted submitter, still 0 `TicketMessage` rows on them. |
-| **4** | **`AutomationRule` — OPEN.** `(scope = 'SYSTEM' OR "tenantId" = current_tenant_id())` FOR ALL with **no explicit `WITH CHECK`**, so PostgreSQL derives the write check from the read predicate. All 6 production rows are `scope = 'SYSTEM'`, so at cutover any tenant-scoped connection may UPDATE or DELETE **every platform automation rule**, and may INSERT a rule naming another tenant. | §6 | an explicit `WITH CHECK` that does not carry the `SYSTEM` branch. No code path exploits it today. |
+| **4** | **`AutomationRule` — OPEN.** `(scope = 'SYSTEM' OR "tenantId" = current_tenant_id())` FOR ALL with **no explicit `WITH CHECK`**, so PostgreSQL derives the write check from the read predicate. All 6 production rows are `scope = 'SYSTEM'`, so at cutover any tenant-scoped connection may UPDATE or DELETE **every platform automation rule**, and may INSERT a rule naming another tenant. **PARTIALLY ADDRESSED ON STAGING 2026-09-14 (quick-599)** — see `docs/audits/tenant-audit-automation-policy-closure.md`. An explicit `WITH CHECK ("tenantId" = current_tenant_id())` now closes INSERT and UPDATE (measured: `AutomationRule.update-system@guc-A` 6 rows → 42501; `AutomationRule.insert-system@guc-A` accepted → 42501). **DELETE REMAINS OPEN** — `WITH CHECK` does not apply to DELETE, only `USING`, which is unchanged; measured `AutomationRule.delete-system@guc-A` = 6 rows in BOTH phases. The fix (a four-policy command split) is named, not built. SELECT visibility is unchanged by design. **Production is PENDING.** | §6 | an explicit `WITH CHECK` that does not carry the `SYSTEM` branch. No code path exploits it today. |
 | **5** | **Three dead policies** (`UserNotificationPreference.user_isolation_policy`, `in_app_notifications_select_policy`, `in_app_notifications_update_policy`). Not a blocker — they grant nothing and deny nothing. | §3, §4 | a tidy-up drop, or a rebuild once a GUC exists that something writes. They are listed so a later reader does not mistake them for enforcement. |
 | **6** | **`policy_drop_audit` has no `app_user` grant** (RLS off, 5 rows on production, 9 on staging). It is the only other public table besides `_prisma_migrations` with zero grants. | §5.1 | a grant, or a statement that nothing at runtime reads it. |
 
@@ -531,8 +531,20 @@ PostgreSQL does:
 | **`_prisma_migrations`** | SELECT, INSERT, UPDATE, DELETE | **none** |
 
 **Two, and no others.** Every other RLS-enabled table has a `FOR ALL` live policy. `Tenant` is the
-blocker: it has the grants, so `app_user` is permitted to write the row and the policy then refuses it —
-an `ERROR 42501 new row violates row-level security policy`, not a silent zero.
+blocker: it has the grants, so `app_user` is permitted to write the row and the policy then refuses it.
+
+**CORRECTION 2026-09-14 (quick-599) — this holds for INSERT only, and D3 of the plan predicted exactly
+that before it was measured.** For INSERT, a missing/failing check IS an `ERROR 42501 new row violates
+row-level security policy` — no policy, no satisfied `WITH CHECK`, hard refusal. For UPDATE and DELETE
+with no applicable policy, PostgreSQL's `USING` filters every candidate row away and the statement
+returns **0 rows affected, with no error at all** — a SILENT zero, not a raise. Measured directly on
+staging as `app_user`, BEFORE quick-599's migration (`evidence/before.md`): `Tenant.update-own@guc-A`
+against the tenant's own row = **0 rows, no error**, with a counter-read in the same transaction
+proving the row was there (`Tenant.update-own.counter-read@guc-A` = 1). Without that counter-read "0
+rows" is indistinguishable from "the row does not exist" — which is exactly why the verification
+instrument pairs every 0-row write probe with one. Practically: `saveOperationsSettings` did not fail
+loudly before this migration — it silently updated nothing, which is a worse failure mode than a raise,
+not a better one.
 
 ### 4.2 Satisfiable policy, unsatisfiable ROWS
 
@@ -615,6 +627,15 @@ excluded:
 Seven of these eleven are outside the 211 bypass sites and outside every prior count — the same seven
 `bypass-replacement-design.md` §1.3(a) flagged. This sweep confirms them and adds the exact line for
 each. The remedy is already designed (§3.1 items 1–3 of that document) and is not restated here.
+
+**STATUS UPDATE 2026-09-14 (quick-599).** `tenant_bootstrap_insert` and `tenant_self_update` shipped to
+staging, closing rows 1–5 of this table (`operations/actions.ts:40`, `hydrate-tenant.ts:41`,
+`email-confirm/[token]/route.ts:67`, `provision-tenant.ts:59`, `tenant.repository.ts:35`) — the
+`operations/actions.ts:40` case was measured directly, both directions: 0 rows/42501 before, 1 row
+after, with the row's presence confirmed by a counter-read either way (see the §4.1 correction above
+for why that counter-read is necessary). Rows 6–11 (`(admin)/actions/tenants.ts`, all six sites) remain
+unserved — deliberately; sysadmin acting on a tenant other than its own, and tenant self-deletion, both
+route to the admin connection (B5), which is not built. Production has not been touched.
 
 ### 5.3 The only rows no policy can reach — `SupportTicket`
 

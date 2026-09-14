@@ -2,9 +2,27 @@
  * Audit log writer — append-only, tenant-scoped.
  *
  * Writes audit events to the audit_log table via prisma.auditLog.create.
- * The audit_log table has FORCE RLS + REVOKE UPDATE/DELETE — it is append-only
- * by construction. Inserts use a bypass_rls transaction so this call succeeds
- * regardless of the caller's tenant context.
+ * Inserts use a bypass_rls transaction so this call succeeds regardless of
+ * the caller's tenant context — that is what makes today's insert succeed:
+ * the connection is `postgres`, which carries `rolbypassrls = true`, and the
+ * `set_config('app.bypass_rls', 'on', TRUE)` line below is the reason. It
+ * stays; removing it is the wrapper migration's job, not this file's.
+ *
+ * quick-599 CORRECTION — this header used to claim "The audit_log table has
+ * FORCE RLS + REVOKE UPDATE/DELETE — it is append-only by construction".
+ * Measured on staging on 2026-09-14 (before quick-599's migration): FALSE.
+ * `app_user` held UPDATE and DELETE grants on `audit_log`, and both
+ * succeeded when probed directly — the exact pair
+ * `bypass-replacement-design.md` §3.1 item 4 assumed away. The revoke is
+ * REAL as of `20260914120000_tenant_audit_automation_policy_closure`, which
+ * also splits the single FOR ALL policy into FOR SELECT (kept, unchanged
+ * name `tenant_isolation_policy`) and a new FOR INSERT `audit_log_append_policy`
+ * (`WITH CHECK (true)`, admitting the cross-tenant write this function's own
+ * contract requires). That migration is applied to STAGING only; production
+ * is PENDING as of this comment. Until the `app_user` cutover happens on
+ * either database, "append-only" is enforced by nothing at all — the
+ * connection bypasses RLS entirely and the revoke is inert alongside it, the
+ * same way every policy in this repository is inert against `postgres`.
  *
  * Part of DatabaseSecurity_MultiTenant_Spec_v1.md Section 4.4 (quick-329).
  *

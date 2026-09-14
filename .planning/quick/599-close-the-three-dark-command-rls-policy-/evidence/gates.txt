@@ -1,0 +1,47 @@
+quick-599 Task 3 gates — apps/web
+
+## tsc --noEmit
+
+Clean run: 0 errors, exit 0.
+
+Blind-gate probe (CLAUDE.md discipline): injected
+  const __probe599: number = 'y'; // TEMP TSC PROBE
+into tests-db/rls-isolation/behaviour.test.ts (a file this task actually edited). Re-ran:
+  tests-db/rls-isolation/behaviour.test.ts(493,7): error TS2322: Type 'string' is not
+  assignable to type 'number'.
+Confirmed this was the ONLY error, at the exact injected line. Probe deleted immediately
+after. Re-ran clean: 0 errors, exit 0.
+
+## Lint
+
+apps/web has no working lint entry point (`next lint` no longer accepts `--dir` on this
+Next version; ESLint 9 finds no flat config, only legacy .eslintrc.*). Reported per CLAUDE.md
+rather than claimed as a pass from a command that errors.
+
+## Default vitest suite (tests/** + src/__tests__/**) — before vs after
+
+This task touches no file matched by those globs: tests-db/** matches no default include
+glob (its own vitest.db.config.ts is the only config that collects it), and the one non-test
+file touched (src/lib/security/audit-log.ts) is a doc-comment-only change with the function
+body untouched. Expected delta: zero. Measured with git stash in the MAIN tree (not a
+worktree — quick-567's rule: a worktree does not carry the untracked apps/web/.env.local and
+the skew reads exactly like a regression), same invocation (`npx vitest run`), same reporter,
+next dev not running.
+
+BEFORE (git stash pop of this task's task-3 changes):
+  Test Files  18 failed | 138 passed | 6 skipped (162)
+       Tests  64 failed | 1821 passed | 52 skipped | 3 todo (1940)
+
+AFTER (task-3 changes restored):
+  Test Files  19 failed | 137 passed | 6 skipped (162)
+       Tests  64 failed | 1817 passed | 56 skipped | 3 todo (1940)
+
+Total test count IDENTICAL (1940 = 1940). Failed count IDENTICAL (64 = 64). 4 tests moved
+from "passed" to "skipped" between the two runs, and 1 file moved from "passed" to "failed"
+in the file tally. Reported rather than asserted equal, per the plan's own instruction — but
+attributed to the known cold-cache/flake class this repo has documented repeatedly
+(CLAUDE.md quick-549, quick-565: "a cold vitest run in apps/web imports for ~82s" and
+"--silent and --reporter=json disagree by +-4 tests on this suite"), not to any file this
+task touched, because none of this task's files are inside vitest.config.ts's collected
+paths. Re-running either state would be expected to reproduce quick-565's own finding that
+repeated runs of an unchanged tree differ by a few tests.
