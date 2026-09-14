@@ -1,0 +1,1027 @@
+{
+  "phase": "before",
+  "capturedAt": "2026-09-14T04:32:09.959Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "connection": {
+    "appUserRole": "app_user",
+    "appUserBypassRls": false,
+    "gucOnFreshConnection": ""
+  },
+  "currentTenantIdDefinition": "CREATE OR REPLACE FUNCTION public.current_tenant_id()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\r\n  SELECT NULLIF(current_setting('app.current_tenant_id', TRUE), '')::UUID;\r\n$function$\n",
+  "policies": [
+    {
+      "schemaname": "public",
+      "tablename": "PushToken",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "PushToken",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "PushToken",
+      "policyname": "user_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "((\"userId\")::text = current_setting('app.current_user_id'::text, true))",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "SysAdminInvoice",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "SysAdminInvoice",
+      "policyname": "sysadmin_invoices_deny_tenant_users",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "((current_setting('app.current_tenant_id'::text, true) IS NULL) OR (current_setting('app.current_tenant_id'::text, true) = ''::text))",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "SysAdminInvoice",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "SysAdminInvoiceItem",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "SysAdminInvoiceItem",
+      "policyname": "sysadmin_invoice_items_deny_tenant_users",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "((current_setting('app.current_tenant_id'::text, true) IS NULL) OR (current_setting('app.current_tenant_id'::text, true) = ''::text))",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "SysAdminInvoiceItem",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "audit_log",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "audit_log",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(tenant_id = (current_setting('app.current_tenant_id'::text, true))::uuid)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "carrier_documents",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(EXISTS ( SELECT 1\n   FROM \"User\" u\n  WHERE ((u.id = carrier_documents.uploaded_by) AND (u.\"tenantId\" = current_tenant_id()))))",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM \"User\" u\n  WHERE ((u.id = carrier_documents.uploaded_by) AND (u.\"tenantId\" = current_tenant_id()))))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "in_app_notifications",
+      "policyname": "bypass_rls_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "in_app_notifications",
+      "policyname": "in_app_notifications_insert_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "true"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "in_app_notifications",
+      "policyname": "in_app_notifications_select_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "SELECT",
+      "qual": "(org_id = ((auth.jwt() ->> 'org_id'::text))::uuid)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "in_app_notifications",
+      "policyname": "in_app_notifications_update_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "UPDATE",
+      "qual": "(org_id = ((auth.jwt() ->> 'org_id'::text))::uuid)",
+      "with_check": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "in_app_notifications",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "route_template_stops",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(EXISTS ( SELECT 1\n   FROM route_templates rt\n  WHERE ((rt.id = route_template_stops.route_template_id) AND (rt.org_id = current_tenant_id()))))",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM route_templates rt\n  WHERE ((rt.id = route_template_stops.route_template_id) AND (rt.org_id = current_tenant_id()))))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "stops",
+      "policyname": "tenant_isolation_policy",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "cmd": "ALL",
+      "qual": "(EXISTS ( SELECT 1\n   FROM dispatches d\n  WHERE ((d.id = stops.dispatch_id) AND (d.org_id = current_tenant_id()))))",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM dispatches d\n  WHERE ((d.id = stops.dispatch_id) AND (d.org_id = current_tenant_id()))))"
+    }
+  ],
+  "totalPolicyCount": 183,
+  "bypassPolicies": [
+    {
+      "tablename": "ActivationProgress",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "AppEvent",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "AutomationRule",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "AutomationRun",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Customer",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "CustomerInteraction",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "DispatchOverrideAudit",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "DocFeedback",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Document",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "DriverHOSEntry",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "DriverIncident",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "DriverInvitation",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "DriverRouteJoin",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "ExpenseCategory",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "ExpenseTemplate",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "ExpenseTemplateItem",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "FleetMessage",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "FuelRecord",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "GPSLocation",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Invoice",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "InvoiceItem",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Load",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "MaintenanceEvent",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "NotificationLog",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "NotificationSendLog",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "NotificationSubscription",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "PayrollRecord",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Playbook",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "PlaybookInstance",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "PlaybookNotification",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "PlaybookStep",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "PlaybookTrigger",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "PushToken",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Route",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "RouteDriver",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "RouteExpense",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "RoutePayment",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "RouteStop",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "SafetyEvent",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "ScheduledService",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "StepInstance",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "StepTemplate",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Subscription",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "SupportTicket",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "SysAdminInvoice",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "SysAdminInvoiceItem",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Tag",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "TagAssignment",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Tenant",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "TenantHealthScore",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "TenantIntegration",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "TenantMetricsDaily",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "TenantNotificationSettings",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "TicketMessage",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "Truck",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "User",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "UserNotificationPreference",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "audit_log",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "carrier_compliance_alert_log",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "carrier_document_types",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "carrier_drivers",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "carrier_expenses",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "carrier_truck_defects",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "carrier_trucks",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "client_contacts",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "clients",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "contracts",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "dispatches",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "document_import_pages",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "document_imports",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "document_profiles",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_bonuses",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_compensation_templates",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_deductions",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_disputes",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_pay_audit_logs",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_pay_records",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "driver_settlements",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "facilities",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "facility_external_references",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "in_app_notifications",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "load_driver_assignments",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "load_pay_components",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "loads",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "pay_component_attachments",
+      "policyname": "bypass_rls_policy"
+    },
+    {
+      "tablename": "route_templates",
+      "policyname": "bypass_rls_policy"
+    }
+  ],
+  "readMatrix": {
+    "audit_log": {
+      "unset": {
+        "tenantARows": {
+          "error": {
+            "code": "22P02",
+            "message": "invalid input syntax for type uuid: \"\""
+          }
+        },
+        "tenantBRows": {
+          "error": {
+            "code": "22P02",
+            "message": "invalid input syntax for type uuid: \"\""
+          }
+        },
+        "totalVisible": {
+          "error": {
+            "code": "22P02",
+            "message": "invalid input syntax for type uuid: \"\""
+          }
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "error": {
+            "code": "22P02",
+            "message": "invalid input syntax for type uuid: \"\""
+          }
+        },
+        "tenantBRows": {
+          "error": {
+            "code": "22P02",
+            "message": "invalid input syntax for type uuid: \"\""
+          }
+        },
+        "totalVisible": {
+          "error": {
+            "code": "22P02",
+            "message": "invalid input syntax for type uuid: \"\""
+          }
+        }
+      }
+    },
+    "in_app_notifications": {
+      "unset": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      }
+    },
+    "PushToken": {
+      "unset": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      }
+    },
+    "SysAdminInvoice": {
+      "unset": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      }
+    },
+    "SysAdminInvoiceItem": {
+      "unset": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      }
+    },
+    "stops": {
+      "unset": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 2
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 2
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      }
+    },
+    "carrier_documents": {
+      "unset": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 1
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 1
+        },
+        "totalVisible": {
+          "rows": 1
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      }
+    },
+    "route_template_stops": {
+      "unset": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      },
+      "tenantA": {
+        "tenantARows": {
+          "rows": 2
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      },
+      "tenantB": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 2
+        },
+        "totalVisible": {
+          "rows": 2
+        }
+      },
+      "empty": {
+        "tenantARows": {
+          "rows": 0
+        },
+        "tenantBRows": {
+          "rows": 0
+        },
+        "totalVisible": {
+          "rows": 0
+        }
+      }
+    }
+  },
+  "observedGuc": {
+    "unset": {
+      "atConnect": "",
+      "afterSet": ""
+    },
+    "tenantA": {
+      "atConnect": "",
+      "afterSet": "a370f48f-51d1-4789-b451-9717c889b479"
+    },
+    "tenantB": {
+      "atConnect": "",
+      "afterSet": "0e25cf49-9ef1-45f2-a189-0e72ef677d2b"
+    },
+    "empty": {
+      "atConnect": "",
+      "afterSet": ""
+    }
+  },
+  "unsetReachability": {
+    "atConnect": "",
+    "afterSetConfigNull": "",
+    "afterReset": ""
+  },
+  "writeProbes": {
+    "audit_log.insert@guc-empty": {
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"\""
+      }
+    },
+    "audit_log.insert-own@guc-A": {
+      "rows": 1
+    },
+    "audit_log.insert-cross@guc-A": {
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"audit_log\""
+      }
+    },
+    "in_app_notifications.insert-cross@guc-A": {
+      "rows": 1
+    },
+    "in_app_notifications.insert-own@guc-A": {
+      "rows": 1
+    },
+    "Promo.select": {
+      "rows": 1
+    },
+    "Promo.update": {
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table Promo"
+      }
+    }
+  },
+  "fixtureCounts": {
+    "audit_log": {
+      "A": 1,
+      "B": 1
+    },
+    "in_app_notifications": {
+      "A": 1,
+      "B": 1
+    },
+    "PushToken": {
+      "A": 1,
+      "B": 1
+    },
+    "SysAdminInvoice": {
+      "A": 1,
+      "B": 1
+    },
+    "SysAdminInvoiceItem": {
+      "A": 1,
+      "B": 1
+    },
+    "stops": {
+      "A": 2,
+      "B": 2
+    },
+    "carrier_documents": {
+      "A": 1,
+      "B": 1
+    },
+    "route_template_stops": {
+      "A": 2,
+      "B": 2
+    }
+  }
+}

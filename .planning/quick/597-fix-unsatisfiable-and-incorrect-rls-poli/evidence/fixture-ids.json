@@ -1,0 +1,89 @@
+{
+  "capturedAt": "2026-09-14T04:28:03.974Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "promoCode": "RLS597-PROMO",
+  "tenants": {
+    "A": {
+      "key": "A",
+      "slug": "staging-alpha",
+      "id": "a370f48f-51d1-4789-b451-9717c889b479",
+      "ownerUserId": "278160b0-ac61-4af3-9e66-e629a0352d16"
+    },
+    "B": {
+      "key": "B",
+      "slug": "staging-beta",
+      "id": "0e25cf49-9ef1-45f2-a189-0e72ef677d2b",
+      "ownerUserId": "4d123f59-f546-4786-adb2-44634ebd6201"
+    }
+  },
+  "rows": {
+    "audit_log": {
+      "A": [
+        "db775109-1bd3-49d2-a090-6d1956c0312f"
+      ],
+      "B": [
+        "04c3f164-7d9d-4736-8a1a-dbb94730fe71"
+      ]
+    },
+    "in_app_notifications": {
+      "A": [
+        "06456c12-24c0-4002-bed2-13081d918981"
+      ],
+      "B": [
+        "c27a5834-66aa-4b95-8cd1-2c011e439031"
+      ]
+    },
+    "PushToken": {
+      "A": [
+        "rls597_staging-alpha"
+      ],
+      "B": [
+        "rls597_staging-beta"
+      ]
+    },
+    "SysAdminInvoice": {
+      "A": [
+        "8ea2c99e-d9d0-4151-8402-90bef006a6e7"
+      ],
+      "B": [
+        "68f25c37-3b50-4662-8d1f-b98530d4e640"
+      ]
+    },
+    "SysAdminInvoiceItem": {
+      "A": [
+        "e83557f8-8f4e-4945-b7eb-d6f338f361a3"
+      ],
+      "B": [
+        "1ece19e1-f6ef-403c-b78e-483febfee416"
+      ]
+    },
+    "stops": {
+      "A": [
+        "cb89b0e2-fb22-42ea-b7f0-7f1ad9aa4400",
+        "0d8a99a4-9ac4-4b64-935b-c9d574f15f84"
+      ],
+      "B": [
+        "f1592856-cc39-49d0-a59b-f9567a820ded",
+        "cc80242e-d353-4ad3-a0a4-1fd46824d12b"
+      ]
+    },
+    "carrier_documents": {
+      "A": [
+        "b313a397-1462-47d0-bbc2-5c4b1bfd7177"
+      ],
+      "B": [
+        "27fb92e8-da00-46a9-b8be-218b33f3b926"
+      ]
+    },
+    "route_template_stops": {
+      "A": [
+        "66796b6f-256f-4e64-be25-363f64a0a17e",
+        "2ff43cff-f6d4-47d4-812c-9f054dd9117c"
+      ],
+      "B": [
+        "3c0ee0bc-545f-45dd-ad4a-8d7c2ce6b1a9",
+        "b6da6a6b-ef50-4ae7-bd2b-e60902f48634"
+      ]
+    }
+  }
+}
