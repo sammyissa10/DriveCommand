@@ -22,7 +22,7 @@ import {
   createTestUser,
   cleanupTestData,
   disconnectPrisma,
-} from '../isolation/setup';
+} from './db-fixture-setup';
 import {
   buildRestrictedS3Key,
   generateRestrictedDownloadUrl,

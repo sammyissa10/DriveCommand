@@ -23,7 +23,7 @@ import {
   createTestUser,
   cleanupTestData,
   disconnectPrisma,
-} from '../isolation/setup';
+} from './db-fixture-setup';
 
 const hasDatabase = !!process.env.DATABASE_URL;
 const describeWithDb = hasDatabase ? describe : describe.skip;

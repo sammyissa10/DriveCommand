@@ -23,6 +23,34 @@
 # used to be. It is deliberately NOT a hard failure: making it one would turn
 # every pull request red today for a missing secret nobody asked for. Adding
 # the secret is a human step — see docs/audits/policy-drift-gate.md.
+#
+# quick-598 — THE CHECK NOW VALIDATES POLICY BODIES, NOT ONLY NAMES.
+# ------------------------------------------------------------------
+# Until quick-598 this check diffed `(table, policy_name)` identity and nothing
+# else. A policy whose `USING` was rewritten to `true` under its existing name
+# left it reporting "MISSING: none / UNEXPECTED: none" — proven on staging, and
+# the transcript is in docs/audits/phase-0-verification-gates.md.
+#
+# The definition layer compares every live policy body against the body its
+# migration declares. The expected side is canonicalised BY POSTGRES (a
+# `CREATE POLICY … pg_get_expr … ROLLBACK` round-trip on staging) and COMMITTED
+# as `apps/web/scripts/audit/rls-policy-canonical.json`, which is why this job
+# still needs no new credential and why its database access is still a pure
+# SELECT with no transaction and no DDL.
+#
+# THREE EXIT CODES NOW:
+#   0  CLEAN            — names and bodies agree.
+#   1  DRIFT            — a policy is missing, unexpected, or its body differs.
+#   3  DEFINITIONS NOT  — `rls-policy-canonical.json` is absent or STALE. The
+#      CHECKED            run prints "DEFINITION LAYER DID NOT RUN" and never
+#                         prints the word CLEAN.
+#
+# EXIT 3 IS WHAT YOU WILL HIT AFTER CHANGING A POLICY BODY IN A MIGRATION.
+# The corpus hash changes, the committed artefact goes stale, and the fix is to
+# run `npm run audit:rls-canonicalise` (staging only — it needs
+# `apps/web/.env.staging`) and commit the regenerated artefact in the same
+# change as the migration. Do not delete the artefact to make this green:
+# without it the check reports that it checked nothing, which is the truth.
 
 name: RLS Policy Drift
 

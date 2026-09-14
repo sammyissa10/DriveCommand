@@ -1,0 +1,120 @@
+# RLS Isolation (staging, as app_user)
+#
+# quick-598. Runs `apps/web/tests-db/rls-isolation/` — the suite that replaced
+# 27 tests which had never checked anything:
+#
+#   - `src/__tests__/isolation/` (17 tests) contained ZERO database references.
+#     Each declared a string literal and asserted it against itself three lines
+#     later, so all 17 passed with every policy in the database dropped
+#     (quick-597 section 6 measured exactly that).
+#   - `tests/isolation/` (10 tests) failed at IMPORT under Prisma 7 and reported
+#     "no tests" on every CI run. It had never executed once.
+#
+# The replacement connects as `app_user` (rolbypassrls = false) against seeded
+# STAGING fixtures and asserts real row counts. It is therefore NOT part of
+# `ci.yml`'s `npx vitest run`, which runs with a DUMMY DATABASE_URL — putting a
+# DB-backed suite there is what produced the second failure above.
+#
+# THIS JOB IS INERT WITHOUT CREDENTIALS, AND THAT IS SAID OUT LOUD.
+# ----------------------------------------------------------------
+# `STAGING_DIRECT_URL` and `STAGING_DATABASE_URL_APP_USER` do NOT exist as
+# repository or organization secrets today. They live only in the gitignored
+# `apps/web/.env.staging`. Minting and storing a database credential is a human
+# step and not something a task should do on its own — see
+# docs/audits/phase-0-verification-gates.md.
+#
+# Until they exist the "Credentials absent" step fires a loud ::warning:: saying
+# a green tick means nothing was checked. It is deliberately NOT a hard failure:
+# making it one would turn every pull request red today for missing secrets
+# nobody asked for. It is also deliberately NOT a ::notice::, and never silent —
+# the whole point of quick-598 is that a gate which passes without checking is
+# worse than no gate, because it is trusted.
+#
+# NOTE ON FIXTURES. The suite needs the quick-597 fixture graph seeded and its
+# `evidence/fixture-ids.json` present. The seed step below creates it and the
+# teardown step removes it, so a run leaves staging as it found it. If either
+# secret is missing, neither step runs.
+
+name: RLS Isolation
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  rls-isolation:
+    name: RLS isolation suite (staging, app_user)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for staging credentials
+        id: cred
+        env:
+          STAGING_DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+          STAGING_DATABASE_URL_APP_USER: ${{ secrets.STAGING_DATABASE_URL_APP_USER }}
+        run: |
+          if [ -n "$STAGING_DIRECT_URL" ] && [ -n "$STAGING_DATABASE_URL_APP_USER" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The suite reads apps/web/.env.staging explicitly and NEVER imports
+      # scripts/_bootstrap-env (which would repoint DATABASE_URL at DIRECT_URL,
+      # i.e. at PRODUCTION). Writing the secrets into that file is how CI hands
+      # them over without changing that rule.
+      - name: Materialise apps/web/.env.staging from secrets
+        if: steps.cred.outputs.present == 'true'
+        working-directory: apps/web
+        env:
+          STAGING_DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+          STAGING_DATABASE_URL_APP_USER: ${{ secrets.STAGING_DATABASE_URL_APP_USER }}
+          STAGING_DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: |
+          {
+            echo "STAGING_DIRECT_URL=${STAGING_DIRECT_URL}"
+            echo "STAGING_DATABASE_URL_APP_USER=${STAGING_DATABASE_URL_APP_USER}"
+            echo "STAGING_DATABASE_URL=${STAGING_DATABASE_URL}"
+          } > .env.staging
+
+      - name: Seed staging fixtures
+        if: steps.cred.outputs.present == 'true'
+        working-directory: apps/web
+        run: npx tsx scripts/audit/597-staging-fixtures.ts --seed
+
+      - name: RLS isolation suite
+        if: steps.cred.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm run test:rls-isolation
+
+      - name: Tear down staging fixtures
+        if: always() && steps.cred.outputs.present == 'true'
+        working-directory: apps/web
+        run: |
+          npx tsx scripts/audit/597-staging-fixtures.ts --teardown
+          npx tsx scripts/audit/597-staging-fixtures.ts --verify-clean
+
+      - name: Credentials absent — suite DID NOT RUN
+        if: steps.cred.outputs.present != 'true'
+        run: |
+          echo "::warning title=RLS isolation suite DID NOT RUN::STAGING_DIRECT_URL and/or STAGING_DATABASE_URL_APP_USER are not configured, so no isolation check was performed. A green tick on this job does NOT mean tenant isolation holds - it means nothing was checked. That is the exact failure mode quick-598 removed from 27 tests that had checked nothing for months. Add the two staging connection strings as repository secrets to arm it. See docs/audits/phase-0-verification-gates.md."
+          echo ""
+          echo "=================================================================="
+          echo " RLS ISOLATION SUITE DID NOT RUN — NO CREDENTIALS"
+          echo "=================================================================="
+          echo " A passing job here is not evidence of anything."
+          echo " Add secrets STAGING_DIRECT_URL and STAGING_DATABASE_URL_APP_USER."
+          echo "=================================================================="
