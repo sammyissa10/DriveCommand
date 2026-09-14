@@ -1,4 +1,6 @@
+import { randomUUID } from 'crypto';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { setTransactionTenantId } from '@/lib/db/tenant-guc';
 import { generateEmailToken } from '@/lib/auth/email-token';
 import { SignUpInput } from '@/lib/validations/onboarding.schemas';
 import {
@@ -18,6 +20,44 @@ export interface ProvisionResult {
   planKey: string;
 }
 
+/**
+ * ─── WHY THE TENANT ID IS MINTED HERE AND NOT BY THE DATABASE (quick-601) ───
+ *
+ * `Tenant.id` still carries `@default(dbgenerated("gen_random_uuid()"))` and that
+ * default is untouched — every other insert path still uses it. This one call
+ * site supplies an explicit id, and the reason is an ordering constraint that no
+ * amount of statement shuffling could otherwise satisfy:
+ *
+ *   - `tenant_bootstrap_insert` admits the `"Tenant"` INSERT only when
+ *     `id = current_tenant_id()`.
+ *   - `tenant_self_read` gates the INSERT's RETURNING clause on the same
+ *     equality — and Prisma's `create()` ALWAYS emits RETURNING.
+ *   - `trg_seed_tenant_notification_settings` fires AFTER INSERT and writes
+ *     `"TenantNotificationSettings"` with `tenantId = NEW.id`, which
+ *     `tenant_isolation_policy` gates on the same equality again.
+ *
+ * All three want the GUC to hold the new tenant's id BEFORE the insert runs. If
+ * the database generates the id, the application cannot know it in time. Minting
+ * it in process is what makes the three checks agree, and it removes the need for
+ * a bypass, an admin connection, or a `SECURITY DEFINER` trigger.
+ *
+ * Measured on staging before this change, as `app_user` with no bypass: the plain
+ * INSERT failed `42501` on `"TenantNotificationSettings"` and the same INSERT with
+ * `RETURNING id` failed `42501` on `"Tenant"` — two different tables, one clause
+ * apart. See `docs/audits/provisioning-path.md` §1.
+ *
+ * ─── THE TWO GLOBAL PROBES ARE SQL FUNCTIONS, NOT PRISMA READS ──────────────
+ *
+ * `provisioning_email_taken` and `provisioning_next_slug` are `SECURITY DEFINER`
+ * and each returns one scalar. The reads they replace are genuinely global —
+ * `User_email_tenantId_key` is `(email, "tenantId")` and `Tenant_slug_key` is
+ * global — so under a tenant-scoped role the Prisma versions returned zero rows
+ * SILENTLY: the email guard stopped guarding, and the slug loop exited on its
+ * first iteration and handed the first colliding slug to `Tenant_slug_key` as a
+ * `23505` on sign-up. They are functions rather than `getAdminDb` calls because a
+ * function returning one boolean leaks strictly less than a `BYPASSRLS` client on
+ * the product's highest-traffic unauthenticated surface.
+ */
 export async function provisionTenant(
   input: SignUpInput,
   authUserId: string,
@@ -32,32 +72,42 @@ export async function provisionTenant(
     heardAbout === 'other' ? input.heardAboutOther?.trim() || null : null;
 
   return prisma.$transaction(async (tx) => {
-    // bypass_rls for the entire transaction (scoped to this transaction session only)
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
     // Step 1 — Reject if email already registered (defensive: auth user was created
     // first, so this normally only fires for orphaned Prisma users from prior failures)
-    const existingUser = await tx.user.findFirst({ where: { email: normalizedEmail } });
-    if (existingUser) throw new Error('EMAIL_TAKEN');
+    const [{ taken }] = await tx.$queryRaw<Array<{ taken: boolean }>>`
+      SELECT provisioning_email_taken(${normalizedEmail}) AS taken
+    `;
+    if (taken) throw new Error('EMAIL_TAKEN');
 
     // Step 2 — Hash password (written to User.passwordHash for mobile Bearer token auth)
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Step 3 — Generate unique slug
-    let baseSlug = companyName
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-    let slug = baseSlug;
-    let suffix = 2;
-    while (await tx.tenant.findFirst({ where: { slug } })) {
-      slug = `${baseSlug}-${suffix++}`;
-    }
+    // Step 3 — Generate unique slug. The suffix loop lives inside
+    // provisioning_next_slug, which is the only place that can see every tenant.
+    //
+    // The `|| 'tenant'` fallback is new and deliberate: a company name with no
+    // alphanumerics normalises to the empty string, and the function raises on an
+    // empty base rather than minting a blank slug. Previously such a name produced
+    // slug='' and the SECOND one collided on Tenant_slug_key.
+    const baseSlug =
+      companyName
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'tenant';
+    const [{ slug }] = await tx.$queryRaw<Array<{ slug: string }>>`
+      SELECT provisioning_next_slug(${baseSlug}) AS slug
+    `;
+
+    // Step 3a — Mint the tenant id and declare it BEFORE the insert. See the
+    // header: this ordering is the whole mechanism.
+    const tenantId = randomUUID();
+    await setTransactionTenantId(tx, tenantId);
 
     // Step 4 — Insert Tenant
     const tenant = await tx.tenant.create({
       data: {
+        id: tenantId,
         name: companyName,
         slug,
         status: TenantStatus.TRIAL,

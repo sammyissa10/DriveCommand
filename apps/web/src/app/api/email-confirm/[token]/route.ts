@@ -12,8 +12,8 @@
  *   SUPPORT_REPLY_TO — Reply-To address for welcome emails
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { verifyEmailToken } from '@/lib/auth/email-token';
+import { confirmTenantEmail } from '@/lib/onboarding/confirm-tenant-email';
 import { logger } from '@/lib/logger';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
@@ -48,37 +48,25 @@ export async function GET(
 
   const { tenantId } = result.payload;
 
-  // Check current state + update atomically (bypass_rls — pre-auth path)
+  // Check current state + update atomically. The tenant id comes out of the
+  // AES-GCM token, so this is NOT a bootstrap: quick-601 replaced the former
+  // `app.bypass_rls` with the tenant GUC, which `tenant_self_read` and
+  // `tenant_self_update` already admit. The outcomes are a returned union rather
+  // than thrown sentinel strings, because an idempotent re-confirmation is a
+  // normal result and was never an error.
+  let confirmation: Awaited<ReturnType<typeof confirmTenantEmail>>;
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
-      const tenant = await tx.tenant.findUnique({ where: { id: tenantId } });
-
-      if (!tenant) {
-        throw new Error('TENANT_NOT_FOUND');
-      }
-
-      // Idempotency: already confirmed — skip update but signal to redirect gracefully
-      if (tenant.emailConfirmedAt !== null) {
-        throw new Error('ALREADY_CONFIRMED');
-      }
-
-      await tx.tenant.update({
-        where: { id: tenantId },
-        data: { emailConfirmedAt: new Date() },
-      });
-    }, TX_OPTIONS);
+    confirmation = await confirmTenantEmail(tenantId);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'unknown';
-    if (msg === 'ALREADY_CONFIRMED') {
-      return redirectTo('/dashboard?notice=already-confirmed');
-    }
-    if (msg === 'TENANT_NOT_FOUND') {
-      logger.warn('[email-confirm] tenant not found', { tenantId });
-      return redirectTo('/sign-in?error=link-invalid');
-    }
     logger.error('[email-confirm] unexpected error', { error: err });
+    return redirectTo('/sign-in?error=link-invalid');
+  }
+
+  if (confirmation.status === 'already-confirmed') {
+    return redirectTo('/dashboard?notice=already-confirmed');
+  }
+  if (confirmation.status === 'not-found') {
+    logger.warn('[email-confirm] tenant not found', { tenantId });
     return redirectTo('/sign-in?error=link-invalid');
   }
 

@@ -75,20 +75,40 @@ export async function generateVehicleId(): Promise<string> {
  *
  * IMPORTANT: call this OUTSIDE any prisma.$transaction callback. It uses the
  * global prisma client; calling it inside a transaction deadlocks the max:1 pool.
+ *
+ * ─── THE READ IS GLOBAL, AND HAS TO BE (quick-601) ──────────────────────────
+ *
+ * `carrier_trucks_vehicle_id_key` is a unique index on `vehicle_id` ALONE — not
+ * `(org_id, vehicle_id)` — read from `pg_indexes`, not inferred from the
+ * snake_case neighbours. So the max this needs is the max across every tenant.
+ *
+ * It used to reach it with a bare `$queryRawUnsafe` on the global client: no
+ * tenant predicate, no `app.bypass_rls` flag, and therefore no `@bypass_rls`
+ * marker — which put it OUTSIDE the 211-site grep the bypass migration is scoped
+ * to. It worked only because `DATABASE_URL` resolves to `postgres`, which carries
+ * `rolbypassrls`. Under `app_user` the `SELECT` returns zero rows with no error,
+ * `nextSeq` falls back to 1, and the SECOND truck created in a given year — for
+ * ANY tenant — dies on `23505`. The same defect class as `generateTicketNumber`
+ * (B7), and it sits on the sign-up hydration path.
+ *
+ * `carrier_max_vehicle_id` is `SECURITY DEFINER`, `EXECUTE` granted to `app_user`
+ * alone (and explicitly revoked from `PUBLIC`, `anon`, `authenticated` and
+ * `service_role`), and its body is the previous query verbatim. The fix is a
+ * privilege change, not a behaviour change.
  */
 export async function generateVehicleIds(count: number): Promise<string[]> {
   if (count === 0) return [];
   const year = new Date().getFullYear();
   const prefix = `VH-${year}-`;
 
-  const rows = await prisma.$queryRawUnsafe<Array<{ vehicle_id: string }>>(
-    `SELECT vehicle_id FROM carrier_trucks WHERE vehicle_id LIKE $1 ORDER BY vehicle_id DESC LIMIT 1`,
-    `${prefix}%`
-  );
+  const rows = await prisma.$queryRaw<Array<{ vehicle_id: string | null }>>`
+    SELECT carrier_max_vehicle_id(${prefix}) AS vehicle_id
+  `;
 
   let nextSeq = 1;
-  if (rows.length > 0) {
-    const suffix = rows[0].vehicle_id.slice(prefix.length);
+  const maxVehicleId = rows[0]?.vehicle_id ?? null;
+  if (maxVehicleId) {
+    const suffix = maxVehicleId.slice(prefix.length);
     const parsed = parseInt(suffix, 10);
     if (!isNaN(parsed)) nextSeq = parsed + 1;
   }

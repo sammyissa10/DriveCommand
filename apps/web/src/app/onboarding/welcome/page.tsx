@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { hydrateTenant } from '@/lib/onboarding/hydrate-tenant';
+import {
+  getOnboardingFlags,
+  readTenantProvisioningState,
+} from '@/lib/onboarding/onboarding-flags';
 import { ActivationChecklist } from './checklist';
 
 // Force dynamic rendering — activation progress is per-tenant and must never be statically cached.
@@ -11,48 +14,13 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Welcome to DriveCommand' };
 
-/**
- * Onboarding step completion, derived from real records (not click-tracking).
- * Sample/seeded rows and soft-deleted rows are excluded so demo data never
- * marks a step done. bypass_rls: this page runs before the tenant has an
- * interactive session context set for RLS.
- */
-async function getOnboardingFlags(tenantId: string): Promise<{
-  hasClient: boolean;
-  hasContract: boolean;
-  hasLoad: boolean;
-  hasTrip: boolean;
-}> {
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    const [clients, contracts, loads, trips] = await Promise.all([
-      tx.carrierClient.count({ where: { orgId: tenantId, isSample: false, deletedAt: null } }),
-      tx.carrierContract.count({ where: { orgId: tenantId, deletedAt: null } }),
-      tx.carrierLoad.count({ where: { orgId: tenantId, isSample: false, deletedAt: null } }),
-      tx.trip.count({ where: { orgId: tenantId, deletedAt: null } }),
-    ]);
-    return {
-      hasClient: clients > 0,
-      hasContract: contracts > 0,
-      hasLoad: loads > 0,
-      hasTrip: trips > 0,
-    };
-  }, TX_OPTIONS);
-}
-
 export default async function WelcomePage() {
   const session = await getSession();
 
   if (session?.tenantId) {
     const tenantId = session.tenantId;
 
-    const tenant = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.tenant.findUnique({
-        where: { id: tenantId },
-        select: { provisioningPhase: true },
-      });
-    }, TX_OPTIONS);
+    const tenant = await readTenantProvisioningState(tenantId);
 
     console.log('[welcome] tenantId:', tenantId, 'phase:', tenant?.provisioningPhase);
 
@@ -66,13 +34,7 @@ export default async function WelcomePage() {
       let catchFlags: Awaited<ReturnType<typeof getOnboardingFlags>> | null = null;
 
       try {
-        const tenantState = await prisma.$transaction(async (tx) => {
-          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-          return tx.tenant.findUnique({
-            where: { id: tenantId },
-            select: { provisioningPhase: true, sampleDataSeeded: true },
-          });
-        }, TX_OPTIONS);
+        const tenantState = await readTenantProvisioningState(tenantId);
 
         if (tenantState?.provisioningPhase === 'HYDRATED') {
           // Case (a) and (b): tenant is HYDRATED — hydrateTenant error was a false alarm (e.g. client timeout)

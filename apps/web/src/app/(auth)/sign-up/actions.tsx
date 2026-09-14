@@ -9,6 +9,7 @@ import {
 } from '@/lib/validations/onboarding.schemas';
 import { provisionTenant } from '@/lib/onboarding/provision-tenant';
 import { prisma } from '@/lib/db/prisma';
+import { setTransactionTenantId } from '@/lib/db/tenant-guc';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email/resend-client';
@@ -228,8 +229,13 @@ export async function signUpAction(
 
   // ── Step 3: Emit tenant.created event (Phase D automation hook) ───────────
   try {
+    // DECORATIVE bypass, removed in quick-601: `result.tenantId` is in hand and
+    // `AppEvent` carries a satisfiable `tenant_isolation_policy`. The bypass was
+    // never the mechanism — the GUC is. It matters that this one is fixed rather
+    // than left: the write is wrapped in a try/catch and logged as non-fatal, so
+    // under `app_user` with neither flag it would have failed SILENTLY.
     await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await setTransactionTenantId(tx, result.tenantId);
       await tx.appEvent.create({
         data: {
           tenantId: result.tenantId,

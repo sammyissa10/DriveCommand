@@ -1,5 +1,6 @@
 import { prisma, TX_OPTIONS } from '../prisma';
 import { getAdminDb } from '../admin-prisma';
+import { setTransactionTenantId } from '../tenant-guc';
 import { randomUUID } from 'crypto';
 
 function generateSlug(name: string): string {
@@ -14,14 +15,23 @@ function generateSlug(name: string): string {
 export class TenantProvisioningRepository {
   /**
    * Create a new tenant with an owner user.
-   * Used during administrative provisioning.
-   * NOT scoped by RLS — this creates the tenant itself.
    *
-   * @bypass_rls reason: cross-tenant
-   * WHY: Tenant provisioning is a system-admin operation that creates a new Tenant
-   *      record and its first Owner User. No tenant context exists yet to scope RLS to.
+   * ─── UNREFERENCED, AND UPDATED ANYWAY (quick-601) ─────────────────────────
+   *
+   * This method has ZERO callers — `grep -rn "TenantProvisioningRepository"`
+   * returns the class declaration and nothing else. The live sysadmin tenant
+   * create is `(admin)/actions/tenants.ts`, on the admin connection.
+   *
+   * It is updated rather than left alone because quick-601 changed what a bare
+   * `"Tenant"` INSERT means: `tenant_bootstrap_insert` now requires
+   * `id = current_tenant_id()`, so a no-GUC insert — which is exactly what this
+   * was — is refused under `app_user`. Leaving it would have parked a method
+   * that is broken the moment anyone calls it, in a file whose two siblings are
+   * live. Same shape as `provisionTenant` in `lib/onboarding`: mint the id,
+   * declare it, then insert.
+   *
    * SCOPE: Creates one Tenant + one User record.
-   * SAFETY: Gated by requireAuth() + isSystemAdmin() in the caller (tenants action).
+   * SAFETY: Gated by requireAuth() + isSystemAdmin() in whatever caller adopts it.
    */
   async provisionTenant(data: {
     companyName: string;
@@ -30,11 +40,12 @@ export class TenantProvisioningRepository {
     ownerEmail: string;
   }) {
     return prisma.$transaction(async (tx) => {
-      // Set bypass flag for this transaction
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const tenantId = randomUUID();
+      await setTransactionTenantId(tx, tenantId);
 
       const tenant = await tx.tenant.create({
         data: {
+          id: tenantId,
           name: data.companyName,
           slug: generateSlug(data.companyName),
           timezone: data.timezone || 'UTC',
