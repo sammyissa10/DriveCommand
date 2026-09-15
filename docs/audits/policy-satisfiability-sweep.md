@@ -69,6 +69,13 @@ live table, and a grant gap.** The flat per-table verdict hides them, so §5.2 s
 ## 1. Every policy and what its expression depends on
 
 180 policies collapse into **17 distinct `(name, command, permissive, USING, WITH CHECK)` shapes**.
+
+> **ACCOUNTING CORRECTION 2026-09-15 (quick-602).** The corpus is now **183** policies on both
+> databases, and after `20260914180000_tenant_context_tripwire` the four-way split on staging is
+> **93 route through `current_tenant_id()` / 0 inline / 86 `app.bypass_rls` / 4 neither = 183**
+> (production is 91 / 2 / 86 / 4 until the next deploy applies the same file). S5 has collapsed into
+> S4, so the distinct-shape count is **16**, not 17. The move is derived per policy from migration
+> SQL in `docs/audits/unmigrated-path-tripwire.md` §1.
 The shape count is the useful unit: 86 of the 180 are byte-identical copies of one expression and 91
 are copies of twelve. Every shape below is quoted verbatim from
 `pg_get_expr(polqual, polrelid)` / `pg_get_expr(polwithcheck, polrelid)` on production.
@@ -143,11 +150,25 @@ shape in which `SupportTicket`'s nullable key bites (§5.3).
 USING      (("tenantId")::text = current_setting('app.current_tenant_id'::text, true))
 WITH CHECK  -- none declared; derived from USING
 ```
-**Depends on:** column `"tenantId"`; **GUC `app.current_tenant_id` read inline**, not through
+~~**Depends on:** column `"tenantId"`; **GUC `app.current_tenant_id` read inline**, not through
 `current_tenant_id()`. **Tables:** `Tag TagAssignment`.
 Text-to-text with no cast and no `NULLIF`, so it filters silently rather than raising — the distinction
 `bypass-replacement-design.md` §1.3(b) drew against `audit_log`, which used to cast. `audit_log` no
-longer does (S9), leaving these two as the only policies that read the GUC without the helper.
+longer does (S9), leaving these two as the only policies that read the GUC without the helper.~~
+
+> **CORRECTION 2026-09-15 (quick-602, `20260914180000_tenant_context_tripwire`).** **S5 IS NO LONGER
+> AN INLINE-GUC SHAPE.** Both tables were rewritten — under their original policy names — to
+>
+> ```
+> USING      ("tenantId" = current_tenant_id())
+> WITH CHECK  -- still none declared; still derived from USING
+> ```
+>
+> which is exactly the **S4** predicate (`tenant_isolation_policy` · ALL · permissive · derived
+> check), so `Tag` and `TagAssignment` join S4's table list and **no policy in the database reads the
+> GUC without the helper any more**. Two measured edge cases came with the rewrite, both quoted in
+> `docs/audits/unmigrated-path-tripwire.md` §4: a non-canonical (uppercase) uuid now ADMITS where
+> text comparison filtered, and non-uuid garbage now raises `22P02` instead of filtering.
 
 ### S6 — `tenant_self_read` · **SELECT** · permissive · **`Tenant`**
 
@@ -300,7 +321,8 @@ Five distinct GUC names are reachable from the 180 policies, three of them only 
 
 | GUC | policies depending on it | writers in the repository | verdict |
 |---|---|---|---|
-| `app.current_tenant_id` | **91** | **12 source sites** (below) | **LIVE** |
+| `app.current_tenant_id` | ~~91~~ **93** — quick-602 routed `Tag`/`TagAssignment` through the helper | **12 source sites** (below) | **LIVE** |
+| `app.tenant_context_tripwire` (quick-602) | **0 directly** — read inside `current_tenant_id()`, so it gates all **93** | **0 in application source.** The documented `ALTER ROLE`/`ALTER DATABASE … SET` levers are **REFUSED (`42501`)** on this instance for a placeholder GUC, and the connection-string `options` parameter is **silently dropped by Supavisor**; a **session-level `SET`** is the only mechanism that works, issued by `602-tripwire-verify.ts`, `602-execution-sweep.ts`, and (temporarily, uncommitted) `lib/db/prisma.ts` during quick-602's HTTP pass | **LIVE but OFF everywhere** — the migration sets it nowhere, so it is a no-op until a process arms it |
 | `app.bypass_rls` | **86** | 773 occurrences repo-wide, ~210 executable sites in `apps/web/src` | **LIVE** (and being removed — that is the whole Phase 0 programme) |
 | `request.jwt.claims` | **3** | **1**, and it cannot satisfy either policy | **DEAD on every request path** |
 | `request.jwt.claim` | **2** | **0** | **DEAD** |
@@ -310,6 +332,11 @@ Five distinct GUC names are reachable from the 180 policies, three of them only 
 91 + 86 + 3 = 180 when the three dead policies are counted once each (`in_app_notifications`'s two
 policies each depend on both `request.jwt.claim` and `request.jwt.claims`; `UserNotificationPreference`'s
 depends on `request.jwt.claim.sub` and `request.jwt.claims`).
+
+> **NOTE 2026-09-15 (quick-602).** This section's observation that the only `ALTER ROLE … SET` in the
+> repository sets a timeout **remains true**: quick-602 deliberately did not add one to a migration —
+> and measured that it could not have, because `ALTER ROLE`/`ALTER DATABASE … SET` on a placeholder
+> GUC is `42501` for `postgres` and for `app_user` alike on this Supabase instance.
 
 ### `app.current_tenant_id` — the 12 writers
 

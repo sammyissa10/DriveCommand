@@ -298,6 +298,13 @@ transaction cannot express; each needs its optional work moved out of the unit b
 
 ## 5. Can the all-or-nothing cutover be relaxed?
 
+> **BUILT 2026-09-15 (quick-602).** This section is a design; the built version, with every number
+> re-measured and the three things this section assumed now measured rather than reasoned about, is
+> **`docs/audits/unmigrated-path-tripwire.md`**. Three of this section's premises turned out to be
+> false and are corrected below and there: the policy counts, the "must stay inline" pair, and — the
+> one that changes how the signal is operated — **`ALTER ROLE app_user SET app.tenant_context_tripwire`
+> is REFUSED on this Supabase instance (42501), so the flag is armed by a session-level `SET`.**
+
 **Yes.** There is a single, already-central place to put a loud signal.
 
 ### The mechanism
@@ -319,30 +326,52 @@ forgotten at a call site because it lives below all of them.
 
 Measured on staging, this covers most but not all of the surface:
 
-| policies on staging | count |
-|---|---|
-| total | 183 |
-| route through `current_tenant_id()` — **covered by the signal** | **87** |
-| `app.bypass_rls` policies (deliberately unaffected) | 86 |
-| **inline `current_setting('app.current_tenant_id')` — would NOT signal** | **5** |
-| neither mechanism | 5 |
+| policies on staging | ~~count (2026-09-12)~~ | **count (2026-09-15, quick-602)** |
+|---|---|---|
+| total | 183 | **183** |
+| route through `current_tenant_id()` — **covered by the signal** | ~~87~~ | **91** (**93** after quick-602's migration) |
+| `app.bypass_rls` policies (deliberately unaffected) | 86 | **86** |
+| **inline `current_setting('app.current_tenant_id')` — would NOT signal** | ~~5~~ | **2** (**0** after quick-602's migration) |
+| neither mechanism | ~~5~~ | **4** |
 
-The 5 inline policies are the precondition, and two of them must stay inline:
+> **CORRECTION 2026-09-15 (quick-602).** The 87/5/86/5 row above was three migrations stale and is
+> struck through. Re-measured on BOTH databases: **91 / 2 / 86 / 4 = 183**, with an empty policy-name
+> set difference in both directions. The move is derived per policy from the SQL of
+> `20260913120000`, `20260914120000` and `20260914160000` in
+> `docs/audits/unmigrated-path-tripwire.md` §1.
 
-- `Tag.tenant_isolation_policy`, `TagAssignment.tenant_isolation_policy`, `audit_log.tenant_isolation_policy`
-  — ordinary tenant isolation; rewrite to call the function.
-- `SysAdminInvoice.sysadmin_invoices_deny_tenant_users`, `SysAdminInvoiceItem…` — **deliberately
+~~The 5 inline policies are the precondition, and two of them must stay inline:~~
+
+- ~~`Tag.tenant_isolation_policy`, `TagAssignment.tenant_isolation_policy`, `audit_log.tenant_isolation_policy`
+  — ordinary tenant isolation; rewrite to call the function.~~
+- ~~`SysAdminInvoice.sysadmin_invoices_deny_tenant_users`, `SysAdminInvoiceItem…` — **deliberately
   inverted**: they *pass* when the GUC is null or empty. Rewriting them to call a raising function
-  would break sysadmin access. Leave them inline.
+  would break sysadmin access. Leave them inline.~~
+
+> **CORRECTION 2026-09-15 (quick-602).** The precondition is now exactly **TWO** policies, and there
+> is **no "must stay inline" residue at all**:
+>
+> - `audit_log.tenant_isolation_policy` already moved in quick-597.
+> - **The two `SysAdminInvoice*` deny policies NO LONGER EXIST** — quick-597 DROPPED them
+>   (`20260913120000_rls_policy_satisfiability_fixes`, §3). The sentence saying they must stay inline
+>   describes objects that are gone.
+> - `Tag.tenant_isolation_policy` and `TagAssignment.tenant_isolation_policy` were rewritten by
+>   quick-602 (`20260914180000_tenant_context_tripwire`) under their original names, with the
+>   before/after row-count matrix in `unmigrated-path-tripwire.md` §2 and §4.
 
 ### How to run the partial migration
 
-1. Fix the 3 Tag/audit_log policies to route through the function.
+1. ~~Fix the 3 Tag/audit_log policies to route through the function.~~ **DONE (quick-602): the TWO
+   remaining policies — `Tag` and `TagAssignment` — were rewritten; `audit_log` had already moved in
+   quick-597. Zero policies now read the GUC inline.**
 2. Deploy the raising `current_tenant_id()` **to staging and preview only**, gated on an environment
    check so production keeps the NULL-returning body. During a partial migration the signal must be a
    500 you can see, not a 500 your customers see.
 3. Point staging's `DATABASE_URL` at `app_user` (the role now has a password and a recorded
    connection string, per `guc-binding-fix.md` §7). Every unmigrated path fails loudly and by name.
+   **quick-602 discharged this PER PROCESS rather than by a standing configuration change**: the
+   execution sweep and the HTTP pass each pointed one process at staging-as-`app_user` and reported
+   24 entry points by name. Staging's standing `DATABASE_URL` is unchanged.
 4. Add a CI countdown: a static check that fails on any `getTenantPrisma`/`getTenantPrismaForOrg`
    outside a `withTenantContext` callback. It gives an exact remaining count per commit and, unlike
    the runtime signal, catches paths no test exercises.
