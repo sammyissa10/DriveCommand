@@ -1,7 +1,7 @@
 import { getSession, getRole } from '@/lib/auth/supabase';
 import { redirect } from 'next/navigation';
 import { UserRole } from '@/lib/auth/roles';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { DocumentList } from './document-list';
 import { FileText } from 'lucide-react';
 
@@ -18,8 +18,25 @@ export default async function DriverDocumentsPage() {
     redirect('/unauthorized');
   }
 
+  /**
+   * quick-606 — TWO defects lived here and only one of them was about `app_user`.
+   *
+   * The one that raised: `P2022 ColumnNotFound`. Five `Document` columns existed
+   * on production and in `schema.prisma` and NOT on staging, two of them in zero
+   * migration files anywhere (quick-604 §7e). This page orders by `expiryDate`,
+   * so it 500'd — the repository could not rebuild its own database. Closed by
+   * `20260915120000_document_column_drift_staging_parity`.
+   *
+   * The one hiding behind it: this read was on the BARE client with no tenant
+   * scope — the §7a shape, unmeasurable while the P2022 raised first. A driver's
+   * documents were selected by `driverId` alone, and `driverId` is a `User` id;
+   * correct in practice only because user ids do not collide across tenants.
+   * `getTenantPrisma()` because there is a session, already role-checked above.
+   */
+  const db = await getTenantPrisma();
+
   // Get all documents for this driver (driverId references User, not Driver)
-  const documents = await prisma.document.findMany({
+  const documents = await db.document.findMany({
     where: {
       driverId: session.userId,
     },

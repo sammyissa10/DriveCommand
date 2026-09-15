@@ -1,0 +1,25 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:41:48.386Z",
+  "probe": {
+    "id": "66bf812f-28fe-4a4b-9588-a32e232b6c69",
+    "fileName": "606-probe-doc-1789497691215.pdf",
+    "tenant": "staging-alpha",
+    "driver": "driver1@alpha.staging.test"
+  },
+  "tenantA": {
+    "email": "driver1@alpha.staging.test",
+    "status": 200,
+    "sawProbe": true
+  },
+  "tenantB": {
+    "email": "driver1@beta.staging.test",
+    "status": 200,
+    "sawProbe": false
+  },
+  "cleanup": {
+    "deletedRows": 1,
+    "survivingProbeRows": 0
+  },
+  "verdict": "SCOPED — tenant A sees its probe, tenant B does not"
+}

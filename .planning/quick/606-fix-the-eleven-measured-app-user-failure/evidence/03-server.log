@@ -1905,3 +1905,34 @@ The column `(not available)` does not exist in the current database.
 }
 [2026-09-15T18:30:43.630Z] INFO: [CRON] send-reminders: Completed {"success":false,"processedTenants":0,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":2,"failures":[{"scope":"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"},{"scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"}]}
  GET /api/cron/send-reminders 500 in 1790ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1779ms)
+✓ Compiled in 808ms
+✓ Compiled in 308ms
+✓ Compiled in 235ms
+✓ Compiled in 207ms
+✓ Compiled in 335ms
+ POST /api/auth/login 200 in 6.5s (next.js: 4.3s, proxy.ts: 669ms, application-code: 1584ms)
+ GET /documents 200 in 7.0s (next.js: 3.5s, proxy.ts: 141ms, application-code: 3.3s)
+ POST /api/auth/login 200 in 882ms (next.js: 3ms, proxy.ts: 2ms, application-code: 877ms)
+ GET /documents 200 in 547ms (next.js: 10ms, proxy.ts: 206ms, application-code: 331ms)
+ POST /api/auth/login 200 in 1540ms (next.js: 3ms, proxy.ts: 4ms, application-code: 1533ms)
+ POST /api/auth/login 200 in 818ms (next.js: 6ms, proxy.ts: 6ms, application-code: 806ms)
+ GET /carrier/trips 200 in 3.6s (next.js: 1268ms, proxy.ts: 216ms, application-code: 2.2s)
+ GET /documents 200 in 703ms (next.js: 12ms, proxy.ts: 137ms, application-code: 555ms)
+[2026-09-15T18:42:06.560Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-15T18:42:06.561Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-15T18:42:06.949Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-15T18:42:08.340Z] INFO: [CRON] digest-compliance-30day: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-compliance-30day 200 in 4.1s (next.js: 2.2s, proxy.ts: 6ms, application-code: 1825ms)
+[2026-09-15T18:42:09.245Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-15T18:42:09.246Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-15T18:42:09.318Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-15T18:42:09.319Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-15T18:42:09.903Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-15T18:42:09.904Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-15T18:42:09.904Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-15T18:42:09.904Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-15T18:42:10.480Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-15T18:42:10.481Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-15T18:42:10.481Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-15T18:42:10.482Z] INFO: [CRON] send-reminders: Completed {"success":true,"processedTenants":2,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/send-reminders 200 in 1780ms (next.js: 496ms, proxy.ts: 6ms, application-code: 1278ms)

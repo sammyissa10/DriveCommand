@@ -1,0 +1,14 @@
+migration : 20260915120000_document_column_drift_staging_parity
+connection: postgres@postgres (staging wyixpgunnjmzguhggocz)
+sha256 (LF bytes): 095c615e9255772d9738a7b65ddddcaa04daedee7a3c3892ee72fa6207dd2f2e
+APPLIED to staging (single transaction, committed)
+SENTINEL 20260914170000_activation_progress_congrats_shown_at visible: YES
+ledger row INSERTed BY HAND — no MCP tool and no DDL writes this (DEC-17)
+READ BACK — newest 3 ledger rows:
+  20260915120000_document_column_drift_staging_parity | steps=0 | logs="" | started=finished:true | checksum=095c615e9255772d9738a7b65ddddcaa04daedee7a3c3892ee72fa6207dd2f2e
+  20260914180000_tenant_context_tripwire | steps=0 | logs="" | started=finished:true | checksum=ad2f6892ede6f5c36e71f87b93c709e66ec37885f181aeb85dcce9a886f724dc
+  20260914170000_activation_progress_congrats_shown_at | steps=1 | logs=null | started=finished:false | checksum=manual
+HEAD IS OURS: true (expected 20260915120000_document_column_drift_staging_parity)
+checksum is a real SHA-256, not 'manual': true
+applied_steps_count is 0 (mirrored, not executed by migrate.mjs): true
+staging _prisma_migrations rows AFTER: 157

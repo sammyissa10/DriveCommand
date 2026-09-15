@@ -1,6 +1,6 @@
 # quick-606 · 01 — the ledger at OPEN
 
-Taken 2026-09-15T18:11:23.373Z. Production is read **read-only**, with every statement drawn from
+Taken 2026-09-15T18:42:57.077Z. Production is read **read-only**, with every statement drawn from
 one frozen SELECT-only array in `scripts/audit/604-survey.ts`. No other
 production statement path exists in that file.
 

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { ImportDocumentAction } from '@/components/carrier/imports/ImportDocumentAction';
 import { ResumeImportBanner } from '@/components/carrier/imports/ResumeImportBanner';
 import { getResumableImports } from '@/lib/document-import/intake';
@@ -16,20 +16,37 @@ export default async function TripsPage() {
 
   const canCreate = session.role !== 'MANAGER';
 
+  /**
+   * quick-606. These three were issued on the BARE `prisma` client — §7a's
+   * exemplar, and worth stating plainly: the trips list, one of the most-visited
+   * screens in the carrier portal, carried a tenant-scoped read with no
+   * `getTenantPrisma`, no bypass flag and no marker, which is exactly why it is
+   * invisible to BOTH the 211-site bypass grep and the 456-unit AST countdown.
+   * The countdown names `trips/[id]/page.tsx`, `trips/[id]/stops/page.tsx` and
+   * `trips/new/page.tsx` — but not the list page itself. It answered HTTP 500
+   * with `TC001` as `app_user` (quick-606 evidence/02-reverify.json row 1).
+   *
+   * `getTenantPrisma()` and not `getTenantPrismaForOrg(orgId)`: this page has a
+   * session and has already null-checked `session.tenantId`, so the
+   * session-derived resolver is the right door. The explicit-tenant escape hatch
+   * is for callers with no session (`tenant-context.ts:44`).
+   */
+  const db = await getTenantPrisma();
+
   const [drivers, trucks, realLoadCount, resumableImports] = await Promise.all([
-    prisma.carrierDriver.findMany({
+    db.carrierDriver.findMany({
       where: { orgId, status: 'active' },
       select: { id: true, firstName: true, lastName: true },
       orderBy: { lastName: 'asc' },
     }),
-    prisma.carrierTruck.findMany({
+    db.carrierTruck.findMany({
       where: { orgId, status: 'active' },
       select: { id: true, unitNumber: true },
       orderBy: { unitNumber: 'asc' },
     }),
     // Real (non-sample, non-deleted) loads exist? Drives the guided empty state:
     // you can't plan a trip until there's a load to assign.
-    prisma.carrierLoad.count({ where: { orgId, isSample: false, deletedAt: null } }),
+    db.carrierLoad.count({ where: { orgId, isSample: false, deletedAt: null } }),
     // Unfinished imports — the resume banner (spec Phase 2 item 8). Only the
     // people who could act on it are asked about it.
     canCreate ? getResumableImports(orgId, session.userId) : Promise.resolve([]),
