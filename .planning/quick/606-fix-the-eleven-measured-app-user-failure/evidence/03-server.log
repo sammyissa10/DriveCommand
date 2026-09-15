@@ -1936,3 +1936,153 @@ The column `(not available)` does not exist in the current database.
 [2026-09-15T18:42:10.481Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
 [2026-09-15T18:42:10.482Z] INFO: [CRON] send-reminders: Completed {"success":true,"processedTenants":2,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":0,"failures":[]}
  GET /api/cron/send-reminders 200 in 1780ms (next.js: 496ms, proxy.ts: 6ms, application-code: 1278ms)
+[2026-09-15T18:50:12.026Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-15T18:50:12.027Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-15T18:50:12.462Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-15T18:50:13.081Z] INFO: [CRON] purge-deleted: Purged 1 CarrierLoad records {"tenantId":"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045"}
+[2026-09-15T18:50:13.679Z] INFO: [CRON] purge-deleted: Purged 1 CarrierLoad records {"tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8"}
+[2026-09-15T18:50:14.115Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":2,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":2,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 2.5s (next.js: 371ms, proxy.ts: 27ms, application-code: 2.1s)
+ POST /api/auth/login 200 in 1799ms (next.js: 83ms, proxy.ts: 6ms, application-code: 1711ms)
+ POST /api/auth/login 200 in 968ms (next.js: 6ms, proxy.ts: 6ms, application-code: 956ms)
+[2026-09-15T18:50:30.884Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-15T18:50:30.885Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-15T18:50:31.268Z] ERROR: [CRON] carrier-auto-dispatch: Failed to fetch tenants Error [DriverAdapterError]: permission denied for table route_templates
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\carrier-auto-dispatch\route.ts:61:15)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: '42501',
+    originalMessage: 'permission denied for table route_templates',
+    kind: 'postgres',
+    code: '42501',
+    severity: 'ERROR',
+    message: 'permission denied for table route_templates',
+    detail: undefined,
+    column: undefined,
+    hint: undefined
+  }
+}
+ GET /api/cron/carrier-auto-dispatch 500 in 934ms (next.js: 409ms, proxy.ts: 5ms, application-code: 520ms)
+[2026-09-15T18:50:32.180Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-15T18:50:32.181Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-15T18:50:32.545Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-15T18:50:33.018Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 0 alert(s) found
+[2026-09-15T18:50:33.462Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 0 alert(s) found
+[2026-09-15T18:50:33.463Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":0,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 1726ms (next.js: 396ms, proxy.ts: 7ms, application-code: 1323ms)
+[2026-09-15T18:50:33.859Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-15T18:50:33.860Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-15T18:50:33.932Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-15T18:50:35.104Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":0,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 1272ms (next.js: 8ms, proxy.ts: 5ms, application-code: 1259ms)
+[2026-09-15T18:50:35.858Z] INFO: [admin-db] privileged query {"reason":"trip reminder tenant sweep"}
+[2026-09-15T18:50:36.797Z] INFO: [CRON] trip-reminders: done {"tenantsProcessed":2,"tenantsFailed":0,"remindersSent":0,"failureCount":0,"failures":[]}
+ GET /api/cron/trip-reminders 200 in 1336ms (next.js: 350ms, proxy.ts: 5ms, application-code: 981ms)
+[2026-09-15T18:50:37.534Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-15T18:50:37.535Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-15T18:50:37.680Z] INFO: [CRON] workflow-notifications: Found 0 overdue step(s)
+[2026-09-15T18:50:37.681Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-15T18:50:37.756Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
+[2026-09-15T18:50:37.757Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-notifications 200 in 586ms (next.js: 320ms, proxy.ts: 6ms, application-code: 260ms)
+[2026-09-15T18:52:25.824Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-15T18:52:25.825Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-15T18:52:26.219Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-15T18:52:28.098Z] ERROR: sendComplianceAlertNotifications: failed {"orgId":"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","err":{"stack":"Error: RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys\n    at Object.get (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_lib_11_uwd~._.js:2168:23)\n    at sendEmail (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_lib_11_uwd~._.js:2186:42)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async sendComplianceAlertNotifications (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_lib_11_uwd~._.js:3449:24)\n    at async GET (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_app_api_cron_carrier-compliance-alerts_route_ts_0yge4xw._.js:146:21)","message":"RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys","name":"Error"}} Error: RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys
+    at Object.get (src\lib\email\resend-client.ts:31:15)
+    at sendEmail (src\lib\email\resend-client.ts:79:40)
+    at async sendComplianceAlertNotifications (src\lib\carrier\notifications.ts:738:20)
+    at async GET (src\app\api\cron\carrier-compliance-alerts\route.ts:122:11)
+  29 |       const apiKey = process.env.RESEND_API_KEY;
+  30 |       if (!apiKey) {
+> 31 |         throw new Error('RESEND_API_KEY environment variable is required. Add it to .env.l...
+     |               ^
+  32 |       }
+  33 |       _resendClient = new Resend(apiKey);
+  34 |     }
+[2026-09-15T18:52:28.220Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 1 alert(s) found
+[2026-09-15T18:52:29.472Z] ERROR: sendComplianceAlertNotifications: failed {"orgId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","err":{"stack":"Error: RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys\n    at Object.get (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_lib_11_uwd~._.js:2168:23)\n    at sendEmail (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_lib_11_uwd~._.js:2186:42)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async sendComplianceAlertNotifications (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_lib_11_uwd~._.js:3449:24)\n    at async GET (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_app_api_cron_carrier-compliance-alerts_route_ts_0yge4xw._.js:146:21)","message":"RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys","name":"Error"}} Error: RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys
+    at Object.get (src\lib\email\resend-client.ts:31:15)
+    at sendEmail (src\lib\email\resend-client.ts:79:40)
+    at async sendComplianceAlertNotifications (src\lib\carrier\notifications.ts:738:20)
+    at async GET (src\app\api\cron\carrier-compliance-alerts\route.ts:122:11)
+  29 |       const apiKey = process.env.RESEND_API_KEY;
+  30 |       if (!apiKey) {
+> 31 |         throw new Error('RESEND_API_KEY environment variable is required. Add it to .env.l...
+     |               ^
+  32 |       }
+  33 |       _resendClient = new Resend(apiKey);
+  34 |     }
+[2026-09-15T18:52:29.541Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 1 alert(s) found
+[2026-09-15T18:52:29.542Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":2,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 3.7s (next.js: 4ms, proxy.ts: 5ms, application-code: 3.7s)
+ POST /api/auth/login 200 in 1687ms (next.js: 7ms, proxy.ts: 6ms, application-code: 1674ms)
+ POST /api/auth/login 200 in 720ms (next.js: 8ms, proxy.ts: 6ms, application-code: 707ms)
+[2026-09-15T18:52:53.321Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-15T18:52:53.322Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-15T18:52:53.688Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
+[2026-09-15T18:52:53.841Z] INFO: [CRON] carrier-auto-dispatch: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 1 template(s)
+[2026-09-15T18:52:54.220Z] ERROR: [CRON] carrier-auto-dispatch: Template f544dab4-8521-4206-a617-ca9c28663e31 generation error {"tenantId":"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","tenantName":"Staging Beta Logistics","scope":"template:f544dab4-8521-4206-a617-ca9c28663e31","err":"Template has no recurrenceRule — nothing to generate"} Error: Template has no recurrenceRule — nothing to generate
+    at Object.error (src\lib\logger.ts:52:55)
+    at CronFailures.record (src\lib\cron\failure-report.ts:124:12)
+    at GET (src\app\api\cron\carrier-auto-dispatch\route.ts:165:24)
+  50 |   },
+  51 |   error(message: string, error?: unknown, context?: Record<string, unknown>) {
+> 52 |     const errorObj = error instanceof Error ? error : new Error(String(error ?? message));
+     |                                                       ^
+  53 |     console.error(formatMessage('error', message, context), errorObj);
+  54 |     Sentry.captureException(errorObj, { extra: { ...context, originalMessage: message } });
+  55 |   },
+[2026-09-15T18:52:54.316Z] INFO: [CRON] carrier-auto-dispatch: Template f544dab4-8521-4206-a617-ca9c28663e31 created 0 dispatch(es), 0 load(s), 0 stop(s), skipped 0
+[2026-09-15T18:52:54.462Z] INFO: [CRON] carrier-auto-dispatch: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 1 template(s)
+[2026-09-15T18:52:54.828Z] ERROR: [CRON] carrier-auto-dispatch: Template 893abff8-9883-44b8-ab94-31cc60bb98f0 generation error {"tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","tenantName":"Staging Alpha Carriers","scope":"template:893abff8-9883-44b8-ab94-31cc60bb98f0","err":"Template has no recurrenceRule — nothing to generate"} Error: Template has no recurrenceRule — nothing to generate
+    at Object.error (src\lib\logger.ts:52:55)
+    at CronFailures.record (src\lib\cron\failure-report.ts:124:12)
+    at GET (src\app\api\cron\carrier-auto-dispatch\route.ts:165:24)
+  50 |   },
+  51 |   error(message: string, error?: unknown, context?: Record<string, unknown>) {
+> 52 |     const errorObj = error instanceof Error ? error : new Error(String(error ?? message));
+     |                                                       ^
+  53 |     console.error(formatMessage('error', message, context), errorObj);
+  54 |     Sentry.captureException(errorObj, { extra: { ...context, originalMessage: message } });
+  55 |   },
+[2026-09-15T18:52:54.911Z] INFO: [CRON] carrier-auto-dispatch: Template 893abff8-9883-44b8-ab94-31cc60bb98f0 created 0 dispatch(es), 0 load(s), 0 stop(s), skipped 0
+[2026-09-15T18:52:54.912Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":2,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":2,"details":[{"orgId":"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","orgName":"Staging Beta Logistics","dispatches_created":0,"loads_created":0,"stops_created":0,"errors":1},{"orgId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","orgName":"Staging Alpha Carriers","dispatches_created":0,"loads_created":0,"stops_created":0,"errors":1}],"failureCount":2,"failures":[{"scope":"template:f544dab4-8521-4206-a617-ca9c28663e31","message":"Template has no recurrenceRule — nothing to generate"},{"scope":"template:893abff8-9883-44b8-ab94-31cc60bb98f0","message":"Template has no recurrenceRule — nothing to generate"}]}
+ GET /api/cron/carrier-auto-dispatch 500 in 1920ms (next.js: 309ms, proxy.ts: 5ms, application-code: 1606ms)
+[2026-09-15T18:52:55.300Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-15T18:52:55.301Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-15T18:52:55.376Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-15T18:52:55.814Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 0 alert(s) found
+[2026-09-15T18:52:56.253Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 0 alert(s) found
+[2026-09-15T18:52:56.253Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":0,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 978ms (next.js: 8ms, proxy.ts: 7ms, application-code: 964ms)
+[2026-09-15T18:52:56.636Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-15T18:52:56.636Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-15T18:52:56.709Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-15T18:52:57.876Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":0,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 1262ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1251ms)
+[2026-09-15T18:52:58.270Z] INFO: [admin-db] privileged query {"reason":"trip reminder tenant sweep"}
+[2026-09-15T18:52:59.213Z] INFO: [CRON] trip-reminders: done {"tenantsProcessed":2,"tenantsFailed":0,"remindersSent":0,"failureCount":0,"failures":[]}
+ GET /api/cron/trip-reminders 200 in 970ms (next.js: 8ms, proxy.ts: 6ms, application-code: 956ms)
+[2026-09-15T18:52:59.611Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-15T18:52:59.611Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-15T18:52:59.758Z] INFO: [CRON] workflow-notifications: Found 0 overdue step(s)
+[2026-09-15T18:52:59.759Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-15T18:52:59.833Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
+[2026-09-15T18:52:59.834Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-notifications 200 in 248ms (next.js: 7ms, proxy.ts: 5ms, application-code: 235ms)

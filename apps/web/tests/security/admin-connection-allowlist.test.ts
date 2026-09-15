@@ -120,11 +120,16 @@ const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
   'app/(admin)/billing/[id]/page.tsx': { calls: 1, minBytes: 4000 },
   'app/api/auth/accept-invitation/route.ts': { calls: 2, minBytes: 9000 },
   'app/api/cron/auto-close-tickets/route.ts': { calls: 1, minBytes: 1500 },
+  // quick-606 — four cron tenant sweeps routed off the bare client.
+  'app/api/cron/carrier-auto-dispatch/route.ts': { calls: 1, minBytes: 3000 },
+  'app/api/cron/carrier-compliance-alerts/route.ts': { calls: 1, minBytes: 5000 },
   'app/api/cron/digest-compliance-30day/route.ts': { calls: 1, minBytes: 1000 },
   'app/api/cron/digest-daily-driver/route.ts': { calls: 1, minBytes: 1000 },
   'app/api/cron/digest-weekly-owner/route.ts': { calls: 1, minBytes: 1000 },
   'app/api/cron/mark-overdue-invoices/route.ts': { calls: 1, minBytes: 700 },
+  'app/api/cron/purge-deleted/route.ts': { calls: 1, minBytes: 4000 },
   'app/api/cron/send-reminders/route.ts': { calls: 1, minBytes: 2000 },
+  'app/api/cron/trip-reminders/route.ts': { calls: 1, minBytes: 6000 },
   'app/api/cron/workflow-digest/route.ts': { calls: 1, minBytes: 4000 },
   'app/api/cron/workflow-notifications/route.ts': { calls: 2, minBytes: 3000 },
   'app/api/track/[token]/route.ts': { calls: 1, minBytes: 1500 },
@@ -140,8 +145,8 @@ const KNOWN_NON_ALLOWLISTED_FILE = 'lib/db/prisma.ts';
 
 describe('quick-600 (B5) — getAdminDb import allowlist', () => {
   it('integrity floor: allowlist is non-trivial and internally consistent', () => {
-    expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(18);
-    expect(TOTAL_EXPECTED_CALLS).toBe(39);
+    expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(22);
+    expect(TOTAL_EXPECTED_CALLS).toBe(43);
   });
 
   it('walked a real, non-trivial corpus (anti-vacuity)', () => {

@@ -1,0 +1,47 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:52:31.682Z",
+  "probeDrivers": [
+    {
+      "id": "cc015662-75e1-4cbc-b5fd-ecd813264af0",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "slug": "staging-alpha"
+    },
+    {
+      "id": "b71ae519-c17f-4cb7-9607-9a7f575bcc80",
+      "tenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "slug": "staging-beta"
+    }
+  ],
+  "cron": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "orgs_processed": 2,
+      "total_alerts_found": 2,
+      "failureCount": 0,
+      "failures": []
+    }
+  },
+  "alertLogCounts": [
+    {
+      "slug": "staging-alpha",
+      "before": 0,
+      "after": 1
+    },
+    {
+      "slug": "staging-beta",
+      "before": 0,
+      "after": 1
+    }
+  ],
+  "everyTenantGrew": true,
+  "misScopedRows": [],
+  "cleanup": {
+    "logsDeleted": 2,
+    "driversDeleted": 2,
+    "leftDrivers": 0,
+    "leftLogs": 0
+  },
+  "verdict": "INSERTED — the alert-log row count grew for BOTH tenants, and every probe row carries its own tenant org_id"
+}

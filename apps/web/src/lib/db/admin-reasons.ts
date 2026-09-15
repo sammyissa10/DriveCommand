@@ -32,6 +32,14 @@ export const ADMIN_REASONS = [
   'workflow overdue-step sweep',
   'workflow blocked-instance sweep',
   'auto-close stale ticket sweep',
+  // quick-606 — four more all-tenant sweeps, each previously issued on the BARE
+  // client. Measured as TC001 (carrier-auto-dispatch, purge-deleted x28,
+  // carrier-compliance-alerts) or, worse, as a SILENT PARTIAL SWEEP that
+  // reported ok:true having covered 1 of 2 tenants (trip-reminders).
+  'compliance alert tenant sweep',
+  'soft-delete purge tenant sweep',
+  'trip reminder tenant sweep',
+  'auto-dispatch generation tenant sweep',
 
   // ── SysAdmin automation surface ───────────────────────────────────────────
   'sysadmin manual automation trigger',

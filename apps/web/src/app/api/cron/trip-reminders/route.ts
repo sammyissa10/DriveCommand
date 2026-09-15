@@ -33,7 +33,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger, serializeError } from '@/lib/logger';
 import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
@@ -71,7 +71,22 @@ export async function GET(request: NextRequest) {
   const failures = new CronFailures();
 
   try {
-    const tenants = await prisma.tenant.findMany({
+    /**
+     * quick-606 — ROUTE. The only unscoped statement in this file; the
+     * per-tenant work below already uses getTenantPrismaForOrg correctly.
+     *
+     * On the bare client this did NOT reliably raise. quick-604 measured
+     * TC001 here; quick-606 measured HTTP 200 with
+     * "tenantsProcessed":1 against TWO active tenants — a SILENT PARTIAL
+     * SWEEP. Nothing was refused: current_tenant_id() returned whatever an
+     * earlier request had left on the max:1 pool, so the tripwire branch was
+     * never taken and the tenant list was simply RLS-FILTERED to that one
+     * tenant. The route then reported ok:true having silently skipped the
+     * other. Which of the two failures you get depends on request order,
+     * which is unmigrated-path-tripwire.md §8 item 7 in its sharpest form.
+     */
+    const adminDb = await getAdminDb('trip reminder tenant sweep');
+    const tenants = await adminDb.tenant.findMany({
       where: { isActive: true },
       select: { id: true },
     });

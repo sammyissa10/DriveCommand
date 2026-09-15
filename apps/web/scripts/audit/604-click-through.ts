@@ -1530,9 +1530,26 @@ const SURFACES606: Surface606[] = [
     role: 'CRON',
     quick604: { verdict: 'fail', sqlstate: 'TC001', note: 'bare-client cross-tenant DELETE sweep (§7a)' },
     dataGate: {
-      sql: `SELECT count(*)::int AS n FROM public."Document" WHERE "deletedAt" IS NOT NULL`,
+      /**
+       * quick-606 correction: the first draft of this gate counted soft-deleted
+       * `"Document"` rows. `Document` is NOT one of the seven models the sweep
+       * walks — it has no `deletedAt` in `schema.prisma` at all, and the column
+       * exists on STAGING ONLY, as drift in the other direction. A gate about the
+       * wrong table would have produced a truthful-looking `LATENT` reason that
+       * named something the route never touches. These are the sweep's actual
+       * seven, by their mapped table names.
+       */
+      sql: `SELECT (
+              (SELECT count(*) FROM public.loads              WHERE deleted_at IS NOT NULL) +
+              (SELECT count(*) FROM public.dispatches         WHERE deleted_at IS NOT NULL) +
+              (SELECT count(*) FROM public.contracts          WHERE deleted_at IS NOT NULL) +
+              (SELECT count(*) FROM public.clients            WHERE deleted_at IS NOT NULL) +
+              (SELECT count(*) FROM public.carrier_drivers    WHERE deleted_at IS NOT NULL) +
+              (SELECT count(*) FROM public.carrier_trucks     WHERE deleted_at IS NOT NULL) +
+              (SELECT count(*) FROM public."Route"            WHERE "deletedAt" IS NOT NULL)
+            )::int AS n`,
       params: undefined,
-      label: 'soft-deleted Document rows — one of the seven models the sweep walks',
+      label: 'soft-deleted rows across the SEVEN models the sweep actually walks',
     },
   },
   {

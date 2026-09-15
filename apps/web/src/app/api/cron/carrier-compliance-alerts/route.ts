@@ -15,7 +15,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { getComplianceAlerts } from '@/lib/carrier/compliance';
 import { sendComplianceAlertNotifications } from '@/lib/carrier/notifications';
 import { logger } from '@/lib/logger';
@@ -34,35 +35,44 @@ export async function GET(request: NextRequest) {
     return cronUnauthorizedResponse();
   }
 
-  // 2. Ensure log table exists (idempotent)
-  try {
-    await prisma.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS carrier_compliance_alert_log (
-        id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-        org_id uuid NOT NULL,
-        alert_type text NOT NULL,
-        entity_id text NOT NULL,
-        message text NOT NULL,
-        severity text NOT NULL,
-        created_at timestamptz DEFAULT now()
-      );
-      CREATE INDEX IF NOT EXISTS idx_compliance_log_org ON carrier_compliance_alert_log(org_id);
-      CREATE INDEX IF NOT EXISTS idx_compliance_log_created ON carrier_compliance_alert_log(created_at);
-    `);
-  } catch (err) {
-    logger.error('[CRON] carrier-compliance-alerts: Failed to ensure log table', err);
-    return NextResponse.json({ success: false, error: 'Failed to initialize log table' }, { status: 500 });
-  }
+  /**
+   * quick-606 — THE `CREATE TABLE IF NOT EXISTS` BOOTSTRAP THAT USED TO LIVE HERE
+   * IS DELETED, and it is worth saying why rather than just how.
+   *
+   * It ran `CREATE TABLE` + two `CREATE INDEX` on EVERY invocation, wrapped in a
+   * try/catch that returned `500 {"error":"Failed to initialize log table"}`.
+   * Under `app_user` that is `42501 permission denied for schema public`, wrapped
+   * by Prisma as `P2010` — measured on staging, quick-606
+   * `evidence/02-reverify.json` row 4. **A runtime connection was being asked to
+   * run DDL**, and no policy and no grant can fix that: granting `CREATE ON
+   * SCHEMA public` to a runtime role is precisely the widening the cutover
+   * exists to remove.
+   *
+   * The table is real and does not need bootstrapping. It was created by
+   * `20260515000000_repair_carrier_compliance_alert_log`, further touched by
+   * `20260515000001_db_security_standardization` and
+   * `20260527000001_quick410_advisor_rls_fix`, and carries a live
+   * `tenant_isolation_policy` on `org_id` (sweep S10) plus an `app_user` grant.
+   * Per R13 its presence was confirmed on BOTH databases against
+   * `information_schema` before the bootstrap was removed — "it is in a
+   * migration" and "it is in the database" are different claims
+   * (`evidence/07-grants.json`, which lists grants on it for both).
+   *
+   * It is NOT in `schema.prisma` — a raw-SQL-only table. That is unchanged.
+   */
 
   /**
-   * @bypass_rls reason: system-operation
-   * WHY: This cron job runs cross-tenant to check compliance for ALL active tenants.
-   *      It has no user context to scope RLS policies to a single tenant.
-   * SAFETY: Gated by CRON_SECRET header check above — only callable by Vercel Cron.
+   * quick-606 — ROUTE. This was `prisma.tenant.findMany` on the BARE client under
+   * an `@bypass_rls reason: system-operation` comment, and **nothing in this file
+   * ever set `app.bypass_rls`** — the comment was decorative in exactly the way
+   * the digests' "DECORATIVE" note was. As `app_user` with an empty GUC the
+   * honest outcomes were a `TC001` raise or, worse, a silent partial sweep.
+   * Genuinely cross-tenant: the sweep IS the list.
    */
   let tenants: Array<{ id: string; name: string }>;
   try {
-    tenants = await prisma.tenant.findMany({
+    const adminDb = await getAdminDb('compliance alert tenant sweep');
+    tenants = await adminDb.tenant.findMany({
       where: { isActive: true },
       select: { id: true, name: true },
     });
@@ -86,8 +96,20 @@ export async function GET(request: NextRequest) {
       const alerts = await getComplianceAlerts(tenant.id);
 
       if (alerts.length > 0) {
+        /**
+         * quick-606. This raw INSERT was issued on the BARE client.
+         * `carrier_compliance_alert_log` carries a live `tenant_isolation_policy`
+         * on `org_id`, and a raw statement is NOT intercepted by the Prisma
+         * extension — the only thing that can satisfy that policy is
+         * `app.current_tenant_id` being set on the connection. It "worked" only
+         * insofar as a `max: 1` pool may have inherited a GUC an earlier scoped
+         * statement left behind (`unmigrated-path-tripwire.md` §8 item 7), which
+         * is exactly what this task exists to stop relying on. Issue it on the
+         * client that set the context.
+         */
+        const tenantDb = await getTenantPrismaForOrg(tenant.id);
         for (const alert of alerts) {
-          await prisma.$executeRaw(Prisma.sql`
+          await tenantDb.$executeRaw(Prisma.sql`
             INSERT INTO carrier_compliance_alert_log (org_id, alert_type, entity_id, message, severity)
             VALUES (${tenant.id}::uuid, ${alert.type}, ${alert.entityId}, ${alert.message}, ${alert.severity})
           `);

@@ -1,0 +1,155 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:44:14.532Z",
+  "tables": [
+    "StepInstance",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "Tenant",
+    "carrier_compliance_alert_log"
+  ],
+  "roles": [
+    "app_user",
+    "app_admin"
+  ],
+  "production": {
+    "tablesPresent": [
+      "PlaybookInstance",
+      "PlaybookNotification",
+      "StepInstance",
+      "Tenant",
+      "carrier_compliance_alert_log"
+    ],
+    "tablesAbsent": [],
+    "roles": [
+      {
+        "rolname": "app_admin",
+        "rolbypassrls": true
+      },
+      {
+        "rolname": "app_user",
+        "rolbypassrls": false
+      }
+    ],
+    "byRole": {
+      "app_user": {
+        "StepInstance": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "PlaybookInstance": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "PlaybookNotification": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "Tenant": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "carrier_compliance_alert_log": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      },
+      "app_admin": {
+        "StepInstance": [
+          "SELECT"
+        ],
+        "PlaybookInstance": [
+          "SELECT"
+        ],
+        "PlaybookNotification": [],
+        "Tenant": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "carrier_compliance_alert_log": []
+      }
+    }
+  },
+  "staging": {
+    "tablesPresent": [
+      "PlaybookInstance",
+      "PlaybookNotification",
+      "StepInstance",
+      "Tenant",
+      "carrier_compliance_alert_log"
+    ],
+    "tablesAbsent": [],
+    "roles": [
+      {
+        "rolname": "app_admin",
+        "rolbypassrls": true
+      },
+      {
+        "rolname": "app_user",
+        "rolbypassrls": false
+      }
+    ],
+    "byRole": {
+      "app_user": {
+        "StepInstance": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "PlaybookInstance": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "PlaybookNotification": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "Tenant": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "carrier_compliance_alert_log": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ]
+      },
+      "app_admin": {
+        "StepInstance": [
+          "SELECT"
+        ],
+        "PlaybookInstance": [
+          "SELECT"
+        ],
+        "PlaybookNotification": [],
+        "Tenant": [
+          "DELETE",
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "carrier_compliance_alert_log": []
+      }
+    }
+  }
+}

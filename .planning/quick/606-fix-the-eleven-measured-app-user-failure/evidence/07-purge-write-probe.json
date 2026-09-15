@@ -1,0 +1,72 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:50:15.888Z",
+  "tenants": [
+    "staging-alpha",
+    "staging-beta"
+  ],
+  "probes": [
+    {
+      "model": "CarrierLoad",
+      "table": "loads",
+      "id": "ed15ea35-18ea-47a1-81fd-4b584a28eb35",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "control": false
+    },
+    {
+      "model": "CarrierLoad",
+      "table": "loads",
+      "id": "e291d43d-c597-40c1-81ef-23fcf24248ac",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "control": true
+    },
+    {
+      "model": "CarrierLoad",
+      "table": "loads",
+      "id": "f12d78d4-708f-490b-b47e-c3575d40c601",
+      "tenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "control": false
+    },
+    {
+      "model": "CarrierLoad",
+      "table": "loads",
+      "id": "900d4aac-7350-4ae2-9830-6577b6ca64f2",
+      "tenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "control": true
+    }
+  ],
+  "cron": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "totalPurged": 2,
+      "tenantsProcessed": 2,
+      "tenantsFound": 2,
+      "results": {
+        "CarrierLoad": 2,
+        "Trip": 0,
+        "CarrierContract": 0,
+        "CarrierClient": 0,
+        "CarrierDriver": 0,
+        "CarrierTruck": 0,
+        "Route": 0
+      },
+      "failureCount": 0,
+      "failures": []
+    }
+  },
+  "counterRead": {
+    "ed15ea35-18ea-47a1-81fd-4b584a28eb35": false,
+    "e291d43d-c597-40c1-81ef-23fcf24248ac": true,
+    "f12d78d4-708f-490b-b47e-c3575d40c601": false,
+    "900d4aac-7350-4ae2-9830-6577b6ca64f2": true
+  },
+  "purgedAllOutOfWindowProbes": true,
+  "inWindowControlsSurvived": true,
+  "bodyReportedCarrierLoadCount": 2,
+  "cleanup": {
+    "deletedAfterwards": 2,
+    "leftovers": 0
+  },
+  "verdict": "DELETED — every out-of-window probe is gone on the privileged counter-read, every in-window control survived, and the response body agrees"
+}
