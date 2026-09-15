@@ -1,0 +1,690 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 1158ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ POST /api/auth/login 400 in 2.6s (next.js: 2.5s, proxy.ts: 85ms, application-code: 35ms)
+ POST /api/auth/login 200 in 3.8s (next.js: 11ms, proxy.ts: 12ms, application-code: 3.8s)
+ POST /api/auth/login 200 in 3.7s (next.js: 4ms, proxy.ts: 3ms, application-code: 3.7s)
+ POST /api/auth/login 200 in 1586ms (next.js: 7ms, proxy.ts: 4ms, application-code: 1575ms)
+ POST /api/auth/login 200 in 2.2s (next.js: 5ms, proxy.ts: 5ms, application-code: 2.2s)
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+○ Compiling /dashboard ...
+ GET /dashboard 200 in 14.8s (next.js: 11.5s, proxy.ts: 225ms, application-code: 3.1s)
+ GET /carrier/dashboard 200 in 7.1s (next.js: 1568ms, proxy.ts: 120ms, application-code: 5.5s)
+○ Compiling /carrier/trips ...
+⨯ Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async TripsPage (src\app\(owner)\carrier\trips\page.tsx:19:62)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  digest: '2634114640',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."first_name", "public"."carrier_drivers"."last_name" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."org_id" = $1 AND "public"."carrier_drivers"."status" = $2) ORDER BY "public"."carrier_drivers"."last_name" ASC OFFSET $3',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ GET /carrier/trips 500 in 10.2s (next.js: 3.6s, proxy.ts: 343ms, application-code: 6.3s)
+ GET /carrier/loads 200 in 3.6s (next.js: 1827ms, proxy.ts: 567ms, application-code: 1188ms)
+ GET /carrier/clients 200 in 4.5s (next.js: 1312ms, proxy.ts: 215ms, application-code: 2.9s)
+ GET /carrier/contracts 200 in 4.4s (next.js: 2.4s, proxy.ts: 212ms, application-code: 1833ms)
+ GET /carrier/facilities 200 in 2.9s (next.js: 1468ms, proxy.ts: 252ms, application-code: 1204ms)
+ GET /carrier/templates 200 in 2.6s (next.js: 1209ms, proxy.ts: 196ms, application-code: 1148ms)
+ GET /carrier/imports 200 in 3.1s (next.js: 1364ms, proxy.ts: 208ms, application-code: 1510ms)
+ GET /carrier/messages 200 in 3.4s (next.js: 2.2s, proxy.ts: 225ms, application-code: 908ms)
+ GET /drivers 200 in 3.1s (next.js: 1574ms, proxy.ts: 224ms, application-code: 1346ms)
+[2026-09-15T10:22:03.771Z] ERROR: [trucks] listTrucks failed: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.truck.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async TruckListSection (src\app\(owner)\trucks\page.tsx:18:30)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Truck',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async (src\generated\prisma\runtime\client.js:15:44673)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:44599)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async TruckListSection (src\app\(owner)\trucks\page.tsx:18:30)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /trucks 200 in 3.6s (next.js: 2.3s, proxy.ts: 234ms, application-code: 1109ms)
+ GET /loads 200 in 4.5s (next.js: 1303ms, proxy.ts: 111ms, application-code: 3.0s)
+ GET /routes 200 in 3.2s (next.js: 1816ms, proxy.ts: 109ms, application-code: 1297ms)
+ GET /invoices 200 in 2.7s (next.js: 1524ms, proxy.ts: 106ms, application-code: 1022ms)
+ GET /payroll 200 in 6.2s (next.js: 1273ms, proxy.ts: 202ms, application-code: 4.8s)
+ GET /crm 200 in 8.7s (next.js: 1916ms, proxy.ts: 478ms, application-code: 6.3s)
+ GET /compliance 200 in 4.9s (next.js: 1739ms, proxy.ts: 585ms, application-code: 2.6s)
+ GET /live-map 200 in 9.0s (next.js: 2.7s, proxy.ts: 219ms, application-code: 6.2s)
+ GET /settings/operations 200 in 3.7s (next.js: 1514ms, proxy.ts: 455ms, application-code: 1754ms)
+ GET /support 200 in 3.1s (next.js: 1250ms, proxy.ts: 308ms, application-code: 1501ms)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /home 200 in 9.0s (next.js: 2.5s, proxy.ts: 224ms, application-code: 6.2s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 4.7s (next.js: 1185ms, proxy.ts: 518ms, application-code: 3.0s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-route 200 in 6.7s (next.js: 2.3s, proxy.ts: 239ms, application-code: 4.2s)
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async DriverDocumentsPage (src\app\(driver)\documents\page.tsx:22:21)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Document',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async DriverDocumentsPage (src\app\(driver)\documents\page.tsx:22:21)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0',
+  digest: '2397443213'
+}
+ GET /documents 500 in 3.0s (next.js: 2.1s, proxy.ts: 286ms, application-code: 613ms)
+ GET /hours 200 in 3.0s (next.js: 1154ms, proxy.ts: 215ms, application-code: 1603ms)
+ GET /api/cron/auto-close-tickets 200 in 1312ms (next.js: 1139ms, proxy.ts: 7ms, application-code: 167ms)
+[cron/automations] Starting evaluator run
+[cron] Rule 'no_progress_nudge' — 0 candidate tenant(s)
+[cron] Rule 'add_driver_nudge' — 0 candidate tenant(s)
+[cron] Rule 'dispatch_load_nudge' — 0 candidate tenant(s)
+[cron] Rule 'trial_ending_soon' — 0 candidate tenant(s)
+[evaluator] Path 1 — found 0 AppEvent(s) in last 30 days
+[evaluator] Path 2 — found 0 due PENDING run(s)
+[evaluator] Done — pendingCreated=0 executed=0 failed=0
+[cron/automations] Complete {
+  pendingCreated: 0,
+  executed: 0,
+  failed: 0,
+  failureCount: 0,
+  failures: []
+}
+ GET /api/cron/automations 200 in 2.2s (next.js: 1359ms, proxy.ts: 7ms, application-code: 834ms)
+[2026-09-15T10:23:26.877Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-15T10:23:26.963Z] INFO: [CRON] carrier-auto-dispatch: Found 1 active tenant(s) with route templates
+[2026-09-15T10:23:27.044Z] INFO: [CRON] carrier-auto-dispatch: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 1 template(s)
+[2026-09-15T10:23:27.418Z] ERROR: [CRON] carrier-auto-dispatch: Template 893abff8-9883-44b8-ab94-31cc60bb98f0 generation error {"tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","tenantName":"Staging Alpha Carriers","scope":"template:893abff8-9883-44b8-ab94-31cc60bb98f0","err":"Template has no recurrenceRule — nothing to generate"} Error: Template has no recurrenceRule — nothing to generate
+    at Object.error (src\lib\logger.ts:52:55)
+    at CronFailures.record (src\lib\cron\failure-report.ts:124:12)
+    at GET (src\app\api\cron\carrier-auto-dispatch\route.ts:125:24)
+  50 |   },
+  51 |   error(message: string, error?: unknown, context?: Record<string, unknown>) {
+> 52 |     const errorObj = error instanceof Error ? error : new Error(String(error ?? message));
+     |                                                       ^
+  53 |     console.error(formatMessage('error', message, context), errorObj);
+  54 |     Sentry.captureException(errorObj, { extra: { ...context, originalMessage: message } });
+  55 |   },
+[2026-09-15T10:23:27.524Z] INFO: [CRON] carrier-auto-dispatch: Template 893abff8-9883-44b8-ab94-31cc60bb98f0 created 0 dispatch(es), 0 load(s), 0 stop(s), skipped 0
+[2026-09-15T10:23:27.525Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":1,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":1,"details":[{"orgId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","orgName":"Staging Alpha Carriers","dispatches_created":0,"loads_created":0,"stops_created":0,"errors":1}],"failureCount":1,"failures":[{"scope":"template:893abff8-9883-44b8-ab94-31cc60bb98f0","message":"Template has no recurrenceRule — nothing to generate"}]}
+ GET /api/cron/carrier-auto-dispatch 500 in 1420ms (next.js: 750ms, proxy.ts: 6ms, application-code: 664ms)
+[2026-09-15T10:23:28.874Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-15T10:23:28.950Z] ERROR: [CRON] carrier-compliance-alerts: Failed to ensure log table Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.$executeRawUnsafe()` invocation:
+
+
+Raw query failed. Code: `42501`. Message: `permission denied for schema public`
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\carrier-compliance-alerts\route.ts:39:5)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2010',
+  meta: {
+    driverAdapterError: Error [DriverAdapterError]: permission denied for schema public
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async GET (src\app\api\cron\carrier-compliance-alerts\route.ts:39:5)
+      13 | ...
+      14 | ...
+    > 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/carrier-compliance-alerts 500 in 1299ms (next.js: 980ms, proxy.ts: 5ms, application-code: 313ms)
+[2026-09-15T10:23:30.327Z] INFO: [CRON] cleanup-quarantine: Starting
+[2026-09-15T10:23:31.495Z] INFO: [CRON] cleanup-quarantine: Completed {"success":true,"scanned":0,"deleted":0,"errors":0,"failureCount":0,"failures":[]}
+ GET /api/cron/cleanup-quarantine 200 in 1952ms (next.js: 770ms, proxy.ts: 7ms, application-code: 1176ms)
+[2026-09-15T10:23:32.625Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-15T10:23:32.626Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.tenant.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\digest-compliance-30day\route.ts:46:19)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'Tenant' },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/digest-compliance-30day 500 in 929ms (next.js: 739ms, proxy.ts: 7ms, application-code: 182ms)
+[2026-09-15T10:23:33.779Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-15T10:23:33.779Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.tenant.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\digest-daily-driver\route.ts:45:19)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'Tenant' },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/digest-daily-driver 500 in 716ms (next.js: 609ms, proxy.ts: 3ms, application-code: 103ms)
+[2026-09-15T10:23:35.044Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-15T10:23:35.044Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.tenant.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\digest-weekly-owner\route.ts:45:19)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'Tenant' },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/digest-weekly-owner 500 in 885ms (next.js: 796ms, proxy.ts: 3ms, application-code: 86ms)
+[2026-09-15T10:23:35.896Z] INFO: [admin-db] privileged query {"reason":"overdue invoice sweep"}
+[2026-09-15T10:23:35.911Z] ERROR: [CRON] mark-overdue-invoices: error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.sysAdminInvoice.updateMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\mark-overdue-invoices\route.ts:25:20)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'SysAdminInvoice' },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/mark-overdue-invoices 500 in 502ms (next.js: 398ms, proxy.ts: 2ms, application-code: 101ms)
+[2026-09-15T10:23:36.808Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-15T10:23:37.329Z] ERROR: [CRON] purge-deleted: Failed to purge CarrierLoad {"scope":"CarrierLoad","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"loads\" WHERE (\"public\".\"loads\".\"deleted_at\" IS NOT NULL AND \"public\".\"loads\".\"deleted_at\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."loads" WHERE ("public"."loads"."deleted_at" IS NOT NULL AND "public"."loads"."deleted_at" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:37.934Z] ERROR: [CRON] purge-deleted: Failed to purge Trip {"scope":"Trip","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"dispatches\" WHERE (\"public\".\"dispatches\".\"deleted_at\" IS NOT NULL AND \"public\".\"dispatches\".\"deleted_at\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."dispatches" WHERE ("public"."dispatches"."deleted_at" IS NOT NULL AND "public"."dispatches"."deleted_at" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:38.538Z] ERROR: [CRON] purge-deleted: Failed to purge CarrierContract {"scope":"CarrierContract","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"contracts\" WHERE (\"public\".\"contracts\".\"deleted_at\" IS NOT NULL AND \"public\".\"contracts\".\"deleted_at\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."contracts" WHERE ("public"."contracts"."deleted_at" IS NOT NULL AND "public"."contracts"."deleted_at" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:39.131Z] ERROR: [CRON] purge-deleted: Failed to purge CarrierClient {"scope":"CarrierClient","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"clients\" WHERE (\"public\".\"clients\".\"deleted_at\" IS NOT NULL AND \"public\".\"clients\".\"deleted_at\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."clients" WHERE ("public"."clients"."deleted_at" IS NOT NULL AND "public"."clients"."deleted_at" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:39.733Z] ERROR: [CRON] purge-deleted: Failed to purge CarrierDriver {"scope":"CarrierDriver","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"carrier_drivers\" WHERE (\"public\".\"carrier_drivers\".\"deleted_at\" IS NOT NULL AND \"public\".\"carrier_drivers\".\"deleted_at\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."deleted_at" IS NOT NULL AND "public"."carrier_drivers"."deleted_at" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:40.337Z] ERROR: [CRON] purge-deleted: Failed to purge CarrierTruck {"scope":"CarrierTruck","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"carrier_trucks\" WHERE (\"public\".\"carrier_trucks\".\"deleted_at\" IS NOT NULL AND \"public\".\"carrier_trucks\".\"deleted_at\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."carrier_trucks" WHERE ("public"."carrier_trucks"."deleted_at" IS NOT NULL AND "public"."carrier_trucks"."deleted_at" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:40.943Z] ERROR: [CRON] purge-deleted: Failed to purge Route {"scope":"Route","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.executeRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4349:17)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4691:30)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: DELETE FROM \"public\".\"Route\" WHERE (\"public\".\"Route\".\"deletedAt\" IS NOT NULL AND \"public\".\"Route\".\"deletedAt\" < $1)","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\purge-deleted\route.ts:51:22)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: DELETE FROM "public"."Route" WHERE ("public"."Route"."deletedAt" IS NOT NULL AND "public"."Route"."deletedAt" < $1)',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T10:23:41.022Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"results":{},"failureCount":7,"failures":[{"scope":"CarrierLoad","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"},{"scope":"Trip","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"},{"scope":"CarrierContract","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"},{"scope":"CarrierClient","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"},{"scope":"CarrierDriver","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"},{"scope":"CarrierTruck","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"},{"scope":"Route","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"}]}
+ GET /api/cron/purge-deleted 500 in 4.7s (next.js: 454ms, proxy.ts: 2ms, application-code: 4.2s)
+[2026-09-15T10:23:42.035Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-15T10:23:42.035Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-15T10:23:42.052Z] ERROR: [CRON] send-reminders: Failed to fetch tenants: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.tenant.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\send-reminders\route.ts:63:15)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'Tenant' },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/send-reminders 500 in 738ms (next.js: 638ms, proxy.ts: 6ms, application-code: 94ms)
+[2026-09-15T10:23:43.830Z] ERROR: [CRON] trip-reminders: run failed {"error":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.queryRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4311:34)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4701:60)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: SELECT \"public\".\"Tenant\".\"id\" FROM \"public\".\"Tenant\" WHERE \"public\".\"Tenant\".\"isActive\" = $1 OFFSET $2","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\trip-reminders\route.ts:74:21)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."Tenant"."id" FROM "public"."Tenant" WHERE "public"."Tenant"."isActive" = $1 OFFSET $2',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ GET /api/cron/trip-reminders 500 in 1453ms (next.js: 832ms, proxy.ts: 2ms, application-code: 618ms)
+[2026-09-15T10:23:44.904Z] INFO: [CRON] workflow-digest: Starting daily digest sweep
+[2026-09-15T10:23:44.905Z] INFO: [admin-db] privileged query {"reason":"workflow digest active-tenant sweep"}
+[2026-09-15T10:23:44.911Z] ERROR: [CRON] workflow-digest: Failed to query active tenants {"scope":"tenantSweep","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.playbookInstance.findMany()` invocation:\n\n\n\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.playbookInstance.findMany()` invocation:\n\n\n","code":"ECONNREFUSED","meta":{"modelName":"PlaybookInstance"},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.playbookInstance.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\workflow-digest\route.ts:57:18)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'PlaybookInstance' },
+  clientVersion: '7.6.0'
+}
+ GET /api/cron/workflow-digest 500 in 714ms (next.js: 604ms, proxy.ts: 7ms, application-code: 103ms)
+[2026-09-15T10:23:46.180Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-15T10:23:46.180Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-15T10:23:46.184Z] ERROR: [CRON] workflow-notifications: Sweep 1 (STEP_OVERDUE) query failed {"scope":"sweep:STEP_OVERDUE","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.stepInstance.findMany()` invocation:\n\n\n\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.stepInstance.findMany()` invocation:\n\n\n","code":"ECONNREFUSED","meta":{"modelName":"StepInstance"},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.stepInstance.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\workflow-notifications\route.ts:73:26)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'StepInstance' },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T10:23:46.259Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-15T10:23:46.262Z] ERROR: [CRON] workflow-notifications: Sweep 2 (INSTANCE_BLOCKED email) query failed {"scope":"sweep:INSTANCE_BLOCKED","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.playbookInstance.findMany()` invocation:\n\n\n\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.playbookInstance.findMany()` invocation:\n\n\n","code":"ECONNREFUSED","meta":{"modelName":"PlaybookInstance"},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.playbookInstance.findMany()` invocation:
+
+
+
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\workflow-notifications\route.ts:146:30)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'ECONNREFUSED',
+  meta: { modelName: 'PlaybookInstance' },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T10:23:46.346Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":2},"failureCount":2,"failures":[{"scope":"sweep:STEP_OVERDUE","message":"\nInvalid `prisma.stepInstance.findMany()` invocation:\n\n\n","code":"ECONNREFUSED"},{"scope":"sweep:INSTANCE_BLOCKED","message":"\nInvalid `prisma.playbookInstance.findMany()` invocation:\n\n\n","code":"ECONNREFUSED"}]}
+ GET /api/cron/workflow-notifications 500 in 972ms (next.js: 795ms, proxy.ts: 5ms, application-code: 172ms)
+[2026-09-15T10:23:47.661Z] INFO: [WARMUP] Pinged successfully
+ GET /api/warmup 200 in 949ms (next.js: 429ms, proxy.ts: 6ms, application-code: 513ms)

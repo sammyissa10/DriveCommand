@@ -1,0 +1,50 @@
+[
+  {
+    "label": "server up, before any surface",
+    "at": "2026-09-15T10:25:19.521Z",
+    "staging": {
+      "total": 13,
+      "app_user": 0
+    },
+    "production": {
+      "total": 17,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "immediately after the surface walk",
+    "at": "2026-09-15T10:26:48.560Z",
+    "staging": {
+      "total": 18,
+      "app_user": 1
+    },
+    "production": {
+      "total": 16,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "after the server was stopped",
+    "at": "2026-09-15T10:30:27.626Z",
+    "staging": {
+      "total": 16,
+      "app_user": 1
+    },
+    "production": {
+      "total": 18,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "90s after the server was stopped",
+    "at": "2026-09-15T10:31:38.951Z",
+    "staging": {
+      "total": 13,
+      "app_user": 0
+    },
+    "production": {
+      "total": 17,
+      "app_user": 0
+    }
+  }
+]
