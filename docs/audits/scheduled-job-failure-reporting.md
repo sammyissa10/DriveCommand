@@ -252,7 +252,177 @@ what was done about each is §6 below.
 
 ## 4. What Vercel does with a non-200, and the status policy
 
-*(Task 2 — populated below.)*
+Full transcript, every URL with its HTTP status and byte count, every quote verbatim:
+`evidence/04-platform-behaviour.md`. **No `WebFetch` tool exists in this executor**; the pages were
+fetched with `curl` against `vercel.com/docs`, which serves a `text/markdown` representation at
+`<url>.md`. One fetch 404'd (`/docs/cron-jobs/manage.md` — wrong slug) and is recorded as such rather
+than dropped.
+
+### 4.1 Retry — **no, never**
+
+https://vercel.com/docs/cron-jobs/manage-cron-jobs § "Cron job error handling":
+
+> **"Vercel will not retry an invocation if a cron job fails. You can check for error logs through
+> the View Log button in the Cron Jobs section in the sidebar."**
+
+Two sentences, and the second is the whole of what a non-2xx buys.
+
+Not to be conflated with it, from § "Cron job delivery and idempotency" on the same page:
+
+> "Cron job delivery is best effort … **Cron delivery can also occasionally invoke the same scheduled
+> run more than once.** Because of this, cron jobs should be resilient to both missed runs and
+> duplicate runs."
+
+Duplicate invocation is a documented hazard **independent of the response status** — not caused by a
+non-200, not prevented by a 200. See §4.5.
+
+### 4.2 Visibility — **yes in the log, and no alert**
+
+https://vercel.com/docs/logs/runtime § "Level":
+
+> **"- Requests with a status code of `4xx` are marked with Warning amber
+>  - Requests with a status code of `5xx` are marked with Error red"**
+
+and https://vercel.com/docs/cron-jobs/manage-cron-jobs § "Cron jobs logs":
+
+> "Cron jobs are logged as function invocations from the Logs section … This will take you to the
+> runtime logs view with a `requestPath` filter to your cron job such as
+> `requestPath:/api/my-cron-job`."
+
+**No page found says a non-2xx cron response notifies anybody.** That absence is recorded as an
+absence: it is not proof no such feature exists, only that none is documented, and §4.6 rests on the
+documented half alone.
+
+### 4.3 What counts as failure — **no documented threshold, and the answer rules 207 out**
+
+Vercel's cron docs never define a status threshold for "failure". The word "fails" appears once, in
+the retry sentence, undefined — and with no retry and no alert there is nothing for a threshold to
+gate. The nearest documented classification is the log **Level**, and it is a *three*-way split:
+
+| status | log level |
+|---|---|
+| `2xx` | none |
+| `3xx` | **not shown in the logs at all** |
+| `4xx` | Warning amber |
+| `5xx` | Error red |
+
+**This is what rules out `207 Multi-Status`.** A 207 carries no level marking, so in the one surface
+an operator scans — the Warning/Error colouring and the `level` filter — **a 207 is indistinguishable
+from a 200**. It is findable only by someone who already suspects the job. That is the brief's
+"different silence", precisely.
+
+3xx is worse: *"Cron jobs do not follow redirects … Redirect responses are treated as final"*, and
+redirect responses *"will not be shown in the logs"*.
+
+**Explicitly unanswered:** whether Vercel records a per-invocation success/failure state distinct
+from the HTTP log. No fetched page mentions one, and it is not guessed at.
+
+### 4.4 The plan — **Pro, and CLAUDE.md is stale**
+
+https://vercel.com/docs/cron-jobs/usage-and-pricing:
+
+> | | Number of cron jobs per project | Minimum interval | Scheduling precision |
+> |---|---|---|---|
+> | Hobby | 100 cron jobs | Once per day | Per-hour (±59 min) |
+> | Pro | 100 cron jobs | Once per minute | Per-minute |
+> | Enterprise | 100 cron jobs | Once per minute | Per-minute |
+
+**The suspected `vercel.json`-count-vs-plan-limit conflict does not exist.** The limit is **100 per
+project on every plan, including Hobby**; 14 ≪ 100. Hobby restricts **frequency and precision, never
+count** — so "CLAUDE.md says Hobby, yet vercel.json carries 14 crons" was never a contradiction.
+
+The actual plan, read live from the Vercel API with the already-authenticated CLI credential (a
+read-only `GET` — nothing written, deployed or changed):
+
+```
+GET /v2/teams/sammyissa10s-projects          -> billing.plan = "pro"
+GET /v9/projects/prj_Xmoayi3nYc5ZxVvS3khXO34BtOU3?teamId=team_6G6wnzQoMQXYRg7xc08k5scO
+     -> project.name = drive-command, accountId = team_6G6wnzQoMQXYRg7xc08k5scO   (same team)
+     -> crons.definitions = 14 entries
+```
+
+**The project is on Pro.** CLAUDE.md, `trip-reminders/route.ts`'s header (lines 11–23) and the
+Phase 52 STATE.md note all assert **Hobby**, and all three use it to justify a schedule coarser than
+the feature wants:
+
+- `trip-reminders`: *"the ideal is 'a couple of hours before scheduled departure', which needs hourly
+  at minimum"* — deferred on a plan limit that does not apply.
+- `workflow-notifications` (lines 4–6): *"Schedule: Hourly. Recommended vercel.json entry (add on
+  deploy): `0 * * * *`"* — the live schedule is `0 7 * * *`, daily.
+- `cleanup-quarantine`: documents `0 * * * *`, which on Hobby *"will fail deployment"* — very
+  plausibly why it was never added at all (§1.2).
+
+All three are available on Pro. **Reported, not fixed** — changing a schedule is a product decision
+and `vercel.json` is not touched by this task.
+
+**The live cron definitions confirm §1 independently:** 14, identical to `vercel.json`, and
+`cleanup-quarantine` is absent from the **deployed project** too, not merely from the config file.
+
+### 4.5 Idempotency — the retry half is moot, the duplicate half is real and pre-existing
+
+Because Vercel does not retry, **this task's status change introduces no retry hazard at all**: a
+route that starts returning 500 is not called again for it, so `send-reminders` returning 500 does
+not re-send anything. That is a benefit of the choice, not a cost of it.
+
+Duplicate *delivery* is live and documented. Measured against the code (per-route table in
+`evidence/04-platform-behaviour.md` §Q5): `purge-deleted`, `mark-overdue-invoices`,
+`auto-close-tickets`, `carrier-auto-dispatch`, `automations`, `workflow-digest`,
+`workflow-notifications` and `trip-reminders` are all safe, each by a real state check.
+**`send-reminders` and the three digests are NOT.** The mechanism:
+`buildIdempotencyKey` has an event scope pinned to the **ISO second** and a digest scope pinned to
+**YYYY-MM-DD**, and the digest scope is **unreachable** — all three `dispatcher.ts` call sites
+(`:229`, `:320`, `:450`) pass `isDigest` as the hardcoded literal `false`. Two deliveries more than
+one second apart therefore produce two keys and two sends. `trip-reminders` escapes only because it
+goes through `emitNotification`, which passes `dedupWindowMs: NOTIFICATION_DEDUP_WINDOW_MS`.
+
+**Pre-existing, reported, NOT fixed.** Closing it changes the notification module's idempotency, not
+any route's reporting.
+
+### 4.6 DECISION — the status code
+
+**A partially-failed batch returns `500`. A total failure returns `500`. A fully-successful run is
+unchanged at `200`.**
+
+1. **207 rejected** on §4.3: no log Level, therefore invisible where an operator looks.
+2. **4xx rejected**: it claims the request was at fault. Vercel's request was correct.
+3. **500 chosen**: marked Error red, reachable by `level=error` and by status filter, visible on the
+   cron job's own `requestPath` log view.
+4. **It costs nothing**, because there is no retry to provoke.
+
+**The justification is the WEAKER one and is stated as weaker.** A non-200 here does **not** retry
+and does **not** alert anybody; no fetched page says otherwise. It buys exactly two things: the
+invocation is coloured red and filterable as an error in the runtime log, and `logger.error` already
+routes to `Sentry.captureException`, so once §6's arity fix lands the named failure reaches Sentry
+with a real message. **"Visible in the log and to Sentry" is the whole claim.**
+
+### 4.7 DECISION — the response-body contract
+
+One shape, implemented identically by every route §5 touches, **additive only**. Every existing key
+keeps its name and its meaning; two are added, and a third appears only when it must:
+
+```jsonc
+{
+  // … every key the route already returned, unchanged …
+  "failureCount": 0,            // NEW — total failures, NEVER capped
+  "failures": [],               // NEW — { scope, message, code? }, capped at 50
+  // "failuresTruncated": true  // NEW — present ONLY when the cap bit
+}
+```
+
+- **(a) every failure is NAMED** — `scope` is the model name / tenant id / driver id / object key;
+  `message` is the real message; `code` is carried when the error carries one.
+- **(b) `success`/`ok` is never true beside a non-zero count** — it is *computed* as
+  `failureCount === 0`. The literal is deleted, so no edit can reintroduce the pairing by accident.
+- **(c) a failure is never erased from a total** — `purge-deleted`'s `-1` sentinel and its
+  `.filter(n => n > 0)` are **deleted**, not patched: successes and failures become two separate
+  structures, so there is no total left for a failure to be erased from.
+
+**The list is capped at 50 and `failureCount` is not.** A sweep that fails for 5,000 tenants must not
+return a 5,000-element array, and a *silent* cap is the failure mode `trip-reminders:108` already
+refuses by name ("No silent caps. If a tenant is truncated, say so").
+
+**A fully-successful run is observably unchanged**: `success: true`, HTTP 200, every original key
+present and identical, plus `failureCount: 0` and `failures: []`.
 
 ---
 
