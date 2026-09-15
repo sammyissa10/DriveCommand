@@ -42,10 +42,25 @@ const STAGING_REF = 'wyixpgunnjmzguhggocz';
 
 const APP_ROOT = resolve(__dirname, '../..');
 const REPO_ROOT = resolve(APP_ROOT, '../..');
-const EVIDENCE_DIR = resolve(
-  REPO_ROOT,
-  '.planning/quick/604-run-staging-as-app-user-end-to-end-and-r/evidence',
-);
+/**
+ * quick-606 (additive): the evidence directory this run writes into. Defaults to
+ * quick-604's, so every existing invocation is byte-for-byte unchanged.
+ * `--evidence <dir>` points it at a later task's directory instead — rewriting a
+ * closed task's `01-open.json` would destroy the baseline its `--close` asserts
+ * against, and `--close` reads `01-open.json` from the SAME directory, so open
+ * and close must be given the same flag.
+ */
+const EVIDENCE_DIR = (() => {
+  const i = process.argv.indexOf('--evidence');
+  if (i >= 0 && process.argv[i + 1]) return resolve(process.argv[i + 1]);
+  return resolve(REPO_ROOT, '.planning/quick/604-run-staging-as-app-user-end-to-end-and-r/evidence');
+})();
+
+/** The task that owns EVIDENCE_DIR, derived from the directory, never hardcoded. */
+const TASK_LABEL = (() => {
+  const m = EVIDENCE_DIR.replace(/\\/g, '/').match(/\/quick\/(\d+)-/);
+  return m ? `quick-${m[1]}` : 'quick-604';
+})();
 
 const ROOT_ENV = resolve(REPO_ROOT, '.env');
 const APP_ENV_LOCAL = resolve(APP_ROOT, '.env.local');
@@ -229,6 +244,46 @@ async function readStaging() {
   }));
 }
 
+/**
+ * quick-606 (additive). `readStaging()`'s `rowCounts` are taken as `app_user`
+ * with NO tenant GUC set, so RLS filters every tenant-scoped table to zero — a
+ * SILENT ZERO, not a census. quick-604 recorded those zeroes and they are not
+ * evidence about what staging holds. These counts are taken on the PRIVILEGED
+ * string (`postgres`, `rolbypassrls = true`) and are the ones a later task
+ * should read when it asks "can this row be driven at all?". Recorded, never
+ * asserted. Each table is read in its own statement so one missing table does
+ * not collapse the whole census (`Document` and legacy `"Load"` are exactly the
+ * two this task needs a truthful zero-or-not answer about).
+ */
+async function readStagingPrivilegedCounts(): Promise<Record<string, Reading<number>>> {
+  const direct = process.env.STAGING_DIRECT_URL;
+  const out: Record<string, Reading<number>> = {};
+  if (!direct) return { _env: { ok: false, error: { code: 'ENV_MISSING', message: 'STAGING_DIRECT_URL unset' } } };
+  if (direct.includes(PRODUCTION_REF)) refuse('STAGING_DIRECT_URL names PRODUCTION');
+  if (!direct.includes(STAGING_REF)) refuse('STAGING_DIRECT_URL does not name staging');
+  const TABLES: Record<string, string> = {
+    Tenant: 'public."Tenant"',
+    User: 'public."User"',
+    loads: 'public.loads',
+    carrier_drivers: 'public.carrier_drivers',
+    document_imports: 'public.document_imports',
+    legacyLoad: 'public."Load"',
+    PlaybookInstance: 'public."PlaybookInstance"',
+    Document: 'public."Document"',
+    carrier_trucks: 'public.carrier_trucks',
+  };
+  try {
+    await withClient(direct, async (c) => {
+      for (const [k, t] of Object.entries(TABLES)) {
+        out[k] = await read(c, `SELECT count(*)::int AS n FROM ${t}`, (r) => r[0].n as number);
+      }
+    });
+  } catch (e) {
+    out._connect = { ok: false, error: errOf(e) };
+  }
+  return out;
+}
+
 /** `auth.users` is not readable as `app_user`; read it on the privileged string. */
 async function readStagingAuthUsers(): Promise<Reading<number>> {
   const direct = process.env.STAGING_DIRECT_URL;
@@ -267,9 +322,10 @@ async function open() {
 
   const staging = await readStaging();
   const authUsers = await readStagingAuthUsers();
+  const privilegedCounts = await readStagingPrivilegedCounts();
 
   const record = {
-    task: 'quick-604',
+    task: TASK_LABEL,
     phase: 'open',
     at: new Date().toISOString(),
     production: {
@@ -287,6 +343,7 @@ async function open() {
     envFileHashes: hashes,
     staging,
     stagingAuthUsers: authUsers,
+    stagingPrivilegedRowCounts: privilegedCounts,
     appUserRoleCheck: staging.identity.ok
       ? `${staging.identity.value.currentUser}/${staging.identity.value.rolbypassrls}`
       : 'UNREADABLE',
@@ -327,7 +384,7 @@ function renderOpenMd(r: any, failures: string[]): string {
         ? 'YES — `tenant_context_required` is in the body'
         : 'NO'
       : 'UNREADABLE';
-  return `# quick-604 · 01 — the ledger at OPEN
+  return `# ${TASK_LABEL} · 01 — the ledger at OPEN
 
 Taken ${r.at}. Production is read **read-only**, with every statement drawn from
 one frozen SELECT-only array in \`scripts/audit/604-survey.ts\`. No other
@@ -361,6 +418,13 @@ production statement path exists in that file.
 | \`bypass_rls_policy\` count | ${v(s.bypassPolicies)} | recorded — **this task never drops one** |
 | \`Tenant\` / \`User\` / \`loads\` / \`carrier_drivers\` | ${v(s.rowCounts)} | recorded |
 | \`auth.users\` (read on the privileged string) | ${v(r.stagingAuthUsers)} | recorded |
+| **privileged row census** (\`postgres\`, bypassing — the row above is a SILENT ZERO as \`app_user\`) | ${
+    r.stagingPrivilegedRowCounts
+      ? Object.entries(r.stagingPrivilegedRowCounts)
+          .map(([k, x]: [string, any]) => `${k}=${x?.ok ? x.value : `ERROR ${x?.error?.code}`}`)
+          .join(' · ')
+      : 'not taken'
+  } | recorded |
 
 ## Verdict
 
@@ -422,7 +486,7 @@ async function close() {
   const authUsers = await readStagingAuthUsers();
 
   const record = {
-    task: 'quick-604',
+    task: TASK_LABEL,
     phase: 'close',
     at: new Date().toISOString(),
     production: {
@@ -435,6 +499,7 @@ async function close() {
     checks,
     stagingAtClose: staging,
     stagingAuthUsersAtClose: authUsers,
+    stagingPrivilegedRowCountsAtClose: await readStagingPrivilegedCounts(),
   };
 
   writeFileSync(resolve(EVIDENCE_DIR, '07-close.json'), JSON.stringify(record, null, 2) + '\n');
@@ -455,7 +520,7 @@ async function close() {
 function renderCloseMd(r: any): string {
   const s = r.stagingAtClose;
   const v = (x: any) => (x?.ok ? JSON.stringify(x.value) : `ERROR ${x?.error?.code ?? 'n/a'}`);
-  return `# quick-604 · 07 — the ledger at CLOSE
+  return `# ${TASK_LABEL} · 07 — the ledger at CLOSE
 
 Taken ${r.at}.
 
@@ -474,6 +539,13 @@ ${r.checks.map((c: any) => `| ${c.name} | \`${c.open}\` | \`${c.close}\` | ${c.o
 | \`bypass_rls_policy\` count | ${v(s?.bypassPolicies)} |
 | row counts | ${v(s?.rowCounts)} |
 | \`auth.users\` | ${v(r.stagingAuthUsersAtClose)} |
+| privileged row census | ${
+    r.stagingPrivilegedRowCountsAtClose
+      ? Object.entries(r.stagingPrivilegedRowCountsAtClose)
+          .map(([k, x]: [string, any]) => `${k}=${x?.ok ? x.value : `ERROR ${x?.error?.code}`}`)
+          .join(' · ')
+      : 'not taken'
+  } |
 
 ## Verdict
 

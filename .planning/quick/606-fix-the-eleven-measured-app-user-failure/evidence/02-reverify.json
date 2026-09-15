@@ -1,0 +1,509 @@
+{
+  "task": "quick-606",
+  "phase": "surfaces606",
+  "artefact": "02-reverify.json",
+  "at": "2026-09-15T18:23:32.558Z",
+  "base": "http://localhost:3000",
+  "serverLog": "C:\\Users\\sammy\\Projects\\DriveCommand\\.planning\\quick\\606-fix-the-eleven-measured-app-user-failure\\evidence\\03-server.log",
+  "authority": "the correlated server-log slice, not the HTTP status. TC001 is detected BY CODE, never by message prose.",
+  "activeTenantsOnStaging": 2,
+  "verdictVocabulary": {
+    "pass": "a 2xx with no TC001 in the correlated window, no swallowed-failure marker, a tenant sweep that covered every active tenant, AND a data gate that found rows",
+    "LATENT": "a 2xx whose data gate found ZERO rows — the raise is gone, the scoping is unproven (R3)",
+    "NOT_MEASURED": "no request was issued, or the gate could not be read",
+    "fail": "a 5xx, a 4xx, a TC001 in the window, a swallowed-failure marker in the body, or a SILENT PARTIAL SWEEP (a 2xx whose own counter reports fewer tenants than staging has)",
+    "not-reachable": "a 404, or a redirect away from the requested surface"
+  },
+  "dynamicSegments": {
+    "__IMPORT_ID__": {
+      "value": null,
+      "reason": "public.document_imports holds ZERO rows for OWNER_A's tenant on staging (0 tenant-wide) — no id to substitute"
+    },
+    "__TRACK_TOKEN__": {
+      "value": null,
+      "reason": "no legacy \"Load\" row carries a trackingToken — public.\"Load\" holds 0 row(s) on staging (seed-staging.ts populates the CARRIER \"loads\" table instead)"
+    }
+  },
+  "sessions": [
+    {
+      "role": "OWNER_A",
+      "email": "owner@alpha.staging.test",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "role": "DRIVER_A",
+      "email": "driver1@alpha.staging.test",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    }
+  ],
+  "rows": [
+    {
+      "id": "1",
+      "route": "/carrier/trips",
+      "surface": "/carrier/trips",
+      "requestedPath": "/carrier/trips",
+      "role": "OWNER_A",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        74781,
+        76751
+      ],
+      "logTc001Mentions": 2,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "bare-client tenant-scoped read at page.tsx:19 (§7a)"
+      },
+      "dataGate": {
+        "count": 3,
+        "label": "carrier_drivers for OWNER_A's tenant — the page's first bare-client statement"
+      },
+      "markers": null,
+      "bodyCounters": null,
+      "bodyExcerpt": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_layout_tsx_004glpo._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_03f6pt6._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_0temigh._.js\" async=\"\"></script><link rel=\"p"
+    },
+    {
+      "id": "2",
+      "route": "/documents",
+      "surface": "/documents",
+      "requestedPath": "/documents",
+      "role": "DRIVER_A",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "P2022",
+      "logByteRange": [
+        76751,
+        78736
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "P2022",
+        "note": "staging Document column drift (§7e) + a latent §7a read"
+      },
+      "dataGate": {
+        "count": 0,
+        "label": "Document rows for the DRIVER_A fixture — the page's only read"
+      },
+      "markers": null,
+      "bodyCounters": null,
+      "bodyExcerpt": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_layout_tsx_004glpo._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_03f6pt6._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_0temigh._.js\" async=\"\"></script><link rel=\"p"
+    },
+    {
+      "id": "3",
+      "route": "/api/cron/carrier-auto-dispatch",
+      "surface": "/api/cron/carrier-auto-dispatch",
+      "requestedPath": "/api/cron/carrier-auto-dispatch",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        78736,
+        80886
+      ],
+      "logTc001Mentions": 2,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "SQLSTATE_UNRECOVERED",
+        "note": "fixture data (§7f) — a NOT_INVOKED in all but name"
+      },
+      "dataGate": {
+        "count": 1,
+        "label": "route_templates with autoGenerateDaysAhead > 0 — the rows the route iterates"
+      },
+      "markers": null,
+      "bodyCounters": {},
+      "bodyExcerpt": "{\"success\":false,\"error\":\"Failed to fetch tenants\"}"
+    },
+    {
+      "id": "4",
+      "route": "/api/cron/carrier-compliance-alerts",
+      "surface": "/api/cron/carrier-compliance-alerts",
+      "requestedPath": "/api/cron/carrier-compliance-alerts",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "P2010",
+      "logByteRange": [
+        80886,
+        82979
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "42501",
+        "note": "runtime connection asked to run DDL (§7c)"
+      },
+      "dataGate": {
+        "count": 2,
+        "label": "active Tenant rows — the sweep the DDL bootstrap was masking"
+      },
+      "markers": null,
+      "bodyCounters": {},
+      "bodyExcerpt": "{\"success\":false,\"error\":\"Failed to initialize log table\"}"
+    },
+    {
+      "id": "5",
+      "route": "/api/cron/digest-compliance-30day",
+      "surface": "/api/cron/digest-compliance-30day",
+      "requestedPath": "/api/cron/digest-compliance-30day",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        82979,
+        91485
+      ],
+      "logTc001Mentions": 8,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "withTenantRLS (§7b)"
+      },
+      "dataGate": {
+        "count": 10,
+        "label": "active User rows across both tenants — the digests' recipient query"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 2,
+        "sent": 0,
+        "skipped": 0,
+        "failed": 2,
+        "failureCount": 2
+      },
+      "bodyExcerpt": "{\"success\":false,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2,\"failureCount\":2,\"failures\":[{\"scope\":\"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"}]}"
+    },
+    {
+      "id": "6",
+      "route": "/api/cron/digest-daily-driver",
+      "surface": "/api/cron/digest-daily-driver",
+      "requestedPath": "/api/cron/digest-daily-driver",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        91485,
+        99955
+      ],
+      "logTc001Mentions": 8,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "withTenantRLS (§7b)"
+      },
+      "dataGate": {
+        "count": 5,
+        "label": "active DRIVER User rows — the daily driver digest's recipient query"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 2,
+        "sent": 0,
+        "skipped": 0,
+        "failed": 2,
+        "failureCount": 2
+      },
+      "bodyExcerpt": "{\"success\":false,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2,\"failureCount\":2,\"failures\":[{\"scope\":\"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"}]}"
+    },
+    {
+      "id": "7",
+      "route": "/api/cron/digest-weekly-owner",
+      "surface": "/api/cron/digest-weekly-owner",
+      "requestedPath": "/api/cron/digest-weekly-owner",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        99955,
+        108425
+      ],
+      "logTc001Mentions": 8,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "withTenantRLS (§7b)"
+      },
+      "dataGate": {
+        "count": 5,
+        "label": "active OWNER/MANAGER User rows — the weekly owner digest's recipient query"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 2,
+        "sent": 0,
+        "skipped": 0,
+        "failed": 2,
+        "failureCount": 2
+      },
+      "bodyExcerpt": "{\"success\":false,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2,\"failureCount\":2,\"failures\":[{\"scope\":\"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"}]}"
+    },
+    {
+      "id": "8",
+      "route": "/api/cron/purge-deleted",
+      "surface": "/api/cron/purge-deleted",
+      "requestedPath": "/api/cron/purge-deleted",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        108425,
+        133206
+      ],
+      "logTc001Mentions": 28,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "bare-client cross-tenant DELETE sweep (§7a)"
+      },
+      "dataGate": {
+        "count": 0,
+        "label": "soft-deleted Document rows — one of the seven models the sweep walks"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "totalPurged": 0,
+        "failureCount": 7
+      },
+      "bodyExcerpt": "{\"success\":false,\"totalPurged\":0,\"results\":{},\"failureCount\":7,\"failures\":[{\"scope\":\"CarrierLoad\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"Trip\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"CarrierContract\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"CarrierClient\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"CarrierDriver\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"CarrierTruck\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"Route\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"}]}"
+    },
+    {
+      "id": "9",
+      "route": "/api/cron/send-reminders",
+      "surface": "/api/cron/send-reminders",
+      "requestedPath": "/api/cron/send-reminders",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        133206,
+        144526
+      ],
+      "logTc001Mentions": 8,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "createTenantClient direct, check-upcoming-maintenance.ts:31"
+      },
+      "dataGate": {
+        "count": 0,
+        "label": "legacy Truck rows — findUpcomingMaintenance's only read"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 0,
+        "tenantsFound": 2,
+        "maintenance.sent": 0,
+        "maintenance.skipped": 0,
+        "maintenance.failed": 0,
+        "documents.sent": 0,
+        "documents.skipped": 0,
+        "documents.failed": 0,
+        "driverDocuments.sent": 0,
+        "driverDocuments.skipped": 0,
+        "driverDocuments.failed": 0,
+        "failureCount": 2
+      },
+      "bodyExcerpt": "{\"success\":false,\"processedTenants\":0,\"tenantsFound\":2,\"maintenance\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"documents\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"driverDocuments\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"failureCount\":2,\"failures\":[{\"scope\":\"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"},{\"scope\":\"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"}]}"
+    },
+    {
+      "id": "10",
+      "route": "/carrier/driver-pay/settlements",
+      "surface": "/carrier/driver-pay/settlements",
+      "requestedPath": "/carrier/driver-pay/settlements",
+      "role": "OWNER_A",
+      "status": 200,
+      "verdict606": "pass",
+      "harnessVerdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        144526,
+        144632
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "SQLSTATE_UNRECOVERED",
+        "note": "nuqs adapter (§7g) — quick-605 mounted it at the root (408a84ec)"
+      },
+      "dataGate": null,
+      "markers": {
+        "nuqs": false
+      },
+      "bodyCounters": null,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5."
+    },
+    {
+      "id": "11",
+      "route": "/checklists/automation",
+      "surface": "/checklists/automation",
+      "requestedPath": "/checklists/automation",
+      "role": "OWNER_A",
+      "status": 200,
+      "verdict606": "pass",
+      "harnessVerdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        144632,
+        144731
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "SQLSTATE_UNRECOVERED",
+        "note": "nuqs adapter (§7g) — quick-605 mounted it at the root (408a84ec)"
+      },
+      "dataGate": null,
+      "markers": {
+        "nuqs": false
+      },
+      "bodyCounters": null,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5."
+    },
+    {
+      "id": "12",
+      "route": "/api/cron/trip-reminders",
+      "surface": "/api/cron/trip-reminders",
+      "requestedPath": "/api/cron/trip-reminders",
+      "role": "CRON",
+      "status": 200,
+      "verdict606": "fail",
+      "harnessVerdict": "pass",
+      "reason": "HTTP 200 — SILENT PARTIAL SWEEP: the route reports tenantsProcessed=1 against 2 active tenants on staging. No statement was refused; the bare tenant list was RLS-FILTERED to whatever app.current_tenant_id an earlier request left on the max:1 pool (unmigrated-path-tripwire.md §8 item 7)",
+      "sqlstate": null,
+      "logByteRange": [
+        144731,
+        144980
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "bare prisma.tenant.findMany sweep at :74"
+      },
+      "dataGate": {
+        "count": 2,
+        "label": "planned dispatches (Trip @@map(\"dispatches\")) — the rows the per-tenant reminder query looks for"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "tenantsProcessed": 1,
+        "tenantsFailed": 0,
+        "remindersSent": 0,
+        "windowHours": 24,
+        "failureCount": 0
+      },
+      "bodyExcerpt": "{\"ok\":true,\"tenantsProcessed\":1,\"tenantsFailed\":0,\"remindersSent\":0,\"windowHours\":24,\"failureCount\":0,\"failures\":[]}"
+    },
+    {
+      "id": "13",
+      "route": "/api/cron/workflow-notifications",
+      "surface": "/api/cron/workflow-notifications",
+      "requestedPath": "/api/cron/workflow-notifications",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "42501",
+      "logByteRange": [
+        144980,
+        148366
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "42501",
+        "note": "app_admin lacks SELECT on PlaybookNotification"
+      },
+      "dataGate": {
+        "count": 0,
+        "label": "PlaybookInstance rows — the sweep's subject"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "stats.overdueSent": 0,
+        "stats.overdueErrors": 0,
+        "stats.blockedEmailsSent": 0,
+        "stats.blockedEmailErrors": 0,
+        "stats.sweepsFailed": 1,
+        "failureCount": 1
+      },
+      "bodyExcerpt": "{\"ok\":false,\"stats\":{\"overdueSent\":0,\"overdueErrors\":0,\"blockedEmailsSent\":0,\"blockedEmailErrors\":0,\"sweepsFailed\":1},\"failureCount\":1,\"failures\":[{\"scope\":\"sweep:INSTANCE_BLOCKED\",\"message\":\"permission denied for table PlaybookNotification\"}]}"
+    },
+    {
+      "id": "U1",
+      "route": "/track/[token]",
+      "surface": "/track/__TRACK_TOKEN__",
+      "role": "NONE",
+      "status": null,
+      "verdict606": "NOT_MEASURED",
+      "reason": "no request issued — no legacy \"Load\" row carries a trackingToken — public.\"Load\" holds 0 row(s) on staging (seed-staging.ts populates the CARRIER \"loads\" table instead)",
+      "sqlstate": null,
+      "logByteRange": [
+        148366,
+        148366
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "not-reachable",
+        "sqlstate": null,
+        "note": "UNMEASURED — legacy \"Load\" holds 0 rows on staging"
+      },
+      "dataGate": null,
+      "bodyCounters": null,
+      "bodyExcerpt": ""
+    },
+    {
+      "id": "U2",
+      "route": "/carrier/imports/[id]/stops",
+      "surface": "/carrier/imports/__IMPORT_ID__/stops",
+      "role": "OWNER_A",
+      "status": null,
+      "verdict606": "NOT_MEASURED",
+      "reason": "no request issued — public.document_imports holds ZERO rows for OWNER_A's tenant on staging (0 tenant-wide) — no id to substitute",
+      "sqlstate": null,
+      "logByteRange": [
+        148366,
+        148366
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "not-reachable",
+        "sqlstate": null,
+        "note": "UNMEASURED — document_imports holds 0 rows on staging"
+      },
+      "dataGate": null,
+      "bodyCounters": null,
+      "bodyExcerpt": ""
+    }
+  ]
+}

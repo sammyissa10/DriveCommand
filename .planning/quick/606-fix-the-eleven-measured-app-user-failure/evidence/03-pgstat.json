@@ -1,0 +1,14 @@
+[
+  {
+    "label": "606-before-sweep",
+    "at": "2026-09-15T18:20:53.824Z",
+    "staging": {
+      "total": 12,
+      "app_user": 0
+    },
+    "production": {
+      "total": 22,
+      "app_user": 0
+    }
+  }
+]
