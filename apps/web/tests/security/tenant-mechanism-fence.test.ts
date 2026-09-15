@@ -207,18 +207,25 @@ const RLS_ALLOWLIST: Record<string, { calls: number; minBytes: number; why: stri
 };
 
 /**
- * ── LIST 2 — `createTenantClient`: A FROZEN INVENTORY ──────────────────────
+ * ── LIST 2 — `createTenantClient`: NOW A CLOSED FENCE ──────────────────────
  *
- * These are NOT violations. Two of them are the mechanism itself; the rest are
- * direct callers quick-606 deliberately did not convert, because they were not
- * measured failures (R4). **They are latent in exactly the way
- * `check-upcoming-maintenance.ts` was latent until it was measured**: a
- * `createTenantClient` client carries the Prisma filter and no GUC, so under the
- * tripwire it raises `TC001` the moment no earlier statement has left a context
- * on the `max: 1` pool.
+ * quick-606 froze this as an INVENTORY because it still held six latent direct
+ * callers it had deliberately not converted (they were not measured failures at
+ * the time). **quick-610 measured all six and converted all six**, so the list is
+ * down to the mechanism itself: the definition, and the two legitimate callers
+ * that issue the `set_config` before returning the client.
  *
- * Freezing the counts makes a new one reviewable and puts the list where the
- * next task will find it.
+ * The rule the six broke, kept here because it is the reason the fence exists: a
+ * `createTenantClient` client carries the Prisma argument filter and NO GUC, so
+ * the RLS policies — which consult `current_tenant_id()` — read whatever some
+ * earlier statement happened to leave on the `max: 1` pooled connection. Under
+ * the tripwire that raises `TC001`; after the `app_user` cutover without the
+ * tripwire it is worse, because it is silent. Latent in exactly the way
+ * `check-upcoming-maintenance.ts` was latent until it was measured.
+ *
+ * A new entry on this list is therefore a violation now, not an inventory row.
+ * `EMPTIED_BY_610` below is the other half: set-equality alone would pass if a
+ * call were re-added AND this list widened in the same edit.
  */
 const TENANT_CLIENT_INVENTORY: Record<string, { calls: number; minBytes: number; why: string }> = {
   'src/lib/db/tenant-client.ts': {
@@ -230,16 +237,6 @@ const TENANT_CLIENT_INVENTORY: Record<string, { calls: number; minBytes: number;
     calls: 2,
     minBytes: 4000,
     why: 'THE legitimate callers — `getTenantPrisma` and `getTenantPrismaForOrg`, both of which set the GUC first.',
-  },
-  'src/app/(owner)/actions/dashboard.ts': {
-    calls: 2,
-    minBytes: 1000,
-    why: 'LATENT — direct caller, no GUC. Not converted: not a measured failure (R4).',
-  },
-  'src/app/(owner)/actions/tenant-notification-settings.ts': {
-    calls: 3,
-    minBytes: 1000,
-    why: 'LATENT — three direct callers, no GUC. Not converted: not a measured failure (R4).',
   },
 };
 
@@ -257,9 +254,15 @@ const TENANT_CLIENT_INVENTORY: Record<string, { calls: number; minBytes: number;
  * absence. Naming the emptied files makes re-adding one a red test rather than
  * a silent list edit.
  *
- * Extended by Task 3 with the two server-action files.
+ * All three were measured, not read: six sites across these three files, each
+ * raising TC001 in a fresh process whose first tenant-touching statement went
+ * through it. None reclassified.
  */
-const EMPTIED_BY_610 = ['src/lib/db/repositories/base.repository.ts'];
+const EMPTIED_BY_610 = [
+  'src/app/(owner)/actions/dashboard.ts',
+  'src/app/(owner)/actions/tenant-notification-settings.ts',
+  'src/lib/db/repositories/base.repository.ts',
+];
 
 /** A file deliberately on NEITHER list, used as the counter-assertion (rule 6). */
 const COUNTER_ASSERTION_FILE = 'src/lib/db/extensions/tenant-rls-bound.prototype.ts';

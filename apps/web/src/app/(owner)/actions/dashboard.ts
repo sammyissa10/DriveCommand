@@ -2,9 +2,12 @@
 
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import {
+  getTenantPrisma,
+  getTenantPrismaForOrg,
+  requireTenantId,
+} from '@/lib/context/tenant-context';
 import { Prisma } from '@/generated/prisma';
-import { createTenantClient } from '@/lib/db/tenant-client';
 import { logger } from '@/lib/logger';
 
 // ─── Auth helper ──────────────────────────────────────────────
@@ -80,9 +83,28 @@ function formatCurrency(amount: Prisma.Decimal | null): string {
 }
 
 // ─── Data fetchers ────────────────────────────────────────────
+//
+// quick-610 — both fetchers below used `createTenantClient(tenantId)`, which
+// applies the Prisma-level tenant filter and writes NO GUC, so the RLS policies
+// were reading a `current_tenant_id()` nothing on this path had set. They worked
+// only while some earlier request had left a context on the `max: 1` pool.
+// `getTenantPrismaForOrg(tenantId)` is the same client plus that `set_config`.
+// No `userId` is passed, exactly as before — these are reads, and forwarding one
+// would start writing audit columns.
+//
+// WHY THE PAGE NEVER LOOKED BROKEN. Every query in both fetchers is individually
+// `.catch(() => 0)` / `.catch(() => [])` — 11 of them. A `TC001` here therefore
+// renders as a zero metric and an empty alert list, never as an error: a
+// dashboard confidently reporting no drivers, no routes and no revenue. That is
+// why quick-604 measured `/dashboard` as `pass`, and it is a second, independent
+// reason on top of the pool-inheritance one that
+// `app-user-failure-remediation.md` §8 item 4 attributes it to. The swallows are
+// left exactly as they are — this change is about how the client is obtained —
+// but it means the server LOG SLICE, never the rendered page, is the authority
+// for whether these two sites are healthy.
 
 async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationAlert[]> {
-    const db = createTenantClient(tenantId);
+    const db = await getTenantPrismaForOrg(tenantId);
 
     const now = new Date();
     const msPerDay = 1000 * 60 * 60 * 24;
@@ -327,7 +349,7 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
 }
 
 async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetrics> {
-    const db = createTenantClient(tenantId);
+    const db = await getTenantPrismaForOrg(tenantId);
 
     const [
       activeDriversCount,

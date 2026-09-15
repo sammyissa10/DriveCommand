@@ -5,8 +5,7 @@ import { z } from 'zod';
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { createTenantClient } from '@/lib/db/tenant-client';
+import { getTenantPrisma, getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import type { VariableDef } from '@/lib/notifications/types';
 import {
   NotificationSendStatus,
@@ -369,9 +368,13 @@ export async function listTenantSubscribers(): Promise<TenantSubscriberRow[]> {
 export async function listTenantUsers(): Promise<TenantUserRow[]> {
   const { tenantId } = await requireTenantAccess();
 
-  // Use createTenantClient(tenantId) — session-bound, not header-bound — so the
-  // RLS extension and the explicit where filter both use the same session tenantId.
-  const tenantDb = createTenantClient(tenantId);
+  // Session-bound, not header-bound, so the RLS extension and the explicit where
+  // filter both use the same session tenantId. quick-610: the REASON survives,
+  // the mechanism named here did not — this was `createTenantClient(tenantId)`,
+  // which writes no GUC, so the database-level policy was reading a tenant id
+  // nothing on this path had set. `getTenantPrismaForOrg` is session-bound in
+  // exactly the same way AND issues the `set_config`.
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
   const users = await tenantDb.user.findMany({
     where: { isActive: true },
     select: { id: true, email: true, firstName: true, lastName: true, role: true },
@@ -498,10 +501,24 @@ export async function listTenantSendLog(params: {
   const page = Math.max(1, params.page ?? 1);
   const skip = (page - 1) * pageSize;
 
-  // NotificationSendLog has no Postgres RLS. Use createTenantClient(tenantId) so the
-  // extension injects tenantId, and keep explicit where: { tenantId } as defense-in-depth.
-  // The postgres role has BYPASSRLS privilege so no bypass_rls SET is needed — removing
-  // the array-form $transaction eliminates the P2028 deadlock risk with connection pool.
+  // quick-610 — BOTH SENTENCES THAT USED TO BE HERE WERE FALSE, and each was
+  // false in a way that argued for leaving this client unscoped.
+  //
+  //   "NotificationSendLog has no Postgres RLS" — it does. Measured on staging
+  //   via `pg_class`/`pg_policy`: relrowsecurity=true, relforcerowsecurity=true,
+  //   2 policies. A cold-pool read through the old client raised TC001 here
+  //   (evidence `02-cold-before.md`, site s4). The claim was a comment, not
+  //   evidence — the quick-547/548 shape.
+  //
+  //   "The postgres role has BYPASSRLS so no bypass_rls SET is needed" — true of
+  //   `postgres` and beside the point. The cutover target is `app_user`, which
+  //   carries rolbypassrls=false. Under it, "no GUC" means the policy reads an
+  //   unset tenant id.
+  //
+  // So: `getTenantPrismaForOrg(tenantId)` sets the GUC the policies read. The
+  // explicit `where: { tenantId }` stays as defence in depth, and dropping the
+  // array-form $transaction still avoids the P2028 deadlock — that part was
+  // always right.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: Record<string, any> = { tenantId };
   if (params.status) where.status = params.status;
@@ -510,7 +527,7 @@ export async function listTenantSendLog(params: {
   }
   if (params.channel) where.channel = params.channel;
 
-  const tenantDb = createTenantClient(tenantId);
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
   const [total, rows] = await Promise.all([
     tenantDb.notificationSendLog.count({ where }),
     tenantDb.notificationSendLog.findMany({
@@ -535,12 +552,12 @@ export async function getTenantSendLogStats(): Promise<SendLogStats> {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // NotificationSendLog has no Postgres RLS. Use createTenantClient(tenantId) so the
-  // extension injects tenantId, and keep explicit where: { tenantId } as defense-in-depth.
-  // The postgres role has BYPASSRLS privilege so no bypass_rls SET is needed — removing
-  // the array-form $transaction eliminates the P2028 deadlock risk with connection pool.
+  // quick-610 — see listTenantSendLog above: NotificationSendLog DOES carry RLS
+  // (2 policies, enabled and forced), and the BYPASSRLS argument describes
+  // `postgres`, not the `app_user` role this is cutting over to. The explicit
+  // `where` stays as defence in depth; the GUC is what the policy actually reads.
   const where = { tenantId, createdAt: { gte: thirtyDaysAgo } };
-  const tenantDb = createTenantClient(tenantId);
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
 
   const [total, sent, failed, pending, failedAllTime] = await Promise.all([
     tenantDb.notificationSendLog.count({ where }),
