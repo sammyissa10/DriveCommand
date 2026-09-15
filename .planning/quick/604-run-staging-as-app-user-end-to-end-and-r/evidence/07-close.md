@@ -1,6 +1,6 @@
 # quick-604 · 07 — the ledger at CLOSE
 
-Taken 2026-09-15T10:51:15.076Z.
+Taken 2026-09-15T11:13:51.560Z.
 
 ## Production — `oqdhberkghtnszrkdvfm`, open vs close
 
@@ -20,7 +20,7 @@ Taken 2026-09-15T10:51:15.076Z.
 | `pg_policy` in `public` | 183 |
 | `bypass_rls_policy` count | 86 |
 | row counts | {"tenants":0,"users":0,"loads":0,"carrier_drivers":0} |
-| `auth.users` | 8 |
+| `auth.users` | 9 |
 
 ## Verdict
 

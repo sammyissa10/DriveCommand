@@ -191,3 +191,60 @@ describe('check 4 — the surface list and the cron enumeration, by source scan'
     expect(click.entries.filter((e: any) => e.label === 'scheduled-non-cron').length).toBe(1);
   });
 });
+
+describe('check 5 — pass 2 covers the brief-named surfaces pass 1 substituted away', () => {
+  const pass2 = () => click.entries.filter((e: any) => String(e.label).startsWith('pass2:'));
+
+  it('the pass-2 block ran and every listed surface produced a row', () => {
+    expect(click.pass2, '04-click-through.json carries no pass2 block').toBeTruthy();
+    // Source scan: the list in the script, and the rows in the artefact, agree.
+    const start = script.indexOf('const PASS2_SURFACES: Pass2Surface[] = [');
+    expect(start, 'PASS2_SURFACES block not found').toBeGreaterThanOrEqual(0);
+    const end = script.indexOf('];', start);
+    expect(end).toBeGreaterThan(start);
+    const listed = (script.slice(start, end).match(/path: '/g) ?? []).length;
+    expect(listed).toBeGreaterThanOrEqual(25);
+    expect(click.pass2.surfaceCount).toBe(listed);
+    expect(pass2().length).toBe(listed);
+  });
+
+  it('every brief-named group has at least one row with a verdict', () => {
+    // Named in the coordinator's table. A group with no row is the omission this
+    // check exists to catch — NOT a group whose rows happen to be `fail`.
+    const GROUPS = [
+      'Settlements',
+      'Driver Pay',
+      'Reports',
+      'Checklists',
+      'Workflows',
+      'Automations',
+      'Notifications',
+      'SysAdmin',
+      'public tracking page',
+      'Signup',
+      'Onboarding',
+    ];
+    const seen = new Set(pass2().map((e: any) => String(e.label).replace(/^pass2:/, '')));
+    for (const g of GROUPS) expect([...seen]).toContain(g);
+  });
+
+  it('the SysAdmin portal was exercised with a SYSADMIN session, not marked unreachable by default', () => {
+    const admin = pass2().filter((e: any) => e.role === 'SYSADMIN');
+    expect(admin.length).toBeGreaterThanOrEqual(6);
+    // COUNTER-ASSERTION: if the sysadmin fixture had been missing, every one of
+    // these would be a 3xx to /sign-in. At least one must have rendered.
+    expect(admin.some((e: any) => e.verdict === 'pass')).toBe(true);
+    expect(click.pass2.sysadmin?.email).toBeTruthy();
+  });
+
+  it('every not-reachable row carries a stated reason and is never merged into pass or fail', () => {
+    for (const e of click.entries.filter((x: any) => x.verdict === 'not-reachable')) {
+      expect(typeof e.reason).toBe('string');
+      expect(e.reason.length).toBeGreaterThan(0);
+      expect(e.verdict).not.toBe('pass');
+      expect(e.verdict).not.toBe('fail');
+    }
+    // Anti-vacuity: there really are some.
+    expect(click.entries.filter((x: any) => x.verdict === 'not-reachable').length).toBeGreaterThan(0);
+  });
+});

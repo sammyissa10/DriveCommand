@@ -4,6 +4,7 @@
  * cookie.
  *
  *   npx tsx scripts/audit/604-click-through.ts --surfaces
+ *   npx tsx scripts/audit/604-click-through.ts --surfaces2   (pass 2: the brief-named surfaces)
  *   npx tsx scripts/audit/604-click-through.ts --writes
  *   npx tsx scripts/audit/604-click-through.ts --pgstat <label>
  *
@@ -131,6 +132,97 @@ if (CRON_ROUTES.length !== 14) {
  * the 14.
  */
 const EXTRA_SCHEDULED = ['/api/warmup'];
+
+// ---------------------------------------------------------------------------
+// PASS 2 (quick-604, second sweep) — the brief-named surfaces pass 1 substituted
+// away. Each was checked against the route tree before being listed; the ones
+// with no index page are listed anyway, because a 404 recorded as
+// `not-reachable` with a stated reason is a verdict and an omission is not.
+// ---------------------------------------------------------------------------
+
+type Pass2Surface = {
+  path: string;
+  role: Role | 'SYSADMIN' | 'NONE';
+  group: string;
+  /**
+   * A stated reason attached to a `not-reachable` verdict. These are properties of
+   * the ROUTE TREE, checked with `ls` before this list was written, not guesses
+   * about the HTTP response — so they are recorded here rather than inferred from
+   * a 404, which cannot tell "no such route" from "no index page".
+   */
+  note?: string;
+};
+
+const PASS2_SURFACES: Pass2Surface[] = [
+  // Driver Pay / Settlements
+  { path: '/carrier/driver-pay/settlements', role: 'OWNER_A', group: 'Settlements' },
+  { path: '/carrier/driver-pay/pending', role: 'OWNER_A', group: 'Driver Pay' },
+  { path: '/carrier/driver-pay/reports', role: 'OWNER_A', group: 'Driver Pay' },
+  {
+    path: '/carrier/driver-pay',
+    role: 'OWNER_A',
+    group: 'Driver Pay',
+    note: "no index page — `(owner)/carrier/driver-pay/` holds only `pending/`, `reports/` and `settlements/`, all of which ARE exercised above",
+  },
+
+  // Reports
+  {
+    path: '/carrier/reports',
+    role: 'OWNER_A',
+    group: 'Reports',
+    note: "no index page — `(owner)/carrier/reports/` holds only `aging/`, `driver-pay/`, `performance/`, `revenue/` and `todays-trips/`",
+  },
+  { path: '/carrier/reports/aging', role: 'OWNER_A', group: 'Reports' },
+  { path: '/carrier/reports/performance', role: 'OWNER_A', group: 'Reports' },
+  { path: '/carrier/reports/revenue', role: 'OWNER_A', group: 'Reports' },
+  { path: '/carrier/reports/todays-trips', role: 'OWNER_A', group: 'Reports' },
+
+  // Checklists / Workflows
+  { path: '/checklists', role: 'OWNER_A', group: 'Checklists' },
+  {
+    path: '/checklists/playbooks',
+    role: 'OWNER_A',
+    group: 'Workflows',
+    note: 'no index page — the directory holds only `[id]/`, so the list lives on `/checklists` itself',
+  },
+  {
+    path: '/checklists/instances',
+    role: 'OWNER_A',
+    group: 'Workflows',
+    note: 'no index page — the directory holds only `[id]/`; staging carries ZERO PlaybookInstance rows, so there is no id to substitute either',
+  },
+  { path: '/checklists/analytics', role: 'OWNER_A', group: 'Workflows' },
+  { path: '/checklists/automation', role: 'OWNER_A', group: 'Workflows' },
+
+  // Notifications
+  { path: '/settings/notifications', role: 'OWNER_A', group: 'Notifications' },
+
+  // SysAdmin — needs the isSystemAdmin claim, which no seeded OWNER carries.
+  { path: '/automations', role: 'SYSADMIN', group: 'Automations' },
+  { path: '/admin-dashboard', role: 'SYSADMIN', group: 'SysAdmin' },
+  { path: '/billing', role: 'SYSADMIN', group: 'SysAdmin' },
+  { path: '/plans', role: 'SYSADMIN', group: 'SysAdmin' },
+  { path: '/notifications', role: 'SYSADMIN', group: 'SysAdmin' },
+  { path: '/admin-support', role: 'SYSADMIN', group: 'SysAdmin' },
+
+  // Public / session-free
+  { path: '/track/__PROBE_TOKEN__', role: 'NONE', group: 'public tracking page' },
+  {
+    path: '/sign-up',
+    role: 'NONE',
+    group: 'Signup',
+    note: 'the PAGE renders; the signup FLOW cannot be completed on staging — `mailer_autoconfirm: false` and the built-in mailer 429s after ~3 sends, so no confirmation email can be received',
+  },
+
+  // Onboarding
+  {
+    path: '/onboarding',
+    role: 'OWNER_A',
+    group: 'Onboarding',
+    note: 'redirects rather than rendering — the seeded tenant is past this gate',
+  },
+  { path: '/onboarding/welcome', role: 'OWNER_A', group: 'Onboarding' },
+];
 
 // ---------------------------------------------------------------------------
 // Log-slice plumbing
@@ -266,7 +358,7 @@ async function login(role: Role, email: string, tenantId: string, userId: string
 type Entry = {
   surface: string;
   label: string;
-  role: Role | 'CRON' | 'NONE';
+  role: Role | 'CRON' | 'NONE' | 'SYSADMIN';
   method: string;
   status: number | null;
   verdict: 'pass' | 'fail' | 'not-reachable';
@@ -280,7 +372,7 @@ type Entry = {
 async function visit(
   surface: string,
   label: string,
-  role: Role | 'CRON' | 'NONE',
+  role: Role | 'CRON' | 'NONE' | 'SYSADMIN',
   cookie: string | null,
   extraHeaders: Record<string, string> = {},
 ): Promise<Entry> {
@@ -439,6 +531,140 @@ async function surfaces() {
   };
   console.log(
     `\n${entries.length} entries — pass ${counts.pass} · fail ${counts.fail} · not-reachable ${counts.notReachable}`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// --surfaces2 — the brief-named surfaces pass 1 substituted away.
+// Merges into 04-click-through.json rather than writing a second artefact, so
+// every downstream number (classification, attribution, the integrity test) is
+// re-derived from ONE file.
+// ---------------------------------------------------------------------------
+
+const SYSADMIN_EMAIL = 'sysadmin@staging.test';
+
+/**
+ * `track/[token]` is public and needs a real `Load.trackingToken`. If the legacy
+ * `Load` table is empty there is nothing to hand it, and that is a stated reason
+ * rather than a skipped row.
+ */
+async function findTrackingToken(): Promise<{ token: string | null; reason: string }> {
+  const c = new Client({ connectionString: DIRECT_URL, connectionTimeoutMillis: 30000 });
+  await c.connect();
+  try {
+    const r = await c.query<{ trackingToken: string | null }>(
+      `SELECT "trackingToken" FROM public."Load" WHERE "trackingToken" IS NOT NULL LIMIT 1`,
+    );
+    if (r.rows[0]?.trackingToken) {
+      return { token: r.rows[0].trackingToken, reason: 'seeded Load.trackingToken' };
+    }
+    const n = (await c.query<{ n: number }>('SELECT count(*)::int AS n FROM public."Load"')).rows[0].n;
+    return {
+      token: null,
+      reason: `no seeded Load carries a trackingToken — the legacy "Load" table holds ${n} row(s) on staging (scripts/seed-staging.ts populates the CARRIER "loads" table, not this one)`,
+    };
+  } finally {
+    await c.end();
+  }
+}
+
+async function surfaces2() {
+  if (!existsSync(EVIDENCE_DIR)) mkdirSync(EVIDENCE_DIR, { recursive: true });
+  const clickPath = resolve(EVIDENCE_DIR, '04-click-through.json');
+  if (!existsSync(clickPath)) refuse('04-click-through.json not found — run --surfaces first');
+  const record = JSON.parse(readFileSync(clickPath, 'utf8'));
+
+  const fx = await pickFixtures();
+
+  // The sysadmin fixture. Its absence is a hard stop, not a silent skip — a whole
+  // portal with no verdict is the weakest thing this report could contain.
+  const sysadmin = await (async () => {
+    const c = new Client({ connectionString: DIRECT_URL, connectionTimeoutMillis: 30000 });
+    await c.connect();
+    try {
+      const r = await c.query<{ id: string; email: string; tenantId: string }>(
+        `SELECT id, email, "tenantId" FROM public."User" WHERE email = $1 AND "isSystemAdmin" = true LIMIT 1`,
+        [SYSADMIN_EMAIL],
+      );
+      return r.rows[0] ?? null;
+    } finally {
+      await c.end();
+    }
+  })();
+  if (!sysadmin) {
+    refuse(
+      'no isSystemAdmin User on staging — run `npx tsx scripts/seed-staging-auth.ts --seed-sysadmin` first. ' +
+        'Marking the whole (admin) portal not-reachable is the fallback, not the default.',
+    );
+  }
+
+  console.log('logging in …');
+  const sessions: Record<string, Session> = {
+    OWNER_A: await login('OWNER_A', fx.ownerA.email, fx.ownerA.tenantId, fx.ownerA.id),
+    DRIVER_A: await login('DRIVER_A', fx.driverA.email, fx.driverA.tenantId, fx.driverA.id),
+    OWNER_B: await login('OWNER_B', fx.ownerB.email, fx.ownerB.tenantId, fx.ownerB.id),
+    SYSADMIN: await login('OWNER_A' as Role, sysadmin.email, sysadmin.tenantId, sysadmin.id),
+  };
+  console.log(`  SYSADMIN ${sysadmin.email} (User.isSystemAdmin = true)`);
+
+  const track = await findTrackingToken();
+  console.log(`  tracking token: ${track.token ? 'found' : 'NONE — ' + track.reason}`);
+
+  const entries: Entry[] = [];
+  console.log('\nPASS 2 surfaces:');
+  for (const s of PASS2_SURFACES) {
+    let path = s.path;
+    let preset: Entry | null = null;
+
+    if (path.includes('__PROBE_TOKEN__')) {
+      if (!track.token) {
+        // A token this page cannot resolve is not a measurement of the page. The
+        // row still exists, with the reason.
+        path = path.replace('__PROBE_TOKEN__', '604-probe-no-seeded-token');
+      } else {
+        path = path.replace('__PROBE_TOKEN__', track.token);
+      }
+    }
+
+    const cookie = s.role === 'NONE' ? null : sessions[s.role as string].cookie;
+    const e = preset ?? (await visit(path, `pass2:${s.group}`, s.role === 'NONE' ? 'NONE' : (s.role as any), cookie));
+
+    // Amend the reason where the instrument or the route tree, not the
+    // application, is the limit. The note NEVER changes a `fail` — a 500 is a
+    // 500 regardless of why the route is shaped the way it is.
+    if (s.group === 'public tracking page' && !track.token) {
+      if (e.verdict !== 'fail') e.verdict = 'not-reachable';
+      e.reason = `${e.reason} — ${track.reason}`;
+    }
+    if (s.note && e.verdict !== 'fail') {
+      e.reason = `${e.reason} — ${s.note}`;
+    }
+    entries.push(e);
+  }
+
+  record.pass2 = {
+    at: new Date().toISOString(),
+    surfaceCount: PASS2_SURFACES.length,
+    sysadmin: { email: sysadmin.email, userId: sysadmin.id },
+    trackingToken: { found: Boolean(track.token), reason: track.reason },
+  };
+  // IDEMPOTENT: drop any previous pass-2 rows before appending, so re-running
+  // this phase corrects the artefact instead of doubling it. A sweep that
+  // silently duplicates rows inflates every downstream count while every
+  // assertion still passes.
+  record.entries = [
+    ...record.entries.filter((e: any) => !String(e.label).startsWith('pass2:')),
+    ...entries,
+  ];
+  writeFileSync(clickPath, JSON.stringify(record, null, 2) + '\n');
+
+  const counts = {
+    pass: record.entries.filter((e: any) => e.verdict === 'pass').length,
+    fail: record.entries.filter((e: any) => e.verdict === 'fail').length,
+    notReachable: record.entries.filter((e: any) => e.verdict === 'not-reachable').length,
+  };
+  console.log(
+    `\nmerged total ${record.entries.length} entries — pass ${counts.pass} · fail ${counts.fail} · not-reachable ${counts.notReachable}`,
   );
 }
 
@@ -873,9 +1099,10 @@ async function pgstat(label: string) {
 
 const phase = process.argv[2];
 if (phase === '--surfaces') surfaces();
+else if (phase === '--surfaces2') surfaces2();
 else if (phase === '--writes') writes();
 else if (phase === '--pgstat') pgstat(process.argv[3] ?? 'unlabelled');
 else {
-  console.error('usage: npx tsx scripts/audit/604-click-through.ts --surfaces|--writes|--pgstat <label>');
+  console.error('usage: npx tsx scripts/audit/604-click-through.ts --surfaces|--surfaces2|--writes|--pgstat <label>');
   process.exit(1);
 }

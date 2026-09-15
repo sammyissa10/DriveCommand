@@ -3,8 +3,25 @@
  * login, so the click-through can drive a real session over real HTTP.
  *
  *   npx tsx scripts/seed-staging-auth.ts --seed
+ *   npx tsx scripts/seed-staging-auth.ts --seed-sysadmin   (quick-604 pass 2)
  *   npx tsx scripts/seed-staging-auth.ts --verify
  *   npx tsx scripts/seed-staging-auth.ts --teardown
+ *
+ * ─── WHY THERE IS A SEPARATE SYSADMIN PHASE ────────────────────────────────
+ *
+ * `(admin)/layout.tsx` gates on `isSystemAdmin()`, which reads
+ * `app_metadata.isSystemAdmin` off the JWT — a claim no seeded OWNER carries, so
+ * the whole SysAdmin portal is a redirect to `/sign-in` without one. Two things
+ * have to line up and neither is obvious:
+ *
+ *   - **`UserRole` in the database has no `SYSTEM_ADMIN` member** (`OWNER |
+ *     MANAGER | DRIVER`), even though `lib/auth/roles.ts` declares one. A
+ *     sysadmin is an `OWNER`-or-whatever row carrying `isSystemAdmin = true`,
+ *     which is a separate BOOLEAN COLUMN, not a role.
+ *   - **`User.tenantId` is NOT NULL**, so a sysadmin still belongs to a tenant.
+ *
+ * Getting either wrong produces a login that succeeds and a portal that still
+ * redirects, which reads like an application defect and is not one.
  *
  * STAGING ONLY. THIS FILE MUST NEVER IMPORT `scripts/_bootstrap-env` — it
  * assigns `DATABASE_URL = DIRECT_URL` unconditionally and every env file points
@@ -223,6 +240,110 @@ async function seed() {
 }
 
 // ---------------------------------------------------------------------------
+// --seed-sysadmin (quick-604 pass 2)
+// ---------------------------------------------------------------------------
+
+const SYSADMIN_EMAIL = 'sysadmin@staging.test';
+
+async function seedSysadmin() {
+  const password = ensurePassword();
+
+  const result = await withClient(async (c) => {
+    const tenant = (
+      await c.query<{ id: string }>(`SELECT id FROM public."Tenant" ORDER BY slug LIMIT 1`)
+    ).rows[0];
+    if (!tenant) refuse('no Tenant on staging — run scripts/seed-staging.ts first');
+
+    // `User.tenantId` is NOT NULL, so a sysadmin still belongs to a tenant.
+    // `UserRole` has no SYSTEM_ADMIN member; `isSystemAdmin` is a separate column.
+    const user = (
+      await c.query<{ id: string }>(
+        // `updatedAt` is Prisma's `@updatedAt` — APPLICATION-side, so the column
+        // carries no database default and a raw INSERT that omits it is a 23502.
+        `INSERT INTO public."User" ("tenantId", email, role, "isSystemAdmin", "firstName", "lastName", "isActive", "updatedAt")
+         VALUES ($1::uuid, $2, 'OWNER', true, 'Sys', 'Admin', true, now())
+         ON CONFLICT DO NOTHING
+         RETURNING id`,
+        [tenant.id, SYSADMIN_EMAIL],
+      )
+    ).rows[0] ??
+      (
+        await c.query<{ id: string }>(`SELECT id FROM public."User" WHERE email = $1`, [
+          SYSADMIN_EMAIL,
+        ])
+      ).rows[0];
+    if (!user) refuse('could not create or find the sysadmin User row');
+
+    const tokenCols = TOKEN_COLUMNS.join(', ');
+    const tokenVals = TOKEN_COLUMNS.map(() => "''").join(', ');
+    const appMeta = {
+      provider: 'email',
+      providers: ['email'],
+      role: 'OWNER',
+      tenantId: tenant.id,
+      // THE claim `(admin)/layout.tsx` gates on.
+      isSystemAdmin: true,
+    };
+
+    await c.query(
+      `INSERT INTO auth.users (
+         instance_id, id, aud, role, email, encrypted_password,
+         email_confirmed_at, created_at, updated_at,
+         raw_app_meta_data, raw_user_meta_data, ${tokenCols}
+       ) VALUES (
+         '00000000-0000-0000-0000-000000000000'::uuid, $1::uuid, 'authenticated', 'authenticated',
+         $2, crypt($3, gen_salt('bf')), now(), now(), now(),
+         $4::jsonb, $5::jsonb, ${tokenVals}
+       )
+       ON CONFLICT (id) DO UPDATE SET
+         email = EXCLUDED.email,
+         encrypted_password = EXCLUDED.encrypted_password,
+         email_confirmed_at = now(),
+         updated_at = now(),
+         raw_app_meta_data = EXCLUDED.raw_app_meta_data,
+         raw_user_meta_data = EXCLUDED.raw_user_meta_data,
+         ${TOKEN_COLUMNS.map((k) => `${k} = ''`).join(', ')}`,
+      [
+        user.id,
+        SYSADMIN_EMAIL,
+        password,
+        JSON.stringify(appMeta),
+        JSON.stringify({ firstName: 'Sys', lastName: 'Admin' }),
+      ],
+    );
+
+    await c.query(
+      `INSERT INTO auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+       VALUES ($1, $2::uuid, $3::jsonb, 'email', now(), now(), now())
+       ON CONFLICT (provider, provider_id) DO UPDATE SET identity_data = EXCLUDED.identity_data, updated_at = now()`,
+      [user.id, user.id, JSON.stringify({ sub: user.id, email: SYSADMIN_EMAIL })],
+    );
+
+    return { userId: user.id, tenantId: tenant.id };
+  });
+
+  // Prove it end to end: the JWT must carry isSystemAdmin, or the portal redirects.
+  const res = await fetch(`${STAGING_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { apikey: STAGING_ANON_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: SYSADMIN_EMAIL, password }),
+  });
+  const body: any = await res.json().catch(() => ({}));
+  const claims = body?.access_token ? decodeJwtPayload(body.access_token) : null;
+
+  console.log(`  sysadmin User.id            : ${result.userId}`);
+  console.log(`  login                       : HTTP ${res.status}`);
+  console.log(`  jwt app_metadata.isSystemAdmin: ${claims?.app_metadata?.isSystemAdmin}`);
+  console.log(`  jwt sub === User.id         : ${claims?.sub === result.userId}`);
+
+  if (res.status !== 200 || claims?.app_metadata?.isSystemAdmin !== true || claims?.sub !== result.userId) {
+    console.error('seed-staging-auth --seed-sysadmin: ASSERTION FAILED');
+    process.exit(1);
+  }
+  console.log('seed-staging-auth --seed-sysadmin: OK');
+}
+
+// ---------------------------------------------------------------------------
 // --verify — four real logins against GoTrue
 // ---------------------------------------------------------------------------
 
@@ -329,9 +450,10 @@ async function teardown() {
 
 const phase = process.argv[2];
 if (phase === '--seed') seed();
+else if (phase === '--seed-sysadmin') seedSysadmin();
 else if (phase === '--verify') verify();
 else if (phase === '--teardown') teardown();
 else {
-  console.error('usage: npx tsx scripts/seed-staging-auth.ts --seed|--verify|--teardown');
+  console.error('usage: npx tsx scripts/seed-staging-auth.ts --seed|--seed-sysadmin|--verify|--teardown');
   process.exit(1);
 }

@@ -15,6 +15,13 @@ agree: **156** `_prisma_migrations` rows, **183** `pg_policy` rows in `public`, 
 Every number below cites the evidence file it came from. Evidence lives in
 `.planning/quick/604-run-staging-as-app-user-end-to-end-and-r/evidence/`.
 
+**This report is TWO sweeps.** Pass 1 covered 26 named surfaces, the 14 cron routes and
+`/api/warmup`; **pass 2, added after review, covered the 25 brief-named surfaces pass 1 had
+substituted away** — Settlements, Driver Pay, Reports, Checklists, Workflows, Automations,
+Notifications, the whole SysAdmin portal, the public tracking page, Signup and Onboarding. Same
+harness, same criterion, same evidence shape; every downstream number re-derived over the merged
+artefact. §8 says which pass covered what.
+
 ---
 
 ## 0. What this measured, and what it deliberately did not
@@ -254,12 +261,19 @@ confusing ten minutes and looks nothing like a credential problem.
 
 Source: `evidence/04-click-through.json`, `evidence/04-click-through.md`, `evidence/04-server.log`.
 
-**41 entries. Every one has its own verdict. There is no summary row.**
-Named surfaces **26** (the script refuses below 25) · cron routes **14**, enumerated from
-`src/app/api/cron/` and asserted `=== 14` · `/api/warmup` labelled separately and **not** folded into
-the 14.
+**66 entries. Every one has its own verdict. There is no summary row.**
 
-Totals: **pass 30 · fail 11 · not-reachable 0.**
+- **Pass 1** — 26 named surfaces (the script refuses below 25) · 14 cron routes, enumerated from
+  `src/app/api/cron/` and asserted `=== 14` · `/api/warmup`, labelled separately and **not** folded
+  into the 14. **41 rows.**
+- **Pass 2** — the 25 brief-named surfaces pass 1 substituted away, added after review.
+  Same harness, same server env, same pass criterion, same evidence shape. **25 rows.**
+
+Totals across both: **pass 47 · fail 13 · not-reachable 6.**
+
+`not-reachable` is a **verdict**, never a merge into pass or fail, and every one of the
+6 carries a stated reason — in every case a property of the route tree or of
+the fixture, checked before the list was written rather than inferred from a 404.
 
 A `pass` means HTTP 2xx/3xx to the requested path, **no `TC001` in the correlated server-log window**,
 and no swallowed-failure marker in the body. The log slice, not the status code, is the authority —
@@ -320,6 +334,86 @@ quick-602 measured `purge-deleted` raising `TC001` seven times behind an HTTP 20
 | route | HTTP | verdict | SQLSTATE |
 |---|---|---|---|
 | `/api/warmup` | 200 | **pass** | — |
+
+### Pass 2 — the brief-named surfaces (25)
+
+Sysadmin fixture: `sysadmin@staging.test` (`User.isSystemAdmin = true`,
+`app_metadata.isSystemAdmin = true`). **Every `(admin)` route was exercised with a real SYSADMIN
+session**, not marked unreachable by default.
+
+| surface | brief group | role | HTTP | verdict | SQLSTATE | reason |
+|---|---|---|---|---|---|---|
+| `/carrier/driver-pay/settlements` | Settlements | OWNER_A | 500 | **fail** | `SQLSTATE_UNRECOVERED` | HTTP 500 |
+| `/carrier/driver-pay/pending` | Driver Pay | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/carrier/driver-pay/reports` | Driver Pay | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/carrier/driver-pay` | Driver Pay | OWNER_A | 404 | **not-reachable** | — | HTTP 404 — no index page — `(owner)/carrier/driver-pay/` holds only `pending/`, `reports/` and `settlements/`, all of which ARE exercised above |
+| `/carrier/reports` | Reports | OWNER_A | 404 | **not-reachable** | — | HTTP 404 — no index page — `(owner)/carrier/reports/` holds only `aging/`, `driver-pay/`, `performance/`, `revenue/` and `todays-trips/` |
+| `/carrier/reports/aging` | Reports | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/carrier/reports/performance` | Reports | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/carrier/reports/revenue` | Reports | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/carrier/reports/todays-trips` | Reports | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/checklists` | Checklists | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/checklists/playbooks` | Workflows | OWNER_A | 404 | **not-reachable** | — | HTTP 404 — no index page — the directory holds only `[id]/`, so the list lives on `/checklists` itself |
+| `/checklists/instances` | Workflows | OWNER_A | 404 | **not-reachable** | — | HTTP 404 — no index page — the directory holds only `[id]/`; staging carries ZERO PlaybookInstance rows, so there is no id to substitute either |
+| `/checklists/analytics` | Workflows | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/checklists/automation` | Workflows | OWNER_A | 500 | **fail** | `SQLSTATE_UNRECOVERED` | HTTP 500 |
+| `/settings/notifications` | Notifications | OWNER_A | 200 | **pass** | — | HTTP 200 |
+| `/automations` | Automations | SYSADMIN | 200 | **pass** | — | HTTP 200 |
+| `/admin-dashboard` | SysAdmin | SYSADMIN | 200 | **pass** | — | HTTP 200 |
+| `/billing` | SysAdmin | SYSADMIN | 200 | **pass** | — | HTTP 200 |
+| `/plans` | SysAdmin | SYSADMIN | 200 | **pass** | — | HTTP 200 |
+| `/notifications` | SysAdmin | SYSADMIN | 200 | **pass** | — | HTTP 200 |
+| `/admin-support` | SysAdmin | SYSADMIN | 200 | **pass** | — | HTTP 200 |
+| `/track/604-probe-no-seeded-token` | public tracking page | NONE | 404 | **not-reachable** | — | HTTP 404 — no seeded Load carries a trackingToken — the legacy "Load" table holds 0 row(s) on staging (scripts/seed-staging.ts populates the CARRIER "loads" table, not this one) |
+| `/sign-up` | Signup | NONE | 200 | **pass** | — | HTTP 200 — the PAGE renders; the signup FLOW cannot be completed on staging — `mailer_autoconfirm: false` and the built-in mailer 429s after ~3 sends, so no confirmation email can be received |
+| `/onboarding` | Onboarding | OWNER_A | 307 | **not-reachable** | — | HTTP 307 → /carrier/dashboard — redirects rather than rendering — the seeded tenant is past this gate |
+| `/onboarding/welcome` | Onboarding | OWNER_A | 200 | **pass** | — | HTTP 200 |
+
+### What pass 2 added, and the one fixture it needed
+
+Pass 1's 26 named surfaces were **not the 26 the brief named** — `/crm`, `/compliance`, `/support`
+and `/routes` were substituted in, and ten brief-named surfaces had **no verdict anywhere**, not even
+in §8's unmeasured list. That is an omission, not a judgement.
+
+The one new fixture is a **SYSADMIN**, because `(admin)/layout.tsx` gates on `isSystemAdmin()`,
+which reads `app_metadata.isSystemAdmin` off the JWT and no seeded OWNER carries it. Three
+non-obvious facts had to line up, and each one produces a login that succeeds beside a portal that
+still redirects — which reads like an application defect and is not one:
+
+- **`UserRole` in the database has no `SYSTEM_ADMIN` member** (`OWNER | MANAGER | DRIVER`), even
+  though `lib/auth/roles.ts` declares one. A sysadmin is a row carrying `isSystemAdmin = true`, a
+  separate boolean column, **not a role**.
+- **`User.tenantId` is NOT NULL**, so a sysadmin still belongs to a tenant.
+- **`User.updatedAt` is Prisma's `@updatedAt` — application-side**, so the column carries no
+  database default and a raw `INSERT` that omits it is a `23502`.
+
+`--seed-sysadmin` asserts `app_metadata.isSystemAdmin === true` and `jwt.sub === User.id` and exits
+1 otherwise.
+
+### Three `not-reachable` rows worth naming
+
+- **`/track/[token]`** — the page is public and needs no session, but it needs a real
+  `Load.trackingToken`. **The legacy `"Load"` table holds zero rows on staging**:
+  `scripts/seed-staging.ts` populates the *carrier* `loads` table, which is a different model. There
+  is nothing to hand the page, so it answers 404 by design (`notFound()`). Stated, not skipped.
+  Worth carrying: this page does `prisma.load.findUnique({ where: { trackingToken } })` on the
+  **bare** client with no tenant context — the shape §7a is about — so it remains **unmeasured**
+  rather than clean.
+- **`/carrier/driver-pay`, `/carrier/reports`, `/checklists/playbooks`, `/checklists/instances`** —
+  **no index page**. Each directory holds only children (and `[id]` for the last two). A 404 cannot
+  tell "no such route" from "no index page", so the reason is a committed constant on each list
+  entry, checked with `ls`. `/checklists/instances` has a second reason: staging carries **zero
+  `PlaybookInstance` rows**, so there is no id to substitute either.
+- **`/onboarding`** — 307 to `/carrier/dashboard`. The seeded tenant is past this gate. Recorded
+  with the destination named rather than counted as a pass, because a page that redirected is not a
+  page that worked.
+
+### Signup — reported as reached, with the limit stated
+
+`/sign-up` **renders** (HTTP 200) and is a `pass` for the page. The signup **flow** cannot be
+completed on staging at all — `mailer_autoconfirm: false` and the built-in mailer 429s after about
+three sends — which is exactly why §3's auth unlock writes `auth.users` directly. The page and the
+flow are two claims and only the first is measured.
 
 ### Two rows that need reading carefully
 
@@ -417,20 +511,22 @@ hard-deleted; `SELECT count(*) FROM clients WHERE name LIKE '604-probe%'` = **0*
 Source: `evidence/06-classification.json`, `evidence/06-classification.md`,
 `apps/web/tests/security/604-report-integrity.test.ts`.
 
+Re-derived over **both passes**. Pass 2 added two failures, both `SOMETHING_ELSE`.
+
 | category | count |
 |---|---|
 | `TRIPWIRE_TC001` | **7** |
 | `MISSING_GRANT` | **2** |
 | `RLS_DENIAL_SATISFIABLE` | **0** |
 | `RLS_DENIAL_NO_POLICY` | **0** |
-| `SOMETHING_ELSE` | **2** |
-| **SUM** | **11** |
-| **failure count, derived independently from the verdict fields** | **11** |
+| `SOMETHING_ELSE` | **4** |
+| **SUM** | **13** |
+| **failure count, derived independently from the verdict fields** | **13** |
 
-`11 === 11`. The failure count is derived as
+`13 === 13`. The failure count is derived as
 `entries.filter(v === 'fail').length + writes.filter(v === 'SILENT_NO_OP' || v === 'REFUSED').length`,
 never read from the classification's own header, and the equality is asserted by a committed test
-that was **witnessed RED** by decrementing one count (`expected 10 to be 11`).
+that was **witnessed RED** by decrementing one count (`expected 10 to be 11`, against pass 1's totals).
 
 `TC001` is detected **by code, never by message prose** (`unmigrated-path-tripwire.md` §3.3).
 
@@ -458,15 +554,18 @@ tripwire fires *before* a policy is consulted — and two plain `42501 permissio
 | `/api/cron/trip-reminders` | 500 | `TC001` | TRIPWIRE_TC001 | `src/app/api/cron/trip-reminders/route.ts:74` (`GET`) | **IN_456_FILE_ONLY** |
 | `/api/cron/workflow-notifications` | 500 | `42501` | MISSING_GRANT | `src/app/api/cron/workflow-notifications/route.ts:146` (`GET`) | **IN_456_FILE_ONLY** |
 
-**IN_456: 0. IN_456_FILE_ONLY: 2. OUTSIDE_456: 9.** `IN_456_FILE_ONLY` is never rounded up to a unit
-match.
+| `/carrier/driver-pay/settlements` | 500 | `SQLSTATE_UNRECOVERED` | SOMETHING_ELSE | `src/components/data-grid/core/useGridUrlState.ts:43` (`useGridUrlState`) | **OUTSIDE_456** |
+| `/checklists/automation` | 500 | `SQLSTATE_UNRECOVERED` | SOMETHING_ELSE | `src/components/data-grid/core/useGridUrlState.ts:43` (`useGridUrlState`) | **OUTSIDE_456** |
+
+**IN_456: 0 · IN_456_FILE_ONLY: 2 · OUTSIDE_456: 11.** `IN_456_FILE_ONLY` is never
+rounded up to a unit match. The last two rows are pass 2's.
 
 ---
 
 ## 7. THE FINDING — everything OUTSIDE the 456
 
-This is the point of the task. Nine of eleven failures sit in files the 456-unit AST countdown does
-not name at all. Attribution is a **lookup** in `scripts/audit/wrapper-countdown.json`
+This is the point of the task. **Eleven of thirteen** failures sit in files the 456-unit AST
+countdown does not name at all — nine from pass 1, two from pass 2. Attribution is a **lookup** in `scripts/audit/wrapper-countdown.json`
 (202 files / 456 units), not a judgement.
 
 ### 7a. `generateVehicleIds`-class global reads — a tenant-scoped statement on the BARE client
@@ -543,6 +642,32 @@ Both databases carry **156** ledger rows. The driver documents page orders by `e
 larger than one column. Reported, **no migration written** — that is a fix, and this task fixes
 nothing.
 
+### 7g. Two live owner pages 500 on RENDER — `nuqs` has no adapter outside `(dev)`
+
+**Found by pass 2, and nothing to do with `app_user`.**
+
+| file | line | function | surfaces |
+|---|---|---|---|
+| `src/components/data-grid/core/useGridUrlState.ts` | 43 | `useGridUrlState` | `/carrier/driver-pay/settlements`, `/checklists/automation` |
+
+Both answer HTTP 500 with:
+
+```
+Error: [nuqs] nuqs requires an adapter to work with your framework.
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+```
+
+`NuqsAdapter` is mounted in **exactly one layout in the repo** — `src/app/(dev)/layout.tsx` — so any
+page **outside the `(dev)` route group** that renders a `useDataGrid` table with URL state enabled
+throws on render. Two owner pages do. **`OUTSIDE_456`**, and outside the tripwire's reach as well:
+this is a render failure, not a statement, so no connection role and no policy could change it.
+Category `SOMETHING_ELSE` with `SQLSTATE_UNRECOVERED` — correctly, since no statement was refused.
+
+This is the clearest argument for pass 2 existing: **a defect on two live screens that pass 1 could
+not have found**, because pass 1 never visited them. **Reported, not fixed.**
+
 ### 7f. Fixture data, not a defect
 
 | file | line | function |
@@ -571,6 +696,23 @@ honest "could not tell" rather than a bug.
 
 ## 8. What is now known that was not, and what remains unmeasured
 
+### Which pass covered what — this report is TWO sweeps, not one
+
+| pass | what it covered | rows |
+|---|---|---|
+| **Pass 1** | 21 OWNER surfaces (`/dashboard`, `/carrier/*`, `/drivers`, `/trucks`, `/loads`, `/routes`, `/invoices`, `/payroll`, `/crm`, `/compliance`, `/live-map`, `/settings/operations`, `/support`), 5 DRIVER surfaces, all 14 cron routes, `/api/warmup` — plus the four write paths | 41 (+4 writes) |
+| **Pass 2** | the brief-named surfaces pass 1 substituted away: Settlements, Driver Pay, Reports, Checklists, Workflows, Automations, Notifications, the whole SysAdmin portal, the public tracking page, Signup, Onboarding | 25 |
+
+Pass 2 was added after review, with the same harness, the same server environment, the same pass
+criterion and the same evidence shape. **Staging was still armed and still seeded, so §3 was not
+repeated.** The only new fixture is the SYSADMIN (§4).
+
+Every downstream number — the entry count, the pass/fail/not-reachable totals, §6's five category
+counts, the `13 === 13` arithmetic check, and the IN_456 / IN_456_FILE_ONLY / OUTSIDE_456
+attribution — was **re-derived over the merged artefact**, not patched. The integrity test gained a
+fifth check block (pass-2 coverage, the SysAdmin session, and "every `not-reachable` carries a
+reason and is never merged into pass or fail"), witnessed RED two more ways.
+
 ### Now known
 
 1. **An authenticated browser path has been measured at all.** 26 named surfaces across two roles and
@@ -587,6 +729,12 @@ honest "could not tell" rather than a bug.
 7. **The auth gap is closable without a service-role key**, and the recipe is written down.
 8. **`Document` is missing five more columns on staging than §2 knew about**, and two of them appear
    in **zero** migration files.
+9. **The whole SysAdmin portal runs clean as `app_user`** — six routes, all `pass`, with a real
+   `isSystemAdmin` session. It had never been exercised at all before.
+10. **Two live owner pages 500 on render for a reason no connection role can affect** — `nuqs` has an
+    adapter in exactly one layout, `(dev)`, and two `(owner)` pages need one (§7g).
+11. **The public tracking page cannot be measured from seeded data** — the legacy `"Load"` table is
+    empty on staging because `seed-staging.ts` populates the *carrier* `loads` table instead.
 
 ### Still unmeasured — `unmigrated-path-tripwire.md` §8, unchanged by this run
 
@@ -616,6 +764,16 @@ honest "could not tell" rather than a bug.
    code, but `next build` inlines and tree-shakes differently and was not measured.
 10. **`carrier-auto-dispatch` was blocked by fixture data before reaching its database work**, so its
     tenant-scoped statements are unmeasured — a NOT_INVOKED in all but name.
+11. **Four routes have no index page and were recorded `not-reachable`** — `/carrier/driver-pay`,
+    `/carrier/reports`, `/checklists/playbooks`, `/checklists/instances`. Their children are covered;
+    the `[id]` detail pages are **not**, because staging carries zero `PlaybookInstance` rows and
+    there is no id to substitute.
+12. **`/track/[token]` is UNMEASURED, not clean.** It does `prisma.load.findUnique({ where: {
+    trackingToken } })` on the BARE client with no tenant context — exactly the §7a shape — and there
+    is no seeded token to drive it with. It is the most likely remaining `OUTSIDE_456` site.
+13. **The signup FLOW is unmeasured.** The page renders; the flow cannot complete on staging
+    (`mailer_autoconfirm: false`, mailer 429s after ~3 sends), which is the same fact §3's auth
+    unlock exists to work around.
 
 ---
 
@@ -684,12 +842,12 @@ machine**. Every instrument repoints to `:5432` and strips `?pgbouncer=true`.
 |---|---|
 | `npx tsc --noEmit` in `apps/web` | **exit 0**, and **probed twice** — a semantic `TS2322` injected into `src/lib/db/tripwire-arm.ts` and again into `scripts/audit/604-classify.ts`, each confirmed reported at the injected line, each deleted, each followed by a clean re-run. A clean run whose gate was never probed is not evidence (CLAUDE.md). |
 | `npx vitest run tests/security/` | 1 failed / 262 passed / 23 skipped (286). The one failure is `rls-policy-replay.test.ts` — **pre-existing**, see below. |
-| full `apps/web` suite, **same reporter both times, measured after the last code commit** | before **2047** tests / **64** failed / **18** failing files · after **2082** / **64** / **18** |
+| full `apps/web` suite, **same reporter both times, measured after the last code commit** | before **2047** tests / **64** failed / **18** failing files · after **2086** / **64** / **18** |
 | `npx eslint` | **NOT RUN, NOT CLAIMED.** `apps/web` has no working lint entry point (quick-562). |
 
-**Suite delta: +35 tests, which is exactly what this task added** (19 in
-`tripwire-arming-gate.test.ts` + 16 in `604-report-integrity.test.ts`). **0 newly failing, 0 newly
-passing.** The failing-file sets were compared **by name in both directions** and are identical —
+**Suite delta: +39 tests, which is exactly what this task added** (19 in
+`tripwire-arming-gate.test.ts` + 20 in `604-report-integrity.test.ts`, the latter grown from 16 by
+pass 2's check-5 block). **0 newly failing, 0 newly passing.** The failing-file sets were compared **by name in both directions** and are identical —
 a count comparison alone would have missed a swap (quick-603's rule).
 
 The BEFORE figure was taken in the main tree by removing this task's three new files and checking
@@ -726,8 +884,9 @@ per quick-603's rule, so this is not a guard being quietly re-baselined.
 ## The `git diff` of this task
 
 Committed: the arming gate (`lib/db/tripwire-arm.ts` + 18 lines in `lib/db/prisma.ts`), the auth
-seeder, three audit scripts, two tests, this report, the doc corrections to
-`staging-environment.md`, the regenerated `wrapper-countdown.json`, and the evidence directory.
+seeder (including its `--seed-sysadmin` phase), three audit scripts, two tests, this report, the doc
+corrections to `staging-environment.md`, the regenerated `wrapper-countdown.json`, and the evidence
+directory.
 
 **No policy. No grant. No migration. No `getAdminDb` routing. No migrated call site.** Every fix this
 report names is named and not applied.

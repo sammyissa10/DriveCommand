@@ -46,5 +46,65 @@
       "total": 17,
       "app_user": 0
     }
+  },
+  {
+    "label": "pass 2: before server start",
+    "at": "2026-09-15T10:59:44.488Z",
+    "staging": {
+      "total": 13,
+      "app_user": 0
+    },
+    "production": {
+      "total": 13,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "pass 2: immediately after the surface walk",
+    "at": "2026-09-15T11:03:04.661Z",
+    "staging": {
+      "total": 18,
+      "app_user": 1
+    },
+    "production": {
+      "total": 13,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "pass 2: 90s after the server was stopped",
+    "at": "2026-09-15T11:04:37.963Z",
+    "staging": {
+      "total": 13,
+      "app_user": 0
+    },
+    "production": {
+      "total": 13,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "pass 2 (re-run): immediately after the surface walk",
+    "at": "2026-09-15T11:08:44.501Z",
+    "staging": {
+      "total": 18,
+      "app_user": 1
+    },
+    "production": {
+      "total": 13,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "pass 2 (re-run): 95s after the server was stopped",
+    "at": "2026-09-15T11:10:22.605Z",
+    "staging": {
+      "total": 15,
+      "app_user": 0
+    },
+    "production": {
+      "total": 13,
+      "app_user": 0
+    }
   }
 ]

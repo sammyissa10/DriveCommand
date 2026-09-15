@@ -1,13 +1,13 @@
 {
   "task": "quick-604",
   "phase": "classification",
-  "at": "2026-09-15T10:38:39.604Z",
-  "countdownGeneratedAt": "2026-09-15T07:25:50.015Z",
+  "at": "2026-09-15T11:10:24.330Z",
+  "countdownGeneratedAt": "2026-09-15T10:44:42.584Z",
   "countdownTotals": {
     "unmigratedUnits": 456,
     "unmigratedCallSites": 459,
     "withTenantContextCallSites": 0,
-    "filesScanned": 1690,
+    "filesScanned": 1691,
     "filesWithUnmigratedUnits": 202
   },
   "counts": {
@@ -15,10 +15,10 @@
     "MISSING_GRANT": 2,
     "RLS_DENIAL_SATISFIABLE": 0,
     "RLS_DENIAL_NO_POLICY": 0,
-    "SOMETHING_ELSE": 2
+    "SOMETHING_ELSE": 4
   },
-  "categorySum": 11,
-  "derivedFailureCount": 11,
+  "categorySum": 13,
+  "derivedFailureCount": 13,
   "arithmeticCheckPasses": true,
   "policyDisagreements": [],
   "findings": [
@@ -263,6 +263,50 @@
         83650,
         87037
       ]
+    },
+    {
+      "source": "surface",
+      "surface": "/carrier/driver-pay/settlements",
+      "role": "OWNER_A",
+      "httpStatus": 500,
+      "sqlstate": "SQLSTATE_UNRECOVERED",
+      "category": "SOMETHING_ELSE",
+      "categoryReason": "unclassified code SQLSTATE_UNRECOVERED",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "useGridUrlState",
+        "file": "src/components/data-grid/core/useGridUrlState.ts",
+        "line": 43
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`components/data-grid/core/useGridUrlState.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        96428,
+        97286
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/checklists/automation",
+      "role": "OWNER_A",
+      "httpStatus": 500,
+      "sqlstate": "SQLSTATE_UNRECOVERED",
+      "category": "SOMETHING_ELSE",
+      "categoryReason": "unclassified code SQLSTATE_UNRECOVERED",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "useGridUrlState",
+        "file": "src/components/data-grid/core/useGridUrlState.ts",
+        "line": 43
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`components/data-grid/core/useGridUrlState.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        98481,
+        99316
+      ]
     }
   ],
   "outside456": [
@@ -337,6 +381,22 @@
       "fn": "findUpcomingMaintenance",
       "category": "TRIPWIRE_TC001",
       "sqlstate": "TC001"
+    },
+    {
+      "surface": "/carrier/driver-pay/settlements",
+      "file": "src/components/data-grid/core/useGridUrlState.ts",
+      "line": 43,
+      "fn": "useGridUrlState",
+      "category": "SOMETHING_ELSE",
+      "sqlstate": "SQLSTATE_UNRECOVERED"
+    },
+    {
+      "surface": "/checklists/automation",
+      "file": "src/components/data-grid/core/useGridUrlState.ts",
+      "line": 43,
+      "fn": "useGridUrlState",
+      "category": "SOMETHING_ELSE",
+      "sqlstate": "SQLSTATE_UNRECOVERED"
     }
   ]
 }

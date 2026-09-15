@@ -6,7 +6,7 @@ Taken 2026-09-15T10:26:46.175Z against http://localhost:3000, with a real sessio
 - named surfaces: **26** — the script refuses to run with fewer than 25
 - cron routes: **14**, enumerated from `src/app/api/cron/` and asserted `=== 14`
 - other scheduled entry points, deliberately NOT folded into the 14: `/api/warmup`
-- total entries: **41** — pass 30 · fail 11 · not-reachable 0
+- total entries: **66** — pass 47 · fail 13 · not-reachable 6
 
 ## The three sessions
 
@@ -26,6 +26,11 @@ No cookie was forged. `@supabase/ssr` set them on the login response and the scr
 | immediately after the surface walk | 18 / **1** | 16 / **0** |
 | after the server was stopped | 16 / **1** | 18 / **0** |
 | 90s after the server was stopped | 13 / **0** | 17 / **0** |
+| pass 2: before server start | 13 / **0** | 13 / **0** |
+| pass 2: immediately after the surface walk | 18 / **1** | 13 / **0** |
+| pass 2: 90s after the server was stopped | 13 / **0** | 13 / **0** |
+| pass 2 (re-run): immediately after the surface walk | 18 / **1** | 13 / **0** |
+| pass 2 (re-run): 95s after the server was stopped | 15 / **0** | 13 / **0** |
 
 **Production showed zero `app_user` connections at every reading.** Production's *total* moved (17 → 16 → 18 → 17);
 that is other traffic on a shared Supabase project, which this measurement cannot attribute and does not claim.
@@ -91,6 +96,40 @@ eventually" and "it went to zero when the server stopped" are different claims a
 |---|---|---|---|---|---|---|---|---|
 | scheduled (not one of the 14) | `/api/warmup` | CRON | GET | 200 | **pass** | — | HTTP 200 | 87037–87185 |
 
+## PASS 2 — the brief-named surfaces pass 1 substituted away (25)
+
+Run 2026-09-15T11:08:36.099Z, same harness, same pass criterion, same evidence shape.
+
+Sysadmin fixture: `sysadmin@staging.test` (`User.isSystemAdmin = true`, `app_metadata.isSystemAdmin = true`).
+Tracking token: **none** — no seeded Load carries a trackingToken — the legacy "Load" table holds 0 row(s) on staging (scripts/seed-staging.ts populates the CARRIER "loads" table, not this one).
+
+| kind | surface | role | method | HTTP | verdict | SQLSTATE | reason | log bytes |
+|---|---|---|---|---|---|---|---|---|
+| surface | `/carrier/driver-pay/settlements` | OWNER_A | GET | 500 | **fail** | `SQLSTATE_UNRECOVERED` | HTTP 500 | 96428–97286 |
+| surface | `/carrier/driver-pay/pending` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 97286–97391 |
+| surface | `/carrier/driver-pay/reports` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 97391–97498 |
+| surface | `/carrier/driver-pay` | OWNER_A | GET | 404 | **not-reachable** | — | HTTP 404 — no index page — `(owner)/carrier/driver-pay/` holds only `pending/`, `reports/` and `settlements/`, all of which ARE exercised above | 97498–97595 |
+| surface | `/carrier/reports` | OWNER_A | GET | 404 | **not-reachable** | — | HTTP 404 — no index page — `(owner)/carrier/reports/` holds only `aging/`, `driver-pay/`, `performance/`, `revenue/` and `todays-trips/` | 97595–97687 |
+| surface | `/carrier/reports/aging` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 97687–97787 |
+| surface | `/carrier/reports/performance` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 97787–97893 |
+| surface | `/carrier/reports/revenue` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 97893–97995 |
+| surface | `/carrier/reports/todays-trips` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 97995–98101 |
+| surface | `/checklists` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 98101–98189 |
+| surface | `/checklists/playbooks` | OWNER_A | GET | 404 | **not-reachable** | — | HTTP 404 — no index page — the directory holds only `[id]/`, so the list lives on `/checklists` itself | 98189–98286 |
+| surface | `/checklists/instances` | OWNER_A | GET | 404 | **not-reachable** | — | HTTP 404 — no index page — the directory holds only `[id]/`; staging carries ZERO PlaybookInstance rows, so there is no id to substitute either | 98286–98383 |
+| surface | `/checklists/analytics` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 98383–98481 |
+| surface | `/checklists/automation` | OWNER_A | GET | 500 | **fail** | `SQLSTATE_UNRECOVERED` | HTTP 500 | 98481–99316 |
+| surface | `/settings/notifications` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 99316–99419 |
+| surface | `/automations` | SYSADMIN | GET | 200 | **pass** | — | HTTP 200 | 99419–99509 |
+| surface | `/admin-dashboard` | SYSADMIN | GET | 200 | **pass** | — | HTTP 200 | 99509–99603 |
+| surface | `/billing` | SYSADMIN | GET | 200 | **pass** | — | HTTP 200 | 99603–99792 |
+| surface | `/plans` | SYSADMIN | GET | 200 | **pass** | — | HTTP 200 | 99792–99875 |
+| surface | `/notifications` | SYSADMIN | GET | 200 | **pass** | — | HTTP 200 | 99875–99969 |
+| surface | `/admin-support` | SYSADMIN | GET | 200 | **pass** | — | HTTP 200 | 99969–100061 |
+| surface | `/track/604-probe-no-seeded-token` | NONE | GET | 404 | **not-reachable** | — | HTTP 404 — no seeded Load carries a trackingToken — the legacy "Load" table holds 0 row(s) on staging (scripts/seed-staging.ts populates the CARRIER "loads" table, not this one) | 100061–100171 |
+| surface | `/sign-up` | NONE | GET | 200 | **pass** | — | HTTP 200 — the PAGE renders; the signup FLOW cannot be completed on staging — `mailer_autoconfirm: false` and the built-in mailer 429s after ~3 sends, so no confirmation email can be received | 100171–100256 |
+| surface | `/onboarding` | OWNER_A | GET | 307 | **not-reachable** | — | HTTP 307 → /carrier/dashboard — redirects rather than rendering — the seeded tenant is past this gate | 100256–100344 |
+| surface | `/onboarding/welcome` | OWNER_A | GET | 200 | **pass** | — | HTTP 200 | 100344–100636 |
 ## Guard 1 — the resolved `DATABASE_URL` in the server's shell, before start
 
 ```
@@ -138,3 +177,59 @@ exactly like a SQLSTATE and is not one. The recogniser now captures the whole de
   a SQLSTATE, and not a permission problem: the staging `Document` table is missing a column the
   client expects. Schema drift on staging, recorded as a failure with its real code rather than
   being folded into an RLS bucket it does not belong in.
+
+---
+
+## PASS 2 — what changed, and what did not
+
+Pass 1 shipped 26 named surfaces, but **they were not the 26 the brief named**: `/crm`,
+`/compliance`, `/support` and `/routes` were substituted for brief-named surfaces, and **ten
+brief-named surfaces had no verdict anywhere** — not even in the unmeasured list. That is an
+omission, not a judgement, and pass 2 closes it with **25 more rows**.
+
+Everything else is unchanged: same harness, same server env, same pass criterion (2xx/3xx **and** no
+`TC001` in the correlated log window), same evidence shape, same triple guard. Staging was still
+armed and still seeded, so the auth work was not repeated.
+
+### The one new fixture
+
+`(admin)/layout.tsx` gates on `isSystemAdmin()`, which reads `app_metadata.isSystemAdmin` off the
+JWT. **No seeded OWNER carries it**, so without a sysadmin every `(admin)` route would have been a
+redirect to `/sign-in` — a whole portal with no verdict, which is the weakest thing this report could
+contain. `seed-staging-auth.ts --seed-sysadmin` creates one. Two non-obvious facts had to line up:
+
+- **`UserRole` in the database has no `SYSTEM_ADMIN` member** (`OWNER | MANAGER | DRIVER`), even
+  though `lib/auth/roles.ts` declares one. A sysadmin is a row carrying `isSystemAdmin = true`, a
+  separate boolean column, not a role.
+- **`User.tenantId` is NOT NULL**, so a sysadmin still belongs to a tenant.
+- **`User.updatedAt` is Prisma's `@updatedAt` — application-side**, so the column has no database
+  default and a raw `INSERT` that omits it is a `23502`. (It was.)
+
+Get any of them wrong and you get a login that succeeds and a portal that still redirects, which
+reads like an application defect and is not one. `--seed-sysadmin` asserts
+`app_metadata.isSystemAdmin === true` and `jwt.sub === User.id` and exits 1 otherwise.
+
+### Guard 2, pass 2
+
+| moment | staging total / `app_user` | production total / `app_user` |
+|---|---|---|
+| pass 2: before server start | 13 / **0** | 13 / **0** |
+| pass 2: immediately after the surface walk | 18 / **1** | 13 / **0** |
+| pass 2: 90 s after the server was stopped | 13 / **0** | 13 / **0** |
+| pass 2 (re-run): immediately after the surface walk | 18 / **1** | 13 / **0** |
+| pass 2 (re-run): 95 s after the server was stopped | 15 / **0** | 13 / **0** |
+
+Production: **zero `app_user` connections at every reading**, in both passes.
+
+### The phase is idempotent, deliberately
+
+`--surfaces2` **drops every existing `pass2:` row before appending**. A sweep that silently
+duplicates rows inflates every downstream count while every assertion still passes — the quietest
+way this report could have become wrong. It was re-run once to prove it: identical 25 rows, merged
+total still 66.
+
+### `not-reachable` reasons come from the ROUTE TREE, not from the 404
+
+A 404 cannot tell "no such route" from "no index page", so the reasons are a committed constant on
+each `PASS2_SURFACES` entry, each checked with `ls` before the list was written. A note **never**
+changes a `fail` — a 500 is a 500 regardless of how the route is shaped.

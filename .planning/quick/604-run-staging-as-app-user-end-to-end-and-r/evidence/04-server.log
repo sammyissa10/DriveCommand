@@ -821,3 +821,161 @@ Raw query failed. Code: `42501`. Message: `permission denied for schema public`
 [2026-09-15T10:29:39.398Z] INFO: [settings] operations settings saved {"orgId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","byUserId":"d27660ff-feef-43dd-b22c-07ee74b9ee01","requirePreTripInspection":true,"blockTripStartOnFailedInspection":false}
  POST /settings/operations 200 in 1290ms (next.js: 8ms, proxy.ts: 101ms, application-code: 1181ms)
   └─ ƒ saveOperationsSettings({"blockTripStartOnFailedInspection":false,"requirePreTripInspection":true}) in 355ms src/app/(owner)/settings/operations/actions.ts
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 685ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ POST /api/auth/login 200 in 3.6s (next.js: 1347ms, proxy.ts: 247ms, application-code: 2.0s)
+ POST /api/auth/login 200 in 779ms (next.js: 16ms, proxy.ts: 12ms, application-code: 751ms)
+ POST /api/auth/login 200 in 1192ms (next.js: 14ms, proxy.ts: 16ms, application-code: 1162ms)
+ POST /api/auth/login 200 in 455ms (next.js: 12ms, proxy.ts: 13ms, application-code: 430ms)
+○ Compiling /carrier/driver-pay/settlements ...
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1373763904'
+}
+ GET /carrier/driver-pay/settlements 500 in 16.1s (next.js: 9.7s, proxy.ts: 128ms, application-code: 6.3s)
+○ Compiling /carrier/driver-pay/pending ...
+ GET /carrier/driver-pay/pending 200 in 5.3s (next.js: 4.2s, proxy.ts: 349ms, application-code: 756ms)
+○ Compiling /carrier/driver-pay/reports ...
+ GET /carrier/driver-pay/reports 200 in 8.9s (next.js: 7.2s, proxy.ts: 174ms, application-code: 1470ms)
+ GET /carrier/driver-pay 404 in 2.8s (next.js: 2.6s, proxy.ts: 126ms, application-code: 64ms)
+ GET /carrier/reports 404 in 292ms (next.js: 25ms, proxy.ts: 207ms, application-code: 59ms)
+ GET /carrier/reports/aging 200 in 3.0s (next.js: 2.3s, proxy.ts: 218ms, application-code: 477ms)
+ GET /carrier/reports/performance 200 in 3.3s (next.js: 2.2s, proxy.ts: 115ms, application-code: 927ms)
+ GET /carrier/reports/revenue 200 in 3.6s (next.js: 2.7s, proxy.ts: 176ms, application-code: 694ms)
+○ Compiling /carrier/reports/todays-trips ...
+ GET /carrier/reports/todays-trips 200 in 4.1s (next.js: 3.2s, proxy.ts: 142ms, application-code: 789ms)
+ GET /checklists 200 in 3.2s (next.js: 2.6s, proxy.ts: 115ms, application-code: 548ms)
+ GET /checklists/playbooks 404 in 182ms (next.js: 13ms, proxy.ts: 118ms, application-code: 51ms)
+ GET /checklists/instances 404 in 266ms (next.js: 42ms, proxy.ts: 119ms, application-code: 105ms)
+ GET /checklists/analytics 200 in 3.4s (next.js: 2.7s, proxy.ts: 210ms, application-code: 516ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at CustomRulesTable (src\app\(owner)\checklists\automation\_components\CustomRulesTable.tsx:175:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1080683676'
+}
+ GET /checklists/automation 500 in 2.9s (next.js: 1990ms, proxy.ts: 113ms, application-code: 824ms)
+○ Compiling /settings/notifications ...
+ GET /settings/notifications 200 in 6.9s (next.js: 4.8s, proxy.ts: 112ms, application-code: 2.0s)
+○ Compiling /automations ...
+ GET /automations 200 in 8.2s (next.js: 7.4s, proxy.ts: 141ms, application-code: 585ms)
+○ Compiling /admin-dashboard ...
+ GET /admin-dashboard 200 in 5.7s (next.js: 4.5s, proxy.ts: 225ms, application-code: 944ms)
+[2026-09-15T11:01:47.532Z] INFO: [admin-db] privileged query {"reason":"sysadmin invoice management"}
+ GET /billing 200 in 3.9s (next.js: 2.6s, proxy.ts: 107ms, application-code: 1202ms)
+ GET /plans 200 in 1981ms (next.js: 1472ms, proxy.ts: 122ms, application-code: 386ms)
+ GET /notifications 200 in 3.4s (next.js: 2.0s, proxy.ts: 109ms, application-code: 1292ms)
+○ Compiling /admin-support ...
+ GET /admin-support 200 in 4.6s (next.js: 3.8s, proxy.ts: 121ms, application-code: 638ms)
+ GET /track/604-probe-no-seeded-token 404 in 4.2s (next.js: 3.6s, proxy.ts: 4ms, application-code: 590ms)
+○ Compiling /sign-up/[[...sign-up]] ...
+ GET /sign-up 200 in 9.1s (next.js: 8.8s, proxy.ts: 9ms, application-code: 349ms)
+○ Compiling /onboarding ...
+ GET /onboarding 307 in 3.9s (next.js: 3.3s, proxy.ts: 238ms, application-code: 308ms)
+[welcome] tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8 phase: MINIMAL
+[hydrateTenant] starting for tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8
+[hydrateTenant] seeding samples for bucket: OWNER_OPERATOR
+[hydrateTenant] samples seeded
+[hydrateTenant] provisioningPhase flipped to HYDRATED
+ GET /onboarding/welcome 200 in 7.0s (next.js: 2.9s, proxy.ts: 4ms, application-code: 4.1s)
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 752ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ POST /api/auth/login 200 in 4.8s (next.js: 2.1s, proxy.ts: 445ms, application-code: 2.2s)
+ POST /api/auth/login 200 in 753ms (next.js: 9ms, proxy.ts: 13ms, application-code: 731ms)
+ POST /api/auth/login 200 in 1041ms (next.js: 8ms, proxy.ts: 10ms, application-code: 1023ms)
+ POST /api/auth/login 200 in 492ms (next.js: 7ms, proxy.ts: 8ms, application-code: 477ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1373763904'
+}
+ GET /carrier/driver-pay/settlements 500 in 4.8s (next.js: 518ms, proxy.ts: 133ms, application-code: 4.1s)
+ GET /carrier/driver-pay/pending 200 in 790ms (next.js: 119ms, proxy.ts: 144ms, application-code: 527ms)
+ GET /carrier/driver-pay/reports 200 in 1814ms (next.js: 397ms, proxy.ts: 113ms, application-code: 1305ms)
+ GET /carrier/driver-pay 404 in 533ms (next.js: 302ms, proxy.ts: 112ms, application-code: 120ms)
+ GET /carrier/reports 404 in 247ms (next.js: 53ms, proxy.ts: 112ms, application-code: 83ms)
+ GET /carrier/reports/aging 200 in 755ms (next.js: 114ms, proxy.ts: 114ms, application-code: 527ms)
+ GET /carrier/reports/performance 200 in 878ms (next.js: 147ms, proxy.ts: 114ms, application-code: 617ms)
+ GET /carrier/reports/revenue 200 in 894ms (next.js: 139ms, proxy.ts: 116ms, application-code: 639ms)
+ GET /carrier/reports/todays-trips 200 in 625ms (next.js: 50ms, proxy.ts: 104ms, application-code: 471ms)
+ GET /checklists 200 in 752ms (next.js: 70ms, proxy.ts: 227ms, application-code: 455ms)
+ GET /checklists/playbooks 404 in 157ms (next.js: 22ms, proxy.ts: 108ms, application-code: 27ms)
+ GET /checklists/instances 404 in 170ms (next.js: 25ms, proxy.ts: 106ms, application-code: 38ms)
+ GET /checklists/analytics 200 in 660ms (next.js: 88ms, proxy.ts: 109ms, application-code: 463ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at CustomRulesTable (src\app\(owner)\checklists\automation\_components\CustomRulesTable.tsx:175:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1080683676'
+}
+ GET /checklists/automation 500 in 702ms (next.js: 89ms, proxy.ts: 110ms, application-code: 503ms)
+ GET /settings/notifications 200 in 1981ms (next.js: 103ms, proxy.ts: 106ms, application-code: 1773ms)
+ GET /automations 200 in 516ms (next.js: 107ms, proxy.ts: 108ms, application-code: 301ms)
+ GET /admin-dashboard 200 in 802ms (next.js: 172ms, proxy.ts: 111ms, application-code: 519ms)
+[2026-09-15T11:08:24.812Z] INFO: [admin-db] privileged query {"reason":"sysadmin invoice management"}
+ GET /billing 200 in 1217ms (next.js: 118ms, proxy.ts: 105ms, application-code: 993ms)
+ GET /plans 200 in 516ms (next.js: 94ms, proxy.ts: 111ms, application-code: 312ms)
+ GET /notifications 200 in 1430ms (next.js: 111ms, proxy.ts: 100ms, application-code: 1219ms)
+ GET /admin-support 200 in 749ms (next.js: 115ms, proxy.ts: 118ms, application-code: 516ms)
+ GET /track/604-probe-no-seeded-token 404 in 1531ms (next.js: 1233ms, proxy.ts: 7ms, application-code: 291ms)
+ GET /sign-up 200 in 1105ms (next.js: 986ms, proxy.ts: 6ms, application-code: 114ms)
+ GET /onboarding 307 in 564ms (next.js: 42ms, proxy.ts: 289ms, application-code: 233ms)
+[welcome] tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8 phase: HYDRATED
+[hydrateTenant] starting for tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8
+[hydrateTenant] already HYDRATED, skipping
+ GET /onboarding/welcome 200 in 1653ms (next.js: 47ms, proxy.ts: 1773µs, application-code: 1605ms)
