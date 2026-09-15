@@ -1,0 +1,11 @@
+### RED 1 — flip the default door to read-only
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[41m[1m FAIL [22m[49m tests/security/script-db-target-guard.test.ts[2m > [22mthe default door is the WRITER door[2m > [22m_bootstrap-env.ts declares intent 'writes'
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m30 passed[39m[22m[90m (31)[39m
+
+### RED 2 — move a writer script onto the read-only door without declaring it
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m29 passed[39m[22m[90m (31)[39m
+
+### GREEN restored
+[2m      Tests [22m [1m[32m31 passed[39m[22m[90m (31)[39m

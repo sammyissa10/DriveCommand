@@ -93,9 +93,15 @@ jobs:
         working-directory: apps/web
         run: npm run audit:rls-policy-drift
         env:
-          # _bootstrap-env.ts only repoints DATABASE_URL at DIRECT_URL when
-          # DIRECT_URL is present. Leaving DIRECT_URL unset here means the
-          # secret below is the connection actually used, unmodified.
+          # An explicitly-set DATABASE_URL is honoured verbatim (quick-607,
+          # `scripts/_db-target.ts` rung 3), so the secret below is the
+          # connection actually used. This used to work for a WEAKER reason —
+          # `_bootstrap-env.ts` repointed DATABASE_URL at DIRECT_URL whenever
+          # DIRECT_URL happened to be set, and CI merely never set it. On a
+          # developer machine, where the repo-root `.env` always supplies a
+          # production DIRECT_URL, the same command read production no matter
+          # what was pinned. The run now PRINTS the resolved project ref to
+          # stderr, so the job log records which database was measured.
           DATABASE_URL: ${{ secrets.RLS_AUDIT_DATABASE_URL }}
 
       - name: Credential absent — check DID NOT RUN

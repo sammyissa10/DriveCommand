@@ -83,6 +83,18 @@ them; in CI `DATABASE_URL` is the dummy, so the import runs and throws.
    **`.env`, `.env.local` and `apps/web/.env.local` all point `DIRECT_URL` at PRODUCTION**. The
    only thing standing between this file and tenants written into the production database was a
    constructor that happens not to compile. Putting an adapter on it removes that.
+
+   > **UPDATE — quick-607. The line named here is fixed; the deletion decision still stands.**
+   > `_bootstrap-env.ts` no longer repoints `DATABASE_URL` at `DIRECT_URL` unconditionally
+   > (`scripts/_db-target.ts`), and a script that reaches a database through it is treated as a
+   > WRITER by default: it REFUSES the production project unless `--allow-production` is passed,
+   > and it PRINTS the resolved project ref on every run. So reason 1 no longer describes live
+   > code. Reasons 2 and 3 are untouched and are sufficient on their own — ten tests that have
+   > never executed have no coverage to preserve, and they were not RLS tests. **Do not read this
+   > update as an argument for restoring them.** Note also that these particular files never
+   > imported `_bootstrap-env` at all; the two bare-`DATABASE_URL` writers in that family
+   > (`tests/security/db-fixture-setup.ts`, `tests-db/rls-isolation/env.ts`) already carry their
+   > own hardcoded production refusal from quick-598, which quick-607 left in place.
 2. **Nothing is lost, because nothing was ever gained.** These ten tests have never executed. There
    is no coverage to preserve, only a claim to re-home.
 3. **They were not RLS tests.** They exercise the `withTenantRLS` Prisma extension's

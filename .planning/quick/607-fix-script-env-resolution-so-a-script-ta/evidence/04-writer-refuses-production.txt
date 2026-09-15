@@ -1,0 +1,33 @@
+### A WRITER, resolving PRODUCTION, no flag — nothing pinned, i.e. the default every
+### existing invocation used. This is the exact command that used to run happily.
+
+$ npx tsx scripts/test-extraction.ts
+[db-target] script   : test-extraction.ts
+[db-target] project  : oqdhberkghtnszrkdvfm (PRODUCTION)
+[db-target] host     : aws-1-us-west-1.pooler.supabase.com:5432
+[db-target] role     : postgres
+[db-target] resolved : file DIRECT_URL (port fix; nothing pinned)
+[db-target] intent   : writes
+
+[db-target] test-extraction.ts REFUSING TO RUN - it resolved the PRODUCTION project (oqdhberkghtnszrkdvfm) and it is not declared read-only.
+
+  resolved via : file DIRECT_URL (port fix; nothing pinned)
+  connection   : postgresql://postgres.oqdhberkghtnszrkdvfm:***@aws-1-us-west-1.pooler.supabase.com:5432/postgres
+
+If this script really must write to production, pass --allow-production (or set ALLOW_PRODUCTION_WRITES=1).
+If it only reads, import 'scripts/_bootstrap-env-readonly' instead of 'scripts/_bootstrap-env' - read-only scripts may target production freely.
+To point it somewhere else, pin DATABASE_URL inline; it is now honoured.
+
+
+exit code: 0
+
+### exit codes, measured directly (the block above reset PIPESTATUS)
+test-extraction.ts (writer, production, no flag) exit code: 1
+rls-policy-drift.ts (read-only, staging pin)   exit code: 0
+[db-target] script   : test-extraction.ts
+[db-target] project  : oqdhberkghtnszrkdvfm (PRODUCTION)
+[db-target] host     : aws-1-us-west-1.pooler.supabase.com:5432
+[db-target] role     : postgres
+[db-target] resolved : file DIRECT_URL (port fix; nothing pinned)
+[db-target] intent   : writes
+[db-target] WARNING  : writing to PRODUCTION - --allow-production was passed

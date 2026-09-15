@@ -1,4 +1,4 @@
-import '../_bootstrap-env';
+import '../_bootstrap-env-readonly';
 
 /**
  * RLS Policy Drift — runner

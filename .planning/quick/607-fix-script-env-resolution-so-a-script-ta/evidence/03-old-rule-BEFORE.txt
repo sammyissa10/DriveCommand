@@ -1,0 +1,4 @@
+Operator pins DATABASE_URL at staging (wyixpgunnjmzguhggocz) and runs the script.
+
+-- OLD rule (HEAD's _bootstrap-env.ts, verbatim) --
+OLD RULE resolved DATABASE_URL to project ref: oqdhberkghtnszrkdvfm

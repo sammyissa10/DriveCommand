@@ -1,0 +1,12 @@
+    [90m   | [39m                                                                        [31m^[39m
+    [90m138| [39m      [34mexpect[39m(call[33m.[39mwhere[33m.[39mtenantId)[33m.[39m[34mtoBe[39m([33mTENANT_A[39m)[33m;[39m
+    [90m139| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[59/64]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m18 failed[39m[22m[2m | [22m[1m[32m158 passed[39m[22m[2m | [22m[33m6 skipped[39m[90m (182)[39m
+[2m      Tests [22m [1m[31m64 failed[39m[22m[2m | [22m[1m[32m2026 passed[39m[22m[2m | [22m[33m52 skipped[39m[2m | [22m[90m3 todo[39m[90m (2145)[39m
+[2m   Start at [22m 15:12:15
+[2m   Duration [22m 106.31s[2m (transform 20.49s, setup 0ms, import 185.65s, tests 239.92s, environment 57ms)[22m
+
