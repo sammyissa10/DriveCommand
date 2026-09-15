@@ -432,6 +432,29 @@ statements is §4's matrix, driven against the real database as the real roles.
 - `tests/security/rls-policy-replay.test.ts` is in the failing set **both before and after**. It is
   pre-existing and untouched by this task.
 
+### An unrelated finding the build surfaced — reported, reverted, NOT fixed here
+
+`npm run build` runs `build:search-index` and `build:admin-search` before `next build`, and both
+rewrote their **committed** artefacts:
+
+```
+ apps/web/.docs-data/admin-docs-search-index.json | 98 +++++++++++++++++++++---
+ apps/web/src/lib/docs/search-index.json          | 74 +++++++++++++++++-
+```
+
+The diff is not noise and not a timestamp. It adds **eight feature-registry entries** that were never
+regenerated into the indexes (`document-import`, `facility-matching` and their siblings — the Document
+Import phases' registry work) and corrects one route in place,
+`/carrier/route-templates` → `/carrier/templates`. So **the committed search indexes are stale against
+the feature registry**, and the stale route is the legacy-vs-carrier route confusion that
+`project_two_route_systems.md` exists to warn about.
+
+Both files were **reverted** (`git checkout --`) rather than committed: they have nothing to do with
+routing `AutomationRule`, and folding them in would be a second change smuggled in beside the one being
+measured. The working tree is clean. This belongs with Phase 12's `check-doc-drift.ts` gate — anyone
+who runs `npm run build` will keep seeing it until the artefacts are regenerated deliberately in their
+own commit.
+
 ---
 
 ## 11. Deviations from the plan
