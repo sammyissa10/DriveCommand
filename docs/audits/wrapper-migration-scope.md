@@ -180,6 +180,51 @@ But investigating that surfaced a sharper and previously unnamed risk, which is 
 
 ### The transaction-abort risk — 17 sites / 16 files (not in §6 at all)
 
+> **RE-VERIFIED BY quick-611 (2026-09-15): 0 LIVE · 16 DORMANT · 1 IMPOSSIBLE. No application
+> code was changed, and that is the result rather than a gap.**
+>
+> This section was written CONDITIONALLY — *after* the `withTenantContext` migration wrapped 456
+> units in transactions. That migration is not proceeding as scoped (quick-602 measured the overlap
+> at **4 of 456 units — 0.88 %**, and `withTenantContext` still has **zero** real call sites), so
+> `25P02` can only fire where a unit of work is **already** transactional. Measured against the tree
+> as it is: **none of the 17 is inside a transaction today**, so none can cascade.
+>
+> **Two corrections to what is written below.**
+>
+> 1. **`api/driver/gps-ping/route.ts` is the SAFE shape, and this section counted it as a risk.**
+>    The `try` WRAPS the whole `prisma.$transaction(...)` call — the catch is its **sibling**, not
+>    inside the callback — so the transaction has already rolled back by the time the catch runs,
+>    and the write after it is on a fresh `getTenantPrisma()` acquisition. Classified **IMPOSSIBLE**
+>    rather than dormant: it cannot be woken by wrapping the function, only by restructuring it.
+>    Measured on staging as control B — earlier write SURVIVED, later write SUCCEEDED.
+> 2. **`team-permissions.ts` is under `app/(owner)/actions/`, not `lib/carrier/`.** The path listed
+>    below does not exist.
+>
+> Also: `trips.ts:720` and `:786` sit inside `after(async () => {` deferred callbacks — post-response,
+> structurally outside any request transaction.
+>
+> **`createCarrierDriver` — described below as the clearest case — is DORMANT.** It opens no
+> transaction, and its only caller (`POST /api/v1/carrier/fleet/drivers`) opens none. The source
+> comment asserting the driver record stays valid is **true today**. It becomes false the moment
+> either is wrapped, which is exactly what the guard now watches for.
+>
+> **The cascade itself is real — measured, not assumed** (`evidence/02-cascade-controls.json`;
+> staging, `app_user`, real tables, the FK on `carrier_drivers.user_id` forcing the failure):
+>
+> | control | shape | result |
+> |---|---|---|
+> | A | swallowed failure INSIDE the tx callback | later write **25P02**, **earlier write GONE** |
+> | B | try WRAPS the tx (the gps-ping shape) | no cascade, earlier write survives |
+> | C | **SAVEPOINT** around the statement allowed to fail | no cascade, earlier write survives |
+>
+> C is the remedy, and it works through `tx.$executeRawUnsafe('SAVEPOINT …')` / `ROLLBACK TO
+> SAVEPOINT` on the same `tx` — Prisma 7 has no `$savepoint()` API, so that was measured rather
+> than assumed. B is the other legitimate shape: keep the whole transaction inside the try.
+>
+> Frozen by `tests/security/transaction-abort-sites.test.ts`, which fails if any site goes LIVE and
+> carries the remedy in its failure message. Full per-site record with waking conditions:
+> `.planning/quick/611-establish-whether-the-17-25p02-sites-are/611-SUMMARY.md`.
+
 **PostgreSQL aborts the entire transaction on any statement error.** Today
 `try { await db.x.create(...) } catch { logger.error(...) }` is harmless: the statement autocommits,
 the error is logged, execution continues. Inside one transaction the failed statement puts the
