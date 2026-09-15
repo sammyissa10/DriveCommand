@@ -1,0 +1,474 @@
+{
+  "at": "2026-09-15T23:28:22.319Z",
+  "project": "wyixpgunnjmzguhggocz",
+  "mode": "before",
+  "roles": {
+    "admin": "app_admin",
+    "tenant": "app_user",
+    "privileged": "postgres"
+  },
+  "tripwire": "on",
+  "grants": [
+    "app_user: DELETE",
+    "app_user: INSERT",
+    "app_user: SELECT",
+    "app_user: UPDATE"
+  ],
+  "policyCount": 186,
+  "bypassCount": 86,
+  "bypassTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "Customer",
+    "CustomerInteraction",
+    "DispatchOverrideAudit",
+    "DocFeedback",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "DriverRouteJoin",
+    "ExpenseCategory",
+    "ExpenseTemplate",
+    "ExpenseTemplateItem",
+    "FleetMessage",
+    "FuelRecord",
+    "GPSLocation",
+    "Invoice",
+    "InvoiceItem",
+    "Load",
+    "MaintenanceEvent",
+    "NotificationLog",
+    "NotificationSendLog",
+    "NotificationSubscription",
+    "PayrollRecord",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PlaybookStep",
+    "PlaybookTrigger",
+    "PushToken",
+    "Route",
+    "RouteDriver",
+    "RouteExpense",
+    "RoutePayment",
+    "RouteStop",
+    "SafetyEvent",
+    "ScheduledService",
+    "StepInstance",
+    "StepTemplate",
+    "Subscription",
+    "SupportTicket",
+    "SysAdminInvoice",
+    "SysAdminInvoiceItem",
+    "Tag",
+    "TagAssignment",
+    "Tenant",
+    "TenantHealthScore",
+    "TenantIntegration",
+    "TenantMetricsDaily",
+    "TenantNotificationSettings",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "UserNotificationPreference",
+    "audit_log",
+    "carrier_compliance_alert_log",
+    "carrier_document_types",
+    "carrier_drivers",
+    "carrier_expenses",
+    "carrier_truck_defects",
+    "carrier_trucks",
+    "client_contacts",
+    "clients",
+    "contracts",
+    "dispatches",
+    "document_import_pages",
+    "document_imports",
+    "document_profiles",
+    "driver_bonuses",
+    "driver_compensation_templates",
+    "driver_deductions",
+    "driver_disputes",
+    "driver_pay_audit_logs",
+    "driver_pay_records",
+    "driver_settlements",
+    "facilities",
+    "facility_external_references",
+    "in_app_notifications",
+    "load_driver_assignments",
+    "load_pay_components",
+    "loads",
+    "pay_component_attachments",
+    "route_templates"
+  ],
+  "livePolicies": [
+    {
+      "tbl": "AutomationRule",
+      "polname": "bypass_rls_policy",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "tbl": "AutomationRule",
+      "polname": "automation_rule_delete_policy",
+      "cmd": "DELETE",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": null
+    },
+    {
+      "tbl": "AutomationRule",
+      "polname": "automation_rule_insert_policy",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "tbl": "AutomationRule",
+      "polname": "tenant_isolation_policy",
+      "cmd": "SELECT",
+      "qual": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
+      "with_check": null
+    },
+    {
+      "tbl": "AutomationRule",
+      "polname": "automation_rule_update_policy",
+      "cmd": "UPDATE",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "tbl": "AutomationRun",
+      "polname": "bypass_rls_policy",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "tbl": "AutomationRun",
+      "polname": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())"
+    },
+    {
+      "tbl": "Tenant",
+      "polname": "bypass_rls_policy",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null
+    },
+    {
+      "tbl": "Tenant",
+      "polname": "tenant_bootstrap_insert",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(id = current_tenant_id())"
+    },
+    {
+      "tbl": "Tenant",
+      "polname": "tenant_self_read",
+      "cmd": "SELECT",
+      "qual": "(id = current_tenant_id())",
+      "with_check": null
+    },
+    {
+      "tbl": "Tenant",
+      "polname": "tenant_self_update",
+      "cmd": "UPDATE",
+      "qual": "(id = current_tenant_id())",
+      "with_check": "(id = current_tenant_id())"
+    }
+  ],
+  "systemAtEntry": 6,
+  "systemAtExit": 6,
+  "systemRule": {
+    "id": "394a8cc3-38b6-4843-8bae-7337e0c8594e",
+    "key": "activation_celebration",
+    "isActive": true
+  },
+  "tenantA": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+  "tenantB": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+  "probes": [
+    {
+      "site": "1",
+      "siteLabel": "getAutomationRules — findMany + _count.runs",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "every rule, and a run count spanning BOTH tenants",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table AutomationRule"
+      },
+      "gucSeen": null
+    },
+    {
+      "site": "1",
+      "siteLabel": "getAutomationRules — findMany + _count.runs",
+      "lane": "TENANT_A",
+      "expectation": "must UNDER-READ",
+      "label": "run count drops every run the GUC does not name",
+      "rows": 1,
+      "values": {
+        "rules_visible": 7,
+        "runs_counted": 1
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "site": "1",
+      "siteLabel": "getAutomationRules — findMany + _count.runs",
+      "lane": "TENANT_EMPTY",
+      "expectation": "MEASURE",
+      "label": "the GUC a sysadmin request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "site": "2",
+      "siteLabel": "getRuleWithRuns — last 10 runs joined to Tenant.name",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "both runs and both tenant names",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table AutomationRule"
+      },
+      "gucSeen": null
+    },
+    {
+      "site": "2",
+      "siteLabel": "getRuleWithRuns — last 10 runs joined to Tenant.name",
+      "lane": "TENANT_A",
+      "expectation": "must UNDER-READ",
+      "label": "tenant B's run and its tenant name are invisible",
+      "rows": 1,
+      "values": {
+        "runs_visible": 1,
+        "tenant_names_visible": 1
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "site": "2",
+      "siteLabel": "getRuleWithRuns — last 10 runs joined to Tenant.name",
+      "lane": "TENANT_EMPTY",
+      "expectation": "MEASURE",
+      "label": "the GUC a sysadmin request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "site": "3",
+      "siteLabel": "toggleRuleActive — UPDATE a SYSTEM platform rule",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO GRANT YET",
+      "label": "flip isActive on a platform rule",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table AutomationRule"
+      },
+      "gucSeen": null,
+      "counterRead": {
+        "label": "the SYSTEM rule still carries its original isActive",
+        "value": 1
+      }
+    },
+    {
+      "site": "3",
+      "siteLabel": "toggleRuleActive — UPDATE a SYSTEM platform rule",
+      "lane": "TENANT_A",
+      "expectation": "must be REFUSED",
+      "label": "post-612 this is a SILENT 0 rows, not a 42501",
+      "rows": 0,
+      "values": null,
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "counterRead": {
+        "label": "the SYSTEM rule still carries its original isActive",
+        "value": 1
+      }
+    },
+    {
+      "site": "3",
+      "siteLabel": "toggleRuleActive — UPDATE a SYSTEM platform rule",
+      "lane": "TENANT_EMPTY",
+      "expectation": "MEASURE",
+      "label": "the GUC a sysadmin request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "counterRead": {
+        "label": "the SYSTEM rule still carries its original isActive",
+        "value": 1
+      }
+    },
+    {
+      "site": "4",
+      "siteLabel": "manualTriggerRule — tenant.findUnique (an ARBITRARY operator-supplied tenant)",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "reads tenant B, which the operator is not",
+      "rows": 1,
+      "values": {
+        "n": 1
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "site": "4",
+      "siteLabel": "manualTriggerRule — tenant.findUnique (an ARBITRARY operator-supplied tenant)",
+      "lane": "TENANT_A",
+      "expectation": "must be REFUSED",
+      "label": "tenant B is invisible — paired with an own > 0",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "pairedOwn": {
+        "label": "own tenant A still readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "site": "4",
+      "siteLabel": "manualTriggerRule — tenant.findUnique (an ARBITRARY operator-supplied tenant)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "MEASURE",
+      "label": "the GUC a sysadmin request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "pairedOwn": {
+        "label": "own tenant A still readable on the SAME connection",
+        "value": null,
+        "error": "TC001"
+      }
+    },
+    {
+      "site": "5a",
+      "siteLabel": "manualTriggerRule — automationRule.findUnique, a SYSTEM rule",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "reads the platform rule",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table AutomationRule"
+      },
+      "gucSeen": null
+    },
+    {
+      "site": "5a",
+      "siteLabel": "manualTriggerRule — automationRule.findUnique, a SYSTEM rule",
+      "lane": "TENANT_A",
+      "expectation": "HONEST FINDING — visible today",
+      "label": "612's SELECT half deliberately keeps the SYSTEM branch",
+      "rows": 1,
+      "values": {
+        "n": 1
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "site": "5a",
+      "siteLabel": "manualTriggerRule — automationRule.findUnique, a SYSTEM rule",
+      "lane": "TENANT_EMPTY",
+      "expectation": "MEASURE",
+      "label": "the GUC a sysadmin request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "site": "5b",
+      "siteLabel": "manualTriggerRule — automationRule.findUnique, another TENANT's rule",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "reads tenant B's TENANT-scoped rule",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table AutomationRule"
+      },
+      "gucSeen": null
+    },
+    {
+      "site": "5b",
+      "siteLabel": "manualTriggerRule — automationRule.findUnique, another TENANT's rule",
+      "lane": "TENANT_A",
+      "expectation": "must be REFUSED",
+      "label": "the structural cross-tenant case — paired with an own > 0",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "pairedOwn": {
+        "label": "own tenant A's rule still readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "site": "5b",
+      "siteLabel": "manualTriggerRule — automationRule.findUnique, another TENANT's rule",
+      "lane": "TENANT_EMPTY",
+      "expectation": "MEASURE",
+      "label": "the GUC a sysadmin request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "pairedOwn": {
+        "label": "own tenant A's rule still readable on the SAME connection",
+        "value": null,
+        "error": "TC001"
+      }
+    }
+  ]
+}
