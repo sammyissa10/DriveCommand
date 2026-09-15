@@ -2086,3 +2086,82 @@ The column `(not available)` does not exist in the current database.
 [2026-09-15T18:52:59.833Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
 [2026-09-15T18:52:59.834Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
  GET /api/cron/workflow-notifications 200 in 248ms (next.js: 7ms, proxy.ts: 5ms, application-code: 235ms)
+○ Compiling /track/[token] ...
+⨯ Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  digest: '8879583',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."Load"."id", "public"."Load"."tenantId", "public"."Load"."loadNumber", "public"."Load"."customerId", "public"."Load"."routeId", "public"."Load"."sequence", "public"."Load"."driverId", "public"."Load"."truckId", "public"."Load"."origin", "public"."Load"."destination", "public"."Load"."pickupDate", "public"."Load"."deliveryDate", "public"."Load"."weight", "public"."Load"."commodity", "public"."Load"."rate", "public"."Load"."status"::text, "public"."Load"."notes", "public"."Load"."pickupLat", "public"."Load"."pickupLng", "public"."Load"."deliveryLat", "public"."Load"."deliveryLng", "public"."Load"."geofenceFlags", "public"."Load"."trackingToken", "public"."Load"."createdById", "public"."Load"."updatedById", "public"."Load"."createdAt", "public"."Load"."updatedAt", "public"."Load"."archivedAt", "public"."Load"."pickupStopId", "public"."Load"."deliveryStopId", "public"."Load"."isSample" FROM "public"."Load" WHERE ("public"."Load"."trackingToken" = $1 AND 1=1) LIMIT $2 OFFSET $3',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ GET /track/606-probe-token-4d2d22d7-d29 500 in 10.9s (next.js: 9.9s, proxy.ts: 3ms, application-code: 1050ms)
+✓ Compiled in 254ms
+✓ Compiled in 256ms
+✓ Compiled in 145ms
+[2026-09-15T18:58:57.083Z] INFO: [admin-db] privileged query {"reason":"public shipment tracking lookup"}
+ GET /track/606-probe-token-e76eef59-afb 200 in 1308ms (next.js: 401ms, proxy.ts: 7ms, application-code: 900ms)
+[2026-09-15T18:59:23.038Z] INFO: [admin-db] privileged query {"reason":"public shipment tracking lookup"}
+ GET /track/606-probe-token-895090e8-13e 200 in 597ms (next.js: 19ms, proxy.ts: 3ms, application-code: 575ms)
+✓ Compiled in 344ms
+⨯ Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  digest: '8879583',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."Load"."id", "public"."Load"."tenantId", "public"."Load"."loadNumber", "public"."Load"."customerId", "public"."Load"."routeId", "public"."Load"."sequence", "public"."Load"."driverId", "public"."Load"."truckId", "public"."Load"."origin", "public"."Load"."destination", "public"."Load"."pickupDate", "public"."Load"."deliveryDate", "public"."Load"."weight", "public"."Load"."commodity", "public"."Load"."rate", "public"."Load"."status"::text, "public"."Load"."notes", "public"."Load"."pickupLat", "public"."Load"."pickupLng", "public"."Load"."deliveryLat", "public"."Load"."deliveryLng", "public"."Load"."geofenceFlags", "public"."Load"."trackingToken", "public"."Load"."createdById", "public"."Load"."updatedById", "public"."Load"."createdAt", "public"."Load"."updatedAt", "public"."Load"."archivedAt", "public"."Load"."pickupStopId", "public"."Load"."deliveryStopId", "public"."Load"."isSample" FROM "public"."Load" WHERE ("public"."Load"."trackingToken" = $1 AND 1=1) LIMIT $2 OFFSET $3',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ GET /track/606-probe-token-74e7a85e-431 500 in 1286ms (next.js: 335ms, proxy.ts: 68ms, application-code: 882ms)
+✓ Compiled in 220ms
+ POST /api/auth/login 200 in 2.6s (next.js: 361ms, proxy.ts: 4ms, application-code: 2.2s)
+ POST /api/auth/login 200 in 727ms (next.js: 5ms, proxy.ts: 8ms, application-code: 713ms)
+[2026-09-15T19:01:37.913Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-15T19:01:37.914Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-15T19:01:38.293Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
+[2026-09-15T19:01:38.600Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":0,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":0,"details":[],"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-auto-dispatch 200 in 745ms (next.js: 42ms, proxy.ts: 7ms, application-code: 696ms)

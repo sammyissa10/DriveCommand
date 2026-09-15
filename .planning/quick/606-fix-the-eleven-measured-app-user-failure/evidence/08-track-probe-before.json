@@ -1,0 +1,27 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:59:42.151Z",
+  "note": "production carries ZERO legacy \"Load\" rows with a trackingToken — this measures the SHAPE, not a live feature",
+  "probe": {
+    "id": "74e7a85e-4311-4e75-9537-10f977896ece",
+    "token": "606-probe-token-74e7a85e-431",
+    "loadNumber": "606-PROBE-74e7a85e",
+    "tenant": "staging-alpha",
+    "seeded": true,
+    "seedError": null
+  },
+  "response": {
+    "status": 500,
+    "tc001InLogWindow": 2,
+    "bodyCarriesLoadNumber": false,
+    "bodyExcerpt": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/stat"
+  },
+  "logSliceExcerpt": "⨯ Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at async e.interpretNode (src\\generated\\prisma\\runtime\\client.js:15:43522)\n    at async e.interpretNode (src\\generated\\prisma\\runtime\\client.js:15:43962)\n    at async e.interpretNode (src\\generated\\prisma\\runtime\\client.js:15:42651)\n    at async e.interpretNode (src\\generated\\prisma\\runtime\\client.js:15:45151)\n    at async e.run (src\\generated\\prisma\\runtime\\client.js:15:42242)\n    at async e.execute (src\\generated\\prisma\\runtime\\client.js:61:815)\n    at async qt.request (src\\generated\\prisma\\runtime\\client.js:62:2327)\n    at async Object.singleLoader (src\\generated\\prisma\\runtime\\client.js:69:6569)\n  13 | ...\n  14 | ...\n> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....\n     |                                               ^\n  16 | ...\n  17 | ...\n  18 | ... {\n  clientVersion: '7.6.0',\n  digest: '8879583',\n  [cause]: {\n    originalCode: 'TC001',\n    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',\n    kind: 'postgres',\n    code: 'TC001',\n    severity: 'ERROR',\n    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',\n    detail: 'statement: SELECT \"public\".\"Load\".\"id\", \"public\".\"Load\".\"tenantId\", \"public\".\"Load\".\"loadNumber\", \"public\".\"Load\".\"customerId\", \"public\".\"Load\".\"routeId\", \"public\".\"Load\".\"sequence\", \"public\".\"Load\".\"driverId\", \"public\".\"Load\".\"truckId\", \"public\".\"Load\".\"origin\", \"public\".\"Load\".\"destination\", \"public\".\"Load\".\"pickupDate\", \"public\".\"Load\".\"deliveryDate\", \"public\".\"Load\".\"weight\", \"public\".\"Load\".\"commodity\", \"public\".\"Load\".\"rate\", \"public\".\"Load\".\"status\"::text, \"public\".\"Load\".\"notes\", \"public\".\"Load\".\"pickupLat\", \"public\".\"Load\".\"pickupLng\", \"public\".\"Load\".\"deliveryLat\", \"public\".\"Load\".\"deliveryLng\", \"public\".\"Load\".\"geofenceFlags\", \"public\".\"Load\".\"trackingToken\", \"public\".\"Load\".\"createdById\", \"public\".\"Load\".\"updatedById\", \"public\".\"Load\".\"createdAt\", \"public\".\"Load\".\"updatedAt\", \"public\".\"Load\".\"archivedAt\", \"public\".\"Load\".\"pickupStopId\", \"public\".\"Load\".\"deliveryStopId\", \"public\".\"Load\".\"isSample\" FROM \"public\".\"Load\" WHERE (\"public\".\"Load\".\"trackingToken\" = $1 AND 1=1) LIMIT $2 OFFSET $3',\n    column: undefined,\n    hint: \"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection.\"\n  }\n}\n GET /track/606-probe-token-74e7a85e-431 500 in 1286ms (next.js: 335ms, proxy.ts: 68ms, application-code: 882ms)\n",
+  "cleanup": {
+    "deleted": 1,
+    "deletedCustomers": 1,
+    "left": 0,
+    "leftCust": 0
+  },
+  "verdict": "FAILS — the page raises as app_user the first time a token exists"
+}

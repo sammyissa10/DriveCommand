@@ -1,0 +1,27 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:59:24.735Z",
+  "note": "production carries ZERO legacy \"Load\" rows with a trackingToken — this measures the SHAPE, not a live feature",
+  "probe": {
+    "id": "895090e8-13ed-42e3-b8bb-7eb235613049",
+    "token": "606-probe-token-895090e8-13e",
+    "loadNumber": "606-PROBE-895090e8",
+    "tenant": "staging-alpha",
+    "seeded": true,
+    "seedError": null
+  },
+  "response": {
+    "status": 200,
+    "tc001InLogWindow": 0,
+    "bodyCarriesLoadNumber": true,
+    "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async="
+  },
+  "logSliceExcerpt": "[2026-09-15T18:59:23.038Z] INFO: [admin-db] privileged query {\"reason\":\"public shipment tracking lookup\"}\n GET /track/606-probe-token-895090e8-13e 200 in 597ms (next.js: 19ms, proxy.ts: 3ms, application-code: 575ms)\n",
+  "cleanup": {
+    "deleted": 1,
+    "deletedCustomers": 1,
+    "left": 0,
+    "leftCust": 0
+  },
+  "verdict": "RENDERS — HTTP 200, no TC001, and the load number is in the body"
+}

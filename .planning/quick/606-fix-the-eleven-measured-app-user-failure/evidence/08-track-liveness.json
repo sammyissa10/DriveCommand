@@ -1,0 +1,23 @@
+{
+  "task": "quick-606",
+  "at": "2026-09-15T18:55:24.660Z",
+  "statements": {
+    "withToken": "SELECT count(*)::int AS n FROM public.\"Load\" WHERE \"trackingToken\" IS NOT NULL",
+    "total": "SELECT count(*)::int AS n FROM public.\"Load\"",
+    "gps": "SELECT count(*)::int AS n FROM public.\"GPSLocation\"",
+    "recent": "SELECT count(*)::int AS n FROM public.\"Load\" WHERE \"trackingToken\" IS NOT NULL AND \"updatedAt\" > now() - interval '180 days'"
+  },
+  "production": {
+    "withToken": 0,
+    "total": 2,
+    "gps": 352,
+    "recent": 0
+  },
+  "staging": {
+    "withToken": 0,
+    "total": 0,
+    "gps": 0,
+    "recent": 0
+  },
+  "live": false
+}

@@ -133,6 +133,10 @@ const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
   'app/api/cron/workflow-digest/route.ts': { calls: 1, minBytes: 4000 },
   'app/api/cron/workflow-notifications/route.ts': { calls: 2, minBytes: 3000 },
   'app/api/track/[token]/route.ts': { calls: 1, minBytes: 1500 },
+  // quick-606 — the PAGE now takes the same decision as its API twin above,
+  // for the byte-identical query. It cannot be tenant-scoped: an anonymous
+  // caller has no tenant until the token resolves one.
+  'app/track/[token]/page.tsx': { calls: 1, minBytes: 3000 },
   'lib/context/tenant-context.ts': { calls: 0, minBytes: 4000 },
   'lib/db/repositories/tenant.repository.ts': { calls: 2, minBytes: 1500 },
   'lib/email/send-sysadmin-invoice.ts': { calls: 1, minBytes: 2000 },
@@ -145,8 +149,8 @@ const KNOWN_NON_ALLOWLISTED_FILE = 'lib/db/prisma.ts';
 
 describe('quick-600 (B5) — getAdminDb import allowlist', () => {
   it('integrity floor: allowlist is non-trivial and internally consistent', () => {
-    expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(22);
-    expect(TOTAL_EXPECTED_CALLS).toBe(43);
+    expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(23);
+    expect(TOTAL_EXPECTED_CALLS).toBe(44);
   });
 
   it('walked a real, non-trivial corpus (anti-vacuity)', () => {
