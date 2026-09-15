@@ -569,4 +569,216 @@ No `logger.warn` or `logger.info` call was touched.
 
 ## 7. The five finishing checks
 
-*(Task 6 — populated below.)*
+### 7.1 The enumeration covered every scheduled entry point, not only the five known
+
+**Evidence:** `evidence/01-enumeration.md`, §1 above.
+
+The plan's fact table named **five** swallowers. The three-source union found **fifteen** entry
+points and classified **twelve** as misreporting. The five are all confirmed, symptom for symptom;
+the other seven are the finding.
+
+Each source's count was asserted separately, never inferred from another:
+
+| source | asserted | command |
+|---|---|---|
+| A — `vercel.json` | 14 | `node -e` parse of the real file |
+| B — the cron directory | 14 | `ls -d … \| wc -l`, never a hardcoded list |
+| union | **15** | `A ∩ B = 13`, so **neither source alone is complete** |
+| C — background handlers | 77 `after(` / 11 `setTimeout|setInterval` / 66 `void` | published with the exact commands and both reconciliations |
+
+Both asymmetries are named, and a third was found that the plan did not anticipate:
+
+1. **`/api/warmup`** — scheduled, not under `/api/cron/`. Invisible to quick-602's directory glob.
+   Verdict **CLEAN**, confirmed (no catch at all).
+2. **`cleanup-quarantine`** — `git log -S"cleanup-quarantine" -- vercel.json` returns **zero**
+   commits, so it was **never scheduled**, not descheduled. The live Vercel project's 14 cron
+   definitions confirm it independently.
+3. **`docs/security/input-hardening.md:86` and the route's own header assert a schedule that has
+   never existed.** Both corrected; the schedule itself was **reported, not added**.
+
+A fourth check makes this durable rather than a one-off: `cron-failure-contract.test.ts` asserts the
+cron directory's contents equal the union of the twelve fixed routes and the CLEAN ones, so a
+**thirteenth** route added later fails the guard instead of quietly escaping classification.
+
+### 7.2 Every DELIBERATE case still continues past a single bad record — proven per route
+
+**Evidence:** `evidence/06-red-runs.md` §"The survivor assertion", and the assertion-3 block in each
+of the eleven test files.
+
+**This is the check that stops the fix turning a resilient batch into a brittle one**, so it is not
+discharged by the response reporting a failure. Each test injects a failure into **1 of M** items and
+asserts the mocked downstream was called **M** times — not 1, not 2 — as well as asserting the
+survivor counter.
+
+| route | M | downstream counted | test name |
+|---|---|---|---|
+| `purge-deleted` | 7 | `deleteMany` per model | *reports the failure … and keeps the survivors in the total* |
+| `send-reminders` | 4 | `dispatchNotification` | *… STILL dispatches the other M-1 items* |
+| `send-reminders` (tenant scope) | 3 | `findUpcomingMaintenance` | *counts and NAMES a whole lost tenant …* |
+| `digest-daily-driver` | 5 | `buildDailyDriverPayload` | *… STILL builds all M payloads* |
+| `digest-weekly-owner` | 5 | `buildWeeklyOwnerPayload` | *… STILL builds all M payloads* |
+| `digest-compliance-30day` | 5 | `buildCompliance30DayPayload` | *… STILL builds all M payloads* |
+| `cleanup-quarantine` | 4 | `DeleteObjectCommand` sends | *… STILL attempts all M deletes* |
+| `carrier-auto-dispatch` | 4 | `generateDispatches` | *… STILL generates for the other M-1* |
+| `carrier-compliance-alerts` | 4 | `getComplianceAlerts` | *COUNTS the lost tenant … STILL processes the other M-1* |
+| `trip-reminders` | 4 | `getTenantPrismaForOrg` | *… STILL reminds the other M-1* |
+| `workflow-notifications` | 5 | `sendStepOverdue` | *reports a failed ITEM … STILL sends the other M-1* |
+| `workflow-digest` | 4 | `sendEmail` | *COUNTS a failed recipient email … STILL emails the other M-1* |
+| `automations` | 16 (4 tenants × 4 rules) | `getTenantPrismaForOrg` | *COUNTS a failed scheduling … STILL schedules the rest* |
+
+**All twelve routes are covered**, and `send-reminders` twice because its tenant-level catch is a
+second, independent resilience boundary. In the code, no `try` became a `throw` and no `continue` was
+removed.
+
+**Every test was witnessed RED before being accepted** (quick-549): the twelve route files were
+reverted to the plan commit and the directory re-run — **11 of 11 files red, 48 of 56 tests red**.
+The 8 that stayed green are the ones that should have (the pure contract unit tests, the directory
+enumeration, the CLEAN-routes counter-assertion, and the 401 test — authentication was never broken).
+
+One methodological point worth keeping: **the `[object Object]` assertion needed its own isolated
+test to be witnessed red at all.** In the combined test, the status assertion fails first on pre-fix
+code, so the log assertion is asserted but never *exercised* in the red run. The isolated test
+produces the defect verbatim:
+
+```
+AssertionError: no logger.error call carried the injected error in slot 2. Calls were:
+  [["[CRON] purge-deleted: Failed to purge CarrierContract","object","[object Object]"]]
+```
+
+### 7.3 The logger defect is wider than these routes — stated plainly
+
+**Evidence:** §3 and §6 above, `evidence/03-logger-sites.md` (all 76 by name),
+`evidence/05-logger-classification.md`.
+
+**Yes, far wider.** At HEAD, **76 of 610 `logger.error` calls — 12.5% — across 36 files** passed an
+object literal where the second parameter is the error. Only **11** of those 76 were on the scheduled
+surface; the other **65 were elsewhere**: server actions, API routes, `lib/`, and two React error
+boundaries.
+
+All 76 are now fixed — 11 by §5, 65 by §6 — and the closing scan returns **zero repo-wide**.
+
+**Bucket (c) is empty, and there is therefore no follow-up list to carry.** The mechanical pass
+proposed 8 sites it could not decide; all 8 resolved on reading, in two clean groups, with no
+guessing (§6.2). Stated explicitly because an empty list and a list nobody produced look identical in
+a summary.
+
+Two numbers were corrected along the way rather than quietly adopted:
+
+- The scan total is **76**, not the planner's 75. The grep is line-oriented and missed one multi-line
+  call — `workflow-notifications/route.ts:156`, named by diffing the two site lists.
+- The denominator is **610**, not 621. The grep counted 11 occurrences of `logger.error(` **inside
+  comments**. The scanner gained a comment stripper mid-task, and the numerator was re-measured
+  against the pre-fix tree with it — still 76, so only the denominator moved.
+
+### 7.4 The platform behaviour was cited, not assumed
+
+**Evidence:** §4 above, `evidence/04-platform-behaviour.md` with every URL, HTTP status, byte count
+and verbatim quote. One fetch 404'd (a wrong slug) and is recorded as such rather than dropped.
+
+- **Retry:** *"Vercel will not retry an invocation if a cron job fails."* — quoted, so the status
+  change provably cannot cause a resend.
+- **Visibility:** *"Requests with a status code of `4xx` are marked with Warning amber / `5xx` are
+  marked with Error red"* — quoted, and it is what rules **207** out: a 207 carries no level marking
+  and is indistinguishable from a 200 in the one surface an operator scans.
+- **Alerting:** **no page says a non-2xx notifies anybody.** Recorded as an absence, not as proof
+  none exists, and **the status decision rests only on the documented half.**
+- **The justification is therefore stated as the WEAKER one**: "visible in the runtime log and to
+  Sentry", never "it alerts". §4.6 says so in those words.
+- **Unanswered and marked unanswered:** whether Vercel records a per-invocation success/failure state
+  distinct from the HTTP log.
+- **Plan:** read live from the Vercel API — `billing.plan = "pro"`, and the project's `accountId` is
+  that same team. **CLAUDE.md, `trip-reminders`' header and the Phase 52 note all say Hobby and are
+  stale.** The suspected cron-count-vs-limit conflict does not exist: the limit is **100 per project
+  on every plan**. Reported; `vercel.json` untouched.
+
+### 7.5 `npm run build` succeeds and the failing-file set is unchanged — compared BY NAME
+
+**Evidence:** `evidence/07-suite-baseline.md`.
+
+```
+$ cd apps/web && npm run build
+BUILD EXIT=0
+```
+
+Suite, both sides with the **same reporter** (`--reporter=json`; `--reporter=basic` does not exist in
+vitest 4 and exits 0 having run zero tests), measured **in the main tree** with the source checked
+out to the plan commit and restored — never a `git worktree`, which does not carry the untracked
+`apps/web/.env.local` (quick-567). No `next dev` was running.
+
+| | BEFORE | AFTER | delta |
+|---|---|---|---|
+| total tests | 1990 | **2047** | **+57** = exactly the tests this task added |
+| passed | 1871 | **1928** | +57 |
+| **failed** | **64** | **64** | **0** |
+| pending | 52 | 52 | 0 |
+| **failing FILES** | **18** | **18** | **0** |
+
+**Compared by name, both directions, and at test granularity as well as file granularity:**
+
+```
+failing-file set difference:                EMPTY both directions (18 identical names)
+NEWLY FAILING (existed before and passed):  0
+FIXED (failed before, passes now):          0
+FAILING AND BRAND NEW (added by this task): 0
+```
+
+**The by-name comparison earned its keep — it caught two regressions a count would have missed, and
+both were fixed rather than swept up.** Recorded in full in `evidence/07` because "the counts
+matched" would have been a false report on the first two passes:
+
+1. **A new failing file this task did not add.** quick-602's countdown guard pins
+   `scripts/audit/wrapper-countdown.json` to the tree, and quick-603 added one file and shifted three
+   line numbers. The artefact was **regenerated** — the guard's own header calls that the intended
+   path ("forces the number down in a reviewable diff, in the same commit as the work") — and the
+   diff was inspected before acceptance: `unmigratedUnits` 456, `unmigratedCallSites` 459,
+   `withTenantContextCallSites` 0 and `filesWithUnmigratedUnits` 202 are all **byte-identical**. Only
+   `generatedAt`, `filesScanned` 1689 → 1690, and three line numbers moved. **No guard was weakened.**
+2. **One test flipped INSIDE an already-failing file** — invisible to a file-set comparison, which is
+   precisely the case the check exists for. §6 added `serializeError` to `fireEvent.ts`'s import, and
+   twelve test files mocked `@/lib/logger` with a factory returning only `{ logger }`, which
+   *replaces* the module. The fix was to the **mocks**, not the code, and it suppresses nothing: each
+   now spreads `importOriginal()` — the pattern `in-app-failure-visibility.test.ts` already used — so
+   the mock stops hiding a real export and the next export added will not break them either. No
+   assertion was touched.
+
+**`tsc --noEmit` is clean and was PROBED four times**, each time by injecting
+`const x: number = 'y'` into a file the corresponding task had actually edited, confirming tsc
+reported *that* error, then deleting the probe:
+
+| after | probe file | reported |
+|---|---|---|
+| §5 | `src/app/api/cron/purge-deleted/route.ts` | `(73,7): error TS2322` |
+| §6 | `src/server/services/workflows/notifications.ts` | `(639,7): error TS2322` |
+| §7 | `tests/cron/purge-deleted.test.ts` | `(155,7): error TS2322` |
+| final tree | `tests/cron/cron-failure-contract.test.ts` | `(194,7): error TS2322` |
+
+Every probe returned a **semantic** error, not a syntax error, which is the positive signal that the
+gate is doing semantic checking rather than silently skipping it.
+
+**Lint could not be run and is reported rather than claimed.** `apps/web` has no working lint entry
+point (quick-562): `next lint` no longer accepts `--dir` on this Next version and ESLint 9 finds no
+`eslint.config.js`. tsc is the only gate that actually runs.
+
+**Nothing installed, no DDL, no database written:**
+
+```
+$ git diff --name-only bf3b921c..HEAD | grep -E "package(-lock)?\.json|prisma/(migrations|schema)"
+(no output)
+```
+
+### 7.6 Generated artefacts — what was committed and what was reverted
+
+Stated deliberately, because a build regenerates more than this task changed.
+
+- **`scripts/audit/wrapper-countdown.json` — COMMITTED.** Its drift is caused by this task, and
+  leaving it stale leaves an existing guard red. Diff inspected; every protected count unchanged
+  (§7.5).
+- **`src/lib/docs/search-index.json` and `.docs-data/admin-docs-search-index.json` — REVERTED.**
+  `npm run build` regenerates both, and their diffs have **nothing to do with quick-603**: three
+  Phase 12 Document Import feature-registry entries (`document-import`, `facility-matching`,
+  `route-template-matching`) and a route correction (`/carrier/route-templates` →
+  `/carrier/templates`). The string `scheduled-job-failure-reporting` appears **zero** times in
+  either diff. Committing them would smuggle an unrelated nav correction and three new help-centre
+  entries into a cron-reporting commit.
+  **Reported as a finding: the committed search indexes are stale relative to what the feature
+  registry now produces.** That is pre-existing drift and someone else's commit to make.

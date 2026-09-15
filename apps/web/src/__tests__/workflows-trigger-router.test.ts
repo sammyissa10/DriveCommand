@@ -37,9 +37,16 @@ vi.mock('@/lib/db/prisma', () => ({
   },
 }));
 
-vi.mock('@/lib/logger', () => ({
-  logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
-}));
+vi.mock('@/lib/logger', async (importOriginal) => {
+  // quick-603: spread the real module so a NEW export (serializeError) is not
+  // hidden by the mock. A factory that returns only `{ logger }` makes vitest
+  // throw for any subject importing anything else from this module.
+  const actual = await importOriginal<typeof import('@/lib/logger')>();
+  return {
+    ...actual,
+    logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  };
+});
 
 const TENANT_ID = 'tenant-abc';
 const PLAYBOOK_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'; // valid UUID v4

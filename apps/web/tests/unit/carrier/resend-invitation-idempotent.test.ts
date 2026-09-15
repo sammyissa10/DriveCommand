@@ -15,7 +15,16 @@ vi.mock('@/lib/db/prisma', () => ({
   TX_OPTIONS: {},
 }));
 
-vi.mock('@/lib/logger', () => ({ logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() } }));
+vi.mock('@/lib/logger', async (importOriginal) => {
+  // quick-603: spread the real module so a NEW export (serializeError) is not
+  // hidden by the mock. A factory that returns only `{ logger }` makes vitest
+  // throw for any subject importing anything else from this module.
+  const actual = await importOriginal<typeof import('@/lib/logger')>();
+  return {
+    ...actual,
+    logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
+  };
+});
 vi.mock('@/lib/email/send-driver-invitation', () => ({ sendDriverInvitation: vi.fn() }));
 vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: vi.fn() }));
 vi.mock('@/lib/app-url', () => ({ getAppBaseUrl: () => 'https://drivecommand.app' }));

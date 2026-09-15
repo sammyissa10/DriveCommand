@@ -305,9 +305,16 @@ vi.mock('@/lib/context/tenant-context', () => ({
   getTenantPrisma: vi.fn(async () => fakeDb),
 }));
 
-vi.mock('@/lib/logger', () => ({
-  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
-}));
+vi.mock('@/lib/logger', async (importOriginal) => {
+  // quick-603: spread the real module so a NEW export (serializeError) is not
+  // hidden by the mock. A factory that returns only `{ logger }` makes vitest
+  // throw for any subject importing anything else from this module.
+  const actual = await importOriginal<typeof import('@/lib/logger')>();
+  return {
+    ...actual,
+    logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  };
+});
 
 vi.mock('../persistence', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../persistence')>();
