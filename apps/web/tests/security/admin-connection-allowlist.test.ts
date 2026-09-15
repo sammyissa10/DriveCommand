@@ -114,7 +114,11 @@ interface AllowlistEntry {
 
 const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
   'actions/support-tickets.ts': { calls: 3, minBytes: 15000 },
-  'app/(admin)/actions/automations.ts': { calls: 3, minBytes: 4000 },
+  // quick-613 — 3 -> 7. The three pre-existing `automationRun` calls, plus the
+  // three routed `AutomationRule` units of work (listing, detail read,
+  // activation toggle), plus ONE shared acquisition in `manualTriggerRule`
+  // serving both its `tenant.findUnique` and its `automationRule.findUnique`.
+  'app/(admin)/actions/automations.ts': { calls: 7, minBytes: 4000 },
   'app/(admin)/actions/sysadmin-invoices.ts': { calls: 10, minBytes: 9000 },
   'app/(admin)/actions/tenants.ts': { calls: 7, minBytes: 15000 },
   'app/(admin)/billing/[id]/page.tsx': { calls: 1, minBytes: 4000 },
@@ -150,7 +154,7 @@ const KNOWN_NON_ALLOWLISTED_FILE = 'lib/db/prisma.ts';
 describe('quick-600 (B5) — getAdminDb import allowlist', () => {
   it('integrity floor: allowlist is non-trivial and internally consistent', () => {
     expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(23);
-    expect(TOTAL_EXPECTED_CALLS).toBe(44);
+    expect(TOTAL_EXPECTED_CALLS).toBe(48); // quick-613: 44 + 4 in automations.ts
   });
 
   it('walked a real, non-trivial corpus (anti-vacuity)', () => {

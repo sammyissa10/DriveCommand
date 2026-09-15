@@ -43,6 +43,16 @@ export const ADMIN_REASONS = [
 
   // ── SysAdmin automation surface ───────────────────────────────────────────
   'sysadmin manual automation trigger',
+  // quick-613 — the three `AutomationRule` units of work in the same file, each
+  // previously issued on the BARE (tenant) client. `toggleRuleActive` was
+  // measured 42501 under `app_user` in quick-612 §3; the two reads are
+  // all-tenant by intent (the run counts and the run list span every tenant).
+  // The manual trigger's own two reads REUSE the reason above — same unit of
+  // work as the `automationRun` writes already routed there, so no fourth
+  // member is minted.
+  'sysadmin automation rule listing',
+  'sysadmin automation rule detail read',
+  'sysadmin automation rule activation toggle',
 
   // ── SysAdmin tenant management ────────────────────────────────────────────
   'sysadmin trial extension',

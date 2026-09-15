@@ -1,7 +1,6 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
 import { getAdminDb } from '@/lib/db/admin-prisma';
 import { revalidatePath } from 'next/cache';
 import { executeSendEmailAction } from '@/lib/automations/actions/send-email';
@@ -18,7 +17,11 @@ async function requireAdminAccess() {
  */
 export async function getAutomationRules() {
   await requireAdminAccess();
-  return prisma.automationRule.findMany({
+  // quick-613 — ROUTE. A sysadmin has no tenant, and `_count.runs` counts
+  // AutomationRun rows across EVERY tenant; on a tenant connection that count
+  // silently drops every run the caller's GUC does not name.
+  const adminDb = await getAdminDb('sysadmin automation rule listing');
+  return adminDb.automationRule.findMany({
     orderBy: { key: 'asc' },
     select: {
       id: true,
@@ -40,7 +43,11 @@ export async function getAutomationRules() {
  */
 export async function getRuleWithRuns(ruleId: string) {
   await requireAdminAccess();
-  const rule = await prisma.automationRule.findUnique({
+  // quick-613 — ROUTE. The last 10 runs are read ACROSS ALL TENANTS and joined
+  // to `Tenant.name`; both the runs and the tenant names belong to tenants the
+  // sysadmin is not, and neither is visible to a tenant connection.
+  const adminDb = await getAdminDb('sysadmin automation rule detail read');
+  const rule = await adminDb.automationRule.findUnique({
     where: { id: ruleId },
     include: {
       runs: {
@@ -68,7 +75,12 @@ export async function getRuleWithRuns(ruleId: string) {
  */
 export async function toggleRuleActive(ruleId: string, isActive: boolean) {
   await requireAdminAccess();
-  await prisma.automationRule.update({
+  // quick-613 — ROUTE. This writes a platform (`scope='SYSTEM'`, `tenantId`
+  // NULL) rule, which no tenant owns. Measured 42501 under `app_user` in
+  // quick-612 §3 with AND without a tenant GUC; quick-612's per-command split
+  // turned that into a silent 0 rows, which is quieter, not safer.
+  const adminDb = await getAdminDb('sysadmin automation rule activation toggle');
+  await adminDb.automationRule.update({
     where: { id: ruleId },
     data: { isActive },
   });
@@ -92,10 +104,18 @@ export async function manualTriggerRule(ruleId: string, tenantId: string) {
     return { error: 'Invalid tenant UUID format' };
   }
 
-  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { id: true, name: true } });
+  // quick-613 — ROUTE, for BOTH reads below. `tenantId` is supplied by the
+  // operator and names a tenant that is not theirs — a sysadmin has no tenant
+  // at all — so on a tenant connection the lookup returns null for every real
+  // tenant and this action answers "Tenant not found" always. The rule read is
+  // the same unit of work as the `automationRun` writes further down, which
+  // quick-600 already routed; one acquisition serves both.
+  const adminDbRead = await getAdminDb('sysadmin manual automation trigger');
+
+  const tenant = await adminDbRead.tenant.findUnique({ where: { id: tenantId }, select: { id: true, name: true } });
   if (!tenant) return { error: 'Tenant not found' };
 
-  const rule = await prisma.automationRule.findUnique({
+  const rule = await adminDbRead.automationRule.findUnique({
     where: { id: ruleId },
     select: { id: true, actionsJson: true },
   });
