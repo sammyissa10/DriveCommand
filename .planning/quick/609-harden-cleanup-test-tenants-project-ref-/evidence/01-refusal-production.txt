@@ -1,0 +1,19 @@
+### STEP 7 — DATABASE_URL pinned at PRODUCTION, no --allow-production
+$ DATABASE_URL="<production>" npx tsx scripts/cleanup-test-tenants.ts
+
+[cleanup-test-tenants] project  : oqdhberkghtnszrkdvfm (PRODUCTION)
+[cleanup-test-tenants] host     : aws-1-us-west-1.pooler.supabase.com:5432
+[cleanup-test-tenants] role     : postgres
+[cleanup-test-tenants] url      : postgresql://postgres.oqdhberkghtnszrkdvfm:***@aws-1-us-west-1.pooler.supabase.com:5432/postgres
+[cleanup-test-tenants] mode     : DRY RUN (default)
+
+cleanup-test-tenants REFUSING TO RUN — DATABASE_URL names the PRODUCTION project (oqdhberkghtnszrkdvfm).
+  This script DELETES tenants and every row beneath them, and it cascades into
+  Supabase Auth users and object storage.
+
+  connection : postgresql://postgres.oqdhberkghtnszrkdvfm:***@aws-1-us-west-1.pooler.supabase.com:5432/postgres
+
+  Point DATABASE_URL at a disposable database, or pass --allow-production if you
+  genuinely mean production. Read docs/audits/production-test-writes.md first.
+
+exit code: 1
