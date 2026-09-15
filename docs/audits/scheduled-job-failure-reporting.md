@@ -500,7 +500,8 @@ the loop still continues. **The proof is §7.2's per-route survivor assertion, n
 
 ### 5.6 ACCIDENTAL: there were none — Task 4 in one line
 
-§2.1 established by reading all 37 catches, and by grepping for the three shapes the plan names, that
+`evidence/05b-task4-accidental.md` records the examination in full: §2.1 read all 37 catches and
+grepped for the three shapes the plan names, establishing that
 **zero catches on the scheduled surface are wider than what they were written for.** There was
 therefore no narrowing to do. Nothing was invented to fill the task; the examination is recorded in
 §2.1 and `evidence/02-classification.md`.
