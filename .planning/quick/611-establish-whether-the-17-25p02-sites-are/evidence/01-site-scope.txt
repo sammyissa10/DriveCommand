@@ -1,0 +1,36 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+SELF-TEST  positive detected: true   negative rejected: true
+
+files scanned            : 1692
+$transaction callbacks   : 237   <- anti-vacuity counter
+
+| id | kind | site | enclosing fn | own tx? | try wraps tx? | callers in tx | VERDICT |
+|---|---|---|---|---|---|---|---|
+| W1 | WRITE | `lib/carrier/fleet-drivers.ts:276` | `createCarrierDriver` | no | no | 0/1 | **DORMANT** |
+| W2 | WRITE | `lib/carrier/inspection-service.ts:703` | `overrideInspection` | no | no | 0/1 | **DORMANT** |
+| W3 | WRITE | `lib/carrier/trips.ts:786` | `transitionTripStatus` | no | no | 0/2 | **DORMANT** |
+| R1 | READ | `app/(owner)/actions/team-permissions.ts:152` | `inviteTeamMember` | no | no | 0/2 | **DORMANT** |
+| R2 | READ | `app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx:21` | `DriverCompensationPage` | no | no | 0/0 | **DORMANT** |
+| R3 | READ | `app/(owner)/crm/[id]/page.tsx:39` | `CustomerDetailPage` | no | no | 0/0 | **DORMANT** |
+| R4 | READ | `app/(owner)/crm/page.tsx:19` | `CRMPage` | no | no | 0/0 | **DORMANT** |
+| R5 | READ | `app/(owner)/invoices/[id]/edit/page.tsx:18` | `EditInvoicePage` | no | no | 0/0 | **DORMANT** |
+| R6 | READ | `app/(owner)/invoices/[id]/page.tsx:52` | `InvoiceDetailPage` | no | no | 0/0 | **DORMANT** |
+| R7 | READ | `app/(owner)/invoices/new/page.tsx:20` | `NewInvoicePage` | no | no | 0/0 | **DORMANT** |
+| R8 | READ | `app/(owner)/loads/[id]/page.tsx:44` | `LoadDetailPage` | no | no | 0/0 | **DORMANT** |
+| R9 | READ | `app/(owner)/loads/page.tsx:18` | `LoadsPage` | no | no | 0/0 | **DORMANT** |
+| R10 | READ | `app/(owner)/payroll/[id]/edit/page.tsx:18` | `EditPayrollPage` | no | no | 0/0 | **DORMANT** |
+| R11 | READ | `app/api/driver-pay/settlements/[settlementId]/finalize/route.ts:74` | `POST` | no | no | 0/51 | **DORMANT** |
+| R12 | READ | `app/api/driver/gps-ping/route.ts:67` | `POST` | no | YES | 0/51 | **IMPOSSIBLE** |
+| R13 | READ | `lib/carrier/documents.ts:101` | `uploadDocument` | no | no | 0/1 | **DORMANT** |
+| R14 | READ | `lib/carrier/trips.ts:720` | `transitionTripStatus` | no | no | 0/2 | **DORMANT** |
+
+LIVE       : 0
+DORMANT    : 16
+IMPOSSIBLE : 1
+UNRESOLVED : 0
+
+REPO-WIDE SWEEP — swallowing try/catch INSIDE a $transaction callback: 0
+
+NO REAL HIT ANYWHERE ON THIS TREE — which is the finding, and is why the SELF-TEST above is load-bearing: it is the only thing that exercises the predicate in the positive direction, so "0 live" is a measurement rather than an unexercised walker returning false for everything.
+
+wrote 01-site-scope.json

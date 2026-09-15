@@ -1,0 +1,48 @@
+{
+  "at": "2026-09-15T22:34:09.602Z",
+  "project": "wyixpgunnjmzguhggocz",
+  "role": "app_user",
+  "tripwire": "armed",
+  "orgId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+  "tag": "QUICK611-c550f982",
+  "bogusUserId": "3077525e-cbb4-450e-82b1-756a3873cfda",
+  "results": [
+    {
+      "control": "A",
+      "name": "TRUE POSITIVE — swallowed failure INSIDE the transaction callback",
+      "shape": "tx.create -> try{ tx.update FAILS }catch{swallow} -> tx.create",
+      "earlierWriteSurvived": false,
+      "laterWriteSucceeded": false,
+      "swallowedSqlstate": "P2003",
+      "laterSqlstate": "25P02",
+      "outerSqlstate": null,
+      "expectation": "later write fails 25P02 AND the earlier write is GONE",
+      "matchedExpectation": true
+    },
+    {
+      "control": "B",
+      "name": "FALSE POSITIVE — the try WRAPS the transaction (api/driver/gps-ping shape)",
+      "shape": "create -> try{ $transaction{ update FAILS } }catch{swallow} -> create",
+      "earlierWriteSurvived": true,
+      "laterWriteSucceeded": true,
+      "swallowedSqlstate": "P2003",
+      "laterSqlstate": null,
+      "outerSqlstate": null,
+      "expectation": "NO cascade — earlier write survives and the later write succeeds",
+      "matchedExpectation": true
+    },
+    {
+      "control": "C",
+      "name": "THE REMEDY — SAVEPOINT around the statement allowed to fail",
+      "shape": "tx.create -> SAVEPOINT -> try{ tx.update FAILS }catch{swallow + ROLLBACK TO} -> tx.create",
+      "earlierWriteSurvived": true,
+      "laterWriteSucceeded": true,
+      "swallowedSqlstate": "P2003",
+      "laterSqlstate": null,
+      "outerSqlstate": null,
+      "expectation": "earlier write SURVIVES and the later write SUCCEEDS",
+      "matchedExpectation": true
+    }
+  ],
+  "allMatched": true
+}

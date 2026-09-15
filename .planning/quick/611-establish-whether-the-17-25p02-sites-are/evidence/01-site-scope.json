@@ -1,0 +1,993 @@
+{
+  "at": "2026-09-15T22:37:34.570Z",
+  "filesScanned": 1692,
+  "totalTxCallbacks": 237,
+  "selfTest": {
+    "positiveDetected": true,
+    "negativeRejected": true
+  },
+  "realHits": 0,
+  "results": [
+    {
+      "id": "W1",
+      "kind": "WRITE",
+      "auditPath": "src/lib/carrier/fleet-drivers.ts",
+      "path": "lib/carrier/fleet-drivers.ts",
+      "auditLine": 276,
+      "fn": "createCarrierDriver",
+      "note": "swallows carrierDriver.update, then 3 more db ops",
+      "resolvedPath": "lib/carrier/fleet-drivers.ts",
+      "resolvedLine": 276,
+      "enclosingFn": "createCarrierDriver",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "app/api/v1/carrier/fleet/drivers/route.ts",
+          "line": 68,
+          "inTransaction": false,
+          "enclosingFn": "POST"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 1 caller(s) are outside a transaction"
+    },
+    {
+      "id": "W2",
+      "kind": "WRITE",
+      "auditPath": "src/lib/carrier/inspection-service.ts",
+      "path": "lib/carrier/inspection-service.ts",
+      "auditLine": 703,
+      "fn": "overrideInspection",
+      "note": "swallows trip.update + dispatchOverrideAudit.create, then 3 more",
+      "resolvedPath": "lib/carrier/inspection-service.ts",
+      "resolvedLine": 703,
+      "enclosingFn": "overrideInspection",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "lib/carrier/inspection-handlers.ts",
+          "line": 598,
+          "inTransaction": false,
+          "enclosingFn": "handleOverride"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 1 caller(s) are outside a transaction"
+    },
+    {
+      "id": "W3",
+      "kind": "WRITE",
+      "auditPath": "src/lib/carrier/trips.ts",
+      "path": "lib/carrier/trips.ts",
+      "auditLine": 786,
+      "fn": "transitionTripStatus",
+      "note": "swallows trip.create + carrierStop.create, then 3 more",
+      "resolvedPath": "lib/carrier/trips.ts",
+      "resolvedLine": 786,
+      "enclosingFn": "transitionTripStatus",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "app/api/v1/carrier/dispatches/[id]/status/route.ts",
+          "line": 93,
+          "inTransaction": false,
+          "enclosingFn": "PATCH"
+        },
+        {
+          "file": "lib/carrier/inspection-handlers.ts",
+          "line": 573,
+          "inTransaction": false,
+          "enclosingFn": "handleStartTrip"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 2 caller(s) are outside a transaction"
+    },
+    {
+      "id": "R1",
+      "kind": "READ",
+      "auditPath": "src/lib/carrier/team-permissions.ts",
+      "path": "app/(owner)/actions/team-permissions.ts",
+      "auditLine": 152,
+      "fn": "",
+      "note": "audit path was wrong — file is under app/(owner)/actions",
+      "resolvedPath": "app/(owner)/actions/team-permissions.ts",
+      "resolvedLine": 152,
+      "enclosingFn": "inviteTeamMember",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "app/(owner)/settings/team-permissions/TeamPermissionsDesktop.tsx",
+          "line": 311,
+          "inTransaction": false,
+          "enclosingFn": "handleInvite"
+        },
+        {
+          "file": "app/(owner)/settings/team-permissions/TeamPermissionsMobile.tsx",
+          "line": 284,
+          "inTransaction": false,
+          "enclosingFn": "handleInvite"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 2 caller(s) are outside a transaction"
+    },
+    {
+      "id": "R2",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx",
+      "path": "app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx",
+      "auditLine": 21,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx",
+      "resolvedLine": 21,
+      "enclosingFn": "DriverCompensationPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R3",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/crm/[id]/page.tsx",
+      "path": "app/(owner)/crm/[id]/page.tsx",
+      "auditLine": 39,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/crm/[id]/page.tsx",
+      "resolvedLine": 39,
+      "enclosingFn": "CustomerDetailPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R4",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/crm/page.tsx",
+      "path": "app/(owner)/crm/page.tsx",
+      "auditLine": 19,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/crm/page.tsx",
+      "resolvedLine": 19,
+      "enclosingFn": "CRMPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R5",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/invoices/[id]/edit/page.tsx",
+      "path": "app/(owner)/invoices/[id]/edit/page.tsx",
+      "auditLine": 18,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/invoices/[id]/edit/page.tsx",
+      "resolvedLine": 18,
+      "enclosingFn": "EditInvoicePage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R6",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/invoices/[id]/page.tsx",
+      "path": "app/(owner)/invoices/[id]/page.tsx",
+      "auditLine": 52,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/invoices/[id]/page.tsx",
+      "resolvedLine": 52,
+      "enclosingFn": "InvoiceDetailPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R7",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/invoices/new/page.tsx",
+      "path": "app/(owner)/invoices/new/page.tsx",
+      "auditLine": 20,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/invoices/new/page.tsx",
+      "resolvedLine": 20,
+      "enclosingFn": "NewInvoicePage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R8",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/loads/[id]/page.tsx",
+      "path": "app/(owner)/loads/[id]/page.tsx",
+      "auditLine": 44,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/loads/[id]/page.tsx",
+      "resolvedLine": 44,
+      "enclosingFn": "LoadDetailPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R9",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/loads/page.tsx",
+      "path": "app/(owner)/loads/page.tsx",
+      "auditLine": 18,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/loads/page.tsx",
+      "resolvedLine": 18,
+      "enclosingFn": "LoadsPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R10",
+      "kind": "READ",
+      "auditPath": "src/app/(owner)/payroll/[id]/edit/page.tsx",
+      "path": "app/(owner)/payroll/[id]/edit/page.tsx",
+      "auditLine": 18,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/(owner)/payroll/[id]/edit/page.tsx",
+      "resolvedLine": 18,
+      "enclosingFn": "EditPayrollPage",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file, and no caller found — autocommit today"
+    },
+    {
+      "id": "R11",
+      "kind": "READ",
+      "auditPath": "src/app/api/driver-pay/settlements/[settlementId]/finalize/route.ts",
+      "path": "app/api/driver-pay/settlements/[settlementId]/finalize/route.ts",
+      "auditLine": 74,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "app/api/driver-pay/settlements/[settlementId]/finalize/route.ts",
+      "resolvedLine": 74,
+      "enclosingFn": "POST",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "app/api/driver-pay/__tests__/components-api.test.ts",
+          "line": 162,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 128,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 141,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 154,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 161,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 167,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 182,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 190,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 200,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 208,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 217,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 234,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 255,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 271,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 285,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 299,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 307,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 324,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 336,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 125,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 135,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 157,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 176,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 185,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 88,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 97,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 105,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 114,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 121,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 129,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 135,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 161,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 175,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 210,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 116,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 132,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 146,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 162,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 167,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 188,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 199,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 212,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 221,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 257,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 273,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 281,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 292,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 307,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 350,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 378,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 404,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 51 caller(s) are outside a transaction"
+    },
+    {
+      "id": "R12",
+      "kind": "READ",
+      "auditPath": "src/app/api/driver/gps-ping/route.ts",
+      "path": "app/api/driver/gps-ping/route.ts",
+      "auditLine": 67,
+      "fn": "POST",
+      "note": "the try WRAPS the $transaction — catch is outside it",
+      "resolvedPath": "app/api/driver/gps-ping/route.ts",
+      "resolvedLine": 67,
+      "enclosingFn": "POST",
+      "ownTransaction": false,
+      "catchWrapsTransaction": true,
+      "callers": [
+        {
+          "file": "app/api/driver-pay/__tests__/components-api.test.ts",
+          "line": 162,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 128,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 141,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 154,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 161,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 167,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 182,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 190,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 200,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 208,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 217,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 234,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 255,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 271,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 285,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 299,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 307,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 324,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/corrections-api.test.ts",
+          "line": 336,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 125,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 135,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 157,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 176,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-audit.test.ts",
+          "line": 185,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 88,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 97,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 105,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 114,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 121,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-rbac.test.ts",
+          "line": 129,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 135,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 161,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 175,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/payroll-export-tenant.test.ts",
+          "line": 210,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 116,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 132,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 146,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 162,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 167,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 188,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 199,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 212,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 221,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 257,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 273,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 281,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 292,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 307,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 350,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 378,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        },
+        {
+          "file": "app/api/driver-pay/__tests__/transitions-api.test.ts",
+          "line": 404,
+          "inTransaction": false,
+          "enclosingFn": "(top level)"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "IMPOSSIBLE",
+      "reason": "the try BLOCK contains the $transaction call — the catch is OUTSIDE the transaction, which has already rolled back by the time the catch runs, so there is no aborted transaction to cascade into"
+    },
+    {
+      "id": "R13",
+      "kind": "READ",
+      "auditPath": "src/lib/carrier/documents.ts",
+      "path": "lib/carrier/documents.ts",
+      "auditLine": 101,
+      "fn": "",
+      "note": "",
+      "resolvedPath": "lib/carrier/documents.ts",
+      "resolvedLine": 101,
+      "enclosingFn": "uploadDocument",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "app/api/v1/carrier/documents/route.ts",
+          "line": 42,
+          "inTransaction": false,
+          "enclosingFn": "POST"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 1 caller(s) are outside a transaction"
+    },
+    {
+      "id": "R14",
+      "kind": "READ",
+      "auditPath": "src/lib/carrier/trips.ts",
+      "path": "lib/carrier/trips.ts",
+      "auditLine": 720,
+      "fn": "transitionTripStatus",
+      "note": "",
+      "resolvedPath": "lib/carrier/trips.ts",
+      "resolvedLine": 720,
+      "enclosingFn": "transitionTripStatus",
+      "ownTransaction": false,
+      "catchWrapsTransaction": false,
+      "callers": [
+        {
+          "file": "app/api/v1/carrier/dispatches/[id]/status/route.ts",
+          "line": 93,
+          "inTransaction": false,
+          "enclosingFn": "PATCH"
+        },
+        {
+          "file": "lib/carrier/inspection-handlers.ts",
+          "line": 573,
+          "inTransaction": false,
+          "enclosingFn": "handleStartTrip"
+        }
+      ],
+      "callersInTransaction": [],
+      "verdict": "DORMANT",
+      "reason": "no enclosing transaction in its own file; all 2 caller(s) are outside a transaction"
+    }
+  ],
+  "sweep": []
+}
