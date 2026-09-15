@@ -1,0 +1,387 @@
+{
+  "total": 621,
+  "objSlot": [
+    {
+      "loc": "src/app/(admin)/actions/tenants.ts:116",
+      "raw": "logger.error('Failed to seed starter playbooks for new tenant:', { tenantId: tenant.id, error: seedError instanceof Error ? seedError.message : String(seedError), })",
+      "arg2": "{ tenantId: tenant.id, error: seedError instanceof Error ? seedError.message : String(seedError), }"
+    },
+    {
+      "loc": "src/app/(driver)/error.tsx:16",
+      "raw": "logger.error('[driver-error-boundary] Server Component render error:', { message: error.message, digest: error.digest, stack: error.stack, })",
+      "arg2": "{ message: error.message, digest: error.digest, stack: error.stack, }"
+    },
+    {
+      "loc": "src/app/(owner)/actions/customers.ts:69",
+      "raw": "logger.error('[createCustomer] fireEvent failed', { customerId: customer.id, err })",
+      "arg2": "{ customerId: customer.id, err }"
+    },
+    {
+      "loc": "src/app/(owner)/actions/drivers.ts:158",
+      "raw": "logger.error('[inviteDriver] fireEvent failed', { invitationId: invitation.id, err })",
+      "arg2": "{ invitationId: invitation.id, err }"
+    },
+    {
+      "loc": "src/app/(owner)/actions/drivers.ts:207",
+      "raw": "logger.error('[inviteDriver] activation tracker failed', { invitationId: invitation.id, err })",
+      "arg2": "{ invitationId: invitation.id, err }"
+    },
+    {
+      "loc": "src/app/(owner)/actions/trucks.ts:124",
+      "raw": "logger.error('[createTruck] fireEvent failed', { truckId: truck.id, err })",
+      "arg2": "{ truckId: truck.id, err }"
+    },
+    {
+      "loc": "src/app/(owner)/error.tsx:16",
+      "raw": "logger.error('[owner-error-boundary] Server Component render error:', { message: error.message, digest: error.digest, stack: error.stack, })",
+      "arg2": "{ message: error.message, digest: error.digest, stack: error.stack, }"
+    },
+    {
+      "loc": "src/app/api/admin/tenants/[id]/users/route.ts:39",
+      "raw": "logger.error('[GET /api/admin/tenants/[id]/users] error:', { error: message })",
+      "arg2": "{ error: message }"
+    },
+    {
+      "loc": "src/app/api/admin/users/[id]/role/route.ts:65",
+      "raw": "logger.error('[PATCH /api/admin/users/[id]/role] Supabase app_metadata update failed:', { userId, error: authError.message, })",
+      "arg2": "{ userId, error: authError.message, }"
+    },
+    {
+      "loc": "src/app/api/admin/users/[id]/role/route.ts:73",
+      "raw": "logger.error('[PATCH /api/admin/users/[id]/role] Supabase admin call threw:', { userId, error: message })",
+      "arg2": "{ userId, error: message }"
+    },
+    {
+      "loc": "src/app/api/admin/users/[id]/role/route.ts:80",
+      "raw": "logger.error('[PATCH /api/admin/users/[id]/role] Unexpected error:', { error: message })",
+      "arg2": "{ error: message }"
+    },
+    {
+      "loc": "src/app/api/auth/admin-reset-password/route.ts:35",
+      "raw": "logger.error('[admin-reset-password] resetPasswordForEmail error:', { email, error: error.message })",
+      "arg2": "{ email, error: error.message }"
+    },
+    {
+      "loc": "src/app/api/auth/admin-reset-password/route.ts:52",
+      "raw": "logger.error('[admin-reset-password] listUsers error:', { error: listError.message })",
+      "arg2": "{ error: listError.message }"
+    },
+    {
+      "loc": "src/app/api/auth/admin-reset-password/route.ts:64",
+      "raw": "logger.error('[admin-reset-password] updateUserById error:', { authUserId: authUser.id, error: error.message })",
+      "arg2": "{ authUserId: authUser.id, error: error.message }"
+    },
+    {
+      "loc": "src/app/api/auth/admin-reset-password/route.ts:75",
+      "raw": "logger.error('[admin-reset-password] Unexpected error:', { error: message })",
+      "arg2": "{ error: message }"
+    },
+    {
+      "loc": "src/app/api/cron/carrier-compliance-alerts/route.ts:100",
+      "raw": "logger.error('[CRON] carrier-compliance-alerts: email notification failed', { tenantId: tenant.id, error: err, })",
+      "arg2": "{ tenantId: tenant.id, error: err, }"
+    },
+    {
+      "loc": "src/app/api/cron/cleanup-quarantine/route.ts:87",
+      "raw": "logger.error('[CRON] cleanup-quarantine: Failed to delete object', { key: obj.Key, error: String(err), })",
+      "arg2": "{ key: obj.Key, error: String(err), }"
+    },
+    {
+      "loc": "src/app/api/cron/cleanup-quarantine/route.ts:97",
+      "raw": "logger.error('[CRON] cleanup-quarantine: List operation failed', { error: String(err) })",
+      "arg2": "{ error: String(err) }"
+    },
+    {
+      "loc": "src/app/api/cron/purge-deleted/route.ts:45",
+      "raw": "logger.error(`[CRON] purge-deleted: Failed to purge ${name}`, { error: String(err) })",
+      "arg2": "{ error: String(err) }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-digest/route.ts:62",
+      "raw": "logger.error('[CRON] workflow-digest: Failed to query active tenants', { error: err })",
+      "arg2": "{ error: err }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-digest/route.ts:161",
+      "raw": "logger.error(`[CRON] workflow-digest: Email failed for ${recipient.email}`, { error: emailErr })",
+      "arg2": "{ error: emailErr }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-digest/route.ts:194",
+      "raw": "logger.error(`[CRON] workflow-digest: Error processing tenant ${tenantId}`, { error: err })",
+      "arg2": "{ error: err }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-notifications/route.ts:106",
+      "raw": "logger.error(`[CRON] workflow-notifications: STEP_OVERDUE failed for step ${step.id}`, { err })",
+      "arg2": "{ err }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-notifications/route.ts:110",
+      "raw": "logger.error('[CRON] workflow-notifications: Sweep 1 (STEP_OVERDUE) query failed', { err })",
+      "arg2": "{ err }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-notifications/route.ts:156",
+      "raw": "logger.error( `[CRON] workflow-notifications: INSTANCE_BLOCKED email failed for instance ${instance.id}`, { err } )",
+      "arg2": "{ err }"
+    },
+    {
+      "loc": "src/app/api/cron/workflow-notifications/route.ts:163",
+      "raw": "logger.error('[CRON] workflow-notifications: Sweep 2 (INSTANCE_BLOCKED email) query failed', { err })",
+      "arg2": "{ err }"
+    },
+    {
+      "loc": "src/app/api/driver/gps-ping/route.ts:122",
+      "raw": "logger.error('POST /api/driver/gps-ping: failed', { error })",
+      "arg2": "{ error }"
+    },
+    {
+      "loc": "src/app/api/driver/notifications/mark-read/route.ts:72",
+      "raw": "logger.error('PATCH /api/driver/notifications/mark-read: failed', { orgId, error: err })",
+      "arg2": "{ orgId, error: err }"
+    },
+    {
+      "loc": "src/app/api/driver/notifications/route.ts:65",
+      "raw": "logger.error('GET /api/driver/notifications: failed', { orgId, error: err })",
+      "arg2": "{ orgId, error: err }"
+    },
+    {
+      "loc": "src/app/api/driver/stops/[stopId]/documents/route.ts:168",
+      "raw": "logger.error('[driver/stops/documents POST] R2 upload failed:', { status: uploadRes.status, stopId, })",
+      "arg2": "{ status: uploadRes.status, stopId, }"
+    },
+    {
+      "loc": "src/app/api/email-confirm/[token]/route.ts:61",
+      "raw": "logger.error('[email-confirm] unexpected error', { error: err })",
+      "arg2": "{ error: err }"
+    },
+    {
+      "loc": "src/app/api/mobile/carrier/driver/stops/[stopId]/documents/route.ts:149",
+      "raw": "logger.error('[mobile/carrier/driver/stops/documents POST] R2 upload failed:', { status: uploadRes.status, stopId, })",
+      "arg2": "{ status: uploadRes.status, stopId, }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/clients/route.ts:118",
+      "raw": "logger.error('[carrier/clients] activation tracker failed', { clientId: client.id, err })",
+      "arg2": "{ clientId: client.id, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/fleet/drivers/route.ts:103",
+      "raw": "logger.error('[carrier/fleet/drivers] fireEvent failed', { driverId: carrierDriver.id, err })",
+      "arg2": "{ driverId: carrierDriver.id, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/fleet/drivers/route.ts:113",
+      "raw": "logger.error('[carrier/fleet/drivers] activation tracker failed', { driverId: carrierDriver.id, err })",
+      "arg2": "{ driverId: carrierDriver.id, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/fleet/trucks/route.ts:110",
+      "raw": "logger.error('[carrier/fleet/trucks] fireEvent failed', { truckId: carrierTruck.id, err })",
+      "arg2": "{ truckId: carrierTruck.id, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/fleet/trucks/route.ts:121",
+      "raw": "logger.error('[carrier/fleet/trucks] activation tracker failed', { truckId: carrierTruck.id, err })",
+      "arg2": "{ truckId: carrierTruck.id, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/loads/[id]/cancel/route.ts:85",
+      "raw": "logger.error('cancelLoad exception', { loadId, err })",
+      "arg2": "{ loadId, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/loads/[id]/route.ts:102",
+      "raw": "logger.error('PATCH /api/v1/carrier/loads/[id] failed', { error: err instanceof Error ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err as object)), stack: err instanceof Error ? err.stack : undefined, })",
+      "arg2": "{ error: err instanceof Error ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err as object)), stack: err instanceof Error ? err.stack : undefined, }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/notifications/mark-read/route.ts:56",
+      "raw": "logger.error('PATCH /api/v1/carrier/notifications/mark-read: failed', { orgId, error: err })",
+      "arg2": "{ orgId, error: err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/notifications/route.ts:63",
+      "raw": "logger.error('GET /api/v1/carrier/notifications: failed', { orgId: session.tenantId, error: err })",
+      "arg2": "{ orgId: session.tenantId, error: err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/trips/[id]/loads/route.ts:50",
+      "raw": "logger.error('addLoadToTrip exception', { tripId, loadId, err })",
+      "arg2": "{ tripId, loadId, err }"
+    },
+    {
+      "loc": "src/app/api/v1/carrier/trips/[id]/reorder/route.ts:50",
+      "raw": "logger.error('reorderTripStops exception', { tripId, err })",
+      "arg2": "{ tripId, err }"
+    },
+    {
+      "loc": "src/lib/carrier/dispatch-generator.ts:469",
+      "raw": "logger.error('generateDispatches: per-date error', { templateId, dateStr, err })",
+      "arg2": "{ templateId, dateStr, err }"
+    },
+    {
+      "loc": "src/lib/carrier/in-app-notifications.ts:81",
+      "raw": "logger.error('createNotification: failed to persist in-app notification', { orgId, type, entityType, entityId, error: err, })",
+      "arg2": "{ orgId, type, entityType, entityId, error: err, }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:339",
+      "raw": "logger.error('sendLoadDeliveredNotification: failed', { orgId, loadId, error: err })",
+      "arg2": "{ orgId, loadId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:472",
+      "raw": "logger.error('sendStopCompletedNotification: failed', { orgId, stopId, error: err })",
+      "arg2": "{ orgId, stopId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:561",
+      "raw": "logger.error('sendPayRecordReadyNotification: failed', { orgId, payRecordId, error: err })",
+      "arg2": "{ orgId, payRecordId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:688",
+      "raw": "logger.error('sendInvoiceGeneratedNotification: failed', { orgId, loadId, error: err })",
+      "arg2": "{ orgId, loadId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:783",
+      "raw": "logger.error('sendComplianceAlertNotifications: failed', { orgId, error: err })",
+      "arg2": "{ orgId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:965",
+      "raw": "logger.error('sendClientPickupNotification: failed', { orgId, loadId, error: err })",
+      "arg2": "{ orgId, loadId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:1104",
+      "raw": "logger.error('sendClientDeliveredNotification: failed', { orgId, loadId, error: err })",
+      "arg2": "{ orgId, loadId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:1208",
+      "raw": "logger.error('sendClientInvoiceReadyNotification: failed', { orgId, loadId, error: err })",
+      "arg2": "{ orgId, loadId, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/notifications.ts:1315",
+      "raw": "logger.error('sendTripChangeNotification: failed', { orgId, dispatchId, changeType, error: err })",
+      "arg2": "{ orgId, dispatchId, changeType, error: err }"
+    },
+    {
+      "loc": "src/lib/carrier/trips.ts:728",
+      "raw": "logger.error('[transitionTripStatus] activation tracker failed', { dispatchId: id, err })",
+      "arg2": "{ dispatchId: id, err }"
+    },
+    {
+      "loc": "src/lib/carrier/trips.ts:938",
+      "raw": "logger.error('transitionTripStatus: auto-generate next dispatch failed', { dispatchId: id, err })",
+      "arg2": "{ dispatchId: id, err }"
+    },
+    {
+      "loc": "src/lib/carrier/trips.ts:1115",
+      "raw": "logger.error('addLoadToTrip: failed to parse pendingStopsJson', { loadId, err })",
+      "arg2": "{ loadId, err }"
+    },
+    {
+      "loc": "src/server/services/workflows/computeDispatchReadiness.ts:81",
+      "raw": "logger.error('[computeDispatchReadiness] sendDispatchReady failed', { instanceId, err })",
+      "arg2": "{ instanceId, err }"
+    },
+    {
+      "loc": "src/server/services/workflows/computeDispatchReadiness.ts:94",
+      "raw": "logger.error('[computeDispatchReadiness] sendInstanceBlocked failed', { instanceId, err })",
+      "arg2": "{ instanceId, err }"
+    },
+    {
+      "loc": "src/server/services/workflows/fireEvent.ts:58",
+      "raw": "logger.error('[fireEvent] failed to load triggers', { event, tenantId, err })",
+      "arg2": "{ event, tenantId, err }"
+    },
+    {
+      "loc": "src/server/services/workflows/fireEvent.ts:81",
+      "raw": "logger.error('[fireEvent] generatePlaybookInstance failed', { event, triggerId: trigger.id, playbookId: trigger.playbookId, err, })",
+      "arg2": "{ event, triggerId: trigger.id, playbookId: trigger.playbookId, err, }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:142",
+      "raw": "logger.error('[notifications] writeAuditRow failed', { err, ...data })",
+      "arg2": "{ err, ...data }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:201",
+      "raw": "logger.error('[notifications] sendStepAssigned: push failed', { err, assignedUserId })",
+      "arg2": "{ err, assignedUserId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:215",
+      "raw": "logger.error('[notifications] sendStepAssigned failed', { err, stepInstanceId })",
+      "arg2": "{ err, stepInstanceId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:286",
+      "raw": "logger.error('[notifications] sendStepOverdue: push failed', { err, recipientId })",
+      "arg2": "{ err, recipientId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:301",
+      "raw": "logger.error('[notifications] sendStepOverdue failed', { err, stepInstanceId })",
+      "arg2": "{ err, stepInstanceId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:370",
+      "raw": "logger.error('[notifications] sendInstanceBlocked: push failed', { err, dispatcherId: dispatcher.id })",
+      "arg2": "{ err, dispatcherId: dispatcher.id }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:385",
+      "raw": "logger.error('[notifications] sendInstanceBlocked failed', { err, playbookInstanceId })",
+      "arg2": "{ err, playbookInstanceId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:418",
+      "raw": "logger.error('[notifications] sendDispatchReady: push failed', { err, dispatcherId: dispatcher.id })",
+      "arg2": "{ err, dispatcherId: dispatcher.id }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:432",
+      "raw": "logger.error('[notifications] sendDispatchReady failed', { err, userId, playbookInstanceId })",
+      "arg2": "{ err, userId, playbookInstanceId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:488",
+      "raw": "logger.error('[notifications] sendStepFailed: push failed', { err, dispatcherId: dispatcher.id })",
+      "arg2": "{ err, dispatcherId: dispatcher.id }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:503",
+      "raw": "logger.error('[notifications] sendStepFailed failed', { err, stepInstanceId, recipientRole: args.recipientRole })",
+      "arg2": "{ err, stepInstanceId, recipientRole: args.recipientRole }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:540",
+      "raw": "logger.error('[notifications] sendApprovalNeeded: push failed', { err, approverUserId })",
+      "arg2": "{ err, approverUserId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:554",
+      "raw": "logger.error('[notifications] sendApprovalNeeded failed', { err, stepInstanceId })",
+      "arg2": "{ err, stepInstanceId }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:620",
+      "raw": "logger.error('[notifications] sendInstanceBlockedEmail: email failed', { err, adminEmail: admin.email })",
+      "arg2": "{ err, adminEmail: admin.email }"
+    },
+    {
+      "loc": "src/server/services/workflows/notifications.ts:635",
+      "raw": "logger.error('[notifications] sendInstanceBlockedEmail failed', { err, playbookInstanceId })",
+      "arg2": "{ err, playbookInstanceId }"
+    }
+  ],
+  "messageOnly": 13,
+  "other": 532
+}
