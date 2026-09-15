@@ -283,3 +283,88 @@ Four gates, four different structural blind spots:
 **A provider mounted in the wrong route group is invisible to all four.** It compiles, it type-checks,
 it builds, it has a plausible-looking mount you can grep for, and the only thing that fails is a render
 nobody automated. That is the class — not "we forgot to test these two pages".
+
+---
+
+## 5. The fix
+
+Three lines of substance, in one file.
+
+**`src/app/layout.tsx`** — `NuqsAdapter` imported from `nuqs/adapters/next/app` and wrapped as the
+**outermost** child of `<body>`:
+
+```tsx
+<body className={inter.className}>
+  <NuqsAdapter>
+    <AuthProvider>
+      {children}
+      <SupportTicketModal />
+      <Toaster richColors position="top-right" />
+    </AuthProvider>
+  </NuqsAdapter>
+</body>
+```
+
+The root layout is a server component and this is a client provider; that is ordinary and already
+demonstrated two lines down by `AuthProvider`.
+
+**Why the root and not `(owner)/layout.tsx`.** The consumers span two route groups (§2). A
+group-scoped mount cannot cover a sibling group, so mounting in `(owner)` — the obvious move, and the
+one the existing `(dev)` precedent invites — would have left `/docs/features` and
+`/docs/database/[model]` answering 500 and would have required a second mount to fix them. One mount
+at the root covers both, and covers `(driver)`, `(shared)`, `(auth)` and every root-level route as
+well, so the next `useDataGrid` page cannot land outside it.
+
+**Why outermost and not inside `AuthProvider`.** The adapter then covers `SupportTicketModal` and
+`Toaster` — both rendered on every page in the app — as well as `{children}`, and its availability
+stops depending on anything about `AuthProvider`'s internals. Nesting it inside would work today and
+would couple two unrelated providers' order for no reason. The reason is written into a comment above
+the mount, not left to be rediscovered.
+
+**Nothing else changed.** No grid config, no page behaviour, no data, no query, no route. The two
+broken screens render exactly what they were always meant to render.
+
+**`src/app/(dev)/layout.tsx` — DELETED**, taking the now-empty `(dev)` route group with it. Nesting
+adapters is harmless (`nuqs/dist/context-C4spomkL.js:99` — `createAdapterProvider` returns a plain
+`context.Provider`; the one `error(303)` path at line 88 fires on two *different* context objects,
+i.e. a duplicate install, is gated on `debugEnabled`, and has nothing to do with nesting), so this is
+a clarity decision rather than a correctness one. It is made because **that file is what made this
+defect survive**: a grep for `NuqsAdapter` returned a hit, in a file named `layout.tsx`, under a route
+group — every signal a reader uses to conclude "the adapter is mounted" was present, and all of them
+were wrong, because the group contains no pages. Leaving it would cost the next reader the same
+investigation this task just did.
+
+### The one thing this mount does NOT cover — checked, not assumed
+
+`src/app/global-error.tsx` **replaces the root layout entirely** when a root-level error boundary
+fires, so nothing rendered inside it is beneath the mount above.
+
+Checked rather than stated: the file has **zero imports** — it is `'use client'` followed by one
+component that renders literal `<html>`/`<body>`/`<div>`/`<button>` JSX with inline styles, reading
+only `error.message`, `error.digest` and `reset`. It reaches no nuqs consumer, directly or
+transitively. **So the gap is real and currently empty.** It becomes a live gap only if someone renders
+a `useDataGrid` component inside the global error boundary — which would mean putting a data grid on
+the screen that appears when the application has already crashed.
+
+`error.tsx` files *below* the root, by contrast, ARE covered: they render inside the root layout, and
+therefore inside the adapter.
+
+### Type gate
+
+`npx tsc --noEmit` in `apps/web`: **0 errors**, twice — once before the probe and once after removing
+it.
+
+**The gate was proven not blind.** `const __probe605: number = 'y';` was injected into
+`src/app/layout.tsx` — the file actually edited — and tsc reported exactly one error and no others:
+
+```
+src/app/layout.tsx(9,7): error TS2322: Type 'string' is not assignable to type 'number'.
+```
+
+The probe was then removed; `find . -name "__probe*"` outside `node_modules` returns nothing.
+
+One real instance of the trap was hit on the way and is recorded because it is the standing shape:
+the first `tsc` run after deleting `(dev)/layout.tsx` reported a single error inside
+`.next/types/validator.ts` — a Next-generated file left behind by the earlier `npm run build`, still
+referencing the deleted layout. Removing `apps/web/.next` and `tsconfig.tsbuildinfo` and re-running
+gave the clean result above.
