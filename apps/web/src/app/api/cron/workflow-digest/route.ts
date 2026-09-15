@@ -22,6 +22,7 @@ import { sendEmail } from '@/lib/email/resend-client';
 import { WorkflowSafetyDigestEmail } from '@/emails/workflow-safety-digest';
 import { getAppBaseUrl } from '@/lib/app-url';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { verifyCronSecret } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   const stats: DigestStats = { tenantsSent: 0, tenantsSkipped: 0, tenantsErrored: 0 };
+  const failures = new CronFailures();
 
   // Find all tenants with at least one active PlaybookInstance
   // quick-600 (B5) — ROUTE. The four bypass-flagged statements later in this
@@ -59,8 +61,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     });
     activeTenantIds = rows.map((r) => r.tenantId);
   } catch (err) {
-    logger.error('[CRON] workflow-digest: Failed to query active tenants', { error: err });
-    return NextResponse.json({ error: 'Failed to query tenants' }, { status: 500 });
+    // Was `{ error: err }` in slot 2 — `Error: [object Object]` to Sentry.
+    failures.record('[CRON] workflow-digest: Failed to query active tenants', 'tenantSweep', err);
+    return NextResponse.json(
+      { ok: false, error: 'Failed to query tenants', ...stats, ...failures.report() },
+      { status: 500 },
+    );
   }
 
   logger.info(`[CRON] workflow-digest: ${activeTenantIds.length} tenant(s) with active instances`);
@@ -158,7 +164,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             react: emailElement,
           });
         } catch (emailErr) {
-          logger.error(`[CRON] workflow-digest: Email failed for ${recipient.email}`, { error: emailErr });
+          // The loop still continues — one bad address must not stop the batch.
+          // Was `{ error: emailErr }` in slot 2, AND counted nowhere: every
+          // recipient of a tenant could fail and `tenantsSent++` still ran below.
+          failures.record(
+            `[CRON] workflow-digest: Email failed for ${recipient.email}`,
+            `recipient:${recipient.id}`,
+            emailErr,
+            { tenantId },
+          );
         }
       }
 
@@ -191,12 +205,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       logger.info(`[CRON] workflow-digest: Sent to ${recipients.length} recipient(s) for tenant ${tenantId}`);
       stats.tenantsSent++;
     } catch (err) {
-      logger.error(`[CRON] workflow-digest: Error processing tenant ${tenantId}`, { error: err });
+      failures.record(
+        `[CRON] workflow-digest: Error processing tenant ${tenantId}`,
+        `tenant:${tenantId}`,
+        err,
+      );
       stats.tenantsErrored++;
       // Continue — do not let one tenant failure abort the whole sweep
     }
   }
 
-  logger.info('[CRON] workflow-digest: Complete', stats);
-  return NextResponse.json({ ok: true, ...stats });
+  const report = failures.report();
+  logger.info('[CRON] workflow-digest: Complete', { ...stats, ...report });
+  return NextResponse.json(
+    { ok: failures.ok, ...stats, ...report },
+    { status: cronStatus(failures) },
+  );
 }

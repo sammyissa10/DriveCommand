@@ -22,6 +22,7 @@ import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { buildDailyDriverPayload } from '@/lib/notifications/digests/daily-driver-payload';
 
 export const dynamic = 'force-dynamic';
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest) {
   let sent = 0;
   let skipped = 0;
   let failed = 0;
+  const failures = new CronFailures();
   const today = new Date();
 
   for (const tenant of tenants) {
@@ -75,24 +77,57 @@ export async function GET(request: NextRequest) {
             payload,
             relatedEntity: { type: 'Digest', id: `${tenant.id}:${driver.id}:${todayIso}` },
           }).catch((err: unknown) => {
-            logger.error('[CRON] digest-daily-driver: dispatch failed', err);
+            failures.record(
+              '[CRON] digest-daily-driver: dispatch failed',
+              `driver:${driver.id}`,
+              err,
+              { tenantId: tenant.id },
+            );
             return { sent: 0, skipped: 0, failed: 1 };
           });
           sent += result.sent;
           skipped += result.skipped;
           failed += result.failed;
+          if (result.failed > 0) {
+            // A per-recipient channel failure. `dispatchNotification` returns
+            // counts only, so the scope is what names it; the per-recipient
+            // detail is in NotificationSendLog and the dispatcher's own logs.
+            failures.record(
+              `[CRON] digest-daily-driver: ${result.failed} channel delivery(ies) failed`,
+              `driver:${driver.id}`,
+              new Error(`${result.failed} notification channel delivery(ies) failed`),
+              { tenantId: tenant.id, dispatched: result },
+            );
+          }
         } catch (driverErr) {
-          logger.error(`[CRON] digest-daily-driver: driver ${driver.id} failed`, driverErr);
+          failures.record(
+            `[CRON] digest-daily-driver: driver ${driver.id} failed`,
+            `driver:${driver.id}`,
+            driverErr,
+            { tenantId: tenant.id },
+          );
           failed++;
         }
       }
     } catch (tenantErr) {
-      logger.error(`[CRON] digest-daily-driver: tenant ${tenant.id} failed`, tenantErr);
+      failures.record(
+        `[CRON] digest-daily-driver: tenant ${tenant.id} failed`,
+        `tenant:${tenant.id}`,
+        tenantErr,
+      );
       failed++;
     }
   }
 
-  const summary = { success: true, processedTenants: tenants.length, sent, skipped, failed };
+  const report = failures.report();
+  const summary = {
+    success: failures.ok,
+    processedTenants: tenants.length,
+    sent,
+    skipped,
+    failed,
+    ...report,
+  };
   logger.info('[CRON] digest-daily-driver: Completed', summary);
-  return Response.json(summary);
+  return Response.json(summary, { status: cronStatus(failures) });
 }

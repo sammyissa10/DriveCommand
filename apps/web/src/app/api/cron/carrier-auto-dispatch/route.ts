@@ -20,6 +20,7 @@ import { prisma } from '@/lib/db/prisma';
 import { generateDispatches } from '@/lib/carrier/dispatch-generator';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic';
@@ -78,6 +79,7 @@ export async function GET(request: NextRequest) {
       errors: number;
     }>,
   };
+  const failures = new CronFailures();
 
   // 4. Process each tenant in isolation
   for (const tenant of tenants) {
@@ -112,9 +114,21 @@ export async function GET(request: NextRequest) {
 
           if (result.errors.length > 0) {
             tenantErrors += result.errors.length;
-            logger.warn(`[CRON] carrier-auto-dispatch: Template ${template.id} had ${result.errors.length} error(s)`, {
-              errors: result.errors,
-            });
+            /**
+             * `generateDispatches` returns its per-day errors as `string[]`.
+             * They were counted into `total_errors` and then sat beside an
+             * unconditional `success: true`, and were only ever `logger.warn`ed
+             * — so a generation failure never reached Sentry as an exception.
+             * Naming each one here replaces that single summary warn.
+             */
+            for (const genErr of result.errors) {
+              failures.record(
+                `[CRON] carrier-auto-dispatch: Template ${template.id} generation error`,
+                `template:${template.id}`,
+                genErr,
+                { tenantId: tenant.id, tenantName: tenant.name },
+              );
+            }
           }
 
           logger.info(`[CRON] carrier-auto-dispatch: Template ${template.id} created ${result.dispatchesCreated} dispatch(es), ${result.loadsCreated} load(s), ${result.stopsCreated} stop(s), skipped ${result.skippedExisting}`);
@@ -149,8 +163,14 @@ export async function GET(request: NextRequest) {
             }
           }
         } catch (templateErr) {
+          // The loop still continues — one bad template must not stop the rest.
           tenantErrors++;
-          logger.error(`[CRON] carrier-auto-dispatch: Error processing template ${template.id} for tenant ${tenant.name}`, templateErr);
+          failures.record(
+            `[CRON] carrier-auto-dispatch: Error processing template ${template.id} for tenant ${tenant.name}`,
+            `template:${template.id}`,
+            templateErr,
+            { tenantId: tenant.id, tenantName: tenant.name },
+          );
         }
       }
 
@@ -169,7 +189,12 @@ export async function GET(request: NextRequest) {
       });
     } catch (tenantErr) {
       // One tenant failure must NOT block others
-      logger.error(`[CRON] carrier-auto-dispatch: Failed to process tenant ${tenant.name} (${tenant.id})`, tenantErr);
+      failures.record(
+        `[CRON] carrier-auto-dispatch: Failed to process tenant ${tenant.name} (${tenant.id})`,
+        `tenant:${tenant.id}`,
+        tenantErr,
+        { tenantName: tenant.name },
+      );
       summary.total_errors++;
       summary.details.push({
         orgId: tenant.id,
@@ -182,6 +207,10 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  logger.info('[CRON] carrier-auto-dispatch: Completed', summary);
-  return NextResponse.json({ success: true, ...summary });
+  const report = failures.report();
+  logger.info('[CRON] carrier-auto-dispatch: Completed', { ...summary, ...report });
+  return NextResponse.json(
+    { success: failures.ok, ...summary, ...report },
+    { status: cronStatus(failures) },
+  );
 }

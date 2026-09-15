@@ -36,6 +36,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger, serializeError } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { emitNotification } from '@/lib/notifications/emit';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
@@ -67,6 +68,7 @@ export async function GET(request: NextRequest) {
   let tenantsProcessed = 0;
   let remindersSent = 0;
   let tenantsFailed = 0;
+  const failures = new CronFailures();
 
   try {
     const tenants = await prisma.tenant.findMany({
@@ -152,26 +154,32 @@ export async function GET(request: NextRequest) {
         // `logger.error(message, error, context)` — error SECOND, and never a
         // bare string. A swallowed notification failure is invisible by
         // definition, which is this module's dominant defect mode.
-        logger.error('[CRON] trip-reminders: tenant failed', err, {
-          tenantId: tenant.id,
-          error: serializeError(err),
-        });
+        // quick-603: the arity here was already right and is unchanged; what
+        // `failures.record` adds is the NAMED entry in the response body and
+        // the status, so `ok: true` can no longer sit beside `tenantsFailed: 3`.
+        failures.record('[CRON] trip-reminders: tenant failed', `tenant:${tenant.id}`, err);
       }
     }
 
+    const report = failures.report();
     logger.info('[CRON] trip-reminders: done', {
       tenantsProcessed,
       tenantsFailed,
       remindersSent,
+      ...report,
     });
 
-    return NextResponse.json({
-      ok: true,
-      tenantsProcessed,
-      tenantsFailed,
-      remindersSent,
-      windowHours: REMINDER_WINDOW_HOURS,
-    });
+    return NextResponse.json(
+      {
+        ok: failures.ok,
+        tenantsProcessed,
+        tenantsFailed,
+        remindersSent,
+        windowHours: REMINDER_WINDOW_HOURS,
+        ...report,
+      },
+      { status: cronStatus(failures) },
+    );
   } catch (err) {
     logger.error('[CRON] trip-reminders: run failed', err, { error: serializeError(err) });
     return NextResponse.json(

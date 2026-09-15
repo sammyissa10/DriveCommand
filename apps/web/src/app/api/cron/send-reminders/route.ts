@@ -28,6 +28,7 @@ import { findExpiringDriverDocuments } from '@/lib/notifications/check-expiring-
 import { formatDocumentType } from '@/lib/email/send-driver-document-expiry-reminder';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic'; // CRITICAL: Prevent Next.js caching
@@ -77,6 +78,17 @@ export async function GET(request: NextRequest) {
   const maintenanceStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
   const documentStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
   const driverDocumentStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
+  const failures = new CronFailures();
+  /**
+   * quick-603 — the ONE non-purely-additive change on this route, made
+   * deliberately. `processedTenants` used to be `tenants.length`, i.e. the
+   * number of tenants FOUND, reported under a key that says PROCESSED. A tenant
+   * that threw at the bottom of the loop was counted as processed. It now
+   * counts completions. On a fully-successful run the two are identical, so
+   * nothing observable changes on the success path; `tenantsFound` is added so
+   * the original number is still available.
+   */
+  let processedTenants = 0;
 
   for (const tenant of tenants) {
     logger.info(`[CRON] send-reminders: Processing tenant ${tenant.name} (${tenant.id})`);
@@ -109,9 +121,22 @@ export async function GET(request: NextRequest) {
           maintenanceStats.sent += result.sent;
           maintenanceStats.skipped += result.skipped;
           maintenanceStats.failed += result.failed;
+          if (result.failed > 0) {
+            failures.record(
+              `[CRON] send-reminders: ${result.failed} channel delivery(ies) failed`,
+              `truck:${item.truckId}`,
+              new Error(`${result.failed} notification channel delivery(ies) failed`),
+              { tenantId: tenant.id, kind: 'maintenance', dispatched: result },
+            );
+          }
           logger.info(`[CRON] send-reminders: Dispatched maintenance reminder for ${item.truckName}: sent=${result.sent} skipped=${result.skipped} failed=${result.failed}`);
         } catch (err) {
-          logger.error(`[CRON] send-reminders: Failed to dispatch maintenance reminder for ${item.truckName}:`, err);
+          failures.record(
+            `[CRON] send-reminders: Failed to dispatch maintenance reminder for ${item.truckName}`,
+            `truck:${item.truckId}`,
+            err,
+            { tenantId: tenant.id, kind: 'maintenance' },
+          );
           maintenanceStats.failed++;
         }
       }
@@ -132,9 +157,22 @@ export async function GET(request: NextRequest) {
           documentStats.sent += result.sent;
           documentStats.skipped += result.skipped;
           documentStats.failed += result.failed;
+          if (result.failed > 0) {
+            failures.record(
+              `[CRON] send-reminders: ${result.failed} channel delivery(ies) failed`,
+              `truck:${item.truckId}:${item.documentType}`,
+              new Error(`${result.failed} notification channel delivery(ies) failed`),
+              { tenantId: tenant.id, kind: 'document', dispatched: result },
+            );
+          }
           logger.info(`[CRON] send-reminders: Dispatched document reminder for ${item.truckName} ${item.documentType}: sent=${result.sent} skipped=${result.skipped} failed=${result.failed}`);
         } catch (err) {
-          logger.error(`[CRON] send-reminders: Failed to dispatch document reminder for ${item.truckName} ${item.documentType}:`, err);
+          failures.record(
+            `[CRON] send-reminders: Failed to dispatch document reminder for ${item.truckName} ${item.documentType}`,
+            `truck:${item.truckId}:${item.documentType}`,
+            err,
+            { tenantId: tenant.id, kind: 'document' },
+          );
           documentStats.failed++;
         }
       }
@@ -156,28 +194,60 @@ export async function GET(request: NextRequest) {
           driverDocumentStats.sent += result.sent;
           driverDocumentStats.skipped += result.skipped;
           driverDocumentStats.failed += result.failed;
+          if (result.failed > 0) {
+            failures.record(
+              `[CRON] send-reminders: ${result.failed} channel delivery(ies) failed`,
+              `driver:${item.driverId}`,
+              new Error(`${result.failed} notification channel delivery(ies) failed`),
+              { tenantId: tenant.id, kind: 'driverDocument', dispatched: result },
+            );
+          }
           logger.info(`[CRON] send-reminders: Dispatched driver doc reminder for ${item.driverName}: sent=${result.sent} skipped=${result.skipped} failed=${result.failed}`);
         } catch (err) {
-          logger.error(`[CRON] send-reminders: Failed to dispatch driver doc reminder for ${item.driverName}:`, err);
+          failures.record(
+            `[CRON] send-reminders: Failed to dispatch driver doc reminder for ${item.driverName}`,
+            `driver:${item.driverId}`,
+            err,
+            { tenantId: tenant.id, kind: 'driverDocument' },
+          );
           driverDocumentStats.failed++;
         }
       }
+
+      processedTenants++;
     } catch (error) {
-      logger.error(`[CRON] send-reminders: Failed to process tenant ${tenant.name}:`, error);
-      // Continue with next tenant
+      /**
+       * quick-603 — this catch used to `continue` with NO counter of any kind.
+       * A whole tenant's maintenance, document and driver-document reminders
+       * could be lost and the response still read
+       * `processedTenants: tenants.length` — the count of tenants FOUND, which
+       * it silently presented as the count of tenants PROCESSED. The tenant is
+       * now named in `failures` and `processedTenants` counts only the tenants
+       * that actually completed.
+       */
+      failures.record(
+        `[CRON] send-reminders: Failed to process tenant ${tenant.name}`,
+        `tenant:${tenant.id}`,
+        error,
+        { tenantName: tenant.name },
+      );
+      // Continue with next tenant — the resilience half is unchanged.
       continue;
     }
   }
 
-  // 4. Return summary (same shape as before for backward compatibility)
+  // 4. Return summary — every original key kept, `failureCount`/`failures` added.
+  const report = failures.report();
   const summary = {
-    success: true,
-    processedTenants: tenants.length,
+    success: failures.ok,
+    processedTenants,
+    tenantsFound: tenants.length,
     maintenance: maintenanceStats,
     documents: documentStats,
     driverDocuments: driverDocumentStats,
+    ...report,
   };
 
   logger.info('[CRON] send-reminders: Completed', summary);
-  return Response.json(summary);
+  return Response.json(summary, { status: cronStatus(failures) });
 }

@@ -22,6 +22,7 @@ import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { buildWeeklyOwnerPayload } from '@/lib/notifications/digests/weekly-owner-payload';
 
 export const dynamic = 'force-dynamic';
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest) {
   let sent = 0;
   let skipped = 0;
   let failed = 0;
+  const failures = new CronFailures();
   const weekStart = new Date();
 
   for (const tenant of tenants) {
@@ -75,24 +77,57 @@ export async function GET(request: NextRequest) {
             payload,
             relatedEntity: { type: 'Digest', id: `${tenant.id}:${owner.id}:${weekIso}` },
           }).catch((err: unknown) => {
-            logger.error('[CRON] digest-weekly-owner: dispatch failed', err);
+            failures.record(
+              '[CRON] digest-weekly-owner: dispatch failed',
+              `owner:${owner.id}`,
+              err,
+              { tenantId: tenant.id },
+            );
             return { sent: 0, skipped: 0, failed: 1 };
           });
           sent += result.sent;
           skipped += result.skipped;
           failed += result.failed;
+          if (result.failed > 0) {
+            // A per-recipient channel failure. `dispatchNotification` returns
+            // counts only, so the scope is what names it; the per-recipient
+            // detail is in NotificationSendLog and the dispatcher's own logs.
+            failures.record(
+              `[CRON] digest-weekly-owner: ${result.failed} channel delivery(ies) failed`,
+              `owner:${owner.id}`,
+              new Error(`${result.failed} notification channel delivery(ies) failed`),
+              { tenantId: tenant.id, dispatched: result },
+            );
+          }
         } catch (ownerErr) {
-          logger.error(`[CRON] digest-weekly-owner: owner ${owner.id} failed`, ownerErr);
+          failures.record(
+            `[CRON] digest-weekly-owner: owner ${owner.id} failed`,
+            `owner:${owner.id}`,
+            ownerErr,
+            { tenantId: tenant.id },
+          );
           failed++;
         }
       }
     } catch (tenantErr) {
-      logger.error(`[CRON] digest-weekly-owner: tenant ${tenant.id} failed`, tenantErr);
+      failures.record(
+        `[CRON] digest-weekly-owner: tenant ${tenant.id} failed`,
+        `tenant:${tenant.id}`,
+        tenantErr,
+      );
       failed++;
     }
   }
 
-  const summary = { success: true, processedTenants: tenants.length, sent, skipped, failed };
+  const report = failures.report();
+  const summary = {
+    success: failures.ok,
+    processedTenants: tenants.length,
+    sent,
+    skipped,
+    failed,
+    ...report,
+  };
   logger.info('[CRON] digest-weekly-owner: Completed', summary);
-  return Response.json(summary);
+  return Response.json(summary, { status: cronStatus(failures) });
 }

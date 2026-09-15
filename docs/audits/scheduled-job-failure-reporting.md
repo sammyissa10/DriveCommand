@@ -230,8 +230,11 @@ it CRLF-normalises before scanning (quick-546).
 
 **Yes — the logger-arity defect is far wider than these routes.**
 
-- **76 of 621 `logger.error` calls — 12.2% — across 36 files** pass an object literal where the
-  function's second parameter is the error.
+- **76 of 610 `logger.error` calls — 12.5% — across 36 files** pass an object literal where the
+  function's second parameter is the error. (**Corrected during Task 3**: the grep-based denominator
+  of 621 counted 11 occurrences of the string `logger.error(` inside COMMENTS. The scanner gained a
+  comment stripper, and the numerator was re-measured against the pre-fix tree with it — still
+  **76**, so the headline is unaffected and only the denominator moved. `evidence/05a`.)
 - The scheduled surface accounts for **11** of those 76 (`carrier-compliance-alerts` ×1,
   `cleanup-quarantine` ×2, `purge-deleted` ×1, `workflow-digest` ×3, `workflow-notifications` ×4).
   The other **65 are elsewhere in the application**: server actions, API routes, `lib/`, and React
@@ -428,7 +431,79 @@ present and identical, plus `failureCount: 0` and `failures: []`.
 
 ## 5. The fixes
 
-*(Tasks 3–4 — populated below.)*
+Per-route before/after table, the consumer grep, and every verification command with its output:
+`evidence/05a-task3-consumers-and-verification.md`.
+
+### 5.1 One contract, one file
+
+`apps/web/src/lib/cron/failure-report.ts` is the whole of §4.7, implemented once and imported by all
+twelve fixed routes:
+
+- `CronFailures.record(logMessage, scope, err, context?)` — the ONLY way to add a failure. It
+  records **and** logs, with `logger.error(msg, err, { …ctx, scope, err: serializeError(err) })`.
+  Folding the log into the recorder makes the right arity **the only reachable one** from a cron
+  route, rather than a convention twelve files have to remember. Same reasoning as
+  `commit-service.ts:264`'s `afterResponse`, which documents this exact bug.
+- `CronFailures.ok` is a **getter** over the count. There is no boolean field an edit can set, so
+  property (b) — `success` never `true` beside a non-zero count — is structural rather than a check
+  someone can drop. Same idiom as the T3/T4 verdict union.
+- `cronStatus(failures)` → 200 / 500.
+- `CRON_FAILURE_LIST_CAP = 50` lives there and nowhere else; the tests import the constant.
+
+### 5.2 Consumers: there are none
+
+```
+$ grep -rn "totalPurged|markedOverdue|orgs_processed|blockedEmailsSent|tenantsSent|
+            processedTenants|total_dispatches_created|remindersSent" --include="*.{ts,tsx,js,mjs}"
+```
+
+**Every match is inside the route that produces the key.** No test, script, mobile client, e2e spec
+or monitoring integration reads any cron response body. The only thing that ever touched one is
+`scripts/audit/602-execution-sweep.ts`, which stores `(await res.text()).slice(0, 300)` as opaque
+text and asserts on nothing. Additive keys are unconditionally safe; the pre-existing keys were kept
+regardless.
+
+### 5.3 The one non-purely-additive change, declared
+
+`send-reminders`' `processedTenants` was the literal `tenants.length` — the number of tenants
+**found**, published under a key that says **processed**. A tenant that threw was `continue`d and
+still counted. It now counts completions, and `tenantsFound` carries the original number.
+**Identical on a fully-successful run.** Declared rather than folded in silently.
+
+### 5.4 What each route gained
+
+Full table in `evidence/05a` §3. The shape of it:
+
+- **All twelve** now return 500 once anything has failed, and `success`/`ok` is computed from the
+  count.
+- **`purge-deleted`** — the `-1` sentinel and the positives-only filter are **deleted**, not patched.
+  `results` holds successes only; failures live in a separate structure, so there is no shared total
+  left for a failure to be erased from.
+- **`send-reminders`** — the tenant-level `continue` now counts **and names** the lost tenant.
+- **`carrier-compliance-alerts`**, **`workflow-digest`**, **`automations`** — three catches that had
+  **no counter of any kind** now have one.
+- **`workflow-notifications`** — the sharpest case. Its two sweep-level catches swallowed a query
+  failure with no counter, so a failed STEP_OVERDUE sweep returned
+  `{ok:true, stats:{overdueSent:0, overdueErrors:0, …}}` — **byte-identical to a clean run with
+  nothing due**. A failed SWEEP and a failed ITEM are different facts and now have different
+  counters (`stats.sweepsFailed`, new).
+- **Counts the routes already had but never let reach `success`** are now recorded too: the
+  dispatcher's `result.failed`, `generateDispatches`' `string[]` errors (previously only
+  `logger.warn`ed, so never a Sentry exception), and `runEvaluator`'s `failed`.
+- **`trip-reminders`** needed only the body and the status — its logging was already correct and is
+  cited as the in-repo precedent alongside the two `after()` wrappers.
+
+### 5.5 Resilience is untouched
+
+No `try` became a `throw`; no `continue` was removed. Every per-item catch carries a comment saying
+the loop still continues. **The proof is §7.2's per-route survivor assertion, not this sentence.**
+
+### 5.6 ACCIDENTAL: there were none — Task 4 in one line
+
+§2.1 established by reading all 37 catches, and by grepping for the three shapes the plan names, that
+**zero catches on the scheduled surface are wider than what they were written for.** There was
+therefore no narrowing to do. Nothing was invented to fill the task; the examination is recorded in
+§2.1 and `evidence/02-classification.md`.
 
 ---
 

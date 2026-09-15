@@ -19,6 +19,7 @@ import { prisma } from '@/lib/db/prisma';
 import { getComplianceAlerts } from '@/lib/carrier/compliance';
 import { sendComplianceAlertNotifications } from '@/lib/carrier/notifications';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { Prisma } from '@/generated/prisma';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 
@@ -77,6 +78,7 @@ export async function GET(request: NextRequest) {
     orgs_processed: 0,
     total_alerts_found: 0,
   };
+  const failures = new CronFailures();
 
   // 4. Process each tenant in isolation
   for (const tenant of tenants) {
@@ -97,10 +99,16 @@ export async function GET(request: NextRequest) {
         try {
           await sendComplianceAlertNotifications(tenant.id, alerts);
         } catch (err) {
-          logger.error('[CRON] carrier-compliance-alerts: email notification failed', {
-            tenantId: tenant.id,
-            error: err,
-          });
+          // Was `logger.error(msg, { tenantId, error: err })` — the error in
+          // slot 2's place, rendered `Error: [object Object]` — and counted
+          // nowhere, so every tenant's alert email could fail and the run still
+          // reported `success: true`.
+          failures.record(
+            '[CRON] carrier-compliance-alerts: email notification failed',
+            `tenant:${tenant.id}:email`,
+            err,
+            { tenantName: tenant.name, alertCount: alerts.length },
+          );
         }
       }
 
@@ -111,14 +119,23 @@ export async function GET(request: NextRequest) {
         `[CRON] carrier-compliance-alerts: Tenant ${tenant.name} (${tenant.id}) — ${alerts.length} alert(s) found`,
       );
     } catch (tenantErr) {
-      // One tenant failure must NOT block others
-      logger.error(
+      // One tenant failure must NOT block others — the `continue` semantics are
+      // unchanged. What changed: the failure is now COUNTED. It used to be
+      // logged and then simply not increment `orgs_processed`, which made a
+      // tenant that blew up indistinguishable from a tenant that does not exist.
+      failures.record(
         `[CRON] carrier-compliance-alerts: Failed to process tenant ${tenant.name} (${tenant.id})`,
+        `tenant:${tenant.id}`,
         tenantErr,
+        { tenantName: tenant.name },
       );
     }
   }
 
-  logger.info('[CRON] carrier-compliance-alerts: Completed', summary);
-  return NextResponse.json({ success: true, ...summary });
+  const report = failures.report();
+  logger.info('[CRON] carrier-compliance-alerts: Completed', { ...summary, ...report });
+  return NextResponse.json(
+    { success: failures.ok, ...summary, ...report },
+    { status: cronStatus(failures) },
+  );
 }

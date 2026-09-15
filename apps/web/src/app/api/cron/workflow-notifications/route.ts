@@ -22,6 +22,7 @@ import { getAdminDb } from '@/lib/db/admin-prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendStepOverdue, sendInstanceBlockedEmail } from '@/server/services/workflows/notifications';
 import { logger } from '@/lib/logger';
+import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { verifyCronSecret } from '@/lib/security/cron-auth';
 
 export const dynamic = 'force-dynamic'; // Prevent Next.js caching
@@ -31,6 +32,17 @@ interface CronStats {
   overdueErrors: number;
   blockedEmailsSent: number;
   blockedEmailErrors: number;
+  /**
+   * quick-603 — NEW, and the reason is the sharpest case on the whole surface.
+   *
+   * Each sweep's outer catch used to swallow a query failure with NO counter at
+   * all. If the STEP_OVERDUE query failed, the response was
+   * `{ok:true, stats:{overdueSent:0, overdueErrors:0, …}}` — **byte-identical to
+   * a clean run with nothing due**. There was no reading of that body that could
+   * tell "nothing to do" from "the sweep never ran". A failed SWEEP and a failed
+   * ITEM are different facts and now have different counters.
+   */
+  sweepsFailed: number;
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -47,7 +59,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     overdueErrors: 0,
     blockedEmailsSent: 0,
     blockedEmailErrors: 0,
+    sweepsFailed: 0,
   };
+  const failures = new CronFailures();
 
   // ─── Sweep 1: STEP_OVERDUE (24h after due) ──────────────────────────────────
 
@@ -102,12 +116,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         stats.overdueSent++;
         logger.info(`[CRON] workflow-notifications: Sent STEP_OVERDUE for step ${step.id}`);
       } catch (err) {
+        // The loop still continues — one bad step must not stop the sweep.
         stats.overdueErrors++;
-        logger.error(`[CRON] workflow-notifications: STEP_OVERDUE failed for step ${step.id}`, { err });
+        failures.record(
+          `[CRON] workflow-notifications: STEP_OVERDUE failed for step ${step.id}`,
+          `step:${step.id}`,
+          err,
+          { tenantId },
+        );
       }
     }
   } catch (err) {
-    logger.error('[CRON] workflow-notifications: Sweep 1 (STEP_OVERDUE) query failed', { err });
+    stats.sweepsFailed++;
+    failures.record(
+      '[CRON] workflow-notifications: Sweep 1 (STEP_OVERDUE) query failed',
+      'sweep:STEP_OVERDUE',
+      err,
+    );
   }
 
   // ─── Sweep 2: INSTANCE_BLOCKED >48h admin email escalation ──────────────────
@@ -152,17 +177,29 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           `[CRON] workflow-notifications: Sent INSTANCE_BLOCKED email for instance ${instance.id}`
         );
       } catch (err) {
+        // The loop still continues.
         stats.blockedEmailErrors++;
-        logger.error(
+        failures.record(
           `[CRON] workflow-notifications: INSTANCE_BLOCKED email failed for instance ${instance.id}`,
-          { err }
+          `instance:${instance.id}`,
+          err,
+          { tenantId: instance.tenantId },
         );
       }
     }
   } catch (err) {
-    logger.error('[CRON] workflow-notifications: Sweep 2 (INSTANCE_BLOCKED email) query failed', { err });
+    stats.sweepsFailed++;
+    failures.record(
+      '[CRON] workflow-notifications: Sweep 2 (INSTANCE_BLOCKED email) query failed',
+      'sweep:INSTANCE_BLOCKED',
+      err,
+    );
   }
 
-  logger.info('[CRON] workflow-notifications: Completed', { stats });
-  return NextResponse.json({ ok: true, stats });
+  const report = failures.report();
+  logger.info('[CRON] workflow-notifications: Completed', { stats, ...report });
+  return NextResponse.json(
+    { ok: failures.ok, stats, ...report },
+    { status: cronStatus(failures) },
+  );
 }

@@ -13,6 +13,45 @@ import { execSync } from 'node:child_process';
 
 const BACKSLASH = String.fromCharCode(92);
 
+/**
+ * Blank out `//` and block comments, preserving every byte position so that the
+ * reported line numbers stay correct.
+ *
+ * Added mid-task, after the fix's own explanatory comments (which quote the old
+ * broken call verbatim) were matched as if they were code. The count is
+ * re-verified against the pre-fix tree in `05-logger-classification.md`: it is
+ * still 76, so no site in the original population was ever a comment.
+ */
+function stripComments(src) {
+  const out = src.split('');
+  let i = 0;
+  let inStr = null;
+  while (i < src.length) {
+    const c = src[i];
+    const p = src[i - 1];
+    if (inStr) {
+      if (c === inStr && p !== BACKSLASH) inStr = null;
+      i++;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === '`') { inStr = c; i++; continue; }
+    if (c === '/' && src[i + 1] === '/') {
+      while (i < src.length && src[i] !== '\n') { out[i] = ' '; i++; }
+      continue;
+    }
+    if (c === '/' && src[i + 1] === '*') {
+      while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) {
+        if (src[i] !== '\n') out[i] = ' ';
+        i++;
+      }
+      if (i < src.length) { out[i] = ' '; out[i + 1] = ' '; i += 2; }
+      continue;
+    }
+    i++;
+  }
+  return out.join('');
+}
+
 const files = execSync('find src -name "*.ts" -o -name "*.tsx"', { encoding: 'utf8' })
   .split('\n')
   .map((s) => s.trim())
@@ -26,7 +65,7 @@ const other = [];
 
 for (const file of files) {
   // CRLF normalisation (quick-546) — this repo is core.autocrlf=true with no .gitattributes.
-  const src = readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+  const src = stripComments(readFileSync(file, 'utf8').replace(/\r\n/g, '\n'));
   let idx = 0;
   while ((idx = src.indexOf('logger.error(', idx)) !== -1) {
     total++;
