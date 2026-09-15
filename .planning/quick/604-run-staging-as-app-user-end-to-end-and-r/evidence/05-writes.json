@@ -1,0 +1,93 @@
+{
+  "task": "quick-604",
+  "phase": "writes",
+  "at": "2026-09-15T10:29:43.637Z",
+  "probeName": "604-probe client 1789468167772",
+  "counterReadConnection": "STAGING_DIRECT_URL (postgres) — asserted NOT app_user",
+  "leftoverProbeClientsAtEnd": 0,
+  "leftoverNeededForcedCleanup": true,
+  "entries": [
+    {
+      "n": 1,
+      "path": "POST /api/v1/carrier/clients",
+      "command": "INSERT",
+      "httpStatus": 201,
+      "verdict": "WROTE",
+      "before": {
+        "probeClients": 0
+      },
+      "after": {
+        "probeClients": 1
+      },
+      "sqlstate": null,
+      "logByteRange": [
+        88700,
+        88802
+      ],
+      "bodyExcerpt": "{\"data\":{\"id\":\"487da7da-6410-4cd8-92da-78ee68d1b71a\",\"orgId\":\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"name\":\"604-probe client 1789468167772\",\"dbaName\":null,\"mcNumber\":null,\"dotNumber\":null,\"taxId\":null,\"primaryContact\":null,\"email\":null,\"phone\":null,\"website\":null,\"addressLine1\":null,\"addressLine2\":null,\"city\":\"Probeville\",\"state\":null,\"zip\":null,\"country\":\"US\",\"status\":\"active\",\"isSample\":false,\"portalAccess\":false,\"portalEmail\":null,\"paymentTerms\":30,\"creditLimit\":null,\"notes\":null,\"createdById\":\"d27660ff-feef-43dd-b22c-07ee74b9ee01\",\"updatedById\":\"d27660ff-feef-43dd-b22c-07ee74b9ee01\",\"deletedAt\":null,\"deletedById\":null,\"createdAt\":\"2026-09-15T10:29:31.273Z\",\"updatedAt\":\"2026-09-15T10:29:31.273Z\",\"contacts\":[]}}",
+      "note": "the loud case — an RLS refusal here is 42501, which proves the instrument can see a raise"
+    },
+    {
+      "n": 2,
+      "path": "PATCH /api/v1/carrier/clients/[id]",
+      "command": "UPDATE",
+      "httpStatus": 200,
+      "verdict": "WROTE",
+      "before": {
+        "city": "Probeville"
+      },
+      "after": {
+        "city": "604-probe-updated"
+      },
+      "sqlstate": null,
+      "logByteRange": [
+        88802,
+        88941
+      ],
+      "bodyExcerpt": "{\"data\":{\"id\":\"487da7da-6410-4cd8-92da-78ee68d1b71a\",\"orgId\":\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"name\":\"604-probe client 1789468167772\",\"dbaName\":null,\"mcNumber\":null,\"dotNumber\":null,\"taxId\":null,\"primaryContact\":null,\"email\":null,\"phone\":null,\"website\":null,\"addressLine1\":null,\"addressLine2\":null,\"city\":\"604-probe-updated\",\"state\":null,\"zip\":null,\"country\":\"US\",\"status\":\"active\",\"isSample\":false,\"portalAccess\":false,\"portalEmail\":null,\"paymentTerms\":30,\"creditLimit\":null,\"notes\":null,\"createdById\":\"d27660ff-feef-43dd-b22c-07ee74b9ee01\",\"updatedById\":\"d27660ff-feef-43dd-b22c-07ee74b9ee01\",\"deletedAt\":null,\"deletedById\":null,\"createdAt\":\"2026-09-15T10:29:31.273Z\",\"updatedAt\":\"2026-09-15T10:29:33.954Z\",\"contacts\":[]}}",
+      "note": "THE SILENT CASE — an UPDATE refused by RLS is 0 rows with no error (policy-satisfiability-sweep §4.1)"
+    },
+    {
+      "n": 3,
+      "path": "DELETE /api/v1/carrier/clients/[id]",
+      "command": "DELETE",
+      "httpStatus": 200,
+      "verdict": "WROTE",
+      "before": {
+        "status": "active"
+      },
+      "after": {
+        "status": "inactive"
+      },
+      "sqlstate": null,
+      "logByteRange": [
+        88941,
+        89081
+      ],
+      "bodyExcerpt": "{\"data\":{\"id\":\"487da7da-6410-4cd8-92da-78ee68d1b71a\",\"status\":\"inactive\"}}",
+      "note": "silent case — a SOFT delete (status → inactive), not a row removal; the counter-read watches the field the endpoint claims to change"
+    },
+    {
+      "n": 4,
+      "path": "/settings/operations server action → Tenant.update",
+      "command": "UPDATE",
+      "httpStatus": 200,
+      "verdict": "WROTE",
+      "before": {
+        "r": false,
+        "b": true
+      },
+      "after": {
+        "r": true,
+        "b": false
+      },
+      "sqlstate": null,
+      "logByteRange": [
+        89177,
+        89685
+      ],
+      "bodyExcerpt": "3:I[\"[project]/node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js [app-client] (ecmascript)\",[\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0huouj7.js\",\"/_next/static/chunks/apps_web_src_0-b9_v9._.js\",\"/_next/static/chunks/node_modules_next_09ek.xo._.js\",\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\",\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\",\"/_next/static/chunks/node_modules_088ljpk._.js\",\"/_next/static/chunks/apps_web_src_app_layout_tsx_004glpo._.js\"],\"SegmentViewNode\"]\n5:\"$Sreact.fragment\"\n1d:I[\"[project]/apps/web/src/lib/auth/auth-context.tsx [app-client] (ecmascript)\",[\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0huouj7.js\",\"/_next/static/chunks/apps_web_src_0-b9_v9._.js\",\"/_next/static/chunks/node_modules_next_09ek.xo._.js\",\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\",\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\",\"/_next/static/chunks/node_modules_088ljpk._.js\",\"/_next/static/chunks/apps_web_src_app_layout_tsx_004glpo._.js\"],\"AuthProvider\"]\n1f:I[\"[project]/node_modules/next/dist/client/components/layout-router.js [app-client] (ecmascript)\",[\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0huouj7.js\",\"/_next/static/chunks/apps_web_src_0-b9_v9._.js\",\"/_next/static/chunks/node_modules_next_09ek.xo._.js\",\"/_next/static/chunks/node_modules_tailwind-merge_dist_bund",
+      "note": "policy-satisfiability-sweep §5.2 row 1 — measures whether quick-599 tenant_self_update closed it END TO END"
+    }
+  ]
+}
