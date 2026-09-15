@@ -77,6 +77,37 @@ than silent.
 
 ### 2.4 The `AutomationRule` residue — D2, measured and unchanged
 
+> **CLOSED BY quick-612 (2026-09-15), and there was a SECOND hole this section did not find.**
+>
+> The `AutomationRule` policy is now a four-way per-command split. `tenant_isolation_policy`
+> keeps its name on the **SELECT** half (this document's own §6 rule); INSERT, UPDATE and DELETE
+> get their own policies, none of which carries the `scope = 'SYSTEM'` branch. Measured on
+> staging as `app_user`, the D2 residue below goes **6 rows → 0 rows**, with a privileged
+> counter-read confirming all 6 SYSTEM rows survive.
+>
+> **The second hole — CAPTURE.** `WITH CHECK` inspects only the NEW row, and `USING` admitted a
+> SYSTEM row for UPDATE, so a tenant-scoped connection could take ownership of all six platform
+> rules:
+>
+> ```
+> UPDATE "AutomationRule" SET "tenantId" = <own> WHERE scope='SYSTEM'   ->  6 rows
+> ```
+>
+> The matrix below tested `update-system` touching a NON-`tenantId` column, which returns 42501
+> precisely because `tenantId` stays NULL — so this shape was never exercised. The capture is
+> arguably worse than the delete: the rules keep running, now owned by one tenant, and nothing
+> looks broken. Also `0 rows` after the split.
+>
+> **`USING` is the only lever on the OLD row**, which is why closing the capture REQUIRED
+> dropping SYSTEM from UPDATE's `USING`, and why no `WITH CHECK` formulation could have done it.
+>
+> **Stated cost:** `UPDATE … SET <non-tenantId column> WHERE scope='SYSTEM'` changes from a loud
+> `42501` to a silent `0 rows`, because the row is now filtered by `USING` before `WITH CHECK` is
+> reached. Accepted deliberately — a silent refusal beats an open capture.
+>
+> Full matrix, both directions on all four commands, with the DELETE counter-read:
+> `.planning/quick/612-close-the-automationrule-delete-gap-with/612-SUMMARY.md` §5.
+
 ```
 AutomationRule.select-system@guc-A     6      ->  6        (read unchanged, by design)
 AutomationRule.update-system@guc-A     6 rows ->  ERROR [42501]

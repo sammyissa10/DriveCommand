@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-15T05:16:04.182Z",
+  "generatedAt": "2026-09-15T22:55:09.194Z",
   "projectRef": "wyixpgunnjmzguhggocz",
-  "corpusHash": "aaf0f4d2845d1f408968981d2f1d363a8b5b3c27f15ddde6c1859fdb366e82cd",
-  "definitionCount": 183,
-  "canonicalisedCount": 183,
+  "corpusHash": "c2a7362e8f8f6f04d0a2ef3f1130ed8bccbcdc1ef9cd37c9c72efe05dc684e29",
+  "definitionCount": 186,
+  "canonicalisedCount": 186,
   "notCanonicalised": [],
   "policies": {
     "ActivationProgress.bypass_rls_policy": {
@@ -69,6 +69,33 @@
       "using": "(tenant_id = current_tenant_id())",
       "withCheck": null
     },
+    "AutomationRule.automation_rule_delete_policy": {
+      "cmd": "DELETE",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": null
+    },
+    "AutomationRule.automation_rule_insert_policy": {
+      "cmd": "INSERT",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": null,
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
+    "AutomationRule.automation_rule_update_policy": {
+      "cmd": "UPDATE",
+      "permissive": true,
+      "roles": [
+        "public"
+      ],
+      "using": "(\"tenantId\" = current_tenant_id())",
+      "withCheck": "(\"tenantId\" = current_tenant_id())"
+    },
     "AutomationRule.bypass_rls_policy": {
       "cmd": "ALL",
       "permissive": true,
@@ -79,13 +106,13 @@
       "withCheck": null
     },
     "AutomationRule.tenant_isolation_policy": {
-      "cmd": "ALL",
+      "cmd": "SELECT",
       "permissive": true,
       "roles": [
         "public"
       ],
       "using": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
-      "withCheck": "(\"tenantId\" = current_tenant_id())"
+      "withCheck": null
     },
     "AutomationRun.bypass_rls_policy": {
       "cmd": "ALL",

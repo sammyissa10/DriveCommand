@@ -1,0 +1,259 @@
+{
+  "at": "2026-09-15T22:52:45.802Z",
+  "project": "wyixpgunnjmzguhggocz",
+  "mode": "before",
+  "policyCount": 183,
+  "bypassCount": 86,
+  "bypassTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "Customer",
+    "CustomerInteraction",
+    "DispatchOverrideAudit",
+    "DocFeedback",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "DriverRouteJoin",
+    "ExpenseCategory",
+    "ExpenseTemplate",
+    "ExpenseTemplateItem",
+    "FleetMessage",
+    "FuelRecord",
+    "GPSLocation",
+    "Invoice",
+    "InvoiceItem",
+    "Load",
+    "MaintenanceEvent",
+    "NotificationLog",
+    "NotificationSendLog",
+    "NotificationSubscription",
+    "PayrollRecord",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PlaybookStep",
+    "PlaybookTrigger",
+    "PushToken",
+    "Route",
+    "RouteDriver",
+    "RouteExpense",
+    "RoutePayment",
+    "RouteStop",
+    "SafetyEvent",
+    "ScheduledService",
+    "StepInstance",
+    "StepTemplate",
+    "Subscription",
+    "SupportTicket",
+    "SysAdminInvoice",
+    "SysAdminInvoiceItem",
+    "Tag",
+    "TagAssignment",
+    "Tenant",
+    "TenantHealthScore",
+    "TenantIntegration",
+    "TenantMetricsDaily",
+    "TenantNotificationSettings",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "UserNotificationPreference",
+    "audit_log",
+    "carrier_compliance_alert_log",
+    "carrier_document_types",
+    "carrier_drivers",
+    "carrier_expenses",
+    "carrier_truck_defects",
+    "carrier_trucks",
+    "client_contacts",
+    "clients",
+    "contracts",
+    "dispatches",
+    "document_import_pages",
+    "document_imports",
+    "document_profiles",
+    "driver_bonuses",
+    "driver_compensation_templates",
+    "driver_deductions",
+    "driver_disputes",
+    "driver_pay_audit_logs",
+    "driver_pay_records",
+    "driver_settlements",
+    "facilities",
+    "facility_external_references",
+    "in_app_notifications",
+    "load_driver_assignments",
+    "load_pay_components",
+    "loads",
+    "pay_component_attachments",
+    "route_templates"
+  ],
+  "livePolicies": [
+    {
+      "polname": "bypass_rls_policy",
+      "cmd": "ALL",
+      "qual": "(current_setting('app.bypass_rls'::text, true) = 'on'::text)",
+      "with_check": null,
+      "polpermissive": true
+    },
+    {
+      "polname": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "qual": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "polpermissive": true
+    }
+  ],
+  "systemBefore": 6,
+  "systemAfter": 6,
+  "tenantA": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+  "tenantB": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+  "probes": [
+    {
+      "id": "S1",
+      "cmd": "SELECT",
+      "direction": "must SUCCEED",
+      "label": "tenant reads the 6 SYSTEM platform rules",
+      "rows": 1,
+      "value": 6,
+      "error": null
+    },
+    {
+      "id": "S2",
+      "cmd": "SELECT",
+      "direction": "must SUCCEED",
+      "label": "tenant reads its OWN rule",
+      "rows": 1,
+      "value": 1,
+      "error": null
+    },
+    {
+      "id": "S3",
+      "cmd": "SELECT",
+      "direction": "must be REFUSED",
+      "label": "tenant B's rules are invisible to tenant A",
+      "rows": 1,
+      "value": 0,
+      "error": null
+    },
+    {
+      "id": "I1",
+      "cmd": "INSERT",
+      "direction": "must SUCCEED",
+      "label": "INSERT naming OWN tenant",
+      "rows": 1,
+      "value": null,
+      "error": null
+    },
+    {
+      "id": "I2",
+      "cmd": "INSERT",
+      "direction": "must be REFUSED",
+      "label": "INSERT naming ANOTHER tenant (cross-tenant)",
+      "rows": null,
+      "value": null,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      }
+    },
+    {
+      "id": "I3",
+      "cmd": "INSERT",
+      "direction": "must be REFUSED",
+      "label": "INSERT a new SYSTEM rule (tenantId NULL)",
+      "rows": null,
+      "value": null,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      }
+    },
+    {
+      "id": "U1",
+      "cmd": "UPDATE",
+      "direction": "must SUCCEED",
+      "label": "UPDATE own rule",
+      "rows": 1,
+      "value": null,
+      "error": null
+    },
+    {
+      "id": "U2",
+      "cmd": "UPDATE",
+      "direction": "must be REFUSED",
+      "label": "UPDATE a SYSTEM rule (touch a non-tenantId column)",
+      "rows": null,
+      "value": null,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AutomationRule\""
+      },
+      "counterRead": {
+        "label": "SYSTEM rows still present",
+        "value": 6
+      }
+    },
+    {
+      "id": "U3",
+      "cmd": "UPDATE",
+      "direction": "must be REFUSED",
+      "label": "CAPTURE: UPDATE SYSTEM rules SET tenantId = own",
+      "rows": 6,
+      "value": null,
+      "error": null,
+      "counterRead": {
+        "label": "SYSTEM rows STILL scope=SYSTEM with tenantId NULL",
+        "value": 6
+      }
+    },
+    {
+      "id": "U4",
+      "cmd": "UPDATE",
+      "direction": "must be REFUSED",
+      "label": "UPDATE another tenant's rule",
+      "rows": 0,
+      "value": null,
+      "error": null
+    },
+    {
+      "id": "D1",
+      "cmd": "DELETE",
+      "direction": "must SUCCEED",
+      "label": "DELETE own rule",
+      "rows": 1,
+      "value": null,
+      "error": null,
+      "counterRead": {
+        "label": "own rule still present (probe was rolled back)",
+        "value": 1
+      }
+    },
+    {
+      "id": "D2",
+      "cmd": "DELETE",
+      "direction": "must be REFUSED",
+      "label": "DELETE the 6 SYSTEM platform rules",
+      "rows": 6,
+      "value": null,
+      "error": null,
+      "counterRead": {
+        "label": "SYSTEM rows still present",
+        "value": 6
+      }
+    },
+    {
+      "id": "D3",
+      "cmd": "DELETE",
+      "direction": "must be REFUSED",
+      "label": "DELETE another tenant's rules",
+      "rows": 0,
+      "value": null,
+      "error": null
+    }
+  ]
+}
