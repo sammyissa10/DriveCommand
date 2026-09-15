@@ -27,7 +27,15 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/logger', async (io) => loggerDouble(io));
-vi.mock('@/lib/db/prisma', () => ({ prisma: { tenant: { findMany: h.tenantFindMany } } }));
+/**
+ * quick-606 — RETARGETED. The tenant sweep moved off the bare client onto
+ * getAdminDb, because on the bare client it did not reliably raise: it was
+ * measured answering 200 with one tenant of two, a SILENT PARTIAL SWEEP.
+ * Left pointing at the bare client these spies would inject into a DEAD path.
+ */
+vi.mock('@/lib/db/admin-prisma', () => ({
+  getAdminDb: vi.fn(async () => ({ tenant: { findMany: h.tenantFindMany } })),
+}));
 vi.mock('@/lib/context/tenant-context', () => ({ getTenantPrismaForOrg: h.getTenantPrismaForOrg }));
 vi.mock('@/lib/notifications/emit', () => ({ emitNotification: h.emitNotification }));
 vi.mock('@/lib/utils/date', () => ({ formatDateInTenantTimezone: () => '2026-09-16 13:00 UTC' }));

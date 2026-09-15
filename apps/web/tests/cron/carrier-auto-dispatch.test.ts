@@ -29,11 +29,18 @@ vi.mock('next/server', async (io) => {
   // what this test is about, so it is replaced with an immediate no-op.
   return { ...actual, after: vi.fn() };
 });
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: {
-    tenant: { findMany: h.tenantFindMany },
-    routeTemplate: { findMany: h.templateFindMany },
-  },
+/**
+ * quick-606 — RETARGETED. The tenant sweep is on getAdminDb and the per-tenant
+ * template read is on getTenantPrismaForOrg. Re-verification measured this
+ * route raising TC001 on its sweep, not the fixture error quick-604 recorded —
+ * which of the two you get depends on what an earlier request left on the
+ * max:1 pool.
+ */
+vi.mock('@/lib/db/admin-prisma', () => ({
+  getAdminDb: vi.fn(async () => ({ tenant: { findMany: h.tenantFindMany } })),
+}));
+vi.mock('@/lib/context/tenant-context', () => ({
+  getTenantPrismaForOrg: vi.fn(async () => ({ routeTemplate: { findMany: h.templateFindMany } })),
 }));
 vi.mock('@/lib/carrier/dispatch-generator', () => ({ generateDispatches: h.generateDispatches }));
 vi.mock('@/lib/carrier/in-app-notifications', () => ({ createNotification: h.createNotification }));

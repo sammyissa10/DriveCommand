@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-15T17:27:19.871Z",
+  "generatedAt": "2026-09-15T19:10:58.436Z",
   "totals": {
-    "unmigratedUnits": 456,
-    "unmigratedCallSites": 459,
+    "unmigratedUnits": 469,
+    "unmigratedCallSites": 472,
     "withTenantContextCallSites": 0,
     "filesScanned": 1691,
-    "filesWithUnmigratedUnits": 202
+    "filesWithUnmigratedUnits": 213
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -99,6 +99,13 @@
       "callSites": 1,
       "names": [
         "findOwnStep:48"
+      ]
+    },
+    "app/(driver)/documents/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "DriverDocumentsPage:10"
       ]
     },
     "app/(driver)/my-tickets/[id]/page.tsx": {
@@ -307,11 +314,13 @@
       ]
     },
     "app/(owner)/actions/notifications.ts": {
-      "units": 2,
-      "callSites": 2,
+      "units": 4,
+      "callSites": 4,
       "names": [
-        "sendLoadUpdateNotification:232",
-        "sendETANotification:278"
+        "(anonymous):66",
+        "(anonymous):145",
+        "sendLoadUpdateNotification:262",
+        "sendETANotification:308"
       ]
     },
     "app/(owner)/actions/onboarding-tour.ts": {
@@ -510,6 +519,13 @@
         "NewTripPage:10"
       ]
     },
+    "app/(owner)/carrier/trips/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "TripsPage:10"
+      ]
+    },
     "app/(owner)/checklists/instances/[id]/_components/actions.ts": {
       "units": 1,
       "callSites": 1,
@@ -691,6 +707,48 @@
       "callSites": 1,
       "names": [
         "scheduleCronDrivenRule:164"
+      ]
+    },
+    "app/api/cron/carrier-auto-dispatch/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:36"
+      ]
+    },
+    "app/api/cron/carrier-compliance-alerts/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:29"
+      ]
+    },
+    "app/api/cron/digest-compliance-30day/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:30"
+      ]
+    },
+    "app/api/cron/digest-daily-driver/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:30"
+      ]
+    },
+    "app/api/cron/digest-weekly-owner/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:30"
+      ]
+    },
+    "app/api/cron/purge-deleted/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:11"
       ]
     },
     "app/api/cron/trip-reminders/route.ts": {
@@ -1555,6 +1613,27 @@
       "names": [
         "legacySendDriverMessageNotification:52",
         "legacySendOwnerReplyNotification:125"
+      ]
+    },
+    "lib/notifications/check-expiring-documents.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "findExpiringDocuments:31"
+      ]
+    },
+    "lib/notifications/check-expiring-driver-documents.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "findExpiringDriverDocuments:21"
+      ]
+    },
+    "lib/notifications/check-upcoming-maintenance.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "findUpcomingMaintenance:27"
       ]
     },
     "lib/routes/assignable-drivers.ts": {

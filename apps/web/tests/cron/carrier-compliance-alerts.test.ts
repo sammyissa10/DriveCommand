@@ -25,12 +25,24 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/logger', async (io) => loggerDouble(io));
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: {
-    $executeRawUnsafe: h.executeRawUnsafe,
-    $executeRaw: h.executeRaw,
-    tenant: { findMany: h.tenantFindMany },
-  },
+/**
+ * quick-606 — RETARGETED, and one spy is deliberately GONE.
+ *
+ * `$executeRawUnsafe` was the CREATE TABLE / CREATE INDEX bootstrap the route
+ * ran on every invocation. Under app_user that is 42501 permission denied for
+ * schema public — a runtime connection asked to run DDL — so the block was
+ * deleted, and a spy for it would now assert a call that can never happen.
+ *
+ * The tenant sweep moved to getAdminDb; the raw per-tenant INSERT moved onto
+ * the getTenantPrismaForOrg client, because a raw statement is not intercepted
+ * by the Prisma extension and the GUC is the only thing that can satisfy
+ * carrier_compliance_alert_log's tenant_isolation_policy.
+ */
+vi.mock('@/lib/db/admin-prisma', () => ({
+  getAdminDb: vi.fn(async () => ({ tenant: { findMany: h.tenantFindMany } })),
+}));
+vi.mock('@/lib/context/tenant-context', () => ({
+  getTenantPrismaForOrg: vi.fn(async () => ({ $executeRaw: h.executeRaw })),
 }));
 vi.mock('@/lib/carrier/compliance', () => ({ getComplianceAlerts: h.getComplianceAlerts }));
 vi.mock('@/lib/carrier/notifications', () => ({

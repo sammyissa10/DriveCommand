@@ -82,8 +82,15 @@ export async function GET(request: NextRequest) {
     CarrierTruck: 'carrierTruck',
     Route: 'route',
   };
-  for (const name of MODEL_NAMES) results[name] = 0;
-
+  /**
+   * quick-606 — `results` is NOT pre-initialised, and that is quick-603's
+   * guarantee, not a style choice. It holds SUCCESSES ONLY: a model that failed
+   * has NO KEY, so a failure cannot be erased into a zero that reads exactly like
+   * a clean run with nothing to purge. Seeding every model with 0 here brought
+   * that erasure straight back — `tests/cron/purge-deleted.test.ts` caught it
+   * ("expected […] to not include 'CarrierContract'"), which is the guard
+   * working.
+   */
   let tenantsProcessed = 0;
   for (const tenant of tenants) {
     let db;
@@ -103,7 +110,7 @@ export async function GET(request: NextRequest) {
             deletedAt: { not: null, lt: cutoffDate },
           },
         });
-        results[name] += result.count;
+        results[name] = (results[name] ?? 0) + result.count;
         if (result.count > 0) {
           logger.info(`[CRON] purge-deleted: Purged ${result.count} ${name} records`, {
             tenantId: tenant.id,

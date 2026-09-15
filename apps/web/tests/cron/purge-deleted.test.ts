@@ -57,12 +57,29 @@ const deleteManySpies = vi.hoisted(() => {
 });
 
 vi.mock('@/lib/logger', async (io) => loggerDouble(io));
-vi.mock('@/lib/db/prisma', () => {
+/**
+ * quick-606 — RETARGETED. The route no longer calls the bare client at all:
+ * the tenant list comes from getAdminDb and the seven deleteMany calls run
+ * per tenant under getTenantPrismaForOrg, because a DELETE refused by RLS is
+ * a SILENT ZERO and totalPurged: 0 is indistinguishable from a clean run.
+ *
+ * Left pointing at '@/lib/db/prisma', these spies would have injected into a
+ * DEAD CODE PATH and this file would have gone green while testing nothing —
+ * the Phase-10 sendDispatchAssignedNotification shape.
+ *
+ * ONE tenant, deliberately: every count below is per (model x tenant), so a
+ * second tenant would double them and the assertions would be measuring the
+ * fixture rather than the route.
+*/
+vi.mock('@/lib/db/admin-prisma', () => ({
+  getAdminDb: vi.fn(async () => ({ tenant: { findMany: vi.fn(async () => [{ id: 'tenant-1' }]) } })),
+}));
+vi.mock('@/lib/context/tenant-context', () => {
   const client: Record<string, unknown> = {};
   for (const m of Object.keys(deleteManySpies)) {
     client[m] = { deleteMany: deleteManySpies[m] };
   }
-  return { prisma: client };
+  return { getTenantPrismaForOrg: vi.fn(async () => client) };
 });
 
 const injected = new InjectedFailure(FAILING_CLIENT_KEY);
