@@ -240,9 +240,14 @@ likewise — the same reporter, per quick-565 (`--silent` and `--reporter=json` 
 
 |  | tests | passed | failed | pending | failing FILES |
 |---|---|---|---|---|---|
-| BEFORE | 2122 | 2003 | 64 | 52 | 25 |
-| AFTER (first) | 2123 | 2002 | 66 | 52 | **26** |
-| AFTER (final) | see §closing | | | | **25 — set identical to BEFORE** |
+| BEFORE (clean tree, `06a6ef66`, before any edit) | 2122 | 2003 | 64 | 52 | 25 |
+| AFTER, first run | 2123 | 2002 | **66** | 52 | **26** |
+| FINAL (after the last commit) | 2123 | **2004** | **64** | 52 | **25 — set byte-identical to BEFORE** |
+
+`diff` of the two failing-file lists is empty. `failed` is identical at 64; `+1`
+passing test is this task's new named-negative assertion. The final run was taken
+**after the last commit**, per quick-561 — quick-559 published a baseline measured
+before it wrote its own guard file and was 7 tests short.
 
 **The first AFTER run had one extra failing file and it was a real regression — by a guard doing
 exactly its job.** `tests/security/wrapper-migration-countdown.test.ts`:
