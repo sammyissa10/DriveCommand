@@ -1,0 +1,118 @@
+{
+  "at": "2026-09-15T21:53:00.051Z",
+  "project": "wyixpgunnjmzguhggocz",
+  "role": "app_user",
+  "tripwire": "armed",
+  "acquire": "after",
+  "poolShape": "max:1 — ONE CHILD PROCESS PER SITE, so every verdict is the first tenant-touching statement of its own process",
+  "verdicts": [
+    {
+      "site": "s1",
+      "file": "src/app/(owner)/actions/dashboard.ts",
+      "line": 85,
+      "fn": "_fetchNotificationAlerts",
+      "tenantSource": "function ARGUMENT (tenantId), resolved upstream by getAuthContext() from the session",
+      "acquire": "after",
+      "instrument": "REAL acquisition expression + this site’s own first query",
+      "table": "Truck",
+      "result": "truck.findMany -> 1 row(s)",
+      "raised": false,
+      "crossTenant": {
+        "ownRowsVisible": 1,
+        "foreignRowsVisible": 0,
+        "refused": true,
+        "nonVacuous": true
+      }
+    },
+    {
+      "site": "s2",
+      "file": "src/app/(owner)/actions/dashboard.ts",
+      "line": 330,
+      "fn": "_fetchDashboardMetrics",
+      "tenantSource": "function ARGUMENT (tenantId), resolved upstream by getAuthContext() from the session",
+      "acquire": "after",
+      "instrument": "REAL acquisition expression + this site’s own first query",
+      "table": "User",
+      "result": "user.count(role=DRIVER, isActive) -> 3",
+      "raised": false,
+      "crossTenant": {
+        "ownRowsVisible": 6,
+        "foreignRowsVisible": 0,
+        "refused": true,
+        "nonVacuous": true
+      }
+    },
+    {
+      "site": "s3",
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 374,
+      "fn": "listTenantUsers",
+      "tenantSource": "SESSION, via requireTenantAccess() on the function’s first line",
+      "acquire": "after",
+      "instrument": "REAL acquisition expression + this site’s own first query",
+      "table": "User",
+      "result": "user.findMany(isActive) -> 6 row(s)",
+      "raised": false,
+      "crossTenant": {
+        "ownRowsVisible": 6,
+        "foreignRowsVisible": 0,
+        "refused": true,
+        "nonVacuous": true
+      }
+    },
+    {
+      "site": "s4",
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 513,
+      "fn": "listTenantSendLog",
+      "tenantSource": "SESSION, via requireTenantAccess() on the function’s first line",
+      "acquire": "after",
+      "instrument": "REAL acquisition expression + this site’s own first query",
+      "table": "NotificationSendLog",
+      "result": "notificationSendLog.count -> 1",
+      "raised": false,
+      "crossTenant": {
+        "ownRowsVisible": 1,
+        "foreignRowsVisible": 0,
+        "refused": true,
+        "nonVacuous": true
+      }
+    },
+    {
+      "site": "s5",
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 543,
+      "fn": "getTenantSendLogStats",
+      "tenantSource": "SESSION, via requireTenantAccess() on the function’s first line",
+      "acquire": "after",
+      "instrument": "REAL acquisition expression + this site’s own first query",
+      "table": "NotificationSendLog",
+      "result": "notificationSendLog.count(30d) -> 1",
+      "raised": false,
+      "crossTenant": {
+        "ownRowsVisible": 1,
+        "foreignRowsVisible": 0,
+        "refused": true,
+        "nonVacuous": true
+      }
+    },
+    {
+      "site": "s6",
+      "file": "src/lib/db/repositories/base.repository.ts",
+      "line": 11,
+      "fn": "TenantRepository constructor (inherited by every subclass)",
+      "tenantSource": "CONSTRUCTOR ARGUMENT (tenantId), passed by all 22 call sites",
+      "acquire": "after",
+      "instrument": "REAL MODULE (DocumentRepository through the inherited constructor)",
+      "table": "Document",
+      "raised": false,
+      "result": "DocumentRepository#findByTruckId -> 1 row(s)",
+      "crossTenant": {
+        "ownRowsVisible": 1,
+        "foreignRowsVisible": 0,
+        "refused": true,
+        "nonVacuous": true
+      }
+    }
+  ]
+}

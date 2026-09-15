@@ -69,6 +69,27 @@ const SERVER_LOG = process.env.CLICK_THROUGH_LOG
 
 loadEnv({ path: resolve(APP_ROOT, '.env.staging'), quiet: true });
 
+/**
+ * Where `--surfaces` writes and `--surfaces2` reads-then-appends.
+ *
+ * quick-610 (additive): `--surfaces3` and `--surfaces606` already take `--out`
+ * so a later task writes its OWN artefact instead of overwriting a closed task's
+ * — the corruption this file's header warns about, since `04-click-through.json`
+ * carries byte offsets into quick-604's own server log. Passes 1 and 2 had no
+ * such escape, so re-running them was destructive by construction. They now take
+ * the same flag.
+ *
+ * `resolve` makes an ABSOLUTE `--out` win outright and a relative one land beside
+ * quick-604's artefacts. Omitting the flag is byte-for-byte the previous
+ * behaviour, so every existing invocation is unchanged. Passes 1 and 2 must be
+ * given the SAME `--out`, because 2 appends to what 1 wrote.
+ */
+function clickThroughPath(): string {
+  const i = process.argv.indexOf('--out');
+  const out = i >= 0 ? process.argv[i + 1] : undefined;
+  return resolve(EVIDENCE_DIR, out ?? '04-click-through.json');
+}
+
 function refuse(reason: string): never {
   console.error(`604-click-through: REFUSING TO RUN — ${reason}`);
   process.exit(1);
@@ -544,7 +565,7 @@ async function surfaces() {
     })),
     entries,
   };
-  writeFileSync(resolve(EVIDENCE_DIR, '04-click-through.json'), JSON.stringify(record, null, 2) + '\n');
+  writeFileSync(clickThroughPath(), JSON.stringify(record, null, 2) + '\n');
 
   const counts = {
     pass: entries.filter((e) => e.verdict === 'pass').length,
@@ -592,8 +613,8 @@ async function findTrackingToken(): Promise<{ token: string | null; reason: stri
 
 async function surfaces2() {
   if (!existsSync(EVIDENCE_DIR)) mkdirSync(EVIDENCE_DIR, { recursive: true });
-  const clickPath = resolve(EVIDENCE_DIR, '04-click-through.json');
-  if (!existsSync(clickPath)) refuse('04-click-through.json not found — run --surfaces first');
+  const clickPath = clickThroughPath();
+  if (!existsSync(clickPath)) refuse(`${clickPath} not found — run --surfaces first (with the same --out)`);
   const record = JSON.parse(readFileSync(clickPath, 'utf8'));
 
   const fx = await pickFixtures();
@@ -1867,6 +1888,6 @@ else if (phase === '--surfaces606') surfaces606();
 else if (phase === '--writes') writes();
 else if (phase === '--pgstat') pgstat(process.argv[3] ?? 'unlabelled');
 else {
-  console.error('usage: npx tsx scripts/audit/604-click-through.ts --surfaces|--surfaces2|--surfaces3 [--out <file>]|--surfaces606 [--out <file>] [--only <ids>]|--writes|--pgstat <label>');
+  console.error('usage: npx tsx scripts/audit/604-click-through.ts --surfaces [--out <file>]|--surfaces2|--surfaces3 [--out <file>]|--surfaces606 [--out <file>] [--only <ids>]|--writes|--pgstat <label>');
   process.exit(1);
 }

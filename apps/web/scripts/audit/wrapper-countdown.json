@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-15T19:10:58.436Z",
+  "generatedAt": "2026-09-15T22:04:42.168Z",
   "totals": {
-    "unmigratedUnits": 469,
-    "unmigratedCallSites": 472,
+    "unmigratedUnits": 475,
+    "unmigratedCallSites": 478,
     "withTenantContextCallSites": 0,
     "filesScanned": 1691,
-    "filesWithUnmigratedUnits": 213
+    "filesWithUnmigratedUnits": 214
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -154,10 +154,12 @@
       ]
     },
     "app/(owner)/actions/dashboard.ts": {
-      "units": 1,
-      "callSites": 1,
+      "units": 3,
+      "callSites": 3,
       "names": [
-        "getFleetStats:482"
+        "_fetchNotificationAlerts:106",
+        "_fetchDashboardMetrics:351",
+        "getFleetStats:504"
       ]
     },
     "app/(owner)/actions/driver-compensation-templates.ts": {
@@ -408,18 +410,21 @@
       ]
     },
     "app/(owner)/actions/tenant-notification-settings.ts": {
-      "units": 9,
-      "callSites": 9,
+      "units": 12,
+      "callSites": 12,
       "names": [
-        "listTenantNotificationSettings:142",
-        "getSettingForTrigger:181",
-        "customizeTemplate:219",
-        "restoreDefault:270",
-        "toggleTenantNotificationActive:299",
-        "listTenantSubscribers:335",
-        "listActiveTemplatesForTenant:394",
-        "addSubscriber:424",
-        "removeSubscriber:466"
+        "listTenantNotificationSettings:141",
+        "getSettingForTrigger:180",
+        "customizeTemplate:218",
+        "restoreDefault:269",
+        "toggleTenantNotificationActive:298",
+        "listTenantSubscribers:334",
+        "listTenantUsers:368",
+        "listActiveTemplatesForTenant:397",
+        "addSubscriber:427",
+        "removeSubscriber:469",
+        "listTenantSendLog:491",
+        "getTenantSendLogStats:549"
       ]
     },
     "app/(owner)/actions/trucks.ts": {
@@ -1495,6 +1500,13 @@
         "transitionTripStatus:640",
         "reorderTripStops:1012",
         "addLoadToTrip:1050"
+      ]
+    },
+    "lib/db/repositories/base.repository.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "client:79"
       ]
     },
     "lib/document-import/cache.ts": {

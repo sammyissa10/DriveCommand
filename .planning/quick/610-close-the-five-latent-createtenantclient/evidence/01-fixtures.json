@@ -1,0 +1,25 @@
+{
+  "at": "2026-09-15T21:41:52.400Z",
+  "mode": "ensure",
+  "project": "wyixpgunnjmzguhggocz",
+  "tenants": {
+    "Staging Alpha Carriers": {
+      "id": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "counts": {
+        "User": 6,
+        "Truck": 1,
+        "Document": 1,
+        "NotificationSendLog": 1
+      }
+    },
+    "Staging Beta Logistics": {
+      "id": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "counts": {
+        "User": 4,
+        "Truck": 1,
+        "Document": 1,
+        "NotificationSendLog": 1
+      }
+    }
+  }
+}
