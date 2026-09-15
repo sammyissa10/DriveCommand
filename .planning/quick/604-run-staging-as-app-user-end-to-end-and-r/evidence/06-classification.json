@@ -1,0 +1,342 @@
+{
+  "task": "quick-604",
+  "phase": "classification",
+  "at": "2026-09-15T10:38:39.604Z",
+  "countdownGeneratedAt": "2026-09-15T07:25:50.015Z",
+  "countdownTotals": {
+    "unmigratedUnits": 456,
+    "unmigratedCallSites": 459,
+    "withTenantContextCallSites": 0,
+    "filesScanned": 1690,
+    "filesWithUnmigratedUnits": 202
+  },
+  "counts": {
+    "TRIPWIRE_TC001": 7,
+    "MISSING_GRANT": 2,
+    "RLS_DENIAL_SATISFIABLE": 0,
+    "RLS_DENIAL_NO_POLICY": 0,
+    "SOMETHING_ELSE": 2
+  },
+  "categorySum": 11,
+  "derivedFailureCount": 11,
+  "arithmeticCheckPasses": true,
+  "policyDisagreements": [],
+  "findings": [
+    {
+      "source": "surface",
+      "surface": "/carrier/trips",
+      "role": "OWNER_A",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "TripsPage",
+        "file": "src/app/(owner)/carrier/trips/page.tsx",
+        "line": 19
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/(owner)/carrier/trips/page.tsx` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        1121,
+        3092
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/documents",
+      "role": "DRIVER_A",
+      "httpStatus": 500,
+      "sqlstate": "P2022",
+      "category": "SOMETHING_ELSE",
+      "categoryReason": "unclassified code P2022",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "DriverDocumentsPage",
+        "file": "src/app/(driver)/documents/page.tsx",
+        "line": 22
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/(driver)/documents/page.tsx` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        10445,
+        12430
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/carrier-auto-dispatch",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "SQLSTATE_UNRECOVERED",
+      "category": "SOMETHING_ELSE",
+      "categoryReason": "unclassified code SQLSTATE_UNRECOVERED",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/carrier-auto-dispatch/route.ts",
+        "line": 125
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/api/cron/carrier-auto-dispatch/route.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        13271,
+        15448
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/carrier-compliance-alerts",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "P2010",
+      "category": "MISSING_GRANT",
+      "categoryReason": "42501 permission denied for schema public",
+      "deniedObject": "schema public",
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/carrier-compliance-alerts/route.ts",
+        "line": 39
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/api/cron/carrier-compliance-alerts/route.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        15448,
+        17543
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/digest-compliance-30day",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/digest-compliance-30day/route.ts",
+        "line": 62
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/api/cron/digest-compliance-30day/route.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        17868,
+        26374
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/digest-daily-driver",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/digest-daily-driver/route.ts",
+        "line": 62
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/api/cron/digest-daily-driver/route.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        26374,
+        34845
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/digest-weekly-owner",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/digest-weekly-owner/route.ts",
+        "line": 62
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/api/cron/digest-weekly-owner/route.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        34845,
+        43316
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/purge-deleted",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/purge-deleted/route.ts",
+        "line": 51
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`app/api/cron/purge-deleted/route.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        43609,
+        68391
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/send-reminders",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "findUpcomingMaintenance",
+        "file": "src/lib/notifications/check-upcoming-maintenance.ts",
+        "line": 31
+      },
+      "attribution": "OUTSIDE_456",
+      "attributionDetail": "`lib/notifications/check-upcoming-maintenance.ts` does not appear in wrapper-countdown.json at all",
+      "logByteRange": [
+        68391,
+        79712
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/trip-reminders",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "TC001",
+      "category": "TRIPWIRE_TC001",
+      "categoryReason": "SQLSTATE is TC001",
+      "deniedObject": null,
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/trip-reminders/route.ts",
+        "line": 74
+      },
+      "attribution": "IN_456_FILE_ONLY",
+      "attributionDetail": "`app/api/cron/trip-reminders/route.ts` is in the 198-file set (1 unit(s): GET:59) but `GET:74` is not one of them",
+      "logByteRange": [
+        79712,
+        83112
+      ]
+    },
+    {
+      "source": "surface",
+      "surface": "/api/cron/workflow-notifications",
+      "role": "CRON",
+      "httpStatus": 500,
+      "sqlstate": "42501",
+      "category": "MISSING_GRANT",
+      "categoryReason": "42501 permission denied for table PlaybookNotification",
+      "deniedObject": "table PlaybookNotification",
+      "policyQuery": null,
+      "site": {
+        "fn": "GET",
+        "file": "src/app/api/cron/workflow-notifications/route.ts",
+        "line": 146
+      },
+      "attribution": "IN_456_FILE_ONLY",
+      "attributionDetail": "`app/api/cron/workflow-notifications/route.ts` is in the 198-file set (1 unit(s): GET:48) but `GET:146` is not one of them",
+      "logByteRange": [
+        83650,
+        87037
+      ]
+    }
+  ],
+  "outside456": [
+    {
+      "surface": "/carrier/trips",
+      "file": "src/app/(owner)/carrier/trips/page.tsx",
+      "line": 19,
+      "fn": "TripsPage",
+      "category": "TRIPWIRE_TC001",
+      "sqlstate": "TC001"
+    },
+    {
+      "surface": "/documents",
+      "file": "src/app/(driver)/documents/page.tsx",
+      "line": 22,
+      "fn": "DriverDocumentsPage",
+      "category": "SOMETHING_ELSE",
+      "sqlstate": "P2022"
+    },
+    {
+      "surface": "/api/cron/carrier-auto-dispatch",
+      "file": "src/app/api/cron/carrier-auto-dispatch/route.ts",
+      "line": 125,
+      "fn": "GET",
+      "category": "SOMETHING_ELSE",
+      "sqlstate": "SQLSTATE_UNRECOVERED"
+    },
+    {
+      "surface": "/api/cron/carrier-compliance-alerts",
+      "file": "src/app/api/cron/carrier-compliance-alerts/route.ts",
+      "line": 39,
+      "fn": "GET",
+      "category": "MISSING_GRANT",
+      "sqlstate": "P2010"
+    },
+    {
+      "surface": "/api/cron/digest-compliance-30day",
+      "file": "src/app/api/cron/digest-compliance-30day/route.ts",
+      "line": 62,
+      "fn": "GET",
+      "category": "TRIPWIRE_TC001",
+      "sqlstate": "TC001"
+    },
+    {
+      "surface": "/api/cron/digest-daily-driver",
+      "file": "src/app/api/cron/digest-daily-driver/route.ts",
+      "line": 62,
+      "fn": "GET",
+      "category": "TRIPWIRE_TC001",
+      "sqlstate": "TC001"
+    },
+    {
+      "surface": "/api/cron/digest-weekly-owner",
+      "file": "src/app/api/cron/digest-weekly-owner/route.ts",
+      "line": 62,
+      "fn": "GET",
+      "category": "TRIPWIRE_TC001",
+      "sqlstate": "TC001"
+    },
+    {
+      "surface": "/api/cron/purge-deleted",
+      "file": "src/app/api/cron/purge-deleted/route.ts",
+      "line": 51,
+      "fn": "GET",
+      "category": "TRIPWIRE_TC001",
+      "sqlstate": "TC001"
+    },
+    {
+      "surface": "/api/cron/send-reminders",
+      "file": "src/lib/notifications/check-upcoming-maintenance.ts",
+      "line": 31,
+      "fn": "findUpcomingMaintenance",
+      "category": "TRIPWIRE_TC001",
+      "sqlstate": "TC001"
+    }
+  ]
+}
