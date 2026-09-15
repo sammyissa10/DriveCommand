@@ -1,0 +1,294 @@
+{
+  "phase": "02-mechanism",
+  "generatedAt": "2026-09-15T05:06:39.132Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "gucPresenceOnFreshClients": [
+    {
+      "tenant_raw": "",
+      "tenant_is_null": false,
+      "control_is_null": true,
+      "tripwire_raw": "",
+      "pid": 566368
+    },
+    {
+      "tenant_raw": "",
+      "tenant_is_null": false,
+      "control_is_null": true,
+      "tripwire_raw": "",
+      "pid": 566368
+    },
+    {
+      "tenant_raw": "",
+      "tenant_is_null": false,
+      "control_is_null": true,
+      "tripwire_raw": "",
+      "pid": 566368
+    },
+    {
+      "tenant_raw": "",
+      "tenant_is_null": false,
+      "control_is_null": true,
+      "tripwire_raw": "",
+      "pid": 566368
+    },
+    {
+      "tenant_raw": "",
+      "tenant_is_null": false,
+      "control_is_null": true,
+      "tripwire_raw": "",
+      "pid": 566368
+    }
+  ],
+  "explainFastPath": [
+    "Seq Scan on public.tripwire_probe_602",
+    "  Output: id, \"tenantId\"",
+    "  Filter: ((tripwire_probe_602.\"tenantId\" = COALESCE((NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid, CASE WHEN (COALESCE(current_setting('app.tenant_context_tripwire'::text, true), 'off'::text) = 'on'::text) THEN probe_tenant_context_required(current_setting('app.current_tenant_id'::text, true)) ELSE NULL::uuid END)) OR (current_setting('app.bypass_rls'::text, true) = 'on'::text))",
+    "Query Identifier: -2676288534328381413"
+  ],
+  "explainBypass": {
+    "tenant policy created FIRST": [
+      "EXPLAIN raised: tenant context is required: app.current_tenant_id is the EMPTY STRING"
+    ],
+    "bypass policy created FIRST": [
+      "EXPLAIN raised: tenant context is required: app.current_tenant_id is the EMPTY STRING"
+    ]
+  },
+  "bypassResults": {
+    "tenant policy created FIRST": {
+      "select": "TC001",
+      "update": "TC001",
+      "delete": "TC001"
+    },
+    "bypass policy created FIRST": {
+      "select": "TC001",
+      "update": "TC001",
+      "delete": "TC001"
+    }
+  },
+  "tc001Payload": {
+    "UNSET": {
+      "raised": true,
+      "code": "TC001",
+      "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+      "detail": "statement: SELECT id FROM public.tripwire_probe_602 WHERE \"tenantId\" IS NOT NULL",
+      "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+    },
+    "EMPTY": {
+      "raised": true,
+      "code": "TC001",
+      "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+      "detail": "statement: SELECT id FROM public.tripwire_probe_602 WHERE \"tenantId\" IS NOT NULL",
+      "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+    }
+  },
+  "tripwireFlagBleedWithoutReset": {
+    "setterPid": 566368,
+    "pid": 566368,
+    "flag": ""
+  },
+  "tripwireFlagBleed": [
+    {
+      "pid": 566368,
+      "flag": ""
+    },
+    {
+      "pid": 566368,
+      "flag": ""
+    },
+    {
+      "pid": 566368,
+      "flag": ""
+    },
+    {
+      "pid": 566368,
+      "flag": ""
+    },
+    {
+      "pid": 566368,
+      "flag": ""
+    },
+    {
+      "pid": 566368,
+      "flag": ""
+    }
+  ],
+  "leftovers": {
+    "tables": 0,
+    "fns": 0
+  },
+  "probes": [
+    {
+      "label": "CONTROL: a name this repo never sets (app.never_set_602_control) reads NULL on every fresh client",
+      "direction": "observation",
+      "ok": true,
+      "detail": "allControlNull=true"
+    },
+    {
+      "label": "app.current_tenant_id reads NULL (truly UNSET) on at least one fresh app_user client through the session pooler",
+      "direction": "observation",
+      "ok": true,
+      "detail": "anyNull=false readings=[\"\",\"\",\"\",\"\",\"\"]"
+    },
+    {
+      "label": "FAST PATH: probe_current_tenant_id() with flag ON and a real uuid",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"v\":\"602a0000-0000-4000-8000-000000000001\"}"
+    },
+    {
+      "label": "FAST PATH: SELECT through a tenant policy that calls it, flag ON, real uuid",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "a fresh app_user connection has app.current_tenant_id UNSET (current_setting(..,TRUE) IS NULL)",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "ASSERT",
+        "message": "is_null=false"
+      }
+    },
+    {
+      "label": "UNSET: probe_current_tenant_id(), flag ON",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT public.probe_current_tenant_id() AS v",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "UNSET: SELECT through the tenant policy, flag ON",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM public.tripwire_probe_602",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "EMPTY STRING: probe_current_tenant_id(), flag ON",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT public.probe_current_tenant_id() AS v",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "EMPTY STRING: SELECT through the tenant policy, flag ON",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM public.tripwire_probe_602",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "FLAG OFF (flag unset), tenant UNSET: probe_current_tenant_id() returns NULL",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"is_null\":true}"
+    },
+    {
+      "label": "FLAG OFF (flag unset), tenant UNSET: SELECT filters silently",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "FLAG explicitly 'off', tenant UNSET: SELECT filters silently",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "BYPASS OR (tenant policy created FIRST): SELECT on tripwire_probe_602",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM public.tripwire_probe_602",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "BYPASS OR (tenant policy created FIRST): UPDATE on tripwire_probe_602",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: UPDATE public.tripwire_probe_602 SET \"tenantId\" = \"tenantId\"",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "BYPASS OR (tenant policy created FIRST): DELETE on tripwire_probe_602",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: DELETE FROM public.tripwire_probe_602",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "BYPASS OR (bypass policy created FIRST): SELECT on tripwire_probe_602_rev",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM public.tripwire_probe_602_rev",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "BYPASS OR (bypass policy created FIRST): UPDATE on tripwire_probe_602_rev",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: UPDATE public.tripwire_probe_602_rev SET \"tenantId\" = \"tenantId\"",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "BYPASS OR (bypass policy created FIRST): DELETE on tripwire_probe_602_rev",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: DELETE FROM public.tripwire_probe_602_rev",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "HAZARD: a session SET of the tripwire flag, with the client closed and NO RESET, is still readable from the next client",
+      "direction": "observation",
+      "ok": true,
+      "detail": "setterPid=566368 readerPid=566368 flag=\"\""
+    },
+    {
+      "label": "after the probe sessions closed, how many fresh app_user clients still read the tripwire flag as ON (session-pooler bleed)",
+      "direction": "observation",
+      "ok": true,
+      "detail": "stillOn=0 of 6; each was RESET after reading"
+    }
+  ]
+}

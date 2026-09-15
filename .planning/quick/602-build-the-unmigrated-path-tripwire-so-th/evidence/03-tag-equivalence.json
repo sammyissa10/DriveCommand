@@ -1,0 +1,706 @@
+{
+  "phase": "03-tag-equivalence",
+  "generatedAt": "2026-09-15T05:09:48.369Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "fixtures": {
+    "tenantA": "4ee5d2e9-f8ad-4774-a98e-6af1a6c2c7e4",
+    "tenantB": "5a112826-6750-43cc-8732-1bb98223415e",
+    "tagA": "ed563bbf-9b8a-4af8-87dc-5a91fd8f44f1",
+    "tagB": "f8a040d8-5230-4acd-9f8f-ea7814d5ce20",
+    "tags": 2,
+    "assignments": 2
+  },
+  "capturedBodies": {
+    "Tag": {
+      "using": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+      "withCheck": null
+    },
+    "TagAssignment": {
+      "using": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+      "withCheck": null
+    }
+  },
+  "before": {
+    "before | Tag | tenant A (canonical lowercase)": {
+      "select": "rows=1 {\"n\":1}",
+      "insertOwn": "rows=1",
+      "insertForeign": "42501"
+    },
+    "before | Tag | tenant B": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "rows=1"
+    },
+    "before | Tag | '' (the pool default)": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | Tag | unset": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | Tag | tenant A UPPERCASED": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | Tag | 'not-a-uuid'": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | TagAssignment | tenant A (canonical lowercase)": {
+      "select": "rows=1 {\"n\":1}",
+      "insertOwn": "rows=1",
+      "insertForeign": "42501"
+    },
+    "before | TagAssignment | tenant B": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "rows=1"
+    },
+    "before | TagAssignment | '' (the pool default)": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | TagAssignment | unset": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | TagAssignment | tenant A UPPERCASED": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "before | TagAssignment | 'not-a-uuid'": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    }
+  },
+  "after": {
+    "after | Tag | tenant A (canonical lowercase)": {
+      "select": "rows=1 {\"n\":1}",
+      "insertOwn": "rows=1",
+      "insertForeign": "42501"
+    },
+    "after | Tag | tenant B": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "rows=1"
+    },
+    "after | Tag | '' (the pool default)": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "after | Tag | unset": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "after | Tag | tenant A UPPERCASED": {
+      "select": "rows=1 {\"n\":1}",
+      "insertOwn": "rows=1",
+      "insertForeign": "42501"
+    },
+    "after | Tag | 'not-a-uuid'": {
+      "select": "22P02",
+      "insertOwn": "22P02",
+      "insertForeign": "22P02"
+    },
+    "after | TagAssignment | tenant A (canonical lowercase)": {
+      "select": "rows=1 {\"n\":1}",
+      "insertOwn": "rows=1",
+      "insertForeign": "42501"
+    },
+    "after | TagAssignment | tenant B": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "rows=1"
+    },
+    "after | TagAssignment | '' (the pool default)": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "after | TagAssignment | unset": {
+      "select": "rows=1 {\"n\":0}",
+      "insertOwn": "42501",
+      "insertForeign": "42501"
+    },
+    "after | TagAssignment | tenant A UPPERCASED": {
+      "select": "rows=1 {\"n\":1}",
+      "insertOwn": "rows=1",
+      "insertForeign": "42501"
+    },
+    "after | TagAssignment | 'not-a-uuid'": {
+      "select": "22P02",
+      "insertOwn": "22P02",
+      "insertForeign": "22P02"
+    }
+  },
+  "restoredBodies": {
+    "Tag": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+    "TagAssignment": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))"
+  },
+  "restoredByteEqual": true,
+  "probes": [
+    {
+      "label": "before | Tag | tenant A (canonical lowercase) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "before | Tag | tenant A (canonical lowercase) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "before | Tag | tenant A (canonical lowercase) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | tenant B | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | Tag | tenant B | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | tenant B | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "before | Tag | '' (the pool default) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | Tag | '' (the pool default) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | '' (the pool default) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | unset | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | Tag | unset | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | unset | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | tenant A UPPERCASED | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | Tag | tenant A UPPERCASED | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | tenant A UPPERCASED | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | 'not-a-uuid' | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | Tag | 'not-a-uuid' | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | Tag | 'not-a-uuid' | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | tenant A (canonical lowercase) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "before | TagAssignment | tenant A (canonical lowercase) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "before | TagAssignment | tenant A (canonical lowercase) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | tenant B | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | TagAssignment | tenant B | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | tenant B | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "before | TagAssignment | '' (the pool default) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | TagAssignment | '' (the pool default) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | '' (the pool default) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | unset | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | TagAssignment | unset | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | unset | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | tenant A UPPERCASED | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | TagAssignment | tenant A UPPERCASED | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | tenant A UPPERCASED | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | 'not-a-uuid' | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "before | TagAssignment | 'not-a-uuid' | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "before | TagAssignment | 'not-a-uuid' | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | Tag | tenant A (canonical lowercase) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "after | Tag | tenant A (canonical lowercase) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "after | Tag | tenant A (canonical lowercase) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | tenant B | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "after | Tag | tenant B | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | tenant B | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "after | Tag | '' (the pool default) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "after | Tag | '' (the pool default) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | '' (the pool default) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | unset | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "after | Tag | unset | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | unset | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | tenant A UPPERCASED | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "after | Tag | tenant A UPPERCASED | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "after | Tag | tenant A UPPERCASED | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "after | Tag | 'not-a-uuid' | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"not-a-uuid\""
+      }
+    },
+    {
+      "label": "after | Tag | 'not-a-uuid' | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"not-a-uuid\""
+      }
+    },
+    {
+      "label": "after | Tag | 'not-a-uuid' | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"not-a-uuid\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | tenant A (canonical lowercase) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "after | TagAssignment | tenant A (canonical lowercase) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "after | TagAssignment | tenant A (canonical lowercase) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | tenant B | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "after | TagAssignment | tenant B | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | tenant B | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "after | TagAssignment | '' (the pool default) | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "after | TagAssignment | '' (the pool default) | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | '' (the pool default) | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | unset | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "after | TagAssignment | unset | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | unset | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | tenant A UPPERCASED | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "after | TagAssignment | tenant A UPPERCASED | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "after | TagAssignment | tenant A UPPERCASED | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"TagAssignment\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | 'not-a-uuid' | SELECT tenant A rows",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"not-a-uuid\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | 'not-a-uuid' | INSERT own tenant (A)",
+      "direction": "legitimate",
+      "ok": false,
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"not-a-uuid\""
+      }
+    },
+    {
+      "label": "after | TagAssignment | 'not-a-uuid' | INSERT foreign tenant (B)",
+      "direction": "cross-tenant",
+      "ok": false,
+      "error": {
+        "code": "22P02",
+        "message": "invalid input syntax for type uuid: \"not-a-uuid\""
+      }
+    }
+  ]
+}
