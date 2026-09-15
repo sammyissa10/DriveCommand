@@ -72,6 +72,15 @@ is exactly what standing up a second project was meant to expose. A preview
 branch could never have found it, because a branch never gets far enough to run
 this migration.
 
+> **Extended 2026-09-15 (quick-604).** The `Document` drift is **five columns wider** than the
+> `driverId` case below. `driverId` has since been added to staging; `expiryDate`, `externalUrl`,
+> `loadId`, `notes` and `description` all exist on **production** and in `schema.prisma` and are
+> **absent from staging**, with both databases carrying the same **156** ledger rows.
+> `expiryDate` and `externalUrl` appear in **zero** migration files at all. The driver documents
+> page orders by `expiryDate` and therefore 500s on staging with `P2022 ColumnNotFound`. **No
+> migration was written** — quick-604 measures and does not fix. See
+> `staging-app-user-end-to-end.md` §7e.
+
 ### Scope is not yet known
 
 This is the **first** failure, at position 38 of 141. Whether more gaps sit
@@ -259,7 +268,19 @@ password reset is a required manual step in standing this environment up again.
 
 ---
 
-## 8. Environment keys — NOT YET WRITTEN
+## 8. Environment keys — ~~NOT YET WRITTEN~~ WRITTEN AND COMPLETE
+
+> **Corrected 2026-09-15 (quick-604).** `apps/web/.env.staging` **exists and is complete.** It
+> carries `STAGING_DATABASE_URL`, `STAGING_DIRECT_URL`, `STAGING_DATABASE_URL_APP_USER`,
+> `STAGING_DATABASE_URL_ADMIN` (quick-600's `app_admin` connection, which the planned table below
+> does not anticipate), plus `STAGING_SEED_PASSWORD` and `TENANT_CONTEXT_TRIPWIRE=on` added by
+> quick-604. Still gitignored (`git check-ignore -v` → `.gitignore:42`), still the only place these
+> values live, so a fresh machine still cannot reproduce a staging run without a human re-minting
+> them. **The pooled `:6543` strings are not reachable from a developer machine** — every instrument
+> repoints to `:5432` and strips `?pgbouncer=true`. See `staging-app-user-end-to-end.md` §9.
+
+The text below is the state as of the original Phase 0 write-up and is kept for the record.
+
 
 `apps/web/.env.staging` has **not** been created, because two of its three
 values cannot be built yet: `app_user` does not exist, so it has no password and
@@ -284,7 +305,22 @@ semantics, so it is deliberately on 5432 rather than 6543.
 
 ---
 
-## 9. Test data — PENDING
+## 9. Test data — ~~PENDING~~ SEEDED, AND THE LOGIN GAP IS CLOSED
+
+> **Corrected 2026-09-15 (quick-604).** The seed has been run against staging: two tenants, 8
+> `User` rows, 2 clients, 4 carrier drivers, 2 dispatches, 2 loads (`created=38, skipped=0`).
+>
+> **The claim below that closing the login gap "needs the staging service-role key" is WRONG.** It
+> needs neither the service-role key nor the app's signup flow (which cannot work here —
+> `mailer_autoconfirm: false` and the built-in mailer 429s after ~3 sends). Writing `auth.users` +
+> `auth.identities` directly as `postgres` and then calling
+> `POST /auth/v1/token?grant_type=password` with the **anon** key returns HTTP 200 with an
+> `access_token`, and `raw_app_meta_data` flows into the JWT's `app_metadata`. Four real logins
+> proven. `apps/web/scripts/seed-staging-auth.ts` is the recipe; the eight-NULL-token GoTrue gotcha
+> is written up in `staging-app-user-end-to-end.md` §3.
+
+The text below is the state as of the original Phase 0 write-up and is kept for the record.
+
 
 The seed script is written and typechecked but **has not been run**, because the
 tables it targets do not exist yet.
