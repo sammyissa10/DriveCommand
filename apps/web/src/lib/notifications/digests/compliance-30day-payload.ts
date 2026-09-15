@@ -1,8 +1,13 @@
 /**
  * 30-day compliance digest payload builder.
  *
- * Accepts a pre-scoped tenantPrisma client (already extended with withTenantRLS)
- * from the caller.
+ * Accepts a pre-scoped tenantPrisma client from the caller — quick-606: one
+ * obtained from `getTenantPrismaForOrg`, which sets `app.current_tenant_id` on
+ * the connection AND applies `withTenantRLS`. This line used to say only
+ * "already extended with withTenantRLS", and a client that is only extended
+ * raises TC001 on every statement in this file. A doc comment naming a
+ * mechanism the caller no longer uses is how that survived three phases.
+ * This keeps the builder testable and avoids double-wrapping.
  *
  * Returns null when there are no truck or driver documents expiring within 30 days,
  * which signals the cron route to skip dispatch for that recipient.
@@ -41,7 +46,20 @@ export async function buildCompliance30DayPayload(
         id: true,
         documentType: true,
         expiryDate: true,
-        truck: { select: { unitNumber: true } },
+        /**
+         * quick-606 — `unitNumber` DOES NOT EXIST on the legacy `Truck` model.
+         * It is a `CarrierTruck` column (schema.prisma:2191), and `Document.truck`
+         * points at the legacy one. Prisma raised
+         * "PrismaClientValidationError: Unknown field `unitNumber` for select
+         * statement on model `Truck`" for every owner with an expiring truck
+         * document — so this digest has never been deliverable. It was invisible
+         * until quick-606 removed the TC001 that raised first
+         * (evidence/04-task2-after.json row 5).
+         *
+         * The legacy model carries no unit number at all. `licensePlate` is the
+         * identifier a person reads off that truck, and it is NOT NULL.
+         */
+        truck: { select: { licensePlate: true } },
       },
     }),
     // Driver documents expiring within 30 days
@@ -77,9 +95,9 @@ export async function buildCompliance30DayPayload(
   const truckItems = truckDocs.map((d: {
     documentType: string | null;
     expiryDate: Date | null;
-    truck: { unitNumber: string } | null;
+    truck: { licensePlate: string } | null;
   }) =>
-    `<li>Truck ${d.truck?.unitNumber ?? 'Unknown'}: ${d.documentType ?? 'Document'} expires ${d.expiryDate?.toLocaleDateString() ?? 'N/A'}</li>`
+    `<li>Truck ${d.truck?.licensePlate ?? 'Unknown'}: ${d.documentType ?? 'Document'} expires ${d.expiryDate?.toLocaleDateString() ?? 'N/A'}</li>`
   );
 
   const driverItems = driverDocs.map((d: {

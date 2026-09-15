@@ -3,7 +3,7 @@
  * Finds truck documents (registration, insurance) expiring within 14 days.
  */
 
-import { createTenantClient } from '../db/tenant-client';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 export interface ExpiringDocumentItem {
   truckId: string;
@@ -31,7 +31,10 @@ interface DocumentMetadata {
 export async function findExpiringDocuments(
   tenantId: string
 ): Promise<ExpiringDocumentItem[]> {
-  const db = createTenantClient(tenantId);
+  // quick-606: `createTenantClient` applies `withTenantRLS` and does NOT set
+  // `app.current_tenant_id`, so every statement below raised TC001 on staging.
+  // `getTenantPrismaForOrg` sets the GUC AND applies the same extension.
+  const db = await getTenantPrismaForOrg(tenantId);
 
   // Fetch all trucks with document metadata
   const trucks = await db.truck.findMany({

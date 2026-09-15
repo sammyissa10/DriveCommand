@@ -1,0 +1,188 @@
+{
+  "task": "quick-606",
+  "phase": "surfaces606",
+  "artefact": "04-task2-after.json",
+  "at": "2026-09-15T18:30:43.985Z",
+  "base": "http://localhost:3000",
+  "serverLog": "C:\\Users\\sammy\\Projects\\DriveCommand\\.planning\\quick\\606-fix-the-eleven-measured-app-user-failure\\evidence\\03-server.log",
+  "authority": "the correlated server-log slice, not the HTTP status. TC001 is detected BY CODE, never by message prose.",
+  "activeTenantsOnStaging": 2,
+  "verdictVocabulary": {
+    "pass": "a 2xx with no TC001 in the correlated window, no swallowed-failure marker, a tenant sweep that covered every active tenant, AND a data gate that found rows",
+    "LATENT": "a 2xx whose data gate found ZERO rows — the raise is gone, the scoping is unproven (R3)",
+    "NOT_MEASURED": "no request was issued, or the gate could not be read",
+    "fail": "a 5xx, a 4xx, a TC001 in the window, a swallowed-failure marker in the body, or a SILENT PARTIAL SWEEP (a 2xx whose own counter reports fewer tenants than staging has)",
+    "not-reachable": "a 404, or a redirect away from the requested surface"
+  },
+  "dynamicSegments": {
+    "__IMPORT_ID__": {
+      "value": null,
+      "reason": "public.document_imports holds ZERO rows for OWNER_A's tenant on staging (0 tenant-wide) — no id to substitute"
+    },
+    "__TRACK_TOKEN__": {
+      "value": null,
+      "reason": "no legacy \"Load\" row carries a trackingToken — public.\"Load\" holds 0 row(s) on staging (seed-staging.ts populates the CARRIER \"loads\" table instead)"
+    }
+  },
+  "sessions": [
+    {
+      "role": "OWNER_A",
+      "email": "owner@alpha.staging.test",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "role": "DRIVER_A",
+      "email": "driver1@alpha.staging.test",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    }
+  ],
+  "rows": [
+    {
+      "id": "5",
+      "route": "/api/cron/digest-compliance-30day",
+      "surface": "/api/cron/digest-compliance-30day",
+      "requestedPath": "/api/cron/digest-compliance-30day",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "TC001",
+      "logByteRange": [
+        176964,
+        184867
+      ],
+      "logTc001Mentions": 4,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "withTenantRLS (§7b)"
+      },
+      "dataGate": {
+        "count": 10,
+        "label": "active User rows across both tenants — the digests' recipient query"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 2,
+        "sent": 0,
+        "skipped": 0,
+        "failed": 2,
+        "failureCount": 2
+      },
+      "bodyExcerpt": "{\"success\":false,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2,\"failureCount\":2,\"failures\":[{\"scope\":\"owner:00dc04fb-dff5-441c-824b-d11c64d560af\",\"message\":\"\\nInvalid `prisma.document.findMany()` invocation:\\n\\n\\nThe column `(not available)` does not exist in the current database.\",\"code\":\"P2022\"},{\"scope\":\"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"message\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"}]}"
+    },
+    {
+      "id": "6",
+      "route": "/api/cron/digest-daily-driver",
+      "surface": "/api/cron/digest-daily-driver",
+      "requestedPath": "/api/cron/digest-daily-driver",
+      "role": "CRON",
+      "status": 200,
+      "verdict606": "pass",
+      "harnessVerdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        184867,
+        185427
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "withTenantRLS (§7b)"
+      },
+      "dataGate": {
+        "count": 5,
+        "label": "active DRIVER User rows — the daily driver digest's recipient query"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 2,
+        "sent": 0,
+        "skipped": 5,
+        "failed": 0,
+        "failureCount": 0
+      },
+      "bodyExcerpt": "{\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":5,\"failed\":0,\"failureCount\":0,\"failures\":[]}"
+    },
+    {
+      "id": "7",
+      "route": "/api/cron/digest-weekly-owner",
+      "surface": "/api/cron/digest-weekly-owner",
+      "requestedPath": "/api/cron/digest-weekly-owner",
+      "role": "CRON",
+      "status": 200,
+      "verdict606": "pass",
+      "harnessVerdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        185427,
+        185988
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "withTenantRLS (§7b)"
+      },
+      "dataGate": {
+        "count": 5,
+        "label": "active OWNER/MANAGER User rows — the weekly owner digest's recipient query"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 2,
+        "sent": 0,
+        "skipped": 3,
+        "failed": 0,
+        "failureCount": 0
+      },
+      "bodyExcerpt": "{\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":3,\"failed\":0,\"failureCount\":0,\"failures\":[]}"
+    },
+    {
+      "id": "9",
+      "route": "/api/cron/send-reminders",
+      "surface": "/api/cron/send-reminders",
+      "requestedPath": "/api/cron/send-reminders",
+      "role": "CRON",
+      "status": 500,
+      "verdict606": "fail",
+      "harnessVerdict": "fail",
+      "reason": "HTTP 500",
+      "sqlstate": "42703",
+      "logByteRange": [
+        185988,
+        193568
+      ],
+      "logTc001Mentions": 0,
+      "quick604": {
+        "verdict": "fail",
+        "sqlstate": "TC001",
+        "note": "createTenantClient direct, check-upcoming-maintenance.ts:31"
+      },
+      "dataGate": {
+        "count": 0,
+        "label": "legacy Truck rows — findUpcomingMaintenance's only read"
+      },
+      "markers": null,
+      "bodyCounters": {
+        "processedTenants": 0,
+        "tenantsFound": 2,
+        "maintenance.sent": 0,
+        "maintenance.skipped": 0,
+        "maintenance.failed": 0,
+        "documents.sent": 0,
+        "documents.skipped": 0,
+        "documents.failed": 0,
+        "driverDocuments.sent": 0,
+        "driverDocuments.skipped": 0,
+        "driverDocuments.failed": 0,
+        "failureCount": 2
+      },
+      "bodyExcerpt": "{\"success\":false,\"processedTenants\":0,\"tenantsFound\":2,\"maintenance\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"documents\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"driverDocuments\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"failureCount\":2,\"failures\":[{\"scope\":\"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\"message\":\"\\nInvalid `prisma.document.findMany()` invocation:\\n\\n\\nThe column `(not available)` does not exist in the current database.\",\"code\":\"P2022\"},{\"scope\":\"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\"message\":\"\\nInvalid `prisma.document.findMany()` invocation:\\n\\n\\nThe column `(not available)` does not exist in the current database.\",\"code\":\"P2022\"}]}"
+    }
+  ]
+}

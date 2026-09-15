@@ -36,9 +36,22 @@ vi.mock('@/lib/logger', async (io) => loggerDouble(io));
 vi.mock('@/lib/db/admin-prisma', () => ({
   getAdminDb: vi.fn(async () => ({ tenant: { findMany: h.tenantFindMany } })),
 }));
-vi.mock('@/lib/db/extensions/tenant-rls', () => ({ withTenantRLS: () => ({}) }));
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: { $extends: () => ({ user: { findMany: h.userFindMany } }) },
+/**
+ * quick-606 — RETARGETED, and the retarget is the point.
+ *
+ * This file used to mock `@/lib/db/extensions/tenant-rls` and
+ * `@/lib/db/prisma`, because the three routes did
+ * `prisma.$extends(withTenantRLS(tenant.id))`. They no longer do: quick-606
+ * moved them onto `getTenantPrismaForOrg`, which sets `app.current_tenant_id`
+ * AND applies the same extension.
+ *
+ * Left alone, those two mocks would have injected into a DEAD CODE PATH and
+ * this file would have gone green forever while testing nothing — the Phase-10
+ * `sendDispatchAssignedNotification` shape exactly. The mock has to point at
+ * the function the routes actually call.
+ */
+vi.mock('@/lib/context/tenant-context', () => ({
+  getTenantPrismaForOrg: vi.fn(async () => ({ user: { findMany: h.userFindMany } })),
 }));
 vi.mock('@/lib/notifications/dispatcher', () => ({ dispatchNotification: h.dispatchNotification }));
 vi.mock('@/lib/notifications/digests/daily-driver-payload', () => ({

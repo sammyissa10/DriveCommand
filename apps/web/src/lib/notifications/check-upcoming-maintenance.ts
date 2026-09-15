@@ -3,7 +3,7 @@
  * Finds scheduled services due within 7 days or 500 miles.
  */
 
-import { createTenantClient } from '../db/tenant-client';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { calculateNextDue } from '../utils/maintenance-utils';
 
 export interface UpcomingMaintenanceItem {
@@ -16,7 +16,9 @@ export interface UpcomingMaintenanceItem {
   currentMileage: number;
 }
 
-// getTenantPrismaForCron removed — use createTenantClient() directly (see tenant-client.ts)
+// quick-606: this line used to read "use createTenantClient() directly". It was
+// wrong — createTenantClient sets no GUC, so "directly" meant "with no tenant
+// context on the connection". The door is getTenantPrismaForOrg.
 
 /**
  * Find scheduled services that are due within 7 days or 500 miles.
@@ -25,7 +27,10 @@ export interface UpcomingMaintenanceItem {
 export async function findUpcomingMaintenance(
   tenantId: string
 ): Promise<UpcomingMaintenanceItem[]> {
-  const db = createTenantClient(tenantId);
+  // quick-606: `createTenantClient` applies `withTenantRLS` and does NOT set
+  // `app.current_tenant_id`, so every statement below raised TC001 on staging.
+  // `getTenantPrismaForOrg` sets the GUC AND applies the same extension.
+  const db = await getTenantPrismaForOrg(tenantId);
 
   // Query all incomplete scheduled services with truck data
   const scheduledServices = await db.scheduledService.findMany({

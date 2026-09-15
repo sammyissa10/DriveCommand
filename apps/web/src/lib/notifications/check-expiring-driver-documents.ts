@@ -3,7 +3,7 @@
  * Finds driver documents (licenses, applications) expiring at 30/60/90 day milestones or already expired.
  */
 
-import { createTenantClient } from '../db/tenant-client';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 export interface ExpiringDriverDocumentItem {
   driverId: string;
@@ -21,7 +21,10 @@ export interface ExpiringDriverDocumentItem {
 export async function findExpiringDriverDocuments(
   tenantId: string
 ): Promise<ExpiringDriverDocumentItem[]> {
-  const db = createTenantClient(tenantId);
+  // quick-606: `createTenantClient` applies `withTenantRLS` and does NOT set
+  // `app.current_tenant_id`, so every statement below raised TC001 on staging.
+  // `getTenantPrismaForOrg` sets the GUC AND applies the same extension.
+  const db = await getTenantPrismaForOrg(tenantId);
 
   const now = new Date();
   const ninetyDaysFromNow = new Date(now);

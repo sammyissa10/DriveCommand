@@ -1353,3 +1353,555 @@ Raw query failed. Code: `42501`. Message: `permission denied for schema public`
 }
 [2026-09-15T18:23:32.192Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":1},"failureCount":1,"failures":[{"scope":"sweep:INSTANCE_BLOCKED","message":"permission denied for table PlaybookNotification"}]}
  GET /api/cron/workflow-notifications 500 in 323ms (next.js: 6ms, proxy.ts: 4ms, application-code: 314ms)
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ POST /api/auth/login 200 in 2.1s (next.js: 321ms, proxy.ts: 57ms, application-code: 1725ms)
+ POST /api/auth/login 200 in 858ms (next.js: 5ms, proxy.ts: 6ms, application-code: 847ms)
+[2026-09-15T18:28:56.608Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-15T18:28:56.608Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-15T18:28:57.000Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-15T18:28:57.168Z] ERROR: [CRON] digest-compliance-30day: owner 00dc04fb-dff5-441c-824b-d11c64d560af failed {"tenantId":"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","scope":"owner:00dc04fb-dff5-441c-824b-d11c64d560af","err":{"stack":"PrismaClientValidationError: \nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [\n      {\n        tenantId: \"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\"\n      },\n      {\n        tenantId: \"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\n        truckId: {\n          not: null\n        },\n        driverId: null,\n        expiryDate: {\n          gte: new Date(\"2026-09-15T18:28:57.150Z\"),\n          lte: new Date(\"2026-10-15T18:28:57.150Z\")\n        }\n      }\n    ]\n  },\n  select: {\n    id: true,\n    documentType: true,\n    expiryDate: true,\n    truck: {\n      select: {\n        unitNumber: true,\n        ~~~~~~~~~~\n?       id?: true,\n?       tenantId?: true,\n?       make?: true,\n?       model?: true,\n?       year?: true,\n?       vin?: true,\n?       licensePlate?: true,\n?       odometer?: true,\n?       inMaintenance?: true,\n?       documentMetadata?: true,\n?       isDispatchReady?: true,\n?       createdById?: true,\n?       updatedById?: true,\n?       createdAt?: true,\n?       updatedAt?: true,\n?       archivedAt?: true,\n?       isSample?: true,\n?       tenant?: true,\n?       createdBy?: true,\n?       updatedBy?: true,\n?       assignedRoutes?: true,\n?       documents?: true,\n?       maintenanceEvents?: true,\n?       scheduledServices?: true,\n?       gpsLocations?: true,\n?       safetyEvents?: true,\n?       fuelRecords?: true,\n?       tagAssignments?: true,\n?       loads?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?.","name":"PrismaClientValidationError","clientVersion":"7.6.0"}} Error [PrismaClientValidationError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+{
+  where: {
+    AND: [
+      {
+        tenantId: "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045"
+      },
+      {
+        tenantId: "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+        truckId: {
+          not: null
+        },
+        driverId: null,
+        expiryDate: {
+          gte: new Date("2026-09-15T18:28:57.150Z"),
+          lte: new Date("2026-10-15T18:28:57.150Z")
+        }
+      }
+    ]
+  },
+  select: {
+    id: true,
+    documentType: true,
+    expiryDate: true,
+    truck: {
+      select: {
+        unitNumber: true,
+        ~~~~~~~~~~
+?       id?: true,
+?       tenantId?: true,
+?       make?: true,
+?       model?: true,
+?       year?: true,
+?       vin?: true,
+?       licensePlate?: true,
+?       odometer?: true,
+?       inMaintenance?: true,
+?       documentMetadata?: true,
+?       isDispatchReady?: true,
+?       createdById?: true,
+?       updatedById?: true,
+?       createdAt?: true,
+?       updatedAt?: true,
+?       archivedAt?: true,
+?       isSample?: true,
+?       tenant?: true,
+?       createdBy?: true,
+?       updatedBy?: true,
+?       assignedRoutes?: true,
+?       documents?: true,
+?       maintenanceEvents?: true,
+?       scheduledServices?: true,
+?       gpsLocations?: true,
+?       safetyEvents?: true,
+?       fuelRecords?: true,
+?       tagAssignments?: true,
+?       loads?: true,
+?       _count?: true
+      }
+    }
+  }
+}
+
+Unknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?.
+    at ar (src\generated\prisma\runtime\client.js:14:1379)
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:7815)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async buildCompliance30DayPayload (src\lib\notifications\digests\compliance-30day-payload.ts:36:41)
+    at async GET (src\app\api\cron\digest-compliance-30day\route.ts:82:27)
+  12 | ...ntext;t.writeLine("[").withIndent(()=>t.writeJoined(_e,this.items).newLine()).write("]"...
+  13 | ...i)?.value.asObject()?.getField(o);if(a){let l=a?.value.asObject()??new $e;l.addSuggesti...
+> 14 | ...olors:r==="pretty",callArguments:u});throw new go.PrismaClientValidationError(c,{client...
+     |                                               ^
+  15 | ...)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$/i;function _c(e){var t=Mc.exec(e);return t?{file:t...
+  16 | ...
+  17 | ... {
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:28:58.083Z] ERROR: [CRON] digest-compliance-30day: owner d27660ff-feef-43dd-b22c-07ee74b9ee01 failed {"tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","scope":"owner:d27660ff-feef-43dd-b22c-07ee74b9ee01","err":{"stack":"PrismaClientValidationError: \nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"\n      },\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\n        truckId: {\n          not: null\n        },\n        driverId: null,\n        expiryDate: {\n          gte: new Date(\"2026-09-15T18:28:58.075Z\"),\n          lte: new Date(\"2026-10-15T18:28:58.075Z\")\n        }\n      }\n    ]\n  },\n  select: {\n    id: true,\n    documentType: true,\n    expiryDate: true,\n    truck: {\n      select: {\n        unitNumber: true,\n        ~~~~~~~~~~\n?       id?: true,\n?       tenantId?: true,\n?       make?: true,\n?       model?: true,\n?       year?: true,\n?       vin?: true,\n?       licensePlate?: true,\n?       odometer?: true,\n?       inMaintenance?: true,\n?       documentMetadata?: true,\n?       isDispatchReady?: true,\n?       createdById?: true,\n?       updatedById?: true,\n?       createdAt?: true,\n?       updatedAt?: true,\n?       archivedAt?: true,\n?       isSample?: true,\n?       tenant?: true,\n?       createdBy?: true,\n?       updatedBy?: true,\n?       assignedRoutes?: true,\n?       documents?: true,\n?       maintenanceEvents?: true,\n?       scheduledServices?: true,\n?       gpsLocations?: true,\n?       safetyEvents?: true,\n?       fuelRecords?: true,\n?       tagAssignments?: true,\n?       loads?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?.","name":"PrismaClientValidationError","clientVersion":"7.6.0"}} Error [PrismaClientValidationError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+{
+  where: {
+    AND: [
+      {
+        tenantId: "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+      },
+      {
+        tenantId: "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+        truckId: {
+          not: null
+        },
+        driverId: null,
+        expiryDate: {
+          gte: new Date("2026-09-15T18:28:58.075Z"),
+          lte: new Date("2026-10-15T18:28:58.075Z")
+        }
+      }
+    ]
+  },
+  select: {
+    id: true,
+    documentType: true,
+    expiryDate: true,
+    truck: {
+      select: {
+        unitNumber: true,
+        ~~~~~~~~~~
+?       id?: true,
+?       tenantId?: true,
+?       make?: true,
+?       model?: true,
+?       year?: true,
+?       vin?: true,
+?       licensePlate?: true,
+?       odometer?: true,
+?       inMaintenance?: true,
+?       documentMetadata?: true,
+?       isDispatchReady?: true,
+?       createdById?: true,
+?       updatedById?: true,
+?       createdAt?: true,
+?       updatedAt?: true,
+?       archivedAt?: true,
+?       isSample?: true,
+?       tenant?: true,
+?       createdBy?: true,
+?       updatedBy?: true,
+?       assignedRoutes?: true,
+?       documents?: true,
+?       maintenanceEvents?: true,
+?       scheduledServices?: true,
+?       gpsLocations?: true,
+?       safetyEvents?: true,
+?       fuelRecords?: true,
+?       tagAssignments?: true,
+?       loads?: true,
+?       _count?: true
+      }
+    }
+  }
+}
+
+Unknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?.
+    at ar (src\generated\prisma\runtime\client.js:14:1379)
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:7815)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async buildCompliance30DayPayload (src\lib\notifications\digests\compliance-30day-payload.ts:36:41)
+    at async GET (src\app\api\cron\digest-compliance-30day\route.ts:82:27)
+  12 | ...ntext;t.writeLine("[").withIndent(()=>t.writeJoined(_e,this.items).newLine()).write("]"...
+  13 | ...i)?.value.asObject()?.getField(o);if(a){let l=a?.value.asObject()??new $e;l.addSuggesti...
+> 14 | ...olors:r==="pretty",callArguments:u});throw new go.PrismaClientValidationError(c,{client...
+     |                                               ^
+  15 | ...)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$/i;function _c(e){var t=Mc.exec(e);return t?{file:t...
+  16 | ...
+  17 | ... {
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:28:58.163Z] ERROR: [CRON] digest-compliance-30day: owner 564681c6-db94-45fa-b64d-7e037c40ca31 failed {"tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","scope":"owner:564681c6-db94-45fa-b64d-7e037c40ca31","err":{"stack":"PrismaClientValidationError: \nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"\n      },\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\n        truckId: {\n          not: null\n        },\n        driverId: null,\n        expiryDate: {\n          gte: new Date(\"2026-09-15T18:28:58.160Z\"),\n          lte: new Date(\"2026-10-15T18:28:58.160Z\")\n        }\n      }\n    ]\n  },\n  select: {\n    id: true,\n    documentType: true,\n    expiryDate: true,\n    truck: {\n      select: {\n        unitNumber: true,\n        ~~~~~~~~~~\n?       id?: true,\n?       tenantId?: true,\n?       make?: true,\n?       model?: true,\n?       year?: true,\n?       vin?: true,\n?       licensePlate?: true,\n?       odometer?: true,\n?       inMaintenance?: true,\n?       documentMetadata?: true,\n?       isDispatchReady?: true,\n?       createdById?: true,\n?       updatedById?: true,\n?       createdAt?: true,\n?       updatedAt?: true,\n?       archivedAt?: true,\n?       isSample?: true,\n?       tenant?: true,\n?       createdBy?: true,\n?       updatedBy?: true,\n?       assignedRoutes?: true,\n?       documents?: true,\n?       maintenanceEvents?: true,\n?       scheduledServices?: true,\n?       gpsLocations?: true,\n?       safetyEvents?: true,\n?       fuelRecords?: true,\n?       tagAssignments?: true,\n?       loads?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?.","name":"PrismaClientValidationError","clientVersion":"7.6.0"}} Error [PrismaClientValidationError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+{
+  where: {
+    AND: [
+      {
+        tenantId: "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+      },
+      {
+        tenantId: "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+        truckId: {
+          not: null
+        },
+        driverId: null,
+        expiryDate: {
+          gte: new Date("2026-09-15T18:28:58.160Z"),
+          lte: new Date("2026-10-15T18:28:58.160Z")
+        }
+      }
+    ]
+  },
+  select: {
+    id: true,
+    documentType: true,
+    expiryDate: true,
+    truck: {
+      select: {
+        unitNumber: true,
+        ~~~~~~~~~~
+?       id?: true,
+?       tenantId?: true,
+?       make?: true,
+?       model?: true,
+?       year?: true,
+?       vin?: true,
+?       licensePlate?: true,
+?       odometer?: true,
+?       inMaintenance?: true,
+?       documentMetadata?: true,
+?       isDispatchReady?: true,
+?       createdById?: true,
+?       updatedById?: true,
+?       createdAt?: true,
+?       updatedAt?: true,
+?       archivedAt?: true,
+?       isSample?: true,
+?       tenant?: true,
+?       createdBy?: true,
+?       updatedBy?: true,
+?       assignedRoutes?: true,
+?       documents?: true,
+?       maintenanceEvents?: true,
+?       scheduledServices?: true,
+?       gpsLocations?: true,
+?       safetyEvents?: true,
+?       fuelRecords?: true,
+?       tagAssignments?: true,
+?       loads?: true,
+?       _count?: true
+      }
+    }
+  }
+}
+
+Unknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?.
+    at ar (src\generated\prisma\runtime\client.js:14:1379)
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:7815)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async buildCompliance30DayPayload (src\lib\notifications\digests\compliance-30day-payload.ts:36:41)
+    at async GET (src\app\api\cron\digest-compliance-30day\route.ts:82:27)
+  12 | ...ntext;t.writeLine("[").withIndent(()=>t.writeJoined(_e,this.items).newLine()).write("]"...
+  13 | ...i)?.value.asObject()?.getField(o);if(a){let l=a?.value.asObject()??new $e;l.addSuggesti...
+> 14 | ...olors:r==="pretty",callArguments:u});throw new go.PrismaClientValidationError(c,{client...
+     |                                               ^
+  15 | ...)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$/i;function _c(e){var t=Mc.exec(e);return t?{file:t...
+  16 | ...
+  17 | ... {
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:28:58.242Z] INFO: [CRON] digest-compliance-30day: Completed {"success":false,"processedTenants":2,"sent":0,"skipped":0,"failed":3,"failureCount":3,"failures":[{"scope":"owner:00dc04fb-dff5-441c-824b-d11c64d560af","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [\n      {\n        tenantId: \"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\"\n      },\n      {\n        tenantId: \"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045\",\n        truckId: {\n          not: null\n        },\n        driverId: null,\n        expiryDate: {\n          gte: new Date(\"2026-09-15T18:28:57.150Z\"),\n          lte: new Date(\"2026-10-15T18:28:57.150Z\")\n        }\n      }\n    ]\n  },\n  select: {\n    id: true,\n    documentType: true,\n    expiryDate: true,\n    truck: {\n      select: {\n        unitNumber: true,\n        ~~~~~~~~~~\n?       id?: true,\n?       tenantId?: true,\n?       make?: true,\n?       model?: true,\n?       year?: true,\n?       vin?: true,\n?       licensePlate?: true,\n?       odometer?: true,\n?       inMaintenance?: true,\n?       documentMetadata?: true,\n?       isDispatchReady?: true,\n?       createdById?: true,\n?       updatedById?: true,\n?       createdAt?: true,\n?       updatedAt?: true,\n?       archivedAt?: true,\n?       isSample?: true,\n?       tenant?: true,\n?       createdBy?: true,\n?       updatedBy?: true,\n?       assignedRoutes?: true,\n?       documents?: true,\n?       maintenanceEvents?: true,\n?       scheduledServices?: true,\n?       gpsLocations?: true,\n?       safetyEvents?: true,\n?       fuelRecords?: true,\n?       tagAssignments?: true,\n?       loads?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?."},{"scope":"owner:d27660ff-feef-43dd-b22c-07ee74b9ee01","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"\n      },\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\n        truckId: {\n          not: null\n        },\n        driverId: null,\n        expiryDate: {\n          gte: new Date(\"2026-09-15T18:28:58.075Z\"),\n          lte: new Date(\"2026-10-15T18:28:58.075Z\")\n        }\n      }\n    ]\n  },\n  select: {\n    id: true,\n    documentType: true,\n    expiryDate: true,\n    truck: {\n      select: {\n        unitNumber: true,\n        ~~~~~~~~~~\n?       id?: true,\n?       tenantId?: true,\n?       make?: true,\n?       model?: true,\n?       year?: true,\n?       vin?: true,\n?       licensePlate?: true,\n?       odometer?: true,\n?       inMaintenance?: true,\n?       documentMetadata?: true,\n?       isDispatchReady?: true,\n?       createdById?: true,\n?       updatedById?: true,\n?       createdAt?: true,\n?       updatedAt?: true,\n?       archivedAt?: true,\n?       isSample?: true,\n?       tenant?: true,\n?       createdBy?: true,\n?       updatedBy?: true,\n?       assignedRoutes?: true,\n?       documents?: true,\n?       maintenanceEvents?: true,\n?       scheduledServices?: true,\n?       gpsLocations?: true,\n?       safetyEvents?: true,\n?       fuelRecords?: true,\n?       tagAssignments?: true,\n?       loads?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?."},{"scope":"owner:564681c6-db94-45fa-b64d-7e037c40ca31","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n{\n  where: {\n    AND: [\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"\n      },\n      {\n        tenantId: \"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\",\n        truckId: {\n          not: null\n        },\n        driverId: null,\n        expiryDate: {\n          gte: new Date(\"2026-09-15T18:28:58.160Z\"),\n          lte: new Date(\"2026-10-15T18:28:58.160Z\")\n        }\n      }\n    ]\n  },\n  select: {\n    id: true,\n    documentType: true,\n    expiryDate: true,\n    truck: {\n      select: {\n        unitNumber: true,\n        ~~~~~~~~~~\n?       id?: true,\n?       tenantId?: true,\n?       make?: true,\n?       model?: true,\n?       year?: true,\n?       vin?: true,\n?       licensePlate?: true,\n?       odometer?: true,\n?       inMaintenance?: true,\n?       documentMetadata?: true,\n?       isDispatchReady?: true,\n?       createdById?: true,\n?       updatedById?: true,\n?       createdAt?: true,\n?       updatedAt?: true,\n?       archivedAt?: true,\n?       isSample?: true,\n?       tenant?: true,\n?       createdBy?: true,\n?       updatedBy?: true,\n?       assignedRoutes?: true,\n?       documents?: true,\n?       maintenanceEvents?: true,\n?       scheduledServices?: true,\n?       gpsLocations?: true,\n?       safetyEvents?: true,\n?       fuelRecords?: true,\n?       tagAssignments?: true,\n?       loads?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `unitNumber` for select statement on model `Truck`. Available options are marked with ?."}]}
+ GET /api/cron/digest-compliance-30day 500 in 1987ms (next.js: 324ms, proxy.ts: 8ms, application-code: 1655ms)
+[2026-09-15T18:28:58.907Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-15T18:28:58.907Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+[2026-09-15T18:28:58.991Z] INFO: [CRON] digest-daily-driver: Found 2 active tenant(s)
+[2026-09-15T18:29:01.656Z] INFO: [CRON] digest-daily-driver: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":5,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-daily-driver 200 in 3.1s (next.js: 284ms, proxy.ts: 6ms, application-code: 2.8s)
+[2026-09-15T18:29:02.316Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-15T18:29:02.317Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+[2026-09-15T18:29:02.388Z] INFO: [CRON] digest-weekly-owner: Found 2 active tenant(s)
+[2026-09-15T18:29:03.165Z] INFO: [CRON] digest-weekly-owner: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-weekly-owner 200 in 1148ms (next.js: 280ms, proxy.ts: 7ms, application-code: 860ms)
+[2026-09-15T18:29:03.848Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-15T18:29:03.849Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-15T18:29:03.924Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-15T18:29:03.925Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-15T18:29:04.370Z] ERROR: [CRON] send-reminders: Failed to process tenant Staging Beta Logistics {"tenantName":"Staging Beta Logistics","scope":"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022","meta":{"modelName":"Document","driverAdapterError":{"name":"DriverAdapterError","cause":{"originalCode":"42703","originalMessage":"column Document.loadId does not exist","kind":"ColumnNotFound"}}},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+    at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Document',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+        at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:29:04.555Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-15T18:29:05.507Z] ERROR: [CRON] send-reminders: Failed to process tenant Staging Alpha Carriers {"tenantName":"Staging Alpha Carriers","scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022","meta":{"modelName":"Document","driverAdapterError":{"name":"DriverAdapterError","cause":{"originalCode":"42703","originalMessage":"column Document.loadId does not exist","kind":"ColumnNotFound"}}},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+    at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Document',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+        at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:29:05.713Z] INFO: [CRON] send-reminders: Completed {"success":false,"processedTenants":0,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":2,"failures":[{"scope":"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"},{"scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"}]}
+ GET /api/cron/send-reminders 500 in 2.2s (next.js: 300ms, proxy.ts: 5ms, application-code: 1872ms)
+ POST /api/auth/login 200 in 1584ms (next.js: 5ms, proxy.ts: 3ms, application-code: 1576ms)
+ POST /api/auth/login 200 in 756ms (next.js: 7ms, proxy.ts: 5ms, application-code: 744ms)
+[2026-09-15T18:30:34.778Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-15T18:30:34.779Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-15T18:30:35.158Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-15T18:30:35.393Z] ERROR: [CRON] digest-compliance-30day: owner 00dc04fb-dff5-441c-824b-d11c64d560af failed {"tenantId":"8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","scope":"owner:00dc04fb-dff5-441c-824b-d11c64d560af","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022","meta":{"modelName":"Document","driverAdapterError":{"name":"DriverAdapterError","cause":{"originalCode":"42703","originalMessage":"column Document.expiryDate does not exist","kind":"ColumnNotFound"}}},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async buildCompliance30DayPayload (src\lib\notifications\digests\compliance-30day-payload.ts:36:41)
+    at async GET (src\app\api\cron\digest-compliance-30day\route.ts:82:27)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Document',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async buildCompliance30DayPayload (src\lib\notifications\digests\compliance-30day-payload.ts:36:41)
+        at async GET (src\app\api\cron\digest-compliance-30day\route.ts:82:27)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:30:37.354Z] ERROR: [CRON] digest-compliance-30day: tenant b5623cdd-dc19-4900-b75d-0ecfcaf191b8 failed {"scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.queryRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4311:34)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4701:60)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: SELECT \"public\".\"User\".\"id\", \"public\".\"User\".\"email\", \"public\".\"User\".\"firstName\" FROM \"public\".\"User\" WHERE (\"public\".\"User\".\"tenantId\" = $1 AND \"public\".\"User\".\"tenantId\" = $2 AND \"public\".\"User\".\"role\" = CAST($3::text AS \"public\".\"UserRole\") AND \"public\".\"User\".\"isActive\" = $4) OFFSET $5","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\cron\digest-compliance-30day\route.ts:73:22)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."User"."id", "public"."User"."email", "public"."User"."firstName" FROM "public"."User" WHERE ("public"."User"."tenantId" = $1 AND "public"."User"."tenantId" = $2 AND "public"."User"."role" = CAST($3::text AS "public"."UserRole") AND "public"."User"."isActive" = $4) OFFSET $5',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+[2026-09-15T18:30:37.434Z] INFO: [CRON] digest-compliance-30day: Completed {"success":false,"processedTenants":2,"sent":0,"skipped":0,"failed":2,"failureCount":2,"failures":[{"scope":"owner:00dc04fb-dff5-441c-824b-d11c64d560af","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"},{"scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING"}]}
+ GET /api/cron/digest-compliance-30day 500 in 3.0s (next.js: 303ms, proxy.ts: 7ms, application-code: 2.7s)
+[2026-09-15T18:30:38.100Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-15T18:30:38.101Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+[2026-09-15T18:30:38.173Z] INFO: [CRON] digest-daily-driver: Found 2 active tenant(s)
+[2026-09-15T18:30:40.012Z] INFO: [CRON] digest-daily-driver: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":5,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-daily-driver 200 in 2.2s (next.js: 282ms, proxy.ts: 6ms, application-code: 1919ms)
+[2026-09-15T18:30:40.663Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-15T18:30:40.664Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+[2026-09-15T18:30:40.736Z] INFO: [CRON] digest-weekly-owner: Found 2 active tenant(s)
+[2026-09-15T18:30:41.473Z] INFO: [CRON] digest-weekly-owner: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-weekly-owner 200 in 1099ms (next.js: 277ms, proxy.ts: 6ms, application-code: 817ms)
+[2026-09-15T18:30:41.862Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-15T18:30:41.862Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-15T18:30:41.934Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-15T18:30:41.935Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-15T18:30:42.372Z] ERROR: [CRON] send-reminders: Failed to process tenant Staging Beta Logistics {"tenantName":"Staging Beta Logistics","scope":"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022","meta":{"modelName":"Document","driverAdapterError":{"name":"DriverAdapterError","cause":{"originalCode":"42703","originalMessage":"column Document.loadId does not exist","kind":"ColumnNotFound"}}},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+    at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Document',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+        at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:30:42.526Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-15T18:30:43.471Z] ERROR: [CRON] send-reminders: Failed to process tenant Staging Alpha Carriers {"tenantName":"Staging Alpha Carriers","scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","err":{"stack":"PrismaClientKnownRequestError: \nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.\n    at zr.handleRequestError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:7336:19)","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022","meta":{"modelName":"Document","driverAdapterError":{"name":"DriverAdapterError","cause":{"originalCode":"42703","originalMessage":"column Document.loadId does not exist","kind":"ColumnNotFound"}}},"clientVersion":"7.6.0","name":"PrismaClientKnownRequestError"}} Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.document.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+    at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'Document',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async findExpiringDriverDocuments (src\lib\notifications\check-expiring-driver-documents.ts:34:21)
+        at async GET (src\app\api\cron\send-reminders\route.ts:97:81)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T18:30:43.630Z] INFO: [CRON] send-reminders: Completed {"success":false,"processedTenants":0,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":2,"failures":[{"scope":"tenant:8c6136c4-eb7b-4a89-a524-d1d0e2c8d045","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"},{"scope":"tenant:b5623cdd-dc19-4900-b75d-0ecfcaf191b8","message":"\nInvalid `prisma.document.findMany()` invocation:\n\n\nThe column `(not available)` does not exist in the current database.","code":"P2022"}]}
+ GET /api/cron/send-reminders 500 in 1790ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1779ms)

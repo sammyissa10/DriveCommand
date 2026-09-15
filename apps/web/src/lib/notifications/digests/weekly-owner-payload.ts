@@ -1,8 +1,13 @@
 /**
  * Weekly owner digest payload builder.
  *
- * Accepts a pre-scoped tenantPrisma client (already extended with withTenantRLS)
- * from the caller.
+ * Accepts a pre-scoped tenantPrisma client from the caller — quick-606: one
+ * obtained from `getTenantPrismaForOrg`, which sets `app.current_tenant_id` on
+ * the connection AND applies `withTenantRLS`. This line used to say only
+ * "already extended with withTenantRLS", and a client that is only extended
+ * raises TC001 on every statement in this file. A doc comment naming a
+ * mechanism the caller no longer uses is how that survived three phases.
+ * This keeps the builder testable and avoids double-wrapping.
  *
  * Returns null when the tenant had no loads in the preceding week,
  * which signals the cron route to skip dispatch for that recipient.

@@ -21,7 +21,6 @@
 
 import { NextRequest } from 'next/server';
 import { getAdminDb } from '@/lib/db/admin-prisma';
-import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { findUpcomingMaintenance } from '@/lib/notifications/check-upcoming-maintenance';
 import { findExpiringDocuments } from '@/lib/notifications/check-expiring-documents';
 import { findExpiringDriverDocuments } from '@/lib/notifications/check-expiring-driver-documents';

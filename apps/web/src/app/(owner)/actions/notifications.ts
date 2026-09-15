@@ -8,9 +8,11 @@
 import { unstable_cache } from 'next/cache';
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { prisma as globalPrisma } from '@/lib/db/prisma';
-import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
+import {
+  getTenantPrisma,
+  getTenantPrismaForOrg,
+  requireTenantId,
+} from '@/lib/context/tenant-context';
 import { calculateNextDue } from '@/lib/utils/maintenance-utils';
 import { revalidatePath } from 'next/cache';
 
@@ -62,7 +64,21 @@ export interface ExpiringDocumentItem {
 
 const _fetchUpcomingMaintenance = unstable_cache(
   async (tenantId: string): Promise<UpcomingMaintenanceItem[]> => {
-    const db = globalPrisma.$extends(withTenantRLS(tenantId));
+    /**
+     * quick-606. Was `globalPrisma.$extends(withTenantRLS(tenantId))` — the
+     * §7b shape, which scopes at the Prisma layer and leaves
+     * `app.current_tenant_id` unset on the connection. It did not raise in
+     * quick-604's run only because `/dashboard` shares a `max: 1` pool with
+     * requests that HAD set the GUC (unmigrated-path-tripwire.md §8 item 7) —
+     * i.e. it was LATENT, not safe.
+     *
+     * `getTenantPrismaForOrg` rather than `getTenantPrisma` because this body
+     * runs inside `unstable_cache`, outside any request scope: the
+     * session-derived resolver reads headers and would throw there. The
+     * tenantId handed in was already derived from the session by
+     * `getAuthContext()` at the call site.
+     */
+    const db = await getTenantPrismaForOrg(tenantId);
 
     const schedules = await db.scheduledService.findMany({
       where: { isCompleted: false },
@@ -127,7 +143,21 @@ const _fetchUpcomingMaintenance = unstable_cache(
 
 const _fetchExpiringDocuments = unstable_cache(
   async (tenantId: string): Promise<ExpiringDocumentItem[]> => {
-    const db = globalPrisma.$extends(withTenantRLS(tenantId));
+    /**
+     * quick-606. Was `globalPrisma.$extends(withTenantRLS(tenantId))` — the
+     * §7b shape, which scopes at the Prisma layer and leaves
+     * `app.current_tenant_id` unset on the connection. It did not raise in
+     * quick-604's run only because `/dashboard` shares a `max: 1` pool with
+     * requests that HAD set the GUC (unmigrated-path-tripwire.md §8 item 7) —
+     * i.e. it was LATENT, not safe.
+     *
+     * `getTenantPrismaForOrg` rather than `getTenantPrisma` because this body
+     * runs inside `unstable_cache`, outside any request scope: the
+     * session-derived resolver reads headers and would throw there. The
+     * tenantId handed in was already derived from the session by
+     * `getAuthContext()` at the call site.
+     */
+    const db = await getTenantPrismaForOrg(tenantId);
 
     const trucks = await db.truck.findMany({
       select: {

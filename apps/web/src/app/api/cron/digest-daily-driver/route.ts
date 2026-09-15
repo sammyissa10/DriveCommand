@@ -18,7 +18,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getAdminDb } from '@/lib/db/admin-prisma';
-import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
 import { logger } from '@/lib/logger';
@@ -37,8 +37,10 @@ export async function GET(request: NextRequest) {
 
   /**
    * quick-600 (B5) — ROUTE. Cross-tenant cron — fetches all tenants then
-   * scopes per-tenant via withTenantRLS (DECORATIVE, left untouched — only
-   * this sweep statement moves onto the admin connection).
+   * scopes per-tenant via getTenantPrismaForOrg. quick-606: this line used to
+   * read "scopes per-tenant via withTenantRLS (DECORATIVE, left untouched)" —
+   * see the loop below for what that word cost. Only this sweep statement is
+   * on the admin connection.
    * Gated by CRON_SECRET header check above.
    */
   const adminDb = await getAdminDb('daily driver digest tenant sweep');
@@ -57,7 +59,17 @@ export async function GET(request: NextRequest) {
 
   for (const tenant of tenants) {
     try {
-      const tenantPrisma: any = prisma.$extends(withTenantRLS(tenant.id));
+      /**
+       * quick-606. This was `prisma.$extends(withTenantRLS(tenant.id))`, and the
+       * comment above called that scoping DECORATIVE. It was worse than
+       * decorative: `withTenantRLS` injects a `tenantId` filter at the Prisma
+       * layer and sets NOTHING on the connection, so with the tripwire armed
+       * every statement in this loop raised TC001 on staging — 8 raises per run,
+       * measured (quick-606 evidence/02-reverify.json rows 5/6/7).
+       * `getTenantPrismaForOrg` sets `app.current_tenant_id` AND applies the
+       * very same extension, so nothing is lost by the move.
+       */
+      const tenantPrisma: any = await getTenantPrismaForOrg(tenant.id);
 
       const drivers = await tenantPrisma.user.findMany({
         where: { tenantId: tenant.id, role: 'DRIVER', isActive: true },
