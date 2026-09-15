@@ -1,6 +1,6 @@
 # quick-604 · 07 — the ledger at CLOSE
 
-Taken 2026-09-15T11:13:51.560Z.
+Taken 2026-09-15T11:18:11.718Z.
 
 ## Production — `oqdhberkghtnszrkdvfm`, open vs close
 
