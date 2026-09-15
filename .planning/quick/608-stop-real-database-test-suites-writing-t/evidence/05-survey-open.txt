@@ -1,0 +1,5 @@
+### The survey now reads the tenant count. --open (production READ-ONLY, SELECT only)
+  production ref : oqdhberkghtnszrkdvfm (read-only, SELECT only)
+604-survey: ASSERTION FAILED — production _prisma_migrations = 159, expected 156
+604-survey: ASSERTION FAILED — production head migration = 20260915130000_grant_playbook_notification_to_app_admin, expected 20260914170000_activation_progress_congrats_shown_at
+  production: ledger=159 policies=183 head=20260915130000_grant_playbook_notification_to_app_admin tenants=32 (throwaway=9)

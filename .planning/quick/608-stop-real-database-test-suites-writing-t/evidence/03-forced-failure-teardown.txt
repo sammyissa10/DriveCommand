@@ -1,0 +1,15 @@
+### PROOF C — a FORCED test failure. Does the tenant still get cleaned up?
+[31m     [31m×[31m starts from a clean database for this tenant[39m[32m 7[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at EXTERNAL_REFS [33m 4782[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at TRIP [33m 5173[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at STOPS [33m 5249[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at LOADS [33m 5407[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at DOCUMENTS [33m 5545[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at IMPORT_UPDATE [33m 5761[2mms[22m[39m
+     [33m[2m✓[22m[39m writes the trip, its stops, its load and its documents when nothing fails [33m 6351[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses a direct call that names a driver with an expired licence [33m 8294[2mms[22m[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: FORCED FAILURE — quick-608 teardown proof[39m
+    [90m526| [39m    [35mthrow[39m [35mnew[39m [33mError[39m([32m"FORCED FAILURE — quick-608 teardown proof"[39m)[33m;[39m
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (9)[39m

@@ -1,0 +1,43 @@
+### PROOF A — the default invocation, whose .env.local names PRODUCTION
+$ npx vitest run tests/carrier/document-import-commit-rollback.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/sammy/Projects/DriveCommand/apps/web[39m
+
+[90mstderr[2m | tests/carrier/document-import-commit-rollback.test.ts
+[22m[39m
+[test-db-guard] DATABASE_URL names the PRODUCTION project (oqdhberkghtnszrkdvfm).
+[test-db-guard] Real-database suites will REFUSE to run. Nothing will be written.
+[test-db-guard] Point DATABASE_URL at staging to run them, or set ALLOW_PRODUCTION_TEST_WRITES=1.
+[test-db-guard] See docs/audits/production-test-writes.md
+
+
+ [31m❯[39m tests/carrier/document-import-commit-rollback.test.ts [2m([22m[2m0 test[22m[2m)[22m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/carrier/document-import-commit-rollback.test.ts[2m [ tests/carrier/document-import-commit-rollback.test.ts ][22m
+[31m[1mError[22m: 
+document-import-commit-rollback.test.ts REFUSING TO RUN — DATABASE_URL named the PRODUCTION project (oqdhberkghtnszrkdvfm).
+
+This suite CREATES tenants, users, clients, drivers, trucks, facilities, imports,
+trips, stops and loads. Nine orphan tenants are already in production because it
+used to run there — see docs/audits/production-test-writes.md.
+
+To run it, point DATABASE_URL at a disposable database:
+  DATABASE_URL="<staging direct url>" npx vitest run <this file>
+
+To override anyway (you almost certainly do not want this):
+  ALLOW_PRODUCTION_TEST_WRITES=1
+[39m
+[36m [2m❯[22m requireDisposableDatabase tests/support/real-db.ts:[2m103:11[22m[39m
+    [90m101| [39m
+    [90m102| [39m  [35mif[39m (url [33m===[39m [33mREFUSAL_SENTINEL[39m) {
+    [90m103| [39m    [35mthrow[39m [35mnew[39m [33mProductionDatabaseRefusal[39m(
+    [90m   | [39m          [31m^[39m
+    [90m104| [39m      `\n${suiteName} REFUSING TO RUN — DATABASE_URL named the PRODUCT…
+    [90m105| [39m        [32m`([39m[36m${[39m[33mPRODUCTION_REF[39m[36m}[39m[32m).\n\n`[39m [33m+[39m
+[90m [2m❯[22m tests/carrier/document-import-commit-rollback.test.ts:[2m135:49[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+

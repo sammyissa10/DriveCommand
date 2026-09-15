@@ -1,0 +1,23 @@
+### PROOF B — the same suite, DATABASE_URL pinned at STAGING
+$ DATABASE_URL="<staging>" npx vitest run tests/carrier/document-import-commit-rollback.test.ts
+
+
+[90mstdout[2m | tests/carrier/document-import-commit-rollback.test.ts[2m > [22m[2mPhase 8 commit — atomic rollback, asserted against the database[2m > [22m[2mrefuses a direct call that names a driver with an expired licence
+[22m[39m[2026-09-15T20:59:39.950Z] INFO: [document-import] commit blocked {"importId":"5a9ed981-25e3-4c32-b74f-6623c0f52793","blocks":["LICENCE_EXPIRED"]}
+
+ [32m✓[39m tests/carrier/document-import-commit-rollback.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 55464[2mms[22m[39m
+     [33m[2m✓[22m[39m starts from a clean database for this tenant [33m 652[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at EXTERNAL_REFS [33m 4702[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at TRIP [33m 5236[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at STOPS [33m 5207[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at LOADS [33m 5350[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at DOCUMENTS [33m 5485[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back completely when the transaction fails at IMPORT_UPDATE [33m 5732[2mms[22m[39m
+     [33m[2m✓[22m[39m writes the trip, its stops, its load and its documents when nothing fails [33m 6302[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses a direct call that names a driver with an expired licence [33m 8290[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 15:58:09
+[2m   Duration [22m 94.84s[2m (transform 1.59s, setup 79ms, import 38.83s, tests 55.46s, environment 0ms)[22m
+

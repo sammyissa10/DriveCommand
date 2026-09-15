@@ -1,0 +1,15 @@
+### PROOF D — the tenant-count check FAILS when the count moves.
+### Simulated by altering the RECORDED open value from 32 -> 31 (no production write).
+
+recorded open tenant count tampered: 32 -> 31, throwaway 9 -> 8
+
+  FAIL production _prisma_migrations rows: open=159 close=159
+  OK   production pg_policy(public): open=183 close=183
+  FAIL production newest migration_name: open=20260915130000_grant_playbook_notification_to_app_admin close=20260915130000_grant_playbook_notification_to_app_admin
+  FAIL production "Tenant" row count: open=31 close=32
+  FAIL production throwaway-named tenants (ZZ-/FI-Test/MT-Test): open=8 close=9
+  OK   sha256 repo-root .env: open=a10194b5b3e7f5c664b4b04e2b694d08d75206d5adb4babe3ae11df9c00ad7f0 close=a10194b5b3e7f5c664b4b04e2b694d08d75206d5adb4babe3ae11df9c00ad7f0
+  OK   sha256 apps/web/.env.local: open=7d298fddafeb78f686e4ddfaf096442d5dcc88dcf939db5863205ce195e0265c close=7d298fddafeb78f686e4ddfaf096442d5dcc88dcf939db5863205ce195e0265c
+604-survey --close: PRODUCTION BASELINE MOVED. This is the headline of the report.
+exit code: 0
+--close with tampered tenant count -> exit code: 1

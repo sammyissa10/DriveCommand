@@ -88,6 +88,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { requireDisposableDatabase, teardownThrowawayTenant } from '../support/real-db';
 
 /**
  * Load `.env.local` into `process.env`, here and only here.
@@ -139,7 +140,10 @@ function loadEnvLocal(): void {
 
 loadEnvLocal();
 
-const hasDatabase = !!process.env.DATABASE_URL;
+// quick-608: refuses the PRODUCTION project at IMPORT, before any row exists.
+// The check is on the DATABASE, not the tenant — see tests/support/real-db.ts.
+const { hasDatabase, url: TEST_DATABASE_URL } = requireDisposableDatabase('inspection-blocked-side-effects.test.ts');
+void TEST_DATABASE_URL;
 const describeWithDb = hasDatabase ? describe : describe.skip;
 
 /**
@@ -526,59 +530,26 @@ describeWithDb('quick-549 — a BLOCKED inspection writes its defects, asserted 
     if (!hasDatabase || !tenantId) return;
     assertDisposable(tenantId);
 
-    // Children first. Every delete is keyed to this suite's own tenant.
-    await bypass(async (tx) => {
-      await tx.carrierTruckDefect.deleteMany({ where: { orgId: tenantId } });
-      // The BLOCKED branch calls `notifyDispatchOfBlock`, which writes
-      // InAppNotification rows, and `in_app_notifications.org_id` is a real FK
-      // to the tenant with ON DELETE RESTRICT (read off pg_constraint). Leaving
-      // them behind makes this teardown fail with a foreign-key violation AFTER
-      // every assertion has already passed — exactly what bit quick-546, where
-      // all the tests passed and the FILE failed. This fixture has no
-      // owner/manager and no dispatcher so it should write none, but the
-      // teardown does not depend on that being true.
-      await tx.inAppNotification.deleteMany({ where: { orgId: tenantId } });
-      // Telemetry from the Phase 10 catalogue emit. No FK to Tenant, so it
-      // cannot block the delete — which is precisely why it would otherwise be
-      // left behind as orphan rows in a production table.
-      await tx.notificationSendLog.deleteMany({ where: { tenantId } });
-      await tx.stepInstance.deleteMany({ where: { tenantId } });
-      await tx.playbookInstance.deleteMany({ where: { tenantId } });
-      await tx.playbook.deleteMany({ where: { tenantId } });
-      await tx.trip.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierTruck.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierDriver.deleteMany({ where: { orgId: tenantId } });
-      await tx.user.deleteMany({ where: { tenantId } });
-      await tx.tenant.deleteMany({ where: { id: tenantId } });
+    // quick-608 — teardown moved onto its OWN pool, outside a single transaction.
+    //
+    // This used to be ~17 deletes inside one `$transaction` on the APP's pool —
+    // the same pool the test had just exhausted. The recorded failures were
+    // `Unable to start a transaction in the given time` and `timeout exceeded
+    // when trying to connect`: contention killed the test and then killed the
+    // cleanup, and because it was one transaction, NOTHING was deleted. That is
+    // why every orphan already in production still has all of its child rows.
+    //
+    // `teardownThrowawayTenant` opens a fresh single-connection pool, deletes in
+    // FK order with per-statement retry, then re-counts and THROWS on any
+    // survivor — the verification is unchanged, only the connection and the
+    // transaction boundary. See docs/audits/production-test-writes.md.
+    await teardownThrowawayTenant({
+      tenantId,
+      tenantName: TENANT_NAME,
+      connectionString: TEST_DATABASE_URL,
+      protectedTenantId: PROTECTED_TENANT_ID,
     });
-
-    // VERIFY the cleanup rather than assume it. A silent failure here leaves
-    // orphan rows in a production database, which is a worse outcome than a
-    // failing test — so this throws loudly.
-    const survivors = await bypass(async (tx) => ({
-      tenants: await tx.tenant.count({ where: { id: tenantId } }),
-      defects: await tx.carrierTruckDefect.count({ where: { orgId: tenantId } }),
-      notifications: await tx.inAppNotification.count({ where: { orgId: tenantId } }),
-      sendLogs: await tx.notificationSendLog.count({ where: { tenantId } }),
-      steps: await tx.stepInstance.count({ where: { tenantId } }),
-      instances: await tx.playbookInstance.count({ where: { tenantId } }),
-      playbooks: await tx.playbook.count({ where: { tenantId } }),
-      trips: await tx.trip.count({ where: { orgId: tenantId } }),
-      trucks: await tx.carrierTruck.count({ where: { orgId: tenantId } }),
-      drivers: await tx.carrierDriver.count({ where: { orgId: tenantId } }),
-      users: await tx.user.count({ where: { tenantId } }),
-    }));
-
-    await prisma.$disconnect();
-
-    const leftover = Object.entries(survivors).filter(([, n]) => (n as number) > 0);
-    if (leftover.length > 0) {
-      throw new Error(
-        `CLEANUP FAILED — orphan rows left in production for throwaway tenant ${tenantId} ` +
-          `(${TENANT_NAME}): ${leftover.map(([k, n]) => `${k}=${n}`).join(', ')}`,
-      );
-    }
-  }, 60_000);
+  }, 120_000);
 
   // -------------------------------------------------------------------------
 

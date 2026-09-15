@@ -1,0 +1,11 @@
+### RED 1 — drop the setupFiles line from vitest.config.ts (every suite silently regains production)
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (17)[39m
+
+### RED 2 — revert one suite to the old unguarded gate
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m+  * Carrier Ops Multi-Tenancy Tests — Spec 8.4[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (17)[39m
+
+### GREEN restored
+[2m      Tests [22m [1m[32m17 passed[39m[22m[90m (17)[39m

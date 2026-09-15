@@ -88,6 +88,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { AssignmentInput } from '@/lib/document-import/commit-service';
+import { requireDisposableDatabase, teardownThrowawayTenant } from '../support/real-db';
 
 /** See the rollback suite: vitest does not read `.env.local`; Next does. */
 function loadEnvLocal(): void {
@@ -125,7 +126,10 @@ function loadEnvLocal(): void {
 
 loadEnvLocal();
 
-const hasDatabase = !!process.env.DATABASE_URL;
+// quick-608: refuses the PRODUCTION project at IMPORT, before any row exists.
+// The check is on the DATABASE, not the tenant — see tests/support/real-db.ts.
+const { hasDatabase, url: TEST_DATABASE_URL } = requireDisposableDatabase('document-import-commit-out-of-service.test.ts');
+void TEST_DATABASE_URL;
 const describeWithDb = hasDatabase ? describe : describe.skip;
 
 const PROTECTED_TENANT_ID = '7e9eca25-1f97-46ed-9365-e67be49436d5';
@@ -424,50 +428,26 @@ describeWithDb('Phase 8 — an out-of-service truck is offered, flagged and refu
     if (!hasDatabase || !tenantId) return;
     assertDisposable(tenantId);
 
-    // Children first. Every delete is keyed to this suite's own tenant.
-    await bypass(async (tx) => {
-      await tx.carrierDocument.deleteMany({ where: { dispatch: { orgId: tenantId } } });
-      await tx.carrierStop.deleteMany({ where: { dispatch: { orgId: tenantId } } });
-      await tx.carrierLoad.deleteMany({ where: { orgId: tenantId } });
-      await tx.trip.deleteMany({ where: { orgId: tenantId } });
-      await tx.facilityExternalReference.deleteMany({ where: { orgId: tenantId } });
-      await tx.documentImportPage.deleteMany({ where: { orgId: tenantId } });
-      await tx.documentImport.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierFacility.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierTruck.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierDriver.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierContract.deleteMany({ where: { orgId: tenantId } });
-      await tx.carrierClient.deleteMany({ where: { orgId: tenantId } });
-      await tx.routeTemplate.deleteMany({ where: { orgId: tenantId } });
-      await tx.user.deleteMany({ where: { tenantId } });
-      await tx.tenant.deleteMany({ where: { id: tenantId } });
+    // quick-608 — teardown moved onto its OWN pool, outside a single transaction.
+    //
+    // This used to be ~17 deletes inside one `$transaction` on the APP's pool —
+    // the same pool the test had just exhausted. The recorded failures were
+    // `Unable to start a transaction in the given time` and `timeout exceeded
+    // when trying to connect`: contention killed the test and then killed the
+    // cleanup, and because it was one transaction, NOTHING was deleted. That is
+    // why every orphan already in production still has all of its child rows.
+    //
+    // `teardownThrowawayTenant` opens a fresh single-connection pool, deletes in
+    // FK order with per-statement retry, then re-counts and THROWS on any
+    // survivor — the verification is unchanged, only the connection and the
+    // transaction boundary. See docs/audits/production-test-writes.md.
+    await teardownThrowawayTenant({
+      tenantId,
+      tenantName: TENANT_NAME,
+      connectionString: TEST_DATABASE_URL,
+      protectedTenantId: PROTECTED_TENANT_ID,
     });
-
-    // VERIFIED cleanup — a silent failure leaves orphans in a production
-    // database, which is worse than a red test.
-    const survivors = await bypass(async (tx) => ({
-      tenants: await tx.tenant.count({ where: { id: tenantId } }),
-      trips: await tx.trip.count({ where: { orgId: tenantId } }),
-      stops: await tx.carrierStop.count({ where: { dispatch: { orgId: tenantId } } }),
-      loads: await tx.carrierLoad.count({ where: { orgId: tenantId } }),
-      documents: await tx.carrierDocument.count({ where: { dispatch: { orgId: tenantId } } }),
-      imports: await tx.documentImport.count({ where: { orgId: tenantId } }),
-      facilities: await tx.carrierFacility.count({ where: { orgId: tenantId } }),
-      drivers: await tx.carrierDriver.count({ where: { orgId: tenantId } }),
-      trucks: await tx.carrierTruck.count({ where: { orgId: tenantId } }),
-      users: await tx.user.count({ where: { tenantId } }),
-    }));
-
-    await prisma.$disconnect();
-
-    const leftover = Object.entries(survivors).filter(([, n]) => (n as number) > 0);
-    if (leftover.length > 0) {
-      throw new Error(
-        `CLEANUP FAILED — orphan rows left in production for throwaway tenant ${tenantId} ` +
-          `(${TENANT_NAME}): ${leftover.map(([k, n]) => `${k}=${n}`).join(', ')}`,
-      );
-    }
-  }, 60_000);
+  }, 120_000);
 
   // -------------------------------------------------------------------------
   // Item 5 — the picker OFFERS it, flags it, and names the reason.

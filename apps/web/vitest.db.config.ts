@@ -37,6 +37,16 @@ export default defineConfig({
     // "tenant A has no rows" — which is indistinguishable at a glance from a
     // real isolation regression. See tests-db/global-setup.ts.
     globalSetup: ['./tests-db/global-setup.ts'],
+    /**
+     * quick-608 — the same production guard `vitest.config.ts` carries.
+     *
+     * This suite already refuses the production ref itself (`tests-db/rls-isolation/env.ts`,
+     * quick-598), so this is belt AND braces rather than the only control. It is
+     * here so that "which vitest config runs a file" is never the thing that
+     * decides whether production is reachable — a new file added under
+     * `tests-db/` inherits the guard exactly as one under `tests/` does.
+     */
+    setupFiles: ['./tests/setup/production-db-guard.ts'],
   },
   resolve: {
     alias: {

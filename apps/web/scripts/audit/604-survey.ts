@@ -91,6 +91,22 @@ const PRODUCTION_SELECTS = Object.freeze({
     "SELECT count(*)::int AS n FROM pg_policy p JOIN pg_class c ON c.oid = p.polrelid JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'public'",
   headMigration:
     'SELECT migration_name FROM public._prisma_migrations ORDER BY finished_at DESC NULLS LAST, started_at DESC LIMIT 1',
+  /**
+   * quick-608 — THE READING THAT WOULD HAVE CAUGHT NINE ORPHAN TENANTS.
+   *
+   * Everything else this file asserts is invariant under a test suite creating a
+   * tenant: _prisma_migrations does not move, pg_policy does not move, the head
+   * migration does not move. So every task in this phase re-read production at
+   * open and at close, compared three numbers, and reported "production was
+   * never written" — honestly, and while ten real-database suites were writing
+   * to it. See docs/audits/production-test-writes.md §6.
+   */
+  tenants:
+    `SELECT count(*)::int AS n,
+            count(*) FILTER (
+              WHERE name LIKE 'ZZ-%' OR name LIKE 'FI-Test%' OR name LIKE 'MT-Test%'
+            )::int AS throwaway
+       FROM public."Tenant"`,
   identity:
     'SELECT current_user AS cu, current_database() AS db, (SELECT rolbypassrls FROM pg_roles WHERE rolname = current_user) AS bypass',
 });
@@ -194,6 +210,10 @@ async function readProduction() {
     })),
     ledgerRows: await read(c, PRODUCTION_SELECTS.ledgerRows, (r) => r[0].n as number),
     policies: await read(c, PRODUCTION_SELECTS.policies, (r) => r[0].n as number),
+    tenants: await read(c, PRODUCTION_SELECTS.tenants, (r) => ({
+      total: r[0].n as number,
+      throwaway: r[0].throwaway as number,
+    })),
     headMigration: await read(
       c,
       PRODUCTION_SELECTS.headMigration,
@@ -314,6 +334,7 @@ async function open() {
   const prodLedgerRows = value(prod.ledgerRows, 'production _prisma_migrations count');
   const prodPolicies = value(prod.policies, 'production pg_policy count');
   const prodHead = value(prod.headMigration, 'production head migration');
+  const prodTenants = value(prod.tenants, 'production Tenant count');
 
   const hashes = {
     rootEnv: sha256File(ROOT_ENV),
@@ -334,6 +355,8 @@ async function open() {
       prodLedgerRows,
       prodPolicies,
       prodHeadMigration: prodHead,
+      prodTenants: prodTenants.total,
+      prodThrowawayTenants: prodTenants.throwaway,
       expected: {
         ledgerRows: EXPECTED_PROD_LEDGER_ROWS,
         policies: EXPECTED_PROD_POLICIES,
@@ -368,7 +391,7 @@ async function open() {
 
   for (const f of failures) console.error(`604-survey: ASSERTION FAILED — ${f}`);
   console.log(
-    `  production: ledger=${prodLedgerRows} policies=${prodPolicies} head=${prodHead}`,
+    `  production: ledger=${prodLedgerRows} policies=${prodPolicies} head=${prodHead} tenants=${prodTenants.total} (throwaway=${prodTenants.throwaway})`,
   );
   console.log(`  staging:    ${record.appUserRoleCheck}`);
   process.exit(failures.length === 0 ? 0 : 1);
@@ -445,6 +468,7 @@ async function close() {
   const prodLedgerRows = value(prod.ledgerRows, 'production _prisma_migrations count');
   const prodPolicies = value(prod.policies, 'production pg_policy count');
   const prodHead = value(prod.headMigration, 'production head migration');
+  const prodTenants = value(prod.tenants, 'production Tenant count');
   const hashes = { rootEnv: sha256File(ROOT_ENV), appEnvLocal: sha256File(APP_ENV_LOCAL) };
 
   const checks: { name: string; open: unknown; close: unknown; ok: boolean }[] = [
@@ -465,6 +489,21 @@ async function close() {
       open: opened.production.prodHeadMigration,
       close: prodHead,
       ok: opened.production.prodHeadMigration === prodHead && prodHead === EXPECTED_PROD_HEAD_MIGRATION,
+    },
+    {
+      // quick-608. A tenant created by a test suite moves THIS and nothing else
+      // the survey reads, which is exactly why nine of them accumulated unseen.
+      // It sits in `checks`, so a change exits 1 — it does not warn.
+      name: 'production "Tenant" row count',
+      open: opened.production.prodTenants,
+      close: prodTenants.total,
+      ok: opened.production.prodTenants === prodTenants.total,
+    },
+    {
+      name: 'production throwaway-named tenants (ZZ-/FI-Test/MT-Test)',
+      open: opened.production.prodThrowawayTenants,
+      close: prodTenants.throwaway,
+      ok: opened.production.prodThrowawayTenants === prodTenants.throwaway,
     },
     {
       name: 'sha256 repo-root .env',

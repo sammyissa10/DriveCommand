@@ -366,3 +366,109 @@ shown the difference.
   separate, deliberate act that should re-verify the FK order and be recorded.
 - Re-examine whether these suites should run in the default `npx vitest run` at all, or move behind a
   separate vitest project the way `tests-db/rls-isolation/` already is (`vitest.db.config.ts`).
+
+---
+
+# Addendum — quick-608: the fix
+
+Investigation above; this is what was built. Nothing in §1-§6 is retracted, but §1's
+census was **incomplete** and §7's follow-up list is now done except where noted.
+
+## The census was seven. It is TEN.
+
+§1 searched for `ZZ-THROWAWAY` and found seven. Three more create tenants and were invisible to
+that search because their names carry no `ZZ-` prefix at all:
+
+| file | tenant name |
+|---|---|
+| `tests/carrier/financial-integrity.test.ts` | `FI-Test-Tenant-${Date.now()}` |
+| `tests/carrier/multi-tenancy.test.ts` | `MT-Test-OrgA/B-${Date.now()}` |
+| `tests/carrier/contracted-route-journey.test.ts` | created through the journey |
+
+Production holds **zero** `FI-Test`/`MT-Test` tenants, so these have never actually fired. That is
+luck, not a control: they survive only because they lack the hand-rolled `.env.local` loader the
+other seven carry, so a bare `npx vitest run` leaves `DATABASE_URL` undefined and they skip. An
+exported `DATABASE_URL` is all it would have taken.
+
+**A name prefix is not a census.** `tests/security/real-db-census.test.ts` keys on the WRITE
+(`tenant.create`, `INSERT INTO "Tenant"`) conjoined with actually resolving a connection, never on
+the name.
+
+## What now stops it — two mechanisms, deliberately
+
+**1. `tests/setup/production-db-guard.ts`, a global `setupFiles` entry in BOTH vitest configs.**
+Applied by the RUNNER to every collected file, so a suite is covered without importing anything.
+When the process carries a production `DATABASE_URL` it is replaced with an unroutable sentinel.
+
+*Sentinel, not delete* — the ten loaders skip keys that are already defined, so a deleted
+`DATABASE_URL` would be re-read from `.env.local` one line later and production restored.
+
+*Only when already set* — the first draft also fired when `DATABASE_URL` was absent and `.env.local`
+held production. That INVENTED a `DATABASE_URL` for the whole run and flipped six suites that had
+always skipped (`audit-log-isolation`, `carrier-driver-pii`, `restricted-documents`,
+`tenant-header-forgery`, `inspection-route-guard`, `driver-pay-tenant-isolation`) from SKIPPED to
+FAILING against 127.0.0.1:1 — sixteen newly red files, none a real defect. Measured and reverted.
+A guard that breaks suites it was not aimed at is a guard people rip out.
+
+**2. `requireDisposableDatabase()` in `tests/support/real-db.ts`**, called at module scope by all
+ten. It throws at IMPORT — before `beforeAll`, therefore before any row exists. It re-checks the
+resolved string itself, which is what covers the file-sourced case the setup file deliberately
+leaves alone.
+
+Three outcomes: `DATABASE_URL` absent → **skip** (unchanged; this is CI) · production → **THROW** ·
+anything else → run.
+
+### If someone writes a suite that bypasses it
+
+They cannot reach production. With an exported production URL the setup file has already replaced
+it, and the sentinel resolves to 127.0.0.1:1. What they lose is the message — ECONNREFUSED instead
+of a sentence naming the problem. The census test closes that at review time by pinning the ten and
+asserting each calls the helper; both halves were witnessed failing red (dropping the `setupFiles`
+line fails 1 test; reverting one suite to `!!process.env.DATABASE_URL` fails 1).
+
+## Cleanup
+
+`teardownThrowawayTenant()` — its **own single-connection pool**, deletes in FK order **outside a
+transaction**, per-statement retry with backoff, then re-counts and throws on survivors.
+
+Aimed at the diagnosed cause: the old teardown ran on the pool the test had just exhausted, so
+contention killed the test and then the cleanup, and the single transaction meant nothing was
+deleted — which is why every orphan still has all its child rows. A retry on the same pool would
+retry into the same wall.
+
+## The assertion
+
+`scripts/audit/604-survey.ts` now reads `Tenant` count plus a throwaway-name breakdown at `--open`
+and `--close`, in `checks`, so a change **exits 1** rather than warning. First run:
+`tenants=32 (throwaway=9)` — the audit's own numbers.
+
+## Other record-not-database guards (§6 of the brief) — reported, NOT fixed
+
+**`scripts/cleanup-test-tenants.ts` is the same shape and it DELETES.** It connects to
+`process.env.DATABASE_URL` with **no project-ref check of any kind** (grep: zero occurrences of the
+production ref, zero imports of `_bootstrap-env`), and its only guard is
+`ALLOWED_PREFIXES = ['FI-Test-', 'MT-Test-']` — a check on the NAME of the record being deleted, not
+on which database it lives in. It then deletes tenants and cascades through ~15 child tables and
+Supabase Auth users.
+
+It is exactly the guard shape this task exists to correct, pointing the other way: the earlier
+failure created rows in the wrong database, this one could delete them there. Note its prefixes are
+precisely the two suites §1 missed, so it was written to clean up after them — and it is the script
+someone would reach for to remove the nine ZZ tenants, which it would not match anyway.
+
+Left alone because the brief scopes this task to test suites and says to report. It needs the same
+`_db-target`-style ref refusal quick-607 gave the script layer.
+
+Lesser instances, listed without alarm: `tests/security/db-fixture-setup.ts`'s `cleanupTestData()`
+deletes by broad name prefix across the whole database rather than by tenant id (the rollback
+suite's own header already refuses to use it for that reason), and `assertDisposable()` remains in
+all seven suites — correctly, as a second, record-level check beneath the new database-level one.
+
+## Result
+
+- **Ten suites carry the refusal.** No data-creating suite is without it; the census test fails if
+  one appears.
+- **Behaviour change, stated plainly:** on a machine whose `.env.local` names production, the seven
+  loader-carrying suites now **FAIL** rather than silently writing there. That is the point. They go
+  green by pointing `DATABASE_URL` at staging. Full-suite failing files went 18 → 25, and the seven
+  are exactly those suites.

@@ -60,6 +60,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { requireDisposableDatabase, teardownThrowawayTenant } from '../support/real-db';
 
 /** See `document-import-commit-rollback.test.ts` for why this is hand-parsed
  *  and why it lives in the file rather than in a shared `setupFiles` entry. */
@@ -98,7 +99,10 @@ function loadEnvLocal(): void {
 
 loadEnvLocal();
 
-const hasDatabase = !!process.env.DATABASE_URL;
+// quick-608: refuses the PRODUCTION project at IMPORT, before any row exists.
+// The check is on the DATABASE, not the tenant — see tests/support/real-db.ts.
+const { hasDatabase, url: TEST_DATABASE_URL } = requireDisposableDatabase('driver-incident-report-persists.test.ts');
+void TEST_DATABASE_URL;
 const describeWithDb = hasDatabase ? describe : describe.skip;
 
 /** The live tenant this suite must never write to, under any circumstance. */
@@ -224,31 +228,26 @@ describeWithDb('submitIncidentReport — success implies a row, asserted against
     if (!hasDatabase || !tenantId) return;
     assertDisposable(tenantId);
 
-    // Children before the tenant. `DriverIncident.tenantId` is a real foreign
-    // key, so leaving rows behind fails the FILE after every assertion has
-    // already passed — the quick-546 shape.
-    await bypass(async (tx) => {
-      await tx.driverIncident.deleteMany({ where: { tenantId } });
-      await tx.user.deleteMany({ where: { tenantId } });
-      await tx.tenant.deleteMany({ where: { id: tenantId } });
+    // quick-608 — teardown moved onto its OWN pool, outside a single transaction.
+    //
+    // This used to be ~17 deletes inside one `$transaction` on the APP's pool —
+    // the same pool the test had just exhausted. The recorded failures were
+    // `Unable to start a transaction in the given time` and `timeout exceeded
+    // when trying to connect`: contention killed the test and then killed the
+    // cleanup, and because it was one transaction, NOTHING was deleted. That is
+    // why every orphan already in production still has all of its child rows.
+    //
+    // `teardownThrowawayTenant` opens a fresh single-connection pool, deletes in
+    // FK order with per-statement retry, then re-counts and THROWS on any
+    // survivor — the verification is unchanged, only the connection and the
+    // transaction boundary. See docs/audits/production-test-writes.md.
+    await teardownThrowawayTenant({
+      tenantId,
+      tenantName: TENANT_NAME,
+      connectionString: TEST_DATABASE_URL,
+      protectedTenantId: PROTECTED_TENANT_ID,
     });
-
-    const survivors = await bypass(async (tx) => ({
-      incidents: await tx.driverIncident.count({ where: { tenantId } }),
-      users: await tx.user.count({ where: { tenantId } }),
-      tenants: await tx.tenant.count({ where: { id: tenantId } }),
-    }));
-
-    await prisma.$disconnect();
-
-    const leftover = Object.entries(survivors).filter(([, n]) => (n as number) > 0);
-    if (leftover.length > 0) {
-      throw new Error(
-        `CLEANUP FAILED — orphan rows left in production for throwaway tenant ${tenantId} ` +
-          `(${TENANT_NAME}): ${leftover.map(([k, n]) => `${k}=${n}`).join(', ')}`,
-      );
-    }
-  }, 60_000);
+  }, 120_000);
 
   it('records a DriverIncident row — success is never reported without one', async () => {
     emitSpy.mockReset();
