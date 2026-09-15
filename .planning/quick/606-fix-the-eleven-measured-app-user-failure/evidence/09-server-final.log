@@ -1,0 +1,79 @@
+GUARD 1: DATABASE_URL role=app_user ref=wyixpgunnjmzguhggocz port=5432 · DATABASE_URL_ADMIN role=app_admin ref=wyixpgunnjmzguhggocz port=5432
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 2.1s
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ POST /api/auth/login 200 in 5.7s (next.js: 3.5s, proxy.ts: 93ms, application-code: 2.0s)
+ POST /api/auth/login 200 in 878ms (next.js: 39ms, proxy.ts: 11ms, application-code: 828ms)
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+○ Compiling /carrier/trips ...
+ GET /carrier/trips 200 in 28.8s (next.js: 16.8s, proxy.ts: 244ms, application-code: 11.8s)
+ GET /documents 200 in 2.2s (next.js: 1473ms, proxy.ts: 127ms, application-code: 570ms)
+[2026-09-15T19:04:02.112Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-15T19:04:02.113Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-15T19:04:02.572Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
+[2026-09-15T19:04:02.877Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":0,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":0,"details":[],"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-auto-dispatch 200 in 1461ms (next.js: 679ms, proxy.ts: 7ms, application-code: 775ms)
+[2026-09-15T19:04:04.372Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-15T19:04:04.373Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-15T19:04:04.445Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-15T19:04:04.927Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 0 alert(s) found
+[2026-09-15T19:04:05.387Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 0 alert(s) found
+[2026-09-15T19:04:05.387Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":0,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 2.1s (next.js: 1116ms, proxy.ts: 7ms, application-code: 1026ms)
+[2026-09-15T19:04:06.455Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-15T19:04:06.456Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-15T19:04:06.528Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-15T19:04:07.933Z] INFO: [CRON] digest-compliance-30day: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-compliance-30day 200 in 2.2s (next.js: 689ms, proxy.ts: 7ms, application-code: 1486ms)
+[2026-09-15T19:04:08.951Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-15T19:04:08.951Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+[2026-09-15T19:04:09.024Z] INFO: [CRON] digest-daily-driver: Found 2 active tenant(s)
+[2026-09-15T19:04:10.429Z] INFO: [CRON] digest-daily-driver: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":5,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-daily-driver 200 in 2.1s (next.js: 643ms, proxy.ts: 9ms, application-code: 1484ms)
+[2026-09-15T19:04:11.590Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-15T19:04:11.591Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+[2026-09-15T19:04:11.663Z] INFO: [CRON] digest-weekly-owner: Found 2 active tenant(s)
+[2026-09-15T19:04:12.406Z] INFO: [CRON] digest-weekly-owner: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-weekly-owner 200 in 1609ms (next.js: 776ms, proxy.ts: 6ms, application-code: 827ms)
+[2026-09-15T19:04:13.387Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-15T19:04:13.388Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-15T19:04:13.460Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-15T19:04:14.639Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":0,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 1876ms (next.js: 607ms, proxy.ts: 8ms, application-code: 1261ms)
+[2026-09-15T19:04:15.617Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-15T19:04:15.618Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-15T19:04:15.691Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-15T19:04:15.692Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-15T19:04:16.270Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-15T19:04:16.271Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-15T19:04:16.271Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-15T19:04:16.272Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-15T19:04:16.852Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-15T19:04:16.853Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-15T19:04:16.853Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-15T19:04:16.854Z] INFO: [CRON] send-reminders: Completed {"success":true,"processedTenants":2,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/send-reminders 200 in 1844ms (next.js: 588ms, proxy.ts: 6ms, application-code: 1250ms)
+ GET /carrier/driver-pay/settlements 200 in 2.7s (next.js: 1503ms, proxy.ts: 258ms, application-code: 934ms)
+ GET /checklists/automation 200 in 2.1s (next.js: 1285ms, proxy.ts: 239ms, application-code: 565ms)
+[2026-09-15T19:04:23.398Z] INFO: [admin-db] privileged query {"reason":"trip reminder tenant sweep"}
+[2026-09-15T19:04:24.335Z] INFO: [CRON] trip-reminders: done {"tenantsProcessed":2,"tenantsFailed":0,"remindersSent":0,"failureCount":0,"failures":[]}
+ GET /api/cron/trip-reminders 200 in 1607ms (next.js: 652ms, proxy.ts: 6ms, application-code: 949ms)
+[2026-09-15T19:04:25.371Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-15T19:04:25.372Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-15T19:04:25.521Z] INFO: [CRON] workflow-notifications: Found 0 overdue step(s)
+[2026-09-15T19:04:25.522Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-15T19:04:25.600Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
+[2026-09-15T19:04:25.601Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-notifications 200 in 898ms (next.js: 656ms, proxy.ts: 5ms, application-code: 237ms)
+[?25h

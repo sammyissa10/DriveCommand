@@ -1,0 +1,32 @@
+{
+  "task": "quick-604",
+  "phase": "classification",
+  "at": "2026-09-15T19:05:28.882Z",
+  "inputs": {
+    "click": "C:\\Users\\sammy\\Projects\\DriveCommand\\.planning\\quick\\606-fix-the-eleven-measured-app-user-failure\\evidence\\09-final-verdicts.json",
+    "writes": "ABSENT — no write-path artefact was supplied for this run",
+    "log": "C:\\Users\\sammy\\Projects\\DriveCommand\\.planning\\quick\\606-fix-the-eleven-measured-app-user-failure\\evidence\\09-server-final.log"
+  },
+  "entriesConsidered": 15,
+  "countdownGeneratedAt": "2026-09-15T17:27:19.871Z",
+  "countdownTotals": {
+    "unmigratedUnits": 456,
+    "unmigratedCallSites": 459,
+    "withTenantContextCallSites": 0,
+    "filesScanned": 1691,
+    "filesWithUnmigratedUnits": 202
+  },
+  "counts": {
+    "TRIPWIRE_TC001": 0,
+    "MISSING_GRANT": 0,
+    "RLS_DENIAL_SATISFIABLE": 0,
+    "RLS_DENIAL_NO_POLICY": 0,
+    "SOMETHING_ELSE": 0
+  },
+  "categorySum": 0,
+  "derivedFailureCount": 0,
+  "arithmeticCheckPasses": true,
+  "policyDisagreements": [],
+  "findings": [],
+  "outside456": []
+}

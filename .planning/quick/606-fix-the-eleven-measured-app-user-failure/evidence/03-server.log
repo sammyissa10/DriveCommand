@@ -2165,3 +2165,4 @@ The column `(not available)` does not exist in the current database.
 [2026-09-15T19:01:38.293Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
 [2026-09-15T19:01:38.600Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":0,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":0,"details":[],"failureCount":0,"failures":[]}
  GET /api/cron/carrier-auto-dispatch 200 in 745ms (next.js: 42ms, proxy.ts: 7ms, application-code: 696ms)
+[?25h

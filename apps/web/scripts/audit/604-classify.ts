@@ -228,10 +228,68 @@ async function livePolicies(client: Client, table: string, command: string): Pro
 
 // ---------------------------------------------------------------------------
 
+/**
+ * quick-606 (additive) — the four inputs and the output directory, each
+ * overridable. EVERY DEFAULT IS UNCHANGED, so `npx tsx 604-classify.ts` with no
+ * arguments still reads and rewrites exactly quick-604's artefacts and nothing
+ * else. quick-606 passes all five so that a later task's classification lands in
+ * that task's own evidence directory, correlated against its own server log —
+ * appending a later run to a closed task's evidence would corrupt byte offsets
+ * already recorded elsewhere.
+ */
+function argPath(flag: string, fallback: string): string {
+  const i = process.argv.indexOf(flag);
+  return i >= 0 && process.argv[i + 1] ? resolve(process.argv[i + 1]) : fallback;
+}
+function argStr(flag: string, fallback: string): string {
+  const i = process.argv.indexOf(flag);
+  return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
+}
+
+/**
+ * `--surfaces606` writes `rows` with a `verdict606` of
+ * `pass | fail | LATENT | NOT_MEASURED | not-reachable`; `--surfaces` writes
+ * `entries` with a `verdict`. Normalised HERE rather than in the harness, so the
+ * harness keeps one vocabulary and the classifier keeps one input shape.
+ *
+ * `LATENT` and `NOT_MEASURED` are **not failures** and are deliberately NOT
+ * mapped onto one — but they are not passes either, and folding them into `pass`
+ * here would hide exactly what R3 exists to surface. They map to their own
+ * verdict string, which the failure filter below simply does not match.
+ */
+function normaliseEntries(doc: any): any[] {
+  if (Array.isArray(doc?.entries)) return doc.entries;
+  if (Array.isArray(doc?.rows)) {
+    return doc.rows.map((r: any) => ({
+      ...r,
+      verdict: r.verdict606 ?? r.verdict,
+      label: r.label ?? `606:${r.id}`,
+    }));
+  }
+  return [];
+}
+
 async function main() {
-  const click = JSON.parse(readFileSync(resolve(EVIDENCE_DIR, '04-click-through.json'), 'utf8'));
-  const writes = JSON.parse(readFileSync(resolve(EVIDENCE_DIR, '05-writes.json'), 'utf8'));
-  const log = readFileSync(SERVER_LOG, 'utf8');
+  const clickPath = argPath('--in', resolve(EVIDENCE_DIR, '04-click-through.json'));
+  const writesPath = argPath('--writes', resolve(EVIDENCE_DIR, '05-writes.json'));
+  const logPath = argPath('--log', SERVER_LOG);
+  const outDir = argPath('--out', EVIDENCE_DIR);
+  const prefix = argStr('--prefix', '06-classification');
+
+  const clickDoc = JSON.parse(readFileSync(clickPath, 'utf8'));
+  const click = { entries: normaliseEntries(clickDoc) };
+  /**
+   * A run with no write-path artefact passes `--writes none`. The write half of
+   * the derived failure count is then ZERO BY ABSENCE, which is stated in the
+   * output rather than silently assumed — a task that ran no write probes and a
+   * task whose write probes all passed produce the same number, and only one of
+   * them is evidence.
+   */
+  const writes =
+    writesPath.endsWith('none') || !existsSync(writesPath)
+      ? { entries: [] as any[], absent: true }
+      : { ...JSON.parse(readFileSync(writesPath, 'utf8')), absent: false };
+  const log = readFileSync(logPath, 'utf8');
   const countdown = JSON.parse(readFileSync(COUNTDOWN, 'utf8')) as {
     generatedAt: string;
     totals: Record<string, number>;
@@ -354,6 +412,14 @@ async function main() {
     task: 'quick-604',
     phase: 'classification',
     at: new Date().toISOString(),
+    // quick-606 (additive): what this run actually read, so a classification can
+    // never be mistaken for one taken over different inputs.
+    inputs: {
+      click: clickPath,
+      writes: writes.absent ? 'ABSENT — no write-path artefact was supplied for this run' : writesPath,
+      log: logPath,
+    },
+    entriesConsidered: click.entries.length,
     countdownGeneratedAt: countdown.generatedAt,
     countdownTotals: countdown.totals,
     counts,
@@ -374,8 +440,8 @@ async function main() {
       })),
   };
 
-  writeFileSync(resolve(EVIDENCE_DIR, '06-classification.json'), JSON.stringify(record, null, 2) + '\n');
-  writeFileSync(resolve(EVIDENCE_DIR, '06-classification.md'), render(record));
+  writeFileSync(resolve(outDir, `${prefix}.json`), JSON.stringify(record, null, 2) + '\n');
+  writeFileSync(resolve(outDir, `${prefix}.md`), render(record));
 
   for (const c of CATEGORIES) console.log(`  ${c.padEnd(24)} ${counts[c]}`);
   console.log(`  ${'SUM'.padEnd(24)} ${sum}`);

@@ -10,5 +10,29 @@
       "total": 22,
       "app_user": 0
     }
+  },
+  {
+    "label": "606-after-server-stopped",
+    "at": "2026-09-15T19:02:58.400Z",
+    "staging": {
+      "total": 17,
+      "app_user": 1
+    },
+    "production": {
+      "total": 20,
+      "app_user": 0
+    }
+  },
+  {
+    "label": "606-final-server-up",
+    "at": "2026-09-15T19:03:18.612Z",
+    "staging": {
+      "total": 17,
+      "app_user": 1
+    },
+    "production": {
+      "total": 20,
+      "app_user": 0
+    }
   }
 ]
