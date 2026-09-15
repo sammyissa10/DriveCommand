@@ -211,9 +211,25 @@ $transaction callbacks   : 237   <- anti-vacuity counter
 | gate | result |
 |---|---|
 | `npx tsc --noEmit` | **clean**, and **PROBED** — injected `const x: number = 'y'` reported as `TS2322` in the file edited, then removed |
-| `npm run build` | see §closing |
-| new guard | 6/6, both assertions witnessed RED |
-| vitest failing-FILE set | see §closing |
+| `npm run build` | **exit 0** |
+| new guard | **6/6**, both assertions witnessed RED |
+| vitest, same reporter both directions | **failing-FILE set IDENTICAL** |
+
+```
+BEFORE (clean tree, 94c9c472, before any edit)   2123 tests · 2004 passed · 64 failed · 52 pending · 25 files
+FINAL  (after the last commit)                   2129 tests · 2010 passed · 64 failed · 52 pending · 25 files
+```
+
+`diff` of the two failing-file lists is empty; `failed` identical at 64. The `+6` passing tests are
+this task's new guard, and nothing else moved.
+
+### Staging at close
+
+```
+QUICK611 leftover carrier_drivers = 0   |   Tenant=2   policies=183   bypass_rls_policy=86
+```
+
+No probe row survived, no tenant was created, no policy added, widened or dropped.
 
 ---
 
