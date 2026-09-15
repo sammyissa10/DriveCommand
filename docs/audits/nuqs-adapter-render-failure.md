@@ -368,3 +368,146 @@ the first `tsc` run after deleting `(dev)/layout.tsx` reported a single error in
 `.next/types/validator.ts` — a Next-generated file left behind by the earlier `npm run build`, still
 referencing the deleted layout. Removing `apps/web/.next` and `tsconfig.tsbuildinfo` and re-running
 gave the clean result above.
+
+---
+
+## 6. The AFTER verdicts
+
+Same harness, same fixtures, same rows, same criterion — the literal string `nuqs requires an adapter`
+in the full body or the correlated log slice. `apps/web/.next` was deleted and the dev server restarted
+before measuring, because swapping files under a running Turbopack reports correct work as missing.
+
+**Every row is its own verdict, beside its BEFORE verdict. There is no summary row.**
+
+| route | BEFORE | AFTER | AFTER `nuqs requires an adapter` | grid branch actually taken? |
+|---|---|---|---|---|
+| `/carrier/driver-pay/settlements` | 500 **BROKEN** | **200** | **no** | yes — `SettlementListTable` is unconditional |
+| `/checklists/automation` | 500 **BROKEN** | **200** | **no** | yes — `CustomRulesTable` is unconditional |
+| `/docs/features` | 500 **BROKEN** | **200** | **no** | yes — unconditional |
+| `/docs/database/[model]` (`Tenant`) | 500 **BROKEN** | **200** | **no** | yes — unconditional |
+| `/carrier/driver-pay/reports?tab=settlement-history` | 500 **BROKEN** | **200** | **no** | yes — `SettlementHistoryReport` has no data gate |
+| `/carrier/driver-pay/reports` (default tab) | 200 **LATENT** | **200** | **no** | **yes — exercised, see below** |
+| `/carrier/driver-pay/reports/[driverId]` | 200 **LATENT** | **200** | **no** | **yes — exercised, see below** |
+| `/carrier/imports/[id]/stops` | **NOT_MEASURED** | **NOT_MEASURED** | — | no request issued; staging still holds zero `document_imports` rows |
+
+`/carrier/imports/[id]/stops` is recorded as unchanged deliberately. **The fix does not make an empty
+table non-empty**, and reporting a `not-reachable` row as fixed would be exactly the kind of claim §4
+is about. Its static position — the barrel-only edge of §2 — is unchanged too.
+
+### The two LATENT rows were EXERCISED, not assumed
+
+A LATENT row measured a second time on the same empty database proves nothing, so the branch was woken
+for real. **One `driver_settlements` row was seeded on STAGING** — tenant `staging-alpha`, its own
+`carrier_driver`, period yesterday→today, `status = 'PAID'`, `notes = '605-latent-probe'` — the sweep
+was re-run, and the row was then deleted with a counter-read asserting the table is back to **zero**
+rows. (The first attempt used `status = 'FINALIZED'`, which wakes the per-driver page but not the
+overview: `countedSettlementsWhere`'s `payroll_out` scope is `['PAID']` only, while `approved` is
+`['FINALIZED','PAID']`. Recorded because it is the difference between the two gates.)
+
+With that row present, the empty-state markers flip and the verdicts hold:
+
+| route | empty-state sentence in body, empty DB | …with one PAID settlement | AFTER status | `nuqs requires an adapter` |
+|---|---|---|---|---|
+| `/carrier/driver-pay/reports` | **present** | **absent** — the grid rendered | 200 | no |
+| `/carrier/driver-pay/reports/[driverId]` | **present** | **absent** — `SettlementsYtdTable` rendered | 200 | no |
+
+### The LATENT claim was then proven by MEASUREMENT, not left as prose
+
+With that same row still seeded, the root mount was temporarily removed and the sweep re-run
+(`evidence/01-latent-proof-mount-removed.json`). `/carrier/driver-pay/reports/[driverId]` — which had
+answered **200** on the empty database, before the fix — answered **500** with
+`nuqs requires an adapter` in its log slice. **The "a LATENT row is not a safe row" claim in §3 is
+therefore a measurement here, not an inference.** The mount was restored immediately after and
+`git diff` on `src/app/layout.tsx` is empty against the committed fix.
+
+### A measurement that CONTRADICTS the plan, recorded rather than reconciled
+
+The same mount-removed, data-present run says `/carrier/driver-pay/reports` on its **default tab**
+answers **HTTP 200** — and the correlated log slice nevertheless carries:
+
+```
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementsTable (src\app\(owner)\carrier\driver-pay\reports\_components\SettlementsTable.tsx:243:53)
+ GET /carrier/driver-pay/reports 200 in 1935ms
+```
+
+The plan predicted a **500** on the default tab for a tenant with payroll data. **It is a 200 with a
+broken table region.** The mechanism is visible in the page's own source and is a real difference
+between the two rows, not an artefact of the instrument:
+
+- `reports/page.tsx:224` wraps `<SettlementsTable>` in `<Suspense fallback={<Skeleton …/>}>`. The shell
+  streams first and the status line is already committed as 200 by the time the deferred boundary
+  renders and throws; the table region is then replaced by the nearest error boundary.
+- `reports/page.tsx:274` renders `{tab === 'settlement-history' && <SettlementHistoryReport …/>}`
+  **with no Suspense**, so it throws before the shell flushes, and the response is HTTP 500.
+
+Two consequences, both worth keeping:
+
+1. **The defect on the default tab is real and is arguably worse than a 500, not better.** A 500 is
+   loud and an owner reports it. A 200 with a missing settlements table looks like "no settlements this
+   period" — which is what the empty state next to it says. The page fails quietly.
+2. **This is the concrete reason the sweep's authority is the log string and not the status code.**
+   Grading on status alone would have recorded that row as passing in both directions and reported a
+   narrower blast radius than the one that exists.
+
+Corrected count, superseding the last paragraph of §3: **five routes were outright HTTP 500 for every
+tenant** (four on first paint, one on an explicit tab), **one renders a silently broken table region for
+any tenant with payroll activity in the period**, **one 500s for any tenant with settlements for that
+driver**, and one is unmeasured. Six live failures, not two — but one of them wears a 200.
+
+---
+
+## 7. Build and suite deltas
+
+### `npm run build`
+
+Exits **0** after the fix. Route markers compared entry by entry against
+`evidence/02-build-before.log`:
+
+| | before | after |
+|---|---|---|
+| entries in the route table | 443 | 443 |
+| entries whose rendering marker changed | — | **0** |
+
+Wrapping the tree in a client provider is exactly the kind of change that can flip a static route to
+dynamic. Nothing moved. (`(dev)` had no route to lose — it contained only the layout.)
+
+### vitest
+
+Measured in the **main tree**, not a `git worktree` — a worktree does not carry the untracked
+`apps/web/.env.local`, and the DB-dependent tests then move between passed and pending, which reads
+exactly like a regression (quick-567). The baseline was taken by checking the touched source files back
+to `49bf351d`, the commit before this task, then restoring them. `next dev` was stopped before both
+runs. **Same reporter on both sides** (`--reporter=json`; `--reporter=basic` does not exist in vitest 4
+and exits 0 having run zero tests).
+
+| | tests | passed | failed | pending | failing FILES |
+|---|---|---|---|---|---|
+| before (`49bf351d` source) | 2086 | 1967 | 64 | 52 | 18 |
+| after | 2086 | 1967 | 64 | 52 | 18 |
+
+**Failing-file set compared BY NAME: identical.** Zero files only in before, zero only in after.
+
+The quoted baseline of "~2086 tests / 64 failed / 18 failing files" was re-measured rather than
+trusted, and it matched.
+
+### One real regression was found this way, and it is worth recording
+
+The first AFTER run had **19** failing files — `tests/security/wrapper-migration-countdown.test.ts`
+was red and had been green in the baseline. It is a direct consequence of deleting
+`src/app/(dev)/layout.tsx`: that test compares a live scan against the committed artefact
+`scripts/audit/wrapper-countdown.json`, and one fewer file in the tree is one fewer file scanned.
+
+```
+- "filesScanned": 1691,
++ "filesScanned": 1690,
+```
+
+The artefact was regenerated with `npm run audit:wrapper-countdown`, and **the entire diff is that line
+plus the `generatedAt` timestamp.** `unmigratedUnits` (456), `unmigratedCallSites` (459),
+`filesWithUnmigratedUnits` (202) and `withTenantContextCallSites` (0) are unchanged, so this is
+bookkeeping for a deleted file and not a countdown moving. Stated explicitly, because "regenerate the
+artefact until the test is green" is the shape of weakening a guard, and the check that it is not is
+that the guarded number did not move.

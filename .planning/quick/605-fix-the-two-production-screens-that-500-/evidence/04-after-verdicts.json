@@ -1,0 +1,214 @@
+{
+  "task": "quick-605",
+  "phase": "nuqs-surfaces",
+  "artefact": "04-after-verdicts.json",
+  "at": "2026-09-15T17:07:48.646Z",
+  "base": "http://localhost:3000",
+  "authority": "the literal string `nuqs requires an adapter` in the full body or the correlated log slice — NOT the HTTP status",
+  "dynamicSegments": {
+    "__DRIVER_ID__": {
+      "value": "7e0bd11b-0002-4fd3-8814-1e3cc64882e7",
+      "reason": "staging carrier_drivers.id scoped to OWNER_A's tenant"
+    },
+    "__IMPORT_ID__": {
+      "value": null,
+      "reason": "public.document_imports holds ZERO rows for OWNER_A's tenant on staging (0 row(s) tenant-wide) — no id to substitute"
+    },
+    "__MODEL__": {
+      "value": "Tenant",
+      "reason": "first `model` block in apps/web/prisma/schema.prisma"
+    }
+  },
+  "sessions": [
+    {
+      "role": "OWNER_A",
+      "email": "owner@alpha.staging.test"
+    },
+    {
+      "role": "SYSADMIN",
+      "email": "sysadmin@staging.test"
+    }
+  ],
+  "entries": [
+    {
+      "surface": "/carrier/driver-pay/settlements",
+      "label": "nuqs:(owner)",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        1339,
+        1495
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false
+      },
+      "route": "/carrier/driver-pay/settlements",
+      "routeGroup": "(owner)",
+      "nuqsMarker": false
+    },
+    {
+      "surface": "/checklists/automation",
+      "label": "nuqs:(owner)",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        1495,
+        1596
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false
+      },
+      "route": "/checklists/automation",
+      "routeGroup": "(owner)",
+      "nuqsMarker": false
+    },
+    {
+      "surface": "/carrier/driver-pay/reports",
+      "label": "nuqs:(owner)",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200 — the DEFAULT tab — `overview`. Line 122 of the page replaces the whole content block with an empty state when the period has no payroll, so on staging this row does not render a grid at all.",
+      "sqlstate": null,
+      "logByteRange": [
+        1596,
+        1699
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false,
+        "emptyStateShown": true
+      },
+      "route": "/carrier/driver-pay/reports",
+      "routeGroup": "(owner)",
+      "nuqsMarker": false,
+      "emptyStateShown": true
+    },
+    {
+      "surface": "/carrier/driver-pay/reports?tab=settlement-history",
+      "label": "nuqs:(owner)",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200 — the same page with an explicit tab, so `SettlementHistoryReport` — a `useDataGrid` consumer — renders regardless of whether staging has payroll data. This row, not the default one, is the measurement of the grid.",
+      "sqlstate": null,
+      "logByteRange": [
+        1699,
+        1826
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false
+      },
+      "route": "/carrier/driver-pay/reports?tab=settlement-history",
+      "routeGroup": "(owner)",
+      "nuqsMarker": false
+    },
+    {
+      "surface": "/carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7",
+      "label": "nuqs:(owner)",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200 — its `SettlementsYtdTable` grid sits behind `settlements.length === 0` at line 124 — the same shape as the `reports` overview tab, and a second data gate the plan did not anticipate.",
+      "sqlstate": null,
+      "logByteRange": [
+        1826,
+        1966
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false,
+        "emptyStateShown": true
+      },
+      "route": "/carrier/driver-pay/reports/[driverId]",
+      "routeGroup": "(owner)",
+      "nuqsMarker": false,
+      "emptyStateShown": true
+    },
+    {
+      "surface": "/carrier/imports/__IMPORT_ID__/stops",
+      "label": "nuqs:(owner)",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": null,
+      "verdict": "not-reachable",
+      "reason": "no request issued — public.document_imports holds ZERO rows for OWNER_A's tenant on staging (0 row(s) tenant-wide) — no id to substitute",
+      "sqlstate": null,
+      "logByteRange": [
+        1966,
+        1966
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "",
+      "markers": {
+        "nuqs": false
+      },
+      "route": "/carrier/imports/[id]/stops",
+      "routeGroup": "(owner)",
+      "nuqsMarker": false
+    },
+    {
+      "surface": "/docs/features",
+      "label": "nuqs:(admin)",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        1966,
+        2056
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false
+      },
+      "route": "/docs/features",
+      "routeGroup": "(admin)",
+      "nuqsMarker": false
+    },
+    {
+      "surface": "/docs/database/Tenant",
+      "label": "nuqs:(admin)",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        2056,
+        2179
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_0sadd83.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0439.pn._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "markers": {
+        "nuqs": false
+      },
+      "route": "/docs/database/[model]",
+      "routeGroup": "(admin)",
+      "nuqsMarker": false
+    }
+  ]
+}

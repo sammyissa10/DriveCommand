@@ -1,0 +1,157 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 1105ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+○ Compiling /sign-in/[[...sign-in]] ...
+ GET /sign-in 200 in 13.1s (next.js: 12.5s, proxy.ts: 61ms, application-code: 482ms)
+ GET /sign-in 200 in 1514ms (next.js: 1017ms, proxy.ts: 13ms, application-code: 484ms)
+ GET /sign-in 200 in 163ms (next.js: 89ms, proxy.ts: 4ms, application-code: 69ms)
+ POST /api/auth/login 200 in 4.1s (next.js: 2.2s, proxy.ts: 4ms, application-code: 1928ms)
+ POST /api/auth/login 200 in 432ms (next.js: 7ms, proxy.ts: 8ms, application-code: 417ms)
+○ Compiling /carrier/driver-pay/settlements ...
+ GET /carrier/driver-pay/settlements 200 in 6.4s (next.js: 3.2s, proxy.ts: 124ms, application-code: 3.0s)
+ GET /checklists/automation 200 in 1918ms (next.js: 1336ms, proxy.ts: 98ms, application-code: 484ms)
+ GET /carrier/driver-pay/reports 200 in 3.6s (next.js: 2.5s, proxy.ts: 109ms, application-code: 972ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 595ms (next.js: 12ms, proxy.ts: 102ms, application-code: 481ms)
+ GET /carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7 200 in 3.6s (next.js: 2.5s, proxy.ts: 116ms, application-code: 918ms)
+ GET /docs/features 200 in 3.1s (next.js: 2.7s, proxy.ts: 126ms, application-code: 309ms)
+ GET /docs/database/Tenant 200 in 4.5s (next.js: 2.7s, proxy.ts: 102ms, generate-params: 1431ms, application-code: 1708ms)
+ POST /api/auth/login 200 in 1706ms (next.js: 7ms, proxy.ts: 4ms, application-code: 1696ms)
+ POST /api/auth/login 200 in 529ms (next.js: 8ms, proxy.ts: 6ms, application-code: 516ms)
+ GET /carrier/driver-pay/settlements 200 in 2.4s (next.js: 14ms, proxy.ts: 111ms, application-code: 2.3s)
+ GET /checklists/automation 200 in 694ms (next.js: 15ms, proxy.ts: 214ms, application-code: 465ms)
+ GET /carrier/driver-pay/reports 200 in 1109ms (next.js: 6ms, proxy.ts: 205ms, application-code: 899ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 604ms (next.js: 12ms, proxy.ts: 128ms, application-code: 464ms)
+ GET /carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7 200 in 946ms (next.js: 32ms, proxy.ts: 112ms, application-code: 802ms)
+ GET /docs/features 200 in 311ms (next.js: 14ms, proxy.ts: 109ms, application-code: 188ms)
+ GET /docs/database/Tenant 200 in 1159ms (next.js: 45ms, proxy.ts: 123ms, generate-params: 10ms, application-code: 992ms)
+ POST /api/auth/login 200 in 1776ms (next.js: 3ms, proxy.ts: 3ms, application-code: 1769ms)
+ POST /api/auth/login 200 in 446ms (next.js: 7ms, proxy.ts: 6ms, application-code: 433ms)
+ GET /carrier/driver-pay/settlements 200 in 2.6s (next.js: 11ms, proxy.ts: 225ms, application-code: 2.3s)
+ GET /checklists/automation 200 in 886ms (next.js: 11ms, proxy.ts: 227ms, application-code: 649ms)
+ GET /carrier/driver-pay/reports 200 in 1150ms (next.js: 11ms, proxy.ts: 124ms, application-code: 1016ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 598ms (next.js: 11ms, proxy.ts: 132ms, application-code: 456ms)
+ GET /carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7 200 in 903ms (next.js: 23ms, proxy.ts: 114ms, application-code: 767ms)
+ GET /docs/features 200 in 347ms (next.js: 9ms, proxy.ts: 115ms, application-code: 223ms)
+ GET /docs/database/Tenant 200 in 1130ms (next.js: 49ms, proxy.ts: 157ms, generate-params: 16ms, application-code: 924ms)
+✓ Compiled in 1235ms
+ POST /api/auth/login 200 in 1950ms (next.js: 306ms, proxy.ts: 58ms, application-code: 1586ms)
+ POST /api/auth/login 200 in 448ms (next.js: 7ms, proxy.ts: 7ms, application-code: 434ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1366968431'
+}
+ GET /carrier/driver-pay/settlements 500 in 3.4s (next.js: 338ms, proxy.ts: 126ms, application-code: 2.9s)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at CustomRulesTable (src\app\(owner)\checklists\automation\_components\CustomRulesTable.tsx:175:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '2178125139'
+}
+ GET /checklists/automation 500 in 1304ms (next.js: 332ms, proxy.ts: 113ms, application-code: 858ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementsTable (src\app\(owner)\carrier\driver-pay\reports\_components\SettlementsTable.tsx:243:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1782397608'
+}
+ GET /carrier/driver-pay/reports 200 in 1935ms (next.js: 456ms, proxy.ts: 110ms, application-code: 1370ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementHistoryReport (src\app\(owner)\carrier\driver-pay\reports\_components\SettlementHistoryReport.tsx:314:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '838292847'
+}
+ GET /carrier/driver-pay/reports?tab=settlement-history 500 in 568ms (next.js: 10ms, proxy.ts: 101ms, application-code: 457ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementsYtdTable (src\app\(owner)\carrier\driver-pay\reports\[driverId]\_components\SettlementsYtdTable.tsx:160:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1934091775'
+}
+ GET /carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7 500 in 1841ms (next.js: 446ms, proxy.ts: 105ms, application-code: 1289ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at AdminFeaturesListPage (src\app\(admin)\docs\features\page.tsx:185:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '941979807'
+}
+ GET /docs/features 500 in 1076ms (next.js: 435ms, proxy.ts: 119ms, application-code: 521ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at FieldsTable (src\app\(admin)\docs\database\[model]\_components\FieldsTable.tsx:130:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '2595197967'
+}
+ GET /docs/database/Tenant 500 in 1639ms (next.js: 422ms, proxy.ts: 120ms, generate-params: 5ms, application-code: 1097ms)
+✓ Compiled in 633ms
+[?25h
