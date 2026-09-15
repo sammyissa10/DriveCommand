@@ -1,0 +1,67 @@
+{
+  "task": "quick-604",
+  "at": "2026-09-15T10:13:58.483Z",
+  "counts": {
+    "users": 8,
+    "authUsers": 8,
+    "identities": 8
+  },
+  "logins": [
+    {
+      "email": "owner@beta.staging.test",
+      "expectedRole": "OWNER",
+      "expectedTenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "status": 200,
+      "hasAccessToken": true,
+      "jwtSub": "00dc04fb-dff5-441c-824b-d11c64d560af",
+      "jwtRole": "OWNER",
+      "jwtTenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "roleMatches": true,
+      "tenantMatches": true,
+      "subMatchesUserId": true,
+      "error": null
+    },
+    {
+      "email": "driver1@beta.staging.test",
+      "expectedRole": "DRIVER",
+      "expectedTenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "status": 200,
+      "hasAccessToken": true,
+      "jwtSub": "63f7cc69-8140-4290-afab-5a34bded0017",
+      "jwtRole": "DRIVER",
+      "jwtTenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "roleMatches": true,
+      "tenantMatches": true,
+      "subMatchesUserId": true,
+      "error": null
+    },
+    {
+      "email": "owner@alpha.staging.test",
+      "expectedRole": "OWNER",
+      "expectedTenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "status": 200,
+      "hasAccessToken": true,
+      "jwtSub": "d27660ff-feef-43dd-b22c-07ee74b9ee01",
+      "jwtRole": "OWNER",
+      "jwtTenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "roleMatches": true,
+      "tenantMatches": true,
+      "subMatchesUserId": true,
+      "error": null
+    },
+    {
+      "email": "driver1@alpha.staging.test",
+      "expectedRole": "DRIVER",
+      "expectedTenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "status": 200,
+      "hasAccessToken": true,
+      "jwtSub": "d606784c-9518-4fe1-a37e-449aaa8396f3",
+      "jwtRole": "DRIVER",
+      "jwtTenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "roleMatches": true,
+      "tenantMatches": true,
+      "subMatchesUserId": true,
+      "error": null
+    }
+  ]
+}
