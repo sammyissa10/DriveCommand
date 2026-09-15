@@ -1,0 +1,37 @@
+migration: 20260914180000_tenant_context_tripwire
+sha256 (LF bytes): bd90afb5c2233b7b50908b1df9fe18652a8edb09ddd96e6602d64b1253ab85b7
+current_tenant_id() proacl BEFORE: =X/postgres postgres=X/postgres anon=X/postgres authenticated=X/postgres service_role=X/postgres app_user=X/postgres
+policy BEFORE  Tag.tenant_isolation_policy USING ("tenantId" = current_tenant_id())
+policy BEFORE  TagAssignment.tenant_isolation_policy USING ("tenantId" = current_tenant_id())
+migration applied to staging (single transaction, committed)
+current_tenant_id() proacl AFTER:  =X/postgres postgres=X/postgres anon=X/postgres authenticated=X/postgres service_role=X/postgres app_user=X/postgres
+policy AFTER   Tag.tenant_isolation_policy cmd=* permissive=true USING ("tenantId" = current_tenant_id()) WITH CHECK (derived)
+policy AFTER   TagAssignment.tenant_isolation_policy cmd=* permissive=true USING ("tenantId" = current_tenant_id()) WITH CHECK (derived)
+EXECUTE on tenant_context_required(text): anon = false
+EXECUTE on tenant_context_required(text): app_user = true
+EXECUTE on tenant_context_required(text): authenticated = false
+EXECUTE on tenant_context_required(text): postgres = true
+EXECUTE on tenant_context_required(text): service_role = false
+current_tenant_id() AFTER:
+CREATE OR REPLACE FUNCTION public.current_tenant_id()
+ RETURNS uuid
+ LANGUAGE sql
+ STABLE
+AS $function$
+  SELECT COALESCE(
+    NULLIF(current_setting('app.current_tenant_id', TRUE), '')::uuid,
+    CASE WHEN COALESCE(current_setting('app.tenant_context_tripwire', TRUE), 'off') = 'on'
+         THEN public.tenant_context_required(current_setting('app.current_tenant_id', TRUE))
+         ELSE NULL::uuid END
+  );
+$function$
+
+SENTINEL visible before writing: YES — 20260914170000_activation_progress_congrats_shown_at
+ledger row INSERTed by hand (apply_migration/DDL does NOT write this — DEC-17)
+READ BACK — newest 3 ledger rows:
+  20260914180000_tenant_context_tripwire | steps=0 | logs="" | started=finished:true | checksum=bd90afb5c2233b7b50908b1df9fe18652a8edb09ddd96e6602d64b1253ab85b7
+  20260914170000_activation_progress_congrats_shown_at | steps=1 | logs=null | started=finished:false | checksum=manual
+  20260914160000_provisioning_under_app_user | steps=1 | logs=null | started=finished:false | checksum=manual
+HEAD IS OURS: true (expected 20260914180000_tenant_context_tripwire)
+checksum is a real SHA-256, not 'manual': true
+policies in public AFTER: 183

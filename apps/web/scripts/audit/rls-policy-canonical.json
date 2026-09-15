@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-14T20:08:05.734Z",
+  "generatedAt": "2026-09-15T05:16:04.182Z",
   "projectRef": "wyixpgunnjmzguhggocz",
-  "corpusHash": "d11f35e339f7d258519c465f24402f06976928e75299d4ff642a3e18cbca8212",
+  "corpusHash": "aaf0f4d2845d1f408968981d2f1d363a8b5b3c27f15ddde6c1859fdb366e82cd",
   "definitionCount": 183,
   "canonicalisedCount": 183,
   "notCanonicalised": [],
@@ -1443,7 +1443,7 @@
       "roles": [
         "public"
       ],
-      "using": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+      "using": "(\"tenantId\" = current_tenant_id())",
       "withCheck": null
     },
     "TagAssignment.bypass_rls_policy": {
@@ -1461,7 +1461,7 @@
       "roles": [
         "public"
       ],
-      "using": "((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))",
+      "using": "(\"tenantId\" = current_tenant_id())",
       "withCheck": null
     },
     "Tenant.bypass_rls_policy": {

@@ -989,6 +989,29 @@ function writeEvidence(phase: string, extra: Record<string, unknown>) {
     case '--baseline':
       await phaseBaseline();
       break;
+    case '--recheck': {
+      // Same survey as --baseline, written under a caller-chosen evidence name, so
+      // the baseline evidence is never overwritten by a later confirmation run.
+      const outName = (process.argv.find((a) => a.startsWith('--out=')) ?? '--out=recheck').slice(6);
+      const staging = new Client({ connectionString: DIRECT_URL });
+      await staging.connect();
+      await staging.query('BEGIN READ ONLY');
+      const res: Record<string, unknown> = { staging: await surveyDatabase(staging, 'staging') };
+      await staging.query('ROLLBACK');
+      await staging.end();
+      const prodUrl = productionReadOnlyUrl();
+      if (prodUrl) {
+        const production = new Client({ connectionString: prodUrl });
+        await production.connect();
+        await production.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+        await production.query('BEGIN READ ONLY');
+        res.production = await surveyDatabase(production, 'production');
+        await production.query('ROLLBACK');
+        await production.end();
+      }
+      writeEvidence(outName, res);
+      break;
+    }
     case '--mechanism':
       await phaseMechanism();
       break;

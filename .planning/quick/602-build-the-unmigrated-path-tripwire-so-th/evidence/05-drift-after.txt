@@ -1,0 +1,25 @@
+  Policies live            : 183
+  Missing (expected−live)  : 0
+  Unexpected (live−expect) : 0
+
+MISSING: none.
+
+UNEXPECTED: none.
+
+ZERO-POLICY TABLES (reported, not gating — Prompt 1 owns these):
+  FORCE RLS + zero policies (severe)     : none
+  RLS enabled, not forced, zero policies : _prisma_migrations
+
+BASELINE: none — this check has no suppression list.
+  Any missing or unexpected policy fails the run.
+
+DEFINITION LAYER (quick-598) — policy BODIES, not just names:
+  Canonical artefact hash  : aaf0f4d2845d1f408968981d2f1d363a8b5b3c27f15ddde6c1859fdb366e82cd
+  Corpus hash (from disk)  : aaf0f4d2845d1f408968981d2f1d363a8b5b3c27f15ddde6c1859fdb366e82cd
+  Policies compared        : 183
+  Definition drift         : 0
+
+  NOT CANONICALISED (live, no canonical entry — body unchecked): none
+
+========================================================================
+RESULT: CLEAN (exit 0) — repo and database agree on policy NAMES and BODIES.
