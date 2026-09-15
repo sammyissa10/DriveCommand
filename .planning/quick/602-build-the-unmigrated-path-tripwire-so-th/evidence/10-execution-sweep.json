@@ -1,0 +1,367 @@
+{
+  "generatedAt": "2026-09-15T05:35:41.549Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "assertions": [
+    "SAFETY: outbound email/push variables absent: YES",
+    "SAFETY: application pool connected as app_user / postgres (rolbypassrls=false)",
+    "SAFETY: tripwire flag on the application connection reads \"on\"",
+    "SAFETY: row-count snapshot taken over 16 tables",
+    "ENUMERATION: 14 directories under src/app/api/cron — equality assertion vs 14: PASS",
+    "FIXTURE: tenant 9034f751-31dc-456e-94ea-4b04a86c7176",
+    "SAFETY: row-count changes across the sweep: NONE",
+    "SAFETY: after the sweep, a fresh app_user connection reads the tripwire flag as null"
+  ],
+  "counts": {
+    "RAISED_TC001": 12,
+    "COMPLETED": 8,
+    "OTHER_FAILURE": 4,
+    "invokedTotal": 24,
+    "NOT_INVOKED": 1
+  },
+  "rows": [
+    {
+      "name": "api/cron/auto-close-tickets/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "getAdminDb",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "HTTP 500 {\"success\":false,\"error\":\"PrismaClientKnownRequestError: \\nInvalid `prisma.$queryRaw()` invocation:\\n\\n\\nRaw query failed. Code: `TC001`. Message: `tenant context is required: app.current_tenant_id is the EMPTY STRING`\"} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: \n      SELECT st.id, st.\"ticketNumber\"\n      FROM \"SupportTicket\" st\n      WHERE st.status = 'RESOLVED'\n        AND st.\"updatedAt\" < $1\n        AND NOT EXISTS (\n          SELECT 1 FROM \"TicketMessage\" tm\n          WHERE tm.\"ticketId\" = st.id\n            AND tm.\"senderType\" = 'OWNER'\n            AND tm.\"createdAt\" > $2\n        )\n    ",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/automations/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "getTenantPrisma*",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "HTTP 500 {\"ok\":false,\"error\":\"tenant context is required: app.current_tenant_id is the EMPTY STRING\"} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"AutomationRule\".\"id\", \"public\".\"AutomationRule\".\"isActive\" FROM \"public\".\"AutomationRule\" WHERE (\"public\".\"AutomationRule\".\"key\" = $1 AND 1=1) LIMIT $2 OFFSET $3",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/carrier-auto-dispatch/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "app.bypass_rls + after()",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "HTTP 500 {\"success\":false,\"error\":\"Failed to fetch tenants\"} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"Tenant\".\"id\", \"public\".\"Tenant\".\"name\" FROM \"public\".\"Tenant\" WHERE (\"public\".\"Tenant\".\"isActive\" = $1 AND EXISTS(SELECT \"t0\".\"org_id\" FROM \"public\".\"route_templates\" AS \"t0\" WHERE (\"t0\".\"active\" = $2 AND (\"public\".\"Tenant\".\"id\") = (\"t0\".\"org_id\") AND \"t0\".\"org_id\" IS NOT NULL))) OFFSET $3",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/carrier-compliance-alerts/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "app.bypass_rls",
+      "verdict": "COMPLETED",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "HTTP 500 {\"success\":false,\"error\":\"Failed to initialize log table\"}"
+    },
+    {
+      "name": "api/cron/cleanup-quarantine/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "no DB import",
+      "verdict": "OTHER_FAILURE",
+      "dbTouched": false,
+      "queries": 0,
+      "error": {
+        "message": "S3_BUCKET environment variable is required"
+      }
+    },
+    {
+      "name": "api/cron/digest-compliance-30day/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "app.bypass_rls + getAdminDb",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 2,
+      "detail": "HTTP 200 {\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"User\".\"id\", \"public\".\"User\".\"email\", \"public\".\"User\".\"firstName\" FROM \"public\".\"User\" WHERE (\"public\".\"User\".\"tenantId\" = $1 AND \"public\".\"User\".\"tenantId\" = $2 AND \"public\".\"User\".\"role\" = CAST($3::text AS \"public\".\"UserRole\") AND \"public\".\"User\".\"isActive\" = $4) OFFSET $5",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/digest-daily-driver/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "app.bypass_rls + getAdminDb",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 2,
+      "detail": "HTTP 200 {\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"User\".\"id\", \"public\".\"User\".\"email\", \"public\".\"User\".\"firstName\" FROM \"public\".\"User\" WHERE (\"public\".\"User\".\"tenantId\" = $1 AND \"public\".\"User\".\"tenantId\" = $2 AND \"public\".\"User\".\"role\" = CAST($3::text AS \"public\".\"UserRole\") AND \"public\".\"User\".\"isActive\" = $4) OFFSET $5",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/digest-weekly-owner/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "app.bypass_rls + getAdminDb",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 2,
+      "detail": "HTTP 200 {\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":0,\"failed\":2} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"User\".\"id\", \"public\".\"User\".\"email\", \"public\".\"User\".\"firstName\" FROM \"public\".\"User\" WHERE (\"public\".\"User\".\"tenantId\" = $1 AND \"public\".\"User\".\"tenantId\" = $2 AND \"public\".\"User\".\"role\" = CAST($3::text AS \"public\".\"UserRole\") AND \"public\".\"User\".\"isActive\" = $4) OFFSET $5",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/mark-overdue-invoices/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "getAdminDb",
+      "verdict": "COMPLETED",
+      "dbTouched": false,
+      "queries": 0,
+      "detail": "HTTP 200 {\"success\":true,\"markedOverdue\":0}"
+    },
+    {
+      "name": "api/cron/purge-deleted/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "bare prisma",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 7,
+      "detail": "HTTP 200 {\"success\":true,\"totalPurged\":0,\"results\":{\"CarrierLoad\":-1,\"Trip\":-1,\"CarrierContract\":-1,\"CarrierClient\":-1,\"CarrierDriver\":-1,\"CarrierTruck\":-1,\"Route\":-1}} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: DELETE FROM \"public\".\"loads\" WHERE (\"public\".\"loads\".\"deleted_at\" IS NOT NULL AND \"public\".\"loads\".\"deleted_at\" < $1)",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/send-reminders/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "getAdminDb",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 6,
+      "detail": "HTTP 200 {\"success\":true,\"processedTenants\":2,\"maintenance\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"documents\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"driverDocuments\":{\"sent\":0,\"skipped\":0,\"failed\":0}} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"ScheduledService\".\"id\", \"public\".\"ScheduledService\".\"tenantId\", \"public\".\"ScheduledService\".\"truckId\", \"public\".\"ScheduledService\".\"serviceType\", \"public\".\"ScheduledService\".\"intervalDays\", \"public\".\"ScheduledService\".\"intervalMiles\", \"public\".\"ScheduledService\".\"baselineDate\", \"public\".\"ScheduledService\".\"baselineOdometer\", \"public\".\"ScheduledService\".\"notes\", \"public\".\"ScheduledService\".\"isCompleted\", \"public\".\"ScheduledService\".\"completedAt\", \"public\".\"ScheduledService\".\"createdById\", \"public\".\"ScheduledService\".\"updatedById\", \"public\".\"ScheduledService\".\"createdAt\", \"public\".\"ScheduledService\".\"updatedAt\" FROM \"public\".\"ScheduledService\" WHERE (\"public\".\"ScheduledService\".\"tenantId\" = $1 AND \"public\".\"ScheduledService\".\"isCompleted\" = $2) OFFSET $3",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/trip-reminders/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "getTenantPrisma*",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "HTTP 500 {\"ok\":false,\"error\":\"Trip reminder run failed\"} | TC001 SWALLOWED by the route (detectedVia: driver rejection)",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"Tenant\".\"id\" FROM \"public\".\"Tenant\" WHERE \"public\".\"Tenant\".\"isActive\" = $1 OFFSET $2",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "api/cron/workflow-digest/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "app.bypass_rls + getAdminDb",
+      "verdict": "COMPLETED",
+      "dbTouched": false,
+      "queries": 0,
+      "detail": "HTTP 200 {\"ok\":true,\"tenantsSent\":0,\"tenantsSkipped\":0,\"tenantsErrored\":0}"
+    },
+    {
+      "name": "api/cron/workflow-notifications/route.ts:GET",
+      "population": "cron (in-process)",
+      "mechanism": "getTenantPrisma* + getAdminDb",
+      "verdict": "COMPLETED",
+      "dbTouched": false,
+      "queries": 0,
+      "detail": "HTTP 200 {\"ok\":true,\"stats\":{\"overdueSent\":0,\"overdueErrors\":0,\"blockedEmailsSent\":0,\"blockedEmailErrors\":0}}"
+    },
+    {
+      "name": "lib/db/prisma.ts:prisma (bare client) — tag.count() with NO tenant context",
+      "population": "lib/ (expected-to-raise)",
+      "mechanism": "bare client / no tenant context",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "detectedVia: driver rejection",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"Truck\".\"id\", \"public\".\"Truck\".\"make\", \"public\".\"Truck\".\"model\", \"public\".\"Truck\".\"year\", \"public\".\"Truck\".\"documentMetadata\" FROM \"public\".\"Truck\" WHERE \"public\".\"Truck\".\"tenantId\" = $1 OFFSET $2",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "lib/db/prisma.ts:prisma (bare client) — appEvent.findMany() with NO tenant context",
+      "population": "lib/ (expected-to-raise)",
+      "mechanism": "bare client / no tenant context",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "detectedVia: driver rejection",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"AppEvent\".\"id\", \"public\".\"AppEvent\".\"tenantId\", \"public\".\"AppEvent\".\"userId\", \"public\".\"AppEvent\".\"eventType\", \"public\".\"AppEvent\".\"properties\", \"public\".\"AppEvent\".\"createdAt\" FROM \"public\".\"AppEvent\" WHERE 1=1 ORDER BY \"public\".\"AppEvent\".\"id\" ASC LIMIT $1 OFFSET $2",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "lib/auth/supabase.ts:getCurrentUser()",
+      "population": "lib/ (expected-to-raise)",
+      "mechanism": "bare client / no tenant context",
+      "verdict": "OTHER_FAILURE",
+      "dbTouched": false,
+      "queries": 0,
+      "error": {
+        "message": "`cookies` was called outside a request scope. Read more: https://nextjs.org/docs/messages/next-dynamic-api-wrong-context"
+      }
+    },
+    {
+      "name": "lib/notifications/dispatcher.ts:dispatchNotification(tenantId, …) — explicit tenantId, BARE client",
+      "population": "lib/ (expected-to-raise)",
+      "mechanism": "bare client / no tenant context",
+      "verdict": "OTHER_FAILURE",
+      "dbTouched": false,
+      "queries": 0,
+      "error": {
+        "message": "Cannot read properties of undefined (reading 'prismaClient')"
+      }
+    },
+    {
+      "name": "lib/automations/evaluator.ts:runEvaluator()",
+      "population": "lib/ (expected-to-raise)",
+      "mechanism": "bare client / no tenant context",
+      "verdict": "RAISED_TC001",
+      "dbTouched": true,
+      "queries": 1,
+      "detail": "detectedVia: driver rejection",
+      "tc001": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT \"public\".\"AppEvent\".\"id\", \"public\".\"AppEvent\".\"tenantId\", \"public\".\"AppEvent\".\"userId\", \"public\".\"AppEvent\".\"eventType\", \"public\".\"AppEvent\".\"properties\", \"public\".\"AppEvent\".\"createdAt\" FROM \"public\".\"AppEvent\" WHERE \"public\".\"AppEvent\".\"createdAt\" > $1 ORDER BY \"public\".\"AppEvent\".\"createdAt\" ASC OFFSET $2",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "name": "app/api/auth/login/route.ts:POST",
+      "population": "lib/ (expected-to-raise)",
+      "mechanism": "bare client / no tenant context",
+      "verdict": "COMPLETED",
+      "dbTouched": false,
+      "queries": 0,
+      "detail": "HTTP 500 {\"error\":\"An error occurred during login\"}"
+    },
+    {
+      "name": "lib/onboarding/onboarding-flags.ts:getOnboardingFlags(tenantId)",
+      "population": "lib/ (must-not-raise)",
+      "mechanism": "acquires a tenant client",
+      "verdict": "COMPLETED",
+      "dbTouched": true,
+      "queries": 7,
+      "detail": "{\"hasClient\":false,\"hasContract\":false,\"hasLoad\":false,\"hasTrip\":false}"
+    },
+    {
+      "name": "lib/onboarding/hydrate-tenant.ts:hydrateTenant(tenantId)",
+      "population": "lib/ (must-not-raise)",
+      "mechanism": "acquires a tenant client",
+      "verdict": "OTHER_FAILURE",
+      "dbTouched": true,
+      "queries": 5,
+      "error": {
+        "code": "P2025",
+        "message": "\nInvalid `tx.user.findFirstOrThrow()` invocation in\nC:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\src\\lib\\onboarding\\hydrate-tenant.ts:29:37\n\n  26 const { tenant, ownerUser } = await prisma.$transaction(async (tx) => {\n  27   await setTransactionTenantId(tx, tenantId);\n  28   const tenant = await tx.tenant.findUniqueOrThrow({ where: { id: tenantId } });\n→ 29   const ownerUser = await tx.user.findF"
+      }
+    },
+    {
+      "name": "lib/onboarding/confirm-tenant-email.ts:confirmTenantEmail(tenantId)",
+      "population": "lib/ (must-not-raise)",
+      "mechanism": "acquires a tenant client",
+      "verdict": "COMPLETED",
+      "dbTouched": true,
+      "queries": 4,
+      "detail": "status=already-confirmed"
+    },
+    {
+      "name": "lib/context/tenant-context.ts:getTenantPrismaForOrg(tenantId) + a model read",
+      "population": "lib/ (must-not-raise)",
+      "mechanism": "acquires a tenant client",
+      "verdict": "COMPLETED",
+      "dbTouched": true,
+      "queries": 4,
+      "detail": "tag.count=1"
+    }
+  ],
+  "notInvoked": [
+    {
+      "name": "api/cron/carrier-auto-dispatch/route.ts:GET — the after()-DEFERRED half",
+      "population": "cron",
+      "mechanism": "after()",
+      "verdict": "NOT_INVOKED",
+      "reason": "called outside the Next request lifecycle, after() may throw or no-op; whatever it defers is not executed by an in-process call. The route row above covers its SYNCHRONOUS body only."
+    }
+  ],
+  "rowCounts": {
+    "before": {
+      "CarrierLoad": -1,
+      "Trip": -1,
+      "CarrierContract": -1,
+      "CarrierClient": -1,
+      "CarrierDriver": -1,
+      "CarrierTruck": -1,
+      "Route": 0,
+      "Load": 0,
+      "Invoice": 0,
+      "SupportTicket": 0,
+      "SysAdminInvoice": 0,
+      "Tenant": 2,
+      "User": 0,
+      "in_app_notifications": 0,
+      "audit_log": 0,
+      "Tag": 2
+    },
+    "after": {
+      "CarrierLoad": -1,
+      "Trip": -1,
+      "CarrierContract": -1,
+      "CarrierClient": -1,
+      "CarrierDriver": -1,
+      "CarrierTruck": -1,
+      "Route": 0,
+      "Load": 0,
+      "Invoice": 0,
+      "SupportTicket": 0,
+      "SysAdminInvoice": 0,
+      "Tenant": 2,
+      "User": 0,
+      "in_app_notifications": 0,
+      "audit_log": 0,
+      "Tag": 2
+    }
+  }
+}
