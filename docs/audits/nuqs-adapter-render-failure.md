@@ -161,3 +161,125 @@ this sweep actually establishes: **four routes are broken on first paint for eve
 (`settlements`, `automation`, `/docs/features`, `/docs/database/[model]` — the latter two never
 measured by any previous task), **two more are broken for any tenant that has payroll data**, and one
 is unmeasured. That is six live 500s, not two.
+
+---
+
+## 4. Why nothing caught it
+
+Four gates. Each is blind for a **different** structural reason, and a route-group-scoped provider is
+invisible to all four.
+
+### 4.1 `npm run build` — the `(owner)` pages
+
+`(owner)/layout.tsx:10` is `export const dynamic = 'force-dynamic'`, with the comment *"All owner-portal
+pages require auth — force dynamic rendering so Next.js never attempts static pre-rendering (which has
+no session context)."* That is correct and desirable; it is also, exactly, why the build cannot see
+this.
+
+`npm run build` exits **0**. All five `(owner)` routes in the trace print `ƒ` — *Dynamic —
+server-rendered on demand* — in the route table (`evidence/02-build-route-table.txt`). A route Next
+never renders is a route whose render-time throw Next never observes.
+
+**Verdict: structurally blind. `force-dynamic` guarantees it.**
+
+### 4.2 `npm run build` — the `(admin)` pages, which were the genuinely open question
+
+`(admin)/layout.tsx` has no `dynamic` export — grepped across the whole group, the only
+`force-dynamic` lines are on ten individual `(admin)` **pages**, and `(admin)/docs/` is not one of them.
+`(admin)/docs/features/page.tsx` is `'use client'` with no `dynamic` of its own. And
+`(admin)/docs/database/[model]/page.tsx` carries a **`generateStaticParams()`** at line 11 that returns
+one entry per Prisma model — the clearest possible signal that Next is meant to prerender it.
+
+It does not. Both print **`ƒ`** in the same route table.
+
+The hypothesis the plan offered is **confirmed, by following the call rather than asserting it**:
+`(admin)/layout.tsx:12` awaits `getSession()`; `getSession` (`lib/auth/supabase.ts:42`) dynamically
+imports and awaits `createSupabaseServerClient()`; `lib/supabase/server.ts:2` imports `cookies` from
+`next/headers` and `:5` does `await cookies()`. A `cookies()` read opts the whole segment out of
+prerendering, so the layout drags both docs pages dynamic regardless of what the pages themselves say.
+
+A consequence worth recording on its own: **`generateStaticParams` on `/docs/database/[model]` is dead
+code.** It cannot produce a prerendered page while its parent layout reads cookies.
+
+**Verdict: blind, and for a reason that is invisible in the page's own file — it lives two modules up
+the layout chain.**
+
+### 4.3 …and the honest headline, which is bigger than either
+
+The whole-table census from that same build:
+
+| marker | count |
+|---|---|
+| `ƒ` Dynamic | 437 |
+| `○` Static | 5 real routes (`/_not-found`, `/accept-invitation`, `/forgot-password`, `/reset-password`, `/unauthorized`) |
+| `●` SSG | **0** |
+
+Five prerendered pages in the entire application, **all of them auth-free**, and no SSG at all. Every
+route group that can hold a `useDataGrid` — `(owner)`, `(admin)`, `(driver)` — reads a session before
+it renders anything. So it is not that these seven pages happened to be dynamic: **no nuqs consumer in
+this repository can be prerendered under the current layout structure, and `npm run build` therefore
+cannot catch this class of defect at all.**
+
+One thing this build could not settle, stated rather than guessed: whether Next's prerender of a
+*genuinely static* client page executes hooks deeply enough to hit the context throw. There is no
+prerendered nuqs consumer to observe, and manufacturing one would be a product change outside this
+task's scope. The question is open; **the operational answer for this repository does not depend on it.**
+
+### 4.4 The three e2e specs — each came close, each was the wrong shape
+
+`grep -rn "driver-pay/settlements\|checklists/automation\|docs/features\|docs/database" apps/web/e2e/`
+returns **nothing**. Full working in `evidence/02-e2e-coverage.md`; the per-spec verdicts:
+
+- **`e2e/carrier/reports.spec.ts`** visits `/carrier/reports/aging|driver-pay|performance|revenue`
+  (`:13`, `:32`, `:72`, `:90`). **`/carrier/reports/driver-pay` is not `/carrier/driver-pay/reports`** —
+  two real directories, no redirect between them (`next.config.ts:19` contains exactly two redirects,
+  both `/carrier/dispatches*` → `/carrier/trips*`), and `grep` for `useDataGrid` under
+  `(owner)/carrier/reports/driver-pay/` returns nothing, so the page this spec visits is not a nuqs
+  consumer in the first place. **It was never near it**, despite looking one word away.
+- **`e2e/carrier/access.spec.ts`** asserts `expect(page.url()).not.toContain(...)` under a DRIVER
+  storage state (`:19`, `:25`, `:31`, `:37`, `:43`) and `toMatch(/\/login/)` anonymously (`:60`, `:69`,
+  `:78`). A redirect assertion never renders the page. Its one owner-authorised block (`:87`–`:107`)
+  reaches `/carrier/dashboard`, `/carrier/dispatches` and `/carrier/reports/driver-pay` — none a nuqs
+  consumer. **The route name appearing in a file is not coverage.**
+- **`e2e/owner/navigation-reachability.spec.ts`** does one `page.goto('/carrier/dashboard')` (`:96`),
+  reads the sidebar's `href` attributes, and asserts membership (`:106`). **It never navigates to a
+  destination.** And this is the spec whose header (`:4`–`:45`) documents seven consecutive phases that
+  reported a nav entry as wired when it was not — the repo's own convention from quick-566/567 being
+  that a nav claim is not done until a DOM query finds its link. **It proves the LINK, not the
+  DESTINATION.** Four of the routes on the other end of links like these answer HTTP 500, and a spec
+  built to stop "reported as wired, actually unreachable" cannot see unreachable-by-500.
+
+  Separately: the seven trace routes are not in `REQUIRED_SIDEBAR_HREFS` at all, because the sidebar
+  does not link them — they are reached from `/checklists` and from the Driver Pay pages. So even a
+  navigating version of this spec would not have reached them.
+
+**The suite is not excused by not running.** `.github/workflows/playwright.yml` runs the FULL chromium
+suite (`npx playwright test --project=chromium`, no `@smoke` filter) on every push and PR to `master`,
+and no spec file is skipped out of it — every `test.skip` in `e2e/` is data-conditional or a
+mobile-project guard, inside a test body. All the files involved are present on `origin/master`
+(tip `86d3a584`), so the branch the workflow watches has carried this defect. **Whether the workflow is
+currently green could not be read from this machine** — `gh` is unauthenticated here and I did not
+authenticate it; that is a stated limitation, not a pass. It does not change the answer, which is
+structural: no spec navigates to any of these routes as an authorised user.
+
+**Verdict: three near misses, three different shapes, zero coverage.**
+
+### 4.5 `tsc`
+
+A missing React context is a runtime error, not a type error. The type gate cannot see this by
+construction. `npx tsc --noEmit` is clean and always was.
+
+### 4.6 The shape that generalises
+
+Four gates, four different structural blind spots:
+
+| gate | why it is blind |
+|---|---|
+| `npm run build`, `(owner)` | `force-dynamic` — the page is never rendered at build |
+| `npm run build`, `(admin)` | a `cookies()` read two modules up the layout chain does the same thing implicitly, and kills a `generateStaticParams` on the way |
+| Playwright | no spec navigates to any of the routes as an authorised user; the one spec built to prove reachability proves links, not destinations |
+| `tsc` | a missing context is not a type |
+
+**A provider mounted in the wrong route group is invisible to all four.** It compiles, it type-checks,
+it builds, it has a plausible-looking mount you can grep for, and the only thing that fails is a render
+nobody automated. That is the class — not "we forgot to test these two pages".

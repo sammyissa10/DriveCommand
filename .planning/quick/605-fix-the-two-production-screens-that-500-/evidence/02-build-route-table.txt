@@ -1,0 +1,46 @@
+# quick-605 · 02 — the build route table (BEFORE the fix)
+
+`npm run build` in `apps/web`, **exit 0**, run with the STAGING environment exported.
+Production was never connected to. Full log: `02-build-before.log`.
+
+## The seven trace routes, with the marker Next printed for each
+
+| route | marker | meaning |
+|---|---|---|
+| `/carrier/driver-pay/settlements` | **ƒ** | Dynamic — server-rendered on demand |
+| `/checklists/automation` | **ƒ** | Dynamic — server-rendered on demand |
+| `/carrier/driver-pay/reports` | **ƒ** | Dynamic — server-rendered on demand |
+| `/carrier/driver-pay/reports/[driverId]` | **ƒ** | Dynamic — server-rendered on demand |
+| `/carrier/imports/[id]/stops` | **ƒ** | Dynamic — server-rendered on demand |
+| `/docs/features` | **ƒ** | Dynamic — server-rendered on demand |
+| `/docs/database/[model]` | **ƒ** | Dynamic — server-rendered on demand |
+
+All seven are `ƒ`. **The build never attempted to render any of them.**
+
+## Legend, quoted verbatim from the build output
+
+```
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+```
+
+Note what is NOT in the legend: there is no `●  (SSG)` line, because **this build produced zero
+SSG routes.**
+
+## Whole-table marker census
+
+| marker | count |
+|---|---|
+| ƒ (Dynamic) | 437 |
+| ○ (Static) | 6 (five real routes plus the legend line) |
+| ● (SSG) | 0 |
+
+The five genuinely prerendered pages, all of them auth-free:
+
+```
+/_not-found
+/accept-invitation
+/forgot-password
+/reset-password
+/unauthorized
+```
