@@ -5,6 +5,18 @@ setDefaultResultOrder('ipv4first');
 import { PrismaClient } from '../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { shouldArmTripwire } from './tripwire-arm';
+
+/**
+ * TRIPWIRE ARMING (quick-604). Evaluated ONCE at module scope, not per
+ * connection. `shouldArmTripwire` arms only when DATABASE_URL names the STAGING
+ * project AND TENANT_CONTEXT_TRIPWIRE is exactly `on` — so this is `false` on
+ * production by construction, whatever the flag says. See tripwire-arm.ts.
+ */
+const ARM_TRIPWIRE = shouldArmTripwire(
+  process.env.DATABASE_URL,
+  process.env.TENANT_CONTEXT_TRIPWIRE,
+);
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient;
@@ -71,6 +83,21 @@ if (globalForPrisma.pool) {
       // so an init failure here is non-fatal.
       console.warn('[prisma] pool connect set_config init failed:', err?.message ?? err);
     });
+
+    // Order matters: the tenant-GUC initialiser above first, the arm second.
+    // Session scope (`false`) because Supavisor session mode holds the backend
+    // for the connection's life and the flag must outlive each statement.
+    // ARM_TRIPWIRE is false on production by construction (see tripwire-arm.ts),
+    // so this branch is unreachable there.
+    if (ARM_TRIPWIRE) {
+      client
+        .query("SELECT set_config('app.tenant_context_tripwire', 'on', false)")
+        .catch((err) => {
+          // An arm failure must never crash a request — exactly as the tenant-GUC
+          // init above is caught.
+          console.warn('[prisma] tripwire arm failed:', err?.message ?? err);
+        });
+    }
   });
   globalForPrisma.pool = pool;
 }
