@@ -81,6 +81,21 @@ this migration.
 > migration was written** — quick-604 measures and does not fix. See
 > `staging-app-user-end-to-end.md` §7e.
 
+> **CLOSED 2026-09-15 (quick-606).** All five columns were added to staging by
+> `20260915120000_document_column_drift_staging_parity`, with production's verbatim types read off
+> `information_schema.columns` first (all five nullable, no default) — so the committed file is a
+> proven no-op when `migrate.mjs` applies it to production on the next deploy. The two indexes and
+> the FK that depend on those columns went with them, all `IF NOT EXISTS` or guarded on
+> `pg_constraint`.
+>
+> **The drift is not symmetric, and the remaining half runs the other way.** Staging carries four
+> columns production does NOT — `createdBy`, `deletedBy`, `deletedAt`, `updatedBy` — and **no Prisma
+> model declares any of them**. `Document` has no `deletedAt` in `schema.prisma`, so a query written
+> against it succeeds on staging and fails on production. Production also carries
+> `Document_driverId_idx`, which staging lacks although the column exists on both. Not touched:
+> dropping a column is irreversible and nothing measured requires it. See
+> `app-user-failure-remediation.md` §6 and §8 item 10.
+
 ### Scope is not yet known
 
 This is the **first** failure, at position 38 of 141. Whether more gaps sit

@@ -1,0 +1,133 @@
+{
+  "task": "quick-606",
+  "phase": "close",
+  "at": "2026-09-15T19:24:09.523Z",
+  "production": {
+    "ref": "oqdhberkghtnszrkdvfm",
+    "prodLedgerRows": 156,
+    "prodPolicies": 183,
+    "prodHeadMigration": "20260914170000_activation_progress_congrats_shown_at"
+  },
+  "envFileHashes": {
+    "rootEnv": "a10194b5b3e7f5c664b4b04e2b694d08d75206d5adb4babe3ae11df9c00ad7f0",
+    "appEnvLocal": "7d298fddafeb78f686e4ddfaf096442d5dcc88dcf939db5863205ce195e0265c"
+  },
+  "checks": [
+    {
+      "name": "production _prisma_migrations rows",
+      "open": 156,
+      "close": 156,
+      "ok": true
+    },
+    {
+      "name": "production pg_policy(public)",
+      "open": 183,
+      "close": 183,
+      "ok": true
+    },
+    {
+      "name": "production newest migration_name",
+      "open": "20260914170000_activation_progress_congrats_shown_at",
+      "close": "20260914170000_activation_progress_congrats_shown_at",
+      "ok": true
+    },
+    {
+      "name": "sha256 repo-root .env",
+      "open": "a10194b5b3e7f5c664b4b04e2b694d08d75206d5adb4babe3ae11df9c00ad7f0",
+      "close": "a10194b5b3e7f5c664b4b04e2b694d08d75206d5adb4babe3ae11df9c00ad7f0",
+      "ok": true
+    },
+    {
+      "name": "sha256 apps/web/.env.local",
+      "open": "7d298fddafeb78f686e4ddfaf096442d5dcc88dcf939db5863205ce195e0265c",
+      "close": "7d298fddafeb78f686e4ddfaf096442d5dcc88dcf939db5863205ce195e0265c",
+      "ok": true
+    }
+  ],
+  "stagingAtClose": {
+    "ref": "UNKNOWN",
+    "port": 5432,
+    "identity": {
+      "ok": true,
+      "value": {
+        "currentUser": "app_user",
+        "database": "postgres",
+        "rolbypassrls": false
+      }
+    },
+    "ledgerRows": {
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table _prisma_migrations"
+      }
+    },
+    "policies": {
+      "ok": true,
+      "value": 183
+    },
+    "tenantContextRequiredPresent": {
+      "ok": true,
+      "value": true
+    },
+    "currentTenantIdBody": {
+      "ok": true,
+      "value": "CREATE OR REPLACE FUNCTION public.current_tenant_id()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\n  SELECT COALESCE(\n    NULLIF(current_setting('app.current_tenant_id', TRUE), '')::uuid,\n    CASE WHEN COALESCE(current_setting('app.tenant_context_tripwire', TRUE), 'off') = 'on'\n         THEN public.tenant_context_required(current_setting('app.current_tenant_id', TRUE))\n         ELSE NULL::uuid END\n  );\n$function$\n"
+    },
+    "bypassPolicies": {
+      "ok": true,
+      "value": 86
+    },
+    "rowCounts": {
+      "ok": true,
+      "value": {
+        "tenants": 0,
+        "users": 0,
+        "loads": 0,
+        "carrier_drivers": 0
+      }
+    }
+  },
+  "stagingAuthUsersAtClose": {
+    "ok": true,
+    "value": 9
+  },
+  "stagingPrivilegedRowCountsAtClose": {
+    "Tenant": {
+      "ok": true,
+      "value": 2
+    },
+    "User": {
+      "ok": true,
+      "value": 10
+    },
+    "loads": {
+      "ok": true,
+      "value": 4
+    },
+    "carrier_drivers": {
+      "ok": true,
+      "value": 5
+    },
+    "document_imports": {
+      "ok": true,
+      "value": 0
+    },
+    "legacyLoad": {
+      "ok": true,
+      "value": 0
+    },
+    "PlaybookInstance": {
+      "ok": true,
+      "value": 0
+    },
+    "Document": {
+      "ok": true,
+      "value": 0
+    },
+    "carrier_trucks": {
+      "ok": true,
+      "value": 3
+    }
+  }
+}

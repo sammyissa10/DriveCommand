@@ -1,0 +1,5 @@
+84f47ca91b83cbb11c472e388258d21bcc408ee891c67d9bfedd450d13079355 *../../604-run-staging-as-app-user-end-to-end-and-r/evidence/04-click-through.json
+db16ccde865a3f3d6ac9003f8234b2809be9c93648ccf9877af6c157c6fe9b61 *../../604-run-staging-as-app-user-end-to-end-and-r/evidence/04-server.log
+055250b754e7183a541e9e8041555d35b3b7bfd75ec54babe2eeecc708fcfe53 *../../604-run-staging-as-app-user-end-to-end-and-r/evidence/05-writes.json
+2a6164b395836e2a5a19016727f5953b8ff22170344c955d4b2bc956f6c608b3 *../../604-run-staging-as-app-user-end-to-end-and-r/evidence/06-classification.json
+06471acdea4a72107051aedef50cb4989370a1a892accb5d67b18f36878c790f *../../604-run-staging-as-app-user-end-to-end-and-r/evidence/06-classification.md
