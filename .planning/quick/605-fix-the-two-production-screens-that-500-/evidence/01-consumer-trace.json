@@ -1,0 +1,150 @@
+{
+  "task": "quick-605",
+  "phase": "consumer-trace",
+  "at": "2026-09-15T16:41:02.835Z",
+  "scannedFiles": 1691,
+  "seedModules": [
+    "src/components/data-grid/core/useGridUrlState.ts"
+  ],
+  "adapterMounts": [
+    {
+      "layoutFile": "src/app/(dev)/layout.tsx",
+      "routeGroup": "(dev)",
+      "coversFrom": "(dev)"
+    }
+  ],
+  "pages": [
+    {
+      "pageFile": "src/app/(admin)/docs/database/[model]/page.tsx",
+      "route": "/docs/database/[model]",
+      "routeGroup": "(admin)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/core/useDataGrid.ts",
+        "src/app/(admin)/docs/database/[model]/_components/FieldsTable.tsx",
+        "src/app/(admin)/docs/database/[model]/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(admin)/docs/layout.tsx",
+        "src/app/(admin)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    },
+    {
+      "pageFile": "src/app/(admin)/docs/features/page.tsx",
+      "route": "/docs/features",
+      "routeGroup": "(admin)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/core/useDataGrid.ts",
+        "src/app/(admin)/docs/features/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(admin)/docs/layout.tsx",
+        "src/app/(admin)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    },
+    {
+      "pageFile": "src/app/(owner)/carrier/driver-pay/reports/[driverId]/page.tsx",
+      "route": "/carrier/driver-pay/reports/[driverId]",
+      "routeGroup": "(owner)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/core/useDataGrid.ts",
+        "src/app/(owner)/carrier/driver-pay/reports/[driverId]/_components/SettlementsYtdTable.tsx",
+        "src/app/(owner)/carrier/driver-pay/reports/[driverId]/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(owner)/carrier/layout.tsx",
+        "src/app/(owner)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    },
+    {
+      "pageFile": "src/app/(owner)/carrier/driver-pay/reports/page.tsx",
+      "route": "/carrier/driver-pay/reports",
+      "routeGroup": "(owner)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/core/useDataGrid.ts",
+        "src/app/(owner)/carrier/driver-pay/reports/_components/AccessorialSpendReport.tsx",
+        "src/app/(owner)/carrier/driver-pay/reports/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(owner)/carrier/layout.tsx",
+        "src/app/(owner)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    },
+    {
+      "pageFile": "src/app/(owner)/carrier/driver-pay/settlements/page.tsx",
+      "route": "/carrier/driver-pay/settlements",
+      "routeGroup": "(owner)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/core/useDataGrid.ts",
+        "src/app/(owner)/carrier/driver-pay/settlements/_components/SettlementListTable.tsx",
+        "src/app/(owner)/carrier/driver-pay/settlements/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(owner)/carrier/layout.tsx",
+        "src/app/(owner)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    },
+    {
+      "pageFile": "src/app/(owner)/carrier/imports/[id]/stops/page.tsx",
+      "route": "/carrier/imports/[id]/stops",
+      "routeGroup": "(owner)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/index.ts",
+        "src/components/carrier/imports/StopReviewScreen.tsx",
+        "src/app/(owner)/carrier/imports/[id]/stops/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(owner)/carrier/layout.tsx",
+        "src/app/(owner)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    },
+    {
+      "pageFile": "src/app/(owner)/checklists/automation/page.tsx",
+      "route": "/checklists/automation",
+      "routeGroup": "(owner)",
+      "kind": "page",
+      "chain": [
+        "src/components/data-grid/core/useGridUrlState.ts",
+        "src/components/data-grid/core/useDataGrid.ts",
+        "src/app/(owner)/checklists/automation/_components/CustomRulesTable.tsx",
+        "src/app/(owner)/checklists/automation/_components/AutomationClient.tsx",
+        "src/app/(owner)/checklists/automation/page.tsx"
+      ],
+      "layoutChain": [
+        "src/app/(owner)/layout.tsx",
+        "src/app/layout.tsx"
+      ],
+      "coveredBy": null,
+      "covered": false
+    }
+  ]
+}

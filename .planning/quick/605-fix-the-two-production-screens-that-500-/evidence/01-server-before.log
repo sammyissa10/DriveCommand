@@ -1,0 +1,306 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 5.8s
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+○ Compiling /sign-in/[[...sign-in]] ...
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ GET /sign-in 200 in 24.1s (next.js: 23.5s, proxy.ts: 94ms, application-code: 476ms)
+ POST /api/auth/login 200 in 4.7s (next.js: 2.2s, proxy.ts: 7ms, application-code: 2.5s)
+ POST /api/auth/login 200 in 557ms (next.js: 11ms, proxy.ts: 9ms, application-code: 537ms)
+○ Compiling /carrier/driver-pay/settlements ...
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '2913805687'
+}
+ GET /carrier/driver-pay/settlements 500 in 7.3s (next.js: 3.6s, proxy.ts: 165ms, application-code: 3.5s)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at CustomRulesTable (src\app\(owner)\checklists\automation\_components\CustomRulesTable.tsx:175:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1434009931'
+}
+ GET /checklists/automation 500 in 2.2s (next.js: 1622ms, proxy.ts: 112ms, application-code: 498ms)
+○ Compiling /carrier/driver-pay/reports ...
+ GET /carrier/driver-pay/reports 200 in 4.7s (next.js: 3.5s, proxy.ts: 103ms, application-code: 1032ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementHistoryReport (src\app\(owner)\carrier\driver-pay\reports\_components\SettlementHistoryReport.tsx:314:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1849530384'
+}
+ GET /carrier/driver-pay/reports?tab=settlement-history 500 in 680ms (next.js: 13ms, proxy.ts: 121ms, application-code: 547ms)
+ GET /carrier/driver-pay/reports/08a85a8b-1fe0-462d-8bfb-f0b9d096cded 404 in 4.0s (next.js: 3.2s, proxy.ts: 115ms, application-code: 657ms)
+○ Compiling /carrier/imports/[id]/stops ...
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.documentImport.findFirst()` invocation:
+
+
+Invalid input value: invalid input syntax for type uuid: "605-probe-unresolved"
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async getImportRecord (src\lib\document-import\persistence.ts:169:15)
+    at async getStopReview (src\lib\document-import\stop-review-service.ts:197:18)
+    at async StopReviewPage (src\app\(owner)\carrier\imports\[id]\stops\page.tsx:28:26)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2007',
+  meta: {
+    modelName: 'DocumentImport',
+    driverAdapterError: Error [DriverAdapterError]: invalid input syntax for type uuid: "605-probe-unresolved"
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+        at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+        at async a (src\generated\prisma\runtime\client.js:79:5816)
+        at async getImportRecord (src\lib\document-import\persistence.ts:169:15)
+        at async getStopReview (src\lib\document-import\stop-review-service.ts:197:18)
+        at async StopReviewPage (src\app\(owner)\carrier\imports\[id]\stops\page.tsx:28:26)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0',
+  digest: '3293502847'
+}
+ GET /carrier/imports/605-probe-unresolved/stops 500 in 13.2s (next.js: 9.7s, proxy.ts: 131ms, application-code: 3.4s)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at AdminFeaturesListPage (src\app\(admin)\docs\features\page.tsx:185:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1320163496'
+}
+ GET /docs/features 500 in 2.8s (next.js: 2.1s, proxy.ts: 112ms, application-code: 539ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at FieldsTable (src\app\(admin)\docs\database\[model]\_components\FieldsTable.tsx:130:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1245782488'
+}
+ GET /docs/database/Tenant 500 in 3.9s (next.js: 2.2s, proxy.ts: 101ms, generate-params: 1036ms, application-code: 1574ms)
+ POST /api/auth/login 200 in 1728ms (next.js: 5ms, proxy.ts: 4ms, application-code: 1719ms)
+ POST /api/auth/login 200 in 451ms (next.js: 8ms, proxy.ts: 6ms, application-code: 437ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '2913805687'
+}
+ GET /carrier/driver-pay/settlements 500 in 2.6s (next.js: 16ms, proxy.ts: 216ms, application-code: 2.3s)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at CustomRulesTable (src\app\(owner)\checklists\automation\_components\CustomRulesTable.tsx:175:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1434009931'
+}
+ GET /checklists/automation 500 in 807ms (next.js: 17ms, proxy.ts: 219ms, application-code: 571ms)
+ GET /carrier/driver-pay/reports 200 in 978ms (next.js: 17ms, proxy.ts: 121ms, application-code: 841ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementHistoryReport (src\app\(owner)\carrier\driver-pay\reports\_components\SettlementHistoryReport.tsx:314:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1849530384'
+}
+ GET /carrier/driver-pay/reports?tab=settlement-history 500 in 610ms (next.js: 11ms, proxy.ts: 139ms, application-code: 459ms)
+ GET /carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7 200 in 895ms (next.js: 27ms, proxy.ts: 112ms, application-code: 755ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at AdminFeaturesListPage (src\app\(admin)\docs\features\page.tsx:185:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1320163496'
+}
+ GET /docs/features 500 in 468ms (next.js: 16ms, proxy.ts: 110ms, application-code: 342ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at FieldsTable (src\app\(admin)\docs\database\[model]\_components\FieldsTable.tsx:130:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1245782488'
+}
+ GET /docs/database/Tenant 500 in 927ms (next.js: 31ms, proxy.ts: 107ms, generate-params: 11ms, application-code: 789ms)
+ POST /api/auth/login 200 in 1728ms (next.js: 4ms, proxy.ts: 2ms, application-code: 1722ms)
+ POST /api/auth/login 200 in 447ms (next.js: 6ms, proxy.ts: 6ms, application-code: 435ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementListTable (src\app\(owner)\carrier\driver-pay\settlements\_components\SettlementListTable.tsx:197:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '2913805687'
+}
+ GET /carrier/driver-pay/settlements 500 in 2.4s (next.js: 11ms, proxy.ts: 136ms, application-code: 2.3s)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at CustomRulesTable (src\app\(owner)\checklists\automation\_components\CustomRulesTable.tsx:175:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1434009931'
+}
+ GET /checklists/automation 500 in 680ms (next.js: 11ms, proxy.ts: 232ms, application-code: 436ms)
+ GET /carrier/driver-pay/reports 200 in 1315ms (next.js: 12ms, proxy.ts: 144ms, application-code: 1159ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at SettlementHistoryReport (src\app\(owner)\carrier\driver-pay\reports\_components\SettlementHistoryReport.tsx:314:53)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1849530384'
+}
+ GET /carrier/driver-pay/reports?tab=settlement-history 500 in 659ms (next.js: 11ms, proxy.ts: 133ms, application-code: 515ms)
+ GET /carrier/driver-pay/reports/7e0bd11b-0002-4fd3-8814-1e3cc64882e7 200 in 932ms (next.js: 35ms, proxy.ts: 140ms, application-code: 757ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at AdminFeaturesListPage (src\app\(admin)\docs\features\page.tsx:185:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1320163496'
+}
+ GET /docs/features 500 in 378ms (next.js: 12ms, proxy.ts: 141ms, application-code: 225ms)
+⨯ Error: [nuqs] nuqs requires an adapter to work with your framework.
+  See https://nuqs.dev/NUQS-404
+    at useGridUrlState (src\components\data-grid\core\useGridUrlState.ts:43:46)
+    at useDataGrid (src\components\data-grid\core\useDataGrid.ts:162:35)
+    at FieldsTable (src\app\(admin)\docs\database\[model]\_components\FieldsTable.tsx:130:32)
+  41 | export function useGridUrlState(enabled: boolean = true): UseGridUrlStateReturn {
+  42 |   // Sort: "field:asc" or "field:desc"
+> 43 |   const [sortStr, setSortStr] = useQueryState(
+     |                                              ^
+  44 |     'sort',
+  45 |     parseAsString.withOptions({ shallow: false, history: 'push' })
+  46 |   ); {
+  digest: '1245782488'
+}
+ GET /docs/database/Tenant 500 in 893ms (next.js: 35ms, proxy.ts: 113ms, generate-params: 11ms, application-code: 745ms)

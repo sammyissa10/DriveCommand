@@ -56,7 +56,16 @@ const EVIDENCE_DIR = resolve(
   REPO_ROOT,
   '.planning/quick/604-run-staging-as-app-user-end-to-end-and-r/evidence',
 );
-const SERVER_LOG = resolve(EVIDENCE_DIR, '04-server.log');
+/**
+ * quick-605 (additive): the log this run correlates against. Defaults to
+ * quick-604's own log so every existing invocation is byte-for-byte unchanged.
+ * `--surfaces3` points it at quick-605's evidence directory instead — appending
+ * a later task's requests to a closed task's evidence file would corrupt the
+ * byte offsets already recorded in `04-click-through.json`.
+ */
+const SERVER_LOG = process.env.CLICK_THROUGH_LOG
+  ? resolve(process.env.CLICK_THROUGH_LOG)
+  : resolve(EVIDENCE_DIR, '04-server.log');
 
 loadEnv({ path: resolve(APP_ROOT, '.env.staging'), quiet: true });
 
@@ -367,6 +376,13 @@ type Entry = {
   logByteRange: [number, number];
   logTc001Mentions: number;
   bodyExcerpt: string;
+  /**
+   * quick-605 (additive, optional). Named substrings searched in the FULL
+   * response body and the FULL correlated log slice — not in `bodyExcerpt`,
+   * which is truncated at 2 KB and would miss a stack trace. Absent on every
+   * quick-604 row; nothing reads it there.
+   */
+  markers?: Record<string, boolean>;
 };
 
 async function visit(
@@ -375,6 +391,7 @@ async function visit(
   role: Role | 'CRON' | 'NONE' | 'SYSADMIN',
   cookie: string | null,
   extraHeaders: Record<string, string> = {},
+  markerSpecs: Record<string, string> = {},
 ): Promise<Entry> {
   const from = logSize();
   let status: number | null = null;
@@ -459,6 +476,11 @@ async function visit(
     logTc001Mentions: tc001,
     bodyExcerpt: body.slice(0, 2048),
   };
+  const markerKeys = Object.keys(markerSpecs);
+  if (markerKeys.length) {
+    const hay = `${slice}\n${body}`;
+    entry.markers = Object.fromEntries(markerKeys.map((k) => [k, hay.includes(markerSpecs[k])]));
+  }
   console.log(
     `  ${String(status ?? 'ERR').padEnd(4)} ${verdict.padEnd(14)} ${surface}  ${sqlstate ?? ''}`,
   );
@@ -666,6 +688,271 @@ async function surfaces2() {
   console.log(
     `\nmerged total ${record.entries.length} entries — pass ${counts.pass} · fail ${counts.fail} · not-reachable ${counts.notReachable}`,
   );
+}
+
+// ---------------------------------------------------------------------------
+// --surfaces3 — quick-605's nuqs sweep.
+//
+// Reuses login()/visit()/the log-slice machinery rather than being a third
+// harness. It writes its OWN artefact into quick-605's evidence directory and
+// NEVER touches `04-click-through.json` — quick-604's pass-1 and pass-2 records
+// are evidence for a closed task and are not rewritten by a later one.
+//
+// The authority for this sweep is NOT the HTTP status. It is the presence of the
+// literal string `nuqs requires an adapter` in the full body or the correlated
+// log slice. A 200 with that string in the log would be a swallowed failure; a
+// 500 without it is a DIFFERENT defect and must not be attributed to nuqs.
+// ---------------------------------------------------------------------------
+
+const NUQS_MARKER = 'nuqs requires an adapter';
+
+const QUICK_605_EVIDENCE_DIR = resolve(
+  REPO_ROOT,
+  '.planning/quick/605-fix-the-two-production-screens-that-500-/evidence',
+);
+
+type Surface3 = {
+  /** `__DRIVER_ID__`, `__IMPORT_ID__`, `__MODEL__` are substituted from staging by SQL. */
+  path: string;
+  route: string;
+  role: 'OWNER_A' | 'SYSADMIN';
+  routeGroup: string;
+  note?: string;
+  /**
+   * Extra named substrings, merged with the nuqs marker. These are the EMPTY-STATE
+   * sentences of the pages whose grid sits behind a data gate: their presence is
+   * positive evidence that the grid branch was NOT taken, which is what separates
+   * a LATENT row from a safe one. Without them a 200 is just a 200.
+   */
+  markers?: Record<string, string>;
+};
+
+const SURFACES3: Surface3[] = [
+  {
+    path: '/carrier/driver-pay/settlements',
+    route: '/carrier/driver-pay/settlements',
+    role: 'OWNER_A',
+    routeGroup: '(owner)',
+  },
+  { path: '/checklists/automation', route: '/checklists/automation', role: 'OWNER_A', routeGroup: '(owner)' },
+  {
+    path: '/carrier/driver-pay/reports',
+    route: '/carrier/driver-pay/reports',
+    role: 'OWNER_A',
+    routeGroup: '(owner)',
+    note: 'the DEFAULT tab — `overview`. Line 122 of the page replaces the whole content block with an empty state when the period has no payroll, so on staging this row does not render a grid at all.',
+    markers: { emptyStateShown: 'No payroll activity in this period' },
+  },
+  {
+    path: '/carrier/driver-pay/reports?tab=settlement-history',
+    route: '/carrier/driver-pay/reports?tab=settlement-history',
+    role: 'OWNER_A',
+    routeGroup: '(owner)',
+    note: 'the same page with an explicit tab, so `SettlementHistoryReport` — a `useDataGrid` consumer — renders regardless of whether staging has payroll data. This row, not the default one, is the measurement of the grid.',
+  },
+  {
+    path: '/carrier/driver-pay/reports/__DRIVER_ID__',
+    route: '/carrier/driver-pay/reports/[driverId]',
+    role: 'OWNER_A',
+    routeGroup: '(owner)',
+    note: 'its `SettlementsYtdTable` grid sits behind `settlements.length === 0` at line 124 — the same shape as the `reports` overview tab, and a second data gate the plan did not anticipate.',
+    markers: { emptyStateShown: 'No finalized or paid settlements for' },
+  },
+  {
+    path: '/carrier/imports/__IMPORT_ID__/stops',
+    route: '/carrier/imports/[id]/stops',
+    role: 'OWNER_A',
+    routeGroup: '(owner)',
+  },
+  { path: '/docs/features', route: '/docs/features', role: 'SYSADMIN', routeGroup: '(admin)' },
+  {
+    path: '/docs/database/__MODEL__',
+    route: '/docs/database/[model]',
+    role: 'SYSADMIN',
+    routeGroup: '(admin)',
+  },
+];
+
+/**
+ * Resolve the three dynamic segments from staging by SQL, the way
+ * `findTrackingToken()` does. An empty table yields a `not-reachable` verdict
+ * with the reason committed as a string — never a skipped row, and never folded
+ * into `pass`.
+ */
+async function resolveSurface3Ids(
+  ownerTenantId: string,
+): Promise<Record<string, { value: string | null; reason: string }>> {
+  const c = new Client({ connectionString: DIRECT_URL, connectionTimeoutMillis: 30000 });
+  await c.connect();
+  try {
+    /**
+     * Scoped to OWNER_A's tenant, NOT "the first row in the table". The page
+     * reads through the tenant-scoped client, so a row belonging to the other
+     * seeded tenant comes back null and the page answers 404 — a measurement of
+     * the id this script chose, not of the page.
+     */
+    async function firstId(
+      table: string,
+      tenantColumn: string,
+      column = 'id',
+    ): Promise<{ value: string | null; reason: string }> {
+      const r = await c.query<{ v: string }>(
+        `SELECT ${column}::text AS v FROM public.${table} WHERE ${tenantColumn} = $1 ORDER BY ${column} LIMIT 1`,
+        [ownerTenantId],
+      );
+      if (r.rows[0]?.v) {
+        return { value: r.rows[0].v, reason: `staging ${table}.${column} scoped to OWNER_A's tenant` };
+      }
+      const n = (
+        await c.query<{ n: number }>(`SELECT count(*)::int AS n FROM public.${table}`)
+      ).rows[0].n;
+      return {
+        value: null,
+        reason: `public.${table} holds ZERO rows for OWNER_A's tenant on staging (${n} row(s) tenant-wide) — no id to substitute`,
+      };
+    }
+
+    const driver = await firstId('carrier_drivers', 'org_id');
+    const imp = await firstId('document_imports', 'org_id');
+
+    // `[model]` is not a database row — it is a Prisma MODEL NAME, resolved from
+    // schema.prisma the way the page's own generateStaticParams does.
+    const schema = readFileSync(resolve(APP_ROOT, 'prisma/schema.prisma'), 'utf8').replace(/\r\n/g, '\n');
+    const modelMatch = schema.match(/^model\s+(\w+)\s*\{/m);
+    const model = modelMatch
+      ? { value: modelMatch[1], reason: 'first `model` block in apps/web/prisma/schema.prisma' }
+      : { value: null, reason: 'no `model` block found in apps/web/prisma/schema.prisma' };
+
+    return { __DRIVER_ID__: driver, __IMPORT_ID__: imp, __MODEL__: model };
+  } finally {
+    await c.end();
+  }
+}
+
+async function surfaces3() {
+  if (!existsSync(QUICK_605_EVIDENCE_DIR)) mkdirSync(QUICK_605_EVIDENCE_DIR, { recursive: true });
+
+  const outName = (() => {
+    const i = process.argv.indexOf('--out');
+    if (i >= 0 && process.argv[i + 1]) return process.argv[i + 1];
+    return '01-before-verdicts.json';
+  })();
+
+  const fx = await pickFixtures();
+
+  const sysadmin = await (async () => {
+    const c = new Client({ connectionString: DIRECT_URL, connectionTimeoutMillis: 30000 });
+    await c.connect();
+    try {
+      const r = await c.query<{ id: string; email: string; tenantId: string }>(
+        `SELECT id, email, "tenantId" FROM public."User" WHERE email = $1 AND "isSystemAdmin" = true LIMIT 1`,
+        [SYSADMIN_EMAIL],
+      );
+      return r.rows[0] ?? null;
+    } finally {
+      await c.end();
+    }
+  })();
+  if (!sysadmin) {
+    refuse(
+      'no isSystemAdmin User on staging — run `npx tsx scripts/seed-staging-auth.ts --seed-sysadmin` first. ' +
+        'Marking the two (admin) nuqs pages not-reachable by default is exactly the omission this sweep exists to close.',
+    );
+  }
+
+  const ids = await resolveSurface3Ids(fx.ownerA.tenantId);
+  for (const [k, v] of Object.entries(ids)) {
+    console.log(`  ${k} = ${v.value ?? 'NONE'} (${v.reason})`);
+  }
+
+  console.log('logging in …');
+  const sessions = {
+    OWNER_A: await login('OWNER_A', fx.ownerA.email, fx.ownerA.tenantId, fx.ownerA.id),
+    SYSADMIN: await login('OWNER_A' as Role, sysadmin.email, sysadmin.tenantId, sysadmin.id),
+  };
+
+  const entries: (Entry & {
+    route: string;
+    routeGroup: string;
+    nuqsMarker: boolean;
+    emptyStateShown?: boolean;
+  })[] = [];
+  console.log('\nquick-605 nuqs surfaces:');
+  for (const s of SURFACES3) {
+    let path = s.path;
+    let unresolved: { token: string; reason: string } | null = null;
+    for (const token of Object.keys(ids)) {
+      if (!path.includes(token)) continue;
+      const r = ids[token];
+      if (!r.value) unresolved = { token, reason: r.reason };
+      else path = path.replace(token, encodeURIComponent(r.value));
+    }
+
+    if (unresolved) {
+      // NO REQUEST IS ISSUED. A fabricated id measures the id, not the page —
+      // an earlier draft substituted a placeholder string and got a 500 with
+      // SQLSTATE `P2007` (invalid UUID), which reads exactly like an
+      // application defect and is nothing of the kind. The row still exists,
+      // with status null and the reason committed as a string.
+      const e: Entry = {
+        surface: s.path,
+        label: `nuqs:${s.routeGroup}`,
+        role: s.role === 'SYSADMIN' ? 'SYSADMIN' : 'OWNER_A',
+        method: 'GET',
+        status: null,
+        verdict: 'not-reachable',
+        reason: `no request issued — ${unresolved.reason}`,
+        sqlstate: null,
+        logByteRange: [logSize(), logSize()],
+        logTc001Mentions: 0,
+        bodyExcerpt: '',
+        markers: { nuqs: false },
+      };
+      console.log(`  ${'—'.padEnd(4)} ${'not-reachable'.padEnd(14)} ${s.route}  (no request issued)`);
+      entries.push({ ...e, route: s.route, routeGroup: s.routeGroup, nuqsMarker: false });
+      continue;
+    }
+
+    const cookie = sessions[s.role].cookie;
+    const e = await visit(path, `nuqs:${s.routeGroup}`, s.role === 'SYSADMIN' ? 'SYSADMIN' : 'OWNER_A', cookie, {}, {
+      nuqs: NUQS_MARKER,
+      ...(s.markers ?? {}),
+    });
+
+    if (s.note) e.reason = `${e.reason} — ${s.note}`;
+
+    entries.push({
+      ...e,
+      route: s.route,
+      routeGroup: s.routeGroup,
+      nuqsMarker: Boolean(e.markers?.nuqs),
+      emptyStateShown: e.markers?.emptyStateShown,
+    });
+  }
+
+  const record = {
+    task: 'quick-605',
+    phase: 'nuqs-surfaces',
+    artefact: outName,
+    at: new Date().toISOString(),
+    base: BASE,
+    authority:
+      'the literal string `nuqs requires an adapter` in the full body or the correlated log slice — NOT the HTTP status',
+    dynamicSegments: ids,
+    sessions: [
+      { role: 'OWNER_A', email: sessions.OWNER_A.email },
+      { role: 'SYSADMIN', email: sysadmin.email },
+    ],
+    entries,
+  };
+  writeFileSync(resolve(QUICK_605_EVIDENCE_DIR, outName), JSON.stringify(record, null, 2) + '\n');
+
+  const withMarker = entries.filter((e) => e.nuqsMarker).length;
+  console.log(
+    `\n${entries.length} rows — pass ${entries.filter((e) => e.verdict === 'pass').length} · fail ${entries.filter((e) => e.verdict === 'fail').length} · not-reachable ${entries.filter((e) => e.verdict === 'not-reachable').length}`,
+  );
+  console.log(`rows carrying \`${NUQS_MARKER}\`: ${withMarker}`);
+  console.log(`wrote ${outName}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -1100,9 +1387,10 @@ async function pgstat(label: string) {
 const phase = process.argv[2];
 if (phase === '--surfaces') surfaces();
 else if (phase === '--surfaces2') surfaces2();
+else if (phase === '--surfaces3') surfaces3();
 else if (phase === '--writes') writes();
 else if (phase === '--pgstat') pgstat(process.argv[3] ?? 'unlabelled');
 else {
-  console.error('usage: npx tsx scripts/audit/604-click-through.ts --surfaces|--surfaces2|--writes|--pgstat <label>');
+  console.error('usage: npx tsx scripts/audit/604-click-through.ts --surfaces|--surfaces2|--surfaces3 [--out <file>]|--writes|--pgstat <label>');
   process.exit(1);
 }
