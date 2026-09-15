@@ -1,0 +1,1680 @@
+{
+  "generatedAt": "2026-09-15T05:43:22.393Z",
+  "totals": {
+    "unmigratedUnits": 456,
+    "unmigratedCallSites": 459,
+    "withTenantContextCallSites": 0,
+    "filesScanned": 1689,
+    "filesWithUnmigratedUnits": 202
+  },
+  "files": {
+    "__tests__/security/tenant-header-forgery.test.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "(anonymous):129",
+        "(anonymous):144",
+        "(anonymous):161",
+        "(anonymous):175",
+        "(anonymous):193"
+      ]
+    },
+    "actions/carrier/save-route-template.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "saveRouteTemplate:49"
+      ]
+    },
+    "actions/carrier/soft-delete.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "softDeleteRecords:15",
+        "restoreRecords:105",
+        "permanentlyDeleteRecords:149"
+      ]
+    },
+    "app/(driver)/actions/driver-dashboard.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "getDriverQuickActionBadges:57",
+        "getRecentUnreadMessages:163"
+      ]
+    },
+    "app/(driver)/actions/driver-documents.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "getMyRouteDocuments:22",
+        "getMyTruckDocuments:61",
+        "getDriverDownloadUrl:108"
+      ]
+    },
+    "app/(driver)/actions/driver-hos.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "getDriverHOS:13",
+        "updateDutyStatus:43"
+      ]
+    },
+    "app/(driver)/actions/driver-incidents.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "submitIncidentReport:126",
+        "getMyIncidentReports:259"
+      ]
+    },
+    "app/(driver)/actions/driver-load.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getMyLoads:27"
+      ]
+    },
+    "app/(driver)/actions/driver-messages.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "getDriverMessages:17",
+        "sendDriverMessage:61",
+        "sendDriverVoiceMessage:148"
+      ]
+    },
+    "app/(driver)/actions/driver-routes.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "getMyActiveDispatch:31",
+        "getMyDispatchHistory:120",
+        "arriveAtStop:277",
+        "completeCurrentStop:321"
+      ]
+    },
+    "app/(driver)/actions/driver-tasks.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "findOwnStep:48"
+      ]
+    },
+    "app/(driver)/my-tickets/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "DriverTicketDetailPage:93"
+      ]
+    },
+    "app/(driver)/pay/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "Page:8"
+      ]
+    },
+    "app/(driver)/pay/settlements/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "Page:9"
+      ]
+    },
+    "app/(owner)/actions/activation-congrats.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "markCongratsShown:12"
+      ]
+    },
+    "app/(owner)/actions/compliance.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getComplianceDashboard:115"
+      ]
+    },
+    "app/(owner)/actions/customers.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "createCustomer:18",
+        "updateCustomer:101",
+        "deleteCustomer:158",
+        "addInteraction:179"
+      ]
+    },
+    "app/(owner)/actions/dashboard.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getFleetStats:482"
+      ]
+    },
+    "app/(owner)/actions/driver-compensation-templates.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "listTemplatesForDriver:110",
+        "getActiveTemplate:138",
+        "createTemplate:165",
+        "getCopyableTemplates:294"
+      ]
+    },
+    "app/(owner)/actions/driver-route-joins.ts": {
+      "units": 6,
+      "callSites": 6,
+      "names": [
+        "listDriverRouteJoinsByRoute:22",
+        "listDriverRouteJoinsByDriver:53",
+        "createDriverRouteJoin:86",
+        "updateDriverRouteJoin:170",
+        "listDriverPrimaryRoutes:267",
+        "deleteDriverRouteJoin:296"
+      ]
+    },
+    "app/(owner)/actions/drivers.ts": {
+      "units": 7,
+      "callSites": 7,
+      "names": [
+        "inviteDriver:29",
+        "listDrivers:236",
+        "getDriver:259",
+        "updateDriver:273",
+        "deactivateDriver:329",
+        "reactivateDriver:361",
+        "listInvitations:391"
+      ]
+    },
+    "app/(owner)/actions/expense-categories.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "createCategory:24",
+        "deleteCategory:84",
+        "listCategories:142"
+      ]
+    },
+    "app/(owner)/actions/expense-templates.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "createTemplate:26",
+        "deleteTemplate:111",
+        "listTemplates:139",
+        "applyTemplate:172"
+      ]
+    },
+    "app/(owner)/actions/expenses.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "createExpense:25",
+        "updateExpense:112",
+        "deleteExpense:218",
+        "listExpenses:274",
+        "listExpenseCategories:303"
+      ]
+    },
+    "app/(owner)/actions/fleet-messages.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "getRouteMessages:29",
+        "getLoadMessages:72",
+        "sendOwnerLoadReply:114",
+        "sendOwnerReply:167"
+      ]
+    },
+    "app/(owner)/actions/ifta.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getIFTAReport:73"
+      ]
+    },
+    "app/(owner)/actions/integrations.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "listIntegrations:20",
+        "toggleIntegration:37",
+        "saveIntegrationConfig:86"
+      ]
+    },
+    "app/(owner)/actions/invoices.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "createInvoice:19",
+        "updateInvoice:133",
+        "markInvoicePaid:248",
+        "deleteInvoice:282"
+      ]
+    },
+    "app/(owner)/actions/lane-analytics.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getLaneAnalytics:41"
+      ]
+    },
+    "app/(owner)/actions/load-driver-assignments.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "listAssignmentsForLoad:135",
+        "createAssignment:168",
+        "updateAssignment:312",
+        "deleteAssignment:433"
+      ]
+    },
+    "app/(owner)/actions/loads.ts": {
+      "units": 8,
+      "callSites": 8,
+      "names": [
+        "createLoad:128",
+        "updateLoad:240",
+        "deleteLoad:364",
+        "dispatchLoad:392",
+        "reassignTruck:502",
+        "updateLoadStatus:564",
+        "updateLoadSequence:748",
+        "revertLoadStatus:773"
+      ]
+    },
+    "app/(owner)/actions/maintenance.ts": {
+      "units": 8,
+      "callSites": 8,
+      "names": [
+        "createMaintenanceEvent:25",
+        "listMaintenanceEvents:72",
+        "deleteMaintenanceEvent:87",
+        "createScheduledService:106",
+        "listScheduledServices:155",
+        "deleteScheduledService:188",
+        "getScheduledService:207",
+        "updateScheduledService:219"
+      ]
+    },
+    "app/(owner)/actions/my-notifications.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getMyPreferences:57"
+      ]
+    },
+    "app/(owner)/actions/notifications.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "sendLoadUpdateNotification:232",
+        "sendETANotification:278"
+      ]
+    },
+    "app/(owner)/actions/onboarding-tour.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "markTourSeen:14"
+      ]
+    },
+    "app/(owner)/actions/payments.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "createPayment:22",
+        "updatePayment:102",
+        "deletePayment:190",
+        "listPayments:231"
+      ]
+    },
+    "app/(owner)/actions/payroll.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "createPayrollRecord:18",
+        "updatePayrollRecord:86",
+        "getDriverPayPeriodStats:149",
+        "deletePayrollRecord:194"
+      ]
+    },
+    "app/(owner)/actions/rate-confirmation.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "generateRateConfirmationPDF:18"
+      ]
+    },
+    "app/(owner)/actions/route-analytics.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "getRouteFinancialAnalytics:33",
+        "getFleetAverageCostPerMile:139"
+      ]
+    },
+    "app/(owner)/actions/routes.ts": {
+      "units": 7,
+      "callSites": 7,
+      "names": [
+        "createRoute:34",
+        "updateRoute:218",
+        "updateRouteStatus:477",
+        "deleteRoute:528",
+        "listRoutes:550",
+        "getRoute:588",
+        "updateRouteCoDrivers:640"
+      ]
+    },
+    "app/(owner)/actions/subscription.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getMySubscriptionInvoices:30"
+      ]
+    },
+    "app/(owner)/actions/tags.ts": {
+      "units": 7,
+      "callSites": 7,
+      "names": [
+        "createTag:20",
+        "deleteTag:73",
+        "listTags:93",
+        "listTagsWithAssignments:107",
+        "assignTag:143",
+        "unassignTag:196",
+        "getTagsForEntity:216"
+      ]
+    },
+    "app/(owner)/actions/team-permissions.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "getTeamMembers:31",
+        "updateUserPermissions:67",
+        "inviteTeamMember:120"
+      ]
+    },
+    "app/(owner)/actions/tenant-notification-settings.ts": {
+      "units": 9,
+      "callSites": 9,
+      "names": [
+        "listTenantNotificationSettings:142",
+        "getSettingForTrigger:181",
+        "customizeTemplate:219",
+        "restoreDefault:270",
+        "toggleTenantNotificationActive:299",
+        "listTenantSubscribers:335",
+        "listActiveTemplatesForTenant:394",
+        "addSubscriber:424",
+        "removeSubscriber:466"
+      ]
+    },
+    "app/(owner)/actions/trucks.ts": {
+      "units": 7,
+      "callSites": 7,
+      "names": [
+        "createTruck:45",
+        "updateTruck:158",
+        "deleteTruck:242",
+        "listTrucks:264",
+        "toggleTruckMaintenance:298",
+        "listTruckRoutes:318",
+        "getTruck:344"
+      ]
+    },
+    "app/(owner)/carrier/driver-pay/reports/[driverId]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "DriverDetailPage:42"
+      ]
+    },
+    "app/(owner)/carrier/driver-pay/reports/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "ReportsPage:60"
+      ]
+    },
+    "app/(owner)/carrier/driver-pay/settlements/[settlementId]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "SettlementDetailPage:22"
+      ]
+    },
+    "app/(owner)/carrier/driver-pay/settlements/generate/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GenerateSettlementsPage:26"
+      ]
+    },
+    "app/(owner)/carrier/driver-pay/settlements/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "SettlementsPage:25"
+      ]
+    },
+    "app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx": {
+      "units": 1,
+      "callSites": 2,
+      "names": [
+        "DriverCompensationPage:15"
+      ]
+    },
+    "app/(owner)/carrier/fleet/drivers/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "CarrierDriverDetailPage:52"
+      ]
+    },
+    "app/(owner)/carrier/loads/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "LoadDetailPage:41"
+      ]
+    },
+    "app/(owner)/carrier/stops/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "StopDetailPage:61"
+      ]
+    },
+    "app/(owner)/carrier/trips/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "DispatchDetailPage:27"
+      ]
+    },
+    "app/(owner)/carrier/trips/[id]/stops/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "StopsOverviewPage:60"
+      ]
+    },
+    "app/(owner)/carrier/trips/new/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "NewTripPage:10"
+      ]
+    },
+    "app/(owner)/checklists/instances/[id]/_components/actions.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getSignedPhotoUrl:7"
+      ]
+    },
+    "app/(owner)/crm/[id]/edit/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "EditCustomerPage:8"
+      ]
+    },
+    "app/(owner)/crm/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "CustomerDetailPage:31"
+      ]
+    },
+    "app/(owner)/crm/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "CRMPage:7"
+      ]
+    },
+    "app/(owner)/drivers/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "DriverListSection:17"
+      ]
+    },
+    "app/(owner)/invoices/[id]/edit/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "EditInvoicePage:9"
+      ]
+    },
+    "app/(owner)/invoices/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "InvoiceDetailPage:43"
+      ]
+    },
+    "app/(owner)/invoices/new/page.tsx": {
+      "units": 1,
+      "callSites": 2,
+      "names": [
+        "NewInvoicePage:8"
+      ]
+    },
+    "app/(owner)/invoices/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "InvoicesPage:7"
+      ]
+    },
+    "app/(owner)/live-map/actions.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "getVehicleRouteHistory:151",
+        "getVehicleDiagnostics:188"
+      ]
+    },
+    "app/(owner)/loads/[id]/edit/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "EditLoadPage:9"
+      ]
+    },
+    "app/(owner)/loads/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "LoadDetailPage:39"
+      ]
+    },
+    "app/(owner)/loads/new/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "NewLoadPage:7"
+      ]
+    },
+    "app/(owner)/loads/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "LoadsPage:7"
+      ]
+    },
+    "app/(owner)/payroll/[id]/edit/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "EditPayrollPage:9"
+      ]
+    },
+    "app/(owner)/payroll/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "PayrollDetailPage:17"
+      ]
+    },
+    "app/(owner)/payroll/new/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "NewPayrollPage:8"
+      ]
+    },
+    "app/(owner)/payroll/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "PayrollPage:7"
+      ]
+    },
+    "app/(owner)/routes/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "RouteDetailPage:23"
+      ]
+    },
+    "app/(owner)/settings/operations/actions.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "saveOperationsSettings:26"
+      ]
+    },
+    "app/(owner)/settings/operations/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "OperationsSettingsPage:22"
+      ]
+    },
+    "app/(owner)/support/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "TicketDetailPage:94"
+      ]
+    },
+    "app/(owner)/trucks/[id]/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "TruckDetailPage:39"
+      ]
+    },
+    "app/(owner)/trucks/page.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "TruckListSection:17"
+      ]
+    },
+    "app/api/auth/accept-invitation/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:84"
+      ]
+    },
+    "app/api/cron/automations/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "scheduleCronDrivenRule:133"
+      ]
+    },
+    "app/api/cron/trip-reminders/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:58"
+      ]
+    },
+    "app/api/cron/workflow-notifications/route.ts": {
+      "units": 1,
+      "callSites": 2,
+      "names": [
+        "GET:36"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/components/[componentId]/attachments/[attachmentId]/download-url/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:20"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/components/[componentId]/attachments/[attachmentId]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "DELETE:16"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/components/[componentId]/attachments/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:101",
+        "POST:149"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/components/[componentId]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "PATCH:94",
+        "DELETE:221"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/components/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:99",
+        "POST:145"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/components/suggest-detention/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:11"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/corrections/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:119"
+      ]
+    },
+    "app/api/driver-pay/assignments/[assignmentId]/transitions/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:105"
+      ]
+    },
+    "app/api/driver-pay/drivers/[driverId]/bonuses/[bonusId]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "PUT:117",
+        "PATCH:219"
+      ]
+    },
+    "app/api/driver-pay/drivers/[driverId]/bonuses/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:114",
+        "POST:148"
+      ]
+    },
+    "app/api/driver-pay/drivers/[driverId]/deductions/[deductionId]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "PUT:123",
+        "PATCH:243"
+      ]
+    },
+    "app/api/driver-pay/drivers/[driverId]/deductions/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:113",
+        "POST:148"
+      ]
+    },
+    "app/api/driver-pay/pending-queue/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:30"
+      ]
+    },
+    "app/api/driver-pay/reports/accessorial-spend/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:28"
+      ]
+    },
+    "app/api/driver-pay/reports/component-type/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:28"
+      ]
+    },
+    "app/api/driver-pay/reports/deduction-balances/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:23"
+      ]
+    },
+    "app/api/driver-pay/reports/drivers/[driverId]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:18"
+      ]
+    },
+    "app/api/driver-pay/reports/load-profitability/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:27"
+      ]
+    },
+    "app/api/driver-pay/reports/operational-metrics/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:24"
+      ]
+    },
+    "app/api/driver-pay/reports/override-audit/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:27"
+      ]
+    },
+    "app/api/driver-pay/reports/overtime-exposure/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:27"
+      ]
+    },
+    "app/api/driver-pay/reports/overview/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:27"
+      ]
+    },
+    "app/api/driver-pay/reports/settlement-history/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:28"
+      ]
+    },
+    "app/api/driver-pay/reports/settlements/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:45"
+      ]
+    },
+    "app/api/driver-pay/settlements/[settlementId]/finalize/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:22"
+      ]
+    },
+    "app/api/driver-pay/settlements/[settlementId]/mark-paid/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:30"
+      ]
+    },
+    "app/api/driver-pay/settlements/[settlementId]/pdf/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:32"
+      ]
+    },
+    "app/api/driver-pay/settlements/[settlementId]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:32"
+      ]
+    },
+    "app/api/driver-pay/settlements/[settlementId]/void/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:33"
+      ]
+    },
+    "app/api/driver-pay/settlements/generate/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:80"
+      ]
+    },
+    "app/api/driver-pay/settlements/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:102"
+      ]
+    },
+    "app/api/driver/gps-ping/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:18"
+      ]
+    },
+    "app/api/driver/notifications/mark-read/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "PATCH:24"
+      ]
+    },
+    "app/api/driver/notifications/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:16"
+      ]
+    },
+    "app/api/driver/stops/[stopId]/documents/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "POST:37",
+        "GET:218"
+      ]
+    },
+    "app/api/driver/stops/[stopId]/messages/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:16",
+        "POST:143"
+      ]
+    },
+    "app/api/mobile/carrier/driver/dispatches/[id]/expenses/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:35"
+      ]
+    },
+    "app/api/mobile/carrier/driver/dispatches/[id]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:18"
+      ]
+    },
+    "app/api/mobile/carrier/driver/dispatches/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:17"
+      ]
+    },
+    "app/api/mobile/carrier/driver/stops/[stopId]/documents/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:39"
+      ]
+    },
+    "app/api/mobile/carrier/owner/dispatches/[id]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:31"
+      ]
+    },
+    "app/api/reports/payroll-export/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:111"
+      ]
+    },
+    "app/api/v1/carrier/clients/[id]/documents/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:6"
+      ]
+    },
+    "app/api/v1/carrier/contracts/[id]/documents/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:6"
+      ]
+    },
+    "app/api/v1/carrier/contracts/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:51"
+      ]
+    },
+    "app/api/v1/carrier/dashboard/activity/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:24"
+      ]
+    },
+    "app/api/v1/carrier/dashboard/alerts/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:20"
+      ]
+    },
+    "app/api/v1/carrier/dashboard/drivers-status/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:28"
+      ]
+    },
+    "app/api/v1/carrier/dashboard/kpi/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:15"
+      ]
+    },
+    "app/api/v1/carrier/dashboard/messages/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:12",
+        "POST:66"
+      ]
+    },
+    "app/api/v1/carrier/dispatches/[id]/remove-load/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:11"
+      ]
+    },
+    "app/api/v1/carrier/documents/[id]/signed-url/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:9"
+      ]
+    },
+    "app/api/v1/carrier/facilities/[id]/route.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "GET:34",
+        "PATCH:58",
+        "DELETE:94"
+      ]
+    },
+    "app/api/v1/carrier/facilities/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:34"
+      ]
+    },
+    "app/api/v1/carrier/fleet/drivers/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "(anonymous):81"
+      ]
+    },
+    "app/api/v1/carrier/fleet/trucks/[id]/photo-upload-url/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:12"
+      ]
+    },
+    "app/api/v1/carrier/fleet/trucks/[id]/photo-view-url/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:7"
+      ]
+    },
+    "app/api/v1/carrier/live-map/history/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:19"
+      ]
+    },
+    "app/api/v1/carrier/live-map/trips/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:13"
+      ]
+    },
+    "app/api/v1/carrier/loads/[id]/cancel/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:13"
+      ]
+    },
+    "app/api/v1/carrier/notifications/mark-read/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "PATCH:15"
+      ]
+    },
+    "app/api/v1/carrier/notifications/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:6"
+      ]
+    },
+    "app/api/v1/carrier/pay-records/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:6"
+      ]
+    },
+    "app/api/v1/carrier/route-templates/active/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:12"
+      ]
+    },
+    "app/api/v1/carrier/stops/[id]/messages/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:15",
+        "POST:129"
+      ]
+    },
+    "components/carrier/templates/SuggestedTemplates.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "SuggestedTemplates:23"
+      ]
+    },
+    "lib/automations/evaluator.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "runEvaluator:56"
+      ]
+    },
+    "lib/carrier/board-lookup.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "loadBoardFacts:231"
+      ]
+    },
+    "lib/carrier/clients.ts": {
+      "units": 6,
+      "callSites": 6,
+      "names": [
+        "listClients:161",
+        "getClientLoadStats:216",
+        "getClient:238",
+        "createClient:295",
+        "updateClient:338",
+        "softDeleteClient:375"
+      ]
+    },
+    "lib/carrier/compliance.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getComplianceAlerts:44"
+      ]
+    },
+    "lib/carrier/contracts.ts": {
+      "units": 6,
+      "callSites": 6,
+      "names": [
+        "listContracts:45",
+        "getContract:82",
+        "createContract:120",
+        "updateContract:192",
+        "softDeleteContract:234",
+        "getContractLoadsSummary:254"
+      ]
+    },
+    "lib/carrier/dispatch-generator.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "generateDispatches:202"
+      ]
+    },
+    "lib/carrier/document-types.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "listDocumentTypes:43",
+        "createDocumentType:69",
+        "updateDocumentType:108",
+        "deleteDocumentType:142"
+      ]
+    },
+    "lib/carrier/documents.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "uploadDocument:33",
+        "listDocuments:197",
+        "deleteDocument:276",
+        "verifyDocument:329"
+      ]
+    },
+    "lib/carrier/expenses.ts": {
+      "units": 6,
+      "callSites": 6,
+      "names": [
+        "listExpenses:35",
+        "getExpense:68",
+        "createExpense:85",
+        "updateExpense:171",
+        "deleteExpense:207",
+        "approveExpense:221"
+      ]
+    },
+    "lib/carrier/facilities.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "listFacilities:59",
+        "getFacility:113",
+        "createFacility:137",
+        "updateFacility:151",
+        "softDeleteFacility:176"
+      ]
+    },
+    "lib/carrier/fleet-drivers.ts": {
+      "units": 12,
+      "callSites": 12,
+      "names": [
+        "listCarrierDrivers:103",
+        "getCarrierDriver:177",
+        "createCarrierDriver:223",
+        "deleteCarrierDriver:372",
+        "resendCarrierDriverInvitation:437",
+        "getLatestInvitationStatus:540",
+        "getLatestInvitationInfo:553",
+        "getPendingInvitationEmails:571",
+        "updateCarrierDriver:580",
+        "decryptCarrierDriverCDL:663",
+        "revokeCarrierDriverAccess:733",
+        "restoreCarrierDriverAccess:761"
+      ]
+    },
+    "lib/carrier/fleet-trucks.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "listCarrierTrucks:125",
+        "getCarrierTruck:174",
+        "createCarrierTruck:199",
+        "updateCarrierTruck:235"
+      ]
+    },
+    "lib/carrier/in-app-notifications.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "createNotification:64"
+      ]
+    },
+    "lib/carrier/inspection-access.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "resolveInspectionAccess:70"
+      ]
+    },
+    "lib/carrier/inspection-handlers.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "resolveUserName:319"
+      ]
+    },
+    "lib/carrier/inspection-lookup.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "findTripInspection:180",
+        "findValidPriorInspection:236",
+        "listInspectionSteps:315",
+        "listOpenTruckDefects:348",
+        "getInspectionBlockerCoverage:387"
+      ]
+    },
+    "lib/carrier/inspection-service.ts": {
+      "units": 6,
+      "callSites": 6,
+      "names": [
+        "evaluateTripGate:75",
+        "ensureTripInspection:163",
+        "recordInspectionDefects:290",
+        "notifyDispatchOfBlock:362",
+        "emitInspectionNotification:576",
+        "overrideInspection:674"
+      ]
+    },
+    "lib/carrier/loads.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "listLoads:91",
+        "getLoad:142",
+        "createLoad:247",
+        "updateLoad:469",
+        "removeLoadFromTrip:678"
+      ]
+    },
+    "lib/carrier/notifications.ts": {
+      "units": 8,
+      "callSites": 8,
+      "names": [
+        "sendDispatchAssignedNotification:77",
+        "sendLoadDeliveredNotification:237",
+        "sendStopCompletedNotification:347",
+        "sendPayRecordReadyNotification:480",
+        "sendInvoiceGeneratedNotification:569",
+        "getClientEmailForLoad:792",
+        "sendClientDeliveredNotification:973",
+        "sendTripChangeNotification:1218"
+      ]
+    },
+    "lib/carrier/pay-calculator.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "generateDriverPayRecords:61",
+        "recalculatePayRecordReimbursements:337"
+      ]
+    },
+    "lib/carrier/reports.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getDriverPayReport:207"
+      ]
+    },
+    "lib/carrier/revenue-calculator.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "recalculateAndStore:132"
+      ]
+    },
+    "lib/carrier/route-templates.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "listRouteTemplates:170",
+        "getRouteTemplate:207",
+        "createRouteTemplate:224",
+        "updateRouteTemplate:276",
+        "softDeleteRouteTemplate:293"
+      ]
+    },
+    "lib/carrier/stop-completion.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "arriveStop:24",
+        "completeStop:54",
+        "skipStop:254"
+      ]
+    },
+    "lib/carrier/stops.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "listStops:58",
+        "getStop:82",
+        "createStop:99",
+        "updateStop:201"
+      ]
+    },
+    "lib/carrier/trips.ts": {
+      "units": 7,
+      "callSites": 7,
+      "names": [
+        "listTrips:71",
+        "getTrip:166",
+        "createTrip:185",
+        "updateTrip:394",
+        "transitionTripStatus:640",
+        "reorderTripStops:1012",
+        "addLoadToTrip:1050"
+      ]
+    },
+    "lib/document-import/cache.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "get:46"
+      ]
+    },
+    "lib/document-import/commit-service.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "loadCommitContext:410",
+        "getCommitPreview:678",
+        "commitImport:822"
+      ]
+    },
+    "lib/document-import/end-stop-service.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "loadContext:104",
+        "writeEndStop:146",
+        "setEndStopChoice:227"
+      ]
+    },
+    "lib/document-import/facility-resolution.ts": {
+      "units": 4,
+      "callSites": 4,
+      "names": [
+        "writeStopProvenance:115",
+        "writeExternalReference:189",
+        "loadContext:246",
+        "createStopFacility:475"
+      ]
+    },
+    "lib/document-import/intake.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "reshootPage:697"
+      ]
+    },
+    "lib/document-import/optimisation-service.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "importContext:152",
+        "getTemplateOptimisation:392",
+        "applyTemplateOptimisation:513"
+      ]
+    },
+    "lib/document-import/persistence.ts": {
+      "units": 12,
+      "callSites": 12,
+      "names": [
+        "getImportRecord:163",
+        "getImportPages:176",
+        "findActiveDuplicate:218",
+        "listResumableImports:259",
+        "listRecentImports:279",
+        "createImport:331",
+        "supersedeImport:375",
+        "transitionImport:394",
+        "writePageOutcome:534",
+        "finishExtraction:601",
+        "failExtraction:697",
+        "replaceSourceFile:736"
+      ]
+    },
+    "lib/document-import/resolution.ts": {
+      "units": 8,
+      "callSites": 8,
+      "names": [
+        "resolveImport:1128",
+        "assignClient:1332",
+        "ensureClientCommitted:1420",
+        "ensureContractCommitted:1485",
+        "setDocumentDate:1531",
+        "assignContract:1573",
+        "createAndAssignClient:1630",
+        "createAndAssignContract:1712"
+      ]
+    },
+    "lib/document-import/stop-review-service.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "viewOf:99",
+        "writeReview:130"
+      ]
+    },
+    "lib/document-import/template-service.ts": {
+      "units": 6,
+      "callSites": 6,
+      "names": [
+        "loadContext:131",
+        "writeTemplate:158",
+        "bumpApplicationCount:572",
+        "writeTemplateFromImport:628",
+        "tenantAutoCreates:913",
+        "updateTemplateFromImport:1013"
+      ]
+    },
+    "lib/driver-pay/require-driver.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "getPrisma:96"
+      ]
+    },
+    "lib/email/send-fleet-message-notifications.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "legacySendDriverMessageNotification:52",
+        "legacySendOwnerReplyNotification:125"
+      ]
+    },
+    "lib/routes/assignable-drivers.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "listRouteAssignableDrivers:39"
+      ]
+    },
+    "server/api/routers/workflows/instance.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "(anonymous):44",
+        "(anonymous):85",
+        "(anonymous):123",
+        "(anonymous):138",
+        "(anonymous):168"
+      ]
+    },
+    "server/api/routers/workflows/playbook.ts": {
+      "units": 10,
+      "callSites": 10,
+      "names": [
+        "(anonymous):27",
+        "(anonymous):44",
+        "(anonymous):66",
+        "(anonymous):78",
+        "(anonymous):95",
+        "(anonymous):112",
+        "(anonymous):156",
+        "(anonymous):203",
+        "(anonymous):229",
+        "(anonymous):288"
+      ]
+    },
+    "server/api/routers/workflows/stepInstance.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "(anonymous):57",
+        "(anonymous):102",
+        "(anonymous):133"
+      ]
+    },
+    "server/api/routers/workflows/stepTemplate.ts": {
+      "units": 5,
+      "callSites": 5,
+      "names": [
+        "(anonymous):25",
+        "(anonymous):41",
+        "(anonymous):54",
+        "(anonymous):66",
+        "(anonymous):83"
+      ]
+    },
+    "server/api/routers/workflows/trigger.ts": {
+      "units": 8,
+      "callSites": 8,
+      "names": [
+        "(anonymous):28",
+        "(anonymous):66",
+        "(anonymous):109",
+        "(anonymous):151",
+        "(anonymous):178",
+        "(anonymous):210",
+        "(anonymous):228",
+        "countInstancesForPlaybook:328"
+      ]
+    },
+    "server/services/workflows/completeStep.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "completeStep:20",
+        "createDocumentRecord:162",
+        "notifyNextStep:193"
+      ]
+    },
+    "server/services/workflows/computeDispatchReadiness.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "computeDispatchReadiness:28"
+      ]
+    },
+    "server/services/workflows/failInspectionItem.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "failInspectionItem:18"
+      ]
+    },
+    "server/services/workflows/fireEvent.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "fireEvent:26"
+      ]
+    },
+    "server/services/workflows/generatePlaybookInstance.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "generatePlaybookInstance:18"
+      ]
+    },
+    "server/services/workflows/playbookStepService.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "reorderPlaybookSteps:12"
+      ]
+    },
+    "server/services/workflows/skipStep.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "skipStep:33"
+      ]
+    }
+  }
+}
