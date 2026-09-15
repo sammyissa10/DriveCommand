@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 export async function PATCH(
   req: NextRequest,
@@ -62,22 +62,19 @@ export async function PATCH(
         app_metadata: { role: newRole },
       });
       if (authError) {
-        logger.error('[PATCH /api/admin/users/[id]/role] Supabase app_metadata update failed:', {
-          userId,
-          error: authError.message,
-        });
+        logger.error('[PATCH /api/admin/users/[id]/role] Supabase app_metadata update failed:', authError, { userId, err: serializeError(authError) });
         // Return success anyway since DB was updated; log for investigation
       }
     } catch (authErr: unknown) {
       const message = authErr instanceof Error ? authErr.message : 'unknown';
-      logger.error('[PATCH /api/admin/users/[id]/role] Supabase admin call threw:', { userId, error: message });
+      logger.error('[PATCH /api/admin/users/[id]/role] Supabase admin call threw:', authErr, { userId, error: message, err: serializeError(authErr) });
     }
 
     logger.info('[PATCH /api/admin/users/[id]/role] Role updated', { userId, newRole });
     return NextResponse.json(updatedUser);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
-    logger.error('[PATCH /api/admin/users/[id]/role] Unexpected error:', { error: message });
+    logger.error('[PATCH /api/admin/users/[id]/role] Unexpected error:', err, { error: message, err: serializeError(err) });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

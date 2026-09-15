@@ -11,7 +11,7 @@
  */
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { generatePlaybookInstance } from './generatePlaybookInstance';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import type { PlaybookEntityType, TriggerEvent, PrismaClient } from '@/generated/prisma';
 
 const EVENT_TO_ENTITY_TYPE: Partial<Record<TriggerEvent, PlaybookEntityType>> = {
@@ -55,7 +55,7 @@ export async function fireEvent(args: {
       where: { tenantId, triggerEvent: event, isActive: true },
     });
   } catch (err) {
-    logger.error('[fireEvent] failed to load triggers', { event, tenantId, err });
+    logger.error('[fireEvent] failed to load triggers', err, { event, tenantId, err: serializeError(err) });
     return; // best-effort — do not throw
   }
 
@@ -78,12 +78,7 @@ export async function fireEvent(args: {
       });
     } catch (err) {
       // Per-trigger best-effort — one failing trigger must not block other triggers
-      logger.error('[fireEvent] generatePlaybookInstance failed', {
-        event,
-        triggerId: trigger.id,
-        playbookId: trigger.playbookId,
-        err,
-      });
+      logger.error('[fireEvent] generatePlaybookInstance failed', err, { event, triggerId: trigger.id, playbookId: trigger.playbookId, err: serializeError(err) });
     }
   }
 }

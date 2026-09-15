@@ -146,7 +146,7 @@ export async function POST(
     });
 
     if (!uploadRes.ok) {
-      logger.error('[mobile/carrier/driver/stops/documents POST] R2 upload failed:', {
+      logger.error('[mobile/carrier/driver/stops/documents POST] R2 upload failed:', undefined, {
         status: uploadRes.status,
         stopId,
       });

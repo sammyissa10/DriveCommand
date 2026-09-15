@@ -36,7 +36,7 @@ import {
 } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 /**
  * Create a new truck.
@@ -121,7 +121,7 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
         tenantId,
       });
     } catch (err) {
-      logger.error('[createTruck] fireEvent failed', { truckId: truck.id, err });
+      logger.error('[createTruck] fireEvent failed', err, { truckId: truck.id, err: serializeError(err) });
     }
     truckId = truck.id;
 

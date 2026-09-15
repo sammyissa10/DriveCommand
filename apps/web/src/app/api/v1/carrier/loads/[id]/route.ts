@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { getLoad, updateLoad } from '@/lib/carrier/loads';
 import { RATE_TYPES } from '@/lib/carrier/rate-types';
 import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
@@ -99,10 +99,7 @@ export async function PATCH(
     if (err instanceof FacilityUnavailableError) {
       return NextResponse.json({ error: err.message }, { status: 400 });
     }
-    logger.error('PATCH /api/v1/carrier/loads/[id] failed', {
-      error: err instanceof Error ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err as object)),
-      stack: err instanceof Error ? err.stack : undefined,
-    });
+    logger.error('PATCH /api/v1/carrier/loads/[id] failed', err, { stack: err instanceof Error ? err.stack : undefined, err: serializeError(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

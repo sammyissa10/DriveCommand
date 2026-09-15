@@ -165,7 +165,7 @@ export async function POST(
     });
 
     if (!uploadRes.ok) {
-      logger.error('[driver/stops/documents POST] R2 upload failed:', {
+      logger.error('[driver/stops/documents POST] R2 upload failed:', undefined, {
         status: uploadRes.status,
         stopId,
       });

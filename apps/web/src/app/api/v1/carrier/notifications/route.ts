@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ notifications, unreadCount });
   } catch (err) {
-    logger.error('GET /api/v1/carrier/notifications: failed', { orgId: session.tenantId, error: err });
+    logger.error('GET /api/v1/carrier/notifications: failed', err, { orgId: session.tenantId, err: serializeError(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -336,7 +336,7 @@ export async function sendLoadDeliveredNotification(
 
     logger.info('sendLoadDeliveredNotification: sent', { orgId, loadId });
   } catch (err) {
-    logger.error('sendLoadDeliveredNotification: failed', { orgId, loadId, error: err });
+    logger.error('sendLoadDeliveredNotification: failed', err, { orgId, loadId, err: serializeError(err) });
   }
 }
 
@@ -469,7 +469,7 @@ export async function sendStopCompletedNotification(
 
     logger.info('sendStopCompletedNotification: sent', { orgId, stopId });
   } catch (err) {
-    logger.error('sendStopCompletedNotification: failed', { orgId, stopId, error: err });
+    logger.error('sendStopCompletedNotification: failed', err, { orgId, stopId, err: serializeError(err) });
   }
 }
 
@@ -558,7 +558,7 @@ export async function sendPayRecordReadyNotification(
 
     logger.info('sendPayRecordReadyNotification: sent', { orgId, payRecordId, driverName });
   } catch (err) {
-    logger.error('sendPayRecordReadyNotification: failed', { orgId, payRecordId, error: err });
+    logger.error('sendPayRecordReadyNotification: failed', err, { orgId, payRecordId, err: serializeError(err) });
   }
 }
 
@@ -685,7 +685,7 @@ export async function sendInvoiceGeneratedNotification(
 
     logger.info('sendInvoiceGeneratedNotification: sent', { orgId, loadId, clientEmail });
   } catch (err) {
-    logger.error('sendInvoiceGeneratedNotification: failed', { orgId, loadId, error: err });
+    logger.error('sendInvoiceGeneratedNotification: failed', err, { orgId, loadId, err: serializeError(err) });
   }
 }
 
@@ -780,7 +780,7 @@ export async function sendComplianceAlertNotifications(
       alertCount: alerts.length,
     });
   } catch (err) {
-    logger.error('sendComplianceAlertNotifications: failed', { orgId, error: err });
+    logger.error('sendComplianceAlertNotifications: failed', err, { orgId, err: serializeError(err) });
   }
 }
 
@@ -962,7 +962,7 @@ export async function sendClientPickupNotification(
     await markNotificationSent(prisma, logId, result.id);
     logger.info('sendClientPickupNotification: sent', { orgId, loadId, recipientEmail });
   } catch (err) {
-    logger.error('sendClientPickupNotification: failed', { orgId, loadId, error: err });
+    logger.error('sendClientPickupNotification: failed', err, { orgId, loadId, err: serializeError(err) });
   }
 }
 
@@ -1101,7 +1101,7 @@ export async function sendClientDeliveredNotification(
     await markNotificationSent(prisma, logId, result.id);
     logger.info('sendClientDeliveredNotification: sent', { orgId, loadId, recipientEmail });
   } catch (err) {
-    logger.error('sendClientDeliveredNotification: failed', { orgId, loadId, error: err });
+    logger.error('sendClientDeliveredNotification: failed', err, { orgId, loadId, err: serializeError(err) });
   }
 }
 
@@ -1205,7 +1205,7 @@ export async function sendClientInvoiceReadyNotification(
     await markNotificationSent(prisma, logId, result.id);
     logger.info('sendClientInvoiceReadyNotification: sent', { orgId, loadId, recipientEmail });
   } catch (err) {
-    logger.error('sendClientInvoiceReadyNotification: failed', { orgId, loadId, error: err });
+    logger.error('sendClientInvoiceReadyNotification: failed', err, { orgId, loadId, err: serializeError(err) });
   }
 }
 
@@ -1312,7 +1312,7 @@ export async function sendTripChangeNotification(
 
     return { notified: true, driverName };
   } catch (err) {
-    logger.error('sendTripChangeNotification: failed', { orgId, dispatchId, changeType, error: err });
+    logger.error('sendTripChangeNotification: failed', err, { orgId, dispatchId, changeType, err: serializeError(err) });
     return { notified: false, driverName: null };
   }
 }

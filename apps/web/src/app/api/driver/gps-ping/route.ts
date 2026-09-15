@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { gpsLimiter, applyRateLimit } from '@/lib/rate-limit';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 /**
  * POST /api/driver/gps-ping
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ saved: true, source: 'web_driver_portal' });
   } catch (error) {
-    logger.error('POST /api/driver/gps-ping: failed', { error });
+    logger.error('POST /api/driver/gps-ping: failed', error, { err: serializeError(error) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

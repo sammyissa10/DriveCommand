@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
 import { sendEmail } from '@/lib/email/resend-client';
 import React from 'react';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { seedStarterPlaybooks } from '@/server/services/workflows/seedStarterPlaybooks';
 
@@ -113,10 +113,7 @@ export async function createTenant(formData: FormData) {
     } catch (seedError: unknown) {
       // Seeding failure is NON-FATAL — tenant creation succeeded. Log and continue so the
       // invitation email still sends. An admin can re-run seed-starter-playbooks.ts later (idempotent).
-      logger.error('Failed to seed starter playbooks for new tenant:', {
-        tenantId: tenant.id,
-        error: seedError instanceof Error ? seedError.message : String(seedError),
-      });
+      logger.error('Failed to seed starter playbooks for new tenant:', seedError, { tenantId: tenant.id, err: serializeError(seedError) });
     }
 
     // Create owner invitation (7 days expiry)

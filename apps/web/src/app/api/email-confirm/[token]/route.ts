@@ -14,7 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyEmailToken } from '@/lib/auth/email-token';
 import { confirmTenantEmail } from '@/lib/onboarding/confirm-tenant-email';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
@@ -58,7 +58,7 @@ export async function GET(
   try {
     confirmation = await confirmTenantEmail(tenantId);
   } catch (err) {
-    logger.error('[email-confirm] unexpected error', { error: err });
+    logger.error('[email-confirm] unexpected error', err, { err: serializeError(err) });
     return redirectTo('/sign-in?error=link-invalid');
   }
 

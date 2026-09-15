@@ -3,7 +3,7 @@ import { z, ZodError } from 'zod';
 import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { listCarrierTrucks, createCarrierTruck, CarrierTruckConflictError } from '@/lib/carrier/fleet-trucks';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
           tenantId: orgId, // carrier module uses orgId for tenant scoping
         });
       } catch (err) {
-        logger.error('[carrier/fleet/trucks] fireEvent failed', { truckId: carrierTruck.id, err });
+        logger.error('[carrier/fleet/trucks] fireEvent failed', err, { truckId: carrierTruck.id, err: serializeError(err) });
       }
     });
 
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       try {
         await recordActivationEvent(orgId, 'first_real_truck');
       } catch (err) {
-        logger.error('[carrier/fleet/trucks] activation tracker failed', { truckId: carrierTruck.id, err });
+        logger.error('[carrier/fleet/trucks] activation tracker failed', err, { truckId: carrierTruck.id, err: serializeError(err) });
       }
     }
 

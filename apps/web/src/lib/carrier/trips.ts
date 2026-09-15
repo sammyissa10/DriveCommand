@@ -725,7 +725,7 @@ export async function transitionTripStatus(
           await recordActivationEvent(orgId, 'first_load_in_transit');
         }
       } catch (err) {
-        logger.error('[transitionTripStatus] activation tracker failed', { dispatchId: id, err });
+        logger.error('[transitionTripStatus] activation tracker failed', err, { dispatchId: id, err: serializeError(err) });
       }
     });
 
@@ -935,7 +935,7 @@ export async function transitionTripStatus(
             nextDate: nextDateStr,
           });
         } catch (err) {
-          logger.error('transitionTripStatus: auto-generate next dispatch failed', { dispatchId: id, err });
+          logger.error('transitionTripStatus: auto-generate next dispatch failed', err, { dispatchId: id, err: serializeError(err) });
         }
       });
     }
@@ -1112,7 +1112,7 @@ export async function addLoadToTrip(
 
       logger.info('addLoadToTrip: persisted pending stops', { orgId, tripId, loadId, stopCount: pendingStops.length });
     } catch (err) {
-      logger.error('addLoadToTrip: failed to parse pendingStopsJson', { loadId, err });
+      logger.error('addLoadToTrip: failed to parse pendingStopsJson', err, { loadId, err: serializeError(err) });
     }
   }
 

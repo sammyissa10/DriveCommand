@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { listCarrierDrivers, createCarrierDriver } from '@/lib/carrier/fleet-drivers';
 import { FacilityUnavailableError } from '@/lib/carrier/facility-errors';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
           tenantPrisma: await getTenantPrismaForOrg(orgId),
         });
       } catch (err) {
-        logger.error('[carrier/fleet/drivers] fireEvent failed', { driverId: carrierDriver.id, err });
+        logger.error('[carrier/fleet/drivers] fireEvent failed', err, { driverId: carrierDriver.id, err: serializeError(err) });
       }
     });
 
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     try {
       await recordActivationEvent(orgId, 'first_real_driver');
     } catch (err) {
-      logger.error('[carrier/fleet/drivers] activation tracker failed', { driverId: carrierDriver.id, err });
+      logger.error('[carrier/fleet/drivers] activation tracker failed', err, { driverId: carrierDriver.id, err: serializeError(err) });
     }
 
     return NextResponse.json(

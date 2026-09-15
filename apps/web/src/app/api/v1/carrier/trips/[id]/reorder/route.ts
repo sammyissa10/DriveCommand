@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { reorderTripStops } from '@/lib/carrier/trips';
 
 const ReorderSchema = z.object({
@@ -47,7 +47,7 @@ export async function POST(
     logger.info('reorderTripStops success', { tripId, stopCount: stopOrder.length });
     return NextResponse.json({ success: true });
   } catch (err) {
-    logger.error('reorderTripStops exception', { tripId, err });
+    logger.error('reorderTripStops exception', err, { tripId, err: serializeError(err) });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

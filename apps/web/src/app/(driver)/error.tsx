@@ -12,11 +12,17 @@ export default function DriverError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log to browser console so it's visible in Vercel function logs and browser devtools
-    logger.error('[driver-error-boundary] Server Component render error:', {
-      message: error.message,
+    // Log to browser console so it's visible in Vercel function logs and browser devtools.
+    //
+    // quick-603 — HAND-EDITED, not part of Task 5's mechanical sweep. `error`
+    // here is a real `Error` arriving as a PROP, not a caught value, so there is
+    // no `catch` binding for the classifier to find; it proposed bucket (b) and
+    // a human read moved it to (a). The error goes in slot 2, which is what
+    // gets Sentry the real exception instead of `new Error('[object Object]')`.
+    // `digest` stays in the context because it is Next's own identifier for the
+    // server-side error and is not a property of the Error itself.
+    logger.error('[driver-error-boundary] Server Component render error:', error, {
       digest: error.digest,
-      stack: error.stack,
     });
   }, [error]);
 

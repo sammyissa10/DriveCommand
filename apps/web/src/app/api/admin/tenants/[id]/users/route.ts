@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 export async function GET(
   _req: NextRequest,
@@ -36,7 +36,7 @@ export async function GET(
     return NextResponse.json(users);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
-    logger.error('[GET /api/admin/tenants/[id]/users] error:', { error: message });
+    logger.error('[GET /api/admin/tenants/[id]/users] error:', err, { error: message, err: serializeError(err) });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

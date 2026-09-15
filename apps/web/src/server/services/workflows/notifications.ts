@@ -17,7 +17,7 @@
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { sendEmail } from '@/lib/email/resend-client';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { WorkflowInstanceBlockedEmail } from '@/emails/workflow-instance-blocked';
 import { getAppBaseUrl } from '@/lib/app-url';
 
@@ -139,7 +139,7 @@ async function writeAuditRow(data: {
       });
     }, TX_OPTIONS);
   } catch (err) {
-    logger.error('[notifications] writeAuditRow failed', { err, ...data });
+    logger.error('[notifications] writeAuditRow failed', err, { ...data, err: serializeError(err) });
   }
 }
 
@@ -198,7 +198,7 @@ export async function sendStepAssigned(args: {
       });
       success = true;
     } catch (err) {
-      logger.error('[notifications] sendStepAssigned: push failed', { err, assignedUserId });
+      logger.error('[notifications] sendStepAssigned: push failed', err, { assignedUserId, err: serializeError(err) });
     }
 
     await writeAuditRow({
@@ -212,7 +212,7 @@ export async function sendStepAssigned(args: {
       success,
     });
   } catch (err) {
-    logger.error('[notifications] sendStepAssigned failed', { err, stepInstanceId });
+    logger.error('[notifications] sendStepAssigned failed', err, { stepInstanceId, err: serializeError(err) });
   }
 }
 
@@ -283,7 +283,7 @@ export async function sendStepOverdue({
         await sendPushToUser(recipientId, { title, body, data: { type: 'STEP_OVERDUE', stepInstanceId } });
         success = true;
       } catch (err) {
-        logger.error('[notifications] sendStepOverdue: push failed', { err, recipientId });
+        logger.error('[notifications] sendStepOverdue: push failed', err, { recipientId, err: serializeError(err) });
       }
 
       await writeAuditRow({
@@ -298,7 +298,7 @@ export async function sendStepOverdue({
       });
     }
   } catch (err) {
-    logger.error('[notifications] sendStepOverdue failed', { err, stepInstanceId });
+    logger.error('[notifications] sendStepOverdue failed', err, { stepInstanceId, err: serializeError(err) });
   }
 }
 
@@ -367,7 +367,7 @@ export async function sendInstanceBlocked(args: {
         });
         success = true;
       } catch (err) {
-        logger.error('[notifications] sendInstanceBlocked: push failed', { err, dispatcherId: dispatcher.id });
+        logger.error('[notifications] sendInstanceBlocked: push failed', err, { dispatcherId: dispatcher.id, err: serializeError(err) });
       }
 
       await writeAuditRow({
@@ -382,7 +382,7 @@ export async function sendInstanceBlocked(args: {
       });
     }
   } catch (err) {
-    logger.error('[notifications] sendInstanceBlocked failed', { err, playbookInstanceId });
+    logger.error('[notifications] sendInstanceBlocked failed', err, { playbookInstanceId, err: serializeError(err) });
   }
 }
 
@@ -415,7 +415,7 @@ export async function sendDispatchReady(args: {
         });
         success = true;
       } catch (err) {
-        logger.error('[notifications] sendDispatchReady: push failed', { err, dispatcherId: dispatcher.id });
+        logger.error('[notifications] sendDispatchReady: push failed', err, { dispatcherId: dispatcher.id, err: serializeError(err) });
       }
 
       await writeAuditRow({
@@ -429,7 +429,7 @@ export async function sendDispatchReady(args: {
       });
     }
   } catch (err) {
-    logger.error('[notifications] sendDispatchReady failed', { err, userId, playbookInstanceId });
+    logger.error('[notifications] sendDispatchReady failed', err, { userId, playbookInstanceId, err: serializeError(err) });
   }
 }
 
@@ -485,7 +485,7 @@ export async function sendStepFailed(args: {
         });
         success = true;
       } catch (err) {
-        logger.error('[notifications] sendStepFailed: push failed', { err, dispatcherId: dispatcher.id });
+        logger.error('[notifications] sendStepFailed: push failed', err, { dispatcherId: dispatcher.id, err: serializeError(err) });
       }
 
       await writeAuditRow({
@@ -500,7 +500,7 @@ export async function sendStepFailed(args: {
       });
     }
   } catch (err) {
-    logger.error('[notifications] sendStepFailed failed', { err, stepInstanceId, recipientRole: args.recipientRole });
+    logger.error('[notifications] sendStepFailed failed', err, { stepInstanceId, recipientRole: args.recipientRole, err: serializeError(err) });
   }
 }
 
@@ -537,7 +537,7 @@ export async function sendApprovalNeeded(args: {
       });
       success = true;
     } catch (err) {
-      logger.error('[notifications] sendApprovalNeeded: push failed', { err, approverUserId });
+      logger.error('[notifications] sendApprovalNeeded: push failed', err, { approverUserId, err: serializeError(err) });
     }
 
     await writeAuditRow({
@@ -551,7 +551,7 @@ export async function sendApprovalNeeded(args: {
       success,
     });
   } catch (err) {
-    logger.error('[notifications] sendApprovalNeeded failed', { err, stepInstanceId });
+    logger.error('[notifications] sendApprovalNeeded failed', err, { stepInstanceId, err: serializeError(err) });
   }
 }
 
@@ -617,7 +617,7 @@ export async function sendInstanceBlockedEmail(args: {
         });
         success = true;
       } catch (err) {
-        logger.error('[notifications] sendInstanceBlockedEmail: email failed', { err, adminEmail: admin.email });
+        logger.error('[notifications] sendInstanceBlockedEmail: email failed', err, { adminEmail: admin.email, err: serializeError(err) });
       }
 
       await writeAuditRow({
@@ -632,6 +632,6 @@ export async function sendInstanceBlockedEmail(args: {
       });
     }
   } catch (err) {
-    logger.error('[notifications] sendInstanceBlockedEmail failed', { err, playbookInstanceId });
+    logger.error('[notifications] sendInstanceBlockedEmail failed', err, { playbookInstanceId, err: serializeError(err) });
   }
 }

@@ -11,7 +11,7 @@
  */
 
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { InAppNotificationType } from '@/generated/prisma';
 
 export type { InAppNotificationType };
@@ -78,13 +78,7 @@ export async function createNotification(params: CreateNotificationParams): Prom
       skipDuplicates: true,
     });
   } catch (err) {
-    logger.error('createNotification: failed to persist in-app notification', {
-      orgId,
-      type,
-      entityType,
-      entityId,
-      error: err,
-    });
+    logger.error('createNotification: failed to persist in-app notification', err, { orgId, type, entityType, entityId, err: serializeError(err) });
     // Never throw — notifications must not block the calling action
   }
 }

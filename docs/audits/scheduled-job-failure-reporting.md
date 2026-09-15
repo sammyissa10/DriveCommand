@@ -510,7 +510,60 @@ therefore no narrowing to do. Nothing was invented to fill the task; the examina
 
 ## 6. The `logger.error` arity sweep
 
-*(Task 5 — populated below.)*
+Classification with a bucket per site, every site named: `evidence/05-logger-classification.md`.
+
+### 6.1 Classified first, applied second
+
+| bucket | n | fix applied |
+|---|---|---|
+| **(a) `ERROR_IN_SCOPE`**, mechanical | **61** | `logger.error(msg, E, { …ctx, err: serializeError(E) })` |
+| **(a) `ERROR_IN_SCOPE`**, hand-edited | **2** | the two React `error.tsx` boundaries |
+| **(b) `CONTEXT_ONLY`** | **2** | `logger.error(msg, undefined, { …ctx })` — context to slot 3 |
+| **(c) `UNCLASSIFIABLE`** | **0** | — |
+| **sum** | **65** | = 76 at HEAD, minus the 11 §5 already fixed inside the cron routes |
+
+### 6.2 Bucket (c) is EMPTY — and that is a measured result, not a skipped step
+
+The plan expects a (c) list carried forward as follow-up work for a human. **There is none.** The
+mechanical pass proposed 8 sites for (c) and all 8 resolved on reading, in two clean groups, with
+**no guessing**: in every case the error value is in scope in the same function, and the classifier
+balked only because the context object names something *derived from* it.
+
+- **C1 (4 sites)** — `const message = err instanceof Error ? err.message : '…'` then
+  `logger.error('…', { error: message })`. `err` is right there. The `message` entry is **kept**;
+  `err: serializeError(err)` is added beside it.
+- **C2 (4 sites)** — a Supabase error **destructured from a call result and never thrown**
+  (`const { error: listError } = await supabase.auth.admin.listUsers(…)`). No `catch` binding exists
+  for the walk-back to find. Sentry now gets the real `AuthError` instead of a message string.
+
+The two React `error.tsx` boundaries were hand-edited rather than mechanised: `error` is a real
+`Error` arriving as a **prop**, and the honest context there is `{ digest: error.digest }` — `digest`
+is Next's identifier for the server-side error and is not a property of the Error.
+
+**So there is no (c) follow-up list to carry.** Stated plainly because an empty list and a list
+nobody produced look identical in a summary.
+
+### 6.3 The trap that was sidestepped rather than navigated
+
+quick-541 wedged an import between `import {` and its first specifier in four files by splicing after
+"the last line matching `^import`", producing a TS1003 **parse** error that then blinded the whole
+tsc gate. **This sweep inserts no import line at all.** Every affected file already imports `logger`
+from `@/lib/logger`, so `serializeError` is appended to that existing specifier list, and the applier
+**refuses to write a file** where no such import was found.
+
+### 6.4 The gate was probed, and the scan closes at zero
+
+```
+$ npx tsc --noEmit                        # clean
+$ # probe injected into a file THIS SWEEP EDITED
+src/server/services/workflows/notifications.ts(639,7): error TS2322: Type 'string' is not assignable to type 'number'.
+$ # probe deleted; re-run clean
+
+$ node evidence/scripts/scan-logger-arity.mjs
+OBJECT LITERAL in slot 2 (the defect): 0        <- was 76
+```
+
+No `logger.warn` or `logger.info` call was touched.
 
 ---
 

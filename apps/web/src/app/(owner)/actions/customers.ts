@@ -8,7 +8,7 @@ import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
@@ -66,7 +66,7 @@ export async function createCustomer(prevState: ActionState | null, formData: Fo
         tenantId,
       });
     } catch (err) {
-      logger.error('[createCustomer] fireEvent failed', { customerId: customer.id, err });
+      logger.error('[createCustomer] fireEvent failed', err, { customerId: customer.id, err: serializeError(err) });
     }
     createdId = customer.id;
 

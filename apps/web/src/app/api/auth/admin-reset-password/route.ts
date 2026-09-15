@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
       if (error) {
-        logger.error('[admin-reset-password] resetPasswordForEmail error:', { email, error: error.message });
+        logger.error('[admin-reset-password] resetPasswordForEmail error:', error, { email, err: serializeError(error) });
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       // not the auth.users UUID that updateUserById requires
       const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
       if (listError) {
-        logger.error('[admin-reset-password] listUsers error:', { error: listError.message });
+        logger.error('[admin-reset-password] listUsers error:', listError, { err: serializeError(listError) });
         return NextResponse.json({ error: listError.message }, { status: 500 });
       }
 
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       const { error } = await supabase.auth.admin.updateUserById(authUser.id, { password });
 
       if (error) {
-        logger.error('[admin-reset-password] updateUserById error:', { authUserId: authUser.id, error: error.message });
+        logger.error('[admin-reset-password] updateUserById error:', error, { authUserId: authUser.id, err: serializeError(error) });
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
-    logger.error('[admin-reset-password] Unexpected error:', { error: message });
+    logger.error('[admin-reset-password] Unexpected error:', err, { error: message, err: serializeError(err) });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

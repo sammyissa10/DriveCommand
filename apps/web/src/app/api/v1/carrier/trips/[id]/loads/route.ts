@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { addLoadToTrip } from '@/lib/carrier/trips';
 
 const AddLoadSchema = z.object({
@@ -47,7 +47,7 @@ export async function POST(
     logger.info('addLoadToTrip success', { tripId, loadId });
     return NextResponse.json({ data: result.trip });
   } catch (err) {
-    logger.error('addLoadToTrip exception', { tripId, loadId, err });
+    logger.error('addLoadToTrip exception', err, { tripId, loadId, err: serializeError(err) });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 const MarkReadSchema = z.object({
   ids: z.array(z.string().uuid()).optional(),
@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true, updated: result.count });
   } catch (err) {
-    logger.error('PATCH /api/v1/carrier/notifications/mark-read: failed', { orgId, error: err });
+    logger.error('PATCH /api/v1/carrier/notifications/mark-read: failed', err, { orgId, err: serializeError(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -14,7 +14,7 @@ import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { driverInviteSchema, driverUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
@@ -155,7 +155,7 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
         tenantId,
       });
     } catch (err) {
-      logger.error('[inviteDriver] fireEvent failed', { invitationId: invitation.id, err });
+      logger.error('[inviteDriver] fireEvent failed', err, { invitationId: invitation.id, err: serializeError(err) });
       // Do not throw — the invitation is already created successfully
     }
 
@@ -204,7 +204,7 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
     try {
       await recordActivationEvent(tenantId, 'first_real_driver');
     } catch (err) {
-      logger.error('[inviteDriver] activation tracker failed', { invitationId: invitation.id, err });
+      logger.error('[inviteDriver] activation tracker failed', err, { invitationId: invitation.id, err: serializeError(err) });
     }
 
     // Invalidate onboarding welcome cache so activation checklist reflects new driver on back-nav.

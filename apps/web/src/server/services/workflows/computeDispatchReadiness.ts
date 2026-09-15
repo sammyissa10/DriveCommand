@@ -14,7 +14,7 @@
  */
 import { prisma } from '@/lib/db/prisma'; // platform table (user.update) kept bare
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { sendDispatchReady, sendInstanceBlocked } from './notifications';
 import type { PlaybookEntityType, PrismaClient } from '@/generated/prisma';
 
@@ -78,7 +78,7 @@ export async function computeDispatchReadiness(
         playbookInstanceId: instanceId,
       });
     } catch (err) {
-      logger.error('[computeDispatchReadiness] sendDispatchReady failed', { instanceId, err });
+      logger.error('[computeDispatchReadiness] sendDispatchReady failed', err, { instanceId, err: serializeError(err) });
     }
   }
 
@@ -91,7 +91,7 @@ export async function computeDispatchReadiness(
         tenantId: instance.tenantId,
       });
     } catch (err) {
-      logger.error('[computeDispatchReadiness] sendInstanceBlocked failed', { instanceId, err });
+      logger.error('[computeDispatchReadiness] sendInstanceBlocked failed', err, { instanceId, err: serializeError(err) });
     }
   }
 

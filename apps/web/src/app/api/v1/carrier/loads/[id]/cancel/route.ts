@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { removeLoadFromTrip } from '@/lib/carrier/loads';
 
 const CancelSchema = z.object({
@@ -82,7 +82,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, removedStopCount });
   } catch (err) {
-    logger.error('cancelLoad exception', { loadId, err });
+    logger.error('cancelLoad exception', err, { loadId, err: serializeError(err) });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

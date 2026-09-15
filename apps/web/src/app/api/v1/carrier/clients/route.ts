@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth/supabase';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 import { listClients, createClient, DuplicateClientError } from '@/lib/carrier/clients';
 import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
       try {
         await recordActivationEvent(orgId, 'first_real_client');
       } catch (err) {
-        logger.error('[carrier/clients] activation tracker failed', { clientId: client.id, err });
+        logger.error('[carrier/clients] activation tracker failed', err, { clientId: client.id, err: serializeError(err) });
       }
     }
 

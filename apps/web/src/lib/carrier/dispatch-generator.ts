@@ -1,5 +1,5 @@
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
-import { logger } from '@/lib/logger';
+import { logger, serializeError } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -466,7 +466,7 @@ export async function generateDispatches(
       });
     } catch (err) {
       const msg = `Error generating dispatch for ${dateStr}: ${err instanceof Error ? err.message : String(err)}`;
-      logger.error('generateDispatches: per-date error', { templateId, dateStr, err });
+      logger.error('generateDispatches: per-date error', err, { templateId, dateStr, err: serializeError(err) });
       result.errors.push(msg);
     }
   }
