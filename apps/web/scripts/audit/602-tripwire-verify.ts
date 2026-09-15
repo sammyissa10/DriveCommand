@@ -776,9 +776,22 @@ async function seedFixtures(pg: Client) {
       await pg.query(`INSERT INTO "TagAssignment" ("tenantId","tagId") VALUES ($1,$2)`, [id, tagId]);
     }
   }
+  // One `AppEvent` per fixture tenant. It is the S2 (`"tenantId"`) shape with no
+  // inbound FK other than the tenant, so it gives the --after matrix a real,
+  // non-zero row count on a policy this task did NOT rewrite — which is what makes
+  // "the tripwire does not fire on a scoped statement" a counter-assertion rather
+  // than a comparison of two zeros.
+  for (const id of ids) {
+    const existing = await pg.query(`SELECT count(*)::int AS n FROM "AppEvent" WHERE "tenantId" = $1`, [id]);
+    if ((existing.rows[0].n as number) === 0) {
+      await pg.query(`INSERT INTO "AppEvent" ("tenantId","eventType") VALUES ($1, $2)`, [id, `${MARKER}.fixture`]);
+    }
+  }
+
   const counts = await pg.query(
     `SELECT (SELECT count(*)::int FROM "Tag" WHERE "tenantId" = ANY($1)) AS tags,
-            (SELECT count(*)::int FROM "TagAssignment" WHERE "tenantId" = ANY($1)) AS assignments`,
+            (SELECT count(*)::int FROM "TagAssignment" WHERE "tenantId" = ANY($1)) AS assignments,
+            (SELECT count(*)::int FROM "AppEvent" WHERE "tenantId" = ANY($1)) AS events`,
     [ids],
   );
   return {
@@ -786,7 +799,7 @@ async function seedFixtures(pg: Client) {
     tenantB: ids[1],
     tagA: tagIds[0],
     tagB: tagIds[1],
-    ...(counts.rows[0] as { tags: number; assignments: number }),
+    ...(counts.rows[0] as { tags: number; assignments: number; events: number }),
   };
 }
 
@@ -794,6 +807,7 @@ async function teardownFixtures(pg: Client) {
   const ids = await pg.query(`SELECT id FROM "Tenant" WHERE name LIKE $1`, [`${MARKER}%`]);
   const tenantIds = ids.rows.map((r) => r.id as string);
   for (const id of tenantIds) {
+    await pg.query(`DELETE FROM "AppEvent" WHERE "tenantId" = $1`, [id]);
     await pg.query(`DELETE FROM "TagAssignment" WHERE "tenantId" = $1`, [id]);
     await pg.query(`DELETE FROM "Tag" WHERE "tenantId" = $1`, [id]);
     await pg.query(`DELETE FROM "Tenant" WHERE id = $1`, [id]);
@@ -946,6 +960,276 @@ async function phaseTagEquivalence() {
 }
 
 // ---------------------------------------------------------------------------
+// Phase: --after  (the migrated database, the tripwire proven at SQL level)
+// ---------------------------------------------------------------------------
+
+/**
+ * Five distinct policy shapes from policy-satisfiability-sweep.md §1, plus writes.
+ * `rows` is only meaningful where a fixture exists; the shapes with no fixture are
+ * labelled so a zero count is never read as a passing counter-assertion.
+ */
+type ShapeProbe = {
+  shape: string;
+  table: string;
+  op: 'read' | 'insert' | 'update';
+  sql: string;
+  params: (f: { tenantA: string; tagA: string }) => unknown[];
+  hasFixture: boolean;
+};
+
+const AFTER_SHAPES: ShapeProbe[] = [
+  {
+    shape: 'S2 "tenantId" — NEWLY ROUTED by this migration',
+    table: 'Tag',
+    op: 'read',
+    sql: `SELECT count(*)::int AS n FROM "Tag" WHERE "tenantId" = $1`,
+    params: (f) => [f.tenantA],
+    hasFixture: true,
+  },
+  {
+    shape: 'S2 "tenantId" — NEWLY ROUTED by this migration',
+    table: 'Tag',
+    op: 'insert',
+    sql: `INSERT INTO "Tag" ("tenantId", name, "updatedAt") VALUES ($1, 'RLS602 after probe', now())`,
+    params: (f) => [f.tenantA],
+    hasFixture: true,
+  },
+  {
+    shape: 'S2 "tenantId" — NEWLY ROUTED by this migration',
+    table: 'Tag',
+    op: 'update',
+    sql: `UPDATE "Tag" SET "updatedAt" = now() WHERE "tenantId" = $1`,
+    params: (f) => [f.tenantA],
+    hasFixture: true,
+  },
+  {
+    shape: 'S2 "tenantId" — pre-existing, untouched by this migration',
+    table: 'AppEvent',
+    op: 'read',
+    sql: `SELECT count(*)::int AS n FROM "AppEvent" WHERE "tenantId" = $1`,
+    params: (f) => [f.tenantA],
+    hasFixture: true,
+  },
+  {
+    shape: 'S2 "tenantId" — pre-existing, untouched by this migration',
+    table: 'AppEvent',
+    op: 'insert',
+    sql: `INSERT INTO "AppEvent" ("tenantId","eventType") VALUES ($1, 'RLS602.after')`,
+    params: (f) => [f.tenantA],
+    hasFixture: true,
+  },
+  {
+    shape: 'S2 "tenantId" — pre-existing, untouched by this migration',
+    table: 'AppEvent',
+    op: 'update',
+    sql: `UPDATE "AppEvent" SET "eventType" = "eventType" WHERE "tenantId" = $1`,
+    params: (f) => [f.tenantA],
+    hasFixture: true,
+  },
+  {
+    shape: 'S10 org_id',
+    table: 'carrier_drivers',
+    op: 'read',
+    sql: `SELECT count(*)::int AS n FROM carrier_drivers WHERE org_id = $1`,
+    params: (f) => [f.tenantA],
+    hasFixture: false,
+  },
+  {
+    shape: 'S12 tenant_id',
+    table: 'audit_log',
+    op: 'read',
+    sql: `SELECT count(*)::int AS n FROM audit_log WHERE tenant_id = $1`,
+    params: (f) => [f.tenantA],
+    hasFixture: false,
+  },
+  {
+    shape: 'S17 EXISTS join (stops -> dispatches.org_id)',
+    table: 'stops',
+    op: 'read',
+    sql: `SELECT count(*)::int AS n FROM stops`,
+    params: () => [],
+    hasFixture: false,
+  },
+];
+
+const BYPASS_TABLES = ['Tag', 'carrier_drivers', 'audit_log'];
+
+async function phaseAfter() {
+  const pg = new Client({ connectionString: DIRECT_URL });
+  await pg.connect();
+  const fixtures = await seedFixtures(pg);
+  console.log('fixtures:', fixtures);
+  if (fixtures.tags < 2 || fixtures.assignments < 2 || fixtures.events < 2) {
+    console.error('FIXTURE FAILURE: RLS602 fixtures are incomplete.');
+    process.exit(1);
+  }
+
+  const out: Record<string, unknown> = { fixtures };
+  const matrix: Record<string, Record<string, string>> = {};
+
+  // Direction A/B/C: {flag on, flag off} x {unset(''), tenant A} x every shape.
+  for (const flag of ['on', 'off'] as const) {
+    for (const guc of ['none', 'tenantA'] as const) {
+      for (const s of AFTER_SHAPES) {
+        const c = await appUser();
+        await c.query(`SET app.tenant_context_tripwire = '${flag}'`);
+        if (guc === 'tenantA') {
+          await c.query(`SELECT set_config('app.current_tenant_id', $1, false)`, [fixtures.tenantA]);
+        } else {
+          await c.query(`SELECT set_config('app.current_tenant_id', '', false)`);
+        }
+        await c.query('BEGIN');
+        const key = `${s.shape} | ${s.table} | ${s.op}`;
+        const o = await sqlProbe(
+          c,
+          `flag=${flag} guc=${guc} | ${key}`,
+          guc === 'tenantA' ? 'legitimate' : 'observation',
+          s.sql,
+          s.params({ tenantA: fixtures.tenantA, tagA: fixtures.tagA }),
+        );
+        await c.query('ROLLBACK').catch(() => {});
+        await c.query(`RESET app.tenant_context_tripwire`).catch(() => {});
+        await c.end();
+        (matrix[key] ??= {})[`flag=${flag} guc=${guc}`] = outcomeCell(o);
+      }
+    }
+  }
+  out.matrix = matrix;
+
+  // Direction D: the bypass interaction on REAL bypass-carrying tables.
+  const bypass: Record<string, string> = {};
+  for (const t of BYPASS_TABLES) {
+    const c = await appUser();
+    await c.query(`SET app.tenant_context_tripwire = 'on'`);
+    await c.query(`SELECT set_config('app.current_tenant_id', '', false)`);
+    await c.query(`SELECT set_config('app.bypass_rls', 'on', false)`);
+    await c.query('BEGIN');
+    const o = await sqlProbe(
+      c,
+      `DIRECTION D: bypass_rls=on, no tenant context, flag ON | SELECT on ${t}`,
+      'observation',
+      `SELECT count(*)::int AS n FROM "${t}"`,
+    );
+    await c.query('ROLLBACK').catch(() => {});
+    await c.query(`RESET app.tenant_context_tripwire`).catch(() => {});
+    await c.query(`SELECT set_config('app.bypass_rls','',false)`).catch(() => {});
+    await c.end();
+    bypass[t] = outcomeCell(o);
+  }
+  out.directionD = bypass;
+
+  // The TC001 payload as seen on a REAL policy, quoted in full.
+  {
+    const c = await appUser();
+    await c.query(`SET app.tenant_context_tripwire = 'on'`);
+    await c.query(`SELECT set_config('app.current_tenant_id', '', false)`);
+    try {
+      await c.query(`SELECT id, name FROM "Tag" ORDER BY name LIMIT 5`);
+      out.realPolicyPayload = { raised: false };
+    } catch (e) {
+      const err = e as { code?: string; message: string; detail?: string; hint?: string };
+      out.realPolicyPayload = { raised: true, code: err.code, message: err.message, detail: err.detail, hint: err.hint };
+    }
+    console.log('  real-policy TC001:', JSON.stringify(out.realPolicyPayload, null, 2));
+    await c.query(`RESET app.tenant_context_tripwire`).catch(() => {});
+    await c.end();
+  }
+
+  // The ALTER ROLE lever — exercised ONCE and reset, with pg_db_role_setting
+  // compared before and after.
+  {
+    const before = await pg.query(
+      `SELECT setconfig::text AS c FROM pg_db_role_setting s
+         JOIN pg_roles r ON r.oid = s.setrole WHERE r.rolname = 'app_user'`,
+    );
+    // The lever the design DOCUMENTS. It is attempted rather than assumed — and on
+    // this instance it is REFUSED, which is a finding, not a failure of the run.
+    const levers: Record<string, string> = {};
+    const tryAs = async (client: Client, label: string, sql: string) => {
+      try {
+        await client.query(sql);
+        levers[label] = 'ACCEPTED';
+      } catch (e) {
+        const err = e as { code?: string; message: string };
+        levers[label] = `${err.code} ${err.message}`;
+      }
+    };
+    await tryAs(pg, "postgres: ALTER ROLE app_user SET app.tenant_context_tripwire='on'",
+      `ALTER ROLE app_user SET app.tenant_context_tripwire = 'on'`);
+    await tryAs(pg, "postgres: ALTER DATABASE postgres SET app.tenant_context_tripwire='on'",
+      `ALTER DATABASE postgres SET app.tenant_context_tripwire = 'on'`);
+    const selfSetter = await appUser();
+    await tryAs(selfSetter, "app_user: ALTER ROLE app_user SET app.tenant_context_tripwire='on'",
+      `ALTER ROLE app_user SET app.tenant_context_tripwire = 'on'`);
+    await tryAs(selfSetter, "app_user: session SET app.tenant_context_tripwire='on'",
+      `SET app.tenant_context_tripwire = 'on'`);
+    await selfSetter.query(`RESET app.tenant_context_tripwire`).catch(() => {});
+    await selfSetter.end();
+    out.levers = levers;
+    console.log('  lever attempts:', JSON.stringify(levers, null, 2));
+
+    const armed = await appUser();
+    const armedRead = await armed.query(
+      `SELECT current_setting('app.tenant_context_tripwire', TRUE) AS flag`,
+    );
+    await armed.end();
+    // Undo whichever of the two persistent levers was accepted. Both are attempted
+    // unconditionally so a partially-accepted state cannot survive this phase.
+    await pg.query(`ALTER ROLE app_user RESET app.tenant_context_tripwire`).catch(() => {});
+    await pg.query(`ALTER DATABASE postgres RESET app.tenant_context_tripwire`).catch(() => {});
+    const disarmed = await appUser();
+    const disarmedRead = await disarmed.query(
+      `SELECT current_setting('app.tenant_context_tripwire', TRUE) AS flag`,
+    );
+    await disarmed.end();
+    const after = await pg.query(
+      `SELECT setconfig::text AS c FROM pg_db_role_setting s
+         JOIN pg_roles r ON r.oid = s.setrole WHERE r.rolname = 'app_user'`,
+    );
+    out.alterRoleLever = {
+      pgDbRoleSettingBefore: before.rows[0]?.c ?? null,
+      armedConnectionReads: armedRead.rows[0].flag,
+      disarmedConnectionReads: disarmedRead.rows[0].flag,
+      pgDbRoleSettingAfter: after.rows[0]?.c ?? null,
+      byteIdentical: (before.rows[0]?.c ?? null) === (after.rows[0]?.c ?? null),
+    };
+    console.log('  ALTER ROLE lever:', JSON.stringify(out.alterRoleLever));
+    record(
+      (before.rows[0]?.c ?? null) === (after.rows[0]?.c ?? null)
+        ? {
+            label: "pg_db_role_setting for app_user is byte-identical after the ALTER ROLE lever was exercised and reset",
+            direction: 'observation',
+            ok: true,
+            detail: String(after.rows[0]?.c),
+          }
+        : {
+            label: "pg_db_role_setting for app_user is byte-identical after the ALTER ROLE lever was exercised and reset",
+            direction: 'observation',
+            ok: false,
+            error: { code: 'ASSERT', message: `${before.rows[0]?.c} -> ${after.rows[0]?.c}` },
+          },
+    );
+  }
+
+  // Leave staging flag-off, and prove it from a connection this phase did not set.
+  {
+    const c = await appUser();
+    const r = await c.query(`SELECT current_setting('app.tenant_context_tripwire', TRUE) AS flag`);
+    await c.end();
+    out.leftFlagState = r.rows[0].flag;
+    record({
+      label: 'staging is left FLAG-OFF: a fresh app_user connection reads the tripwire flag as',
+      direction: 'observation',
+      ok: r.rows[0].flag !== 'on',
+      detail: JSON.stringify(r.rows[0].flag),
+    } as Probe);
+  }
+
+  writeEvidence('06-tripwire-matrix', out);
+  await pg.end();
+}
+
+// ---------------------------------------------------------------------------
 // Evidence
 // ---------------------------------------------------------------------------
 
@@ -1017,6 +1301,9 @@ function writeEvidence(phase: string, extra: Record<string, unknown>) {
       break;
     case '--tag-equivalence':
       await phaseTagEquivalence();
+      break;
+    case '--after':
+      await phaseAfter();
       break;
     case '--setup': {
       const pg = new Client({ connectionString: DIRECT_URL });

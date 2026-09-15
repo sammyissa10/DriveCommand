@@ -1,0 +1,395 @@
+{
+  "phase": "06-tripwire-matrix",
+  "generatedAt": "2026-09-15T05:26:57.463Z",
+  "projectRef": "wyixpgunnjmzguhggocz",
+  "fixtures": {
+    "tenantA": "9034f751-31dc-456e-94ea-4b04a86c7176",
+    "tenantB": "3f14c1c7-bfc3-457c-92eb-7fb72b742467",
+    "tagA": "9cd430c1-d87d-4c62-8f3a-4e2b76bca4cb",
+    "tagB": "cc777296-165b-44d6-862d-0a8b54e68b33",
+    "tags": 2,
+    "assignments": 2,
+    "events": 2
+  },
+  "matrix": {
+    "S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | read": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1 {\"n\":1}",
+      "flag=off guc=none": "rows=1 {\"n\":0}",
+      "flag=off guc=tenantA": "rows=1 {\"n\":1}"
+    },
+    "S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | insert": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1",
+      "flag=off guc=none": "42501",
+      "flag=off guc=tenantA": "rows=1"
+    },
+    "S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | update": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1",
+      "flag=off guc=none": "rows=0",
+      "flag=off guc=tenantA": "rows=1"
+    },
+    "S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | read": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1 {\"n\":1}",
+      "flag=off guc=none": "rows=1 {\"n\":0}",
+      "flag=off guc=tenantA": "rows=1 {\"n\":1}"
+    },
+    "S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | insert": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1",
+      "flag=off guc=none": "42501",
+      "flag=off guc=tenantA": "rows=1"
+    },
+    "S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | update": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1",
+      "flag=off guc=none": "rows=0",
+      "flag=off guc=tenantA": "rows=1"
+    },
+    "S10 org_id | carrier_drivers | read": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1 {\"n\":0}",
+      "flag=off guc=none": "rows=1 {\"n\":0}",
+      "flag=off guc=tenantA": "rows=1 {\"n\":0}"
+    },
+    "S12 tenant_id | audit_log | read": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1 {\"n\":0}",
+      "flag=off guc=none": "rows=1 {\"n\":0}",
+      "flag=off guc=tenantA": "rows=1 {\"n\":0}"
+    },
+    "S17 EXISTS join (stops -> dispatches.org_id) | stops | read": {
+      "flag=on guc=none": "TC001",
+      "flag=on guc=tenantA": "rows=1 {\"n\":0}",
+      "flag=off guc=none": "rows=1 {\"n\":0}",
+      "flag=off guc=tenantA": "rows=1 {\"n\":0}"
+    }
+  },
+  "directionD": {
+    "Tag": "rows=1 {\"n\":2}",
+    "carrier_drivers": "rows=1 {\"n\":0}",
+    "audit_log": "rows=1 {\"n\":0}"
+  },
+  "realPolicyPayload": {
+    "raised": true,
+    "code": "TC001",
+    "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+    "detail": "statement: SELECT id, name FROM \"Tag\" ORDER BY name LIMIT 5",
+    "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  },
+  "levers": {
+    "postgres: ALTER ROLE app_user SET app.tenant_context_tripwire='on'": "42501 permission denied to set parameter \"app.tenant_context_tripwire\"",
+    "postgres: ALTER DATABASE postgres SET app.tenant_context_tripwire='on'": "42501 permission denied to set parameter \"app.tenant_context_tripwire\"",
+    "app_user: ALTER ROLE app_user SET app.tenant_context_tripwire='on'": "42501 permission denied to set parameter \"app.tenant_context_tripwire\"",
+    "app_user: session SET app.tenant_context_tripwire='on'": "ACCEPTED"
+  },
+  "alterRoleLever": {
+    "pgDbRoleSettingBefore": "{idle_in_transaction_session_timeout=30s}",
+    "armedConnectionReads": "",
+    "disarmedConnectionReads": "",
+    "pgDbRoleSettingAfter": "{idle_in_transaction_session_timeout=30s}",
+    "byteIdentical": true
+  },
+  "leftFlagState": "",
+  "probes": [
+    {
+      "label": "flag=on guc=none | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | read",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM \"Tag\" WHERE \"tenantId\" = $1",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | insert",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: INSERT INTO \"Tag\" (\"tenantId\", name, \"updatedAt\") VALUES ($1, 'RLS602 after probe', now())",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | update",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: UPDATE \"Tag\" SET \"updatedAt\" = now() WHERE \"tenantId\" = $1",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | read",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM \"AppEvent\" WHERE \"tenantId\" = $1",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | insert",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: INSERT INTO \"AppEvent\" (\"tenantId\",\"eventType\") VALUES ($1, 'RLS602.after')",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | update",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: UPDATE \"AppEvent\" SET \"eventType\" = \"eventType\" WHERE \"tenantId\" = $1",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S10 org_id | carrier_drivers | read",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM carrier_drivers WHERE org_id = $1",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S12 tenant_id | audit_log | read",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM audit_log WHERE tenant_id = $1",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=none | S17 EXISTS join (stops -> dispatches.org_id) | stops | read",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: SELECT count(*)::int AS n FROM stops",
+        "hint": "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+      }
+    },
+    {
+      "label": "flag=on guc=tenantA | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "flag=on guc=tenantA | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | insert",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=on guc=tenantA | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | update",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=on guc=tenantA | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "flag=on guc=tenantA | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | insert",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=on guc=tenantA | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | update",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=on guc=tenantA | S10 org_id | carrier_drivers | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=on guc=tenantA | S12 tenant_id | audit_log | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=on guc=tenantA | S17 EXISTS join (stops -> dispatches.org_id) | stops | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=none | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | read",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=none | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | insert",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"Tag\""
+      }
+    },
+    {
+      "label": "flag=off guc=none | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | update",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=0"
+    },
+    {
+      "label": "flag=off guc=none | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | read",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=none | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | insert",
+      "direction": "observation",
+      "ok": false,
+      "error": {
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"AppEvent\""
+      }
+    },
+    {
+      "label": "flag=off guc=none | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | update",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=0"
+    },
+    {
+      "label": "flag=off guc=none | S10 org_id | carrier_drivers | read",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=none | S12 tenant_id | audit_log | read",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=none | S17 EXISTS join (stops -> dispatches.org_id) | stops | read",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=tenantA | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "flag=off guc=tenantA | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | insert",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=off guc=tenantA | S2 \"tenantId\" — NEWLY ROUTED by this migration | Tag | update",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=off guc=tenantA | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":1}"
+    },
+    {
+      "label": "flag=off guc=tenantA | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | insert",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=off guc=tenantA | S2 \"tenantId\" — pre-existing, untouched by this migration | AppEvent | update",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1"
+    },
+    {
+      "label": "flag=off guc=tenantA | S10 org_id | carrier_drivers | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=tenantA | S12 tenant_id | audit_log | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "flag=off guc=tenantA | S17 EXISTS join (stops -> dispatches.org_id) | stops | read",
+      "direction": "legitimate",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "DIRECTION D: bypass_rls=on, no tenant context, flag ON | SELECT on Tag",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":2}"
+    },
+    {
+      "label": "DIRECTION D: bypass_rls=on, no tenant context, flag ON | SELECT on carrier_drivers",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "DIRECTION D: bypass_rls=on, no tenant context, flag ON | SELECT on audit_log",
+      "direction": "observation",
+      "ok": true,
+      "detail": "rows=1 {\"n\":0}"
+    },
+    {
+      "label": "pg_db_role_setting for app_user is byte-identical after the ALTER ROLE lever was exercised and reset",
+      "direction": "observation",
+      "ok": true,
+      "detail": "{idle_in_transaction_session_timeout=30s}"
+    },
+    {
+      "label": "staging is left FLAG-OFF: a fresh app_user connection reads the tripwire flag as",
+      "direction": "observation",
+      "ok": true,
+      "detail": "\"\""
+    }
+  ]
+}

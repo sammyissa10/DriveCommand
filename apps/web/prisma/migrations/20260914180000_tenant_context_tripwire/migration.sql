@@ -101,12 +101,32 @@
 -- policy evaluation on 93 policies; that query would itself be subject to RLS (a
 -- recursion hazard) and would need its own grant. A GUC costs nothing.
 --
---   ALTER ROLE app_user SET app.tenant_context_tripwire = 'on';   -- the lever
---   ALTER ROLE app_user RESET app.tenant_context_tripwire;        -- and its undo
+-- HOW THE FLAG IS ACTUALLY ARMED — MEASURED, and NOT what the design assumed.
+-- The design (wrapper-migration-scope.md §5, and this file's first draft) named
 --
--- flips it for every new connection in one statement, with no migration and no
--- deploy. `pg_db_role_setting` already proves role-level custom GUCs work on this
--- Supabase instance. A session-level `SET` is the per-connection escape hatch.
+--   ALTER ROLE app_user SET app.tenant_context_tripwire = 'on';
+--
+-- as the one-statement lever, on the strength of `pg_db_role_setting` already
+-- carrying role-level entries. Attempted on staging
+-- (evidence/06-tripwire-matrix.md), it is REFUSED — and so are the two obvious
+-- variants:
+--
+--   postgres: ALTER ROLE app_user SET  …  -> 42501 permission denied to set parameter
+--   postgres: ALTER DATABASE postgres SET … -> 42501 permission denied to set parameter
+--   app_user: ALTER ROLE app_user SET  …  -> 42501 permission denied to set parameter
+--   app_user: SET app.tenant_context_tripwire = 'on'  -> ACCEPTED
+--
+-- Supabase's `postgres` is not a superuser, and PostgreSQL refuses `ALTER ROLE/
+-- DATABASE ... SET` on a PLACEHOLDER (custom, extension-less) GUC to anyone who is
+-- not. The pre-existing `pg_db_role_setting` rows were written by the platform's own
+-- superuser roles, which is why they looked like proof and were not.
+--
+-- So the ARMING MECHANISM IS A SESSION-LEVEL `SET`, issued per connection by
+-- whatever opens it — `lib/db/prisma.ts`'s `pool.on('connect')` in a staging build,
+-- or a harness, or a psql session. That is a per-environment change rather than one
+-- statement, and it is strictly SAFER for production: there is no server-side switch
+-- anybody can flip by accident, and the flag cannot outlive the process that sets it
+-- (measured: Supavisor discards session state on release).
 --
 -- CONSEQUENCE, STATED PLAINLY: this migration file is committed, so
 -- `scripts/migrate.mjs` will apply it to PRODUCTION on the next `vercel --prod`.

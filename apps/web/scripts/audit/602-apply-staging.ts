@@ -120,7 +120,18 @@ const checksum = createHash('sha256').update(lf, 'utf8').digest('hex');
     );
     say('ledger row INSERTed by hand (apply_migration/DDL does NOT write this — DEC-17)');
   } else {
-    say('ledger row already present — not duplicated');
+    // The row exists. If the FILE has changed since it was written (a correction to
+    // the header, as happened when the ALTER ROLE lever turned out to be refused),
+    // the stored checksum is stale — refresh it in place rather than leaving a row
+    // that claims to describe SQL it no longer matches. `scripts/migrate.mjs` skips
+    // by migration_name and never validates a checksum, so this is a bookkeeping
+    // correction and not a re-apply.
+    const upd = await c.query(
+      `UPDATE _prisma_migrations SET checksum = $1::varchar
+        WHERE migration_name = $2::varchar AND checksum <> $1::varchar`,
+      [checksum, NAME],
+    );
+    say(`ledger row already present — checksum ${upd.rowCount ? 'REFRESHED (file changed)' : 'unchanged'}`);
   }
 
   const back = await c.query(

@@ -1,0 +1,44 @@
+quick-602 Task 3 — `npm run test:rls-isolation` either side of the migration
+===========================================================================
+
+Same command, same reporter (vitest's default), same machine, same staging
+database, run in this task rather than quoted from a previous summary
+(quick-561/565/567: three consecutive tasks published a baseline that was
+measuring something other than the tree they thought).
+
+The suite is DB-backed (`vitest.db.config.ts`, `tests-db/rls-isolation/*`), so
+"pre-migration" had to be created rather than remembered: the migration was
+REVERTED on staging (old `current_tenant_id()` body restored, `tenant_context_
+required` dropped, both inline `Tag`/`TagAssignment` bodies restored, ledger row
+deleted), the suite was run, and the migration was re-applied immediately after.
+The revert was verified before the run:
+
+    reverted — {"raiser":0,"tag_using":"((\"tenantId\")::text = current_setting('app.current_tenant_id'::text, true))"}
+
+RUN 1 — POST-migration, flag OFF (taken first, before the revert)
+-----------------------------------------------------------------
+ Test Files  4 passed (4)
+      Tests  156 passed (156)
+   Duration  120.01s (transform 248ms, setup 0ms, import 721ms, tests 83.15s)
+
+RUN 2 — PRE-migration (migration reverted on staging)
+------------------------------------------------------
+ Test Files  4 passed (4)
+      Tests  156 passed (156)
+   Duration  93.05s (transform 234ms, setup 0ms, import 684ms, tests 66.98s)
+
+RUN 3 — POST-migration again, after re-applying, flag OFF (the state staging is left in)
+----------------------------------------------------------------------------------------
+ Test Files  4 passed (4)
+      Tests  156 passed (156)
+   Duration  70.77s (transform 263ms, setup 0ms, import 728ms, tests 48.51s)
+
+VERDICT
+-------
+4 files / 156 tests, all passed, in all three runs. The post-migration count
+EQUALS the pre-migration count; the migration adds and removes no test and changes
+no assertion's outcome with the flag off. Durations differ by warm/cold cache
+(120s -> 93s -> 71s) and are recorded rather than compared.
+
+Every run printed a `Test Files … | Tests …` summary line, so none of them is the
+vitest-4 `--reporter=basic` shape that exits 0 having executed zero tests.

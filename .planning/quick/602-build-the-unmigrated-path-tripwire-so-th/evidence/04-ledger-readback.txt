@@ -1,5 +1,5 @@
 migration: 20260914180000_tenant_context_tripwire
-sha256 (LF bytes): bd90afb5c2233b7b50908b1df9fe18652a8edb09ddd96e6602d64b1253ab85b7
+sha256 (LF bytes): ad2f6892ede6f5c36e71f87b93c709e66ec37885f181aeb85dcce9a886f724dc
 current_tenant_id() proacl BEFORE: =X/postgres postgres=X/postgres anon=X/postgres authenticated=X/postgres service_role=X/postgres app_user=X/postgres
 policy BEFORE  Tag.tenant_isolation_policy USING ("tenantId" = current_tenant_id())
 policy BEFORE  TagAssignment.tenant_isolation_policy USING ("tenantId" = current_tenant_id())
@@ -27,9 +27,9 @@ AS $function$
 $function$
 
 SENTINEL visible before writing: YES — 20260914170000_activation_progress_congrats_shown_at
-ledger row INSERTed by hand (apply_migration/DDL does NOT write this — DEC-17)
+ledger row already present — checksum REFRESHED (file changed)
 READ BACK — newest 3 ledger rows:
-  20260914180000_tenant_context_tripwire | steps=0 | logs="" | started=finished:true | checksum=bd90afb5c2233b7b50908b1df9fe18652a8edb09ddd96e6602d64b1253ab85b7
+  20260914180000_tenant_context_tripwire | steps=0 | logs="" | started=finished:true | checksum=ad2f6892ede6f5c36e71f87b93c709e66ec37885f181aeb85dcce9a886f724dc
   20260914170000_activation_progress_congrats_shown_at | steps=1 | logs=null | started=finished:false | checksum=manual
   20260914160000_provisioning_under_app_user | steps=1 | logs=null | started=finished:false | checksum=manual
 HEAD IS OURS: true (expected 20260914180000_tenant_context_tripwire)
