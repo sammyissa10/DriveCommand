@@ -1,0 +1,52 @@
+quick-605 · 05 — e2e/owner/nuqs-grid-render.spec.ts
+
+Run against a local `next dev` pointed at STAGING (`wyixpgunnjmzguhggocz`) on the
+`app_user` role with the quick-602 tripwire armed. Storage states were minted by the
+repo's own `e2e/auth.setup.ts` from the staging fixtures:
+
+  TEST_OWNER_EMAIL=owner@alpha.staging.test
+  TEST_SYSADMIN_EMAIL=sysadmin@staging.test
+
+--- npx playwright test e2e/owner/nuqs-grid-render.spec.ts --project=chromium --workers=1
+
+Running 9 tests using 1 worker
+
+  ok 1 [setup] > e2e\auth.setup.ts:148:8 > multi-role auth setup > authenticate as owner (1.6s)
+  ok 2 [setup] > e2e\auth.setup.ts:162:8 > multi-role auth setup > authenticate as sysadmin (448ms)
+  ok 3 [setup] > e2e\auth.setup.ts:171:8 > multi-role auth setup > authenticate as driver (159ms)
+  ok 4 [setup] > e2e\auth.setup.ts:180:8 > multi-role auth setup > authenticate as manager (133ms)
+AUTH SETUP FAILED - driver (driver@test.com): status=401 reason={"error":"Invalid email or password"}
+AUTH SETUP FAILED - manager (manager@test.com): status=401 reason={"error":"Invalid email or password"}
+  ok 5 [setup] > e2e\auth.setup.ts:193:8 > multi-role auth setup > auth setup summary (3ms)
+  ok 6 [chromium] > nuqs grid render - (owner) > @smoke /carrier/driver-pay/settlements renders its grid (3.2s)
+  ok 7 [chromium] > nuqs grid render - (owner) > @smoke /checklists/automation renders its grid (1.4s)
+  ok 8 [chromium] > nuqs grid render - (owner) > @smoke /carrier/driver-pay/reports renders a grid on an EXPLICIT tab (1.7s)
+  ok 9 [chromium] > nuqs grid render - (admin) > @smoke /docs/features renders its grid (1.5s)
+
+  9 passed (12.2s)
+
+ALL FOUR SPEC TESTS PASS, INCLUDING THE (admin) ROW. Nothing was skipped.
+
+The two `AUTH SETUP FAILED` lines are the pre-existing `driver@test.com` /
+`manager@test.com` fixtures, which have no staging accounts. They are printed by
+`auth.setup.ts`'s own summary test (quick-576) and take nothing down; this spec
+uses neither role.
+
+--- THE FLAKE, CHARACTERISED RATHER THAN HIDDEN
+
+At the config's default `workers: 3`, `/carrier/driver-pay/settlements` failed on 2 of
+3 runs and passed on the third. The correlated server-log entry is NOT a nuqs error:
+
+  ⨯ Error: timeout exceeded when trying to connect
+      at async getTenantPrisma (src\lib\context\tenant-context.ts:179:3)
+      at async SettlementsPage (src\app\(owner)\carrier\driver-pay\settlements\page.tsx:49:18)
+   GET /carrier/driver-pay/settlements 500 in 5.6s
+
+It is Postgres connection-pool exhaustion, which `playwright.config.ts` documents in its
+own comment ("the withTenantRLS extension wraps every query in a transaction; too many
+parallel tests saturate the Supabase connection pool"), amplified here by the staging
+`app_user` string carrying `connection_limit=1`. Runs at `--workers=1`: 3 for 3 green.
+
+Recorded rather than smoothed over: on a metered staging connection this spec is
+concurrency-sensitive. In CI `workers` is already 1 (`process.env.CI ? 1 : 3`), so the
+configuration CI actually uses is the one that was green here.

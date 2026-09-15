@@ -1,0 +1,75 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+=== every layout under src/app, and what it renders ===
+
+src/app/(admin)/docs/layout.tsx
+  renders: AdminDocSearch, BookOpen, Cog, Link
+src/app/(admin)/layout.tsx
+  renders: AppLogo, DriveCommandWordmark, Link, UserMenu
+src/app/(auth)/layout.tsx
+  renders: (nothing capitalised)
+src/app/(driver)/layout.tsx
+  renders: AppLogo, DriveCommandWordmark, DriverBottomNav, DriverGpsPing, DriverNav, DriverNotificationBell, UserMenu
+src/app/(driver-fullscreen)/layout.tsx
+  renders: (nothing capitalised)
+src/app/(owner)/carrier/layout.tsx
+  renders: CarrierBreadcrumb
+src/app/(owner)/help/layout.tsx
+  renders: (nothing capitalised)
+src/app/(owner)/layout.tsx
+  renders: OwnerShell, TRPCReactProvider
+src/app/(owner)/settings/layout.tsx
+  renders: (nothing capitalised)
+src/app/(shared)/layout.tsx
+  renders: (nothing capitalised)
+src/app/layout.tsx
+  renders: AuthProvider, NuqsAdapter, SupportTicketModal, Toaster
+
+=== provider 1 — AuthProvider (root) ===
+useAuth() consumers: 7
+route groups reached: (admin), (driver), (owner), (root)
+mounted at: src/app/layout.tsx (root) — covers every group by construction
+
+=== provider 2 — TRPCReactProvider ((owner)/layout.tsx) ===
+useTRPC() consumers: 17
+  src/app/(owner)/carrier/trips/new/NewTripMobile.tsx
+  src/app/(owner)/checklists/_components/CreatePlaybookDialog.tsx
+  src/app/(owner)/checklists/_components/DashboardClient.tsx
+  src/app/(owner)/checklists/_components/StartChecklistDialog.tsx
+  src/app/(owner)/checklists/analytics/_components/AnalyticsDashboard.tsx
+  src/app/(owner)/checklists/automation/_components/AutomationActivityLog.tsx
+  src/app/(owner)/checklists/automation/_components/AutomationClient.tsx
+  src/app/(owner)/checklists/automation/_components/CreateCustomRuleDialog.tsx
+  src/app/(owner)/checklists/automation/_components/RecipeCard.tsx
+  src/app/(owner)/checklists/instances/[id]/_components/ChecklistDetailClient.tsx
+  src/app/(owner)/checklists/playbooks/[id]/edit/_components/BuilderClient.tsx
+  src/app/(owner)/checklists/playbooks/[id]/edit/_components/BuilderStepRow.tsx
+  src/app/(owner)/checklists/playbooks/[id]/edit/_components/NewStepTemplateButton.tsx
+  src/app/(owner)/checklists/playbooks/[id]/edit/_components/StepDetailEditor.tsx
+  src/app/(owner)/checklists/playbooks/[id]/edit/_components/StepLibraryPanel.tsx
+  src/components/carrier/dispatches/NewDispatchForm.tsx
+  src/components/carrier/loads/DispatchLoadModal.tsx
+
+pages reaching a useTRPC() consumer: 7
+  (owner)      /carrier/loads/[id]                                src/app/(owner)/carrier/loads/[id]/page.tsx
+  (owner)      /carrier/trips/new                                 src/app/(owner)/carrier/trips/new/page.tsx
+  (owner)      /checklists/analytics                              src/app/(owner)/checklists/analytics/page.tsx
+  (owner)      /checklists/automation                             src/app/(owner)/checklists/automation/page.tsx
+  (owner)      /checklists/instances/[id]                         src/app/(owner)/checklists/instances/[id]/page.tsx
+  (owner)      /checklists                                        src/app/(owner)/checklists/page.tsx
+  (owner)      /checklists/playbooks/[id]/edit                    src/app/(owner)/checklists/playbooks/[id]/edit/page.tsx
+
+pages OUTSIDE (owner) that reach a useTRPC() consumer: 0
+
+=== provider 3 — NuqsAdapter (root, as of quick-605) ===
+fixed by this task; see docs/audits/nuqs-adapter-render-failure.md
+
+=== layouts that mount NO provider at all ===
+  src/app/(admin)/docs/layout.tsx
+  src/app/(admin)/layout.tsx
+  src/app/(auth)/layout.tsx
+  src/app/(driver)/layout.tsx
+  src/app/(driver-fullscreen)/layout.tsx
+  src/app/(owner)/carrier/layout.tsx
+  src/app/(owner)/help/layout.tsx
+  src/app/(owner)/settings/layout.tsx
+  src/app/(shared)/layout.tsx

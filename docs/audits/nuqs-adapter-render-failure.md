@@ -511,3 +511,171 @@ plus the `generatedAt` timestamp.** `unmigratedUnits` (456), `unmigratedCallSite
 bookkeeping for a deleted file and not a countdown moving. Stated explicitly, because "regenerate the
 artefact until the test is green" is the shape of weakening a guard, and the check that it is not is
 that the guarded number did not move.
+
+---
+
+### Re-measured after the LAST commit, which is a different number
+
+The table above was taken before the guards in §8 existed. quick-561's lesson is that a suite figure
+published before a task writes its own test file is a baseline the next task inherits 11 tests short,
+so here is the figure after everything this task adds:
+
+| | tests | passed | failed | pending | failing FILES |
+|---|---|---|---|---|---|
+| before (`49bf351d` source) | 2086 | 1967 | 64 | 52 | 18 |
+| final (everything committed) | **2097** | **1978** | **64** | 52 | **18** |
+
+`+11` tests and `+11` passes are exactly `src/__tests__/nuqs-adapter-coverage.test.ts`. **Failing-file
+set still identical by name.**
+
+And `wrapper-countdown.json` needed regenerating a **second** time, for the mirror-image reason:
+adding the guard file under `src/__tests__/` took `filesScanned` back from 1690 to **1691**, the
+original value. The guarded numbers never moved in either direction (456 / 459 / 202 / 0). Worth
+recording as a small standing fact: **any task that adds or deletes a file under `apps/web/src` will
+turn `tests/security/wrapper-migration-countdown.test.ts` red until the artefact is regenerated**, and
+the check that the regeneration is honest is that `unmigratedUnits` is unchanged.
+
+---
+
+## 8. The guards
+
+Two, because neither is sufficient and both are cheap.
+
+### 8.1 `apps/web/src/__tests__/nuqs-adapter-coverage.test.ts` — the primary guard
+
+A source scan. It imports `findNuqsConsumerPages`, `findAdapterMounts` and `computeCoverage` from
+`scripts/audit/605-nuqs-coverage.ts` — **the same code that produced §2's evidence, not a second
+copy** — and asserts every consumer page is `covered`. The failure message names the uncovered pages
+with route, route group and file, and names the fix location.
+
+It asserts the recurrence shape directly: *a nuqs consumer reachable from a route with no adapter
+above it*. No server, no session, no database.
+
+Three assertions beyond coverage, each load-bearing:
+
+- **the integrity block** — files scanned above a floor, seed set non-empty, seed modules non-empty
+  after CRLF normalisation, mount set non-empty, page set ≥ 7, plus two counter-assertions that
+  `assertScanIntegrity` **rejects** an empty page list and an empty mount list. Without these, "every
+  page is covered" is satisfied by no pages at all, and **the failure mode of a source scan is GREEN**.
+  The CRLF normalisation is not cosmetic: this repo is `core.autocrlf=true` with no `.gitattributes`,
+  so an LF-anchored reader returns empty on a Windows checkout and the whole guard passes vacuously
+  (quick-546).
+- **`coveredBy` must be exactly `['src/app/layout.tsx']`** — this is what fails if a future
+  recurrence is "fixed" by adding a second route-group mount instead of using the root one, which is
+  the state this task found the repo in.
+- **both `(owner)` and `(admin)` must appear among the traced groups** — so a scan that silently
+  stopped covering one group fails rather than shrinking quietly.
+
+**Witnessed RED.** `evidence/05-guard-fires-red.md` carries the captured failure. The revert was the
+**exact pre-605 shape** — root mount removed AND `(dev)/layout.tsx` restored — so
+`findAdapterMounts` returned a non-empty set and **all nine integrity tests stayed green while the
+two coverage tests failed, naming all seven pages**. That is the anti-vacuity evidence: the guard
+fails on the SHAPE, an adapter that exists but is scoped to a group its consumers do not live in, not
+merely on "no adapter anywhere". Restored, re-confirmed green: 11 passed.
+
+**What it does NOT prove**, stated in the test's own header: that an adapter is in the layout chain is
+not that the page renders. A different missing provider, or any other render-time throw, passes it
+untouched. It is also blind to a consumer whose page is reached by something the import scan cannot
+follow.
+
+### 8.2 `apps/web/e2e/owner/nuqs-grid-render.spec.ts` — the browser smoke
+
+Four routes in a real browser, asserting 200 **and** the absence of `nuqs requires an adapter` in both
+the rendered text and the markup, **and** the absence of Next's error dialog:
+
+| route | storage state | why this one |
+|---|---|---|
+| `/carrier/driver-pay/settlements` | owner | unconditional grid; was 500 |
+| `/checklists/automation` | owner | unconditional grid; was 500 |
+| `/carrier/driver-pay/reports?tab=settlement-history` | owner | **the `?tab=` is load-bearing** — the default tab's grid is behind the `isEmpty` data gate, so visiting the bare URL against a tenant with no payroll asserts nothing, which is exactly how this route went unnoticed |
+| `/docs/features` | sysadmin | the `(admin)` half a mount in `(owner)/layout.tsx` would have missed — the only browser evidence for why the mount is at the root |
+
+**All four pass**, against a local server pointed at staging, with storage states minted by the repo's
+own `e2e/auth.setup.ts` from the staging fixtures. Nothing skipped
+(`evidence/05-playwright-green.txt`).
+
+Two decisions in it were measurements, not preferences:
+
+- **The error-overlay locator excludes `nextjs-portal`.** Probed in a real browser: on a healthy page
+  `nextjs-portal` is 1 and `[data-nextjs-dialog]` is 0; on a genuinely failing page (`/carrier/trips`,
+  HTTP 500 on staging) both dialog selectors are 1 while `nextjs-portal` is still 1.
+  `nextjs-portal` and `[data-nextjs-toast]` are the dev-tools host and are present on **every** dev
+  page — the first draft asserted their absence and failed all three `(owner)` rows while the pages
+  were rendering perfectly. The dialog pair was witnessed in **both** directions before being used.
+  (Role locators are the wrong instrument for an absence check regardless: the accessibility tree
+  excludes `display:none` subtrees, so `getByRole` returns 0 for a hidden-but-present node — quick-559.)
+- **The `(admin)` block's `test.use` is unconditional**, matching the five existing
+  `e2e/sysadmin/*.spec.ts` files. A guarded `fs.existsSync` skip was written first and removed:
+  Playwright collects every spec module **before** the `setup` project runs, so on a cold CI checkout
+  `sysadmin.json` does not exist yet at module load and the block would skip itself on every run while
+  looking deliberate. **A spec that can never run is worse than one that fails loudly.**
+
+**What it does NOT prove**: it needs a server, a session, and data in the right branch; it cannot cover
+the dynamic-segment routes (no stable id in CI, and a fabricated one measures the id — this task hit
+exactly that and got a 404 that looked like a verdict); and it is blind to a consumer page nobody
+thought to list in it. That last miss is precisely what 8.1 covers, and 8.1's miss is precisely what
+8.2 covers.
+
+**One honest wrinkle, characterised rather than hidden.** At the config's default `workers: 3`,
+`/carrier/driver-pay/settlements` failed 2 of 3 runs with `timeout exceeded when trying to connect` at
+`getTenantPrisma` — Postgres connection-pool exhaustion, which `playwright.config.ts` documents in its
+own comment and which the staging `app_user` string's `connection_limit=1` amplifies. **Not a nuqs
+failure**; no adapter error in the trace. At `--workers=1`, 3 for 3 green — and CI already runs
+`workers: 1`.
+
+---
+
+## 9. What remains unmeasured
+
+Stated plainly, because a gap named is a gap someone can close and a gap implied is a gap that comes
+back.
+
+1. **Every runtime verdict in this document is a STAGING verdict.** Production was never connected to.
+   `/carrier/driver-pay/reports` is the standing proof that this matters: it measured a confident 200
+   on staging in §3 and, on the same code with one database row present, throws
+   `nuqs requires an adapter` from `SettlementsTable` while still answering 200 (§6). **A staging 200
+   and a production 200 are different claims, and so are two staging 200s taken against different
+   data.**
+
+2. **`/carrier/imports/[id]/stops` was never rendered, before or after.** `public.document_imports`
+   holds zero rows on staging, tenant-wide, so no request was issued — a fabricated id measures the id.
+   Statically it is the barrel-only edge of §2 (`StopReviewScreen` imports `useGridSelection`, which is
+   zustand-backed, and renders no `<DataGrid>`), so it is *expected* safe. **Expected safe is not a
+   verdict.** Closing this needs a seeded `document_imports` row on staging or a CI fixture.
+
+3. **`/carrier/driver-pay/reports/[driverId]` is not in the Playwright smoke**, and neither is
+   `/carrier/imports/[id]/stops`, for the same reason: no stable id in CI. Both were exercised on
+   staging in §6 (the first with a seeded settlement, in both the mount-present and mount-removed
+   directions); neither has a standing browser guard.
+
+4. **`src/app/global-error.tsx` is not covered by the root mount** and cannot be — it replaces the root
+   layout. Checked, not assumed: it has zero imports and reaches no nuqs consumer, so the gap is real
+   and currently empty. It becomes live if anyone renders a `useDataGrid` component inside the global
+   error boundary.
+
+5. **Whether `next build` can catch this class for a GENUINELY PRERENDERED page is unknown.** This
+   build produced 437 dynamic routes, 5 static ones (all auth-free) and **zero** SSG, so there is no
+   prerendered nuqs consumer to observe, and manufacturing one would be a product change outside this
+   task. The operational answer for this repository does not depend on it: under the current layout
+   structure no nuqs consumer can be prerendered, so the build cannot catch it here either way.
+
+6. **Whether the Playwright workflow is currently green on `master` could not be read from this
+   machine** — `gh` is unauthenticated and was not authenticated. The structural answer in §4 does not
+   depend on it, but the CI colour itself is unverified.
+
+7. **`TEST_SYSADMIN_EMAIL` / `TEST_SYSADMIN_PASSWORD` are unset in the local environment**, so
+   `.playwright/auth/sysadmin.json` normally does not exist here and the new spec's `(admin)` block —
+   like the five existing `e2e/sysadmin/*.spec.ts` files — will fail rather than skip. For this task
+   they were supplied from the staging fixtures, which is why the `(admin)` row has a green result
+   above. In CI they are secrets and should be present. Pre-existing, reported, not fixed.
+
+8. **`TRPCReactProvider` has the same route-group shape and is not broken today** — zero pages outside
+   `(owner)` reach a `useTRPC()` consumer — but two of its 17 consumers live in the shared
+   `src/components` tree. §8's full enumeration is in
+   `.planning/quick/605-fix-the-two-production-screens-that-500-/evidence/05-provider-scan.md`.
+   **Reported, not fixed.** Recommended follow-up is the guard rather than the hoist.
+
+9. **`apps/web` has no working lint entry point** (quick-562): `next lint` no longer accepts `--dir` on
+   this Next version, and ESLint 9 finds no `eslint.config.js` because the repo still carries
+   `.eslintrc.*`. No lint was run for this task and none is claimed. `tsc` is the only type-level gate
+   that actually runs, and it reports 0 errors with the probe recorded in §5.

@@ -1,0 +1,475 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 601ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ GET /sign-in 200 in 1789ms (next.js: 1302ms, proxy.ts: 64ms, application-code: 422ms)
+ GET /sign-in 200 in 90ms (next.js: 33ms, proxy.ts: 7ms, application-code: 50ms)
+ POST /api/auth/login 200 in 2.4s (next.js: 352ms, proxy.ts: 5ms, application-code: 1996ms)
+ POST /api/auth/login 200 in 500ms (next.js: 4ms, proxy.ts: 3ms, application-code: 493ms)
+ POST /api/auth/login 401 in 133ms (next.js: 8ms, proxy.ts: 5ms, application-code: 119ms)
+ POST /api/auth/login 401 in 162ms (next.js: 8ms, proxy.ts: 7ms, application-code: 147ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 2.6s (next.js: 114ms, proxy.ts: 141ms, application-code: 2.3s)
+ GET /checklists/automation 200 in 5.6s (next.js: 205ms, proxy.ts: 531ms, application-code: 4.8s)
+ GET /carrier/driver-pay/settlements 200 in 5.6s (next.js: 96ms, proxy.ts: 531ms, application-code: 5.0s)
+ GET /carrier/driver-pay/settlements 200 in 3.1s (next.js: 16ms, proxy.ts: 333ms, application-code: 2.8s)
+⨯ Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async TripsPage (src\app\(owner)\carrier\trips\page.tsx:19:62)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  digest: '2634114640',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."first_name", "public"."carrier_drivers"."last_name" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."org_id" = $1 AND "public"."carrier_drivers"."status" = $2) ORDER BY "public"."carrier_drivers"."last_name" ASC OFFSET $3',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ GET /carrier/trips 500 in 6.5s (next.js: 2.8s, proxy.ts: 304ms, application-code: 3.4s)
+[browser] [2026-09-15T17:18:09.994Z] ERROR: [owner-error-boundary] Server Component render error: {"digest":"2634114640"} DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at a (src\generated\prisma\runtime\client.js:79:5816)
+    at Promise.all (<anonymous>:1:20)
+    at TripsPage (src\app\(owner)\carrier\trips\page.tsx:19:62)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... (src/lib/logger.ts:53:13)
+ GET /api/auth/me 200 in 1093ms (next.js: 672ms, proxy.ts: 177ms, application-code: 244ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 1119ms (next.js: 6ms, proxy.ts: 110ms, application-code: 1003ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 697ms (next.js: 9ms, proxy.ts: 115ms, application-code: 573ms)
+[2026-09-15T17:18:12.720Z] ERROR: [api/v1/messages/conversations GET] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\v1\messages\conversations\route.ts:37:22)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/v1/messages/conversations?tab=all 500 in 1815ms (next.js: 938ms, proxy.ts: 182ms, application-code: 695ms)
+[2026-09-15T17:18:13.324Z] ERROR: [api/v1/messages/conversations GET] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\v1\messages\conversations\route.ts:37:22)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/v1/messages/conversations?tab=all 500 in 2.3s (next.js: 801ms, proxy.ts: 342ms, application-code: 1186ms)
+ GET /api/v1/carrier/dispatches?needs_assignment=true&status=planned 200 in 3.0s (next.js: 1898ms, proxy.ts: 98ms, application-code: 1032ms)
+ GET /api/v1/carrier/dispatches?needs_assignment=true&status=planned 200 in 3.0s (next.js: 1780ms, proxy.ts: 217ms, application-code: 1033ms)
+ POST /api/auth/login 200 in 1627ms (next.js: 4ms, proxy.ts: 2ms, application-code: 1622ms)
+ POST /api/auth/login 200 in 432ms (next.js: 3ms, proxy.ts: 2ms, application-code: 426ms)
+ POST /api/auth/login 401 in 145ms (next.js: 3ms, proxy.ts: 3ms, application-code: 139ms)
+ POST /api/auth/login 401 in 128ms (next.js: 3ms, proxy.ts: 3ms, application-code: 122ms)
+ GET /checklists/automation 200 in 1470ms (next.js: 14ms, proxy.ts: 108ms, application-code: 1347ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 158ms (next.js: 15ms, proxy.ts: 104ms, application-code: 40ms)
+ GET /api/auth/me 200 in 153ms (next.js: 4ms, proxy.ts: 122ms, application-code: 27ms)
+ GET /docs/features 200 in 546ms (next.js: 88ms, proxy.ts: 100ms, application-code: 358ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 3.4s (next.js: 11ms, proxy.ts: 194ms, application-code: 3.2s)
+ GET /api/auth/me 200 in 259ms (next.js: 16ms, proxy.ts: 118ms, application-code: 125ms)
+⨯ Error: timeout exceeded when trying to connect
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async getTenantPrisma (src\lib\context\tenant-context.ts:179:3)
+    at async SettlementsPage (src\app\(owner)\carrier\driver-pay\settlements\page.tsx:49:18)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  digest: '2025274313'
+}
+ GET /carrier/driver-pay/settlements 500 in 5.6s (next.js: 11ms, proxy.ts: 285ms, application-code: 5.3s)
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.gridPreference.findUnique()` invocation:
+
+
+The table `public.grid_preference` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\user\grid-preferences\[gridId]\route.ts:49:22)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2021',
+  meta: {
+    modelName: 'GridPreference',
+    driverAdapterError: Error [DriverAdapterError]: TableDoesNotExist
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T17:19:10.917Z] ERROR: GET /api/v1/carrier/notifications: failed {"orgId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","err":{"stack":"DriverAdapterError: tenant context is required: app.current_tenant_id is the EMPTY STRING\n    at PrismaPgAdapter.onError (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4391:15)\n    at PrismaPgAdapter.performIO (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4386:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async PrismaPgAdapter.queryRaw (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\node_modules_@prisma_0hos0ie._.js:4311:34)\n    at async e.interpretNode (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\.next\\dev\\server\\chunks\\apps_web_src_generated_prisma_runtime_client_0nfnq3p.js:4701:60)","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","name":"DriverAdapterError","cause":{"originalCode":"TC001","originalMessage":"tenant context is required: app.current_tenant_id is the EMPTY STRING","kind":"postgres","code":"TC001","severity":"ERROR","message":"tenant context is required: app.current_tenant_id is the EMPTY STRING","detail":"statement: SELECT \"public\".\"in_app_notifications\".\"id\", \"public\".\"in_app_notifications\".\"org_id\", \"public\".\"in_app_notifications\".\"user_id\", \"public\".\"in_app_notifications\".\"type\"::text, \"public\".\"in_app_notifications\".\"title\", \"public\".\"in_app_notifications\".\"message\", \"public\".\"in_app_notifications\".\"entity_type\", \"public\".\"in_app_notifications\".\"entity_id\", \"public\".\"in_app_notifications\".\"read\", \"public\".\"in_app_notifications\".\"created_at\" FROM \"public\".\"in_app_notifications\" WHERE (\"public\".\"in_app_notifications\".\"org_id\" = $1 AND \"public\".\"in_app_notifications\".\"read\" = $2 AND (\"public\".\"in_app_notifications\".\"user_id\" IS NULL OR \"public\".\"in_app_notifications\".\"user_id\" = $3)) ORDER BY \"public\".\"in_app_notifications\".\"read\" ASC, \"public\".\"in_app_notifications\".\"created_at\" DESC LIMIT $4 OFFSET $5","hint":"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."},"clientVersion":"7.6.0"}} Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\v1\carrier\notifications\route.ts:22:42)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."in_app_notifications"."id", "public"."in_app_notifications"."org_id", "public"."in_app_notifications"."user_id", "public"."in_app_notifications"."type"::text, "public"."in_app_notifications"."title", "public"."in_app_notifications"."message", "public"."in_app_notifications"."entity_type", "public"."in_app_notifications"."entity_id", "public"."in_app_notifications"."read", "public"."in_app_notifications"."created_at" FROM "public"."in_app_notifications" WHERE ("public"."in_app_notifications"."org_id" = $1 AND "public"."in_app_notifications"."read" = $2 AND ("public"."in_app_notifications"."user_id" IS NULL OR "public"."in_app_notifications"."user_id" = $3)) ORDER BY "public"."in_app_notifications"."read" ASC, "public"."in_app_notifications"."created_at" DESC LIMIT $4 OFFSET $5',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ POST /api/auth/login 200 in 1580ms (next.js: 5ms, proxy.ts: 3ms, application-code: 1573ms)
+ POST /api/auth/login 200 in 431ms (next.js: 3ms, proxy.ts: 2ms, application-code: 426ms)
+ POST /api/auth/login 401 in 146ms (next.js: 4ms, proxy.ts: 8ms, application-code: 135ms)
+ POST /api/auth/login 401 in 119ms (next.js: 5ms, proxy.ts: 4ms, application-code: 111ms)
+ GET /carrier/driver-pay/settlements 200 in 2.3s (next.js: 10ms, proxy.ts: 108ms, application-code: 2.2s)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 190ms (next.js: 6ms, proxy.ts: 125ms, application-code: 58ms)
+ GET /checklists/automation 200 in 712ms (next.js: 12ms, proxy.ts: 203ms, application-code: 497ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 135ms (next.js: 8ms, proxy.ts: 101ms, application-code: 26ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 919ms (next.js: 11ms, proxy.ts: 184ms, application-code: 725ms)
+ GET /api/auth/me 200 in 228ms (next.js: 10ms, proxy.ts: 179ms, application-code: 39ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 243ms (next.js: 4ms, proxy.ts: 112ms, application-code: 127ms)
+ GET /docs/features 200 in 581ms (next.js: 11ms, proxy.ts: 100ms, application-code: 470ms)
+ GET /api/auth/me 200 in 329ms (next.js: 9ms, proxy.ts: 209ms, application-code: 111ms)
+ GET /api/docs-index 200 in 337ms (next.js: 14ms, proxy.ts: 219ms, application-code: 104ms)
+ GET /api/user/grid-preferences/admin-features 200 in 336ms (next.js: 35ms, proxy.ts: 211ms, application-code: 89ms)
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.gridPreference.findUnique()` invocation:
+
+
+The table `public.grid_preference` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\user\grid-preferences\[gridId]\route.ts:49:22)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2021',
+  meta: {
+    modelName: 'GridPreference',
+    driverAdapterError: Error [DriverAdapterError]: TableDoesNotExist
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[2026-09-15T17:19:43.164Z] ERROR: reports/settlement-history error Error [DriverAdapterError]: tenant context is required: app.current_tenant_id is the EMPTY STRING
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async computeSettlementHistory (src\lib\driver-pay\reports\settlement-history.ts:142:38)
+    at async GET (src\app\api\driver-pay\reports\settlement-history\route.ts:57:20)
+  13 | ...
+  14 | ...
+> 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  [cause]: {
+    originalCode: 'TC001',
+    originalMessage: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    kind: 'postgres',
+    code: 'TC001',
+    severity: 'ERROR',
+    message: 'tenant context is required: app.current_tenant_id is the EMPTY STRING',
+    detail: 'statement: SELECT "public"."driver_settlements"."id", "public"."driver_settlements"."net_pay", "public"."driver_settlements"."status"::text FROM "public"."driver_settlements" WHERE ("public"."driver_settlements"."tenant_id" = $1 AND "public"."driver_settlements"."tenant_id" = $2 AND "public"."driver_settlements"."deleted_at" IS NULL AND "public"."driver_settlements"."period_end" >= $3 AND "public"."driver_settlements"."period_start" <= $4 AND "public"."driver_settlements"."status" = CAST($5::text AS "public"."DriverSettlementStatus")) OFFSET $6',
+    column: undefined,
+    hint: "This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection."
+  }
+}
+ POST /api/auth/login 200 in 1519ms (next.js: 3ms, proxy.ts: 2ms, application-code: 1514ms)
+ POST /api/auth/login 200 in 421ms (next.js: 14ms, proxy.ts: 2ms, application-code: 404ms)
+ POST /api/auth/login 401 in 108ms (next.js: 3ms, proxy.ts: 3ms, application-code: 102ms)
+ POST /api/auth/login 401 in 120ms (next.js: 4ms, proxy.ts: 4ms, application-code: 111ms)
+ GET /checklists/automation 200 in 1450ms (next.js: 11ms, proxy.ts: 115ms, application-code: 1324ms)
+ GET /api/auth/me 200 in 190ms (next.js: 18ms, proxy.ts: 100ms, application-code: 72ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 200ms (next.js: 6ms, proxy.ts: 140ms, application-code: 53ms)
+ GET /docs/features 200 in 340ms (next.js: 6ms, proxy.ts: 101ms, application-code: 232ms)
+ GET /api/auth/me 200 in 244ms (next.js: 20ms, proxy.ts: 190ms, application-code: 34ms)
+ GET /api/docs-index 200 in 254ms (next.js: 12ms, proxy.ts: 196ms, application-code: 46ms)
+ GET /api/user/grid-preferences/admin-features 200 in 252ms (next.js: 43ms, proxy.ts: 195ms, application-code: 13ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 3.4s (next.js: 4ms, proxy.ts: 173ms, application-code: 3.3s)
+ GET /api/auth/me 200 in 196ms (next.js: 10ms, proxy.ts: 177ms, application-code: 9ms)
+ GET /api/v1/carrier/notifications?unread=true&limit=1 200 in 327ms (next.js: 9ms, proxy.ts: 135ms, application-code: 182ms)
+ GET /api/driver-pay/reports/settlement-history?period=this_week&page=1&pageSize=25 200 in 314ms (next.js: 21ms, proxy.ts: 182ms, application-code: 111ms)
+ GET /api/driver-pay/reports/settlement-history?period=this_week&page=1&pageSize=1 200 in 323ms (next.js: 19ms, proxy.ts: 133ms, application-code: 171ms)
+⨯ Error: timeout exceeded when trying to connect
+    at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43294)
+    at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+    at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+    at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+    at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+    at async zr.request (src\generated\prisma\runtime\client.js:69:7061)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async getTenantPrisma (src\lib\context\tenant-context.ts:179:3)
+    at async SettlementsPage (src\app\(owner)\carrier\driver-pay\settlements\page.tsx:49:18)
+  13 | ...
+  14 | ...
+> 15 | ...(let o of n){let s=Sa(o,r.sqlCommenter);i+=await this.#l(s,r.queryable,()=>r.queryable....
+     |                                               ^
+  16 | ...
+  17 | ...
+  18 | ... {
+  clientVersion: '7.6.0',
+  digest: '2025274313'
+}
+ GET /carrier/driver-pay/settlements 500 in 5.4s (next.js: 6ms, proxy.ts: 184ms, application-code: 5.2s)
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.gridPreference.findUnique()` invocation:
+
+
+The table `public.grid_preference` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\user\grid-preferences\[gridId]\route.ts:49:22)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2021',
+  meta: {
+    modelName: 'GridPreference',
+    driverAdapterError: Error [DriverAdapterError]: TableDoesNotExist
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ POST /api/auth/login 200 in 1154ms (next.js: 6ms, proxy.ts: 3ms, application-code: 1146ms)
+ POST /api/auth/login 200 in 444ms (next.js: 6ms, proxy.ts: 4ms, application-code: 434ms)
+ POST /api/auth/login 401 in 129ms (next.js: 9ms, proxy.ts: 7ms, application-code: 113ms)
+ POST /api/auth/login 401 in 128ms (next.js: 6ms, proxy.ts: 4ms, application-code: 118ms)
+ GET /carrier/driver-pay/reports?tab=settlement-history 200 in 801ms (next.js: 8ms, proxy.ts: 109ms, application-code: 684ms)
+ GET /checklists/automation 200 in 1264ms (next.js: 11ms, proxy.ts: 250ms, application-code: 1003ms)
+ GET /carrier/driver-pay/settlements 200 in 1450ms (next.js: 10ms, proxy.ts: 195ms, application-code: 1245ms)
+ GET /docs/features 200 in 517ms (next.js: 13ms, proxy.ts: 112ms, application-code: 392ms)
+ GET /api/docs-index 200 in 204ms (next.js: 4ms, proxy.ts: 102ms, application-code: 99ms)
+ GET /api/auth/me 200 in 199ms (next.js: 4ms, proxy.ts: 112ms, application-code: 84ms)
+ GET /api/user/grid-preferences/admin-features 200 in 201ms (next.js: 14ms, proxy.ts: 130ms, application-code: 58ms)
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.gridPreference.findUnique()` invocation:
+
+
+The table `public.grid_preference` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async GET (src\app\api\user\grid-preferences\[gridId]\route.ts:49:22)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2021',
+  meta: {
+    modelName: 'GridPreference',
+    driverAdapterError: Error [DriverAdapterError]: TableDoesNotExist
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43962)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+[?25h
