@@ -11,7 +11,7 @@ export class TruckRepository extends TenantRepository {
    * Find all trucks for the current tenant, ordered by creation date (newest first).
    */
   async findAll() {
-    return this.db.truck.findMany({
+    return (await this.client()).truck.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -21,7 +21,7 @@ export class TruckRepository extends TenantRepository {
    * Returns null if not found or belongs to different tenant (RLS).
    */
   async findById(id: string) {
-    return this.db.truck.findUnique({
+    return (await this.client()).truck.findUnique({
       where: { id },
     });
   }
@@ -31,7 +31,7 @@ export class TruckRepository extends TenantRepository {
    * Returns null if not found or belongs to different tenant (RLS).
    */
   async findByVin(vin: string) {
-    return this.db.truck.findFirst({
+    return (await this.client()).truck.findFirst({
       where: { vin },
     });
   }
@@ -40,7 +40,7 @@ export class TruckRepository extends TenantRepository {
    * Create a new truck for the current tenant.
    */
   async create(data: Prisma.TruckCreateInput) {
-    return this.db.truck.create({
+    return (await this.client()).truck.create({
       data,
     });
   }
@@ -50,7 +50,7 @@ export class TruckRepository extends TenantRepository {
    * RLS ensures only trucks in the current tenant can be updated.
    */
   async update(id: string, data: Prisma.TruckUpdateInput) {
-    return this.db.truck.update({
+    return (await this.client()).truck.update({
       where: { id },
       data,
     });
@@ -61,7 +61,7 @@ export class TruckRepository extends TenantRepository {
    * RLS ensures only trucks in the current tenant can be deleted.
    */
   async delete(id: string) {
-    return this.db.truck.delete({
+    return (await this.client()).truck.delete({
       where: { id },
     });
   }

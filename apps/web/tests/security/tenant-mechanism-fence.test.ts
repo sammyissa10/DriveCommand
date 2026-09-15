@@ -241,12 +241,25 @@ const TENANT_CLIENT_INVENTORY: Record<string, { calls: number; minBytes: number;
     minBytes: 1000,
     why: 'LATENT — three direct callers, no GUC. Not converted: not a measured failure (R4).',
   },
-  'src/lib/db/repositories/base.repository.ts': {
-    calls: 1,
-    minBytes: 200,
-    why: 'LATENT — every repository subclass inherits it. The widest of the four, and the one most worth converting next.',
-  },
 };
+
+/**
+ * ── quick-610 — THE NAMED NEGATIVE ────────────────────────────────────────
+ *
+ * Files that used to hold a `createTenantClient` call and now hold none. Each
+ * was measured raising `TC001` on a cold pool before conversion (evidence
+ * `02-cold-before.md`) and passing after it (`05-cold-after.md`).
+ *
+ * WHY THIS IS NOT JUST A SHORTER INVENTORY. The both-directions set-equality
+ * test above would pass identically if someone re-added a call to one of these
+ * files AND widened `TENANT_CLIENT_INVENTORY` in the same edit — the shape
+ * quick-566 recorded when a nav entry was removed and nothing asserted its
+ * absence. Naming the emptied files makes re-adding one a red test rather than
+ * a silent list edit.
+ *
+ * Extended by Task 3 with the two server-action files.
+ */
+const EMPTIED_BY_610 = ['src/lib/db/repositories/base.repository.ts'];
 
 /** A file deliberately on NEITHER list, used as the counter-assertion (rule 6). */
 const COUNTER_ASSERTION_FILE = 'src/lib/db/extensions/tenant-rls-bound.prototype.ts';
@@ -316,6 +329,24 @@ describe('tenant-mechanism fence — withTenantRLS is fenced, createTenantClient
     for (const [path, entry] of Object.entries(TENANT_CLIENT_INVENTORY)) {
       const f = FILES.find((x) => x.path === path)!;
       expect(f.tenantClientCalls, `${path}: ${entry.why}`).toBe(entry.calls);
+    }
+  });
+
+  it('createTenantClient: the files quick-610 emptied still hold ZERO calls', () => {
+    for (const path of EMPTIED_BY_610) {
+      const f = FILES.find((x) => x.path === path);
+      // Both halves. "Was read" first: the failure mode of a walker that never
+      // saw the file is GREEN on the count assertion (quick-546), so a path
+      // rename would otherwise satisfy this test by making it vacuous.
+      expect(f, `EMPTIED_BY_610 names ${path} but the scan never read it`).toBeDefined();
+      expect(f!.bytes, `${path} is ${f!.bytes} bytes — too small to be the real file`).toBeGreaterThan(200);
+      expect(
+        f!.tenantClientCalls,
+        `${path} calls createTenantClient again — it obtains its client from ` +
+          'getTenantPrismaForOrg(tenantId) since quick-610, which is what sets the GUC the ' +
+          'RLS policies read. A call here is LATENT: correct only while some earlier ' +
+          'statement happens to have left a tenant context on the max:1 pool.',
+      ).toBe(0);
     }
   });
 

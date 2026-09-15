@@ -32,7 +32,7 @@ export class DocumentRepository extends TenantRepository {
    * Find all documents for a specific truck
    */
   async findByTruckId(truckId: string) {
-    return this.db.document.findMany({
+    return (await this.client()).document.findMany({
       where: { truckId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -51,7 +51,7 @@ export class DocumentRepository extends TenantRepository {
    * Find all documents for a specific route
    */
   async findByRouteId(routeId: string) {
-    return this.db.document.findMany({
+    return (await this.client()).document.findMany({
       where: { routeId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -71,7 +71,7 @@ export class DocumentRepository extends TenantRepository {
    * Returns null if not found or wrong tenant (RLS)
    */
   async findById(id: string) {
-    return this.db.document.findUnique({
+    return (await this.client()).document.findUnique({
       where: { id },
       include: {
         uploader: {
@@ -94,7 +94,7 @@ export class DocumentRepository extends TenantRepository {
    */
   async create(data: DocumentCreateInput) {
     const isRestricted = data.isRestricted ?? isRestrictedDocumentType(data.documentType);
-    return this.db.document.create({
+    return (await this.client()).document.create({
       data: { ...data, isRestricted },
     });
   }
@@ -103,7 +103,7 @@ export class DocumentRepository extends TenantRepository {
    * Find all documents for a specific driver
    */
   async findByDriverId(driverId: string) {
-    return this.db.document.findMany({
+    return (await this.client()).document.findMany({
       where: { driverId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -122,7 +122,7 @@ export class DocumentRepository extends TenantRepository {
    * Find all documents for a specific load
    */
   async findByLoadId(loadId: string) {
-    return this.db.document.findMany({
+    return (await this.client()).document.findMany({
       where: { loadId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -141,7 +141,7 @@ export class DocumentRepository extends TenantRepository {
    * Update document metadata (expiry date, notes, document type)
    */
   async update(id: string, data: { expiryDate?: Date; notes?: string; documentType?: DocumentType }) {
-    return this.db.document.update({
+    return (await this.client()).document.update({
       where: { id },
       data,
     });
@@ -152,7 +152,7 @@ export class DocumentRepository extends TenantRepository {
    * Returns the deleted record (so caller can get s3Key for S3 cleanup)
    */
   async delete(id: string) {
-    return this.db.document.delete({
+    return (await this.client()).document.delete({
       where: { id },
     });
   }
