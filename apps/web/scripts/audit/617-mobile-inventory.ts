@@ -55,7 +55,7 @@
  */
 
 import * as ts from 'typescript';
-import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync } from 'fs';
+import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { resolve, relative, sep } from 'path';
 
 const BYPASS_LITERAL = 'app.bypass_rls';
@@ -800,7 +800,18 @@ function main() {
   };
 
   mkdirSync(EVIDENCE_DIR, { recursive: true });
+  // BEFORE mode refuses to clobber a committed BEFORE artefact. `01-inventory.json`
+  // is the pinned record of the 47/83 population AND the hazard list, and it is what
+  // `617-apply-routing.js` and `617-routing-verify.ts` read; a BEFORE re-run after
+  // the edits silently rewrote it to 45/80 once. Post-edit runs use `--after`.
   const target = resolve(EVIDENCE_DIR, AFTER ? '01-inventory-after.json' : '01-inventory.json');
+  if (!AFTER && existsSync(target) && !process.argv.includes('--force')) {
+    console.error(
+      `[617-inventory] REFUSING to overwrite the pinned BEFORE artefact at ${posix(relative(REPO_ROOT, target))}.\n` +
+        `                Use --after for a post-edit run, or --force if you really mean to re-pin it.`,
+    );
+    process.exit(1);
+  }
   writeFileSync(target, JSON.stringify(out, null, 2));
 
   console.log(`[617-inventory] mode=${out.mode}`);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
 import { sendNewTicketNotification } from '@/lib/email/send-support-notifications';
@@ -93,8 +94,16 @@ export async function POST(req: NextRequest) {
   try {
     const ticketNumber = await generateTicketNumber();
 
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
+     */
+    const tenantPrisma = await getTenantPrismaForOrg(auth.tenantId);
+    await tenantPrisma.$transaction(async (tx) => {
       await tx.supportTicket.create({
         data: {
           ticketNumber,
