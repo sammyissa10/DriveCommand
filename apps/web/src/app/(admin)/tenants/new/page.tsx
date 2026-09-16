@@ -13,12 +13,14 @@ export default function NewTenantPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [emailWarning, setEmailWarning] = useState<string | null>(null);
+  const [seedWarning, setSeedWarning] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
     setEmailWarning(null);
+    setSeedWarning(null);
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -27,8 +29,12 @@ export default function NewTenantPage() {
       const result = await createTenant(formData);
 
       if (result.success) {
-        if ('emailWarning' in result && result.emailWarning) {
-          setEmailWarning(result.emailWarning);
+        const email = 'emailWarning' in result ? result.emailWarning ?? null : null;
+        // quick-623: a tenant created without its starter playbooks is not "done".
+        const seed = 'seedWarning' in result ? result.seedWarning ?? null : null;
+        if (email || seed) {
+          setEmailWarning(email);
+          setSeedWarning(seed);
           // Stay on page so user sees the warning; they can navigate away manually
         } else {
           router.push('/tenants');
@@ -67,10 +73,11 @@ export default function NewTenantPage() {
           )}
 
           {/* Email Warning Banner */}
-          {emailWarning && (
+          {(emailWarning || seedWarning) && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-md">
               <p className="font-medium text-sm">Tenant created</p>
-              <p className="text-sm mt-1">{emailWarning}</p>
+              {emailWarning && <p className="text-sm mt-1">{emailWarning}</p>}
+              {seedWarning && <p className="text-sm mt-1">{seedWarning}</p>}
               <Link
                 href="/tenants"
                 className="text-sm font-medium underline mt-2 inline-block"

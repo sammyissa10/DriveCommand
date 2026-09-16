@@ -195,8 +195,18 @@ try {
         shell: true,
         env: process.env,
       });
+      // quick-623: the seeder now exits 1 when ANY tenant fails (it used to exit 0
+      // regardless). This deliberately does NOT fail the migration: the DDL above
+      // is already committed, so exiting non-zero here would block a deploy whose
+      // schema has already moved (build) or refuse to start the app for every
+      // tenant over one tenant's playbooks (`npm start`). It is reported as an
+      // ERROR naming the consequence, not a "continuing" warning.
       if (result.status !== 0) {
-        console.warn('Starter playbook seeding returned non-zero exit code — continuing.');
+        console.error(
+          `ERROR: starter playbook seeding FAILED (exit ${result.status}). One or more tenants have ` +
+            'NO starter playbooks — see the ✗ lines above. Migrations are applied; re-run ' +
+            '`npx tsx scripts/seed-starter-playbooks.ts` once the cause is fixed.',
+        );
       }
     } catch (e) {
       console.warn('Starter playbook seeding skipped:', e.message);

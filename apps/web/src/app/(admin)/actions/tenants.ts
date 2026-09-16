@@ -116,13 +116,23 @@ export async function createTenant(formData: FormData) {
     });
 
     // Seed starter playbooks for the new tenant (non-fatal — idempotent, can be re-run)
+    let seedWarning: string | undefined;
     try {
       await seedStarterPlaybooks(tenant.id);
       logger.info(`Seeded starter playbooks for new tenant ${tenant.name} (${tenant.id})`);
     } catch (seedError: unknown) {
-      // Seeding failure is NON-FATAL — tenant creation succeeded. Log and continue so the
-      // invitation email still sends. An admin can re-run seed-starter-playbooks.ts later (idempotent).
+      // Seeding failure is NON-FATAL — the tenant row is committed on the admin connection
+      // and cannot be rolled back from here, and the invitation must still send. An admin
+      // can re-run seed-starter-playbooks.ts later (idempotent).
+      //
+      // quick-623: it is no longer SILENT. This used to log and then return a plain
+      // `{ success: true }`, so the sysadmin was told the tenant was ready when it had no
+      // starter playbooks — which is exactly what happened to every tenant under app_user.
+      // The result now carries the warning and the page stays open to show it.
       logger.error('Failed to seed starter playbooks for new tenant:', seedError, { tenantId: tenant.id, err: serializeError(seedError) });
+      seedWarning =
+        `Tenant created, but its starter playbooks (CDL Driver Onboarding, Pre-Trip Inspection, New Partner Setup) ` +
+        `could not be created. Re-run scripts/seed-starter-playbooks.ts for tenant ${tenant.id}.`;
     }
 
     // Create owner invitation (7 days expiry)
@@ -172,10 +182,11 @@ export async function createTenant(formData: FormData) {
       return {
         success: true,
         emailWarning: `Tenant created but invitation email could not be sent to ${validation.data.ownerEmail}. Please check your email configuration and resend manually.`,
+        seedWarning,
       };
     }
 
-    return { success: true, tenant };
+    return { success: true, tenant, seedWarning };
   } catch (error: unknown) {
     // Check for unique constraint violation on slug
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('slug')) {
