@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { getAppBaseUrl } from '@/lib/app-url';
@@ -56,16 +57,16 @@ export async function POST(req: NextRequest) {
 
   try {
     // Check for existing user with same email in tenant
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
      */
-    const existingUser = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const existingUser = await tenantPrisma.$transaction(async (tx) => {
       return tx.user.findFirst({ where: { email: normalizedEmail, tenantId } });
     }, TX_OPTIONS);
 
@@ -77,8 +78,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Cancel any existing pending invitations for this email
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    await tenantPrisma.$transaction(async (tx) => {
       return tx.driverInvitation.updateMany({
         where: { email: normalizedEmail, tenantId, status: 'PENDING' },
         data: { status: 'CANCELLED' },
@@ -102,8 +102,7 @@ export async function POST(req: NextRequest) {
       : {};
 
     // Create invitation record
-    const invitation = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const invitation = await tenantPrisma.$transaction(async (tx) => {
       return tx.driverInvitation.create({
         data: {
           tenantId,
@@ -122,8 +121,7 @@ export async function POST(req: NextRequest) {
     // Fetch tenant name for the email
     let organizationName = 'your fleet';
     try {
-      const tenant = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const tenant = await tenantPrisma.$transaction(async (tx) => {
         return tx.tenant.findUnique({ where: { id: tenantId }, select: { name: true } });
       }, TX_OPTIONS);
       organizationName = tenant?.name || 'your fleet';

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withMobileAuth } from '@/lib/api/with-mobile-auth'
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
+import { TX_OPTIONS } from '@/lib/db/prisma'
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context'
 import { computeHOSClocks } from '@/lib/hos/compute-hos-clocks'
 
 /**
@@ -45,22 +46,22 @@ export const GET = withMobileAuth(
   async (req: NextRequest, { auth }) => {
     const { tenantId } = auth
 
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
-     */
     const now = new Date()
     const startOfDay = new Date(now)
     startOfDay.setUTCHours(0, 0, 0, 0)
     const endOfDay = new Date(now)
     endOfDay.setUTCHours(23, 59, 59, 999)
 
-    const { drivers, invitations } = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
-
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
+     */
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId)
+    const { drivers, invitations } = await tenantPrisma.$transaction(async (tx) => {
       const drivers = await tx.user.findMany({
         where: { tenantId, role: 'DRIVER', isActive: true },
         select: {

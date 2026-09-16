@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -27,17 +28,16 @@ export async function GET(req: NextRequest) {
   const { tenantId } = auth;
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
      */
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const result = await tenantPrisma.$transaction(async (tx) => {
       const invoices = await tx.invoice.findMany({
         where: { tenantId, archivedAt: null },
         orderBy: { createdAt: 'desc' },
@@ -156,9 +156,9 @@ export async function POST(req: NextRequest) {
   const invoiceNumber = `INV-${Date.now().toString().slice(-6)}`;
 
   try {
-    const invoice = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    // quick-617: tenant-scoped client — see the first handler in this file.
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const invoice = await tenantPrisma.$transaction(async (tx) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const invoiceData: any = {
         tenantId,

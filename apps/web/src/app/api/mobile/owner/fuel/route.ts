@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@/generated/prisma';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -27,15 +28,16 @@ export async function GET(req: NextRequest) {
   const { tenantId } = auth;
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — no cookie session available.
-     * SCOPE: Reads FuelRecord and Truck records belonging to the authenticated user's tenant only.
-     * SAFETY: Gated by validateMobileToken() above. tenantId comes from the verified JWT.
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
      */
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const result = await tenantPrisma.$transaction(async (tx) => {
       const records = await tx.fuelRecord.findMany({
         where: { tenantId },
         take: 50,
@@ -143,15 +145,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — no cookie session available.
-     * SCOPE: Creates FuelRecord only after verifying truckId belongs to the authenticated tenant.
-     * SAFETY: Gated by validateMobileToken() above. tenantId comes from the verified JWT.
-     */
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    // quick-617: tenant-scoped client — see the first handler in this file.
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const result = await tenantPrisma.$transaction(async (tx) => {
       // Verify truck belongs to the tenant
       const truck = await tx.truck.findFirst({
         where: { id: truckId as string, tenantId, archivedAt: null },
