@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T20:14:29.103Z",
+  "generatedAt": "2026-09-16T23:20:37.931Z",
   "totals": {
     "unmigratedUnits": 568,
     "unmigratedCallSites": 578,
@@ -15,8 +15,8 @@
         "(anonymous):129",
         "(anonymous):144",
         "(anonymous):161",
-        "(anonymous):175",
-        "(anonymous):193"
+        "(anonymous):183",
+        "(anonymous):201"
       ]
     },
     "actions/carrier/save-route-template.ts": {

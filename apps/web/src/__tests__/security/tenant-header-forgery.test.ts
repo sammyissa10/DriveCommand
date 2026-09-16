@@ -166,10 +166,18 @@ describe('getTenantPrisma() tenant resolution (no DB — gates the build)', () =
     await mod.getTenantPrisma();
 
     expect(tenantClientCalls[0].tenantId).toBe(sessionTenantId);
-    expect(gucWrites[0].params[0]).toBe(sessionTenantId);
+    // quick-627: the resolver no longer writes the GUC itself. The tenant it hands to
+    // createTenantClient IS the value the pool asserts at every checkout, so the
+    // assertion above is now the one that says which tenant reaches the connection.
+    // A session set_config reappearing here would mean the old per-acquisition
+    // write — the one quick-624's eviction and quick-607's concurrency defeated —
+    // came back beside the checkout mechanism.
+    expect(gucWrites).toHaveLength(0);
     // Locked decision: GUC name and session scope are not this task's to change.
-    expect(gucWrites[0].sql).toContain('app.current_tenant_id');
-    expect(gucWrites[0].sql).toContain('false');
+    // Asserted on the statement the pool actually issues.
+    const actual = await vi.importActual<typeof import('@/lib/db/prisma')>('@/lib/db/prisma');
+    expect(actual.SET_TENANT_GUC_SQL).toContain('app.current_tenant_id');
+    expect(actual.SET_TENANT_GUC_SQL).toContain('false');
   });
 
   it('resolves the session tenant when no header is present at all', async () => {

@@ -155,31 +155,25 @@ export async function requireTenantId(): Promise<string> {
  * note at the top of this file. This function throws rather than ever returning an
  * unscoped client, so a caller cannot accidentally hold a client with no filter.
  *
- * TENANT GUC (quick-411): Before returning the extended client, fires a session-scope
- * set_config to write the caller's tenantId into app.current_tenant_id on the pooled
- * connection. RLS policies that call current_tenant_id() read this GUC. Uses FALSE
- * (session scope) because Supabase Session Pooler (port 6543) + max:1 pool +
- * single-threaded Vercel workers guarantee no concurrent tenant overlap on a given
- * physical connection. The $executeRawUnsafe runs as a single autocommit statement on
- * the bare prisma client — NOT inside a $transaction — so it cannot deadlock against
- * any outer transaction opened by the caller. See quick-411 plan for full rationale.
+ * TENANT GUC (quick-411 → quick-627): this function no longer writes the GUC itself.
+ * It used to fire one session-scope set_config here, ONCE per acquisition, which did
+ * not survive pg-pool evicting the connection on a caught error (quick-624) and was
+ * last-writer-wins between concurrent requests sharing the connection (quick-607).
+ * The returned client now carries its tenant to the pool, which asserts
+ * app.current_tenant_id at every CHECKOUT — see the quick-627 block in
+ * lib/db/prisma.ts. Consequence worth knowing: a BARE `prisma` statement issued after
+ * this call, but before this client has run anything, no longer inherits this tenant
+ * from the connection; under onNoContext 'leave' it inherits whatever the previous
+ * checkout left. Those bare statements are the census's routing list.
  *
  * The GUC name and its session scope (FALSE) are locked decisions — see
- * .planning/phase-0-revised.md §2. quick-590 did not change either.
+ * .planning/phase-0-revised.md §2. quick-627 kept both; it moved where the write happens.
  *
  * Use this in API routes and server actions to ensure queries are scoped to the current tenant.
  */
 export async function getTenantPrisma(): Promise<PrismaClient> {
   const tenantId = await requireTenantId();
   const session = await getSession();
-
-  // Set the tenant GUC for the current pooled connection (session scope, not tx scope).
-  // This must run on the bare client before returning the extended client so every
-  // subsequent model query on that connection sees the correct current_tenant_id().
-  await prisma.$executeRawUnsafe(
-    "SELECT set_config('app.current_tenant_id', $1, false)",
-    tenantId
-  );
 
   return createTenantClient(tenantId, session?.userId ?? null);
 }
@@ -193,9 +187,10 @@ export async function getTenantPrisma(): Promise<PrismaClient> {
  * x-tenant-id request header, so it cannot throw "Tenant context is required"
  * outside a middleware-processed request.
  *
- * It sets the app.current_tenant_id GUC (session scope) exactly like getTenantPrisma()
- * so DB-level RLS policies resolve correctly, and applies the same withTenantRLS +
- * audit-column extensions via createTenantClient. Pass userId to populate audit
+ * Like getTenantPrisma(), the app.current_tenant_id GUC is asserted by the pool at each
+ * checkout for the returned client (quick-627), so DB-level RLS policies resolve
+ * correctly, and it applies the same withTenantRLS + audit-column extensions via
+ * createTenantClient. Pass userId to populate audit
  * columns on writes (omit/null for pure system contexts).
  */
 export async function getTenantPrismaForOrg(
@@ -207,10 +202,6 @@ export async function getTenantPrismaForOrg(
   // two-direction boot guard on ordinary tenant-scoped traffic, not only
   // when an admin path happens to fire first in a given process.
   await assertRoleBootGuard();
-  await prisma.$executeRawUnsafe(
-    "SELECT set_config('app.current_tenant_id', $1, false)",
-    tenantId,
-  );
   return createTenantClient(tenantId, userId ?? null);
 }
 
