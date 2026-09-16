@@ -1,0 +1,7 @@
+program: 1554 shipping files, 35.5s
+statements: 1825 (queries 1770, GUC plumbing 55) in 363 files; untyped 55
+by verdict: {"SCOPED":1383,"SILENT_ZERO_AT_CUTOVER":180,"ADMIN_CONNECTION":107,"SILENT_ZERO_AT_BYPASS_DROP":56,"NO_RLS_TABLE":36,"RAW_NO_TABLE_NAMED":8}
+by client: {"TENANT_SESSION":793,"TX of TENANT_ORG":224,"TENANT_ORG":194,"TX of BARE":167,"BARE":165,"ADMIN":100,"TX of TENANT_SESSION":73,"MIXED(TENANT_ORG|TENANT_SESSION)":20,"MIXED(TX(TENANT_ORG)|TX(TENANT_SESSION))":14,"MIXED(BARE|TENANT_SESSION|TX(BARE))":9,"TX of ADMIN":8,"MIXED(TX(BARE)|TX(TENANT_SESSION))":2,"MIXED(TENANT_ORG|TX(TENANT_ORG))":1}
+cutover gating: {"statements":180,"files":53}  bypass-drop gating: {"statements":56,"files":24}
+unresolved: {"statements":0,"statementsWithAnyUnresolvedOrigin":0,"onRlsTables":0}
+wrote .planning/quick/622-query-census-keyed-on-queries/evidence/01-query-census.json

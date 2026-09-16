@@ -1,0 +1,7 @@
+program: 1554 shipping files, 33.4s
+statements: 1825 (queries 1770, GUC plumbing 55) in 363 files; untyped 55
+by verdict: {"UNCLASSIFIED":1726,"NO_RLS_TABLE":36,"RAW_NO_TABLE_NAMED":8}
+by client: {"UNRESOLVED":1752,"TX of UNRESOLVED":18}
+cutover gating: {"statements":0,"files":0}  bypass-drop gating: {"statements":0,"files":0}
+unresolved: {"statements":1726,"statementsWithAnyUnresolvedOrigin":1770,"onRlsTables":1726}
+wrote ../../AppData/Local/Temp/claude/c--Users-sammy-Projects-DriveCommand/c3fe23db-e38d-4ae0-a0c4-414ab9c00541/scratchpad/break-final.json

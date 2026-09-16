@@ -1,0 +1,4756 @@
+{
+  "generated": "2026-09-16T19:03:45.158Z",
+  "checks": [
+    {
+      "id": "AV1",
+      "name": "FLOOR — at least 1500 query statements",
+      "pass": true,
+      "detail": "1770"
+    },
+    {
+      "id": "AV2",
+      "name": "RESOLVER ALIVE — fewer than 5% of queries unclassified",
+      "pass": true,
+      "detail": "0 of 1770"
+    },
+    {
+      "id": "GT1a",
+      "name": "src/app/(owner)/layout.tsx at HEAD: exactly 3 statements",
+      "pass": true,
+      "detail": "54:tenant.findUnique, 58:activationProgress.findUnique, 62:user.findUnique"
+    },
+    {
+      "id": "GT1b",
+      "name": "src/app/(owner)/layout.tsx at HEAD: all 3 SCOPED (quick-621's fix)",
+      "pass": true,
+      "detail": "tenant.findUnique=TX(TENANT_ORG)/SCOPED, activationProgress.findUnique=TX(TENANT_ORG)/SCOPED, user.findUnique=TX(TENANT_ORG)/SCOPED"
+    },
+    {
+      "id": "GT1c",
+      "name": "src/app/(owner)/layout.tsx at HEAD: reaches Tenant, ActivationProgress, User",
+      "pass": true,
+      "detail": "[[\"Tenant\"],[\"ActivationProgress\"],[\"User\"]]"
+    },
+    {
+      "id": "GT1d",
+      "name": "src/app/(owner)/layout.tsx PRE-FIX (37e0bb17^): exactly 3 statements",
+      "pass": true,
+      "detail": "40:$queryRaw``, 53:$queryRaw``, 70:$queryRaw``"
+    },
+    {
+      "id": "GT1e",
+      "name": "src/app/(owner)/layout.tsx PRE-FIX: all 3 BARE and SILENT_ZERO_AT_CUTOVER",
+      "pass": true,
+      "detail": "40=BARE/SILENT_ZERO_AT_CUTOVER, 53=BARE/SILENT_ZERO_AT_CUTOVER, 70=BARE/SILENT_ZERO_AT_CUTOVER"
+    },
+    {
+      "id": "GT1f",
+      "name": "src/app/(owner)/layout.tsx PRE-FIX: reaches Tenant, ActivationProgress, User",
+      "pass": true,
+      "detail": "[[\"Tenant\"],[\"ActivationProgress\"],[\"User\"]]"
+    },
+    {
+      "id": "GT1g",
+      "name": "src/app/(owner)/layout.tsx PRE-FIX: all 3 SWALLOWED (the catch {} quick-621 removed)",
+      "pass": true,
+      "detail": "SWALLOWED, SWALLOWED, SWALLOWED"
+    },
+    {
+      "id": "GT1h",
+      "name": "PRE-FIX run differs from HEAD only in the layout",
+      "pass": true,
+      "detail": "1767 vs 1767"
+    },
+    {
+      "id": "GT2a",
+      "name": "quick-618's committed list has 56 sites",
+      "pass": true,
+      "detail": "56"
+    },
+    {
+      "id": "GT2b",
+      "name": "all 56 of quick-618's findUnique hazards found",
+      "pass": true,
+      "detail": "56/56"
+    },
+    {
+      "id": "GT2c",
+      "name": "receiver class agrees with quick-618 on all 56",
+      "pass": true,
+      "detail": "56/56 (3 routed since 618)"
+    },
+    {
+      "id": "GT2d",
+      "name": "the three PARAMETER-passed digest sites resolve to TENANT_ORG",
+      "pass": true,
+      "detail": "compliance-30day-payload.ts:79=TENANT_ORG, daily-driver-payload.ts:63=TENANT_ORG, weekly-owner-payload.ts:68=TENANT_ORG"
+    },
+    {
+      "id": "GT3a",
+      "name": "src/app/(admin)/actions/tenants.ts: the _count{users,trucks,routes} read is enumerated",
+      "pass": true,
+      "detail": "src/app/(admin)/actions/tenants.ts:329:tenant.findUnique (_count at :347)"
+    },
+    {
+      "id": "GT3b",
+      "name": "its table reach includes Route, User and Truck",
+      "pass": true,
+      "detail": "[\"Tenant\",\"User\",\"Truck\",\"Route\",\"DriverInvitation\"]"
+    },
+    {
+      "id": "GT3c",
+      "name": "its client is the admin connection",
+      "pass": true,
+      "detail": "ADMIN"
+    },
+    {
+      "id": "GT3d",
+      "name": "no `.route.` delegate appears in the file (so a text grep could not see it)",
+      "pass": true,
+      "detail": "true"
+    },
+    {
+      "id": "R1a",
+      "name": "flag-method replica reproduces the published 45 remaining",
+      "pass": true,
+      "detail": "45 statements / 25 files"
+    },
+    {
+      "id": "R2a",
+      "name": "quick-621's committed BLIND_RLS list has 125 units",
+      "pass": true,
+      "detail": "125"
+    }
+  ],
+  "gt2Sites": [
+    {
+      "file": "src/app/(driver)/my-tickets/[id]/page.tsx",
+      "line": 105,
+      "op": "findUnique",
+      "model": "SupportTicket",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(driver)/my-tickets/[id]/page.tsx:105:supportTicket.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/driver-route-joins.ts",
+      "line": 199,
+      "op": "findUnique",
+      "model": "DriverRouteJoin",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/driver-route-joins.ts:199:driverRouteJoin.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/driver-route-joins.ts",
+      "line": 303,
+      "op": "findUnique",
+      "model": "DriverRouteJoin",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/driver-route-joins.ts:303:driverRouteJoin.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/invoices.ts",
+      "line": 254,
+      "op": "findUnique",
+      "model": "Invoice",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/invoices.ts:254:invoice.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/invoices.ts",
+      "line": 289,
+      "op": "findUnique",
+      "model": "Invoice",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/invoices.ts:289:invoice.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 273,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:273:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 370,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:370:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 409,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:409:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 437,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:437:user.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 514,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:514:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 575,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:575:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 621,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:621:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/loads.ts",
+      "line": 779,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/loads.ts:779:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/maintenance.ts",
+      "line": 162,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/maintenance.ts:162:truck.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/payments.ts",
+      "line": 52,
+      "op": "findUnique",
+      "model": "Route",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/payments.ts:52:route.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/payroll.ts",
+      "line": 200,
+      "op": "findUnique",
+      "model": "PayrollRecord",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/payroll.ts:200:payrollRecord.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/route-analytics.ts",
+      "line": 43,
+      "op": "findUnique",
+      "model": "Route",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/route-analytics.ts:43:route.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/routes.ts",
+      "line": 294,
+      "op": "findUnique",
+      "model": "Route",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/routes.ts:294:route.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx",
+      "line": 34,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx:34:user.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/invoices/new/page.tsx",
+      "line": 61,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/invoices/new/page.tsx:61:load.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/invoices/[id]/page.tsx",
+      "line": 74,
+      "op": "findUnique",
+      "model": "Customer",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/invoices/[id]/page.tsx:74:customer.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/live-map/actions.ts",
+      "line": 202,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "db",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/live-map/actions.ts:202:truck.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/support/[id]/page.tsx",
+      "line": 107,
+      "op": "findUnique",
+      "model": "SupportTicket",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/support/[id]/page.tsx:107:supportTicket.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/revert/route.ts",
+      "line": 70,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/driver/loads/[id]/revert/route.ts:70:load.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/status/route.ts",
+      "line": 103,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/driver/loads/[id]/status/route.ts:103:load.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts",
+      "line": 66,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts:66:load.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "line": 212,
+      "op": "findUnique",
+      "model": "Load",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/loads/[id]/route.ts:212:load.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+      "line": 166,
+      "op": "findUnique",
+      "model": "Route",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/routes/[id]/route.ts:166:route.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "line": 51,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts:51:truck.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "line": 177,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts:177:truck.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+      "line": 222,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/trucks/[id]/route.ts:222:truck.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "line": 95,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts:95:truck.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "line": 225,
+      "op": "findUnique",
+      "model": "Truck",
+      "recv": "tx",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts:225:truck.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/email/send-fleet-message-notifications.ts",
+      "line": 131,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "prisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/email/send-fleet-message-notifications.ts:131:user.findUnique",
+      "censusClient": "TENANT_SESSION",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/notifications/digests/compliance-30day-payload.ts",
+      "line": 79,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "tenantPrisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "viaParameter": "buildCompliance30DayPayload(arg 0)",
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/notifications/digests/compliance-30day-payload.ts:79:user.findUnique",
+      "censusClient": "TENANT_ORG",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/notifications/digests/daily-driver-payload.ts",
+      "line": 63,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "tenantPrisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "viaParameter": "buildDailyDriverPayload(arg 0)",
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/notifications/digests/daily-driver-payload.ts:63:user.findUnique",
+      "censusClient": "TENANT_ORG",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/notifications/digests/weekly-owner-payload.ts",
+      "line": 68,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "tenantPrisma",
+      "receiverClass": "TENANT",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": true,
+      "isTest": false,
+      "viaParameter": "buildWeeklyOwnerPayload(arg 0)",
+      "cls": "LIVE",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/notifications/digests/weekly-owner-payload.ts:68:user.findUnique",
+      "censusClient": "TENANT_ORG",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 306,
+      "op": "findUniqueOrThrow",
+      "model": "NotificationTemplate",
+      "recv": "prisma",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/actions/tenant-notification-settings.ts:306:notificationTemplate.findUniqueOrThrow",
+      "censusClient": "BARE",
+      "censusVerdict": "NO_RLS_TABLE",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/checklists/instances/[id]/page.tsx",
+      "line": 10,
+      "op": "findUnique",
+      "model": "PlaybookInstance",
+      "recv": "prisma",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/checklists/instances/[id]/page.tsx:10:playbookInstance.findUnique",
+      "censusClient": "BARE",
+      "censusVerdict": "SILENT_ZERO_AT_CUTOVER",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(owner)/settings/account/page.tsx",
+      "line": 29,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "prisma",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(owner)/settings/account/page.tsx:29:user.findUnique",
+      "censusClient": "BARE",
+      "censusVerdict": "SILENT_ZERO_AT_CUTOVER",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 114,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "tx",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/auth/login/route.ts:114:user.findUnique",
+      "censusClient": "TX(BARE)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 155,
+      "op": "findUnique",
+      "model": "ActivationProgress",
+      "recv": "tx",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/auth/login/route.ts:155:activationProgress.findUnique",
+      "censusClient": "TX(BARE)",
+      "censusVerdict": "SILENT_ZERO_AT_BYPASS_DROP",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/carrier/trips.ts",
+      "line": 217,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "prisma",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/carrier/trips.ts:217:user.findUnique",
+      "censusClient": "BARE",
+      "censusVerdict": "SILENT_ZERO_AT_CUTOVER",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/carrier/trips.ts",
+      "line": 228,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "prisma",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/carrier/trips.ts:228:user.findUnique",
+      "censusClient": "BARE",
+      "censusVerdict": "SILENT_ZERO_AT_CUTOVER",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/notifications/notification-deduplication.ts",
+      "line": 31,
+      "op": "findUnique",
+      "model": "NotificationLog",
+      "recv": "prisma",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/lib/notifications/notification-deduplication.ts:31:notificationLog.findUnique",
+      "censusClient": "BARE",
+      "censusVerdict": "SILENT_ZERO_AT_CUTOVER",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/lib/onboarding/activation-tracker.ts",
+      "line": 74,
+      "op": "findUnique",
+      "model": "ActivationProgress",
+      "recv": "tx",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "nearest same model+op, +0 lines (file changed since 618)",
+      "censusId": "src/lib/onboarding/activation-tracker.ts:74:activationProgress.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": "routed to a tenant client after 618 (file changed since)"
+    },
+    {
+      "file": "src/lib/onboarding/activation-tracker.ts",
+      "line": 96,
+      "op": "findUnique",
+      "model": "ActivationProgress",
+      "recv": "tx",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "nearest same model+op, +0 lines (file changed since 618)",
+      "censusId": "src/lib/onboarding/activation-tracker.ts:96:activationProgress.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": "routed to a tenant client after 618 (file changed since)"
+    },
+    {
+      "file": "src/server/services/workflows/notifications.ts",
+      "line": 63,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "tx",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "nearest same model+op, +5 lines (file changed since 618)",
+      "censusId": "src/server/services/workflows/notifications.ts:68:user.findUnique",
+      "censusClient": "TX(BARE)",
+      "censusVerdict": "SILENT_ZERO_AT_BYPASS_DROP",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/server/services/workflows/notifications.ts",
+      "line": 252,
+      "op": "findUnique",
+      "model": "StepInstance",
+      "recv": "tx",
+      "receiverClass": "BARE_OR_UNKNOWN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "LATENT",
+      "found": true,
+      "how": "nearest same model+op, +5 lines (file changed since 618)",
+      "censusId": "src/server/services/workflows/notifications.ts:257:stepInstance.findUnique",
+      "censusClient": "TX(TENANT_ORG)",
+      "censusVerdict": "SCOPED",
+      "classOk": true,
+      "classNote": "routed to a tenant client after 618 (file changed since)"
+    },
+    {
+      "file": "src/app/(admin)/actions/automations.ts",
+      "line": 118,
+      "op": "findUnique",
+      "model": "AutomationRule",
+      "recv": "adminDbRead",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(admin)/actions/automations.ts:118:automationRule.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(admin)/actions/sysadmin-invoices.ts",
+      "line": 372,
+      "op": "findUnique",
+      "model": "SysAdminInvoice",
+      "recv": "adminDb",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(admin)/actions/sysadmin-invoices.ts:372:sysAdminInvoice.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(admin)/actions/tenants.ts",
+      "line": 630,
+      "op": "findUnique",
+      "model": "Subscription",
+      "recv": "adminDb",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(admin)/actions/tenants.ts:630:subscription.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(admin)/actions/users.ts",
+      "line": 116,
+      "op": "findUnique",
+      "model": "User",
+      "recv": "adminDbUserUpdate",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(admin)/actions/users.ts:116:user.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(admin)/billing/[id]/page.tsx",
+      "line": 40,
+      "op": "findUnique",
+      "model": "SysAdminInvoice",
+      "recv": "adminDb",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(admin)/billing/[id]/page.tsx:40:sysAdminInvoice.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/(admin)/tenants/[id]/page.tsx",
+      "line": 62,
+      "op": "findUnique",
+      "model": "Subscription",
+      "recv": "adminDbBilling",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/(admin)/tenants/[id]/page.tsx:62:subscription.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    },
+    {
+      "file": "src/app/api/cron/automations/route.ts",
+      "line": 196,
+      "op": "findUnique",
+      "model": "AutomationRule",
+      "recv": "adminDbRule",
+      "receiverClass": "ADMIN",
+      "projection": "SELECT_OMITS_TENANTID",
+      "nestedMentionsTenantId": false,
+      "live": false,
+      "isTest": false,
+      "cls": "NA",
+      "found": true,
+      "how": "exact line (file unchanged since 618)",
+      "censusId": "src/app/api/cron/automations/route.ts:196:automationRule.findUnique",
+      "censusClient": "ADMIN",
+      "censusVerdict": "ADMIN_CONNECTION",
+      "classOk": true,
+      "classNote": ""
+    }
+  ],
+  "r1": {
+    "flagMethodAtHead": {
+      "statements": 45,
+      "files": 25
+    },
+    "censusFlagSetConfigStatements": 45,
+    "flagMethodOnly": [],
+    "censusOnly": [],
+    "protectedQueriesPerFlag": [
+      {
+        "file": "src/actions/support-tickets.ts",
+        "line": 179,
+        "txLine": 178,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/actions/support-tickets.ts",
+        "line": 227,
+        "txLine": 226,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/actions/support-tickets.ts",
+        "line": 417,
+        "txLine": 416,
+        "queries": 2,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/actions/support-tickets.ts",
+        "line": 456,
+        "txLine": 455,
+        "queries": 2,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "line": 74,
+        "txLine": 73,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "line": 86,
+        "txLine": 85,
+        "queries": 2,
+        "verdicts": [
+          "SCOPED"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-routes.ts",
+        "line": 202,
+        "txLine": 201,
+        "queries": 2,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/tasks/page.tsx",
+        "line": 148,
+        "txLine": 147,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/tasks/[id]/page.tsx",
+        "line": 95,
+        "txLine": 94,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/tasks/[id]/page.tsx",
+        "line": 207,
+        "txLine": 206,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+        "line": 24,
+        "txLine": 23,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+        "line": 30,
+        "txLine": 29,
+        "queries": 4,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+        "line": 91,
+        "txLine": 90,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+        "line": 110,
+        "txLine": 109,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+        "line": 153,
+        "txLine": 152,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 137,
+        "txLine": 136,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+        "line": 118,
+        "txLine": 117,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/auth/accept-invitation/route.ts",
+        "line": 155,
+        "txLine": 154,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/auth/accept-invitation/route.ts",
+        "line": 239,
+        "txLine": 238,
+        "queries": 3,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/auth/login/route.ts",
+        "line": 154,
+        "txLine": 153,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/cron/workflow-digest/route.ts",
+        "line": 82,
+        "txLine": 81,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/cron/workflow-digest/route.ts",
+        "line": 102,
+        "txLine": 101,
+        "queries": 5,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/cron/workflow-digest/route.ts",
+        "line": 181,
+        "txLine": 180,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/cron/workflow-digest/route.ts",
+        "line": 190,
+        "txLine": 189,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver/gps-ping/route.ts",
+        "line": 69,
+        "txLine": 68,
+        "queries": 2,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+        "line": 66,
+        "txLine": 65,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+        "line": 92,
+        "txLine": 91,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+        "line": 105,
+        "txLine": 104,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+        "line": 209,
+        "txLine": 208,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+        "line": 219,
+        "txLine": 218,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts",
+        "line": 60,
+        "txLine": 59,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ]
+      },
+      {
+        "file": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts",
+        "line": 108,
+        "txLine": 107,
+        "queries": 2,
+        "verdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ]
+      },
+      {
+        "file": "src/app/api/gps/report/route.ts",
+        "line": 88,
+        "txLine": 87,
+        "queries": 2,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/gps/report/route.ts",
+        "line": 120,
+        "txLine": 119,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/integrations/motive/sync/route.ts",
+        "line": 54,
+        "txLine": 53,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/integrations/samsara/sync/route.ts",
+        "line": 54,
+        "txLine": 53,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/push-tokens/route.ts",
+        "line": 54,
+        "txLine": 53,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/app/api/track/[token]/route.ts",
+        "line": 50,
+        "txLine": 49,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/lib/auth/supabase.ts",
+        "line": 164,
+        "txLine": 163,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/lib/driver-pay/require-driver.ts",
+        "line": 105,
+        "txLine": 104,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/lib/notifications/audit-log.ts",
+        "line": 47,
+        "txLine": 46,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/lib/notifications/send-push.ts",
+        "line": 49,
+        "txLine": 48,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/lib/notifications/send-push.ts",
+        "line": 90,
+        "txLine": 89,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/notifications.ts",
+        "line": 67,
+        "txLine": 66,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/notifications.ts",
+        "line": 154,
+        "txLine": 153,
+        "queries": 1,
+        "verdicts": [
+          "SILENT_ZERO_AT_BYPASS_DROP"
+        ]
+      }
+    ],
+    "queriesUnderAFlag": 69
+  },
+  "r2": {
+    "units": 125,
+    "unitsWithNoCensusStatement": [],
+    "unitsWhoseStatementsAreNotGating": [
+      {
+        "file": "src/app/(auth)/sign-up/actions.tsx",
+        "line": 237,
+        "kind": "SERVER_ACTION",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "AppEvent"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "line": 168,
+        "kind": "SERVER_ACTION",
+        "shape": "load.findMany",
+        "tables": [
+          "Load"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TENANT_SESSION"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "line": 174,
+        "kind": "SERVER_ACTION",
+        "shape": "fleetMessage.findMany",
+        "tables": [
+          "FleetMessage"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TENANT_SESSION"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/confirm-tenant-email.ts",
+        "line": 36,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/hydrate-tenant.ts",
+        "line": 26,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant",
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/hydrate-tenant.ts",
+        "line": 55,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/onboarding-flags.ts",
+        "line": 30,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "clients",
+          "contracts",
+          "loads",
+          "dispatches"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 4,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/onboarding-flags.ts",
+        "line": 57,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/provision-tenant.ts",
+        "line": 74,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant",
+          "User",
+          "Plan",
+          "Promo",
+          "Subscription",
+          "ActivationProgress"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 9,
+        "censusVerdicts": [
+          "RAW_NO_TABLE_NAMED",
+          "SCOPED",
+          "NO_RLS_TABLE"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      }
+    ],
+    "gatingStatementsInsideThe125Units": 127,
+    "all": [
+      {
+        "file": "src/actions/support-tickets.ts",
+        "line": 609,
+        "kind": "SERVER_ACTION",
+        "shape": "$queryRaw``",
+        "tables": [
+          "SupportTicket",
+          "TicketMessage"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(auth)/sign-up/actions.tsx",
+        "line": 237,
+        "kind": "SERVER_ACTION",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "AppEvent"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "line": 168,
+        "kind": "SERVER_ACTION",
+        "shape": "load.findMany",
+        "tables": [
+          "Load"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TENANT_SESSION"
+        ]
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "line": 174,
+        "kind": "SERVER_ACTION",
+        "shape": "fleetMessage.findMany",
+        "tables": [
+          "FleetMessage"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TENANT_SESSION"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/actions/my-notifications.ts",
+        "line": 71,
+        "kind": "SERVER_ACTION",
+        "shape": "userNotificationPreference.findMany",
+        "tables": [
+          "UserNotificationPreference"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/actions/my-notifications.ts",
+        "line": 81,
+        "kind": "SERVER_ACTION",
+        "shape": "notificationSubscription.findMany",
+        "tables": [
+          "NotificationSubscription"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/actions/my-notifications.ts",
+        "line": 185,
+        "kind": "SERVER_ACTION",
+        "shape": "userNotificationPreference.upsert",
+        "tables": [
+          "UserNotificationPreference"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/actions/my-notifications.ts",
+        "line": 257,
+        "kind": "SERVER_ACTION",
+        "shape": "notificationSubscription.upsert",
+        "tables": [
+          "NotificationSubscription"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/actions/my-notifications.ts",
+        "line": 266,
+        "kind": "SERVER_ACTION",
+        "shape": "notificationSubscription.deleteMany",
+        "tables": [
+          "NotificationSubscription"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/clients/[id]/page.tsx",
+        "line": 27,
+        "kind": "PAGE",
+        "shape": "carrierClient.findUnique",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/contracts/new/page.tsx",
+        "line": 20,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/contracts/[id]/page.tsx",
+        "line": 25,
+        "kind": "PAGE",
+        "shape": "carrierContract.findUnique",
+        "tables": [
+          "contracts"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/contracts/[id]/page.tsx",
+        "line": 36,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/facilities/[id]/page.tsx",
+        "line": 30,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findUnique",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/fleet/trucks/[id]/page.tsx",
+        "line": 46,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findUnique",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/fleet/trucks/[id]/page.tsx",
+        "line": 72,
+        "kind": "PAGE",
+        "shape": "trip.findFirst",
+        "tables": [
+          "dispatches"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 20,
+        "kind": "PAGE",
+        "shape": "carrierClient.count",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 21,
+        "kind": "PAGE",
+        "shape": "carrierDriver.count",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 22,
+        "kind": "PAGE",
+        "shape": "carrierTruck.count",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 41,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 46,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 56,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findMany",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+        "line": 62,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/page.tsx",
+        "line": 14,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 34,
+        "kind": "PAGE",
+        "shape": "carrierClient.count",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 35,
+        "kind": "PAGE",
+        "shape": "carrierDriver.count",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 36,
+        "kind": "PAGE",
+        "shape": "carrierTruck.count",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 60,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 65,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 76,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findMany",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 81,
+        "kind": "PAGE",
+        "shape": "carrierLoad.findUnique",
+        "tables": [
+          "loads"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 98,
+        "kind": "PAGE",
+        "shape": "carrierContract.findMany",
+        "tables": [
+          "contracts"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 111,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+        "line": 160,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 25,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 29,
+        "kind": "PAGE",
+        "shape": "carrierContract.findMany",
+        "tables": [
+          "contracts"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 33,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 37,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findMany",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 41,
+        "kind": "PAGE",
+        "shape": "route.findMany",
+        "tables": [
+          "Route"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 45,
+        "kind": "PAGE",
+        "shape": "trip.findMany",
+        "tables": [
+          "dispatches"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 49,
+        "kind": "PAGE",
+        "shape": "carrierLoad.findMany",
+        "tables": [
+          "loads"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+        "line": 62,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 22,
+        "kind": "PAGE",
+        "shape": "carrierClient.count",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 23,
+        "kind": "PAGE",
+        "shape": "carrierDriver.count",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 24,
+        "kind": "PAGE",
+        "shape": "carrierTruck.count",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 44,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 49,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 54,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findMany",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+        "line": 59,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 31,
+        "kind": "PAGE",
+        "shape": "carrierClient.count",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 32,
+        "kind": "PAGE",
+        "shape": "carrierDriver.count",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 33,
+        "kind": "PAGE",
+        "shape": "carrierTruck.count",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 45,
+        "kind": "PAGE",
+        "shape": "routeTemplate.findUnique",
+        "tables": [
+          "route_templates"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 69,
+        "kind": "PAGE",
+        "shape": "carrierClient.findMany",
+        "tables": [
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 74,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 79,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findMany",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 85,
+        "kind": "PAGE",
+        "shape": "carrierContract.findMany",
+        "tables": [
+          "contracts"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+        "line": 91,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 40,
+        "kind": "PAGE",
+        "shape": "trip.findUnique",
+        "tables": [
+          "dispatches"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 54,
+        "kind": "PAGE",
+        "shape": "routeTemplate.findFirst",
+        "tables": [
+          "route_templates"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 71,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 154,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 169,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findFirst",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 176,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 189,
+        "kind": "PAGE",
+        "shape": "carrierDriver.findMany",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "line": 194,
+        "kind": "PAGE",
+        "shape": "carrierTruck.findMany",
+        "tables": [
+          "carrier_trucks"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/plan/page.tsx",
+        "line": 27,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/plan/page.tsx",
+        "line": 48,
+        "kind": "PAGE",
+        "shape": "carrierLoad.findMany",
+        "tables": [
+          "loads"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+        "line": 81,
+        "kind": "PAGE",
+        "shape": "carrierFacility.findMany",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/checklists/instances/[id]/page.tsx",
+        "line": 10,
+        "kind": "PAGE",
+        "shape": "playbookInstance.findUnique",
+        "tables": [
+          "PlaybookInstance"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/(owner)/settings/account/page.tsx",
+        "line": 29,
+        "kind": "PAGE",
+        "shape": "user.findUnique",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/api/admin/tenants/[id]/users/route.ts",
+        "line": 23,
+        "kind": "ROUTE_HANDLER",
+        "shape": "user.findMany",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/api/admin/users/[id]/role/route.ts",
+        "line": 34,
+        "kind": "ROUTE_HANDLER",
+        "shape": "user.findUnique",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/api/admin/users/[id]/role/route.ts",
+        "line": 52,
+        "kind": "ROUTE_HANDLER",
+        "shape": "user.update",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/api/v1/carrier/dashboard/drivers-status/route.ts",
+        "line": 64,
+        "kind": "ROUTE_HANDLER",
+        "shape": "$queryRaw()",
+        "tables": [
+          "DriverHOSEntry"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/api/v1/carrier/dashboard/messages/route.ts",
+        "line": 33,
+        "kind": "ROUTE_HANDLER",
+        "shape": "user.findMany",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/app/api/v1/carrier/pay-records/[id]/approve/route.ts",
+        "line": 19,
+        "kind": "ROUTE_HANDLER",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "driver_pay_records"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/app/api/v1/carrier/pay-records/[id]/mark-paid/route.ts",
+        "line": 19,
+        "kind": "ROUTE_HANDLER",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "driver_pay_records"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/app/api/v1/carrier/pay-records/[id]/void/route.ts",
+        "line": 19,
+        "kind": "ROUTE_HANDLER",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "driver_pay_records"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/automations/actions/send-email.ts",
+        "line": 37,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/automations/actions/send-email.ts",
+        "line": 46,
+        "kind": "LIBRARY",
+        "shape": "tenant.findUnique",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/automations/actions/send-email.ts",
+        "line": 82,
+        "kind": "LIBRARY",
+        "shape": "notificationLog.upsert",
+        "tables": [
+          "NotificationLog"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/automations/actions/send-email.ts",
+        "line": 103,
+        "kind": "LIBRARY",
+        "shape": "notificationLog.upsert",
+        "tables": [
+          "NotificationLog"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/document-types.ts",
+        "line": 27,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "carrier_document_types"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/facilities.ts",
+        "line": 72,
+        "kind": "LIBRARY",
+        "shape": "$queryRaw``",
+        "tables": [
+          "facilities"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/fleet-drivers.ts",
+        "line": 240,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/fleet-drivers.ts",
+        "line": 277,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/fleet-drivers.ts",
+        "line": 321,
+        "kind": "LIBRARY",
+        "shape": "tenant.findUnique",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/fleet-drivers.ts",
+        "line": 402,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "driver_pay_records",
+          "carrier_expenses",
+          "DriverInvitation",
+          "carrier_drivers",
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 7,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/fleet-drivers.ts",
+        "line": 503,
+        "kind": "LIBRARY",
+        "shape": "tenant.findUnique",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/fleet-drivers.ts",
+        "line": 593,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 51,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 60,
+        "kind": "LIBRARY",
+        "shape": "carrierDriver.findFirst",
+        "tables": [
+          "carrier_drivers"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 149,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 270,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 409,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 458,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 512,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 617,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 718,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 877,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 1009,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/notifications.ts",
+        "line": 1146,
+        "kind": "LIBRARY",
+        "shape": "tenant.findFirst",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/reports.ts",
+        "line": 134,
+        "kind": "LIBRARY",
+        "shape": "$queryRaw()",
+        "tables": [
+          "loads",
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/reports.ts",
+        "line": 151,
+        "kind": "LIBRARY",
+        "shape": "$queryRaw()",
+        "tables": [
+          "loads",
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/reports.ts",
+        "line": 278,
+        "kind": "LIBRARY",
+        "shape": "$queryRaw()",
+        "tables": [
+          "loads",
+          "clients"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/trips.ts",
+        "line": 217,
+        "kind": "LIBRARY",
+        "shape": "user.findUnique",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/carrier/trips.ts",
+        "line": 228,
+        "kind": "LIBRARY",
+        "shape": "user.findUnique",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/confirm-tenant-email.ts",
+        "line": 36,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/hydrate-tenant.ts",
+        "line": 26,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant",
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/hydrate-tenant.ts",
+        "line": 55,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/onboarding-flags.ts",
+        "line": 30,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "clients",
+          "contracts",
+          "loads",
+          "dispatches"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 4,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/onboarding-flags.ts",
+        "line": 57,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SCOPED"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/onboarding/provision-tenant.ts",
+        "line": 74,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Tenant",
+          "User",
+          "Plan",
+          "Promo",
+          "Subscription",
+          "ActivationProgress"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 9,
+        "censusVerdicts": [
+          "RAW_NO_TABLE_NAMED",
+          "SCOPED",
+          "NO_RLS_TABLE"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/lib/security/restricted-document-access.ts",
+        "line": 60,
+        "kind": "LIBRARY",
+        "shape": "document.findUnique",
+        "tables": [
+          "Document"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/api/routers/workflows/playbook.ts",
+        "line": 123,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "Playbook",
+          "PlaybookStep"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/server/api/routers/workflows/stepInstance.ts",
+        "line": 117,
+        "kind": "LIBRARY",
+        "shape": "user.findMany",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/api/routers/workflows/trigger.ts",
+        "line": 254,
+        "kind": "LIBRARY",
+        "shape": "user.findMany",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/computeDispatchReadiness.ts",
+        "line": 119,
+        "kind": "LIBRARY",
+        "shape": "user.update",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/failInspectionItem.ts",
+        "line": 130,
+        "kind": "LIBRARY",
+        "shape": "user.findMany",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+        "line": 235,
+        "kind": "LIBRARY",
+        "shape": "user.findFirst",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+        "line": 270,
+        "kind": "LIBRARY",
+        "shape": "user.findMany",
+        "tables": [
+          "User"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/playbookStepService.ts",
+        "line": 42,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "PlaybookStep"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 2,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/seedStarterPlaybooks.ts",
+        "line": 468,
+        "kind": "LIBRARY",
+        "shape": "playbook.findFirst",
+        "tables": [
+          "Playbook"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "BARE"
+        ]
+      },
+      {
+        "file": "src/server/services/workflows/seedStarterPlaybooks.ts",
+        "line": 477,
+        "kind": "LIBRARY",
+        "shape": "$transaction(cb)",
+        "tables": [
+          "PlaybookTrigger"
+        ],
+        "category": "BLIND_RLS",
+        "censusStatements": 1,
+        "censusVerdicts": [
+          "SILENT_ZERO_AT_CUTOVER"
+        ],
+        "censusClients": [
+          "TX(BARE)"
+        ]
+      }
+    ]
+  },
+  "r3": {
+    "gatingStatementsOutside621": 53,
+    "byReason": {
+      "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method": 49,
+      "621 counted the unit but as BLIND_UNRESOLVED (no table resolved — no relation traversal / dynamic SQL)": 4
+    },
+    "statements": [
+      {
+        "id": "src/app/api/driver-pay/me/bonuses/route.ts:19:driverBonus.findMany",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/current-period/route.ts:20:loadDriverAssignment.findMany",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/deductions/route.ts:24:driverDeduction.findMany",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts:48:driverSettlement.findFirst",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts:78:driverDispute.create",
+        "client": "MIXED(TX(BARE)|TX(TENANT_SESSION))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts:91:driverPayAuditLog.create",
+        "client": "MIXED(TX(BARE)|TX(TENANT_SESSION))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/[id]/pdf/route.ts:24:driverSettlement.findFirst",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/[id]/route.ts:25:driverSettlement.findFirst",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/[id]/route.ts:46:driverDeduction.findMany",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/route.ts:26:driverSettlement.findMany",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/app/api/driver-pay/me/settlements/route.ts:37:driverSettlement.count",
+        "client": "MIXED(BARE|TENANT_SESSION|TX(BARE))",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/carrier/reports.ts:382:$queryRaw()",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "621 counted the unit but as BLIND_UNRESOLVED (no table resolved — no relation traversal / dynamic SQL)"
+      },
+      {
+        "id": "src/lib/carrier/reports.ts:391:$queryRaw()",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "621 counted the unit but as BLIND_UNRESOLVED (no table resolved — no relation traversal / dynamic SQL)"
+      },
+      {
+        "id": "src/lib/carrier/reports.ts:399:$queryRaw()",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "621 counted the unit but as BLIND_UNRESOLVED (no table resolved — no relation traversal / dynamic SQL)"
+      },
+      {
+        "id": "src/lib/carrier/reports.ts:407:$queryRaw()",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "621 counted the unit but as BLIND_UNRESOLVED (no table resolved — no relation traversal / dynamic SQL)"
+      },
+      {
+        "id": "src/lib/notifications/dispatcher.ts:111:tenantNotificationSettings.findUnique",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/idempotency.ts:56:notificationSendLog.findFirst",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/idempotency.ts:107:notificationSendLog.findFirst",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/in-app-writer.ts:140:inAppNotification.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/in-app-writer.ts:159:inAppNotification.findFirst",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/notification-deduplication.ts:31:notificationLog.findUnique",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/notification-deduplication.ts:55:notificationLog.create",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/notification-deduplication.ts:80:notificationLog.update",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/notification-deduplication.ts:98:notificationLog.update",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/recipient-resolver.ts:73:user.findMany",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/recipient-resolver.ts:88:user.findMany",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/recipient-resolver.ts:105:user.findFirst",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/recipient-resolver.ts:127:user.findFirst",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/recipient-resolver.ts:142:notificationSubscription.findMany",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/lib/notifications/recipient-resolver.ts:162:userNotificationPreference.findMany",
+        "client": "BARE",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:23:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:32:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:41:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:50:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:68:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:77:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:86:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:95:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:104:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:115:playbook.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:125:playbookStep.createMany",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:261:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:275:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:285:playbook.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:314:playbookStep.createMany",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:330:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:339:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:348:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:357:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:366:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:381:stepTemplate.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:392:playbook.create",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      },
+      {
+        "id": "src/server/services/workflows/seedStarterPlaybooks.ts:402:playbookStep.createMany",
+        "client": "TX(BARE)",
+        "verdict": "SILENT_ZERO_AT_CUTOVER",
+        "why": "receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method"
+      }
+    ]
+  },
+  "r4": {
+    "at616": 175,
+    "filesAt616": 87,
+    "now": 45,
+    "filesNow": 25,
+    "filesWhereFlagsAppeared": [],
+    "perFile": [
+      {
+        "file": "src/actions/doc-feedback.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/actions/support-tickets.ts",
+        "at616": 4,
+        "now": 4
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-dashboard.ts",
+        "at616": 2,
+        "now": 2
+      },
+      {
+        "file": "src/app/(driver)/actions/driver-routes.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/(driver)/tasks/[id]/page.tsx",
+        "at616": 2,
+        "now": 2
+      },
+      {
+        "file": "src/app/(driver)/tasks/page.tsx",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+        "at616": 2,
+        "now": 2
+      },
+      {
+        "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+        "at616": 3,
+        "now": 3
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/auth/accept-invitation/route.ts",
+        "at616": 2,
+        "now": 2
+      },
+      {
+        "file": "src/app/api/auth/login/route.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/cron/workflow-digest/route.ts",
+        "at616": 4,
+        "now": 4
+      },
+      {
+        "file": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts",
+        "at616": 2,
+        "now": 2
+      },
+      {
+        "file": "src/app/api/driver/gps-ping/route.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+        "at616": 5,
+        "now": 5
+      },
+      {
+        "file": "src/app/api/gps/report/route.ts",
+        "at616": 2,
+        "now": 2
+      },
+      {
+        "file": "src/app/api/integrations/motive/sync/route.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/integrations/samsara/sync/route.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/mobile/driver/dashboard/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/documents/[id]/url/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/documents/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/hos/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/incidents/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/loads/[id]/rate-confirmation/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/loads/[id]/revert/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/loads/[id]/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/loads/[id]/status/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/loads/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/messages/route-thread/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/messages/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/messages/unread-count/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/route/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/tasks/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/driver/tracking-token/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/compliance/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/crm/[id]/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/crm/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/customers/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/dashboard/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/drivers/[id]/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/drivers/active/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/drivers/invite/route.ts",
+        "at616": 4,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/drivers/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/fleet-positions/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/fleet/messages/[recipientId]/route.ts",
+        "at616": 7,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/fleet/messages/route.ts",
+        "at616": 6,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/fuel/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/invoices/[id]/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/invoices/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+        "at616": 4,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/loads/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/maintenance/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/map/vehicles/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/payroll/[id]/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/payroll/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/profit-predictor/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/routes/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/safety/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+        "at616": 3,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/owner/trucks/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/mobile/support/ticket/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/push-tokens/route.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/track/[token]/route.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/app/api/v1/carrier/stops/[id]/messages/route.ts",
+        "at616": 4,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/v1/messages/[id]/audio-url/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/v1/messages/broadcast/route.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/v1/messages/conversations/route.ts",
+        "at616": 3,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/v1/messages/send/route.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/app/api/v1/messages/thread/route.ts",
+        "at616": 3,
+        "now": 0
+      },
+      {
+        "file": "src/lib/auth/supabase.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/lib/automations/evaluator.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/lib/driver-pay/require-driver.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/lib/email/send-geofence-alert.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/lib/geofencing/geofence-check.ts",
+        "at616": 8,
+        "now": 0
+      },
+      {
+        "file": "src/lib/notifications/audit-log.ts",
+        "at616": 1,
+        "now": 1
+      },
+      {
+        "file": "src/lib/notifications/send-push.ts",
+        "at616": 4,
+        "now": 2
+      },
+      {
+        "file": "src/lib/onboarding/activation-tracker.ts",
+        "at616": 2,
+        "now": 0
+      },
+      {
+        "file": "src/lib/security/audit-log.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/server/api/routers/workflows/analytics.ts",
+        "at616": 7,
+        "now": 0
+      },
+      {
+        "file": "src/server/api/routers/workflows/instance.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+        "at616": 1,
+        "now": 0
+      },
+      {
+        "file": "src/server/services/workflows/notifications.ts",
+        "at616": 10,
+        "now": 2
+      }
+    ]
+  }
+}

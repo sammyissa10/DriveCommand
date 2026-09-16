@@ -1,5 +1,11 @@
 # `app.bypass_rls` call classification
 
+> ## ⚠ SUPERSEDED AGAIN — 2026-09-16 (quick-622)
+>
+> **quick-616's census, which superseded this document, is itself superseded by
+> [`docs/audits/query-census.md`](query-census.md).** Both counted the `app.bypass_rls` *flag*. The query census
+> counts *queries*: **1,770 in total; 180 as scanned (169 after one hand credit) gate the cutover, and none of the 169 carries a flag.**
+
 > ## ⚠ SUPERSEDED — 2026-09-15 (quick-616)
 >
 > **This document's 211 / 103 and its two-category DECORATIVE/CROSS_TENANT split are both stale.**

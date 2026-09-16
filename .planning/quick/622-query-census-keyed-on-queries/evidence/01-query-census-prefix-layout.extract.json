@@ -1,0 +1,175 @@
+{
+  "note": "Extract of a full census run with --override \"src/app/(owner)/layout.tsx=37e0bb17^\" (the pre-quick-621 layout). The full JSON is reproducible and not committed; only the layout statements and totals are kept.",
+  "generated": "2026-09-16T19:03:39.169Z",
+  "overrides": [
+    "src/app/(owner)/layout.tsx=37e0bb17^"
+  ],
+  "totals": {
+    "statementsIncludingGucPlumbing": 1825,
+    "queries": 1770,
+    "gucPlumbing": 55,
+    "files": 363,
+    "untypedStatements": 55,
+    "byVerdict": {
+      "SCOPED": 1380,
+      "SILENT_ZERO_AT_CUTOVER": 183,
+      "ADMIN_CONNECTION": 107,
+      "SILENT_ZERO_AT_BYPASS_DROP": 56,
+      "NO_RLS_TABLE": 36,
+      "RAW_NO_TABLE_NAMED": 8
+    },
+    "cutoverGating": {
+      "statements": 183,
+      "files": 54
+    },
+    "bypassDropGating": {
+      "statements": 56,
+      "files": 24
+    },
+    "unresolved": {
+      "statements": 0,
+      "statementsWithAnyUnresolvedOrigin": 0,
+      "onRlsTables": 0
+    },
+    "tablesPartial": 370,
+    "bypassFlagged": 69,
+    "armsDisagree": 11,
+    "statementsWithAbsentFlows": 18,
+    "plumbing": {
+      "bypassSetConfig": 45,
+      "bypassSetConfigFiles": 25,
+      "other": 10
+    }
+  },
+  "layoutStatements": [
+    {
+      "id": "src/app/(owner)/layout.tsx:40:$queryRaw``",
+      "file": "src/app/(owner)/layout.tsx",
+      "line": 40,
+      "surface": "OWNER_PORTAL",
+      "fileKind": "LAYOUT",
+      "shape": "$queryRaw``",
+      "model": null,
+      "op": "$queryRaw",
+      "typed": true,
+      "client": "BARE",
+      "clientChain": [
+        "BARE"
+      ],
+      "unresolvedReasons": [],
+      "absentFlows": [],
+      "inTransaction": false,
+      "txLine": null,
+      "syntacticTxLine": null,
+      "bypassFlag": false,
+      "bypassFlagOnEveryArm": false,
+      "decorativeBypass": false,
+      "tenantGucInTx": false,
+      "isGucPlumbing": false,
+      "tables": [
+        "Tenant"
+      ],
+      "tablesPartial": false,
+      "rlsTables": [
+        "Tenant"
+      ],
+      "noPolicyRlsTables": [],
+      "noBypassPolicyTables": [],
+      "tenantSource": "SESSION",
+      "tenantSourceEvidence": "calls getSession()",
+      "failure": "SWALLOWED",
+      "failureEvidence": "try/catch at line 39 — handler: { // Non-fatal — sidebar falls back to \"DriveCommand\" }",
+      "verdict": "SILENT_ZERO_AT_CUTOVER",
+      "armVerdicts": [
+        "SILENT_ZERO_AT_CUTOVER"
+      ],
+      "armsDisagree": false
+    },
+    {
+      "id": "src/app/(owner)/layout.tsx:53:$queryRaw``",
+      "file": "src/app/(owner)/layout.tsx",
+      "line": 53,
+      "surface": "OWNER_PORTAL",
+      "fileKind": "LAYOUT",
+      "shape": "$queryRaw``",
+      "model": null,
+      "op": "$queryRaw",
+      "typed": true,
+      "client": "BARE",
+      "clientChain": [
+        "BARE"
+      ],
+      "unresolvedReasons": [],
+      "absentFlows": [],
+      "inTransaction": false,
+      "txLine": null,
+      "syntacticTxLine": null,
+      "bypassFlag": false,
+      "bypassFlagOnEveryArm": false,
+      "decorativeBypass": false,
+      "tenantGucInTx": false,
+      "isGucPlumbing": false,
+      "tables": [
+        "ActivationProgress"
+      ],
+      "tablesPartial": false,
+      "rlsTables": [
+        "ActivationProgress"
+      ],
+      "noPolicyRlsTables": [],
+      "noBypassPolicyTables": [],
+      "tenantSource": "SESSION",
+      "tenantSourceEvidence": "calls getSession()",
+      "failure": "SWALLOWED",
+      "failureEvidence": "try/catch at line 52 — handler: { // Non-fatal — default to showing the ribbon (treat as incomplete) o",
+      "verdict": "SILENT_ZERO_AT_CUTOVER",
+      "armVerdicts": [
+        "SILENT_ZERO_AT_CUTOVER"
+      ],
+      "armsDisagree": false
+    },
+    {
+      "id": "src/app/(owner)/layout.tsx:70:$queryRaw``",
+      "file": "src/app/(owner)/layout.tsx",
+      "line": 70,
+      "surface": "OWNER_PORTAL",
+      "fileKind": "LAYOUT",
+      "shape": "$queryRaw``",
+      "model": null,
+      "op": "$queryRaw",
+      "typed": true,
+      "client": "BARE",
+      "clientChain": [
+        "BARE"
+      ],
+      "unresolvedReasons": [],
+      "absentFlows": [],
+      "inTransaction": false,
+      "txLine": null,
+      "syntacticTxLine": null,
+      "bypassFlag": false,
+      "bypassFlagOnEveryArm": false,
+      "decorativeBypass": false,
+      "tenantGucInTx": false,
+      "isGucPlumbing": false,
+      "tables": [
+        "User"
+      ],
+      "tablesPartial": false,
+      "rlsTables": [
+        "User"
+      ],
+      "noPolicyRlsTables": [],
+      "noBypassPolicyTables": [],
+      "tenantSource": "SESSION",
+      "tenantSourceEvidence": "calls getSession()",
+      "failure": "SWALLOWED",
+      "failureEvidence": "try/catch at line 69 — handler: { tourSeen = true; }",
+      "verdict": "SILENT_ZERO_AT_CUTOVER",
+      "armVerdicts": [
+        "SILENT_ZERO_AT_CUTOVER"
+      ],
+      "armsDisagree": false
+    }
+  ]
+}

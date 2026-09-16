@@ -1,0 +1,27 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+PASS  AV1   FLOOR — at least 1500 query statements — 1770
+PASS  AV2   RESOLVER ALIVE — fewer than 5% of queries unclassified — 0 of 1770
+PASS  GT1a  src/app/(owner)/layout.tsx at HEAD: exactly 3 statements — 54:tenant.findUnique, 58:activationProgress.findUnique, 62:user.findUnique
+PASS  GT1b  src/app/(owner)/layout.tsx at HEAD: all 3 SCOPED (quick-621's fix) — tenant.findUnique=TX(TENANT_ORG)/SCOPED, activationProgress.findUnique=TX(TENANT_ORG)/SCOPED, user.findUnique=TX(TENANT_ORG)/SCOPED
+PASS  GT1c  src/app/(owner)/layout.tsx at HEAD: reaches Tenant, ActivationProgress, User — [["Tenant"],["ActivationProgress"],["User"]]
+PASS  GT1d  src/app/(owner)/layout.tsx PRE-FIX (37e0bb17^): exactly 3 statements — 40:$queryRaw``, 53:$queryRaw``, 70:$queryRaw``
+PASS  GT1e  src/app/(owner)/layout.tsx PRE-FIX: all 3 BARE and SILENT_ZERO_AT_CUTOVER — 40=BARE/SILENT_ZERO_AT_CUTOVER, 53=BARE/SILENT_ZERO_AT_CUTOVER, 70=BARE/SILENT_ZERO_AT_CUTOVER
+PASS  GT1f  src/app/(owner)/layout.tsx PRE-FIX: reaches Tenant, ActivationProgress, User — [["Tenant"],["ActivationProgress"],["User"]]
+PASS  GT1g  src/app/(owner)/layout.tsx PRE-FIX: all 3 SWALLOWED (the catch {} quick-621 removed) — SWALLOWED, SWALLOWED, SWALLOWED
+PASS  GT1h  PRE-FIX run differs from HEAD only in the layout — 1767 vs 1767
+PASS  GT2a  quick-618's committed list has 56 sites — 56
+PASS  GT2b  all 56 of quick-618's findUnique hazards found — 56/56
+PASS  GT2c  receiver class agrees with quick-618 on all 56 — 56/56 (3 routed since 618)
+PASS  GT2d  the three PARAMETER-passed digest sites resolve to TENANT_ORG — compliance-30day-payload.ts:79=TENANT_ORG, daily-driver-payload.ts:63=TENANT_ORG, weekly-owner-payload.ts:68=TENANT_ORG
+PASS  GT3a  src/app/(admin)/actions/tenants.ts: the _count{users,trucks,routes} read is enumerated — src/app/(admin)/actions/tenants.ts:329:tenant.findUnique (_count at :347)
+PASS  GT3b  its table reach includes Route, User and Truck — ["Tenant","User","Truck","Route","DriverInvitation"]
+PASS  GT3c  its client is the admin connection — ADMIN
+PASS  GT3d  no `.route.` delegate appears in the file (so a text grep could not see it) — true
+PASS  R1a   flag-method replica reproduces the published 45 remaining — 45 statements / 25 files
+PASS  R2a   quick-621's committed BLIND_RLS list has 125 units — 125
+R1 flag method at HEAD: 45 statements / 25 files; census flag set_config: 45; flag-only 0; census-only 0; queries under a flag: 69
+R2 621's 125: 0 unmatched, 9 matched but not gating, 127 gating statements inside them
+R3 gating statements outside 621's 125: 53 {"receiver is not the file-locally imported `prisma` identifier (helper-returned, parameter, destructured, or a transaction opened elsewhere) — outside 621's method":49,"621 counted the unit but as BLIND_UNRESOLVED (no table resolved — no relation traversal / dynamic SQL)":4}
+R4 616: 175 (post-616-routing) / 87 files → now 45 / 25; files where flags increased: 0
+wrote .planning/quick/622-query-census-keyed-on-queries/evidence/02-ground-truth.json
+exit=0
