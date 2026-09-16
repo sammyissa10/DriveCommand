@@ -1,8 +1,8 @@
 'use server';
 
 import { requireAuth } from '@/lib/auth/supabase';
-import { requireTenantId } from '@/lib/context/tenant-context';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { requireTenantId, getTenantPrismaForOrg } from '@/lib/context/tenant-context';
+import { TX_OPTIONS } from '@/lib/db/prisma';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
 
@@ -28,8 +28,10 @@ export async function submitDocFeedback(data: {
   const { docSlug, helpful, comment } = validation.data;
 
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    // quick-619: the tenant is the caller's session (`requireTenantId()` above).
+    // No userId passed (quick-610) — `userId` is already written explicitly below.
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    await tenantPrisma.$transaction(async (tx) => {
       await tx.docFeedback.create({
         data: {
           tenantId,

@@ -43,7 +43,7 @@
  *   we never retroactively evaluate stale events.
  */
 
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
 import { getAdminDb } from '@/lib/db/admin-prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { executeSendEmailAction } from '@/lib/automations/actions/send-email';
@@ -74,8 +74,8 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
    * AppEvent in a 30-day window. `runEvaluator` is one unit of work.
    *
    * NOT on this client: `:80`'s dedup read, which holds `event.tenantId` and
-   * goes to `getTenantPrismaForOrg`, and the bypass-flagged `$transaction`
-   * below, which is the Phase 0 bypass programme's to close, not this task's.
+   * goes to `getTenantPrismaForOrg`, and the AutomationRun create below, which
+   * was bypass-flagged until quick-619 routed it to `getTenantPrismaForOrg` too.
    */
   const adminDbEvaluator = await getAdminDb('automation evaluator scan');
 
@@ -123,8 +123,12 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
       const scheduledAt = new Date(event.createdAt.getTime() + rule.delaySeconds * 1000);
 
       try {
-        await prisma.$transaction(async (tx) => {
-          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        // quick-619: `event.tenantId` is the job payload, the same tenant the
+        // runOncePerTenant read above already scopes with. Acquired INSIDE this
+        // try, so an acquisition failure lands in the non-idempotent branch of the
+        // catch below rather than being mistaken for an already-scheduled run.
+        const tenantDbRun = await getTenantPrismaForOrg(event.tenantId);
+        await tenantDbRun.$transaction(async (tx) => {
           await tx.automationRun.create({
             data: {
               ruleId: rule.id,

@@ -1,4 +1,5 @@
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 /**
@@ -33,14 +34,15 @@ const FIELD_MAP: Record<ActivationEventType, string> = {
  * - If completionPct reaches 100, writes a tenant.activated AppEvent
  * - NEVER propagates errors — the caller's user action must succeed regardless
  *
- * All DB writes use bypass_rls to operate outside tenant RLS context, which is
- * required because some callers (e.g. accept-invitation) have no active session.
+ * quick-619: every write runs on getTenantPrismaForOrg(tenantId), no userId. Some
+ * callers (e.g. accept-invitation) have no active session, which is why this used
+ * `app.bypass_rls`, but the function has always been handed `tenantId` and the
+ * tenant client sets the GUC itself, so neither a session nor a bypass is needed.
  *
  * ─── THE $transaction IS LOAD-BEARING TWICE OVER (quick-596) ──────────────────
- * 1. BYPASS SCOPE. `set_config(..., TRUE)` is transaction-local, so the
- *    transaction is what confines the bypass to these statements. Both
- *    `ActivationProgress` and `AppEvent` are FORCE-RLS, and sessionless callers
- *    have no tenant GUC, so without the bypass the writes are rejected outright.
+ * 1. BYPASS SCOPE: RETIRED by quick-619. This used to be what confined the
+ *    transaction-local bypass. The writes now run on a tenant client instead, so
+ *    this reason no longer applies; reason 2 is why the transaction stays.
  * 2. REAL ATOMICITY. This is the one helper in its family where the writes must
  *    also succeed or fail together, and the reason is the idempotency: the
  *    progress update sets a step timestamp AND recomputes completionPct, then an
@@ -52,10 +54,8 @@ const FIELD_MAP: Record<ActivationEventType, string> = {
  *    events do not add up. Only a manual backfill recovers it.
  *
  * So do not remove this transaction to reduce the withTenantContext deadlock
- * count, and do not replace it with an optional client parameter that sets the
- * bypass on a caller's transaction (that leaks the bypass across the caller's
- * whole unit of work). Five call-chain units reach a transaction through this
- * function; closing them needs a privileged connection.
+ * count. This function acquires its own tenant client and borrows no caller's
+ * transaction, so nothing it does leaks into the caller's unit of work.
  */
 export async function recordActivationEvent(
   tenantId: string,
@@ -65,8 +65,8 @@ export async function recordActivationEvent(
     const field = FIELD_MAP[event];
     const now = new Date();
 
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    await tenantPrisma.$transaction(async (tx) => {
 
       // Idempotency: only update if this field is not yet set.
       // Fetch all relevant fields with explicit (non-dynamic) keys so TypeScript
@@ -194,8 +194,10 @@ export async function recordActivationEvent(
 
     // Best-effort: write error event (separate connection, bypass_rls)
     try {
-      await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      // A fresh acquisition: if the first one is what failed, this retries it,
+      // and a second failure is swallowed below exactly as before.
+      const tenantPrismaErr = await getTenantPrismaForOrg(tenantId);
+      await tenantPrismaErr.$transaction(async (tx) => {
         await tx.appEvent.create({
           data: {
             tenantId,

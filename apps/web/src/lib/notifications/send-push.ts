@@ -1,5 +1,6 @@
 import { Expo, ExpoPushMessage } from 'expo-server-sdk';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 const expo = new Expo();
@@ -14,14 +15,18 @@ const expo = new Expo();
  * Use with after() in serverless routes to ensure delivery survives context freezing.
  *
  * ─── THE $transaction IS A BYPASS SCOPE, NOT AN ATOMICITY WRAPPER (quick-596) ──
- * The bypass here is STRICTLY load-bearing, more so than anywhere else in this
- * family. `PushToken` is FORCE-RLS and its isolation policy reads
+ * quick-619 CORRECTION. This header used to say `PushToken`'s policy was
  *   USING ("userId"::text = current_setting('app.current_user_id', true))
- * and **nothing in this repository ever sets `app.current_user_id`** — the sole
- * occurrence is a comment in lib/auth/mobile-auth.ts noting it is not set from
- * the HTTP context. That policy can never pass, so the bypass is the only reason
- * this query returns rows at all. Remove it and every push notification silently
- * stops: zero tokens found, early return, no error, no log.
+ * and could never pass. Read from `pg_policies` on 2026-09-16, byte-identical on
+ * staging and production, the live policy is
+ *   tenant_isolation_policy FOR ALL USING ("tenantId" = current_tenant_id())
+ * — an ordinary tenant policy. So the bypass is NOT load-bearing for a caller
+ * that holds a tenant: `sendPushToOrg` below now runs on
+ * getTenantPrismaForOrg(orgId). It IS still load-bearing HERE, for a different
+ * reason than the one this header gave: `sendPushToUser` takes a `userId` and
+ * nothing else, so there is no tenant to scope with, and without the bypass the
+ * read returns zero tokens silently. Routing it needs a tenant threaded in from
+ * the callers — a signature change, reported by quick-619 and not made.
  *
  * `set_config(..., TRUE)` is transaction-local, so the transaction is what
  * confines the bypass. Do NOT swap it for an optional client parameter that sets
@@ -123,9 +128,15 @@ export async function sendPushToOrg(
   options?: { role?: string }
 ): Promise<void> {
   try {
+    // quick-619: `orgId` IS the tenant. One tenant client for the read and the
+    // token cleanup below; no userId (quick-610). withTenantRLS adds
+    // `PushToken.tenantId = orgId` beside the `user.tenantId` filter — the two agree
+    // by construction, because the only writer (api/push-tokens) sets both from the
+    // same verified token.
+    const tenantPrisma = await getTenantPrismaForOrg(orgId);
+
     // Fetch all push tokens for users in the org (optionally filtered by role)
-    const tokenRecords = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tokenRecords = await tenantPrisma.$transaction(async (tx) => {
       return tx.pushToken.findMany({
         where: {
           user: {
@@ -171,8 +182,7 @@ export async function sendPushToOrg(
               const tokenToRemove = validEntries[messageIndex + i]?.token;
               if (tokenToRemove) {
                 try {
-                  await prisma.$transaction(async (tx) => {
-                    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+                  await tenantPrisma.$transaction(async (tx) => {
                     await tx.pushToken.deleteMany({ where: { token: tokenToRemove } });
                   }, TX_OPTIONS);
                   logger.info('[send-push] removed invalid org token', { orgId });
