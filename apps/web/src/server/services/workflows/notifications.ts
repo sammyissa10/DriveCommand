@@ -14,7 +14,12 @@
  *
  * Spec reference: Section 10 (Notification System)
  */
+// quick-619: `prisma` is still imported for exactly two helpers — `getUserName`
+// and `loadStepInstance` — which take no tenant and so were NOT routed (a tenant
+// is never threaded through a signature on a guess). Every other statement in
+// this file runs on a getTenantPrismaForOrg(tenantId) client, without userId.
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { sendEmail } from '@/lib/email/resend-client';
 import { logger, serializeError } from '@/lib/logger';
@@ -45,8 +50,8 @@ function getStepName(stepSnapshot: unknown): string {
 /** Get tenant name */
 async function getTenantName(tenantId: string): Promise<string> {
   try {
-    const tenant = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantDb = await getTenantPrismaForOrg(tenantId);
+    const tenant = await tenantDb.$transaction(async (tx) => {
       return tx.tenant.findUnique({ where: { id: tenantId }, select: { name: true } });
     }, TX_OPTIONS);
     return tenant?.name ?? 'DriveCommand';
@@ -76,8 +81,8 @@ async function getUserName(userId: string): Promise<string> {
 /** Get truck license plate label */
 async function getTruckLabel(tenantId: string, entityId: string): Promise<string> {
   try {
-    const truck = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantDb = await getTenantPrismaForOrg(tenantId);
+    const truck = await tenantDb.$transaction(async (tx) => {
       return tx.truck.findFirst({
         where: { id: entityId, tenantId },
         select: { licensePlate: true },
@@ -91,8 +96,8 @@ async function getTruckLabel(tenantId: string, entityId: string): Promise<string
 
 /** Find dispatchers (OWNER + MANAGER roles) in the tenant */
 async function findDispatchers(tenantId: string): Promise<Array<{ id: string }>> {
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
+  return tenantDb.$transaction(async (tx) => {
     return tx.user.findMany({
       where: { tenantId, role: { in: ['OWNER', 'MANAGER'] }, isActive: true },
       select: { id: true },
@@ -102,8 +107,8 @@ async function findDispatchers(tenantId: string): Promise<Array<{ id: string }>>
 
 /** Find tenant admin emails (OWNER + MANAGER) */
 async function findAdminEmails(tenantId: string): Promise<Array<{ id: string; email: string }>> {
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
+  return tenantDb.$transaction(async (tx) => {
     return tx.user.findMany({
       where: { tenantId, role: { in: ['OWNER', 'MANAGER'] }, isActive: true },
       select: { id: true, email: true },
@@ -123,8 +128,8 @@ async function writeAuditRow(data: {
   success: boolean;
 }): Promise<void> {
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantDb = await getTenantPrismaForOrg(data.tenantId);
+    await tenantDb.$transaction(async (tx) => {
       await tx.playbookNotification.create({
         data: {
           tenantId: data.tenantId,
@@ -247,8 +252,8 @@ export async function sendStepOverdue({
       : 'Driver';
 
     // Compute how many days overdue
-    const stepWithDue = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantDb = await getTenantPrismaForOrg(tenantId);
+    const stepWithDue = await tenantDb.$transaction(async (tx) => {
       return tx.stepInstance.findUnique({
         where: { id: stepInstanceId },
         select: { dueDate: true },
@@ -306,18 +311,14 @@ export async function sendStepOverdue({
  * INSTANCE_BLOCKED — in-app push alert to dispatchers when a checklist transitions to BLOCKED.
  * Push to dispatchers (OWNER/MANAGER).
  *
- * ─── THE $transaction IS A BYPASS SCOPE, NOT AN ATOMICITY WRAPPER (quick-596) ──
- * The read is a single findUnique and needs no atomicity, but it does need the
- * bypass: `PlaybookInstance` is FORCE-RLS and this runs from workflow events that
- * may carry no session, hence no tenant GUC. `set_config(..., TRUE)` is
- * transaction-local, so deleting the transaction removes the bypass with it and
- * the instance read returns null — the function then logs "instance not found"
- * and no dispatcher is ever told a driver is blocked.
- *
- * Do NOT replace it with an optional client parameter that sets the bypass on a
- * caller's transaction: that leaves `app.bypass_rls = on` for the rest of the
- * caller's unit of work. Five call-chain units reach a transaction through this
- * function (docs/audits/wrapper-migration-scope.md §1b).
+ * quick-619 — NO LONGER ON THE BYPASS. quick-596 recorded that this read needed
+ * `app.bypass_rls` because `PlaybookInstance` is FORCE-RLS and workflow events
+ * may carry no session, so no tenant GUC. Both halves are still true, but the
+ * function has always held `args.tenantId`: a getTenantPrismaForOrg(tenantId)
+ * client sets the GUC itself, the policy admits this tenant's instance, and no
+ * bypass is left on any caller's unit of work. The `$transaction` is kept as-is.
+ * If `tenantId` did not match the instance's tenant the read now returns null and
+ * the function logs "instance not found" — which is isolation, not a regression.
  */
 export async function sendInstanceBlocked(args: {
   playbookInstanceId: string;
@@ -325,8 +326,8 @@ export async function sendInstanceBlocked(args: {
 }): Promise<void> {
   const { playbookInstanceId, tenantId } = args;
   try {
-    const instance = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantDb = await getTenantPrismaForOrg(tenantId);
+    const instance = await tenantDb.$transaction(async (tx) => {
       return tx.playbookInstance.findUnique({
         where: { id: playbookInstanceId },
         include: {
@@ -566,8 +567,8 @@ export async function sendInstanceBlockedEmail(args: {
 }): Promise<void> {
   const { playbookInstanceId, tenantId } = args;
   try {
-    const instance = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantDb = await getTenantPrismaForOrg(tenantId);
+    const instance = await tenantDb.$transaction(async (tx) => {
       return tx.playbookInstance.findUnique({
         where: { id: playbookInstanceId },
         include: {

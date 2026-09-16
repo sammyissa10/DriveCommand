@@ -24,8 +24,8 @@ import {
 import { generatePlaybookInstance } from '@/server/services/workflows/generatePlaybookInstance';
 import { computeDispatchReadiness } from '@/server/services/workflows/computeDispatchReadiness';
 import { deriveDriverReadiness } from '@/server/services/workflows/deriveDriverReadiness';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma'; // kept for $transaction (bypass_rls) + user platform table
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma, getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 const generate = adminProcedure
   .input(generateInstanceSchema)
@@ -101,8 +101,12 @@ const get = tenantMemberProcedure
 
     const skippedByUsers: Record<string, { fullName: string }> = {};
     if (skippedUserIds.length > 0) {
-      const users = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      // quick-619: tenant from the tRPC session (`ctx.tenantId`). A separate
+      // getTenantPrismaForOrg client rather than the getTenantPrisma() one above,
+      // because the established pattern omits userId (quick-610/617) — for this
+      // read the two behave identically.
+      const tenantDb = await getTenantPrismaForOrg(ctx.tenantId);
+      const users = await tenantDb.$transaction(async (tx) => {
         return tx.user.findMany({
           where: { id: { in: skippedUserIds } },
           select: { id: true, firstName: true, lastName: true, email: true },

@@ -9,7 +9,7 @@
  * Assignee resolution and push notifications are best-effort, outside the transaction.
  */
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { TRPCError } from '@trpc/server';
 import { sendStepAssigned } from './notifications';
 import type { PlaybookEntityType, TriggerEvent } from '@/generated/prisma';
@@ -61,8 +61,12 @@ export async function generatePlaybookInstance(args: {
   // 4–6. Build snapshot and create instance + step instances in one transaction
   const playbookSnapshot = buildPlaybookSnapshot(playbook);
 
-  const instance = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+  // quick-619: the instance and its step instances are still created in ONE
+  // transaction — that atomicity is real and is kept. Only the client changes:
+  // `args.tenantId` scopes it, so the policies see the tenant the `data` already
+  // names. No userId (quick-610) — neither create sets audit columns today.
+  const tenantDb = await getTenantPrismaForOrg(tenantId);
+  const instance = await tenantDb.$transaction(async (tx) => {
 
     const newInstance = await tx.playbookInstance.create({
       data: {

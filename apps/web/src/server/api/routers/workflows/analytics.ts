@@ -11,7 +11,8 @@
  */
 import { z } from 'zod';
 import { router, tenantMemberProcedure } from '@/server/api/trpc';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 
 const daysInput = z.number().int().min(1).max(365).default(30);
 
@@ -20,26 +21,26 @@ const getPlaybookStats = tenantMemberProcedure
   .input(z.object({ days: daysInput }))
   .query(async ({ ctx, input }) => {
     const since = new Date(Date.now() - input.days * 86_400_000);
+    // quick-619: tenant from the tRPC session (`ctx.tenantId`). One client per
+    // procedure; every `tenantId` predicate is kept. No userId (quick-610).
+    const tenantPrisma = await getTenantPrismaForOrg(ctx.tenantId);
 
     const [total, completed, playbooks] = await Promise.all([
-      prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      tenantPrisma.$transaction(async (tx) => {
         return tx.playbookInstance.groupBy({
           by: ['playbookId'],
           where: { tenantId: ctx.tenantId, createdAt: { gte: since } },
           _count: { id: true },
         });
       }, TX_OPTIONS),
-      prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      tenantPrisma.$transaction(async (tx) => {
         return tx.playbookInstance.groupBy({
           by: ['playbookId'],
           where: { tenantId: ctx.tenantId, status: 'COMPLETED', createdAt: { gte: since } },
           _count: { id: true },
         });
       }, TX_OPTIONS),
-      prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      tenantPrisma.$transaction(async (tx) => {
         return tx.playbook.findMany({
           where: { tenantId: ctx.tenantId, deletedAt: null },
           select: { id: true, name: true },
@@ -66,9 +67,11 @@ const getAvgCompletionTime = tenantMemberProcedure
   .input(z.object({ days: daysInput }))
   .query(async ({ ctx, input }) => {
     const since = new Date(Date.now() - input.days * 86_400_000);
+    // quick-619: tenant from the tRPC session (`ctx.tenantId`). One client per
+    // procedure; every `tenantId` predicate is kept. No userId (quick-610).
+    const tenantPrisma = await getTenantPrismaForOrg(ctx.tenantId);
 
-    const completed = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const completed = await tenantPrisma.$transaction(async (tx) => {
       return tx.playbookInstance.findMany({
         where: {
           tenantId: ctx.tenantId,
@@ -103,11 +106,13 @@ const getStepDropOff = tenantMemberProcedure
   .input(z.object({ playbookId: z.string().uuid(), days: daysInput }))
   .query(async ({ ctx, input }) => {
     const since = new Date(Date.now() - input.days * 86_400_000);
+    // quick-619: tenant from the tRPC session (`ctx.tenantId`). One client per
+    // procedure; every `tenantId` predicate is kept. No userId (quick-610).
+    const tenantPrisma = await getTenantPrismaForOrg(ctx.tenantId);
 
     // Step 1: get instance IDs scoped to this tenant + playbook + time range
     // (Avoids Prisma groupBy cross-tenant issue — prefetch IDs then filter)
-    const instanceIds = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const instanceIds = await tenantPrisma.$transaction(async (tx) => {
       const rows = await tx.playbookInstance.findMany({
         where: {
           tenantId: ctx.tenantId,
@@ -122,8 +127,7 @@ const getStepDropOff = tenantMemberProcedure
     if (instanceIds.length === 0) return [];
 
     // Step 2: count StepInstances by stepTemplateId + status
-    const stepCounts = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const stepCounts = await tenantPrisma.$transaction(async (tx) => {
       return tx.stepInstance.groupBy({
         by: ['stepTemplateId', 'status'],
         where: { playbookInstanceId: { in: instanceIds } },
@@ -138,8 +142,7 @@ const getStepDropOff = tenantMemberProcedure
 
     const stepTemplates =
       stepTemplateIds.length > 0
-        ? await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        ? await tenantPrisma.$transaction(async (tx) => {
             return tx.stepTemplate.findMany({
               where: { id: { in: stepTemplateIds } },
               select: { id: true, name: true },
