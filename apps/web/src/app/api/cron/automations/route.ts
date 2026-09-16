@@ -207,64 +207,72 @@ async function scheduleCronDrivenRule(
   console.log(`[cron] Rule '${ruleKey}' — ${candidates.length} candidate tenant(s)`);
 
   for (const { tenantId } of candidates) {
-    /**
-     * quick-615 — CORRECT, not ROUTE. `tenantId` is the LOOP VARIABLE, and the
-     * create at the bottom of this same body already runs on
-     * `getTenantPrismaForOrg(tenantId)`. A tenant client demonstrably serves
-     * these two dedup reads, so `getAdminDb` must not: routing a statement to
-     * the bypassing connection that a scoped one can serve is the one thing
-     * `admin-prisma.ts`'s NOT-LIST names outright. No `userId` is passed —
-     * `getTenantPrisma()` would forward one into the audit-columns extension
-     * and start writing `createdById`/`updatedById` (quick-610).
-     *
-     * THE DOUBLE ACQUISITION IS DELIBERATE AND IS NOT AN OVERSIGHT. This
-     * acquisition is here, beside its statement and OUTSIDE the `try` below,
-     * because the existing one at the bottom is INSIDE that `try`, whose
-     * `catch` calls `failures.record(...)` and lets the loop continue. Hoisting
-     * one shared acquisition above the `try` would move an `await` that can
-     * throw from outside the recorder's reach to inside it — changing which
-     * failures are attributed to which tenant and which iteration `continue`s.
-     * That is a behaviour change wearing a routing fix's clothes. The cost is
-     * one extra `set_config` round trip per candidate; correct error
-     * attribution is worth one statement.
-     */
-    const tenantDbDedup = await getTenantPrismaForOrg(tenantId);
-
-    // Dedup check
-    if (runOncePerTenant) {
-      // Lifetime dedup: skip if this tenant has any run ever for this rule
-      const existing = await tenantDbDedup.automationRun.findFirst({
-        where: { ruleId: rule.id, tenantId },
-        select: { id: true },
-      });
-      if (existing) continue;
-    } else {
-      // Time-window dedup: skip if a run was fired OR is in-flight PENDING within windowHours.
-      // Covers both executed runs (firedAt) and PENDING runs that haven't fired yet
-      // (scheduledAt), to prevent duplicates if the evaluator is delayed.
-      const wh = windowHours ?? 20;
-      const windowStart = new Date(Date.now() - wh * 60 * 60 * 1000);
-      const recentRun = await tenantDbDedup.automationRun.findFirst({
-        where: {
-          ruleId: rule.id,
-          tenantId,
-          OR: [
-            { firedAt: { gte: windowStart } },
-            { status: 'PENDING', scheduledAt: { gte: windowStart } },
-          ],
-        },
-        select: { id: true },
-      });
-      if (recentRun) continue;
-    }
-
     try {
-      // quick-600 (B5) — CORRECT, not ROUTE. `tenantId` is the loop
-      // variable, already known per candidate row — same shape as
-      // workflow-notifications:81/:96 and evaluator.ts's optimistic status
-      // update. Not in the design doc's original snapshot (Fact #9); see
-      // ROUTING-MANIFEST.md §5.
+      /**
+       * quick-600 (B5) — CORRECT, not ROUTE. `tenantId` is the loop variable,
+       * already known per candidate row — same shape as
+       * workflow-notifications:81/:96 and evaluator.ts's optimistic status
+       * update. Not in the design doc's original snapshot (Fact #9); see
+       * ROUTING-MANIFEST.md §5.
+       *
+       * quick-615 — the two DEDUP READS below moved onto this SAME client, and
+       * with them the whole dedup block moved INSIDE this `try`. They were on
+       * the bare (tenant-context-free) client and raise `TC001` at the
+       * `app_user` cutover; a tenant client demonstrably serves them, so
+       * `getAdminDb` must not — routing a statement to the bypassing
+       * connection that a scoped one can serve is the one thing
+       * `admin-prisma.ts`'s NOT-LIST names outright. No `userId` is passed:
+       * `getTenantPrisma()` would forward one into the audit-columns extension
+       * and start writing `createdById`/`updatedById` (quick-610).
+       *
+       * ONE ACQUISITION PER CANDIDATE, AND IT MUST STAY INSIDE THIS `try`.
+       * The first attempt at this put a SECOND acquisition above the `try`,
+       * beside the dedup reads, reasoning that leaving the existing one
+       * untouched preserved error attribution. `tests/cron/automations.test.ts`
+       * disproved it: that test injects its failure AT
+       * `getTenantPrismaForOrg`, so the new outer acquisition became the one
+       * that threw — OUTSIDE the recorder's reach — and quick-603's whole
+       * contract ("one tenant's scheduling failure must not stop the rest, and
+       * must be counted") silently became a 500 for the entire run. The same
+       * test also pins the acquisition COUNT at `M * RULES`, which a double
+       * acquisition breaks outright. Two acquisitions bought nothing and cost
+       * the contract.
+       *
+       * The residual, stated rather than hidden: a dedup-read failure is now
+       * RECORDED and the loop continues, where before it propagated to the
+       * route's outer catch and 500'd the run. That is the direction this
+       * loop's catch exists for, and it is the safer one.
+       */
       const tenantDb = await getTenantPrismaForOrg(tenantId);
+
+      // Dedup check
+      if (runOncePerTenant) {
+        // Lifetime dedup: skip if this tenant has any run ever for this rule
+        const existing = await tenantDb.automationRun.findFirst({
+          where: { ruleId: rule.id, tenantId },
+          select: { id: true },
+        });
+        if (existing) continue;
+      } else {
+        // Time-window dedup: skip if a run was fired OR is in-flight PENDING within windowHours.
+        // Covers both executed runs (firedAt) and PENDING runs that haven't fired yet
+        // (scheduledAt), to prevent duplicates if the evaluator is delayed.
+        const wh = windowHours ?? 20;
+        const windowStart = new Date(Date.now() - wh * 60 * 60 * 1000);
+        const recentRun = await tenantDb.automationRun.findFirst({
+          where: {
+            ruleId: rule.id,
+            tenantId,
+            OR: [
+              { firedAt: { gte: windowStart } },
+              { status: 'PENDING', scheduledAt: { gte: windowStart } },
+            ],
+          },
+          select: { id: true },
+        });
+        if (recentRun) continue;
+      }
+
       await tenantDb.automationRun.create({
         data: {
           ruleId: rule.id,

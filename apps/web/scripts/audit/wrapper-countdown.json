@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-09-15T22:04:42.168Z",
+  "generatedAt": "2026-09-16T01:40:40.486Z",
   "totals": {
     "unmigratedUnits": 475,
-    "unmigratedCallSites": 478,
+    "unmigratedCallSites": 479,
     "withTenantContextCallSites": 0,
     "filesScanned": 1691,
     "filesWithUnmigratedUnits": 214
@@ -711,7 +711,7 @@
       "units": 1,
       "callSites": 1,
       "names": [
-        "scheduleCronDrivenRule:164"
+        "scheduleCronDrivenRule:184"
       ]
     },
     "app/api/cron/carrier-auto-dispatch/route.ts": {
@@ -1247,9 +1247,9 @@
     },
     "lib/automations/evaluator.ts": {
       "units": 1,
-      "callSites": 1,
+      "callSites": 2,
       "names": [
-        "runEvaluator:56"
+        "runEvaluator:57"
       ]
     },
     "lib/carrier/board-lookup.ts": {

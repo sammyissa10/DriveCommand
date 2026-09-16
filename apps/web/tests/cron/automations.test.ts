@@ -27,13 +27,33 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/logger', async (io) => loggerDouble(io));
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: {
+/**
+ * quick-615 — THE DOUBLE MOVED WITH THE RECEIVER, AND ONLY THE RECEIVER.
+ *
+ * This file used to mock `@/lib/db/prisma`, because the route issued all five
+ * of its own statements on the bare client. quick-615 split them by class:
+ *
+ *   ADMIN  — the four `candidateQuery` sweeps (`activationProgress.findMany`
+ *            x3, `subscription.findMany`) and the platform-scope
+ *            `automationRule.findUnique` now run on `getAdminDb`. They answer
+ *            "WHICH tenants are candidates" and "is this rule active", before
+ *            any tenant is known, so no tenant client can serve them.
+ *   TENANT — the two per-candidate `automationRun.findFirst` dedup reads now
+ *            run on `getTenantPrismaForOrg(tenantId)`, the SAME client the
+ *            create below them already used.
+ *
+ * So the `prisma` double becomes an `admin-prisma` double and `runFindFirst`
+ * moves onto the tenant double. The SAME `h.*` spies back both, so every
+ * assertion below is unchanged — and `getTenantPrismaForOrg` is still expected
+ * to be called exactly `M * RULES` times, which is what pins the route to ONE
+ * acquisition per candidate.
+ */
+vi.mock('@/lib/db/admin-prisma', () => ({
+  getAdminDb: vi.fn(async () => ({
     automationRule: { findUnique: h.ruleFindUnique },
-    automationRun: { findFirst: h.runFindFirst },
     activationProgress: { findMany: h.activationFindMany },
     subscription: { findMany: h.subscriptionFindMany },
-  },
+  })),
 }));
 vi.mock('@/lib/context/tenant-context', () => ({ getTenantPrismaForOrg: h.getTenantPrismaForOrg }));
 vi.mock('@/lib/automations/evaluator', () => ({ runEvaluator: h.runEvaluator }));
@@ -59,7 +79,7 @@ describe('cron/automations — injection', () => {
     h.getTenantPrismaForOrg.mockImplementation(async (tenantId: string) =>
       tenantId === FAILING_TENANT
         ? Promise.reject(injected)
-        : { automationRun: { create: h.runCreate } },
+        : { automationRun: { create: h.runCreate, findFirst: h.runFindFirst } },
     );
     h.runEvaluator.mockResolvedValue({ pendingCreated: 3, executed: 3, failed: 0 });
   });
@@ -87,7 +107,7 @@ describe('cron/automations — injection', () => {
   });
 
   it("records runEvaluator's own `failed`, so `ok` cannot be true beside it", async () => {
-    h.getTenantPrismaForOrg.mockResolvedValue({ automationRun: { create: h.runCreate } });
+    h.getTenantPrismaForOrg.mockResolvedValue({ automationRun: { create: h.runCreate, findFirst: h.runFindFirst } });
     h.runEvaluator.mockResolvedValue({ pendingCreated: 3, executed: 1, failed: 2 });
 
     const { GET } = await import('@/app/api/cron/automations/route');
@@ -101,7 +121,7 @@ describe('cron/automations — injection', () => {
   });
 
   it('is unchanged on a fully-successful run', async () => {
-    h.getTenantPrismaForOrg.mockResolvedValue({ automationRun: { create: h.runCreate } });
+    h.getTenantPrismaForOrg.mockResolvedValue({ automationRun: { create: h.runCreate, findFirst: h.runFindFirst } });
 
     const { GET } = await import('@/app/api/cron/automations/route');
     const res = await GET(cronRequest());
