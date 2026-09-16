@@ -1,0 +1,398 @@
+{
+  "generated": "2026-09-16T04:51:25.781Z",
+  "supabaseProject": "wyixpgunnjmzguhggocz (staging)",
+  "base": "http://localhost:3000",
+  "serverLog": "C:\\Users\\sammy\\Projects\\DriveCommand\\.planning\\quick\\617-route-the-mobile-api-surface-to-gettenan\\evidence\\05-server.log",
+  "totals": {
+    "entries": 30,
+    "pass": 0,
+    "fail": 29,
+    "notReachable": 0,
+    "tc001": 0,
+    "wholeLogTc001": 0
+  },
+  "antiVacuity": [
+    {
+      "name": "FLOOR — at least 20 routed GET routes exercised",
+      "pass": true,
+      "detail": "28 >= 20"
+    },
+    {
+      "name": "AUTH CONTROL — /api/mobile/driver/dashboard with NO Authorization returns 401",
+      "pass": true,
+      "detail": "status 401 (expected 401)"
+    },
+    {
+      "name": "TENANT CONTROL — /api/mobile/driver/dashboard with a tenant-B driver token still answers 200 with tenant-B data",
+      "pass": false,
+      "detail": "status 401; body {\"error\":\"Unauthorized\"} — NOTE: staging is sparse, so an empty result here proves the route does not RAISE, not that it scopes"
+    },
+    {
+      "name": "ZERO TC001 across the correlated slices AND the whole log (independent measurements)",
+      "pass": true,
+      "detail": "slices 0, whole log 0"
+    }
+  ],
+  "entries": [
+    {
+      "route": "/api/mobile/driver/dashboard",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21056,
+        21205
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/documents",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21205,
+        21311
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/hos",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21311,
+        21410
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/incidents",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21410,
+        21514
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/loads",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21514,
+        21615
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/messages",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21615,
+        21716
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/messages/route-thread",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21716,
+        21831
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/messages/unread-count",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21831,
+        21946
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/route",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        21946,
+        22045
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/tasks",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22045,
+        22144
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/tracking-token",
+      "role": "DRIVER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22144,
+        22252
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/compliance",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22252,
+        22356
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/crm",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22356,
+        22452
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/customers",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22452,
+        22554
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/dashboard",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22554,
+        22655
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/drivers",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22655,
+        22756
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/drivers/active",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22756,
+        22863
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/fleet-positions",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22863,
+        22971
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/fleet/messages",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        22971,
+        23080
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/fuel",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23080,
+        23176
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/invoices",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23176,
+        23276
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/loads",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23276,
+        23374
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/maintenance",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23374,
+        23478
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/map/vehicles",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23478,
+        23583
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/payroll",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23583,
+        23683
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/routes",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23683,
+        23782
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/safety",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23782,
+        23881
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/owner/trucks",
+      "role": "OWNER",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        23881,
+        23980
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/dashboard",
+      "role": "NO-TOKEN",
+      "status": 401,
+      "verdict": "unauthorised-control",
+      "logByteRange": [
+        23980,
+        24080
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/dashboard",
+      "role": "DRIVER-tenantB",
+      "status": 401,
+      "verdict": "fail",
+      "logByteRange": [
+        24080,
+        24181
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    }
+  ]
+}
