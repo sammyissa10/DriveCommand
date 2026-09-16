@@ -10,7 +10,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { logger } from '@/lib/logger';
 
@@ -27,13 +28,16 @@ export async function GET(
   const { id } = await params;
 
   try {
-    /**
-     * @bypass_rls reason: server-side session-authed web route
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by getSession() above; tenantId verified on message lookup.
+    /*
+     * quick-620: tenant-scoped client, acquired from the verified session's tenantId.
+     * userId is deliberately NOT passed — it would drive the audit-columns extension to
+     * start writing createdById on FleetMessage, a behaviour change this routing task
+     * declines to make.
+     * Every where clause below is unchanged: RLS is the second layer, not a
+     * replacement for the first.
      */
-    const message = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const message = await tenantPrisma.$transaction(async (tx) => {
       return tx.fleetMessage.findFirst({
         where: { id, tenantId },
         select: { id: true, audioUrl: true },

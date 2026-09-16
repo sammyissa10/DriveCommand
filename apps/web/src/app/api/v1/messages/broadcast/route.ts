@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendPushToOrg } from '@/lib/notifications/send-push';
 import { logger } from '@/lib/logger';
 
@@ -45,13 +46,16 @@ export async function POST(req: NextRequest) {
   const messageBody = payload.body.toString().trim();
 
   try {
-    /**
-     * @bypass_rls reason: server-side session-authed web route
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by getSession() (OWNER role only) above.
+    /*
+     * quick-620: tenant-scoped client, acquired from the verified session's tenantId.
+     * userId is deliberately NOT passed — it would drive the audit-columns extension to
+     * start writing createdById on FleetMessage, a behaviour change this routing task
+     * declines to make.
+     * Every where clause below is unchanged: RLS is the second layer, not a
+     * replacement for the first.
      */
-    const created = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const created = await tenantPrisma.$transaction(async (tx) => {
       return tx.fleetMessage.create({
         data: {
           tenantId,

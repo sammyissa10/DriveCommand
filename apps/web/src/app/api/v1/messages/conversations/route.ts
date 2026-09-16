@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { logger } from '@/lib/logger';
 
 /**
@@ -29,13 +30,18 @@ export async function GET(req: NextRequest) {
   const tab = searchParams.get('tab') ?? 'all';
 
   try {
-    /**
-     * @bypass_rls reason: server-side session-authed web route
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by getSession() above. tenantId comes from the verified session cookie.
+    /*
+     * quick-620: tenant-scoped client, acquired from the verified session's tenantId.
+     * userId is deliberately NOT passed — it would drive the audit-columns extension to
+     * start writing createdById on FleetMessage, a behaviour change this routing task
+     * declines to make.
+     * Trip is exempt from the tenant extension, so its explicit orgId predicate and
+     * the dispatches tenant policy are what isolate that read.
+     * Every where clause below is unchanged: RLS is the second layer, not a
+     * replacement for the first.
      */
-    const messages = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const messages = await tenantPrisma.$transaction(async (tx) => {
       return tx.fleetMessage.findMany({
         where: {
           tenantId,
@@ -70,8 +76,7 @@ export async function GET(req: NextRequest) {
     // Fetch user names
     const userMap = new Map<string, string>();
     if (participantIds.size > 0) {
-      const users = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const users = await tenantPrisma.$transaction(async (tx) => {
         return tx.user.findMany({
           where: { id: { in: Array.from(participantIds) }, tenantId },
           select: { id: true, firstName: true, lastName: true, email: true },
@@ -90,8 +95,7 @@ export async function GET(req: NextRequest) {
 
     const dispatchMap = new Map<string, { dispatchNumber: string; status: string }>();
     if (dispatchIds.size > 0) {
-      const dispatches = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const dispatches = await tenantPrisma.$transaction(async (tx) => {
         return tx.trip.findMany({
           where: { id: { in: Array.from(dispatchIds) }, orgId: tenantId },
           select: { id: true, status: true, scheduledDeparture: true },
