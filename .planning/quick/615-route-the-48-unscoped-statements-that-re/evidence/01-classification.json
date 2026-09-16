@@ -1,0 +1,1018 @@
+{
+  "task": "quick-615",
+  "generated_from": "source read of current HEAD; NO database access",
+  "head": "99330747",
+  "audit_baseline": "51f683eb",
+  "git_log_since_baseline_over_blocker_paths": "EMPTY — measured, printed in 01-reverification.md section 1",
+  "corrections_to_614": [
+    {
+      "item": "B-2",
+      "was": "cutover blocker (TC001)",
+      "now": "NOT A RUNTIME STATEMENT",
+      "detail": "sysadmin-invoices.ts:83 is Awaited<ReturnType<typeof prisma.sysAdminInvoice.create>> inside a return-type annotation; the only other prisma. hit in the file (line 26) is a comment. Zero runtime bare statements.",
+      "effect": "48 -> 47 runtime TC001 statements; section 2.1 36 -> 35; blocker FILES 12 -> 11"
+    },
+    {
+      "item": "arithmetic",
+      "was": "the brief says \"48\"",
+      "now": "48 TC001 + 1 GRANT (support-tickets.ts:292) = 49 input statements, of which 47 are runtime TC001",
+      "detail": "614 section 7 already counts the GRANT one separately; the summary states it so the arithmetic does not look broken"
+    }
+  ],
+  "counts": {
+    "input_total": 49,
+    "ADMIN": 44,
+    "TENANT": 3,
+    "GRANT": 1,
+    "NOT_A_RUNTIME_STATEMENT": 1,
+    "STOP_AND_REPORT": 0,
+    "runtime_tc001": 47,
+    "verdicts": {
+      "PRESENT": 48,
+      "MOVED": 0,
+      "ALREADY_ROUTED": 0,
+      "NOT_A_RUNTIME_STATEMENT": 1
+    },
+    "planned_new_acquisitions": 18,
+    "planned_receiver_swaps": 3
+  },
+  "tables_touched_by_routed_statements": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "DriverInvitation",
+    "Load",
+    "NotificationSendLog",
+    "Route",
+    "Subscription",
+    "SupportTicket",
+    "Tenant",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "auth.users"
+  ],
+  "files": [
+    {
+      "file": "actions/support-tickets.ts",
+      "statements": 4,
+      "ADMIN": 3,
+      "TENANT": 0,
+      "GRANT": 1,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "SupportTicket",
+        "Tenant",
+        "User",
+        "auth.users"
+      ]
+    },
+    {
+      "file": "app/(admin)/actions/notifications.ts",
+      "statements": 9,
+      "ADMIN": 9,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 2,
+      "planned_swaps": 0,
+      "tables": [
+        "NotificationSendLog"
+      ]
+    },
+    {
+      "file": "app/(admin)/actions/sysadmin-invoices.ts",
+      "statements": 1,
+      "ADMIN": 0,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 1,
+      "planned_new_acquisitions": 0,
+      "planned_swaps": 0,
+      "tables": []
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "statements": 14,
+      "ADMIN": 14,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 5,
+      "planned_swaps": 3,
+      "tables": [
+        "DriverInvitation",
+        "Load",
+        "Route",
+        "SupportTicket",
+        "Tenant",
+        "Truck",
+        "User"
+      ]
+    },
+    {
+      "file": "app/(admin)/actions/users.ts",
+      "statements": 5,
+      "ADMIN": 5,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 2,
+      "planned_swaps": 0,
+      "tables": [
+        "Tenant",
+        "User"
+      ]
+    },
+    {
+      "file": "app/(admin)/admin-support/page.tsx",
+      "statements": 1,
+      "ADMIN": 1,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "Tenant"
+      ]
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/activation-progress-section.tsx",
+      "statements": 1,
+      "ADMIN": 1,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "ActivationProgress"
+      ]
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/automation-runs-section.tsx",
+      "statements": 1,
+      "ADMIN": 1,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "AutomationRule",
+        "AutomationRun"
+      ]
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/page.tsx",
+      "statements": 1,
+      "ADMIN": 1,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "Subscription"
+      ]
+    },
+    {
+      "file": "app/api/cron/auto-close-tickets/route.ts",
+      "statements": 1,
+      "ADMIN": 1,
+      "TENANT": 0,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "SupportTicket",
+        "TicketMessage"
+      ]
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "statements": 7,
+      "ADMIN": 5,
+      "TENANT": 2,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 2,
+      "planned_swaps": 0,
+      "tables": [
+        "ActivationProgress",
+        "AutomationRule",
+        "AutomationRun",
+        "Subscription"
+      ]
+    },
+    {
+      "file": "lib/automations/evaluator.ts",
+      "statements": 4,
+      "ADMIN": 3,
+      "TENANT": 1,
+      "GRANT": 0,
+      "NONE": 0,
+      "planned_new_acquisitions": 1,
+      "planned_swaps": 0,
+      "tables": [
+        "AppEvent",
+        "AutomationRule",
+        "AutomationRun"
+      ]
+    }
+  ],
+  "statements": [
+    {
+      "id": "B-1/:250",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 250,
+      "statement": "prisma.notificationSendLog.findMany({ where, orderBy:{createdAt:desc}, skip, take:PAGE_SIZE })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "cross-tenant send log; where is built from OPTIONAL sysadmin filters and is {} by default",
+      "unit": "sysadmin notification send log listing",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-1/:256",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 256,
+      "statement": "prisma.notificationSendLog.count({ where })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same Promise.all as :250 — one unit of work",
+      "unit": "sysadmin notification send log listing",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-1/:346",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 346,
+      "statement": "prisma.notificationSendLog.count({ where:{status, createdAt} })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-1/:349",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 349,
+      "statement": "prisma.notificationSendLog.count({ where:{status, createdAt} })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-1/:352",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 352,
+      "statement": "prisma.notificationSendLog.count({ where:{status, createdAt} })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-1/:355",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 355,
+      "statement": "prisma.notificationSendLog.count({ where:{status, createdAt} })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-1/:360",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 360,
+      "statement": "prisma.notificationSendLog.count({ where:{status, createdAt} })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-1/:362",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 362,
+      "statement": "prisma.notificationSendLog.groupBy({ by:[triggerKey], where, _count, orderBy, take:1 })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-1/:369",
+      "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+      "line": 369,
+      "statement": "prisma.notificationSendLog.groupBy({ by:[triggerKey], where, _count, orderBy, take:1 })",
+      "tables": [
+        "NotificationSendLog"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "platform-wide delivery statistics; no tenant appears anywhere in the function",
+      "unit": "sysadmin notification delivery statistics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-2/:83",
+      "file": "apps/web/src/app/(admin)/actions/sysadmin-invoices.ts",
+      "line": 83,
+      "statement": "Awaited<ReturnType<typeof prisma.sysAdminInvoice.create>> — a type query inside a return-type annotation",
+      "tables": [],
+      "verdict": "NOT A RUNTIME STATEMENT",
+      "class": "N/A",
+      "receiver_today": "none (erased at compile time)",
+      "reason": "type position: typeof X in a type never evaluates X. Emits no JavaScript and no SQL. Remedy: NOTHING.",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-3/:32",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 32,
+      "statement": "prisma.tenant.findMany({ select:{..., _count:{users,trucks,routes}, users:{where:{role:OWNER},take:1}}, orderBy:{createdAt:desc} })",
+      "tables": [
+        "Tenant",
+        "User",
+        "Truck",
+        "Route"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "getAllTenants lists EVERY tenant; tenant_self_read is id = current_tenant_id() with no second branch",
+      "unit": "sysadmin tenant listing",
+      "new_acquisition": true,
+      "reason_reused": true
+    },
+    {
+      "id": "B-3/:123",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 123,
+      "statement": "prisma.driverInvitation.create({ data:{tenantId, email, firstName, lastName, role:OWNER, status:PENDING, expiresAt} })",
+      "tables": [
+        "DriverInvitation"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "the owner invitation for a tenant created on adminDb two statements earlier; quick-600 pre-reported this exact statement by name",
+      "unit": "sysadmin tenant create",
+      "new_acquisition": false,
+      "receiver_swap": "adminDb (:100)",
+      "operation": "INSERT"
+    },
+    {
+      "id": "B-3/:198",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 198,
+      "statement": "prisma.user.findMany({ where:{tenantId}, select:{id:true} })",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "suspendTenant — a sysadmin administering an ARBITRARY tenant; same unit of work as the tenant.update seven lines above, which no tenant client could ever serve",
+      "unit": "sysadmin tenant status change",
+      "new_acquisition": false,
+      "receiver_swap": "adminDbSuspend (:191)"
+    },
+    {
+      "id": "B-3/:239",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 239,
+      "statement": "prisma.user.findMany({ where:{tenantId}, select:{id:true} })",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "reactivateTenant — identical shape to :198",
+      "unit": "sysadmin tenant status change",
+      "new_acquisition": false,
+      "receiver_swap": "adminDbReactivate (:232)"
+    },
+    {
+      "id": "B-3/:271",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 271,
+      "statement": "prisma.tenant.count()",
+      "tables": [
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "getSystemMetrics platform totals; no tenant exists at all",
+      "unit": "sysadmin platform metrics",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-3/:272",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 272,
+      "statement": "prisma.load.count({ where:{status:{in:[DISPATCHED,PICKED_UP,IN_TRANSIT]}, createdAt:{gte:startOfDay}} })",
+      "tables": [
+        "Load"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same Promise.all",
+      "unit": "sysadmin platform metrics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-3/:278",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 278,
+      "statement": "prisma.tenant.count({ where:{createdAt:{gte:sevenDaysAgo}} })",
+      "tables": [
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same Promise.all",
+      "unit": "sysadmin platform metrics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-3/:283",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 283,
+      "statement": "prisma.supportTicket.count({ where:{status:OPEN} })",
+      "tables": [
+        "SupportTicket"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same Promise.all",
+      "unit": "sysadmin platform metrics",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-3/:297",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 297,
+      "statement": "prisma.tenant.findUnique({ where:{id:tenantId}, select:{..., _count:{users,trucks,routes}, users:{...}, driverInvitations:{...}} })",
+      "tables": [
+        "Tenant",
+        "User",
+        "DriverInvitation",
+        "Truck",
+        "Route"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "getTenantById — the SysAdmin tenant-detail page for an arbitrary tenant",
+      "unit": "sysadmin tenant detail read",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-3/:355",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 355,
+      "statement": "prisma.tenant.findUnique({ where:{id:tenantId}, select:{name:true} })",
+      "tables": [
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "resendOwnerInvitation — sysadmin administering an arbitrary tenant",
+      "unit": "sysadmin owner invitation resend",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-3/:364",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 364,
+      "statement": "prisma.driverInvitation.findFirst({ where:{tenantId, role:OWNER, status:{in:[PENDING,EXPIRED]}}, orderBy:{createdAt:desc} })",
+      "tables": [
+        "DriverInvitation"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same function, same unit of work",
+      "unit": "sysadmin owner invitation resend",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-3/:376",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 376,
+      "statement": "prisma.driverInvitation.update({ where:{id:invitation.id}, data:{status:PENDING, expiresAt} })",
+      "tables": [
+        "DriverInvitation"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same function; an UPDATE",
+      "unit": "sysadmin owner invitation resend",
+      "new_acquisition": false,
+      "operation": "UPDATE"
+    },
+    {
+      "id": "B-3/:472",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 472,
+      "statement": "prisma.user.findUnique({ where:{id:userId}, select:{email,firstName,lastName,tenantId} })",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "updateOwnerEmail(userId, newEmail) — NO tenant is in hand at all; the tenant is derived FROM this very read. A tenant client is impossible here by construction",
+      "unit": "sysadmin owner email change",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-3/:480",
+      "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+      "line": 480,
+      "statement": "prisma.user.update({ where:{id:userId}, data:{email} })",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same function; an UPDATE",
+      "unit": "sysadmin owner email change",
+      "new_acquisition": false,
+      "operation": "UPDATE"
+    },
+    {
+      "id": "B-4/:41",
+      "file": "apps/web/src/app/(admin)/actions/users.ts",
+      "line": 41,
+      "statement": "prisma.user.findMany({ where:{isSample:false,isSystemAdmin:false}, select:{..., tenant:{select:{name}}}, orderBy })",
+      "tables": [
+        "User",
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "getAllUsers — every user in every tenant",
+      "unit": "sysadmin user listing",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-4/:102",
+      "file": "apps/web/src/app/(admin)/actions/users.ts",
+      "line": 102,
+      "statement": "prisma.user.findUnique({ where:{id:userId}, select:{...} }) — read-before-write",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "updateUserProfile input is {userId, firstName, lastName, role, isActive} — no tenant in hand, ever",
+      "unit": "sysadmin user profile update",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-4/:115",
+      "file": "apps/web/src/app/(admin)/actions/users.ts",
+      "line": 115,
+      "statement": "prisma.user.update({ where:{id:userId}, data:{firstName,lastName,role,isActive} })",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same function; an UPDATE",
+      "unit": "sysadmin user profile update",
+      "new_acquisition": false,
+      "operation": "UPDATE"
+    },
+    {
+      "id": "B-4/:130",
+      "file": "apps/web/src/app/(admin)/actions/users.ts",
+      "line": 130,
+      "statement": "prisma.user.update({ where:{id:userId}, data:{...existing} }) — the compensating rollback",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same function; an UPDATE. MUST share the receiver with :115 or a rollback could land on a different connection from the write it reverses",
+      "unit": "sysadmin user profile update",
+      "new_acquisition": false,
+      "operation": "UPDATE"
+    },
+    {
+      "id": "B-4/:144",
+      "file": "apps/web/src/app/(admin)/actions/users.ts",
+      "line": 144,
+      "statement": "prisma.user.findUnique({ where:{id:userId}, select:{..., tenant:{select:{name}}} })",
+      "tables": [
+        "User",
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same function",
+      "unit": "sysadmin user profile update",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-5/:24",
+      "file": "apps/web/src/app/(admin)/admin-support/page.tsx",
+      "line": 24,
+      "statement": "prisma.tenant.findMany({ select:{id,name}, orderBy:{name:asc} })",
+      "tables": [
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "the SysAdmin ticket filter tenant dropdown — every tenant",
+      "unit": "sysadmin tenant listing",
+      "new_acquisition": true,
+      "reason_reused": true
+    },
+    {
+      "id": "B-6/:20",
+      "file": "apps/web/src/app/(admin)/tenants/[id]/activation-progress-section.tsx",
+      "line": 20,
+      "statement": "prisma.activationProgress.findUnique({ where:{tenantId} })",
+      "tables": [
+        "ActivationProgress"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "a sysadmin page rendering an ARBITRARY tenant activation panel",
+      "unit": "sysadmin tenant activation progress read",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-7/:10",
+      "file": "apps/web/src/app/(admin)/tenants/[id]/automation-runs-section.tsx",
+      "line": 10,
+      "statement": "prisma.automationRun.findMany({ where:{tenantId}, orderBy:{firedAt:desc}, take:10, select:{..., rule:{select:{key,id}}} })",
+      "tables": [
+        "AutomationRun",
+        "AutomationRule"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "the sysadmin tenant-detail run list; quick-613 routed the /automations twin and this byte-similar one was never in that census",
+      "unit": "sysadmin tenant automation run list",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-8/:56",
+      "file": "apps/web/src/app/(admin)/tenants/[id]/page.tsx",
+      "line": 56,
+      "statement": "prisma.subscription.findUnique({ where:{tenantId:id}, select:{trialEndsAt} })",
+      "tables": [
+        "Subscription"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "the sysadmin billing summary for an arbitrary tenant",
+      "unit": "sysadmin tenant billing summary read",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-9/:271",
+      "file": "apps/web/src/actions/support-tickets.ts",
+      "line": 271,
+      "statement": "prisma.$queryRawUnsafe(SELECT * FROM \"SupportTicket\" ${whereClause} ORDER BY \"createdAt\" DESC, ...params)",
+      "tables": [
+        "SupportTicket"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "getAllTickets — the sysadmin ticket list across every tenant; the tenantId filter is OPTIONAL",
+      "unit": "sysadmin ticket listing",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-9/:286",
+      "file": "apps/web/src/actions/support-tickets.ts",
+      "line": 286,
+      "statement": "prisma.$queryRaw SELECT id, email, \"firstName\", \"lastName\" FROM \"User\" WHERE id = ANY(${userIds}::uuid[])",
+      "tables": [
+        "User"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same Promise.all; the submitter ids span tenants",
+      "unit": "sysadmin ticket listing",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-9/:290",
+      "file": "apps/web/src/actions/support-tickets.ts",
+      "line": 290,
+      "statement": "prisma.$queryRaw SELECT id, name FROM \"Tenant\" WHERE id = ANY(${tenantIds}::uuid[])",
+      "tables": [
+        "Tenant"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "same Promise.all; the ids are MANY tenants",
+      "unit": "sysadmin ticket listing",
+      "new_acquisition": false
+    },
+    {
+      "id": "S2.3/:292",
+      "file": "apps/web/src/actions/support-tickets.ts",
+      "line": 292,
+      "statement": "prisma.$queryRaw SELECT id, email, raw_user_meta_data FROM auth.users WHERE id = ANY(${userIds}::uuid[])",
+      "tables": [
+        "auth.users"
+      ],
+      "verdict": "PRESENT",
+      "class": "GRANT",
+      "receiver_today": "bare prisma",
+      "reason": "auth.users has RLS enabled with ZERO policies and the tenant role holds neither USAGE on schema auth nor any table grant: this fails 42501, never TC001, and the tripwire can never signal it",
+      "unit": "sysadmin ticket listing",
+      "new_acquisition": false,
+      "columns": [
+        "id",
+        "email",
+        "raw_user_meta_data"
+      ]
+    },
+    {
+      "id": "B-10/:25",
+      "file": "apps/web/src/app/api/cron/auto-close-tickets/route.ts",
+      "line": 25,
+      "statement": "prisma.$queryRaw SELECT st.id, st.\"ticketNumber\" FROM \"SupportTicket\" st WHERE ... AND NOT EXISTS (SELECT 1 FROM \"TicketMessage\" tm ...)",
+      "tables": [
+        "SupportTicket",
+        "TicketMessage"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "an all-tenant stale-ticket scan with no tenant predicate; quick-602 MEASURED this route raising TC001 at runtime. :57 getAdminDb is 32 lines below and not in scope here",
+      "unit": "auto-close stale ticket sweep",
+      "new_acquisition": true,
+      "reason_reused": true
+    },
+    {
+      "id": "B-11/:53",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 53,
+      "statement": "prisma.activationProgress.findMany({ where:{completionPct:20, accountCreatedAt:{lte:threshold}, isActivated:false}, select:{tenantId} })",
+      "tables": [
+        "ActivationProgress"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "no_progress_nudge candidate sweep — it finds WHICH tenants; no tenant exists yet",
+      "unit": "automation cron candidate sweep",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-11/:71",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 71,
+      "statement": "prisma.activationProgress.findMany({ where:{firstRealTruckAt:{not:null}, firstRealDriverAt:null, isActivated:false}, select:{tenantId} })",
+      "tables": [
+        "ActivationProgress"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "add_driver_nudge candidate sweep",
+      "unit": "automation cron candidate sweep",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-11/:89",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 89,
+      "statement": "prisma.activationProgress.findMany({ where:{firstRealDriverAt:{not:null}, firstLoadInTransitAt:null, isActivated:false}, select:{tenantId} })",
+      "tables": [
+        "ActivationProgress"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "dispatch_load_nudge candidate sweep",
+      "unit": "automation cron candidate sweep",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-11/:111",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 111,
+      "statement": "prisma.subscription.findMany({ where:{trialEndsAt:{gte,lte}, status:TRIALING}, select:{tenantId} })",
+      "tables": [
+        "Subscription"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "trial_ending_soon candidate sweep",
+      "unit": "automation cron candidate sweep",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-11/:170",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 170,
+      "statement": "prisma.automationRule.findUnique({ where:{key:ruleKey}, select:{id,isActive} })",
+      "tables": [
+        "AutomationRule"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "a platform-scope rule read BEFORE any tenant is known — it is what decides whether the sweep runs at all",
+      "unit": "automation cron candidate sweep",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-11/:187",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 187,
+      "statement": "prisma.automationRun.findFirst({ where:{ruleId:rule.id, tenantId}, select:{id} })",
+      "tables": [
+        "AutomationRun"
+      ],
+      "verdict": "PRESENT",
+      "class": "TENANT",
+      "receiver_today": "bare prisma",
+      "reason": "inside for (const {tenantId} of candidates) — tenantId IS the loop variable, and :212 in the same loop body already calls getTenantPrismaForOrg(tenantId)",
+      "new_receiver": "getTenantPrismaForOrg(tenantId)"
+    },
+    {
+      "id": "B-11/:198",
+      "file": "apps/web/src/app/api/cron/automations/route.ts",
+      "line": 198,
+      "statement": "prisma.automationRun.findFirst({ where:{ruleId, tenantId, OR:[{firedAt:{gte}},{status:PENDING,scheduledAt:{gte}}]}, select:{id} })",
+      "tables": [
+        "AutomationRun"
+      ],
+      "verdict": "PRESENT",
+      "class": "TENANT",
+      "receiver_today": "bare prisma",
+      "reason": "the else branch of the same dedup, same loop, same variable",
+      "new_receiver": "getTenantPrismaForOrg(tenantId)"
+    },
+    {
+      "id": "B-12/:64",
+      "file": "apps/web/src/lib/automations/evaluator.ts",
+      "line": 64,
+      "statement": "prisma.appEvent.findMany({ where:{createdAt:{gt:thirtyDaysAgo}}, orderBy:{createdAt:asc} })",
+      "tables": [
+        "AppEvent"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "scans EVERY tenant events; this read is what discovers the tenants",
+      "unit": "automation evaluator scan",
+      "new_acquisition": true
+    },
+    {
+      "id": "B-12/:73",
+      "file": "apps/web/src/lib/automations/evaluator.ts",
+      "line": 73,
+      "statement": "prisma.automationRule.findMany({ where:{triggerEvent:event.eventType, isActive:true} })",
+      "tables": [
+        "AutomationRule"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "rules are platform-scope; no tenant predicate. quick-613 site 8, left unrouted",
+      "unit": "automation evaluator scan",
+      "new_acquisition": false
+    },
+    {
+      "id": "B-12/:80",
+      "file": "apps/web/src/lib/automations/evaluator.ts",
+      "line": 80,
+      "statement": "prisma.automationRun.findFirst({ where:{ruleId:rule.id, tenantId:event.tenantId}, select:{id} })",
+      "tables": [
+        "AutomationRun"
+      ],
+      "verdict": "PRESENT",
+      "class": "TENANT",
+      "receiver_today": "bare prisma",
+      "reason": "event.tenantId is in hand, and :208 in the same file already uses getTenantPrismaForOrg(run.tenantId)",
+      "new_receiver": "getTenantPrismaForOrg(event.tenantId)"
+    },
+    {
+      "id": "B-12/:131",
+      "file": "apps/web/src/lib/automations/evaluator.ts",
+      "line": 131,
+      "statement": "prisma.automationRun.findMany({ where:{status:PENDING, scheduledAt:{lte:now}}, include:{rule:true}, orderBy, take:100 })",
+      "tables": [
+        "AutomationRun",
+        "AutomationRule"
+      ],
+      "verdict": "PRESENT",
+      "class": "ADMIN",
+      "receiver_today": "bare prisma",
+      "reason": "the due-run queue across every tenant",
+      "unit": "automation evaluator scan",
+      "new_acquisition": false
+    }
+  ],
+  "out_of_scope": [
+    {
+      "item": "actions/support-tickets.ts:563 (getUnreadAdminReplyCount)",
+      "verdict": "REPORTED, NOT ROUTED — latent wrong-answer site (614 section 2.4), not a cutover blocker"
+    },
+    {
+      "item": "B7 — both generateTicketNumber copies",
+      "verdict": "bypass-flagged; breaks at the BYPASS DROP, not the cutover"
+    },
+    {
+      "item": "B8 — lib/auth/supabase.ts:164",
+      "verdict": "bypass-flagged; same"
+    },
+    {
+      "item": "notifications.ts — 8 NotificationTemplate/NotificationEmailConfig statements",
+      "verdict": "RLS OFF (Section 4.12 allowlist); LATENT; deliberately NOT routed"
+    },
+    {
+      "item": "plans.ts x4, promos.ts x2",
+      "verdict": "RLS OFF; LATENT"
+    },
+    {
+      "item": "evaluator.ts:95-96",
+      "verdict": "bypass-flagged"
+    },
+    {
+      "item": "actions/support-tickets.ts — 7 bypass-flagged statements",
+      "verdict": "bypass-flagged"
+    }
+  ]
+}
