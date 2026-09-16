@@ -1,0 +1,40 @@
+[db-target] project : wyixpgunnjmzguhggocz (STAGING)
+[db-target] url     : postgresql://app_user.wyixpgunnjmzguhggocz:***@aws-0-us-west-1.pooler.supabase.com:5432/postgres
+[db-target] role    : app_user  rolbypassrls=false  db=postgres
+[db-target] intent  : READ-ONLY probe matrix (every cell BEGIN … ROLLBACK)
+[tripwire]  session GUC read back : "on"
+[tripwire]  TENANT_CONTEXT_TRIPWIRE env var : "on"
+  OR-1a              EMPTY  RAISES TC001
+  OR-1a              REAL   RETURNS 6 ROWS
+  OR-1b              EMPTY  RAISES TC001
+  OR-1b              REAL   RETURNS 0 ROWS
+  SUB-cd             EMPTY  RAISES TC001
+  SUB-cd             REAL   RETURNS 1 ROWS
+  SUB-st             EMPTY  RAISES TC001
+  SUB-st             REAL   RETURNS 2 ROWS
+  SUB-rts            EMPTY  RAISES TC001
+  SUB-rts            REAL   RETURNS 2 ROWS
+  SUB-tm             EMPTY  RAISES TC001
+  SUB-tm             REAL   RETURNS 0 ROWS
+  F-empty-inner      EMPTY  RAISES TC001
+  F-nonempty-inner   EMPTY  RAISES TC001
+  BE-tenant          EMPTY  RAISES TC001
+  BE-tenant          REAL   RETURNS 1 ROWS
+  BE-user            EMPTY  RAISES TC001
+  BE-user            REAL   RETURNS 6 ROWS
+  BE-trucks          EMPTY  RAISES TC001
+  BE-trucks          REAL   RETURNS 2 ROWS
+  BE-drivers         EMPTY  RAISES TC001
+  BE-drivers         REAL   RETURNS 3 ROWS
+  BE-audit           EMPTY  RAISES TC001
+  BE-audit           REAL   RETURNS 0 ROWS
+  BE-tag             EMPTY  RAISES TC001
+  BE-tag             REAL   RETURNS 0 ROWS
+  BYP-on             BYPASS RETURNS 3 ROWS
+  BYP-on-tag         BYPASS RETURNS 0 ROWS
+  CTL-1              EMPTY  RETURNS 1 ROWS
+  CTL-plan           EMPTY  RETURNS 3 ROWS
+  CTL-migrations     EMPTY  RAISES 42501
+
+wrote C:\Users\sammy\Projects\DriveCommand\.planning\quick\614-enumerate-policies-whose-or-branch-canno\evidence\02-matrix.json
+cells: 31  RAISES: 15  RETURNS: 16

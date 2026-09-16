@@ -1,0 +1,539 @@
+{
+  "raisingTableCount": 90,
+  "bypassTableCount": 86,
+  "filesScanned": 1692,
+  "categories": {
+    "sysadmin": {
+      "label": "Sysadmin — app/(admin)/**",
+      "files": [
+        {
+          "file": "apps/web/src/app/(admin)/actions/automations.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 7,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "NotificationSendLog x9"
+          ],
+          "notRaising": [
+            "NotificationEmailConfig x4",
+            "NotificationTemplate x4"
+          ],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/actions/plans.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [
+            "Plan x4"
+          ],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/actions/promos.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [
+            "Promo x2"
+          ],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/actions/sysadmin-invoices.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 10,
+          "tenant": false,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [
+            "SysAdminInvoice x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 7,
+          "tenant": false,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [
+            "AppEvent x1",
+            "DriverInvitation x3",
+            "Load x1",
+            "Subscription x1",
+            "SupportTicket x1",
+            "Tenant x5",
+            "User x4"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/actions/users.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "User x5"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/admin-support/page.tsx",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "Tenant x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/billing/[id]/page.tsx",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/tenants/[id]/activation-progress-section.tsx",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "ActivationProgress x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/tenants/[id]/automation-runs-section.tsx",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "AutomationRun x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/(admin)/tenants/[id]/page.tsx",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "Subscription x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        }
+      ]
+    },
+    "cron": {
+      "label": "Cron — app/api/cron/**",
+      "files": [
+        {
+          "file": "apps/web/src/app/api/cron/auto-close-tickets/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/automations/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [
+            "ActivationProgress x3",
+            "AutomationRule x1",
+            "AutomationRun x2",
+            "Subscription x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/carrier-auto-dispatch/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/carrier-compliance-alerts/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/digest-compliance-30day/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/digest-daily-driver/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/digest-weekly-owner/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/mark-overdue-invoices/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/purge-deleted/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/send-reminders/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/trip-reminders/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/workflow-digest/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": true,
+          "bypassHits": 4,
+          "raising": [
+            "PlaybookInstance x2",
+            "PlaybookNotification x2",
+            "StepInstance x2",
+            "Tenant x1",
+            "User x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/cron/workflow-notifications/route.ts",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 2,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        }
+      ]
+    },
+    "public": {
+      "label": "Public / pre-auth — track, accept-invitation, login, provisioning",
+      "files": [
+        {
+          "file": "apps/web/src/app/api/auth/accept-invitation/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 2,
+          "tenant": true,
+          "mixed": true,
+          "bypassHits": 2,
+          "raising": [
+            "DriverInvitation x1",
+            "User x2",
+            "carrier_drivers x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/auth/login/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 1,
+          "raising": [
+            "ActivationProgress x1",
+            "Tenant x1",
+            "User x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/api/track/[token]/route.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": true,
+          "bypassHits": 1,
+          "raising": [
+            "GPSLocation x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/app/track/[token]/page.tsx",
+          "bareSpec": null,
+          "admin": true,
+          "adminCalls": 1,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/lib/onboarding/activation-tracker.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 2,
+          "raising": [
+            "ActivationProgress x4",
+            "AppEvent x3",
+            "User x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/lib/onboarding/confirm-tenant-email.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "Tenant x2"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/lib/onboarding/hydrate-tenant.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "Tenant x2",
+            "User x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/lib/onboarding/onboarding-flags.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "Tenant x1",
+            "clients x1",
+            "contracts x1",
+            "dispatches x1",
+            "loads x1"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/lib/onboarding/provision-tenant.ts",
+          "bareSpec": "@/lib/db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [
+            "ActivationProgress x1",
+            "Subscription x1",
+            "Tenant x1",
+            "User x1"
+          ],
+          "notRaising": [
+            "Plan x1",
+            "Promo x1"
+          ],
+          "raisingTablesWithNoBypassPolicy": []
+        }
+      ]
+    },
+    "login": {
+      "label": "Login / session resolution — lib/auth/**, lib/context/**",
+      "files": [
+        {
+          "file": "apps/web/src/lib/auth/supabase.ts",
+          "bareSpec": "../db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 1,
+          "raising": [
+            "User x2"
+          ],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        },
+        {
+          "file": "apps/web/src/lib/context/tenant-context.ts",
+          "bareSpec": "../db/prisma",
+          "admin": false,
+          "adminCalls": 0,
+          "tenant": false,
+          "mixed": false,
+          "bypassHits": 0,
+          "raising": [],
+          "notRaising": [],
+          "raisingTablesWithNoBypassPolicy": []
+        }
+      ]
+    }
+  },
+  "treeWide": {
+    "filesImportingBarePrisma": 165,
+    "ofWhichTouchARaisingTable": 142,
+    "ofWhichSetBypassRls": 86
+  }
+}

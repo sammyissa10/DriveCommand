@@ -1,0 +1,143 @@
+
+======== Sysadmin — app/(admin)/** — 12 files
+  apps/web/src/app/(admin)/actions/automations.ts
+      clients : ADMIN(7)
+      bypass  : none
+  apps/web/src/app/(admin)/actions/notifications.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : NotificationSendLog x9
+      safe    : NotificationEmailConfig x4, NotificationTemplate x4
+  apps/web/src/app/(admin)/actions/plans.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      safe    : Plan x4
+  apps/web/src/app/(admin)/actions/promos.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      safe    : Promo x2
+  apps/web/src/app/(admin)/actions/sysadmin-invoices.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(10)   << MIXED
+      bypass  : none
+      RAISING : SysAdminInvoice x1
+  apps/web/src/app/(admin)/actions/tenants.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(7)   << MIXED
+      bypass  : none
+      RAISING : AppEvent x1, DriverInvitation x3, Load x1, Subscription x1, SupportTicket x1, Tenant x5, User x4
+  apps/web/src/app/(admin)/actions/users.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : User x5
+  apps/web/src/app/(admin)/admin-support/page.tsx
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : Tenant x1
+  apps/web/src/app/(admin)/billing/[id]/page.tsx
+      clients : ADMIN(1)
+      bypass  : none
+  apps/web/src/app/(admin)/tenants/[id]/activation-progress-section.tsx
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : ActivationProgress x1
+  apps/web/src/app/(admin)/tenants/[id]/automation-runs-section.tsx
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : AutomationRun x1
+  apps/web/src/app/(admin)/tenants/[id]/page.tsx
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : Subscription x1
+
+======== Cron — app/api/cron/** — 13 files
+  apps/web/src/app/api/cron/auto-close-tickets/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(1)   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/automations/route.ts
+      clients : BARE('@/lib/db/prisma') + TENANT   << MIXED
+      bypass  : none
+      RAISING : ActivationProgress x3, AutomationRule x1, AutomationRun x2, Subscription x1
+  apps/web/src/app/api/cron/carrier-auto-dispatch/route.ts
+      clients : ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/carrier-compliance-alerts/route.ts
+      clients : ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/digest-compliance-30day/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/digest-daily-driver/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/digest-weekly-owner/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/mark-overdue-invoices/route.ts
+      clients : ADMIN(1)
+      bypass  : none
+  apps/web/src/app/api/cron/purge-deleted/route.ts
+      clients : ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/send-reminders/route.ts
+      clients : ADMIN(1)
+      bypass  : none
+  apps/web/src/app/api/cron/trip-reminders/route.ts
+      clients : ADMIN(1) + TENANT   << MIXED
+      bypass  : none
+  apps/web/src/app/api/cron/workflow-digest/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(1)   << MIXED
+      bypass  : SETS app.bypass_rls x4 -> EXEMPT from the tripwire
+      RAISING : PlaybookInstance x2, PlaybookNotification x2, StepInstance x2, Tenant x1, User x1
+  apps/web/src/app/api/cron/workflow-notifications/route.ts
+      clients : ADMIN(2) + TENANT   << MIXED
+      bypass  : none
+
+======== Public / pre-auth — track, accept-invitation, login, provisioning — 9 files
+  apps/web/src/app/api/auth/accept-invitation/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(2) + TENANT   << MIXED
+      bypass  : SETS app.bypass_rls x2 -> EXEMPT from the tripwire
+      RAISING : DriverInvitation x1, User x2, carrier_drivers x1
+  apps/web/src/app/api/auth/login/route.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : SETS app.bypass_rls x1 -> EXEMPT from the tripwire
+      RAISING : ActivationProgress x1, Tenant x1, User x1
+  apps/web/src/app/api/track/[token]/route.ts
+      clients : BARE('@/lib/db/prisma') + ADMIN(1)   << MIXED
+      bypass  : SETS app.bypass_rls x1 -> EXEMPT from the tripwire
+      RAISING : GPSLocation x1
+  apps/web/src/app/track/[token]/page.tsx
+      clients : ADMIN(1)
+      bypass  : none
+  apps/web/src/lib/onboarding/activation-tracker.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : SETS app.bypass_rls x2 -> EXEMPT from the tripwire
+      RAISING : ActivationProgress x4, AppEvent x3, User x1
+  apps/web/src/lib/onboarding/confirm-tenant-email.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : Tenant x2
+  apps/web/src/lib/onboarding/hydrate-tenant.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : Tenant x2, User x1
+  apps/web/src/lib/onboarding/onboarding-flags.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : Tenant x1, clients x1, contracts x1, dispatches x1, loads x1
+  apps/web/src/lib/onboarding/provision-tenant.ts
+      clients : BARE('@/lib/db/prisma')
+      bypass  : none
+      RAISING : ActivationProgress x1, Subscription x1, Tenant x1, User x1
+      safe    : Plan x1, Promo x1
+
+======== Login / session resolution — lib/auth/**, lib/context/** — 2 files
+  apps/web/src/lib/auth/supabase.ts
+      clients : BARE('../db/prisma')
+      bypass  : SETS app.bypass_rls x1 -> EXEMPT from the tripwire
+      RAISING : User x2
+  apps/web/src/lib/context/tenant-context.ts
+      clients : BARE('../db/prisma')
+      bypass  : none
+
+tree-wide: {"filesImportingBarePrisma":165,"ofWhichTouchARaisingTable":142,"ofWhichSetBypassRls":86}
+tables carrying a current_tenant_id policy (all raise): 90
+tables carrying bypass_rls_policy: 86

@@ -1,0 +1,161 @@
+
+## apps/web/src/app/(admin)/actions/notifications.ts
+   >> :250  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :256  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :346  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :349  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :352  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :355  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :360  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :362  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+   >> :369  prisma.notificationSendLog  NotificationSendLog    UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/(admin)/actions/plans.ts
+   no UNFLAGGED statement on a raising table
+
+## apps/web/src/app/(admin)/actions/promos.ts
+   no UNFLAGGED statement on a raising table
+
+## apps/web/src/app/(admin)/actions/sysadmin-invoices.ts
+   >> :83   prisma.sysAdminInvoice      SysAdminInvoice        UNFLAGGED, RAISING TABLE -> TC001
+      (17x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/(admin)/actions/tenants.ts
+   >> :32   prisma.tenant               Tenant                 UNFLAGGED, RAISING TABLE -> TC001
+   >> :123  prisma.driverInvitation     DriverInvitation       UNFLAGGED, RAISING TABLE -> TC001
+   >> :198  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :239  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :271  prisma.tenant               Tenant                 UNFLAGGED, RAISING TABLE -> TC001
+   >> :272  prisma.load                 Load                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :278  prisma.tenant               Tenant                 UNFLAGGED, RAISING TABLE -> TC001
+   >> :283  prisma.supportTicket        SupportTicket          UNFLAGGED, RAISING TABLE -> TC001
+   >> :297  prisma.tenant               Tenant                 UNFLAGGED, RAISING TABLE -> TC001
+   >> :355  prisma.tenant               Tenant                 UNFLAGGED, RAISING TABLE -> TC001
+   >> :364  prisma.driverInvitation     DriverInvitation       UNFLAGGED, RAISING TABLE -> TC001
+   >> :376  prisma.driverInvitation     DriverInvitation       UNFLAGGED, RAISING TABLE -> TC001
+   >> :472  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :480  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+      (9x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/(admin)/actions/users.ts
+   >> :41   prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :102  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :115  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :130  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+   >> :144  prisma.user                 User                   UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/(admin)/admin-support/page.tsx
+   >> :24   prisma.tenant               Tenant                 UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/(admin)/tenants/[id]/activation-progress-section.tsx
+   >> :20   prisma.activationProgress   ActivationProgress     UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/(admin)/tenants/[id]/automation-runs-section.tsx
+   >> :10   prisma.automationRun        AutomationRun          UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/(admin)/tenants/[id]/page.tsx
+   >> :56   prisma.subscription         Subscription           UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/api/cron/auto-close-tickets/route.ts
+   >> :25   prisma.$queryRaw            (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+      (1x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/api/cron/automations/route.ts
+   >> :53   prisma.activationProgress   ActivationProgress     UNFLAGGED, RAISING TABLE -> TC001
+   >> :71   prisma.activationProgress   ActivationProgress     UNFLAGGED, RAISING TABLE -> TC001
+   >> :89   prisma.activationProgress   ActivationProgress     UNFLAGGED, RAISING TABLE -> TC001
+   >> :111  prisma.subscription         Subscription           UNFLAGGED, RAISING TABLE -> TC001
+   >> :170  prisma.automationRule       AutomationRule         UNFLAGGED, RAISING TABLE -> TC001
+   >> :187  prisma.automationRun        AutomationRun          UNFLAGGED, RAISING TABLE -> TC001
+   >> :198  prisma.automationRun        AutomationRun          UNFLAGGED, RAISING TABLE -> TC001
+
+## apps/web/src/app/api/cron/digest-compliance-30day/route.ts
+   no UNFLAGGED statement on a raising table
+      (1x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/api/cron/digest-daily-driver/route.ts
+   no UNFLAGGED statement on a raising table
+      (1x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/api/cron/digest-weekly-owner/route.ts
+   no UNFLAGGED statement on a raising table
+      (1x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/api/cron/workflow-digest/route.ts
+   no UNFLAGGED statement on a raising table
+      (1x ADMIN CONNECTION — no policy consulted)
+      (8x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/app/api/auth/accept-invitation/route.ts
+   no UNFLAGGED statement on a raising table
+      (2x ADMIN CONNECTION — no policy consulted)
+      (4x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/app/api/auth/login/route.ts
+   no UNFLAGGED statement on a raising table
+      (2x TENANT CONTEXT PRESENT — does not raise)
+      (1x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/app/api/track/[token]/route.ts
+   no UNFLAGGED statement on a raising table
+      (1x ADMIN CONNECTION — no policy consulted)
+      (1x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/app/track/[token]/page.tsx
+   no UNFLAGGED statement on a raising table
+      (2x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/lib/onboarding/activation-tracker.ts
+   no UNFLAGGED statement on a raising table
+      (8x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/lib/onboarding/confirm-tenant-email.ts
+   no UNFLAGGED statement on a raising table
+      (2x TENANT CONTEXT PRESENT — does not raise)
+
+## apps/web/src/lib/onboarding/hydrate-tenant.ts
+   no UNFLAGGED statement on a raising table
+      (3x TENANT CONTEXT PRESENT — does not raise)
+
+## apps/web/src/lib/onboarding/onboarding-flags.ts
+   no UNFLAGGED statement on a raising table
+      (5x TENANT CONTEXT PRESENT — does not raise)
+
+## apps/web/src/lib/onboarding/provision-tenant.ts
+   no UNFLAGGED statement on a raising table
+      (4x TENANT CONTEXT PRESENT — does not raise)
+
+## apps/web/src/lib/auth/supabase.ts
+   no UNFLAGGED statement on a raising table
+      (2x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/lib/context/tenant-context.ts
+   >> :179  prisma.$executeRawUnsafe    (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+   >> :210  prisma.$executeRawUnsafe    (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+
+## apps/web/src/lib/db/repositories/tenant.repository.ts
+   no UNFLAGGED statement on a raising table
+      (1x TENANT CONTEXT PRESENT — does not raise)
+      (2x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/actions/support-tickets.ts
+   >> :271  prisma.$queryRawUnsafe      (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+   >> :286  prisma.$queryRaw            (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+   >> :290  prisma.$queryRaw            (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+   >> :292  prisma.$queryRaw            (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+   >> :563  prisma.$queryRaw            (raw SQL literal)      UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table
+      (7x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+      (5x ADMIN CONNECTION — no policy consulted)
+
+## apps/web/src/app/api/mobile/support/ticket/route.ts
+   no UNFLAGGED statement on a raising table
+      (2x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+## apps/web/src/lib/automations/evaluator.ts
+   >> :64   prisma.appEvent             AppEvent               UNFLAGGED, RAISING TABLE -> TC001
+   >> :73   prisma.automationRule       AutomationRule         UNFLAGGED, RAISING TABLE -> TC001
+   >> :80   prisma.automationRun        AutomationRun          UNFLAGGED, RAISING TABLE -> TC001
+   >> :131  prisma.automationRun        AutomationRun          UNFLAGGED, RAISING TABLE -> TC001
+      (1x BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled)
+
+TOTAL UNFLAGGED statements on a raising table (or unflagged raw SQL): 52

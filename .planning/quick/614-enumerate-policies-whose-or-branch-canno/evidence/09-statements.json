@@ -1,0 +1,2413 @@
+[
+  {
+    "file": "apps/web/src/app/(admin)/actions/notifications.ts",
+    "statements": [
+      {
+        "line": 33,
+        "receiver": "prisma",
+        "member": "notificationTemplate",
+        "table": "NotificationTemplate",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "const templates = await prisma.notificationTemplate.findMany({"
+      },
+      {
+        "line": 49,
+        "receiver": "prisma",
+        "member": "notificationTemplate",
+        "table": "NotificationTemplate",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "const template = await prisma.notificationTemplate.findUniqueOrThrow({"
+      },
+      {
+        "line": 72,
+        "receiver": "prisma",
+        "member": "notificationTemplate",
+        "table": "NotificationTemplate",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.notificationTemplate.update({"
+      },
+      {
+        "line": 100,
+        "receiver": "prisma",
+        "member": "notificationTemplate",
+        "table": "NotificationTemplate",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.notificationTemplate.update({"
+      },
+      {
+        "line": 130,
+        "receiver": "prisma",
+        "member": "notificationEmailConfig",
+        "table": "NotificationEmailConfig",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "const config = await prisma.notificationEmailConfig.findFirst({"
+      },
+      {
+        "line": 169,
+        "receiver": "prisma",
+        "member": "notificationEmailConfig",
+        "table": "NotificationEmailConfig",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "const existing = await prisma.notificationEmailConfig.findFirst({"
+      },
+      {
+        "line": 176,
+        "receiver": "prisma",
+        "member": "notificationEmailConfig",
+        "table": "NotificationEmailConfig",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.notificationEmailConfig.update({"
+      },
+      {
+        "line": 185,
+        "receiver": "prisma",
+        "member": "notificationEmailConfig",
+        "table": "NotificationEmailConfig",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.notificationEmailConfig.create({"
+      },
+      {
+        "line": 250,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.findMany({"
+      },
+      {
+        "line": 256,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.count({ where }),"
+      },
+      {
+        "line": 346,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.count({"
+      },
+      {
+        "line": 349,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.count({"
+      },
+      {
+        "line": 352,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.count({"
+      },
+      {
+        "line": 355,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.count({"
+      },
+      {
+        "line": 360,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.count({ where: { status: 'FAILED' } }),"
+      },
+      {
+        "line": 362,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.groupBy({"
+      },
+      {
+        "line": 369,
+        "receiver": "prisma",
+        "member": "notificationSendLog",
+        "table": "NotificationSendLog",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.notificationSendLog.groupBy({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/actions/plans.ts",
+    "statements": [
+      {
+        "line": 16,
+        "receiver": "prisma",
+        "member": "plan",
+        "table": "Plan",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "return prisma.plan.findMany({ orderBy: { sortOrder: 'asc' } });"
+      },
+      {
+        "line": 21,
+        "receiver": "prisma",
+        "member": "plan",
+        "table": "Plan",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "const plan = await prisma.plan.findUnique({ where: { id } });"
+      },
+      {
+        "line": 45,
+        "receiver": "prisma",
+        "member": "plan",
+        "table": "Plan",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.plan.create({ data: validation.data });"
+      },
+      {
+        "line": 71,
+        "receiver": "prisma",
+        "member": "plan",
+        "table": "Plan",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.plan.update({ where: { id }, data: validation.data });"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/actions/promos.ts",
+    "statements": [
+      {
+        "line": 16,
+        "receiver": "prisma",
+        "member": "promo",
+        "table": "Promo",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "return prisma.promo.findMany({ orderBy: { createdAt: 'desc' } });"
+      },
+      {
+        "line": 35,
+        "receiver": "prisma",
+        "member": "promo",
+        "table": "Promo",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, table has no tenant policy — safe",
+        "src": "await prisma.promo.create({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/actions/sysadmin-invoices.ts",
+    "statements": [
+      {
+        "line": 34,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const last = await adminDb.sysAdminInvoice.findFirst({"
+      },
+      {
+        "line": 83,
+        "receiver": "prisma",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "}): Promise<{ success: true; invoice: Awaited<ReturnType<typeof prisma.sysAdminInvoice.create>> } | { success: false; error: string }> {"
+      },
+      {
+        "line": 115,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.create({"
+      },
+      {
+        "line": 161,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "return adminDb.sysAdminInvoice.findMany({"
+      },
+      {
+        "line": 177,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.findUnique({"
+      },
+      {
+        "line": 187,
+        "receiver": "adminDb",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const ownerUser = await adminDb.user.findFirst({"
+      },
+      {
+        "line": 214,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });"
+      },
+      {
+        "line": 254,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoiceItem",
+        "table": "SysAdminInvoiceItem",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:253-268",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "adminDb.sysAdminInvoiceItem.deleteMany({ where: { invoiceId: id } }),"
+      },
+      {
+        "line": 255,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:253-268",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "adminDb.sysAdminInvoice.update({"
+      },
+      {
+        "line": 288,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });"
+      },
+      {
+        "line": 293,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.sysAdminInvoice.update({"
+      },
+      {
+        "line": 314,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });"
+      },
+      {
+        "line": 319,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.sysAdminInvoice.update({"
+      },
+      {
+        "line": 340,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.findUnique({ where: { id } });"
+      },
+      {
+        "line": 346,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.sysAdminInvoice.update({"
+      },
+      {
+        "line": 372,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invoice = await adminDb.sysAdminInvoice.findUnique({"
+      },
+      {
+        "line": 382,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.sysAdminInvoice.update({"
+      },
+      {
+        "line": 416,
+        "receiver": "adminDb",
+        "member": "sysAdminInvoice",
+        "table": "SysAdminInvoice",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const result = await adminDb.sysAdminInvoice.updateMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/actions/tenants.ts",
+    "statements": [
+      {
+        "line": 32,
+        "receiver": "prisma",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const tenants = await prisma.tenant.findMany({"
+      },
+      {
+        "line": 101,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const tenant = await adminDb.tenant.create({"
+      },
+      {
+        "line": 123,
+        "receiver": "prisma",
+        "member": "driverInvitation",
+        "table": "DriverInvitation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const invitation = await prisma.driverInvitation.create({"
+      },
+      {
+        "line": 192,
+        "receiver": "adminDbSuspend",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDbSuspend.tenant.update({"
+      },
+      {
+        "line": 198,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const tenantUsers = await prisma.user.findMany({"
+      },
+      {
+        "line": 233,
+        "receiver": "adminDbReactivate",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDbReactivate.tenant.update({"
+      },
+      {
+        "line": 239,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const tenantUsers = await prisma.user.findMany({"
+      },
+      {
+        "line": 271,
+        "receiver": "prisma",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.tenant.count(),"
+      },
+      {
+        "line": 272,
+        "receiver": "prisma",
+        "member": "load",
+        "table": "Load",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.load.count({"
+      },
+      {
+        "line": 278,
+        "receiver": "prisma",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.tenant.count({"
+      },
+      {
+        "line": 283,
+        "receiver": "prisma",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "prisma.supportTicket.count({"
+      },
+      {
+        "line": 297,
+        "receiver": "prisma",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const tenant = await prisma.tenant.findUnique({"
+      },
+      {
+        "line": 355,
+        "receiver": "prisma",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const tenant = await prisma.tenant.findUnique({"
+      },
+      {
+        "line": 364,
+        "receiver": "prisma",
+        "member": "driverInvitation",
+        "table": "DriverInvitation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const invitation = await prisma.driverInvitation.findFirst({"
+      },
+      {
+        "line": 376,
+        "receiver": "prisma",
+        "member": "driverInvitation",
+        "table": "DriverInvitation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "await prisma.driverInvitation.update({"
+      },
+      {
+        "line": 438,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.tenant.update({"
+      },
+      {
+        "line": 472,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const user = await prisma.user.findUnique({"
+      },
+      {
+        "line": 480,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "await prisma.user.update({"
+      },
+      {
+        "line": 550,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.tenant.update({"
+      },
+      {
+        "line": 588,
+        "receiver": "adminDb",
+        "member": "subscription",
+        "table": "Subscription",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const subscription = await adminDb.subscription.findUnique({"
+      },
+      {
+        "line": 601,
+        "receiver": "tx",
+        "member": "subscription",
+        "table": "Subscription",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:600-617",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await tx.subscription.update({"
+      },
+      {
+        "line": 606,
+        "receiver": "tx",
+        "member": "appEvent",
+        "table": "AppEvent",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:600-617",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await tx.appEvent.create({"
+      },
+      {
+        "line": 640,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.tenant.delete({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/actions/users.ts",
+    "statements": [
+      {
+        "line": 41,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "return prisma.user.findMany({"
+      },
+      {
+        "line": 102,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const existing = await prisma.user.findUnique({"
+      },
+      {
+        "line": 115,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "await prisma.user.update({"
+      },
+      {
+        "line": 130,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "await prisma.user.update({"
+      },
+      {
+        "line": 144,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const updated = await prisma.user.findUnique({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/admin-support/page.tsx",
+    "statements": [
+      {
+        "line": 24,
+        "receiver": "prisma",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "tenantOptions = await prisma.tenant.findMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/tenants/[id]/activation-progress-section.tsx",
+    "statements": [
+      {
+        "line": 20,
+        "receiver": "prisma",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const progress = await prisma.activationProgress.findUnique({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/tenants/[id]/automation-runs-section.tsx",
+    "statements": [
+      {
+        "line": 10,
+        "receiver": "prisma",
+        "member": "automationRun",
+        "table": "AutomationRun",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const runs = await prisma.automationRun.findMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/(admin)/tenants/[id]/page.tsx",
+    "statements": [
+      {
+        "line": 56,
+        "receiver": "prisma",
+        "member": "subscription",
+        "table": "Subscription",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "subscription = await prisma.subscription.findUnique({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/cron/auto-close-tickets/route.ts",
+    "statements": [
+      {
+        "line": 25,
+        "receiver": "prisma",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "const tickets = await prisma.$queryRaw<RawTicket[]>`"
+      },
+      {
+        "line": 58,
+        "receiver": "adminDb",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.supportTicket.updateMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/cron/automations/route.ts",
+    "statements": [
+      {
+        "line": 53,
+        "receiver": "prisma",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "return prisma.activationProgress.findMany({"
+      },
+      {
+        "line": 71,
+        "receiver": "prisma",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "return prisma.activationProgress.findMany({"
+      },
+      {
+        "line": 89,
+        "receiver": "prisma",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "return prisma.activationProgress.findMany({"
+      },
+      {
+        "line": 111,
+        "receiver": "prisma",
+        "member": "subscription",
+        "table": "Subscription",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "return prisma.subscription.findMany({"
+      },
+      {
+        "line": 170,
+        "receiver": "prisma",
+        "member": "automationRule",
+        "table": "AutomationRule",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const rule = await prisma.automationRule.findUnique({"
+      },
+      {
+        "line": 187,
+        "receiver": "prisma",
+        "member": "automationRun",
+        "table": "AutomationRun",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const existing = await prisma.automationRun.findFirst({"
+      },
+      {
+        "line": 198,
+        "receiver": "prisma",
+        "member": "automationRun",
+        "table": "AutomationRun",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const recentRun = await prisma.automationRun.findFirst({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/cron/digest-compliance-30day/route.ts",
+    "statements": [
+      {
+        "line": 47,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const tenants = await adminDb.tenant.findMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/cron/digest-daily-driver/route.ts",
+    "statements": [
+      {
+        "line": 47,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const tenants = await adminDb.tenant.findMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/cron/digest-weekly-owner/route.ts",
+    "statements": [
+      {
+        "line": 47,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const tenants = await adminDb.tenant.findMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/cron/workflow-digest/route.ts",
+    "statements": [
+      {
+        "line": 57,
+        "receiver": "adminDb",
+        "member": "playbookInstance",
+        "table": "PlaybookInstance",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const rows = await adminDb.playbookInstance.findMany({"
+      },
+      {
+        "line": 82,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:81-91",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 83,
+        "receiver": "tx",
+        "member": "playbookNotification",
+        "table": "PlaybookNotification",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:81-91",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.playbookNotification.findFirst({"
+      },
+      {
+        "line": 102,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:101-135",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 104,
+        "receiver": "tx",
+        "member": "stepInstance",
+        "table": "StepInstance",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:101-135",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const overdueCount = await tx.stepInstance.count({"
+      },
+      {
+        "line": 112,
+        "receiver": "tx",
+        "member": "stepInstance",
+        "table": "StepInstance",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:101-135",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const completedTodayCount = await tx.stepInstance.count({"
+      },
+      {
+        "line": 120,
+        "receiver": "tx",
+        "member": "playbookInstance",
+        "table": "PlaybookInstance",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:101-135",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const activeInstanceCount = await tx.playbookInstance.count({"
+      },
+      {
+        "line": 124,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:101-135",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const recipients = await tx.user.findMany({"
+      },
+      {
+        "line": 129,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:101-135",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const tenant = await tx.tenant.findUnique({"
+      },
+      {
+        "line": 181,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:180-186",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 182,
+        "receiver": "tx",
+        "member": "playbookInstance",
+        "table": "PlaybookInstance",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:180-186",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.playbookInstance.findFirst({"
+      },
+      {
+        "line": 190,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:189-202",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 191,
+        "receiver": "tx",
+        "member": "playbookNotification",
+        "table": "PlaybookNotification",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:189-202",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.playbookNotification.create({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/auth/accept-invitation/route.ts",
+    "statements": [
+      {
+        "line": 46,
+        "receiver": "adminDb",
+        "member": "driverInvitation",
+        "table": "DriverInvitation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invitation = await adminDb.driverInvitation.findUnique({"
+      },
+      {
+        "line": 122,
+        "receiver": "adminDbInvitation",
+        "member": "driverInvitation",
+        "table": "DriverInvitation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const invitation = await adminDbInvitation.driverInvitation.findUnique({"
+      },
+      {
+        "line": 155,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:154-162",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 156,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:154-162",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.user.findFirst({"
+      },
+      {
+        "line": 239,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:238-278",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 241,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:238-278",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const newUser = await tx.user.create({"
+      },
+      {
+        "line": 256,
+        "receiver": "tx",
+        "member": "driverInvitation",
+        "table": "DriverInvitation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:238-278",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.driverInvitation.update({"
+      },
+      {
+        "line": 266,
+        "receiver": "tx",
+        "member": "carrierDriver",
+        "table": "carrier_drivers",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:238-278",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.carrierDriver.updateMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/auth/login/route.ts",
+    "statements": [
+      {
+        "line": 74,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:73-79",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${appMeta.tenantId as string}, TRUE)`;"
+      },
+      {
+        "line": 75,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:73-79",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "return tx.tenant.findUnique({"
+      },
+      {
+        "line": 113,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:112-118",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${appMeta.tenantId as string}, TRUE)`;"
+      },
+      {
+        "line": 114,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:112-118",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "return tx.user.findUnique({"
+      },
+      {
+        "line": 154,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:153-159",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 155,
+        "receiver": "tx",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:153-159",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.activationProgress.findUnique({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/track/[token]/route.ts",
+    "statements": [
+      {
+        "line": 27,
+        "receiver": "adminDb",
+        "member": "load",
+        "table": "Load",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const load = await adminDb.load.findUnique({"
+      },
+      {
+        "line": 50,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:49-55",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 51,
+        "receiver": "tx",
+        "member": "gPSLocation",
+        "table": "GPSLocation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:49-55",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.gPSLocation.findFirst({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/track/[token]/page.tsx",
+    "statements": [
+      {
+        "line": 54,
+        "receiver": "adminDb",
+        "member": "load",
+        "table": "Load",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const load = await adminDb.load.findUnique({"
+      },
+      {
+        "line": 78,
+        "receiver": "adminDb",
+        "member": "gPSLocation",
+        "table": "GPSLocation",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const gps = await adminDb.gPSLocation.findFirst({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/onboarding/activation-tracker.ts",
+    "statements": [
+      {
+        "line": 69,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 74,
+        "receiver": "tx",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "let current = await tx.activationProgress.findUnique({"
+      },
+      {
+        "line": 93,
+        "receiver": "tx",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.activationProgress.create({"
+      },
+      {
+        "line": 96,
+        "receiver": "tx",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "current = await tx.activationProgress.findUnique({"
+      },
+      {
+        "line": 151,
+        "receiver": "tx",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.activationProgress.update({"
+      },
+      {
+        "line": 158,
+        "receiver": "tx",
+        "member": "appEvent",
+        "table": "AppEvent",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.appEvent.create({"
+      },
+      {
+        "line": 169,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const owner = await tx.user.findFirst({"
+      },
+      {
+        "line": 177,
+        "receiver": "tx",
+        "member": "appEvent",
+        "table": "AppEvent",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:68-190",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.appEvent.create({"
+      },
+      {
+        "line": 198,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:197-210",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 199,
+        "receiver": "tx",
+        "member": "appEvent",
+        "table": "AppEvent",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:197-210",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.appEvent.create({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/onboarding/confirm-tenant-email.ts",
+    "statements": [
+      {
+        "line": 39,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:36-53",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const tenant = await tx.tenant.findUnique({ where: { id: tenantId } });"
+      },
+      {
+        "line": 47,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:36-53",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "await tx.tenant.update({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/onboarding/hydrate-tenant.ts",
+    "statements": [
+      {
+        "line": 28,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:26-31",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const tenant = await tx.tenant.findUniqueOrThrow({ where: { id: tenantId } });"
+      },
+      {
+        "line": 29,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:26-31",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const ownerUser = await tx.user.findFirstOrThrow({ where: { tenantId, role: 'OWNER' } });"
+      },
+      {
+        "line": 61,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:55-69",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "await tx.tenant.update({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/onboarding/onboarding-flags.ts",
+    "statements": [
+      {
+        "line": 33,
+        "receiver": "tx",
+        "member": "carrierClient",
+        "table": "clients",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:30-44",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "tx.carrierClient.count({ where: { orgId: tenantId, isSample: false, deletedAt: null } }),"
+      },
+      {
+        "line": 34,
+        "receiver": "tx",
+        "member": "carrierContract",
+        "table": "contracts",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:30-44",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "tx.carrierContract.count({ where: { orgId: tenantId, deletedAt: null } }),"
+      },
+      {
+        "line": 35,
+        "receiver": "tx",
+        "member": "carrierLoad",
+        "table": "loads",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:30-44",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "tx.carrierLoad.count({ where: { orgId: tenantId, isSample: false, deletedAt: null } }),"
+      },
+      {
+        "line": 36,
+        "receiver": "tx",
+        "member": "trip",
+        "table": "dispatches",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:30-44",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "tx.trip.count({ where: { orgId: tenantId, deletedAt: null } }),"
+      },
+      {
+        "line": 59,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:57-63",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "return tx.tenant.findUnique({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/onboarding/provision-tenant.ts",
+    "statements": [
+      {
+        "line": 77,
+        "receiver": "tx",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const [{ taken }] = await tx.$queryRaw<Array<{ taken: boolean }>>`"
+      },
+      {
+        "line": 98,
+        "receiver": "tx",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const [{ slug }] = await tx.$queryRaw<Array<{ slug: string }>>`"
+      },
+      {
+        "line": 108,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const tenant = await tx.tenant.create({"
+      },
+      {
+        "line": 127,
+        "receiver": "tx",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const user = await tx.user.create({"
+      },
+      {
+        "line": 141,
+        "receiver": "tx",
+        "member": "plan",
+        "table": "Plan",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const plan = await tx.plan.findFirst({ where: { key: 'starter', isActive: true } });"
+      },
+      {
+        "line": 147,
+        "receiver": "tx",
+        "member": "promo",
+        "table": "Promo",
+        "tableRaises": false,
+        "tableHasBypassPolicy": false,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const found = await tx.promo.findFirst({"
+      },
+      {
+        "line": 152,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const updated = await tx.$executeRaw`"
+      },
+      {
+        "line": 172,
+        "receiver": "tx",
+        "member": "subscription",
+        "table": "Subscription",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "await tx.subscription.create({"
+      },
+      {
+        "line": 185,
+        "receiver": "tx",
+        "member": "activationProgress",
+        "table": "ActivationProgress",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:74-199",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "await tx.activationProgress.create({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/auth/supabase.ts",
+    "statements": [
+      {
+        "line": 164,
+        "receiver": "prisma",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:163-166",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,"
+      },
+      {
+        "line": 165,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:163-166",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "prisma.user.findUnique({ where: { id: session.userId } }),"
+      },
+      {
+        "line": 166,
+        "receiver": "prisma",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:163-166",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "]) as [unknown, Awaited<ReturnType<typeof prisma.user.findUnique>> | null];"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/context/tenant-context.ts",
+    "statements": [
+      {
+        "line": 179,
+        "receiver": "prisma",
+        "member": "$executeRawUnsafe",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "await prisma.$executeRawUnsafe("
+      },
+      {
+        "line": 210,
+        "receiver": "prisma",
+        "member": "$executeRawUnsafe",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "await prisma.$executeRawUnsafe("
+      },
+      {
+        "line": 231,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:230-233",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/db/repositories/tenant.repository.ts",
+    "statements": [
+      {
+        "line": 46,
+        "receiver": "tx",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "TENANT_GUC",
+        "enclosingTransaction": "prisma.$transaction @:42-64",
+        "verdict": "TENANT CONTEXT PRESENT — does not raise",
+        "src": "const tenant = await tx.tenant.create({"
+      },
+      {
+        "line": 79,
+        "receiver": "adminDb",
+        "member": "user",
+        "table": "User",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const user = await adminDb.user.findUnique({"
+      },
+      {
+        "line": 97,
+        "receiver": "adminDb",
+        "member": "tenant",
+        "table": "Tenant",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "return adminDb.tenant.findMany({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/actions/support-tickets.ts",
+    "statements": [
+      {
+        "line": 99,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:98-106",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 101,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:98-106",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const latest = await tx.supportTicket.findFirst({"
+      },
+      {
+        "line": 170,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:169-187",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 171,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:169-187",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.supportTicket.create({"
+      },
+      {
+        "line": 218,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:217-223",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 219,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:217-223",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.supportTicket.findMany({"
+      },
+      {
+        "line": 271,
+        "receiver": "prisma",
+        "member": "$queryRawUnsafe",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "const tickets = await prisma.$queryRawUnsafe<RawTicket[]>("
+      },
+      {
+        "line": 286,
+        "receiver": "prisma",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "prisma.$queryRaw<RawUser[]>`"
+      },
+      {
+        "line": 290,
+        "receiver": "prisma",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "? prisma.$queryRaw<RawTenant[]>`SELECT id, name FROM \"Tenant\" WHERE id = ANY(${tenantIds}::uuid[])`"
+      },
+      {
+        "line": 292,
+        "receiver": "prisma",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "prisma.$queryRaw<RawAuthUser[]>`"
+      },
+      {
+        "line": 343,
+        "receiver": "adminDb",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await adminDb.supportTicket.update({"
+      },
+      {
+        "line": 371,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:370-385",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 372,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:370-385",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const ticket = await tx.supportTicket.findFirst({"
+      },
+      {
+        "line": 380,
+        "receiver": "tx",
+        "member": "ticketMessage",
+        "table": "TicketMessage",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:370-385",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const messages = await tx.ticketMessage.findMany({"
+      },
+      {
+        "line": 410,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:409-430",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 412,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:409-430",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "const ticket = await tx.supportTicket.findFirst({"
+      },
+      {
+        "line": 422,
+        "receiver": "tx",
+        "member": "ticketMessage",
+        "table": "TicketMessage",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:409-430",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.ticketMessage.create({"
+      },
+      {
+        "line": 478,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:477-508",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const ticket = await tx.supportTicket.findFirst({"
+      },
+      {
+        "line": 488,
+        "receiver": "tx",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:477-508",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "const users = await tx.$queryRaw<RawUser[]>`"
+      },
+      {
+        "line": 494,
+        "receiver": "tx",
+        "member": "ticketMessage",
+        "table": "TicketMessage",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:477-508",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await tx.ticketMessage.create({"
+      },
+      {
+        "line": 504,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": "adminDb.$transaction @:477-508",
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "await tx.supportTicket.update({"
+      },
+      {
+        "line": 545,
+        "receiver": "adminDb",
+        "member": "ticketMessage",
+        "table": "TicketMessage",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "ADMIN_CONN",
+        "enclosingTransaction": null,
+        "verdict": "ADMIN CONNECTION — no policy consulted",
+        "src": "return adminDb.ticketMessage.findMany({"
+      },
+      {
+        "line": 563,
+        "receiver": "prisma",
+        "member": "$queryRaw",
+        "table": "(raw SQL literal)",
+        "tableRaises": null,
+        "tableHasBypassPolicy": null,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED RAW SQL — raises iff the literal names a tenant-policy table",
+        "src": "const result = await prisma.$queryRaw<RawResult[]>`"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/app/api/mobile/support/ticket/route.ts",
+    "statements": [
+      {
+        "line": 39,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:38-44",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 40,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:38-44",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "return tx.supportTicket.findFirst({"
+      },
+      {
+        "line": 97,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:96-113",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 98,
+        "receiver": "tx",
+        "member": "supportTicket",
+        "table": "SupportTicket",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:96-113",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.supportTicket.create({"
+      }
+    ]
+  },
+  {
+    "file": "apps/web/src/lib/automations/evaluator.ts",
+    "statements": [
+      {
+        "line": 64,
+        "receiver": "prisma",
+        "member": "appEvent",
+        "table": "AppEvent",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const events = await prisma.appEvent.findMany({"
+      },
+      {
+        "line": 73,
+        "receiver": "prisma",
+        "member": "automationRule",
+        "table": "AutomationRule",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const rules = await prisma.automationRule.findMany({"
+      },
+      {
+        "line": 80,
+        "receiver": "prisma",
+        "member": "automationRun",
+        "table": "AutomationRun",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const existing = await prisma.automationRun.findFirst({"
+      },
+      {
+        "line": 96,
+        "receiver": "tx",
+        "member": "$executeRaw",
+        "table": "(set_config — no relation)",
+        "tableRaises": false,
+        "tableHasBypassPolicy": null,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:95-107",
+        "verdict": "NO RELATION — cannot raise",
+        "src": "await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;"
+      },
+      {
+        "line": 97,
+        "receiver": "tx",
+        "member": "automationRun",
+        "table": "AutomationRun",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "BYPASS",
+        "enclosingTransaction": "prisma.$transaction @:95-107",
+        "verdict": "BYPASS-FLAGGED — EXEMPTED by the tripwire, not signalled",
+        "src": "await tx.automationRun.create({"
+      },
+      {
+        "line": 131,
+        "receiver": "prisma",
+        "member": "automationRun",
+        "table": "AutomationRun",
+        "tableRaises": true,
+        "tableHasBypassPolicy": true,
+        "context": "UNFLAGGED",
+        "enclosingTransaction": null,
+        "verdict": "UNFLAGGED, RAISING TABLE -> TC001",
+        "src": "const dueRuns = await prisma.automationRun.findMany({"
+      }
+    ]
+  }
+]
