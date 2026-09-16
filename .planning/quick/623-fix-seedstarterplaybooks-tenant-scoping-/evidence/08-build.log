@@ -1,0 +1,538 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+
+> @drivecommand/web@0.1.0 build
+> npm run build:search-index && npm run build:admin-search && prisma generate && next build
+
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+
+> @drivecommand/web@0.1.0 build:search-index
+> tsx scripts/build-search-index.ts
+
+Search index built: 62 entries -> C:\Users\sammy\Projects\DriveCommand\apps\web\src\lib\docs\search-index.json
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+
+> @drivecommand/web@0.1.0 build:admin-search
+> tsx src/lib/docs/build-admin-search-index.ts
+
+Admin search index written to C:\Users\sammy\Projects\DriveCommand\apps\web\.docs-data\admin-docs-search-index.json (142 entries)
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+
+✔ Generated Prisma Client (v7.6.0) to .\src\generated\prisma in 11.05s
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+▲ Next.js 16.2.1 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Turbopack build encountered 2 warnings:
+./apps/web/src/app/(owner)/carrier/imports/new
+Package pdfjs-dist can't be external
+The request pdfjs-dist/build/pdf.worker.min.mjs matches serverExternalPackages (or the default list).
+The package seems invalid. require() resolves to a EcmaScript module, which would result in an error in Node.js.
+
+
+./apps/web/next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Import trace:
+  Server Component:
+    ./apps/web/next.config.ts
+    ./apps/web/src/app/(admin)/docs/features/[slug]/page.tsx
+
+
+✓ Compiled successfully in 56s
+  Running next.config.js provided runAfterProductionCompile ...
+✓ Completed runAfterProductionCompile in 6.5s
+  Running TypeScript ...
+  Finished TypeScript in 51s ...
+  Collecting page data using 11 workers ...
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[2026-09-16T20:13:13.702Z] WARN: [accept-invitation] NEXT_PUBLIC_APP_URL is not set. Invitation links will use http://localhost:3000. Set this env var in production.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+  Generating static pages using 11 workers (0/229) ...
+[2026-09-16T20:13:18.233Z] WARN: [accept-invitation] NEXT_PUBLIC_APP_URL is not set. Invitation links will use http://localhost:3000. Set this env var in production.
+  Generating static pages using 11 workers (57/229) 
+  Generating static pages using 11 workers (114/229) 
+  Generating static pages using 11 workers (171/229) 
+✓ Generating static pages using 11 workers (229/229) in 2.1s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ○ /accept-invitation
+├ ƒ /admin-dashboard
+├ ƒ /admin-support
+├ ƒ /ai-documents
+├ ƒ /api/admin/support/screenshot
+├ ƒ /api/admin/tenants/[id]/users
+├ ƒ /api/admin/users/[id]/role
+├ ƒ /api/auth/accept-invitation
+├ ƒ /api/auth/admin-reset-password
+├ ƒ /api/auth/callback
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/cron/auto-close-tickets
+├ ƒ /api/cron/automations
+├ ƒ /api/cron/carrier-auto-dispatch
+├ ƒ /api/cron/carrier-compliance-alerts
+├ ƒ /api/cron/cleanup-quarantine
+├ ƒ /api/cron/digest-compliance-30day
+├ ƒ /api/cron/digest-daily-driver
+├ ƒ /api/cron/digest-weekly-owner
+├ ƒ /api/cron/mark-overdue-invoices
+├ ƒ /api/cron/purge-deleted
+├ ƒ /api/cron/send-reminders
+├ ƒ /api/cron/trip-reminders
+├ ƒ /api/cron/workflow-digest
+├ ƒ /api/cron/workflow-notifications
+├ ƒ /api/docs-index
+├ ƒ /api/documents/complete-upload
+├ ƒ /api/documents/delete/[id]
+├ ƒ /api/documents/download-url/[id]
+├ ƒ /api/documents/multipart/complete
+├ ƒ /api/documents/multipart/initiate
+├ ƒ /api/documents/multipart/part-url
+├ ƒ /api/documents/request-upload-url
+├ ƒ /api/documents/upload
+├ ƒ /api/driver-pay/assignments/[assignmentId]/components
+├ ƒ /api/driver-pay/assignments/[assignmentId]/components/[componentId]
+├ ƒ /api/driver-pay/assignments/[assignmentId]/components/[componentId]/attachments
+├ ƒ /api/driver-pay/assignments/[assignmentId]/components/[componentId]/attachments/[attachmentId]
+├ ƒ /api/driver-pay/assignments/[assignmentId]/components/[componentId]/attachments/[attachmentId]/download-url
+├ ƒ /api/driver-pay/assignments/[assignmentId]/components/suggest-detention
+├ ƒ /api/driver-pay/assignments/[assignmentId]/corrections
+├ ƒ /api/driver-pay/assignments/[assignmentId]/transitions
+├ ƒ /api/driver-pay/drivers/[driverId]/bonuses
+├ ƒ /api/driver-pay/drivers/[driverId]/bonuses/[bonusId]
+├ ƒ /api/driver-pay/drivers/[driverId]/deductions
+├ ƒ /api/driver-pay/drivers/[driverId]/deductions/[deductionId]
+├ ƒ /api/driver-pay/me/bonuses
+├ ƒ /api/driver-pay/me/current-period
+├ ƒ /api/driver-pay/me/deductions
+├ ƒ /api/driver-pay/me/settlements
+├ ƒ /api/driver-pay/me/settlements/[id]
+├ ƒ /api/driver-pay/me/settlements/[id]/dispute
+├ ƒ /api/driver-pay/me/settlements/[id]/pdf
+├ ƒ /api/driver-pay/pending-queue
+├ ƒ /api/driver-pay/reports/accessorial-spend
+├ ƒ /api/driver-pay/reports/component-type
+├ ƒ /api/driver-pay/reports/deduction-balances
+├ ƒ /api/driver-pay/reports/drivers/[driverId]
+├ ƒ /api/driver-pay/reports/load-profitability
+├ ƒ /api/driver-pay/reports/operational-metrics
+├ ƒ /api/driver-pay/reports/override-audit
+├ ƒ /api/driver-pay/reports/overtime-exposure
+├ ƒ /api/driver-pay/reports/overview
+├ ƒ /api/driver-pay/reports/settlement-history
+├ ƒ /api/driver-pay/reports/settlements
+├ ƒ /api/driver-pay/settlements
+├ ƒ /api/driver-pay/settlements/[settlementId]
+├ ƒ /api/driver-pay/settlements/[settlementId]/finalize
+├ ƒ /api/driver-pay/settlements/[settlementId]/mark-paid
+├ ƒ /api/driver-pay/settlements/[settlementId]/pdf
+├ ƒ /api/driver-pay/settlements/[settlementId]/void
+├ ƒ /api/driver-pay/settlements/generate
+├ ƒ /api/driver/gps-ping
+├ ƒ /api/driver/notifications
+├ ƒ /api/driver/notifications/mark-read
+├ ƒ /api/driver/stops/[stopId]/documents
+├ ƒ /api/driver/stops/[stopId]/messages
+├ ƒ /api/email-confirm/[token]
+├ ƒ /api/geocoding/autocomplete
+├ ƒ /api/geocoding/directions
+├ ƒ /api/geocoding/distance
+├ ƒ /api/gps/locations
+├ ƒ /api/gps/report
+├ ƒ /api/health
+├ ƒ /api/integrations/motive/sync
+├ ƒ /api/integrations/samsara/sync
+├ ƒ /api/mobile/carrier/driver/dispatches
+├ ƒ /api/mobile/carrier/driver/dispatches/[id]
+├ ƒ /api/mobile/carrier/driver/dispatches/[id]/expenses
+├ ƒ /api/mobile/carrier/driver/dispatches/[id]/inspection
+├ ƒ /api/mobile/carrier/driver/dispatches/[id]/inspection/checklist
+├ ƒ /api/mobile/carrier/driver/dispatches/[id]/inspection/submit
+├ ƒ /api/mobile/carrier/driver/dispatches/[id]/start
+├ ƒ /api/mobile/carrier/driver/stops/[stopId]/documents
+├ ƒ /api/mobile/carrier/owner/dispatches/[id]
+├ ƒ /api/mobile/carrier/owner/document-imports
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/commit
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/end-stop
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/extract
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/optimisation
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/pages
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/resolution
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/resolution/client
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/resolution/contract
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/stops
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/stops/bulk
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/stops/facility
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/stops/order
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/stops/review
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/template
+├ ƒ /api/mobile/carrier/owner/document-imports/[id]/template/offer
+├ ƒ /api/mobile/carrier/owner/document-imports/upload-url
+├ ƒ /api/mobile/driver/dashboard
+├ ƒ /api/mobile/driver/documents
+├ ƒ /api/mobile/driver/documents/[id]/url
+├ ƒ /api/mobile/driver/documents/upload-url
+├ ƒ /api/mobile/driver/hos
+├ ƒ /api/mobile/driver/incidents
+├ ƒ /api/mobile/driver/incidents/upload-photo
+├ ƒ /api/mobile/driver/loads
+├ ƒ /api/mobile/driver/loads/[id]
+├ ƒ /api/mobile/driver/loads/[id]/rate-confirmation
+├ ƒ /api/mobile/driver/loads/[id]/revert
+├ ƒ /api/mobile/driver/loads/[id]/status
+├ ƒ /api/mobile/driver/messages
+├ ƒ /api/mobile/driver/messages/mark-read
+├ ƒ /api/mobile/driver/messages/route-thread
+├ ƒ /api/mobile/driver/messages/unread-count
+├ ƒ /api/mobile/driver/route
+├ ƒ /api/mobile/driver/tasks
+├ ƒ /api/mobile/driver/tasks/[id]/complete
+├ ƒ /api/mobile/driver/tasks/[id]/fail
+├ ƒ /api/mobile/driver/tasks/[id]/skip
+├ ƒ /api/mobile/driver/tasks/upload-photo
+├ ƒ /api/mobile/driver/tracking-token
+├ ƒ /api/mobile/owner/compliance
+├ ƒ /api/mobile/owner/crm
+├ ƒ /api/mobile/owner/crm/[id]
+├ ƒ /api/mobile/owner/customers
+├ ƒ /api/mobile/owner/dashboard
+├ ƒ /api/mobile/owner/drivers
+├ ƒ /api/mobile/owner/drivers/[id]
+├ ƒ /api/mobile/owner/drivers/active
+├ ƒ /api/mobile/owner/drivers/invite
+├ ƒ /api/mobile/owner/fleet-positions
+├ ƒ /api/mobile/owner/fleet/messages
+├ ƒ /api/mobile/owner/fleet/messages/[recipientId]
+├ ƒ /api/mobile/owner/fuel
+├ ƒ /api/mobile/owner/invoices
+├ ƒ /api/mobile/owner/invoices/[id]
+├ ƒ /api/mobile/owner/loads
+├ ƒ /api/mobile/owner/loads/[id]
+├ ƒ /api/mobile/owner/loads/[id]/assign-truck
+├ ƒ /api/mobile/owner/maintenance
+├ ƒ /api/mobile/owner/map/vehicles
+├ ƒ /api/mobile/owner/payroll
+├ ƒ /api/mobile/owner/payroll/[id]
+├ ƒ /api/mobile/owner/profit-predictor
+├ ƒ /api/mobile/owner/routes
+├ ƒ /api/mobile/owner/routes/[id]
+├ ƒ /api/mobile/owner/safety
+├ ƒ /api/mobile/owner/trucks
+├ ƒ /api/mobile/owner/trucks/[id]
+├ ƒ /api/mobile/owner/trucks/[id]/maintenance
+├ ƒ /api/mobile/owner/trucks/[id]/scheduled-service
+├ ƒ /api/mobile/support/ticket
+├ ƒ /api/mobile/support/upload-screenshot
+├ ƒ /api/push-tokens
+├ ƒ /api/reports/payroll-export
+├ ƒ /api/support/upload-attachment
+├ ƒ /api/track/[token]
+├ ƒ /api/trpc/[trpc]
+├ ƒ /api/user/grid-preferences/[gridId]
+├ ƒ /api/user/grid-views/[gridId]
+├ ƒ /api/user/grid-views/[gridId]/[viewId]
+├ ƒ /api/v1/carrier/clients
+├ ƒ /api/v1/carrier/clients/[id]
+├ ƒ /api/v1/carrier/clients/[id]/documents
+├ ƒ /api/v1/carrier/compliance-alerts
+├ ƒ /api/v1/carrier/contracts
+├ ƒ /api/v1/carrier/contracts/[id]
+├ ƒ /api/v1/carrier/contracts/[id]/documents
+├ ƒ /api/v1/carrier/contracts/[id]/loads
+├ ƒ /api/v1/carrier/dashboard/activity
+├ ƒ /api/v1/carrier/dashboard/alerts
+├ ƒ /api/v1/carrier/dashboard/drivers-status
+├ ƒ /api/v1/carrier/dashboard/kpi
+├ ƒ /api/v1/carrier/dashboard/messages
+├ ƒ /api/v1/carrier/dispatches
+├ ƒ /api/v1/carrier/dispatches/[id]
+├ ƒ /api/v1/carrier/dispatches/[id]/inspection
+├ ƒ /api/v1/carrier/dispatches/[id]/inspection/checklist
+├ ƒ /api/v1/carrier/dispatches/[id]/inspection/override
+├ ƒ /api/v1/carrier/dispatches/[id]/remove-load
+├ ƒ /api/v1/carrier/dispatches/[id]/start
+├ ƒ /api/v1/carrier/dispatches/[id]/status
+├ ƒ /api/v1/carrier/document-imports
+├ ƒ /api/v1/carrier/document-imports/[id]
+├ ƒ /api/v1/carrier/document-imports/[id]/commit
+├ ƒ /api/v1/carrier/document-imports/[id]/end-stop
+├ ƒ /api/v1/carrier/document-imports/[id]/extract
+├ ƒ /api/v1/carrier/document-imports/[id]/optimisation
+├ ƒ /api/v1/carrier/document-imports/[id]/pages
+├ ƒ /api/v1/carrier/document-imports/[id]/resolution
+├ ƒ /api/v1/carrier/document-imports/[id]/resolution/client
+├ ƒ /api/v1/carrier/document-imports/[id]/resolution/contract
+├ ƒ /api/v1/carrier/document-imports/[id]/stops
+├ ƒ /api/v1/carrier/document-imports/[id]/stops/bulk
+├ ƒ /api/v1/carrier/document-imports/[id]/stops/facility
+├ ƒ /api/v1/carrier/document-imports/[id]/stops/order
+├ ƒ /api/v1/carrier/document-imports/[id]/stops/review
+├ ƒ /api/v1/carrier/document-imports/[id]/template
+├ ƒ /api/v1/carrier/document-imports/[id]/template/offer
+├ ƒ /api/v1/carrier/document-imports/upload-url
+├ ƒ /api/v1/carrier/document-types
+├ ƒ /api/v1/carrier/document-types/[id]
+├ ƒ /api/v1/carrier/documents
+├ ƒ /api/v1/carrier/documents/[id]
+├ ƒ /api/v1/carrier/documents/[id]/signed-url
+├ ƒ /api/v1/carrier/expenses
+├ ƒ /api/v1/carrier/expenses/[id]
+├ ƒ /api/v1/carrier/expenses/[id]/approve
+├ ƒ /api/v1/carrier/facilities
+├ ƒ /api/v1/carrier/facilities/[id]
+├ ƒ /api/v1/carrier/fleet/drivers
+├ ƒ /api/v1/carrier/fleet/drivers/[id]
+├ ƒ /api/v1/carrier/fleet/drivers/[id]/resend-invitation
+├ ƒ /api/v1/carrier/fleet/drivers/[id]/restore-access
+├ ƒ /api/v1/carrier/fleet/drivers/[id]/revoke-access
+├ ƒ /api/v1/carrier/fleet/trucks
+├ ƒ /api/v1/carrier/fleet/trucks/[id]
+├ ƒ /api/v1/carrier/fleet/trucks/[id]/photo-upload-url
+├ ƒ /api/v1/carrier/fleet/trucks/[id]/photo-view-url
+├ ƒ /api/v1/carrier/live-board
+├ ƒ /api/v1/carrier/live-map/history
+├ ƒ /api/v1/carrier/live-map/trips
+├ ƒ /api/v1/carrier/live-map/vehicles
+├ ƒ /api/v1/carrier/loads
+├ ƒ /api/v1/carrier/loads/[id]
+├ ƒ /api/v1/carrier/loads/[id]/cancel
+├ ƒ /api/v1/carrier/loads/[id]/revenue
+├ ƒ /api/v1/carrier/notifications
+├ ƒ /api/v1/carrier/notifications/mark-read
+├ ƒ /api/v1/carrier/pay-records
+├ ƒ /api/v1/carrier/pay-records/[id]/approve
+├ ƒ /api/v1/carrier/pay-records/[id]/mark-paid
+├ ƒ /api/v1/carrier/pay-records/[id]/recalculate
+├ ƒ /api/v1/carrier/pay-records/[id]/void
+├ ƒ /api/v1/carrier/reports/aging
+├ ƒ /api/v1/carrier/reports/driver-pay
+├ ƒ /api/v1/carrier/reports/performance
+├ ƒ /api/v1/carrier/reports/revenue
+├ ƒ /api/v1/carrier/reports/todays-trips
+├ ƒ /api/v1/carrier/route-templates
+├ ƒ /api/v1/carrier/route-templates/[id]
+├ ƒ /api/v1/carrier/route-templates/[id]/generate
+├ ƒ /api/v1/carrier/route-templates/active
+├ ƒ /api/v1/carrier/stops
+├ ƒ /api/v1/carrier/stops/[id]
+├ ƒ /api/v1/carrier/stops/[id]/arrived
+├ ƒ /api/v1/carrier/stops/[id]/complete
+├ ƒ /api/v1/carrier/stops/[id]/messages
+├ ƒ /api/v1/carrier/stops/[id]/skip
+├ ƒ /api/v1/carrier/templates/[id]/optimisation
+├ ƒ /api/v1/carrier/trips/[id]/loads
+├ ƒ /api/v1/carrier/trips/[id]/reorder
+├ ƒ /api/v1/messages/[id]/audio-url
+├ ƒ /api/v1/messages/broadcast
+├ ƒ /api/v1/messages/conversations
+├ ƒ /api/v1/messages/send
+├ ƒ /api/v1/messages/thread
+├ ƒ /api/v1/messages/upload-audio
+├ ƒ /api/warmup
+├ ƒ /automations
+├ ƒ /automations/[ruleId]
+├ ƒ /billing
+├ ƒ /billing/[id]
+├ ƒ /billing/[id]/edit
+├ ƒ /billing/new
+├ ƒ /carrier/clients
+├ ƒ /carrier/clients/[id]
+├ ƒ /carrier/clients/new
+├ ƒ /carrier/contracts
+├ ƒ /carrier/contracts/[id]
+├ ƒ /carrier/contracts/new
+├ ƒ /carrier/dashboard
+├ ƒ /carrier/driver-pay/pending
+├ ƒ /carrier/driver-pay/reports
+├ ƒ /carrier/driver-pay/reports/[driverId]
+├ ƒ /carrier/driver-pay/settlements
+├ ƒ /carrier/driver-pay/settlements/[settlementId]
+├ ƒ /carrier/driver-pay/settlements/generate
+├ ƒ /carrier/facilities
+├ ƒ /carrier/facilities/[id]
+├ ƒ /carrier/facilities/new
+├ ƒ /carrier/fleet/drivers
+├ ƒ /carrier/fleet/drivers/[id]
+├ ƒ /carrier/fleet/drivers/[id]/compensation
+├ ƒ /carrier/fleet/drivers/[id]/compensation/wizard
+├ ƒ /carrier/fleet/drivers/new
+├ ƒ /carrier/fleet/trucks
+├ ƒ /carrier/fleet/trucks/[id]
+├ ƒ /carrier/fleet/trucks/new
+├ ƒ /carrier/imports
+├ ƒ /carrier/imports/[id]
+├ ƒ /carrier/imports/[id]/assign
+├ ƒ /carrier/imports/[id]/stops
+├ ƒ /carrier/imports/new
+├ ƒ /carrier/loads
+├ ƒ /carrier/loads/[id]
+├ ƒ /carrier/loads/new
+├ ƒ /carrier/messages
+├ ƒ /carrier/recently-deleted
+├ ƒ /carrier/reports/aging
+├ ƒ /carrier/reports/driver-pay
+├ ƒ /carrier/reports/performance
+├ ƒ /carrier/reports/revenue
+├ ƒ /carrier/reports/todays-trips
+├ ƒ /carrier/stops/[id]
+├ ƒ /carrier/templates
+├ ƒ /carrier/templates/[id]
+├ ƒ /carrier/templates/document-types
+├ ƒ /carrier/templates/new
+├ ƒ /carrier/trips
+├ ƒ /carrier/trips/[id]
+├ ƒ /carrier/trips/[id]/plan
+├ ƒ /carrier/trips/[id]/stops
+├ ƒ /carrier/trips/new
+├ ƒ /checklists
+├ ƒ /checklists/analytics
+├ ƒ /checklists/automation
+├ ƒ /checklists/instances/[id]
+├ ƒ /checklists/playbooks/[id]/edit
+├ ƒ /compliance
+├ ƒ /crm
+├ ƒ /crm/[id]
+├ ƒ /crm/[id]/edit
+├ ƒ /crm/new
+├ ƒ /dashboard
+├ ƒ /docs
+├ ƒ /docs/database
+├ ƒ /docs/database/[model]
+├ ƒ /docs/features
+├ ƒ /docs/features/[slug]
+├ ƒ /docs/operations
+├ ƒ /docs/operations/[slug]
+├ ƒ /documents
+├ ƒ /drivers
+├ ƒ /drivers/[id]/edit
+├ ƒ /drivers/invite
+├ ○ /forgot-password
+├ ƒ /fuel
+├ ƒ /help
+├ ƒ /help/[categoryOrSlug]
+├ ƒ /help/[categoryOrSlug]/[article]
+├ ƒ /help/whats-new
+├ ƒ /home
+├ ƒ /hours
+├ ƒ /ifta
+├ ƒ /incidents
+├ ƒ /inspection/[dispatchId]
+├ ƒ /inspection/[dispatchId]/blocked
+├ ƒ /invoices
+├ ƒ /invoices/[id]
+├ ƒ /invoices/[id]/edit
+├ ƒ /invoices/new
+├ ƒ /lane-analytics
+├ ƒ /live-map
+├ ƒ /loads
+├ ƒ /loads/[id]
+├ ƒ /loads/[id]/edit
+├ ƒ /loads/new
+├ ƒ /messages
+├ ƒ /more
+├ ƒ /my-load
+├ ƒ /my-route
+├ ƒ /my-tickets
+├ ƒ /my-tickets/[id]
+├ ƒ /notifications
+├ ƒ /onboarding
+├ ƒ /onboarding/welcome
+├ ƒ /pay
+├ ƒ /pay/settlements/[id]
+├ ƒ /payroll
+├ ƒ /payroll/[id]
+├ ƒ /payroll/[id]/edit
+├ ƒ /payroll/new
+├ ƒ /plans
+├ ƒ /plans/[id]
+├ ƒ /plans/new
+├ ƒ /profit-predictor
+├ ƒ /promos
+├ ƒ /promos/new
+├ ○ /reset-password
+├ ƒ /routes
+├ ƒ /routes/[id]
+├ ƒ /routes/[id]/edit
+├ ƒ /routes/new
+├ ƒ /safety
+├ ƒ /settings
+├ ƒ /settings/account
+├ ƒ /settings/billing
+├ ƒ /settings/expense-categories
+├ ƒ /settings/expense-templates
+├ ƒ /settings/financial
+├ ƒ /settings/integrations
+├ ƒ /settings/my-notifications
+├ ƒ /settings/notifications
+├ ƒ /settings/operations
+├ ƒ /settings/team-permissions
+├ ƒ /settings/templates
+├ ƒ /settings/templates/[type]
+├ ƒ /settings/workflows
+├ ƒ /settings/workspace
+├ ƒ /sign-in/[[...sign-in]]
+├ ƒ /sign-up/[[...sign-up]]
+├ ƒ /subscription
+├ ƒ /support
+├ ƒ /support/[id]
+├ ƒ /tags
+├ ƒ /tasks
+├ ƒ /tasks/[id]
+├ ƒ /tenants
+├ ƒ /tenants/[id]
+├ ƒ /tenants/new
+├ ƒ /track/[token]
+├ ƒ /trucks
+├ ƒ /trucks/[id]
+├ ƒ /trucks/[id]/edit
+├ ƒ /trucks/[id]/maintenance
+├ ƒ /trucks/[id]/maintenance/[serviceId]/edit
+├ ƒ /trucks/[id]/maintenance/log-event
+├ ƒ /trucks/[id]/maintenance/schedule-service
+├ ƒ /trucks/new
+├ ○ /unauthorized
+└ ƒ /users
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,59 @@
+{
+ "before": {
+  "statements": 180,
+  "files": 53
+ },
+ "after": {
+  "statements": 155,
+  "files": 52
+ },
+ "leftGating": [
+  [
+   "src/server/services/workflows/seedStarterPlaybooks.ts#StepTemplate.create#stepTemplate.create",
+   17
+  ],
+  [
+   "src/server/services/workflows/seedStarterPlaybooks.ts#Playbook.create#playbook.create",
+   3
+  ],
+  [
+   "src/server/services/workflows/seedStarterPlaybooks.ts#PlaybookStep.createMany#playbookStep.createMany",
+   3
+  ],
+  [
+   "src/server/services/workflows/seedStarterPlaybooks.ts#Playbook.findFirst#playbook.findFirst",
+   1
+  ],
+  [
+   "src/server/services/workflows/seedStarterPlaybooks.ts#PlaybookTrigger.create#playbookTrigger.create",
+   1
+  ]
+ ],
+ "leftTotal": 25,
+ "enteredGating": [],
+ "seederAfter": {
+  "rows": 25,
+  "byVerdict": {
+   "SCOPED": 25
+  },
+  "byClient": {
+   "TX(TENANT_ORG)": 24,
+   "TENANT_ORG": 1
+  }
+ },
+ "totalsUnchanged": {
+  "statementsBefore": 1825,
+  "statementsAfter": 1825
+ },
+ "driverPayArmsDisagreeAfter": 11,
+ "corrected": {
+  "before": {
+   "statements": 169,
+   "files": 46
+  },
+  "after": {
+   "statements": 144,
+   "files": 45
+  }
+ }
+}

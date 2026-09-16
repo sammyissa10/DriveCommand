@@ -1,0 +1,9 @@
+login 200
+/home 200 hook TC001 lines 1
+/my-load 200 hook TC001 lines 0
+/home 200 hook TC001 lines 1
+/home 200 hook TC001 lines 1
+/my-load 200 hook TC001 lines 0
+/home 200 hook TC001 lines 1
+/home 200 hook TC001 lines 1
+/home 200 hook TC001 lines 1

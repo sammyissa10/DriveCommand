@@ -1,0 +1,25 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging) RUN  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED, never printed)
+PRECONDITION 1 — role
+  current_user : app_user
+  rolbypassrls : false
+  VERDICT      : PASS
+
+PRECONDITION 2 — tripwire (armed => raises; scoped => succeeds)
+  flag before SET : null (a fresh backend carries nothing)
+  flag after  SET : "on"
+  unscoped read  : {"raised":true,"sqlstate":"TC001"}
+  scoped read    : {"ok":true,"own":1}
+  disarmed read  : {"raised":false,"sqlstate":"none","rows":0}  <- silent 0 is the bug the tripwire exists to catch
+  VERDICT        : PASS
+
+PRECONDITION 3/4 — bypass_rls_policy population and parity
+  staging    : 86 policies on 86 tables
+[db-target] project : PRODUCTION (READ-ONLY, pg_policies only)  host : aws-1-us-west-1.pooler.supabase.com:5432  role : postgres.oqdhberkghtnszrkdvfm  (credential MASKED, never printed)
+  production : 86 policies
+  expected 86 : PASS
+  sorted-list parity staging vs production : IDENTICAL
+  staging sha256    : 315c31b0a8f53bac7d7813c3ce7ba35e94f71a02bd9f519cbda582c2f1d1548a
+  production sha256 : 315c31b0a8f53bac7d7813c3ce7ba35e94f71a02bd9f519cbda582c2f1d1548a
+
+OVERALL: PASS

@@ -1,0 +1,21 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+pre-flight fixture sweep: deleted 0 leftover q623 tenant(s)
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\623-fix-seedstarterplaybooks-tenant-scoping-\evidence\05-policy-capture.json
+tables the seeder writes: 4; carrying bypass_rls_policy: 4
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."Playbook"
+DROPPED bypass_rls_policy ON public."StepTemplate"
+DROPPED bypass_rls_policy ON public."PlaybookStep"
+DROPPED bypass_rls_policy ON public."PlaybookTrigger"
+bypass_rls_policy now: 82 (was 86)
+
+!! --throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.
+RESTORE: re-created 4; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
+TEARDOWN: deleted 0 q623 tenant(s); leftover rows total 0

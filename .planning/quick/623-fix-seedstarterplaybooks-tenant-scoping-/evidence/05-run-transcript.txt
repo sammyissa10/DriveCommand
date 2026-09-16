@@ -1,0 +1,32 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+pre-flight fixture sweep: deleted 0 leftover q623 tenant(s)
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\623-fix-seedstarterplaybooks-tenant-scoping-\evidence\05-policy-capture.json
+tables the seeder writes: 4; carrying bypass_rls_policy: 4
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."Playbook"
+DROPPED bypass_rls_policy ON public."StepTemplate"
+DROPPED bypass_rls_policy ON public."PlaybookStep"
+DROPPED bypass_rls_policy ON public."PlaybookTrigger"
+bypass_rls_policy now: 82 (was 86)
+  PASS  hook-control  {"callerSaw":"TC001","hookRecorded":1}
+  PASS  control:pre-fix-seeder  {"rejected":"TC001: tenant context is required: app.current_tenant_id is the EMPTY STRING","rowsAfter":{"playbooks":[],"steps":0,"stepTemplates":0,"triggers":0,"foreignTotals":{"Playbook":0,"StepTemplate":0,"PlaybookStep":0,"PlaybookTrigger":0}},"tc001Observed":1,"tc001Sql":["SELECT \"public\".\"Playbook\".\"id\" FROM \"public\".\"Playbook\" WHERE (\"public\".\"Playbook\".\"tenantId\" = $1 AND \"public\".\"Playbook\".\"name\" = $2) LIMIT $3 OFFSET $4"],"meaning":"every caller logged this and reported success"}
+  PASS  fn:create-tenant  {"success":true,"seedWarning":null,"emailWarning":null,"error":null,"tenantId":"c59fbddb-6fa5-40f5-9afd-17856976e2e7","counts":{"playbooks":["CDL Driver Onboarding","New Partner Setup","Pre-Trip Inspection (DVIR)"],"steps":27,"stepTemplates":27,"triggers":1,"foreignTotals":{"Playbook":0,"StepTemplate":0,"PlaybookStep":0,"PlaybookTrigger":0}},"invitationEmailsStubbed":1,"tc001Observed":0,"driverErrors":[]}
+  PASS  fn:seed-fresh-tenant  {"before":{"playbooks":[],"steps":0,"stepTemplates":0,"triggers":0,"foreignTotals":{"Playbook":3,"StepTemplate":27,"PlaybookStep":27,"PlaybookTrigger":1}},"after":{"playbooks":["CDL Driver Onboarding","New Partner Setup","Pre-Trip Inspection (DVIR)"],"steps":27,"stepTemplates":27,"triggers":1,"foreignTotals":{"Playbook":3,"StepTemplate":27,"PlaybookStep":27,"PlaybookTrigger":1}},"secondCall":{"playbooks":["CDL Driver Onboarding","New Partner Setup","Pre-Trip Inspection (DVIR)"],"steps":27,"stepTemplates":27,"triggers":1,"foreignTotals":{"Playbook":3,"StepTemplate":27,"PlaybookStep":27,"PlaybookTrigger":1}},"othersUnchanged":true,"othersNonZero":true,"tc001AfterFirst":0,"tc001Observed":0,"driverErrors":[]}
+  PASS  caller:script-fixed-armed  {"exit":1,"expectedExit":1,"tripwire":"on","stdout":[],"stderr":["    detail: 'statement: SELECT \"public\".\"Tenant\".\"id\", \"public\".\"Tenant\".\"name\" FROM \"public\".\"Tenant\" WHERE \"public\".\"Tenant\".\"isActive\" = $1 OFFSET $2',","    column: undefined,","    hint: \"This statement ran with no tenant context. Acquire one (getTenantPrisma / getTenantPrismaForOrg / withTenantContext) before querying, or SET app.tenant_context_tripwire = 'off' on this connection.\"","  },","  clientVersion: '7.6.0'","}"]}
+  PASS  caller:script-fixed-disarmed  {"exit":1,"expectedExit":1,"tripwire":"off","stdout":["Seeding starter playbooks for 0 tenant(s)..."],"stderr":["  ✗ enumerated ZERO active tenants. On an app_user connection with no tenant context this is row-level security hiding every \"Tenant\" row, not an empty database. Nothing was seeded."]}
+  PASS  witness:script-pre-fix-disarmed  {"exit":0,"expectedExit":0,"tripwire":"off","stdout":["Seeding starter playbooks for 0 tenant(s)..."],"stderr":[]}
+REVOKED INSERT ON public."PlaybookTrigger" FROM app_user (has_table_privilege now: false)
+  PASS  fn:forced-failure-seeder  {"rejected":{"sqlstate":"42501","message":"permission denied for table PlaybookTrigger"},"rowsAfterRollback":{"playbooks":[],"steps":0,"stepTemplates":0,"triggers":0,"foreignTotals":{"Playbook":6,"StepTemplate":54,"PlaybookStep":54,"PlaybookTrigger":2}},"tc001Observed":0,"driverErrors":["42501: permission denied for table PlaybookTrigger"]}
+  PASS  fn:forced-failure-create-tenant  {"success":true,"seedWarning":"Tenant created, but its starter playbooks (CDL Driver Onboarding, Pre-Trip Inspection, New Partner Setup) could not be created. Re-run scripts/seed-starter-playbooks.ts for tenant 65eb4d5f-7084-4084-a7a1-e5563c0fd55b.","tenantId":"65eb4d5f-7084-4084-a7a1-e5563c0fd55b","counts":{"playbooks":[],"steps":0,"stepTemplates":0,"triggers":0,"foreignTotals":{"Playbook":6,"StepTemplate":54,"PlaybookStep":54,"PlaybookTrigger":2}},"meaning":"pre-fix this returned { success: true, tenant } with no warning"}
+GRANT INSERT restored: has_table_privilege=true; app_user privileges ["DELETE","INSERT","SELECT","UPDATE"]; PASS
+RESTORE: re-created 4; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
+TEARDOWN: deleted 5 q623 tenant(s); leftover rows total 0
+
+ALL CELLS PASS
