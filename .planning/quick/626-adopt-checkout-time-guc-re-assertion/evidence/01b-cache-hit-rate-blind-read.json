@@ -1,0 +1,70 @@
+{
+  "generated": "2026-09-16T22:17:36.003Z",
+  "requestsPerConfig": 120,
+  "results": [
+    {
+      "stack": "shipped",
+      "blindRead": true,
+      "concurrency": 1,
+      "requests": 120,
+      "checkouts": 684,
+      "tenantGucStatements": 120,
+      "checkoutsPerRequest": 5.7,
+      "gucStatementsPerRequest": 1,
+      "cacheHitRate": null,
+      "medianMs": 664.9,
+      "p95Ms": 783,
+      "medianRttMs": 64.9,
+      "wrongTenantReads": 0,
+      "errors": {}
+    },
+    {
+      "stack": "protoCache",
+      "blindRead": true,
+      "concurrency": 1,
+      "requests": 120,
+      "checkouts": 564,
+      "tenantGucStatements": 287,
+      "checkoutsPerRequest": 4.7,
+      "gucStatementsPerRequest": 2.39,
+      "cacheHitRate": 0.491,
+      "medianMs": 726.8,
+      "p95Ms": 962.2,
+      "medianRttMs": 64.2,
+      "wrongTenantReads": 0,
+      "errors": {}
+    },
+    {
+      "stack": "shipped",
+      "blindRead": true,
+      "concurrency": 4,
+      "requests": 120,
+      "checkouts": 684,
+      "tenantGucStatements": 120,
+      "checkoutsPerRequest": 5.7,
+      "gucStatementsPerRequest": 1,
+      "cacheHitRate": null,
+      "medianMs": 2558.8,
+      "p95Ms": 3419.6,
+      "medianRttMs": 63.6,
+      "wrongTenantReads": 184,
+      "errors": {}
+    },
+    {
+      "stack": "protoCache",
+      "blindRead": true,
+      "concurrency": 4,
+      "requests": 120,
+      "checkouts": 564,
+      "tenantGucStatements": 286,
+      "checkoutsPerRequest": 4.7,
+      "gucStatementsPerRequest": 2.38,
+      "cacheHitRate": 0.493,
+      "medianMs": 2885.2,
+      "p95Ms": 3943.3,
+      "medianRttMs": 64.5,
+      "wrongTenantReads": 0,
+      "errors": {}
+    }
+  ]
+}

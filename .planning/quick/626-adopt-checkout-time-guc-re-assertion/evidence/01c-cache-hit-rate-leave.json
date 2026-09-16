@@ -1,0 +1,38 @@
+{
+  "generated": "2026-09-16T22:21:13.527Z",
+  "requestsPerConfig": 120,
+  "results": [
+    {
+      "stack": "protoCacheLeave",
+      "blindRead": true,
+      "concurrency": 1,
+      "requests": 120,
+      "checkouts": 564,
+      "tenantGucStatements": 120,
+      "checkoutsPerRequest": 4.7,
+      "gucStatementsPerRequest": 1,
+      "cacheHitRate": 0.787,
+      "medianMs": 662.2,
+      "p95Ms": 735.7,
+      "medianRttMs": 64.5,
+      "wrongTenantReads": 0,
+      "errors": {}
+    },
+    {
+      "stack": "protoCacheLeave",
+      "blindRead": true,
+      "concurrency": 4,
+      "requests": 120,
+      "checkouts": 564,
+      "tenantGucStatements": 240,
+      "checkoutsPerRequest": 4.7,
+      "gucStatementsPerRequest": 2,
+      "cacheHitRate": 0.574,
+      "medianMs": 2790.8,
+      "p95Ms": 3829.3,
+      "medianRttMs": 64.7,
+      "wrongTenantReads": 0,
+      "errors": {}
+    }
+  ]
+}

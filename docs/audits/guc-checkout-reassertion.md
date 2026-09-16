@@ -389,3 +389,36 @@ keep their bodies.
   (`07-after-move-smoke.txt`) reproduced the eviction cells and a 64/64 injected-error configuration exactly.
 - **Staging:** read only. No rows written, no DDL, no role or password change. The two tenants used already existed.
 - **Production:** `pg_policies` read for the parity check. Nothing else.
+
+---
+
+## 8. Addendum (quick-626): the latency gate, measured before adoption, and not cleared
+
+§4.2's "with the cache, cost returns to shipped's level" came from **one long loop on one warm connection holding one
+tenant**, which is the cache's best case. quick-626 measured it under request-shaped traffic
+(`scripts/audit/626-cache-hit-rate.ts`): five tenants, the auth bootstrap's bare transaction on every request, c=1 and
+c=4, cold process per configuration.
+
+| stack | c | GUC round trips / request | cache hit rate | median / p95 ms |
+|---|---:|---:|---:|---|
+| shipped | 1 | 1.00 | — | 664.9 / 783.0 |
+| re-assert + cache (§5.3's recommendation) | 1 | 2.39 | **49.1 %** | 726.8 / 962.2 |
+| re-assert + cache, `onNoContext:'leave'` | 1 | 1.00 | 78.7 % | 662.2 / 735.7 |
+| shipped | 4 | 1.00 | — | 2558.8 / 3419.6 (**184 wrong-tenant reads**) |
+| re-assert + cache | 4 | 2.38 | **49.3 %** | 2885.2 / 3943.3 (0 wrong) |
+| re-assert + cache, `leave` | 4 | 2.00 | 57.4 % | 2790.8 / 3829.3 (0 wrong) |
+
+- **The ~49 % is structural.** A bare checkout asserts `''`, so every authenticated request flips the connection
+  tenant → `''` at the auth bootstrap (`lib/auth/supabase.ts:163`) and back at its first tenant statement: at least
+  two misses. The measurement matches the arithmetic (48.9 % expected).
+- **Shipped on real traffic** (both click-throughs, counter hook, no code changed) pays **1.34 GUC round trips per
+  request** (median 1, p95 3), so the designed stack would pay more than shipped, not the same.
+- **Each miss is one extra round trip on the application → Supavisor link.** Measured from a laptop to us-west-1 at a
+  **63–65 ms** median RTT. **iad1 → us-west-1 was not measured.**
+- **§6's list:** the cache's invalidation (forget on any statement text naming the GUC, reads included) is too broad.
+  A GUC read forces a miss, and it should forget on writes only.
+
+**Consequence for §5.3:** the recommendation stands on correctness and is **not adopted**, because more than half of
+checkouts pay the round trip. The measured `leave` variant restores shipped's per-request cost at c=1, but gives up
+the loud failure of bare statements. That trade-off, and an unmeasured bypass-transaction exemption, is in
+`.planning/quick/626-adopt-checkout-time-guc-re-assertion/626-SUMMARY.md` §3.

@@ -1,0 +1,534 @@
+[server-target] DATABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DIRECT_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DATABASE_URL_ADMIN -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] NEXT_PUBLIC_SUPABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] TENANT_CONTEXT_TRIPWIRE=on
+[server-target] DATABASE_URL role : app_user.wyixpgunnjmzguhggocz
+[server-target] anon key present : true | length 208 | MASKED eyJhbG...d7Zs
+[server-target] SUPABASE_SERVICE_ROLE_KEY -> staging wyixpgunnjmzguhggocz, role service_role (MASKED)
+[server-target] CRON_SECRET generated for this run (MASKED, never written to a tracked file)
+[server-target] NODE_OPTIONS --require 626-checkout-counter-hook.js (loads 620 detector unchanged, then counts checkouts + GUC writes)
+[q626-count] installed pid=16940
+[q620-hook] control pid=16940 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q626-count] installed pid=7304
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[q626-count] installed pid=7832
+[q620-hook] control pid=7304 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q626-count] installed pid=11812
+[q620-hook] control pid=7832 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.1.10.35:3000
+- Environments: .env.local
+✓ Ready in 1310ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+[q620-hook] control pid=11812 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q626-count] installed pid=6208
+[q620-hook] control pid=6208 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[q626-count] installed pid=3120
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+○ Compiling /sign-in/[[...sign-in]] ...
+[q626-count] installed pid=11760
+[q620-hook] control pid=11760 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+ GET /sign-in 200 in 16.9s (next.js: 15.7s, proxy.ts: 189ms, application-code: 1044ms)
+[q626-count] pid=11812 checkouts=1 gucWrites=0
+[q626-count] pid=11812 checkouts=2 gucWrites=0
+[q626-count] pid=11812 checkouts=3 gucWrites=0
+ POST /api/auth/login 200 in 3.5s (next.js: 1370ms, proxy.ts: 28ms, application-code: 2.1s)
+[q626-count] pid=11812 checkouts=5 gucWrites=0
+ POST /api/auth/login 200 in 684ms (next.js: 17ms, proxy.ts: 4ms, application-code: 663ms)
+[q626-count] pid=11812 checkouts=8 gucWrites=0
+ POST /api/auth/login 200 in 1039ms (next.js: 32ms, proxy.ts: 8ms, application-code: 999ms)
+[q626-count] pid=11812 checkouts=10 gucWrites=1
+ GET /dashboard 200 in 2.9s (next.js: 535ms, proxy.ts: 280ms, application-code: 2.1s)
+[q626-count] pid=11812 checkouts=12 gucWrites=1
+[q626-count] pid=11812 checkouts=14 gucWrites=2
+ GET /carrier/dashboard 200 in 1754ms (next.js: 110ms, proxy.ts: 115ms, application-code: 1529ms)
+[q626-count] pid=11812 checkouts=21 gucWrites=4
+[q626-count] pid=11812 checkouts=22 gucWrites=5
+ GET /carrier/trips 200 in 2.1s (next.js: 280ms, proxy.ts: 105ms, application-code: 1720ms)
+[q626-count] pid=11812 checkouts=25 gucWrites=6
+ GET /carrier/loads 200 in 885ms (next.js: 98ms, proxy.ts: 92ms, application-code: 696ms)
+[q626-count] pid=11812 checkouts=30 gucWrites=8
+[q626-count] pid=11812 checkouts=33 gucWrites=9
+ GET /carrier/clients 200 in 1327ms (next.js: 88ms, proxy.ts: 102ms, application-code: 1137ms)
+[q626-count] pid=11812 checkouts=38 gucWrites=11
+ GET /carrier/contracts 200 in 1072ms (next.js: 60ms, proxy.ts: 122ms, application-code: 890ms)
+[q626-count] pid=11812 checkouts=39 gucWrites=11
+[q626-count] pid=11812 checkouts=44 gucWrites=13
+ GET /carrier/facilities 200 in 1066ms (next.js: 96ms, proxy.ts: 103ms, application-code: 868ms)
+[q626-count] pid=11812 checkouts=48 gucWrites=15
+ GET /carrier/templates 200 in 868ms (next.js: 77ms, proxy.ts: 111ms, application-code: 680ms)
+[q626-count] pid=11812 checkouts=52 gucWrites=17
+ GET /carrier/imports 200 in 1147ms (next.js: 117ms, proxy.ts: 98ms, application-code: 932ms)
+[q626-count] pid=11812 checkouts=54 gucWrites=18
+ GET /carrier/messages 200 in 844ms (next.js: 96ms, proxy.ts: 105ms, application-code: 644ms)
+[q626-count] pid=11812 checkouts=58 gucWrites=20
+ GET /drivers 200 in 1184ms (next.js: 144ms, proxy.ts: 96ms, application-code: 943ms)
+[q626-count] pid=11812 checkouts=60 gucWrites=21
+[q626-count] pid=11812 checkouts=64 gucWrites=23
+[q626-count] pid=11812 checkouts=68 gucWrites=23
+ GET /trucks 200 in 1304ms (next.js: 115ms, proxy.ts: 107ms, application-code: 1083ms)
+[q626-count] pid=11812 checkouts=74 gucWrites=25
+[q626-count] pid=11812 checkouts=77 gucWrites=25
+ GET /loads 200 in 1231ms (next.js: 80ms, proxy.ts: 100ms, application-code: 1051ms)
+[q626-count] pid=11812 checkouts=81 gucWrites=27
+ GET /routes 200 in 1051ms (next.js: 90ms, proxy.ts: 93ms, application-code: 868ms)
+[q626-count] pid=11812 checkouts=83 gucWrites=27
+[q626-count] pid=11812 checkouts=89 gucWrites=29
+ GET /invoices 200 in 1138ms (next.js: 93ms, proxy.ts: 101ms, application-code: 944ms)
+[q626-count] pid=11812 checkouts=90 gucWrites=29
+[q626-count] pid=11812 checkouts=96 gucWrites=31
+ GET /payroll 200 in 972ms (next.js: 83ms, proxy.ts: 98ms, application-code: 791ms)
+[q626-count] pid=11812 checkouts=98 gucWrites=31
+[q626-count] pid=11812 checkouts=104 gucWrites=33
+ GET /crm 200 in 1615ms (next.js: 88ms, proxy.ts: 111ms, application-code: 1416ms)
+[q626-count] pid=11812 checkouts=108 gucWrites=35
+ GET /compliance 200 in 1262ms (next.js: 118ms, proxy.ts: 104ms, application-code: 1040ms)
+[q626-count] pid=11812 checkouts=112 gucWrites=35
+[q626-count] pid=11812 checkouts=116 gucWrites=36
+[q626-count] pid=11812 checkouts=117 gucWrites=36
+ GET /live-map 200 in 1648ms (next.js: 97ms, proxy.ts: 104ms, application-code: 1447ms)
+[q626-count] pid=11812 checkouts=123 gucWrites=39
+ GET /settings/operations 200 in 1246ms (next.js: 97ms, proxy.ts: 106ms, application-code: 1044ms)
+[q626-count] pid=11812 checkouts=125 gucWrites=39
+[q626-count] pid=11812 checkouts=127 gucWrites=39
+[q626-count] pid=11812 checkouts=128 gucWrites=40
+ GET /support 200 in 1183ms (next.js: 71ms, proxy.ts: 104ms, application-code: 1009ms)
+[q626-count] pid=11812 checkouts=130 gucWrites=40
+[q626-count] pid=11812 checkouts=139 gucWrites=44
+[q626-count] pid=11812 checkouts=143 gucWrites=44
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /home 200 in 5.4s (next.js: 177ms, proxy.ts: 102ms, application-code: 5.1s)
+[q620-hook] TC001 pid=11812 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q626-count] pid=11812 checkouts=144 gucWrites=45
+[q626-count] pid=11812 checkouts=146 gucWrites=46
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1472ms (next.js: 152ms, proxy.ts: 390ms, application-code: 931ms)
+[q626-count] pid=11812 checkouts=150 gucWrites=48
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-route 200 in 2.5s (next.js: 110ms, proxy.ts: 98ms, application-code: 2.3s)
+ GET /documents 200 in 545ms (next.js: 91ms, proxy.ts: 110ms, application-code: 344ms)
+[q626-count] pid=11812 checkouts=152 gucWrites=49
+ GET /hours 200 in 791ms (next.js: 75ms, proxy.ts: 189ms, application-code: 527ms)
+[q626-count] pid=11812 checkouts=154 gucWrites=50
+[2026-09-16T22:23:40.792Z] INFO: [admin-db] privileged query {"reason":"auto-close stale ticket sweep"}
+[q626-count] pid=11812 checkouts=155 gucWrites=50
+ GET /api/cron/auto-close-tickets 200 in 535ms (next.js: 102ms, proxy.ts: 7ms, application-code: 426ms)
+[cron/automations] Starting evaluator run
+[2026-09-16T22:23:42.882Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[2026-09-16T22:23:42.883Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'no_progress_nudge' — 0 candidate tenant(s)
+[2026-09-16T22:23:43.020Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'add_driver_nudge' — 0 candidate tenant(s)
+[2026-09-16T22:23:43.156Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'dispatch_load_nudge' — 0 candidate tenant(s)
+[2026-09-16T22:23:43.295Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'trial_ending_soon' — 0 candidate tenant(s)
+[2026-09-16T22:23:43.429Z] INFO: [admin-db] privileged query {"reason":"automation evaluator scan"}
+[evaluator] Path 1 — found 1 AppEvent(s) in last 30 days
+[evaluator] Path 2 — found 0 due PENDING run(s)
+[evaluator] Done — pendingCreated=0 executed=0 failed=0
+[cron/automations] Complete {
+  pendingCreated: 0,
+  executed: 0,
+  failed: 0,
+  failureCount: 0,
+  failures: []
+}
+ GET /api/cron/automations 200 in 993ms (next.js: 143ms, proxy.ts: 6ms, application-code: 843ms)
+[q626-count] pid=11812 checkouts=167 gucWrites=50
+[2026-09-16T22:23:45.558Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-16T22:23:45.558Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-16T22:23:45.626Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
+[2026-09-16T22:23:45.907Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":0,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":0,"details":[],"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-auto-dispatch 200 in 449ms (next.js: 84ms, proxy.ts: 6ms, application-code: 359ms)
+[q626-count] pid=11812 checkouts=172 gucWrites=52
+[2026-09-16T22:23:47.851Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-16T22:23:47.852Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-16T22:23:47.918Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-16T22:23:48.328Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 0 alert(s) found
+[2026-09-16T22:23:48.747Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 0 alert(s) found
+[2026-09-16T22:23:48.748Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":0,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 1089ms (next.js: 178ms, proxy.ts: 7ms, application-code: 905ms)
+[q626-count] pid=11812 checkouts=185 gucWrites=54
+[2026-09-16T22:23:50.607Z] INFO: [CRON] cleanup-quarantine: Starting
+[2026-09-16T22:23:54.469Z] INFO: [CRON] cleanup-quarantine: Completed {"success":true,"scanned":0,"deleted":0,"errors":0,"failureCount":0,"failures":[]}
+ GET /api/cron/cleanup-quarantine 200 in 4.0s (next.js: 122ms, proxy.ts: 6ms, application-code: 3.9s)
+[2026-09-16T22:23:56.061Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-16T22:23:56.061Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-16T22:23:56.137Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-16T22:23:57.418Z] INFO: [CRON] digest-compliance-30day: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-compliance-30day 200 in 1447ms (next.js: 74ms, proxy.ts: 5ms, application-code: 1367ms)
+[q626-count] pid=11812 checkouts=205 gucWrites=56
+[2026-09-16T22:23:59.313Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-16T22:23:59.313Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+[2026-09-16T22:23:59.381Z] INFO: [CRON] digest-daily-driver: Found 2 active tenant(s)
+[2026-09-16T22:24:00.691Z] INFO: [CRON] digest-daily-driver: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":5,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-daily-driver 200 in 1567ms (next.js: 163ms, proxy.ts: 14ms, application-code: 1390ms)
+[q626-count] pid=11812 checkouts=225 gucWrites=58
+[2026-09-16T22:24:02.428Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-16T22:24:02.429Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+[2026-09-16T22:24:02.497Z] INFO: [CRON] digest-weekly-owner: Found 2 active tenant(s)
+[2026-09-16T22:24:03.195Z] INFO: [CRON] digest-weekly-owner: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-weekly-owner 200 in 886ms (next.js: 104ms, proxy.ts: 6ms, application-code: 776ms)
+[q626-count] pid=11812 checkouts=236 gucWrites=60
+[2026-09-16T22:24:05.006Z] INFO: [admin-db] privileged query {"reason":"overdue invoice sweep"}
+[2026-09-16T22:24:05.200Z] INFO: [CRON] mark-overdue-invoices: Marked 0 invoice(s) overdue
+ GET /api/cron/mark-overdue-invoices 200 in 284ms (next.js: 76ms, proxy.ts: 6ms, application-code: 202ms)
+[q626-count] pid=11812 checkouts=237 gucWrites=60
+[2026-09-16T22:24:06.998Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-16T22:24:06.998Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-16T22:24:07.066Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-16T22:24:08.216Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":0,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 1309ms (next.js: 74ms, proxy.ts: 5ms, application-code: 1230ms)
+[q626-count] pid=11812 checkouts=254 gucWrites=62
+[2026-09-16T22:24:10.051Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-16T22:24:10.052Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-16T22:24:10.114Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-16T22:24:10.115Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-16T22:24:10.634Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-16T22:24:10.635Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-16T22:24:10.635Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-16T22:24:10.636Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-16T22:24:11.138Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-16T22:24:11.140Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-16T22:24:11.140Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-16T22:24:11.141Z] INFO: [CRON] send-reminders: Completed {"success":true,"processedTenants":2,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/send-reminders 200 in 1201ms (next.js: 97ms, proxy.ts: 5ms, application-code: 1098ms)
+[q626-count] pid=11812 checkouts=271 gucWrites=68
+[2026-09-16T22:24:12.963Z] INFO: [admin-db] privileged query {"reason":"trip reminder tenant sweep"}
+[2026-09-16T22:24:13.800Z] INFO: [CRON] trip-reminders: done {"tenantsProcessed":2,"tenantsFailed":0,"remindersSent":0,"failureCount":0,"failures":[]}
+ GET /api/cron/trip-reminders 200 in 939ms (next.js: 89ms, proxy.ts: 5ms, application-code: 845ms)
+[q626-count] pid=11812 checkouts=284 gucWrites=70
+[2026-09-16T22:24:15.628Z] INFO: [CRON] workflow-digest: Starting daily digest sweep
+[2026-09-16T22:24:15.629Z] INFO: [admin-db] privileged query {"reason":"workflow digest active-tenant sweep"}
+[2026-09-16T22:24:15.698Z] INFO: [CRON] workflow-digest: 0 tenant(s) with active instances
+[2026-09-16T22:24:15.699Z] INFO: [CRON] workflow-digest: Complete {"tenantsSent":0,"tenantsSkipped":0,"tenantsErrored":0,"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-digest 200 in 175ms (next.js: 91ms, proxy.ts: 7ms, application-code: 78ms)
+[q626-count] pid=11812 checkouts=285 gucWrites=70
+[2026-09-16T22:24:17.590Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-16T22:24:17.590Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-16T22:24:17.769Z] INFO: [CRON] workflow-notifications: Found 0 overdue step(s)
+[2026-09-16T22:24:17.770Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-16T22:24:17.840Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
+[2026-09-16T22:24:17.841Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-notifications 200 in 373ms (next.js: 104ms, proxy.ts: 4ms, application-code: 265ms)
+[q626-count] pid=11812 checkouts=288 gucWrites=70
+[2026-09-16T22:24:19.725Z] INFO: [WARMUP] Pinged successfully
+ GET /api/warmup 200 in 137ms (next.js: 62ms, proxy.ts: 4ms, application-code: 72ms)
+[q626-count] pid=11812 checkouts=289 gucWrites=70
+[q626-count] pid=11812 checkouts=291 gucWrites=70
+ POST /api/auth/login 200 in 1104ms (next.js: 4ms, proxy.ts: 4ms, application-code: 1096ms)
+[q626-count] pid=11812 checkouts=292 gucWrites=70
+[q626-count] pid=11812 checkouts=294 gucWrites=70
+ POST /api/auth/login 200 in 683ms (next.js: 7ms, proxy.ts: 9ms, application-code: 667ms)
+[q626-count] pid=11812 checkouts=295 gucWrites=70
+[q626-count] pid=11812 checkouts=296 gucWrites=70
+ POST /api/auth/login 200 in 936ms (next.js: 8ms, proxy.ts: 6ms, application-code: 922ms)
+[q626-count] pid=11812 checkouts=297 gucWrites=70
+ POST /api/auth/login 200 in 387ms (next.js: 6ms, proxy.ts: 5ms, application-code: 376ms)
+[q626-count] pid=11812 checkouts=298 gucWrites=70
+[q626-count] pid=11812 checkouts=303 gucWrites=72
+ GET /carrier/driver-pay/settlements 200 in 1262ms (next.js: 148ms, proxy.ts: 100ms, application-code: 1014ms)
+[q626-count] pid=11812 checkouts=305 gucWrites=72
+[q626-count] pid=11812 checkouts=307 gucWrites=73
+ GET /carrier/driver-pay/pending 200 in 792ms (next.js: 93ms, proxy.ts: 95ms, application-code: 603ms)
+[q626-count] pid=11812 checkouts=314 gucWrites=75
+ GET /carrier/driver-pay/reports 200 in 1274ms (next.js: 79ms, proxy.ts: 86ms, application-code: 1109ms)
+ GET /carrier/driver-pay 404 in 231ms (next.js: 102ms, proxy.ts: 97ms, application-code: 31ms)
+ GET /carrier/reports 404 in 166ms (next.js: 24ms, proxy.ts: 111ms, application-code: 31ms)
+[q626-count] pid=11812 checkouts=316 gucWrites=76
+ GET /carrier/reports/aging 200 in 779ms (next.js: 66ms, proxy.ts: 96ms, application-code: 617ms)
+[q626-count] pid=11812 checkouts=318 gucWrites=77
+ GET /carrier/reports/performance 200 in 772ms (next.js: 87ms, proxy.ts: 99ms, application-code: 587ms)
+[q626-count] pid=11812 checkouts=320 gucWrites=78
+ GET /carrier/reports/revenue 200 in 822ms (next.js: 63ms, proxy.ts: 92ms, application-code: 667ms)
+[q626-count] pid=11812 checkouts=322 gucWrites=79
+ GET /carrier/reports/todays-trips 200 in 859ms (next.js: 94ms, proxy.ts: 100ms, application-code: 665ms)
+[q626-count] pid=11812 checkouts=324 gucWrites=80
+ GET /checklists 200 in 797ms (next.js: 88ms, proxy.ts: 97ms, application-code: 612ms)
+ GET /checklists/playbooks 404 in 169ms (next.js: 20ms, proxy.ts: 101ms, application-code: 48ms)
+ GET /checklists/instances 404 in 161ms (next.js: 22ms, proxy.ts: 100ms, application-code: 39ms)
+[q626-count] pid=11812 checkouts=326 gucWrites=81
+ GET /checklists/analytics 200 in 798ms (next.js: 75ms, proxy.ts: 107ms, application-code: 617ms)
+[q626-count] pid=11812 checkouts=328 gucWrites=82
+ GET /checklists/automation 200 in 861ms (next.js: 95ms, proxy.ts: 105ms, application-code: 661ms)
+[q626-count] pid=11812 checkouts=336 gucWrites=84
+[q626-count] pid=11812 checkouts=349 gucWrites=89
+[q626-count] pid=11812 checkouts=350 gucWrites=89
+ GET /settings/notifications 200 in 2.3s (next.js: 88ms, proxy.ts: 98ms, application-code: 2.1s)
+[2026-09-16T22:25:03.577Z] INFO: [admin-db] privileged query {"reason":"sysadmin automation rule listing"}
+[q626-count] pid=11812 checkouts=351 gucWrites=89
+ GET /automations 200 in 806ms (next.js: 105ms, proxy.ts: 121ms, application-code: 580ms)
+[2026-09-16T22:25:05.962Z] INFO: [admin-db] privileged query {"reason":"sysadmin platform metrics"}
+[q626-count] pid=11812 checkouts=355 gucWrites=89
+ GET /admin-dashboard 200 in 702ms (next.js: 116ms, proxy.ts: 102ms, application-code: 484ms)
+[2026-09-16T22:25:08.276Z] INFO: [admin-db] privileged query {"reason":"sysadmin invoice management"}
+ GET /billing 200 in 553ms (next.js: 115ms, proxy.ts: 105ms, application-code: 333ms)
+[q626-count] pid=11812 checkouts=357 gucWrites=89
+ GET /plans 200 in 454ms (next.js: 89ms, proxy.ts: 114ms, application-code: 251ms)
+[q626-count] pid=11812 checkouts=358 gucWrites=89
+[2026-09-16T22:25:12.709Z] INFO: [admin-db] privileged query {"reason":"sysadmin notification send log listing"}
+[2026-09-16T22:25:12.710Z] INFO: [admin-db] privileged query {"reason":"sysadmin notification delivery statistics"}
+[q626-count] pid=11812 checkouts=369 gucWrites=89
+ GET /notifications 200 in 1064ms (next.js: 62ms, proxy.ts: 90ms, application-code: 912ms)
+[2026-09-16T22:25:15.338Z] INFO: [admin-db] privileged query {"reason":"sysadmin ticket listing"}
+[2026-09-16T22:25:15.407Z] INFO: [admin-db] privileged query {"reason":"sysadmin tenant listing"}
+ GET /admin-support 200 in 583ms (next.js: 83ms, proxy.ts: 114ms, application-code: 386ms)
+[q626-count] pid=11812 checkouts=371 gucWrites=89
+[q626-count] installed pid=8076
+[2026-09-16T22:25:18.304Z] INFO: [admin-db] privileged query {"reason":"public shipment tracking lookup"}
+ GET /track/604-probe-no-seeded-token 404 in 1297ms (next.js: 1076ms, proxy.ts: 5ms, application-code: 216ms)
+[q626-count] pid=11812 checkouts=372 gucWrites=89
+[q620-hook] control pid=8076 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q626-count] installed pid=14252
+ GET /sign-up 200 in 955ms (next.js: 871ms, proxy.ts: 4ms, application-code: 79ms)
+[q620-hook] control pid=14252 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+ GET /onboarding 307 in 420ms (next.js: 82ms, proxy.ts: 186ms, application-code: 152ms)
+[q626-count] pid=11812 checkouts=373 gucWrites=89
+[welcome] tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8 phase: HYDRATED
+[hydrateTenant] starting for tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8
+[q626-count] pid=11812 checkouts=374 gucWrites=89
+[hydrateTenant] already HYDRATED, skipping
+[q626-count] pid=11812 checkouts=375 gucWrites=89
+ GET /onboarding/welcome 200 in 1985ms (next.js: 79ms, proxy.ts: 5ms, application-code: 1901ms)
+[q626-count] pid=11812 checkouts=377 gucWrites=90
+ GET /api/mobile/driver/dashboard 200 in 883ms (next.js: 109ms, proxy.ts: 5ms, application-code: 768ms)
+ GET /api/mobile/driver/documents 200 in 635ms (next.js: 88ms, proxy.ts: 6ms, application-code: 541ms)
+[q626-count] pid=11812 checkouts=379 gucWrites=91
+ GET /api/mobile/driver/hos 200 in 504ms (next.js: 82ms, proxy.ts: 5ms, application-code: 417ms)
+[q626-count] pid=11812 checkouts=381 gucWrites=92
+ GET /api/mobile/driver/incidents 200 in 425ms (next.js: 55ms, proxy.ts: 2ms, application-code: 368ms)
+[q626-count] pid=11812 checkouts=383 gucWrites=93
+[q626-count] pid=11812 checkouts=385 gucWrites=94
+ GET /api/mobile/driver/loads 200 in 626ms (next.js: 85ms, proxy.ts: 7ms, application-code: 534ms)
+[q626-count] pid=11812 checkouts=387 gucWrites=95
+[2026-09-16T22:25:42.778Z] ERROR: [withMobileAuth] handler error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\driver\messages\route.ts:43:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET.allowedRoles (src\app\api\mobile\driver\messages\route.ts:32:38)
+    at async (src\lib\api\with-mobile-auth.ts:74:14)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/driver/messages 500 in 731ms (next.js: 64ms, proxy.ts: 3ms, application-code: 664ms)
+ GET /api/mobile/driver/messages/route-thread 400 in 202ms (next.js: 81ms, proxy.ts: 6ms, application-code: 115ms)
+[q626-count] pid=11812 checkouts=389 gucWrites=96
+ GET /api/mobile/driver/messages/unread-count 200 in 546ms (next.js: 77ms, proxy.ts: 5ms, application-code: 464ms)
+[q626-count] pid=11812 checkouts=391 gucWrites=97
+ GET /api/mobile/driver/route 200 in 596ms (next.js: 66ms, proxy.ts: 5ms, application-code: 524ms)
+[q626-count] pid=11812 checkouts=393 gucWrites=98
+ GET /api/mobile/driver/tasks 200 in 538ms (next.js: 97ms, proxy.ts: 5ms, application-code: 436ms)
+ GET /api/mobile/driver/tracking-token 200 in 442ms (next.js: 62ms, proxy.ts: 6ms, application-code: 373ms)
+[q626-count] pid=11812 checkouts=395 gucWrites=99
+[q626-count] pid=11812 checkouts=397 gucWrites=100
+ GET /api/mobile/owner/compliance 200 in 702ms (next.js: 123ms, proxy.ts: 5ms, application-code: 575ms)
+[q626-count] pid=11812 checkouts=399 gucWrites=101
+ GET /api/mobile/owner/crm 200 in 707ms (next.js: 68ms, proxy.ts: 7ms, application-code: 632ms)
+ GET /api/mobile/owner/customers 200 in 491ms (next.js: 96ms, proxy.ts: 6ms, application-code: 390ms)
+[q626-count] pid=11812 checkouts=401 gucWrites=102
+[q626-count] pid=11812 checkouts=403 gucWrites=103
+ GET /api/mobile/owner/dashboard 200 in 1212ms (next.js: 73ms, proxy.ts: 5ms, application-code: 1134ms)
+[q626-count] pid=11812 checkouts=405 gucWrites=104
+[2026-09-16T22:26:04.980Z] ERROR: [withMobileAuth] handler error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.driverInvitation.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\drivers\route.ts:106:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET.allowedRoles (src\app\api\mobile\owner\drivers\route.ts:64:38)
+    at async (src\lib\api\with-mobile-auth.ts:74:14)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'DriverInvitation',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/drivers 500 in 936ms (next.js: 104ms, proxy.ts: 5ms, application-code: 827ms)
+ GET /api/mobile/owner/drivers/active 200 in 476ms (next.js: 86ms, proxy.ts: 4ms, application-code: 386ms)
+[q626-count] pid=11812 checkouts=407 gucWrites=105
+ GET /api/mobile/owner/fleet-positions 200 in 414ms (next.js: 51ms, proxy.ts: 3ms, application-code: 360ms)
+[q626-count] pid=11812 checkouts=409 gucWrites=106
+[2026-09-16T22:26:11.308Z] ERROR: [mobile/owner/fleet/messages GET] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\fleet\messages\route.ts:46:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\mobile\owner\fleet\messages\route.ts:45:38)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/fleet/messages 500 in 638ms (next.js: 65ms, proxy.ts: 3ms, application-code: 570ms)
+[q626-count] pid=11812 checkouts=411 gucWrites=107
+ GET /api/mobile/owner/fuel 200 in 595ms (next.js: 85ms, proxy.ts: 5ms, application-code: 505ms)
+[q626-count] pid=11812 checkouts=413 gucWrites=108
+[q626-count] pid=11812 checkouts=415 gucWrites=109
+ GET /api/mobile/owner/invoices 200 in 543ms (next.js: 96ms, proxy.ts: 5ms, application-code: 442ms)
+[q626-count] pid=11812 checkouts=417 gucWrites=110
+ GET /api/mobile/owner/loads 200 in 717ms (next.js: 66ms, proxy.ts: 4ms, application-code: 647ms)
+[q626-count] pid=11812 checkouts=419 gucWrites=111
+ GET /api/mobile/owner/maintenance 200 in 532ms (next.js: 75ms, proxy.ts: 7ms, application-code: 450ms)
+ GET /api/mobile/owner/map/vehicles 200 in 447ms (next.js: 81ms, proxy.ts: 5ms, application-code: 362ms)
+[q626-count] pid=11812 checkouts=421 gucWrites=112
+[2026-09-16T22:26:24.320Z] ERROR: [mobile/owner/payroll] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.payrollRecord.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\payroll\route.ts:40:23)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\mobile\owner\payroll\route.ts:39:20)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'PayrollRecord',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/payroll 500 in 568ms (next.js: 82ms, proxy.ts: 6ms, application-code: 480ms)
+[q626-count] pid=11812 checkouts=423 gucWrites=113
+[q626-count] pid=11812 checkouts=425 gucWrites=114
+ GET /api/mobile/owner/routes 200 in 695ms (next.js: 74ms, proxy.ts: 5ms, application-code: 616ms)
+[q626-count] pid=11812 checkouts=427 gucWrites=115
+ GET /api/mobile/owner/safety 200 in 796ms (next.js: 78ms, proxy.ts: 6ms, application-code: 712ms)
+[q626-count] pid=11812 checkouts=429 gucWrites=116
+ GET /api/mobile/owner/trucks 200 in 830ms (next.js: 90ms, proxy.ts: 6ms, application-code: 734ms)
+ GET /api/mobile/driver/dashboard 401 in 17ms (next.js: 4ms, proxy.ts: 5ms, application-code: 7ms)
+[q626-count] pid=11812 checkouts=431 gucWrites=117
+ GET /api/mobile/driver/dashboard 200 in 570ms (next.js: 7ms, proxy.ts: 6ms, application-code: 557ms)
+[?25h

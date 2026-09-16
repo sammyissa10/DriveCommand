@@ -1,0 +1,56 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+logging in three sessions over the real /api/auth/login …
+  OWNER_A  owner@alpha.staging.test
+  DRIVER_A driver1@alpha.staging.test
+  OWNER_B  owner@beta.staging.test
+
+OWNER surfaces:
+  200  pass           /dashboard  
+  200  pass           /carrier/dashboard  
+  200  pass           /carrier/trips  
+  200  pass           /carrier/loads  
+  200  pass           /carrier/clients  
+  200  pass           /carrier/contracts  
+  200  pass           /carrier/facilities  
+  200  pass           /carrier/templates  
+  200  pass           /carrier/imports  
+  200  pass           /carrier/messages  
+  200  pass           /drivers  
+  200  pass           /trucks  
+  200  pass           /loads  
+  200  pass           /routes  
+  200  pass           /invoices  
+  200  pass           /payroll  
+  200  pass           /crm  
+  200  pass           /compliance  
+  200  pass           /live-map  
+  200  pass           /settings/operations  
+  200  pass           /support  
+
+DRIVER surfaces:
+  200  fail           /home  TC001
+  200  pass           /my-load  
+  200  pass           /my-route  
+  200  pass           /documents  
+  200  pass           /hours  
+
+CRON routes (14, enumerated from the directory):
+  200  pass           /api/cron/auto-close-tickets  
+  200  pass           /api/cron/automations  
+  200  pass           /api/cron/carrier-auto-dispatch  
+  200  pass           /api/cron/carrier-compliance-alerts  
+  200  pass           /api/cron/cleanup-quarantine  
+  200  pass           /api/cron/digest-compliance-30day  
+  200  pass           /api/cron/digest-daily-driver  
+  200  pass           /api/cron/digest-weekly-owner  
+  200  pass           /api/cron/mark-overdue-invoices  
+  200  pass           /api/cron/purge-deleted  
+  200  pass           /api/cron/send-reminders  
+  200  pass           /api/cron/trip-reminders  
+  200  pass           /api/cron/workflow-digest  
+  200  pass           /api/cron/workflow-notifications  
+
+Other scheduled entry points (NOT folded into the 14):
+  200  pass           /api/warmup  
+
+41 entries — pass 40 · fail 1 · not-reachable 0
