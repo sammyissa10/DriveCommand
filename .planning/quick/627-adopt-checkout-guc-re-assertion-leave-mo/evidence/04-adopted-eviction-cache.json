@@ -1,0 +1,419 @@
+{
+  "generated": "2026-09-16T22:52:45.370Z",
+  "group": "cache",
+  "results": [
+    {
+      "cell": "cache:control:repeat-same-tenant",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#2",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#3",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:guc-read-does-not-forget",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "literal current_setting read",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        },
+        {
+          "step": "truck.count#2",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:tenant-switch-A-B-A",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "B carrierDriver.count (2)",
+          "ok": true,
+          "value": 2
+        },
+        {
+          "step": "A carrierDriver.count (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "B probe",
+          "ok": true,
+          "value": {
+            "guc": "B",
+            "drivers": 2
+          }
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A",
+          "B",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:foreign-session-set-between",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1 (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE set_config(B, false)",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "A carrierDriver.count#2 (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:reset-all-between",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1 (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE RESET ALL",
+          "ok": true,
+          "value": 0
+        },
+        {
+          "step": "A carrierDriver.count#2 (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:tx-local-set-between",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1 (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE $transaction(set_config(B, true); carrierDriver.count; probe)",
+          "ok": true,
+          "value": [
+            2,
+            {
+              "guc": "B",
+              "drivers": 2
+            }
+          ]
+        },
+        {
+          "step": "A carrierDriver.count#2 (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:bare-after-tenant",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "tenant truck.count",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "BARE carrierDriver.count (inherits A=3 under leave)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:bare-first-cold",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "BARE carrierDriver.count on a cold connection",
+          "ok": false,
+          "sqlstate": "TC001"
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 1,
+        "tc001": 1,
+        "gucSets": [
+          "''"
+        ]
+      }
+    },
+    {
+      "cell": "cache:socket-dies-during-assertion",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "B carrierDriver.count (socket destroyed on the next write: the candidate B assertion)",
+          "ok": false,
+          "sqlstate": "UNKNOWN"
+        },
+        {
+          "step": "B carrierDriver.count (2)",
+          "ok": true,
+          "value": 2
+        },
+        {
+          "step": "A carrierDriver.count (3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "''",
+          "B",
+          "A"
+        ]
+      }
+    },
+    {
+      "cell": "cache:same-tick-findUnique-two-tenants",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "setup ids",
+          "ok": true
+        },
+        {
+          "step": "A findUnique (same tick)",
+          "ok": true,
+          "value": "own row"
+        },
+        {
+          "step": "B findUnique (same tick)",
+          "ok": true,
+          "value": "own row"
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A",
+          "B"
+        ]
+      }
+    },
+    {
+      "cell": "cache:same-tick-findUnique-no-rewrite-control",
+      "stack": "real",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "candidate-only control",
+          "ok": true,
+          "value": "skipped"
+        }
+      ],
+      "obs": {
+        "connects": 0,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": []
+      }
+    }
+  ]
+}

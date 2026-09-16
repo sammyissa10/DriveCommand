@@ -1,0 +1,1371 @@
+{
+  "task": "quick-604",
+  "phase": "surfaces",
+  "at": "2026-09-16T23:10:26.370Z",
+  "base": "http://localhost:3000",
+  "namedSurfaceCount": 26,
+  "cronRouteCount": 14,
+  "extraScheduled": [
+    "/api/warmup"
+  ],
+  "sessions": [
+    {
+      "role": "OWNER_A",
+      "email": "owner@alpha.staging.test",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "cookieNames": [
+        "sb-wyixpgunnjmzguhggocz-auth-token"
+      ]
+    },
+    {
+      "role": "DRIVER_A",
+      "email": "driver1@alpha.staging.test",
+      "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "cookieNames": [
+        "sb-wyixpgunnjmzguhggocz-auth-token"
+      ]
+    },
+    {
+      "role": "OWNER_B",
+      "email": "owner@beta.staging.test",
+      "tenantId": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "cookieNames": [
+        "sb-wyixpgunnjmzguhggocz-auth-token"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "surface": "/dashboard",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        2739,
+        3124
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1504,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/dashboard",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        3124,
+        3317
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1607,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/trips",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        3317,
+        3546
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1537,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/loads",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        3546,
+        3685
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1527,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/clients",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        3685,
+        3875
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1633,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/contracts",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        3875,
+        4066
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1626,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/facilities",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        4066,
+        4211
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1501,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/templates",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        4211,
+        4355
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1526,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/imports",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        4355,
+        4497
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1536,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/messages",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        4497,
+        4640
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1619,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/drivers",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        4640,
+        4822
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1762,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/trucks",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        4822,
+        5003
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1519,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/loads",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        5003,
+        5184
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1506,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/routes",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        5184,
+        5364
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1667,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/invoices",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        5364,
+        5546
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1676,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/payroll",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        5546,
+        5776
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 2786,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/crm",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        5776,
+        5953
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1535,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/compliance",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        5953,
+        6138
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1657,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/live-map",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        6138,
+        6319
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1503,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/settings/operations",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        6319,
+        6512
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1753,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/support",
+      "label": "named-surface",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        6512,
+        6646
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1522,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/home",
+      "label": "named-surface",
+      "role": "DRIVER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        6646,
+        8157
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 2041,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/my-load",
+      "label": "named-surface",
+      "role": "DRIVER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        8157,
+        9447
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1502,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/my-route",
+      "label": "named-surface",
+      "role": "DRIVER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        9447,
+        10725
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1501,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/documents",
+      "label": "named-surface",
+      "role": "DRIVER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        10725,
+        10864
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1780,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/hours",
+      "label": "named-surface",
+      "role": "DRIVER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        10864,
+        10998
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1798,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/auto-close-tickets",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        10998,
+        11254
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"closed\":0}",
+      "logWindow": {
+        "quietAfterMs": 1525,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/automations",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        11254,
+        12587
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"ok\":true,\"pendingCreated\":0,\"executed\":0,\"failed\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1818,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/carrier-auto-dispatch",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        12587,
+        13375
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"orgs_processed\":0,\"total_dispatches_created\":0,\"total_loads_created\":0,\"total_stops_created\":0,\"total_errors\":0,\"details\":[],\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1703,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/carrier-compliance-alerts",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        13375,
+        14297
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"orgs_processed\":2,\"total_alerts_found\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1723,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/cleanup-quarantine",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        14297,
+        14622
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"scanned\":0,\"deleted\":0,\"errors\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1599,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/digest-compliance-30day",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        14622,
+        15350
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":3,\"failed\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1636,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/digest-daily-driver",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        15350,
+        15960
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":5,\"failed\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1614,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/digest-weekly-owner",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        15960,
+        16570
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"processedTenants\":2,\"sent\":0,\"skipped\":3,\"failed\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1734,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/mark-overdue-invoices",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        16570,
+        16914
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"markedOverdue\":0}",
+      "logWindow": {
+        "quietAfterMs": 1613,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/purge-deleted",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        16914,
+        17579
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"totalPurged\":0,\"tenantsProcessed\":2,\"tenantsFound\":2,\"results\":{\"CarrierLoad\":0,\"Trip\":0,\"CarrierContract\":0,\"CarrierClient\":0,\"CarrierDriver\":0,\"CarrierTruck\":0,\"Route\":0},\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1802,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/send-reminders",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        17579,
+        19115
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"success\":true,\"processedTenants\":2,\"tenantsFound\":2,\"maintenance\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"documents\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"driverDocuments\":{\"sent\":0,\"skipped\":0,\"failed\":0},\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1731,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/trip-reminders",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        19115,
+        19518
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"ok\":true,\"tenantsProcessed\":2,\"tenantsFailed\":0,\"remindersSent\":0,\"windowHours\":24,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1762,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/workflow-digest",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        19518,
+        20110
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"ok\":true,\"tenantsSent\":0,\"tenantsSkipped\":0,\"tenantsErrored\":0,\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1734,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/cron/workflow-notifications",
+      "label": "cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        20110,
+        20979
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"ok\":true,\"stats\":{\"overdueSent\":0,\"overdueErrors\":0,\"blockedEmailsSent\":0,\"blockedEmailErrors\":0,\"sweepsFailed\":0},\"failureCount\":0,\"failures\":[]}",
+      "logWindow": {
+        "quietAfterMs": 1801,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/api/warmup",
+      "label": "scheduled-non-cron",
+      "role": "CRON",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        20979,
+        21177
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "{\"ok\":true,\"timestamp\":\"2026-09-16T23:10:24.549Z\"}",
+      "logWindow": {
+        "quietAfterMs": 1816,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/driver-pay/settlements",
+      "label": "pass2:Settlements",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        21942,
+        22200
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1618,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/driver-pay/pending",
+      "label": "pass2:Driver Pay",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        22200,
+        22355
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1555,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/driver-pay/reports",
+      "label": "pass2:Driver Pay",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        22355,
+        22555
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1611,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/driver-pay",
+      "label": "pass2:Driver Pay",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 404,
+      "verdict": "not-reachable",
+      "reason": "HTTP 404 — no index page — `(owner)/carrier/driver-pay/` holds only `pending/`, `reports/` and `settlements/`, all of which ARE exercised above",
+      "sqlstate": null,
+      "logByteRange": [
+        22555,
+        22648
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1584,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/reports",
+      "label": "pass2:Reports",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 404,
+      "verdict": "not-reachable",
+      "reason": "HTTP 404 — no index page — `(owner)/carrier/reports/` holds only `aging/`, `driver-pay/`, `performance/`, `revenue/` and `todays-trips/`",
+      "sqlstate": null,
+      "logByteRange": [
+        22648,
+        22740
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1532,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/reports/aging",
+      "label": "pass2:Reports",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        22740,
+        22890
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1507,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/reports/performance",
+      "label": "pass2:Reports",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        22890,
+        23044
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1502,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/reports/revenue",
+      "label": "pass2:Reports",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        23044,
+        23194
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1605,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/carrier/reports/todays-trips",
+      "label": "pass2:Reports",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        23194,
+        23351
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1584,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/checklists",
+      "label": "pass2:Checklists",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        23351,
+        23490
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1608,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/checklists/playbooks",
+      "label": "pass2:Workflows",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 404,
+      "verdict": "not-reachable",
+      "reason": "HTTP 404 — no index page — the directory holds only `[id]/`, so the list lives on `/checklists` itself",
+      "sqlstate": null,
+      "logByteRange": [
+        23490,
+        23588
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1504,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/checklists/instances",
+      "label": "pass2:Workflows",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 404,
+      "verdict": "not-reachable",
+      "reason": "HTTP 404 — no index page — the directory holds only `[id]/`; staging carries ZERO PlaybookInstance rows, so there is no id to substitute either",
+      "sqlstate": null,
+      "logByteRange": [
+        23588,
+        23685
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1603,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/checklists/analytics",
+      "label": "pass2:Workflows",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        23685,
+        23833
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1524,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/checklists/automation",
+      "label": "pass2:Workflows",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        23833,
+        23981
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\" data-precedence=\"next_static/chunks/apps_web_src_components_data-grid_tokens_grid-tokens_0.kww4i.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5.",
+      "logWindow": {
+        "quietAfterMs": 1518,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/settings/notifications",
+      "label": "pass2:Notifications",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        23981,
+        24181
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1517,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/automations",
+      "label": "pass2:Automations",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        24181,
+        24457
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1511,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/admin-dashboard",
+      "label": "pass2:SysAdmin",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        24457,
+        24734
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1602,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/billing",
+      "label": "pass2:SysAdmin",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        24734,
+        24970
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1644,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/plans",
+      "label": "pass2:SysAdmin",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        24970,
+        25102
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1603,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/notifications",
+      "label": "pass2:SysAdmin",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        25102,
+        25505
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1526,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/admin-support",
+      "label": "pass2:SysAdmin",
+      "role": "SYSADMIN",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        25505,
+        25841
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1502,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/track/604-probe-no-seeded-token",
+      "label": "pass2:public tracking page",
+      "role": "NONE",
+      "method": "GET",
+      "status": 404,
+      "verdict": "not-reachable",
+      "reason": "HTTP 404 — no seeded Load carries a trackingToken — the legacy \"Load\" table holds 0 row(s) on staging (scripts/seed-staging.ts populates the CARRIER \"loads\" table, not this one)",
+      "sqlstate": null,
+      "logByteRange": [
+        25841,
+        26261
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_layout_tsx_004glpo._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_03f6pt6._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_1233mds._.js\" async=\"\"></script><link rel=\"p",
+      "logWindow": {
+        "quietAfterMs": 1522,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/sign-up",
+      "label": "pass2:Signup",
+      "role": "NONE",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200 — the PAGE renders; the signup FLOW cannot be completed on staging — `mailer_autoconfirm: false` and the built-in mailer 429s after ~3 sends, so no confirmation email can be received",
+      "sqlstate": null,
+      "logByteRange": [
+        26261,
+        26507
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1722,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/onboarding",
+      "label": "pass2:Onboarding",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 307,
+      "verdict": "not-reachable",
+      "reason": "HTTP 307 → /carrier/dashboard — redirects rather than rendering — the seeded tenant is past this gate",
+      "sqlstate": null,
+      "logByteRange": [
+        26507,
+        26594
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_layout_tsx_004glpo._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_03f6pt6._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_app_global-error_tsx_1233mds._.js\" async=\"\"></script><link rel=\"p",
+      "logWindow": {
+        "quietAfterMs": 1506,
+        "capped": false
+      }
+    },
+    {
+      "surface": "/onboarding/welcome",
+      "label": "pass2:Onboarding",
+      "role": "OWNER_A",
+      "method": "GET",
+      "status": 200,
+      "verdict": "pass",
+      "reason": "HTTP 200",
+      "sqlstate": null,
+      "logByteRange": [
+        26594,
+        27066
+      ],
+      "logTc001Mentions": 0,
+      "bodyExcerpt": "<!DOCTYPE html><html lang=\"en\" class=\"dm_sans_6b9cc634-module__nPijqG__variable inter_c15e96cb-module__0bjUvq__variable jetbrains_mono_7ea1d0f9-module__6GV5LG__variable\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/%5Broot-of-the-server%5D__0o9i_fi._.css\" data-precedence=\"next_static/chunks/[root-of-the-server]__0o9i_fi._.css\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10z625~._.js\"/><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_next-devtools_index_0553esy.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_dist_115brz8._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40swc_helpers_cjs_0-4ujiy._.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_0rqeker._.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-apps_web_0p44nws._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_html2canvas_dist_html2canvas_10mxj1y.js\" async=\"\"></script><script src=\"/_next/static/chunks/apps_web_src_0lhyz9n._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_next_0cx8-k4._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_tailwind-merge_dist_bundle-mjs_mjs_0ezz.e5._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_%40sentry_core_build_esm_0_fq1b1._.js\" async=\"\"></script><script src=\"/_next/static/chunks/node_modules_0m47g~c._.js\" async=\"\"></script><script src=",
+      "logWindow": {
+        "quietAfterMs": 1618,
+        "capped": false
+      }
+    }
+  ],
+  "pass2": {
+    "at": "2026-09-16T23:12:40.058Z",
+    "surfaceCount": 25,
+    "sysadmin": {
+      "email": "sysadmin@staging.test",
+      "userId": "564681c6-db94-45fa-b64d-7e037c40ca31"
+    },
+    "trackingToken": {
+      "found": false,
+      "reason": "no seeded Load carries a trackingToken — the legacy \"Load\" table holds 0 row(s) on staging (scripts/seed-staging.ts populates the CARRIER \"loads\" table, not this one)"
+    }
+  }
+}

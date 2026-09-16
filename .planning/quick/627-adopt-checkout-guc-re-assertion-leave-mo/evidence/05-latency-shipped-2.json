@@ -1,0 +1,40 @@
+{
+  "generated": "2026-09-16T23:03:02.244Z",
+  "requestsPerConfig": 120,
+  "results": [
+    {
+      "stack": "shipped",
+      "blindRead": true,
+      "concurrency": 1,
+      "requests": 120,
+      "checkouts": 684,
+      "tenantGucStatements": 120,
+      "checkoutsPerRequest": 5.7,
+      "gucStatementsPerRequest": 1,
+      "cacheHitRate": null,
+      "medianMs": 669.6,
+      "p95Ms": 765.3,
+      "medianRttMs": 65.1,
+      "wrongTenantReads": 0,
+      "errors": {},
+      "label": "shipped run 2"
+    },
+    {
+      "stack": "shipped",
+      "blindRead": true,
+      "concurrency": 4,
+      "requests": 120,
+      "checkouts": 684,
+      "tenantGucStatements": 120,
+      "checkoutsPerRequest": 5.7,
+      "gucStatementsPerRequest": 1,
+      "cacheHitRate": null,
+      "medianMs": 2563.7,
+      "p95Ms": 3460.5,
+      "medianRttMs": 63.8,
+      "wrongTenantReads": 184,
+      "errors": {},
+      "label": "shipped run 2"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+[31m     [31m×[31m Prisma still hands it to query extensions, in the shape isInsideTransaction reads[39m[32m 181[2mms[22m[39m
+[31m     [31m×[31m a tenant findUnique inside an interactive transaction stays on the transaction connection[39m[33m 2089[2mms[22m[39m
+     [33m[2m✓[22m[39m every tenant statement runs under the GUC of the tenant that issued it [33m 635[2mms[22m[39m
+     [33m[2m✓[22m[39m self-test: the same traffic through a DataLoader-shaped dispatcher IS detected [33m 550[2mms[22m[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[41m[1m FAIL [22m[49m tests/security/tenant-checkout-guards.test.ts[2m > [22mguard 1 — the private __internalParams.transaction field[2m > [22mPrisma still hands it to query extensions, in the shape isInsideTransaction reads
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+[41m[1m FAIL [22m[49m tests/security/tenant-checkout-guards.test.ts[2m > [22mguard 1 — the private __internalParams.transaction field[2m > [22ma tenant findUnique inside an interactive transaction stays on the transaction connection
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (4)[39m

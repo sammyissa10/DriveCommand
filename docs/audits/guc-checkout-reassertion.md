@@ -422,3 +422,47 @@ c=4, cold process per configuration.
 checkouts pay the round trip. The measured `leave` variant restores shipped's per-request cost at c=1, but gives up
 the loud failure of bare statements. That trade-off, and an unmeasured bypass-transaction exemption, is in
 `.planning/quick/626-adopt-checkout-time-guc-re-assertion/626-SUMMARY.md` §3.
+
+---
+
+## 9. Addendum (quick-627): adopted, with `onNoContext: 'leave'`
+
+`leave` was chosen. It is now in `src`. Full evidence: `.planning/quick/627-adopt-checkout-guc-re-assertion-leave-mo/`.
+
+**Where things live now:**
+- `src/lib/db/prisma.ts`: `createTenantCheckoutPool`, `tenantCheckoutStore()` (on `globalThis` beside the pool),
+  `isInsideTransaction`, `SET_TENANT_GUC_SQL`, `TENANT_GUC_WRITE`, and the default mode
+  **`TENANT_CHECKOUT_NO_CONTEXT = 'leave'`**.
+- `src/lib/db/tenant-client.ts`: the context extension, the `findUnique` rewrite and the `$transaction` Proxy.
+- `src/lib/context/tenant-context.ts`: the two session `set_config` calls are gone.
+- `tests/security/tenant-checkout-guards.test.ts`: the two guards from §6's "what could break" list, each proven to
+  fire by a deliberate break.
+
+**What changed from §2's prototype:**
+- The cache forgets on GUC **writes** only (the §8 finding). A `current_setting` read no longer forces a miss,
+  measured.
+- The tripwire arm stays under the module-scope `ARM_TRIPWIRE` gate, because `tripwire-arming-gate.test.ts` pins
+  that shape.
+
+**Measured under `leave`:**
+- **§3/§4 re-measured:** 64/64 on all four reads, at max:1 and max:5, with and without evictions, on the candidate
+  and again on the adopted modules. 0 wrong, 0 empty, 0 P2028. Every §3.1 error shape re-asserts the right tenant,
+  including 22012 and 42703 with the tripwire off, where shipped read a silent 0.
+- **§8's traffic, stash-bracketed against shipped:**
+  - c=1: 1.00 GUC round trip per request, 78.7 % hit, median 663.6 / 662.3 ms against shipped's 659.3 / 669.6.
+    **Parity.**
+  - c=4: 2.00 against shipped's 1.00. Shipped gets its 1.00 by reading the wrong tenant 184 times, in both runs.
+- **Real traffic** (both click-throughs): 0.30 GUC writes per request against shipped's 1.34.
+- **Click-throughs:** web 66 · 60 · 0 · 6, **`/home` fixed**; mobile 30 · 24 · 5 · 0 unchanged; TC001 0.
+
+**What §6's "could break" list now says:**
+- **"Bare-client paths start failing"** does not apply under `leave`: they inherit, as before. With the session
+  `set_config` removed, a bare statement run after `getTenantPrisma*()` but before the tenant client's first statement
+  inherits the *previous* checkout's tenant rather than this request's. That makes no difference on production's
+  `postgres` role and is one more reason the 144 must be routed before cutover.
+- **Latency:** as measured above.
+- **`instanceof` / identity on the tenant client:** still untested. None found by grep.
+- **A Prisma upgrade:** now guarded (`__internalParams`, caller context).
+- **A GUC write invisible as statement text:** still an invariant the cache depends on, stated in `prisma.ts`'s header.
+
+**The 144 are unchanged** (census regenerated; the only row difference is the two removed `set_config` calls).

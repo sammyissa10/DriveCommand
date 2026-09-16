@@ -1,0 +1,93 @@
+{
+  "generated": "2026-09-16T22:52:12.288Z",
+  "results": [
+    {
+      "stack": "real",
+      "max": 1,
+      "errors": false,
+      "iterations": 64,
+      "ms": 37980,
+      "physicalConnects": 1,
+      "R1_carrierDriver_count": {
+        "correct": 64
+      },
+      "R2_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_count": {
+        "correct": 64
+      },
+      "unknownMessages": [],
+      "label": "adopted (src after step 4)"
+    },
+    {
+      "stack": "real",
+      "max": 5,
+      "errors": false,
+      "iterations": 64,
+      "ms": 8134,
+      "physicalConnects": 5,
+      "R1_carrierDriver_count": {
+        "correct": 64
+      },
+      "R2_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_count": {
+        "correct": 64
+      },
+      "unknownMessages": [],
+      "label": "adopted (src after step 4)"
+    },
+    {
+      "stack": "real",
+      "max": 1,
+      "errors": true,
+      "iterations": 64,
+      "ms": 43132,
+      "physicalConnects": 17,
+      "R1_carrierDriver_count": {
+        "correct": 64
+      },
+      "R2_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_count": {
+        "correct": 64
+      },
+      "unknownMessages": [],
+      "label": "adopted (src after step 4)"
+    },
+    {
+      "stack": "real",
+      "max": 5,
+      "errors": true,
+      "iterations": 64,
+      "ms": 9295,
+      "physicalConnects": 21,
+      "R1_carrierDriver_count": {
+        "correct": 64
+      },
+      "R2_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_guc_read": {
+        "correct": 64
+      },
+      "R3_tx_count": {
+        "correct": 64
+      },
+      "unknownMessages": [],
+      "label": "adopted (src after step 4)"
+    }
+  ]
+}

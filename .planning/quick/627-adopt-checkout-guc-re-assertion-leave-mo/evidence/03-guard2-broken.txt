@@ -1,0 +1,21 @@
+     [32m✓[39m Prisma still hands it to query extensions, in the shape isInsideTransaction reads[32m 195[2mms[22m[39m
+     [32m✓[39m a tenant findUnique inside an interactive transaction stays on the transaction connection[32m 50[2mms[22m[39m
+[31m     [31m×[31m every tenant statement runs under the GUC of the tenant that issued it[39m[33m 647[2mms[22m[39m
+     [33m[2m✓[22m[39m self-test: the same traffic through a DataLoader-shaped dispatcher IS detected [33m 505[2mms[22m[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[41m[1m FAIL [22m[49m tests/security/tenant-checkout-guards.test.ts[2m > [22mguard 2 — Prisma runs operations in the caller async context[2m > [22mevery tenant statement runs under the GUC of the tenant that issued it
+[31m[1mAssertionError[22m: a statement ran under a GUC other than its own tenant: expected [ { …(3) }, { …(3) }, { …(3) }, …(3) ] to deeply equal [][39m
+[31m+     "guc": "bbbbbbbb-0627-4000-8000-00000000000b",[39m
+[31m+     "named": [[39m
+[31m+     "guc": "bbbbbbbb-0627-4000-8000-00000000000b",[39m
+[31m+     "named": [[39m
+[31m+     "guc": "bbbbbbbb-0627-4000-8000-00000000000b",[39m
+[31m+     "named": [[39m
+[31m+     "guc": "bbbbbbbb-0627-4000-8000-00000000000b",[39m
+[31m+     "named": [[39m
+[31m+     "guc": "bbbbbbbb-0627-4000-8000-00000000000b",[39m
+[31m+     "named": [[39m
+[31m+     "guc": "bbbbbbbb-0627-4000-8000-00000000000b",[39m
+[31m+     "named": [[39m
+    [90m211| [39m      mismatches.map((m) => ({ guc: m.guc, named: tenantsIn(m.values),…
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m

@@ -1,0 +1,38 @@
+{
+ "before": {
+  "statements": 155,
+  "files": 52
+ },
+ "after": {
+  "statements": 155,
+  "files": 52
+ },
+ "leftGating": [],
+ "leftTotal": 0,
+ "enteredGating": [],
+ "seederAfter": {
+  "rows": 25,
+  "byVerdict": {
+   "SCOPED": 25
+  },
+  "byClient": {
+   "TX(TENANT_ORG)": 24,
+   "TENANT_ORG": 1
+  }
+ },
+ "totalsUnchanged": {
+  "statementsBefore": 1825,
+  "statementsAfter": 1823
+ },
+ "driverPayArmsDisagreeAfter": 11,
+ "corrected": {
+  "before": {
+   "statements": 144,
+   "files": 45
+  },
+  "after": {
+   "statements": 144,
+   "files": 45
+  }
+ }
+}

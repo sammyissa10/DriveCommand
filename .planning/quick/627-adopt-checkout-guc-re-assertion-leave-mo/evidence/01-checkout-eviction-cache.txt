@@ -1,0 +1,102 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+cache:control:repeat-same-tenant [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    truck.count#2: ok 1
+    truck.count#3: ok 1
+    probe: ok {"guc":"A","drivers":3}
+cache:control:repeat-same-tenant [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    truck.count#2: ok 1
+    truck.count#3: ok 1
+    probe: ok {"guc":"A","drivers":3}
+cache:guc-read-does-not-forget [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    literal current_setting read: ok {"guc":"A","drivers":3}
+    truck.count#2: ok 1
+    probe: ok {"guc":"A","drivers":3}
+cache:guc-read-does-not-forget [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    literal current_setting read: ok {"guc":"A","drivers":3}
+    truck.count#2: ok 1
+    probe: ok {"guc":"A","drivers":3}
+cache:tenant-switch-A-B-A [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A","B","A"]
+    A carrierDriver.count (3): ok 3
+    B carrierDriver.count (2): ok 2
+    A carrierDriver.count (3): ok 3
+    B probe: ok {"guc":"B","drivers":2}
+    A probe: ok {"guc":"A","drivers":3}
+cache:tenant-switch-A-B-A [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B"]
+    A carrierDriver.count (3): ok 2
+    B carrierDriver.count (2): ok 2
+    A carrierDriver.count (3): ok 2
+    B probe: ok {"guc":"B","drivers":2}
+    A probe: ok {"guc":"B","drivers":2}
+cache:foreign-session-set-between [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A"]
+    A carrierDriver.count#1 (3): ok 3
+    BARE set_config(B, false): ok 1
+    A carrierDriver.count#2 (3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+cache:foreign-session-set-between [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B"]
+    A carrierDriver.count#1 (3): ok 3
+    BARE set_config(B, false): ok 1
+    A carrierDriver.count#2 (3): ok 2
+    A probe: ok {"guc":"B","drivers":2}
+cache:reset-all-between [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","A"]
+    A carrierDriver.count#1 (3): ok 3
+    BARE RESET ALL: ok 0
+    A carrierDriver.count#2 (3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+cache:reset-all-between [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    A carrierDriver.count#1 (3): ok 3
+    BARE RESET ALL: ok 0
+    A carrierDriver.count#2 (3): ok 0
+    A probe: ok {"guc":"''","drivers":0}
+cache:tx-local-set-between [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A"]
+    A carrierDriver.count#1 (3): ok 3
+    BARE $transaction(set_config(B, true); carrierDriver.count; probe): ok [2,{"guc":"B","drivers":2}]
+    A carrierDriver.count#2 (3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+cache:tx-local-set-between [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B"]
+    A carrierDriver.count#1 (3): ok 3
+    BARE $transaction(set_config(B, true); carrierDriver.count; probe): ok [2,{"guc":"B","drivers":2}]
+    A carrierDriver.count#2 (3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+cache:bare-after-tenant [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    tenant truck.count: ok 1
+    BARE carrierDriver.count (inherits A=3 under leave): ok 3
+    BARE probe: ok {"guc":"A","drivers":3}
+cache:bare-after-tenant [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    tenant truck.count: ok 1
+    BARE carrierDriver.count (inherits A=3 under leave): ok 3
+    BARE probe: ok {"guc":"A","drivers":3}
+cache:bare-first-cold [cand · tripwire on]  connects=1 ends=1 tc001=1 gucSets=["''"]
+    BARE carrierDriver.count on a cold connection: ERROR TC001
+cache:bare-first-cold [real · tripwire on]  connects=1 ends=1 tc001=1 gucSets=["''"]
+    BARE carrierDriver.count on a cold connection: ERROR TC001
+cache:socket-dies-during-assertion [cand · tripwire on]  connects=2 ends=1 tc001=0 gucSets=["''","A","B","''","B","A"]
+    A carrierDriver.count (3): ok 3
+    B carrierDriver.count (socket destroyed on the next write: the candidate B assertion): ERROR UNKNOWN
+    B carrierDriver.count (2): ok 2
+    A carrierDriver.count (3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+cache:socket-dies-during-assertion [real · tripwire on]  connects=4 ends=4 tc001=3 gucSets=["''","A","B","''","''","''"]
+    A carrierDriver.count (3): ok 2
+    B carrierDriver.count (socket destroyed on the next write: the candidate B assertion): ERROR UNKNOWN
+    B carrierDriver.count (2): ERROR TC001
+    A carrierDriver.count (3): ERROR TC001
+    A probe: ERROR P2010
+cache:same-tick-findUnique-two-tenants [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A","B"]
+    setup ids: ok undefined
+    A findUnique (same tick): ok "own row"
+    B findUnique (same tick): ok "own row"
+cache:same-tick-findUnique-two-tenants [real · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A","B"]
+    setup ids: ok undefined
+    A findUnique (same tick): ok "NULL (row exists)"
+    B findUnique (same tick): ok "own row"
+cache:same-tick-findUnique-no-rewrite-control [cand · tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B"]
+    setup ids: ok undefined
+    A findUnique (same tick, NO rewrite): ok "NULL (row exists)"
+    B findUnique (same tick, NO rewrite): ok "own row"
+cache:same-tick-findUnique-no-rewrite-control [real · tripwire on]  connects=0 ends=0 tc001=0 gucSets=[]
+    candidate-only control: ok "skipped"

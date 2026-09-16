@@ -1,0 +1,4 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+{"stack":"adopted","blindRead":true,"concurrency":1,"requests":120,"checkouts":564,"tenantGucStatements":120,"checkoutsPerRequest":4.7,"gucStatementsPerRequest":1,"cacheHitRate":0.787,"medianMs":663.6,"p95Ms":734.1,"medianRttMs":65.5,"wrongTenantReads":0,"errors":{},"label":"adopted run 1"}
+{"stack":"adopted","blindRead":true,"concurrency":4,"requests":120,"checkouts":564,"tenantGucStatements":240,"checkoutsPerRequest":4.7,"gucStatementsPerRequest":2,"cacheHitRate":0.574,"medianMs":2774.6,"p95Ms":3786.7,"medianRttMs":63.6,"wrongTenantReads":0,"errors":{},"label":"adopted run 1"}

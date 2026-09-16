@@ -1,0 +1,886 @@
+{
+  "summary": {
+    "entries": 96,
+    "entriesWithCheckouts": 87,
+    "checkouts": 297,
+    "gucWrites": 26,
+    "gucWritesPerRequest": {
+      "mean": 0.3,
+      "median": 0,
+      "p95": 2,
+      "max": 2
+    },
+    "checkoutsPerRequest": {
+      "mean": 3.41,
+      "median": 1,
+      "p95": 12
+    },
+    "gucWritesOverCheckouts": 0.088
+  },
+  "rows": [
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/dashboard",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 1
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/dashboard",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 3,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/trips",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 5,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/loads",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/clients",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 5,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/contracts",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 4,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/facilities",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 3,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/templates",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/imports",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/messages",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/drivers",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 3,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/trucks",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 6,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/loads",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 7,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/routes",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 4,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/invoices",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 5,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/payroll",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 4,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/crm",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 6,
+      "gucWrites": 1
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/compliance",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 6,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/live-map",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 4,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/settings/operations",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 5,
+      "gucWrites": 1
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/support",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "DRIVER_A",
+      "surface": "/home",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 11,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "DRIVER_A",
+      "surface": "/my-load",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "DRIVER_A",
+      "surface": "/my-route",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "DRIVER_A",
+      "surface": "/documents",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "DRIVER_A",
+      "surface": "/hours",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/auto-close-tickets",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/automations",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 12,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/carrier-auto-dispatch",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 3,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/carrier-compliance-alerts",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 11,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/cleanup-quarantine",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/digest-compliance-30day",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 18,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/digest-daily-driver",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 18,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/digest-weekly-owner",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 9,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/mark-overdue-invoices",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/purge-deleted",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 15,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/send-reminders",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 11,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/trip-reminders",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 11,
+      "gucWrites": 2
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/workflow-digest",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/cron/workflow-notifications",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 3,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "CRON",
+      "surface": "/api/warmup",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/driver-pay/settlements",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 5,
+      "gucWrites": 1
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/driver-pay/pending",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/driver-pay/reports",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 5,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/driver-pay",
+      "status": 404,
+      "verdict": "not-reachable",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/reports",
+      "status": 404,
+      "verdict": "not-reachable",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/reports/aging",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/reports/performance",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/reports/revenue",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/carrier/reports/todays-trips",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/checklists",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/checklists/playbooks",
+      "status": 404,
+      "verdict": "not-reachable",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/checklists/instances",
+      "status": 404,
+      "verdict": "not-reachable",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/checklists/analytics",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/checklists/automation",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/settings/notifications",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 15,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "SYSADMIN",
+      "surface": "/automations",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "SYSADMIN",
+      "surface": "/admin-dashboard",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 4,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "SYSADMIN",
+      "surface": "/billing",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "SYSADMIN",
+      "surface": "/plans",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "SYSADMIN",
+      "surface": "/notifications",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 11,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "SYSADMIN",
+      "surface": "/admin-support",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 2,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "NONE",
+      "surface": "/track/604-probe-no-seeded-token",
+      "status": 404,
+      "verdict": "not-reachable",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "NONE",
+      "surface": "/sign-up",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/onboarding",
+      "status": 307,
+      "verdict": "not-reachable",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-click-through.json",
+      "role": "OWNER_A",
+      "surface": "/onboarding/welcome",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 3,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/dashboard",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 1
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/documents",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/hos",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/incidents",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/loads",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/messages",
+      "status": 500,
+      "verdict": "fail",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/messages/route-thread",
+      "status": 400,
+      "verdict": "fail",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/messages/unread-count",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/route",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/tasks",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER",
+      "surface": "/api/mobile/driver/tracking-token",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/compliance",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/crm",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/customers",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/dashboard",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/drivers",
+      "status": 500,
+      "verdict": "fail",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/drivers/active",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/fleet-positions",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/fleet/messages",
+      "status": 500,
+      "verdict": "fail",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/fuel",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/invoices",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/loads",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/maintenance",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/map/vehicles",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/payroll",
+      "status": 500,
+      "verdict": "fail",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/routes",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/safety",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "OWNER",
+      "surface": "/api/mobile/owner/trucks",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "NO-TOKEN",
+      "surface": "/api/mobile/driver/dashboard",
+      "status": 401,
+      "verdict": "unauthorised-control",
+      "checkouts": 0,
+      "gucWrites": 0
+    },
+    {
+      "file": "06-mobile-click-through.json",
+      "role": "DRIVER-tenantB",
+      "surface": "/api/mobile/driver/dashboard",
+      "status": 200,
+      "verdict": "pass",
+      "checkouts": 1,
+      "gucWrites": 1
+    }
+  ]
+}
