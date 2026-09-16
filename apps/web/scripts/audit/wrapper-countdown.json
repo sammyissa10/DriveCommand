@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-16T03:26:00.859Z",
+  "generatedAt": "2026-09-16T04:59:18.456Z",
   "totals": {
-    "unmigratedUnits": 475,
-    "unmigratedCallSites": 479,
+    "unmigratedUnits": 530,
+    "unmigratedCallSites": 534,
     "withTenantContextCallSites": 0,
     "filesScanned": 1691,
-    "filesWithUnmigratedUnits": 214
+    "filesWithUnmigratedUnits": 253
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -1064,6 +1064,295 @@
       "callSites": 1,
       "names": [
         "GET:31"
+      ]
+    },
+    "app/api/mobile/driver/dashboard/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "(anonymous):19"
+      ]
+    },
+    "app/api/mobile/driver/documents/[id]/url/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:19"
+      ]
+    },
+    "app/api/mobile/driver/documents/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:34",
+        "POST:131"
+      ]
+    },
+    "app/api/mobile/driver/hos/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "(anonymous):18",
+        "(anonymous):141"
+      ]
+    },
+    "app/api/mobile/driver/incidents/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:17",
+        "POST:77"
+      ]
+    },
+    "app/api/mobile/driver/loads/[id]/rate-confirmation/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:27"
+      ]
+    },
+    "app/api/mobile/driver/loads/[id]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:22"
+      ]
+    },
+    "app/api/mobile/driver/loads/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:20"
+      ]
+    },
+    "app/api/mobile/driver/messages/route-thread/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:16",
+        "POST:82"
+      ]
+    },
+    "app/api/mobile/driver/messages/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "(anonymous):16",
+        "(anonymous):80"
+      ]
+    },
+    "app/api/mobile/driver/messages/unread-count/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:17"
+      ]
+    },
+    "app/api/mobile/driver/route/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:18"
+      ]
+    },
+    "app/api/mobile/driver/tasks/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "(anonymous):16"
+      ]
+    },
+    "app/api/mobile/driver/tracking-token/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:21"
+      ]
+    },
+    "app/api/mobile/owner/compliance/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:19"
+      ]
+    },
+    "app/api/mobile/owner/crm/[id]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:15",
+        "PATCH:109"
+      ]
+    },
+    "app/api/mobile/owner/crm/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:16"
+      ]
+    },
+    "app/api/mobile/owner/customers/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:19",
+        "POST:69"
+      ]
+    },
+    "app/api/mobile/owner/dashboard/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "(anonymous):20"
+      ]
+    },
+    "app/api/mobile/owner/drivers/[id]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:51",
+        "PATCH:231"
+      ]
+    },
+    "app/api/mobile/owner/drivers/active/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:19"
+      ]
+    },
+    "app/api/mobile/owner/drivers/invite/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:22"
+      ]
+    },
+    "app/api/mobile/owner/drivers/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "(anonymous):46"
+      ]
+    },
+    "app/api/mobile/owner/fleet-positions/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:18"
+      ]
+    },
+    "app/api/mobile/owner/fleet/messages/[recipientId]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:22",
+        "POST:201"
+      ]
+    },
+    "app/api/mobile/owner/fleet/messages/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:18",
+        "POST:230"
+      ]
+    },
+    "app/api/mobile/owner/fuel/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:17",
+        "POST:98"
+      ]
+    },
+    "app/api/mobile/owner/invoices/[id]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:8"
+      ]
+    },
+    "app/api/mobile/owner/invoices/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:17",
+        "POST:126"
+      ]
+    },
+    "app/api/mobile/owner/loads/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:27",
+        "POST:137"
+      ]
+    },
+    "app/api/mobile/owner/maintenance/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:60"
+      ]
+    },
+    "app/api/mobile/owner/map/vehicles/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:22"
+      ]
+    },
+    "app/api/mobile/owner/payroll/[id]/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:15"
+      ]
+    },
+    "app/api/mobile/owner/payroll/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:16",
+        "POST:107"
+      ]
+    },
+    "app/api/mobile/owner/profit-predictor/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:22"
+      ]
+    },
+    "app/api/mobile/owner/routes/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:23",
+        "POST:138"
+      ]
+    },
+    "app/api/mobile/owner/safety/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:28"
+      ]
+    },
+    "app/api/mobile/owner/trucks/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "POST:14",
+        "GET:124"
+      ]
+    },
+    "app/api/mobile/support/ticket/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:70"
       ]
     },
     "app/api/reports/payroll-export/route.ts": {
