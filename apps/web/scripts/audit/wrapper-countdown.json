@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-16T17:03:53.536Z",
+  "generatedAt": "2026-09-16T17:55:20.328Z",
   "totals": {
-    "unmigratedUnits": 561,
-    "unmigratedCallSites": 569,
+    "unmigratedUnits": 566,
+    "unmigratedCallSites": 576,
     "withTenantContextCallSites": 0,
     "filesScanned": 1692,
-    "filesWithUnmigratedUnits": 269
+    "filesWithUnmigratedUnits": 274
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -1590,10 +1590,45 @@
     },
     "app/api/v1/carrier/stops/[id]/messages/route.ts": {
       "units": 2,
-      "callSites": 2,
+      "callSites": 4,
       "names": [
         "GET:15",
-        "POST:129"
+        "POST:137"
+      ]
+    },
+    "app/api/v1/messages/[id]/audio-url/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:18"
+      ]
+    },
+    "app/api/v1/messages/broadcast/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:19"
+      ]
+    },
+    "app/api/v1/messages/conversations/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:19"
+      ]
+    },
+    "app/api/v1/messages/send/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:19"
+      ]
+    },
+    "app/api/v1/messages/thread/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "GET:20"
       ]
     },
     "components/carrier/templates/SuggestedTemplates.tsx": {
