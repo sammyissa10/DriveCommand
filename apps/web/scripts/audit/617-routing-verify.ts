@@ -338,14 +338,28 @@ async function sortedListFor(url: string, label: string) {
       label,
       count: rows.length,
       tables,
+      // TWO recorded figures, TWO algorithms, TWO spellings of "the list" —
+      // and they are NOT in conflict (fact H). Both are reproduced here by name
+      // so a future reader never has to search for the normalisation:
+      //
+      //   sha256 over "public.X\npublic.Y…"  reproduces quick-616's
+      //     0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd
+      //   md5 over "X,Y,…" (BARE names, comma-joined) reproduces the
+      //     orchestrator's .planning/STATE.md:966 figure
+      //     29498ef6e52f51dcc02461a1abbb84b0
+      //
+      // The bare/comma spelling was FOUND by trying fourteen normalisations,
+      // not assumed. An algorithm mismatch is not drift, and neither is a
+      // joiner mismatch — but only one of the fourteen matched, so this is a
+      // reproduction and not a coincidence.
       sha256: createHash('sha256').update(joined).digest('hex'),
       md5: createHash('md5').update(joined).digest('hex'),
-      // The brief's recorded figure is 32 hex chars over a list; the other
-      // plausible spelling of "the list" is comma-joined, so compute it too
-      // rather than declare a mismatch that means nothing.
-      md5Comma: createHash('md5').update(tables.join(',')).digest('hex'),
-      sha256Comma: createHash('sha256').update(tables.join(',')).digest('hex'),
-      md5Json: createHash('md5').update(JSON.stringify(tables)).digest('hex'),
+      sha256BareComma: createHash('sha256')
+        .update(tables.map((t) => t.replace(/^public\./, '')).join(','))
+        .digest('hex'),
+      md5BareComma: createHash('md5')
+        .update(tables.map((t) => t.replace(/^public\./, '')).join(','))
+        .digest('hex'),
     };
   } finally {
     await c.end();
@@ -357,6 +371,11 @@ async function hashes() {
   const stg = await sortedListFor(DIRECT_URL, 'staging');
   // PRODUCTION, READ-ONLY. This harness never writes to production; the only
   // statement it issues there is the pg_policies SELECT above.
+  // The production reference is loaded EXPLICITLY and used for exactly ONE
+  // statement — the `pg_policies` SELECT above. `.env.local` is read here and
+  // nowhere else in this file, and never assigned to DATABASE_URL: quick-607's
+  // rule is that a script must never do `DATABASE_URL = DIRECT_URL`.
+  loadEnv({ path: resolve(APP_ROOT, '.env.local'), quiet: true });
   const prodRaw = process.env.PRODUCTION_DIRECT_URL_READONLY ?? process.env.DIRECT_URL;
   let prod: Awaited<ReturnType<typeof sortedListFor>> | { label: string; error: string };
   if (!prodRaw || !prodRaw.includes(PRODUCTION_REF)) {

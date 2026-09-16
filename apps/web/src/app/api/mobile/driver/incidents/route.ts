@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import type { IncidentCategory, IncidentSeverity } from '@/generated/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
@@ -26,16 +27,19 @@ export async function GET(req: NextRequest) {
   const { driverId, tenantId } = auth;
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw —
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified
+     * auth.tenantId. userId is deliberately NOT passed: it would drive the
+     * audit-columns extension to start writing createdById/updatedById on
+     * DriverIncident, a behaviour change this routing task declines to make
+     * (this diverges from quick-588, which passes it — see 01-inventory.md §5).
+     * Every where clause below is unchanged: RLS is the second layer, not a
+     * replacement for the first.
      */
-    const incidents = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const incidents = await tenantPrisma.$transaction(async (tx) => {
       return tx.driverIncident.findMany({
         where: { driverId, tenantId },
         orderBy: { reportedAt: 'desc' },
@@ -130,9 +134,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const incident = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    // quick-617: see the GET handler above for why getTenantPrismaForOrg and
+    // why userId is omitted. The create's `data` is unchanged.
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const incident = await tenantPrisma.$transaction(async (tx) => {
       return tx.driverIncident.create({
         data: {
           tenantId,
