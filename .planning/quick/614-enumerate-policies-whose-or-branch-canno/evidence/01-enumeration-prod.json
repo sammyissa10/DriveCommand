@@ -1,0 +1,1815 @@
+{
+  "db": "prod",
+  "ref": "oqdhberkghtnszrkdvfm",
+  "role": "postgres",
+  "server": "PostgreSQL 17.6 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+  "totals": {
+    "total_policies": 186,
+    "bypass_policies": 86,
+    "distinct_tables": 90,
+    "bypass_tables": 86
+  },
+  "bypassTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "Customer",
+    "CustomerInteraction",
+    "DispatchOverrideAudit",
+    "DocFeedback",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "DriverRouteJoin",
+    "ExpenseCategory",
+    "ExpenseTemplate",
+    "ExpenseTemplateItem",
+    "FleetMessage",
+    "FuelRecord",
+    "GPSLocation",
+    "Invoice",
+    "InvoiceItem",
+    "Load",
+    "MaintenanceEvent",
+    "NotificationLog",
+    "NotificationSendLog",
+    "NotificationSubscription",
+    "PayrollRecord",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PlaybookStep",
+    "PlaybookTrigger",
+    "PushToken",
+    "Route",
+    "RouteDriver",
+    "RouteExpense",
+    "RoutePayment",
+    "RouteStop",
+    "SafetyEvent",
+    "ScheduledService",
+    "StepInstance",
+    "StepTemplate",
+    "Subscription",
+    "SupportTicket",
+    "SysAdminInvoice",
+    "SysAdminInvoiceItem",
+    "Tag",
+    "TagAssignment",
+    "Tenant",
+    "TenantHealthScore",
+    "TenantIntegration",
+    "TenantMetricsDaily",
+    "TenantNotificationSettings",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "UserNotificationPreference",
+    "audit_log",
+    "carrier_compliance_alert_log",
+    "carrier_document_types",
+    "carrier_drivers",
+    "carrier_expenses",
+    "carrier_truck_defects",
+    "carrier_trucks",
+    "client_contacts",
+    "clients",
+    "contracts",
+    "dispatches",
+    "document_import_pages",
+    "document_imports",
+    "document_profiles",
+    "driver_bonuses",
+    "driver_compensation_templates",
+    "driver_deductions",
+    "driver_disputes",
+    "driver_pay_audit_logs",
+    "driver_pay_records",
+    "driver_settlements",
+    "facilities",
+    "facility_external_references",
+    "in_app_notifications",
+    "load_driver_assignments",
+    "load_pay_components",
+    "loads",
+    "pay_component_attachments",
+    "route_templates"
+  ],
+  "policies": [
+    {
+      "table": "ActivationProgress",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "AppEvent",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "AutomationRule",
+      "policy": "automation_rule_delete_policy",
+      "cmd": "DELETE",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "AutomationRule",
+      "policy": "automation_rule_insert_policy",
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "AutomationRule",
+      "policy": "automation_rule_update_policy",
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "AutomationRule",
+      "policy": "tenant_isolation_policy",
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "((scope = 'SYSTEM'::\"AutomationScope\") OR (\"tenantId\" = current_tenant_id()))",
+      "with_check": "",
+      "class": "or",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": true
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "AutomationRun",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Customer",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "CustomerInteraction",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "DispatchOverrideAudit",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "DocFeedback",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Document",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "DriverHOSEntry",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "DriverIncident",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "DriverInvitation",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "DriverRouteJoin",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "ExpenseCategory",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "ExpenseTemplate",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "ExpenseTemplateItem",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "FleetMessage",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "FuelRecord",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "GPSLocation",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Invoice",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "InvoiceItem",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Load",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "MaintenanceEvent",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "NotificationLog",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "NotificationSendLog",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "NotificationSubscription",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "PayrollRecord",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Playbook",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "PlaybookInstance",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "PlaybookNotification",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "PlaybookStep",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "PlaybookTrigger",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "PushToken",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Route",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "RouteDriver",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "RouteExpense",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "RoutePayment",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "RouteStop",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "SafetyEvent",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "ScheduledService",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "StepInstance",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "StepTemplate",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Subscription",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "SupportTicket",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "SysAdminInvoice",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "SysAdminInvoiceItem",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Tag",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "TagAssignment",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Tenant",
+      "policy": "tenant_bootstrap_insert",
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "",
+      "with_check": "(id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Tenant",
+      "policy": "tenant_self_read",
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(id = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Tenant",
+      "policy": "tenant_self_update",
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(id = current_tenant_id())",
+      "with_check": "(id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "TenantHealthScore",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "TenantIntegration",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "TenantMetricsDaily",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "TenantNotificationSettings",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "TicketMessage",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"ticketId\" IN ( SELECT \"SupportTicket\".id\n   FROM \"SupportTicket\"\n  WHERE (\"SupportTicket\".\"tenantId\" = current_tenant_id())))",
+      "with_check": "",
+      "class": "subquery",
+      "flags": {
+        "subquery": true,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "Truck",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "User",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "UserNotificationPreference",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(\"tenantId\" = current_tenant_id())",
+      "with_check": "(\"tenantId\" = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "audit_log",
+      "policy": "tenant_isolation_policy",
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "carrier_compliance_alert_log",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "carrier_document_types",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "carrier_documents",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(EXISTS ( SELECT 1\n   FROM \"User\" u\n  WHERE ((u.id = carrier_documents.uploaded_by) AND (u.\"tenantId\" = current_tenant_id()))))",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM \"User\" u\n  WHERE ((u.id = carrier_documents.uploaded_by) AND (u.\"tenantId\" = current_tenant_id()))))",
+      "class": "subquery",
+      "flags": {
+        "subquery": true,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": false
+    },
+    {
+      "table": "carrier_drivers",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "carrier_expenses",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "carrier_truck_defects",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "carrier_trucks",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "client_contacts",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "clients",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "contracts",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "dispatches",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "document_import_pages",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "document_imports",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "document_profiles",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_bonuses",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_compensation_templates",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_deductions",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_disputes",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_pay_audit_logs",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_pay_records",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "driver_settlements",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "facilities",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "facility_external_references",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "in_app_notifications",
+      "policy": "in_app_notifications_insert_policy",
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "in_app_notifications",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "load_driver_assignments",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "load_pay_components",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "loads",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "pay_component_attachments",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(tenant_id = current_tenant_id())",
+      "with_check": "(tenant_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "route_matrix_cache",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": false
+    },
+    {
+      "table": "route_template_stops",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(EXISTS ( SELECT 1\n   FROM route_templates rt\n  WHERE ((rt.id = route_template_stops.route_template_id) AND (rt.org_id = current_tenant_id()))))",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM route_templates rt\n  WHERE ((rt.id = route_template_stops.route_template_id) AND (rt.org_id = current_tenant_id()))))",
+      "class": "subquery",
+      "flags": {
+        "subquery": true,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": false
+    },
+    {
+      "table": "route_templates",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(org_id = current_tenant_id())",
+      "with_check": "(org_id = current_tenant_id())",
+      "class": "bare_equality",
+      "flags": {
+        "subquery": false,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": true
+    },
+    {
+      "table": "stops",
+      "policy": "tenant_isolation_policy",
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "roles": "public",
+      "qual": "(EXISTS ( SELECT 1\n   FROM dispatches d\n  WHERE ((d.id = stops.dispatch_id) AND (d.org_id = current_tenant_id()))))",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM dispatches d\n  WHERE ((d.id = stops.dispatch_id) AND (d.org_id = current_tenant_id()))))",
+      "class": "subquery",
+      "flags": {
+        "subquery": true,
+        "case_": false,
+        "coalesce": false,
+        "or": false
+      },
+      "table_has_bypass_policy": false
+    }
+  ],
+  "classCounts": {
+    "bare_equality": 91,
+    "or": 1,
+    "subquery": 4
+  },
+  "rlsTablesWithoutTenantPolicy": [
+    {
+      "tablename": "_prisma_migrations",
+      "n_policies": 0,
+      "relrowsecurity": true,
+      "relforcerowsecurity": false
+    }
+  ],
+  "ledger": [
+    {
+      "migration_name": "20260914180000_tenant_context_tripwire",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T19:41:50.532Z",
+      "started_at": "2026-09-15T19:41:50.226Z",
+      "logs": ""
+    },
+    {
+      "migration_name": "20260915140000_automation_rule_per_command_policy_split",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T23:06:06.919Z",
+      "started_at": "2026-09-15T23:06:06.667Z",
+      "logs": ""
+    },
+    {
+      "migration_name": "20260915150000_grant_automation_rule_to_app_admin",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T23:46:59.840Z",
+      "started_at": "2026-09-15T23:46:59.672Z",
+      "logs": ""
+    }
+  ],
+  "ledgerHead": [
+    {
+      "migration_name": "20260915150000_grant_automation_rule_to_app_admin",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T23:46:59.840Z"
+    },
+    {
+      "migration_name": "20260915140000_automation_rule_per_command_policy_split",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T23:06:06.919Z"
+    },
+    {
+      "migration_name": "20260915130000_grant_playbook_notification_to_app_admin",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T19:41:51.135Z"
+    },
+    {
+      "migration_name": "20260915120000_document_column_drift_staging_parity",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T19:41:50.848Z"
+    },
+    {
+      "migration_name": "20260914180000_tenant_context_tripwire",
+      "applied_steps_count": 1,
+      "checksum": "manual",
+      "finished_at": "2026-09-15T19:41:50.532Z"
+    }
+  ],
+  "functions": [
+    {
+      "proname": "current_tenant_id",
+      "def": "CREATE OR REPLACE FUNCTION public.current_tenant_id()\n RETURNS uuid\n LANGUAGE sql\n STABLE\nAS $function$\r\n  SELECT COALESCE(\r\n    NULLIF(current_setting('app.current_tenant_id', TRUE), '')::uuid,\r\n    CASE WHEN COALESCE(current_setting('app.tenant_context_tripwire', TRUE), 'off') = 'on'\r\n         THEN public.tenant_context_required(current_setting('app.current_tenant_id', TRUE))\r\n         ELSE NULL::uuid END\r\n  );\r\n$function$\n"
+    },
+    {
+      "proname": "tenant_context_required",
+      "def": "CREATE OR REPLACE FUNCTION public.tenant_context_required(p_raw text)\n RETURNS uuid\n LANGUAGE plpgsql\n STABLE\n SET search_path TO 'public', 'pg_catalog'\nAS $function$\r\nBEGIN\r\n  -- §3: a bypass-flagged statement is admitted by the bypass arm and is not what\r\n  -- this tripwire exists to catch. Returning NULL here reproduces today's\r\n  -- behaviour exactly for those statements.\r\n  IF COALESCE(current_setting('app.bypass_rls', TRUE), '') = 'on' THEN\r\n    RETURN NULL::uuid;\r\n  END IF;\r\n\r\n  RAISE EXCEPTION USING\r\n    ERRCODE = 'TC001',\r\n    MESSAGE = 'tenant context is required: app.current_tenant_id is '\r\n              || CASE WHEN p_raw IS NULL THEN 'UNSET' ELSE 'the EMPTY STRING' END,\r\n    DETAIL  = 'statement: ' || current_query(),\r\n    HINT    = 'This statement ran with no tenant context. Acquire one (getTenantPrisma / '\r\n              || 'getTenantPrismaForOrg / withTenantContext) before querying, or SET '\r\n              || 'app.tenant_context_tripwire = ''off'' on this connection.';\r\nEND;\r\n$function$\n"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "task": "quick-614 mechanism",
+  "ref": "wyixpgunnjmzguhggocz",
+  "tripwire": "on",
+  "cells": [
+    {
+      "id": "M1-rlsoff-var-eq",
+      "lane": "EMPTY",
+      "what": "RLS-OFF table, `Var = current_tenant_id()`, PLAIN EXPLAIN (nothing executed)",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id()",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id()"
+      }
+    },
+    {
+      "id": "M1-rlsoff-var-eq-exec",
+      "lane": "EMPTY",
+      "what": "the same, EXECUTED",
+      "sql": "select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id()",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id()"
+      }
+    },
+    {
+      "id": "M1-control-real",
+      "lane": "REAL",
+      "what": "THE CONTROL for M1 — same statement, REAL lane. Must NOT raise.",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id()",
+      "verdict": "RETURNS 1 ROWS",
+      "output": "Aggregate\n  Output: (count(*))::integer\n  ->  Index Only Scan using \"Plan_pkey\" on public.\"Plan\" p\n        Output: id\n        Index Cond: (p.id = COALESCE((NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid, CASE WHEN (COALESCE(current_setting('app.tenant_context_tripwire'::text, true), 'off'::text) = 'on'::text) THEN tenant_context_required(current_setting('app.current_tenant_id'::text, true)) ELSE NULL::uuid END))\nQuery Identifier: -4013282776161284995",
+      "error": null
+    },
+    {
+      "id": "M2-norelation-plan",
+      "lane": "EMPTY",
+      "what": "NO relation, no Var to estimate against, PLAIN EXPLAIN",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select 1 as n where current_tenant_id() is not null",
+      "verdict": "RETURNS 1 ROWS",
+      "output": "Result\n  Output: 1\n  One-Time Filter: (COALESCE((NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid, CASE WHEN (COALESCE(current_setting('app.tenant_context_tripwire'::text, true), 'off'::text) = 'on'::text) THEN tenant_context_required(current_setting('app.current_tenant_id'::text, true)) ELSE NULL::uuid END) IS NOT NULL)\nQuery Identifier: -7483175894299388954",
+      "error": null
+    },
+    {
+      "id": "M3-norelation-exec",
+      "lane": "EMPTY",
+      "what": "THE COUNTER-ASSERTION for M2 — the same statement EXECUTED. Must raise.",
+      "sql": "select 1 as n where current_tenant_id() is not null",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select 1 as n where current_tenant_id() is not null"
+      }
+    },
+    {
+      "id": "M4-empty-relation-plan",
+      "lane": "EMPTY",
+      "what": "RLS-OFF EMPTY relation (0 rows), `Var = current_tenant_id()`, PLAIN EXPLAIN",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Promo\" p where p.id = current_tenant_id()",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Promo\" p where p.id = current_tenant_id()"
+      }
+    },
+    {
+      "id": "M5-prepared-generic",
+      "lane": "EMPTY",
+      "what": "does a GENERIC plan avoid it? EXPLAIN (GENERIC_PLAN) on a parameterised statement",
+      "sql": "EXPLAIN (GENERIC_PLAN, VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id() and p.key = $1",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (GENERIC_PLAN, VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where p.id = current_tenant_id() and p.key = $1"
+      }
+    },
+    {
+      "id": "M6-server-version",
+      "lane": "EMPTY",
+      "what": "server version, for the record",
+      "sql": "select version() as n",
+      "verdict": "RETURNS PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit ROWS",
+      "output": "PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+      "error": null
+    }
+  ]
+}

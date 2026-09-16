@@ -1,0 +1,186 @@
+{
+  "task": "quick-614 finding F",
+  "ref": "wyixpgunnjmzguhggocz",
+  "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+  "tripwire": "on",
+  "cells": [
+    {
+      "id": "Q1-tm-plainexplain",
+      "q": "Q1",
+      "lane": "EMPTY",
+      "what": "EXPLAIN (no ANALYZE) — PLANS the statement, executes nothing",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"TicketMessage\"",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"TicketMessage\""
+      }
+    },
+    {
+      "id": "Q1-tm-analyze",
+      "q": "Q1",
+      "lane": "EMPTY",
+      "what": "EXPLAIN (ANALYZE) — plans AND executes",
+      "sql": "EXPLAIN (ANALYZE, VERBOSE, COSTS OFF, TIMING OFF, SUMMARY OFF) select count(*)::int as n from \"TicketMessage\"",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (ANALYZE, VERBOSE, COSTS OFF, TIMING OFF, SUMMARY OFF) select count(*)::int as n from \"TicketMessage\""
+      }
+    },
+    {
+      "id": "Q1-tm-plain-real",
+      "q": "Q1",
+      "lane": "REAL",
+      "what": "EXPLAIN (no ANALYZE), REAL lane — the control: the same plan must be producible",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"TicketMessage\"",
+      "verdict": "RETURNS 1 ROWS",
+      "output": "Aggregate\n  Output: (count(*))::integer\n  ->  Seq Scan on public.\"TicketMessage\"\n        Output: \"TicketMessage\".id, \"TicketMessage\".\"ticketId\", \"TicketMessage\".\"senderType\", \"TicketMessage\".\"senderLabel\", \"TicketMessage\".body, \"TicketMessage\".\"createdAt\"\n        Filter: ((ANY (\"TicketMessage\".\"ticketId\" = (hashed SubPlan 1).col1)) OR (current_setting('app.bypass_rls'::text, true) = 'on'::text))\n        SubPlan 1\n          ->  Seq Scan on public.\"SupportTicket\"\n                Output: \"SupportTicket\".id\n                Filter: (((\"SupportTicket\".\"tenantId\" = COALESCE((NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid, CASE WHEN (COALESCE(current_setting('app.tenant_context_tripwire'::text, true), 'off'::text) = 'on'::text) THEN tenant_context_required(current_setting('app.current_tenant_id'::text, true)) ELSE NULL::uuid END)) OR (current_setting('app.bypass_rls'::text, true) = 'on'::text)) AND (\"SupportTicket\".\"tenantId\" = COALESCE((NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid, CASE WHEN (COALESCE(current_setting('app.tenant_context_tripwire'::text, true), 'off'::text) = 'on'::text) THEN tenant_context_required(current_setting('app.current_tenant_id'::text, true)) ELSE NULL::uuid END)))\nQuery Identifier: -2905226352301673149",
+      "error": null
+    },
+    {
+      "id": "Q1-tm-exec",
+      "q": "Q1",
+      "lane": "EMPTY",
+      "what": "the bare statement again, for the record",
+      "sql": "select count(*)::int as n from \"TicketMessage\"",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"TicketMessage\""
+      }
+    },
+    {
+      "id": "Q1-tag-empty",
+      "q": "Q1",
+      "lane": "EMPTY",
+      "what": "quick-610 rule re-measured: an EMPTY table with a bare-equality policy",
+      "sql": "select count(*)::int as n from \"Tag\"",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Tag\""
+      }
+    },
+    {
+      "id": "Q2-empty-inner",
+      "q": "Q2",
+      "lane": "EMPTY",
+      "what": "inner relation \"Promo\" is EMPTY (0 rows); tenant fn on a NON-join column (code)",
+      "sql": "select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Promo\" pr where pr.id = p.id and pr.code = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Promo\" pr where pr.id = p.id and pr.code = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q2-empty-inner-explain",
+      "q": "Q2",
+      "lane": "EMPTY",
+      "what": "its plan, un-executed",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Promo\" pr where pr.id = p.id and pr.code = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Promo\" pr where pr.id = p.id and pr.code = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q2-nonempty-inner",
+      "q": "Q2",
+      "lane": "EMPTY",
+      "what": "THE COUNTER-ASSERTION — same shape, inner \"Plan\" has 3 rows. Must RAISE, or the cell above says nothing.",
+      "sql": "select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Plan\" q where q.id = p.id and q.key = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Plan\" q where q.id = p.id and q.key = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q2-nonempty-inner-explain",
+      "q": "Q2",
+      "lane": "EMPTY",
+      "what": "its plan, un-executed",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Plan\" q where q.id = p.id and q.key = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Plan\" p where exists (select 1 from \"Plan\" q where q.id = p.id and q.key = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q3-empty-outer",
+      "q": "Q3",
+      "lane": "EMPTY",
+      "what": "outer \"Promo\" is EMPTY (0 rows), inner \"Plan\" has 3 — does an empty outer suppress the raise?",
+      "sql": "select count(*)::int as n from \"Promo\" p where exists (select 1 from \"Plan\" q where q.id = p.id and q.key = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Promo\" p where exists (select 1 from \"Plan\" q where q.id = p.id and q.key = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q3-empty-outer-uncorrelated",
+      "q": "Q3",
+      "lane": "EMPTY",
+      "what": "the TicketMessage shape reproduced: EMPTY outer, UNCORRELATED IN over a NON-empty inner",
+      "sql": "select count(*)::int as n from \"Promo\" p where p.id in (select q.id from \"Plan\" q where q.key = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Promo\" p where p.id in (select q.id from \"Plan\" q where q.key = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q3-empty-outer-uncorr-explain",
+      "q": "Q3",
+      "lane": "EMPTY",
+      "what": "its plan, un-executed",
+      "sql": "EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Promo\" p where p.id in (select q.id from \"Plan\" q where q.key = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: EXPLAIN (VERBOSE, COSTS OFF) select count(*)::int as n from \"Promo\" p where p.id in (select q.id from \"Plan\" q where q.key = current_tenant_id()::text)"
+      }
+    },
+    {
+      "id": "Q3-empty-outer-uncorr-empty-inner",
+      "q": "Q3",
+      "lane": "EMPTY",
+      "what": "BOTH empty — the exact TicketMessage/SupportTicket configuration, outside RLS",
+      "sql": "select count(*)::int as n from \"Promo\" p where p.id in (select q.id from \"Promo\" q where q.code = current_tenant_id()::text)",
+      "verdict": "RAISES TC001",
+      "output": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING",
+        "detail": "statement: select count(*)::int as n from \"Promo\" p where p.id in (select q.id from \"Promo\" q where q.code = current_tenant_id()::text)"
+      }
+    }
+  ]
+}
