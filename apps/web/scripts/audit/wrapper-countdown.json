@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-16T17:55:20.328Z",
+  "generatedAt": "2026-09-16T18:29:17.572Z",
   "totals": {
-    "unmigratedUnits": 566,
-    "unmigratedCallSites": 576,
+    "unmigratedUnits": 567,
+    "unmigratedCallSites": 577,
     "withTenantContextCallSites": 0,
-    "filesScanned": 1692,
-    "filesWithUnmigratedUnits": 274
+    "filesScanned": 1693,
+    "filesWithUnmigratedUnits": 275
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -599,6 +599,13 @@
       "callSites": 1,
       "names": [
         "InvoicesPage:7"
+      ]
+    },
+    "app/(owner)/layout.tsx": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "OwnerLayout:22"
       ]
     },
     "app/(owner)/live-map/actions.ts": {
