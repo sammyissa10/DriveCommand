@@ -1,0 +1,30 @@
+{
+  "generated": "2026-09-16T17:29:17.512Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "droppedPolicyTables": [
+    "FleetMessage",
+    "User",
+    "dispatches"
+  ],
+  "fixtures": {
+    "A1": "0bb13c56-93ee-4f03-954f-334d02ae470d",
+    "A2": "0a18905c-b193-4ed2-996e-5cc50bb2b3e9",
+    "B1": "c35b5fbd-0f6d-4a3c-b6a7-0c8667afe171",
+    "B2": "56d7941e-204e-42e5-942d-c006cdfe0ed1",
+    "ownerB": "00dc04fb-dff5-441c-824b-d11c64d560af"
+  },
+  "threw": "--throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.",
+  "results": [],
+  "restore": {
+    "restoredCount": 3,
+    "liveCount": 86,
+    "onlyInBefore": [],
+    "onlyInAfter": [],
+    "sortedListIdentical": true,
+    "bodyMismatches": [],
+    "ok": true
+  },
+  "fixturesLeft": 0
+}

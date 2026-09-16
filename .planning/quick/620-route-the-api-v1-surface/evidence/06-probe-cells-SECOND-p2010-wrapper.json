@@ -1,0 +1,290 @@
+{
+  "generated": "2026-09-16T17:36:30.091Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "droppedPolicyTables": [
+    "FleetMessage",
+    "User",
+    "dispatches"
+  ],
+  "fixtures": {
+    "A1": "374f3962-0458-4dae-9dd4-b16b6bae342b",
+    "A2": "3424c21b-c701-447a-bdb0-741337f30172",
+    "B1": "5d206b01-09b4-4ecb-96cc-4f1e368ac1ae",
+    "B2": "ff232c9c-cff1-463a-8f5f-cd3ac3cf214e",
+    "ownerB": "00dc04fb-dff5-441c-824b-d11c64d560af"
+  },
+  "threw": null,
+  "results": [
+    {
+      "cell": "hook-control",
+      "ok": true,
+      "detail": {
+        "callerSaw": "TC001",
+        "hookRecorded": 1
+      }
+    },
+    {
+      "cell": "handler:audio-url:own",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "url": "stub-presigned://quick-620/fixture-a1.m4a",
+        "tc001Observed": 0,
+        "driverErrors": [],
+        "covers": "audio-url:36 — row RETURNED"
+      }
+    },
+    {
+      "cell": "handler:audio-url:foreign",
+      "ok": true,
+      "detail": {
+        "status": 404,
+        "json": {
+          "error": "Message not found"
+        },
+        "privilegedCounterRead": 1,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "handler:send:foreign-recipient",
+      "ok": true,
+      "detail": {
+        "status": 404,
+        "json": {
+          "error": "Recipient not found in tenant"
+        },
+        "privilegedCounterRead": 1,
+        "rowsWritten": 0,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "handler:send:own-recipient",
+      "ok": true,
+      "detail": {
+        "verdict": "BLOCKED_BY_STAGING_DRIFT",
+        "status": 500,
+        "tc001Observed": 0,
+        "driverErrors": [
+          "42703: column \"isBroadcast\" of relation \"FleetMessage\" does not exist"
+        ],
+        "statementsReached": "send:64 RETURNED the recipient (a 404 would have ended the handler); send:76 blocked by missing isBroadcast",
+        "afterCallbacksScheduled": 0,
+        "rowsWritten": 0
+      }
+    },
+    {
+      "cell": "handler:thread",
+      "ok": true,
+      "detail": {
+        "verdict": "BLOCKED_BY_STAGING_DRIFT",
+        "status": 500,
+        "tc001Observed": 0,
+        "driverErrors": [
+          "42703: column FleetMessage.isBroadcast does not exist"
+        ],
+        "statementsReached": "thread:79 blocked (select isBroadcast); :105 and :118 not reached",
+        "afterCallbacksScheduled": 0
+      }
+    },
+    {
+      "cell": "handler:conversations",
+      "ok": true,
+      "detail": {
+        "verdict": "BLOCKED_BY_STAGING_DRIFT",
+        "status": 500,
+        "tc001Observed": 0,
+        "driverErrors": [
+          "42703: column FleetMessage.isBroadcast does not exist"
+        ],
+        "statementsReached": "conversations:38 blocked (where/select isBroadcast); :74 and :94 not reached",
+        "afterCallbacksScheduled": 0
+      }
+    },
+    {
+      "cell": "handler:broadcast",
+      "ok": true,
+      "detail": {
+        "verdict": "BLOCKED_BY_STAGING_DRIFT",
+        "status": 500,
+        "tc001Observed": 0,
+        "driverErrors": [
+          "42703: column \"isBroadcast\" of relation \"FleetMessage\" does not exist"
+        ],
+        "statementsReached": "broadcast:54 blocked (data isBroadcast)",
+        "afterCallbacksScheduled": 0,
+        "rowsWritten": 0
+      }
+    },
+    {
+      "cell": "handler:stops:GET",
+      "ok": true,
+      "detail": {
+        "verdict": "BLOCKED_BY_STAGING_DRIFT",
+        "status": 500,
+        "tc001Observed": 0,
+        "driverErrors": [
+          "42703: column FleetMessage.isBroadcast does not exist"
+        ],
+        "statementsReached": "stop-ownership lookup passed (else 404); stops:49 blocked (select isBroadcast); :76 and :89 not reached",
+        "afterCallbacksScheduled": 0
+      }
+    },
+    {
+      "cell": "handler:stops:POST",
+      "ok": true,
+      "detail": {
+        "verdict": "BLOCKED_BY_STAGING_DRIFT",
+        "status": 500,
+        "tc001Observed": 0,
+        "driverErrors": [
+          "42703: column \"isBroadcast\" of relation \"FleetMessage\" does not exist"
+        ],
+        "statementsReached": "stop lookup + driver user resolved (else 404/422); stops:201 blocked (data isBroadcast)",
+        "afterCallbacksScheduled": 0,
+        "rowsWritten": 0
+      }
+    },
+    {
+      "cell": "shape:fleet-findMany-stop",
+      "ok": true,
+      "detail": {
+        "own": 1,
+        "foreign": 0,
+        "privilegedCounterRead": 1,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "shape:fleet-findMany-or",
+      "ok": true,
+      "detail": {
+        "withRoutePredicate": 2,
+        "withoutRoutePredicate": 2,
+        "privilegedFixtureRows": 4,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "shape:fleet-updateMany-mark-read",
+      "ok": true,
+      "detail": {
+        "updatedCount": 1,
+        "ownMarkedRead": true,
+        "foreignMarkedRead": false,
+        "readAtResetAfter": true,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "shape:fleet-insert-policy",
+      "ok": false,
+      "detail": {
+        "ownInsertRowCount": 1,
+        "ownRowsWritten": 1,
+        "foreignInsertSqlstate": "P2010",
+        "foreignRowsWritten": 0,
+        "tc001Observed": 0,
+        "unprovenOnStaging": "Prisma create injection + createdById NULL (P2022 on the missing isBroadcast column)"
+      }
+    },
+    {
+      "cell": "shape:user-findMany",
+      "ok": true,
+      "detail": {
+        "withRoutePredicate": [
+          "d27660ff-feef-43dd-b22c-07ee74b9ee01"
+        ],
+        "withoutRoutePredicate": [
+          "d27660ff-feef-43dd-b22c-07ee74b9ee01"
+        ],
+        "privilegedCounterRead": 2,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "shape:trip-findMany",
+      "ok": true,
+      "detail": {
+        "withRoutePredicate": [
+          "d2ee6c42-6e23-44e9-beb0-483a18d52f9c"
+        ],
+        "policyAloneNoPredicate": [
+          "d2ee6c42-6e23-44e9-beb0-483a18d52f9c"
+        ],
+        "privilegedCounterRead": 2,
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "table:FleetMessage",
+      "ok": true,
+      "detail": {
+        "model": "FleetMessage",
+        "table": "FleetMessage",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 3,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 2,
+          "verdict": "PROVEN",
+          "data": "FIXTURE rows only — staging holds 0 real FleetMessage rows"
+        }
+      }
+    },
+    {
+      "cell": "table:User",
+      "ok": true,
+      "detail": {
+        "model": "User",
+        "table": "User",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 6,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 4,
+          "verdict": "PROVEN",
+          "data": "real staging rows"
+        }
+      }
+    },
+    {
+      "cell": "table:Trip",
+      "ok": true,
+      "detail": {
+        "model": "Trip",
+        "table": "dispatches",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN",
+          "data": "real staging rows"
+        }
+      }
+    }
+  ],
+  "restore": {
+    "restoredCount": 3,
+    "liveCount": 86,
+    "onlyInBefore": [],
+    "onlyInAfter": [],
+    "sortedListIdentical": true,
+    "bodyMismatches": [],
+    "ok": true
+  },
+  "fixturesLeft": 0
+}

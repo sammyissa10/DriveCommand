@@ -1,0 +1,6 @@
+src/app/api/v1/carrier/stops/[id]/messages/route.ts  tenantId-mentions=10 where-with-tenantId=3 orgId:tenantId=3 bypass=0
+src/app/api/v1/messages/broadcast/route.ts  tenantId-mentions=4 where-with-tenantId=0 orgId:tenantId=0 bypass=0
+src/app/api/v1/messages/conversations/route.ts  tenantId-mentions=5 where-with-tenantId=1 orgId:tenantId=1 bypass=0
+src/app/api/v1/messages/send/route.ts  tenantId-mentions=5 where-with-tenantId=1 orgId:tenantId=1 bypass=0
+src/app/api/v1/messages/thread/route.ts  tenantId-mentions=6 where-with-tenantId=0 orgId:tenantId=0 bypass=0
+src/app/api/v1/messages/[id]/audio-url/route.ts  tenantId-mentions=3 where-with-tenantId=1 orgId:tenantId=0 bypass=0

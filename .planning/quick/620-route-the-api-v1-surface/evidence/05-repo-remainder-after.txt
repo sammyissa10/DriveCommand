@@ -1,0 +1,19 @@
+repo-wide remainder: 45 statements in 25 files (tests: 5, excluded)
+by surface:
+  LIB_SERVICES           6 files   11 statements
+  OWNER_PORTAL           4 files    7 statements
+  DRIVER_PORTAL          4 files    6 statements
+  API_DRIVER             2 files    6 statements
+  API_CRON               1 files    4 statements
+  API_AUTH               2 files    3 statements
+  API_DRIVER_PAY         1 files    2 statements
+  API_GPS                1 files    2 statements
+  API_INTEGRATIONS       2 files    2 statements
+  API_PUSH_TOKENS        1 files    1 statements
+  API_TRACK              1 files    1 statements
+  PASS  FLOOR — total statements >= 40 — 45 >= 40
+  PASS  POSITIVE CONTROL — lib/auth/supabase.ts still yields its ARRAY-FORM statement — 1 array-form at lines [164] >= 1
+  PASS  COUNTER-ASSERTION src/app/api/v1/messages/thread/route.ts WAS READ — bytes=5188 parsed=true acquiresTenantClient=true
+  PASS  COUNTER-ASSERTION src/app/api/v1/messages/thread/route.ts YIELDS ZERO — 0 === 0
+  PASS  OTHER SURFACES UNCHANGED — every non-API_V1 statement identical file:line before and after — before 45 / after 45
+  PASS  ARITHMETIC — 59 at quick-620 start − 14 routed from API_V1 = 45 — measured 45 vs expected 45

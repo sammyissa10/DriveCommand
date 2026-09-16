@@ -1,0 +1,409 @@
+[server-target] DATABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DIRECT_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DATABASE_URL_ADMIN -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] NEXT_PUBLIC_SUPABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] TENANT_CONTEXT_TRIPWIRE=on
+[server-target] DATABASE_URL role : app_user.wyixpgunnjmzguhggocz
+[server-target] anon key present : true | length 208 | MASKED eyJhbG...d7Zs
+[server-target] SUPABASE_SERVICE_ROLE_KEY -> staging wyixpgunnjmzguhggocz, role service_role (MASKED)
+[server-target] CRON_SECRET generated for this run (MASKED, never written to a tracked file)
+[server-target] NODE_OPTIONS --require 620-tc001-driver-hook.js (fixed dual-form TC001 detector)
+[q620-hook] control pid=20240 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[q620-hook] control pid=10844 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q620-hook] control pid=6128 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.1.10.35:3000
+- Environments: .env.local
+✓ Ready in 2.0s
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+[q620-hook] control pid=21600 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+○ Compiling /api/auth/login ...
+ POST /api/auth/login 200 in 18.8s (next.js: 9.7s, proxy.ts: 1115ms, application-code: 8.1s)
+ POST /api/auth/login 200 in 3.5s (next.js: 198ms, proxy.ts: 28ms, application-code: 3.3s)
+ POST /api/auth/login 200 in 4.1s (next.js: 135ms, proxy.ts: 22ms, application-code: 4.0s)
+[q620-hook] TC001 pid=21600 sql= SELECT name FROM "Tenant" WHERE id = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "isActivated", "congratsShownAt" FROM "ActivationProgress" WHERE "tenantId" = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "onboardingTourSeen" FROM "User" WHERE id = $1::uuid LIMIT 1 
+ GET /dashboard 200 in 14.2s (next.js: 2.5s, proxy.ts: 276ms, application-code: 11.4s)
+[q620-hook] TC001 pid=21600 sql= SELECT name FROM "Tenant" WHERE id = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "isActivated", "congratsShownAt" FROM "ActivationProgress" WHERE "tenantId" = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "onboardingTourSeen" FROM "User" WHERE id = $1::uuid LIMIT 1 
+ GET /carrier/dashboard 200 in 12.9s (next.js: 285ms, proxy.ts: 1063ms, application-code: 11.5s)
+[q620-hook] TC001 pid=21600 sql= SELECT name FROM "Tenant" WHERE id = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "isActivated", "congratsShownAt" FROM "ActivationProgress" WHERE "tenantId" = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "onboardingTourSeen" FROM "User" WHERE id = $1::uuid LIMIT 1 
+ GET /carrier/trips 200 in 7.2s (next.js: 532ms, proxy.ts: 230ms, application-code: 6.4s)
+ GET /carrier/loads 200 in 2.5s (next.js: 156ms, proxy.ts: 859ms, application-code: 1517ms)
+ GET /carrier/clients 200 in 2.6s (next.js: 138ms, proxy.ts: 376ms, application-code: 2.1s)
+ GET /carrier/contracts 200 in 3.1s (next.js: 147ms, proxy.ts: 260ms, application-code: 2.7s)
+ GET /carrier/facilities 200 in 3.0s (next.js: 188ms, proxy.ts: 284ms, application-code: 2.6s)
+ GET /carrier/templates 200 in 1641ms (next.js: 166ms, proxy.ts: 176ms, application-code: 1298ms)
+ GET /carrier/imports 200 in 2.1s (next.js: 217ms, proxy.ts: 113ms, application-code: 1815ms)
+ GET /carrier/messages 200 in 1035ms (next.js: 127ms, proxy.ts: 132ms, application-code: 776ms)
+ GET /drivers 200 in 2.8s (next.js: 216ms, proxy.ts: 125ms, application-code: 2.4s)
+ GET /trucks 200 in 3.6s (next.js: 282ms, proxy.ts: 334ms, application-code: 3.0s)
+ GET /loads 200 in 4.5s (next.js: 173ms, proxy.ts: 118ms, application-code: 4.2s)
+ GET /routes 200 in 3.9s (next.js: 171ms, proxy.ts: 824ms, application-code: 2.9s)
+ GET /invoices 200 in 3.6s (next.js: 244ms, proxy.ts: 584ms, application-code: 2.8s)
+ GET /payroll 200 in 7.4s (next.js: 180ms, proxy.ts: 187ms, application-code: 7.0s)
+[q620-hook] TC001 pid=21600 sql= SELECT name FROM "Tenant" WHERE id = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "isActivated", "congratsShownAt" FROM "ActivationProgress" WHERE "tenantId" = $1::uuid LIMIT 1 
+[q620-hook] TC001 pid=21600 sql= SELECT "onboardingTourSeen" FROM "User" WHERE id = $1::uuid LIMIT 1 
+ GET /crm 200 in 5.5s (next.js: 152ms, proxy.ts: 421ms, application-code: 4.9s)
+ GET /compliance 200 in 1544ms (next.js: 188ms, proxy.ts: 203ms, application-code: 1153ms)
+ GET /live-map 200 in 2.1s (next.js: 167ms, proxy.ts: 236ms, application-code: 1660ms)
+ GET /settings/operations 200 in 1320ms (next.js: 140ms, proxy.ts: 99ms, application-code: 1081ms)
+ GET /support 200 in 2.9s (next.js: 140ms, proxy.ts: 369ms, application-code: 2.4s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /home 200 in 10.7s (next.js: 245ms, proxy.ts: 115ms, application-code: 10.3s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 5.8s (next.js: 230ms, proxy.ts: 951ms, application-code: 4.6s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-route 200 in 5.1s (next.js: 204ms, proxy.ts: 650ms, application-code: 4.2s)
+ GET /documents 200 in 2.0s (next.js: 179ms, proxy.ts: 836ms, application-code: 994ms)
+ GET /hours 200 in 1095ms (next.js: 121ms, proxy.ts: 128ms, application-code: 846ms)
+[2026-09-16T17:45:02.481Z] INFO: [admin-db] privileged query {"reason":"auto-close stale ticket sweep"}
+ GET /api/cron/auto-close-tickets 200 in 1710ms (next.js: 123ms, proxy.ts: 8ms, application-code: 1579ms)
+[cron/automations] Starting evaluator run
+[2026-09-16T17:45:04.806Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[2026-09-16T17:45:04.807Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'no_progress_nudge' — 0 candidate tenant(s)
+[2026-09-16T17:45:04.950Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'add_driver_nudge' — 0 candidate tenant(s)
+[2026-09-16T17:45:05.107Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'dispatch_load_nudge' — 0 candidate tenant(s)
+[2026-09-16T17:45:05.263Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'trial_ending_soon' — 0 candidate tenant(s)
+[2026-09-16T17:45:05.399Z] INFO: [admin-db] privileged query {"reason":"automation evaluator scan"}
+[evaluator] Path 1 — found 1 AppEvent(s) in last 30 days
+[evaluator] Path 2 — found 0 due PENDING run(s)
+[evaluator] Done — pendingCreated=0 executed=0 failed=0
+[cron/automations] Complete {
+  pendingCreated: 0,
+  executed: 0,
+  failed: 0,
+  failureCount: 0,
+  failures: []
+}
+ GET /api/cron/automations 200 in 1283ms (next.js: 381ms, proxy.ts: 10ms, application-code: 892ms)
+[2026-09-16T17:45:06.208Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-16T17:45:06.209Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-16T17:45:06.288Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
+[2026-09-16T17:45:06.875Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":0,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":0,"details":[],"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-auto-dispatch 200 in 837ms (next.js: 144ms, proxy.ts: 7ms, application-code: 686ms)
+[2026-09-16T17:45:07.567Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-16T17:45:07.568Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-16T17:45:07.883Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-16T17:45:09.230Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 0 alert(s) found
+[2026-09-16T17:45:10.466Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 0 alert(s) found
+[2026-09-16T17:45:10.467Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":0,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 3.2s (next.js: 298ms, proxy.ts: 8ms, application-code: 2.9s)
+[2026-09-16T17:45:11.075Z] INFO: [CRON] cleanup-quarantine: Starting
+[2026-09-16T17:45:13.315Z] INFO: [CRON] cleanup-quarantine: Completed {"success":true,"scanned":0,"deleted":0,"errors":0,"failureCount":0,"failures":[]}
+ GET /api/cron/cleanup-quarantine 200 in 2.5s (next.js: 220ms, proxy.ts: 8ms, application-code: 2.3s)
+[2026-09-16T17:45:13.838Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-16T17:45:13.839Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-16T17:45:14.111Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-16T17:45:15.503Z] INFO: [CRON] digest-compliance-30day: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-compliance-30day 200 in 1823ms (next.js: 131ms, proxy.ts: 10ms, application-code: 1682ms)
+[2026-09-16T17:45:16.092Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-16T17:45:16.093Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+[2026-09-16T17:45:16.158Z] INFO: [CRON] digest-daily-driver: Found 2 active tenant(s)
+[2026-09-16T17:45:20.161Z] INFO: [CRON] digest-daily-driver: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":5,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-daily-driver 200 in 4.3s (next.js: 198ms, proxy.ts: 12ms, application-code: 4.1s)
+[2026-09-16T17:45:20.813Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-16T17:45:20.815Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+[2026-09-16T17:45:21.176Z] INFO: [CRON] digest-weekly-owner: Found 2 active tenant(s)
+[2026-09-16T17:45:24.211Z] INFO: [CRON] digest-weekly-owner: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-weekly-owner 200 in 3.7s (next.js: 263ms, proxy.ts: 12ms, application-code: 3.4s)
+[2026-09-16T17:45:24.750Z] INFO: [admin-db] privileged query {"reason":"overdue invoice sweep"}
+[2026-09-16T17:45:25.557Z] INFO: [CRON] mark-overdue-invoices: Marked 0 invoice(s) overdue
+ GET /api/cron/mark-overdue-invoices 200 in 985ms (next.js: 152ms, proxy.ts: 8ms, application-code: 825ms)
+[2026-09-16T17:45:26.109Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-16T17:45:26.111Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-16T17:45:26.272Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-16T17:45:29.162Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":0,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 3.2s (next.js: 150ms, proxy.ts: 9ms, application-code: 3.1s)
+[2026-09-16T17:45:29.716Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-16T17:45:29.717Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-16T17:45:29.938Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-16T17:45:29.939Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-16T17:45:31.926Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-16T17:45:31.927Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-16T17:45:31.927Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-16T17:45:31.927Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-16T17:45:34.319Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-16T17:45:34.320Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-16T17:45:34.321Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-16T17:45:34.322Z] INFO: [CRON] send-reminders: Completed {"success":true,"processedTenants":2,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/send-reminders 200 in 4.8s (next.js: 164ms, proxy.ts: 6ms, application-code: 4.6s)
+[2026-09-16T17:45:34.846Z] INFO: [admin-db] privileged query {"reason":"trip reminder tenant sweep"}
+[2026-09-16T17:45:38.055Z] INFO: [CRON] trip-reminders: done {"tenantsProcessed":2,"tenantsFailed":0,"remindersSent":0,"failureCount":0,"failures":[]}
+ GET /api/cron/trip-reminders 200 in 3.4s (next.js: 138ms, proxy.ts: 8ms, application-code: 3.2s)
+[2026-09-16T17:45:38.608Z] INFO: [CRON] workflow-digest: Starting daily digest sweep
+[2026-09-16T17:45:38.610Z] INFO: [admin-db] privileged query {"reason":"workflow digest active-tenant sweep"}
+[2026-09-16T17:45:38.999Z] INFO: [CRON] workflow-digest: 0 tenant(s) with active instances
+[2026-09-16T17:45:39.000Z] INFO: [CRON] workflow-digest: Complete {"tenantsSent":0,"tenantsSkipped":0,"tenantsErrored":0,"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-digest 200 in 579ms (next.js: 161ms, proxy.ts: 8ms, application-code: 410ms)
+[2026-09-16T17:45:39.577Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-16T17:45:39.578Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-16T17:45:39.857Z] INFO: [CRON] workflow-notifications: Found 0 overdue step(s)
+[2026-09-16T17:45:39.859Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-16T17:45:40.124Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
+[2026-09-16T17:45:40.125Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-notifications 200 in 765ms (next.js: 192ms, proxy.ts: 6ms, application-code: 566ms)
+[2026-09-16T17:45:40.796Z] INFO: [WARMUP] Pinged successfully
+ GET /api/warmup 200 in 308ms (next.js: 80ms, proxy.ts: 5ms, application-code: 223ms)
+ POST /api/auth/login 200 in 2.9s (next.js: 10ms, proxy.ts: 9ms, application-code: 2.9s)
+ POST /api/auth/login 200 in 673ms (next.js: 10ms, proxy.ts: 7ms, application-code: 657ms)
+ POST /api/auth/login 200 in 924ms (next.js: 10ms, proxy.ts: 7ms, application-code: 907ms)
+ POST /api/auth/login 200 in 483ms (next.js: 7ms, proxy.ts: 6ms, application-code: 470ms)
+ GET /carrier/driver-pay/settlements 200 in 1308ms (next.js: 160ms, proxy.ts: 152ms, application-code: 996ms)
+ GET /carrier/driver-pay/pending 200 in 1390ms (next.js: 142ms, proxy.ts: 110ms, application-code: 1138ms)
+ GET /carrier/driver-pay/reports 200 in 3.4s (next.js: 158ms, proxy.ts: 218ms, application-code: 3.0s)
+ GET /carrier/driver-pay 404 in 779ms (next.js: 391ms, proxy.ts: 218ms, application-code: 170ms)
+ GET /carrier/reports 404 in 592ms (next.js: 48ms, proxy.ts: 446ms, application-code: 97ms)
+ GET /carrier/reports/aging 200 in 1122ms (next.js: 110ms, proxy.ts: 134ms, application-code: 878ms)
+ GET /carrier/reports/performance 200 in 1689ms (next.js: 133ms, proxy.ts: 172ms, application-code: 1385ms)
+ GET /carrier/reports/revenue 200 in 1084ms (next.js: 110ms, proxy.ts: 138ms, application-code: 836ms)
+ GET /carrier/reports/todays-trips 200 in 1729ms (next.js: 126ms, proxy.ts: 399ms, application-code: 1204ms)
+ GET /checklists 200 in 2.0s (next.js: 120ms, proxy.ts: 113ms, application-code: 1815ms)
+ GET /checklists/playbooks 404 in 255ms (next.js: 32ms, proxy.ts: 123ms, application-code: 100ms)
+ GET /checklists/instances 404 in 280ms (next.js: 26ms, proxy.ts: 169ms, application-code: 85ms)
+ GET /checklists/analytics 200 in 2.1s (next.js: 154ms, proxy.ts: 114ms, application-code: 1866ms)
+ GET /checklists/automation 200 in 1956ms (next.js: 123ms, proxy.ts: 101ms, application-code: 1731ms)
+ GET /settings/notifications 200 in 7.3s (next.js: 130ms, proxy.ts: 142ms, application-code: 7.1s)
+[2026-09-16T17:46:28.320Z] INFO: [admin-db] privileged query {"reason":"sysadmin automation rule listing"}
+ GET /automations 200 in 2.3s (next.js: 145ms, proxy.ts: 588ms, application-code: 1602ms)
+[2026-09-16T17:46:30.472Z] INFO: [admin-db] privileged query {"reason":"sysadmin platform metrics"}
+ GET /admin-dashboard 200 in 1751ms (next.js: 198ms, proxy.ts: 344ms, application-code: 1209ms)
+[2026-09-16T17:46:32.591Z] INFO: [admin-db] privileged query {"reason":"sysadmin invoice management"}
+ GET /billing 200 in 1332ms (next.js: 199ms, proxy.ts: 231ms, application-code: 902ms)
+ GET /plans 200 in 1071ms (next.js: 121ms, proxy.ts: 375ms, application-code: 575ms)
+[2026-09-16T17:46:35.726Z] INFO: [admin-db] privileged query {"reason":"sysadmin notification send log listing"}
+[2026-09-16T17:46:35.727Z] INFO: [admin-db] privileged query {"reason":"sysadmin notification delivery statistics"}
+ GET /notifications 200 in 3.7s (next.js: 163ms, proxy.ts: 274ms, application-code: 3.3s)
+[2026-09-16T17:46:39.908Z] INFO: [admin-db] privileged query {"reason":"sysadmin ticket listing"}
+[2026-09-16T17:46:40.460Z] INFO: [admin-db] privileged query {"reason":"sysadmin tenant listing"}
+ GET /admin-support 200 in 2.0s (next.js: 149ms, proxy.ts: 447ms, application-code: 1430ms)
+[2026-09-16T17:46:44.800Z] INFO: [admin-db] privileged query {"reason":"public shipment tracking lookup"}
+ GET /track/604-probe-no-seeded-token 404 in 3.7s (next.js: 3.4s, proxy.ts: 6ms, application-code: 384ms)
+ GET /sign-up 200 in 3.4s (next.js: 3.1s, proxy.ts: 12ms, application-code: 331ms)
+ GET /onboarding 307 in 1207ms (next.js: 126ms, proxy.ts: 543ms, application-code: 538ms)
+[welcome] tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8 phase: HYDRATED
+[hydrateTenant] starting for tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8
+[hydrateTenant] already HYDRATED, skipping
+ GET /onboarding/welcome 200 in 3.4s (next.js: 114ms, proxy.ts: 10ms, application-code: 3.3s)
+ GET /api/mobile/driver/dashboard 200 in 2.9s (next.js: 193ms, proxy.ts: 15ms, application-code: 2.7s)
+ GET /api/mobile/driver/documents 200 in 558ms (next.js: 147ms, proxy.ts: 10ms, application-code: 402ms)
+ GET /api/mobile/driver/hos 200 in 518ms (next.js: 141ms, proxy.ts: 9ms, application-code: 368ms)
+ GET /api/mobile/driver/incidents 200 in 1356ms (next.js: 140ms, proxy.ts: 9ms, application-code: 1207ms)
+ GET /api/mobile/driver/loads 200 in 922ms (next.js: 130ms, proxy.ts: 6ms, application-code: 785ms)
+[2026-09-16T17:47:38.086Z] ERROR: [withMobileAuth] handler error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\driver\messages\route.ts:43:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET.allowedRoles (src\app\api\mobile\driver\messages\route.ts:32:38)
+    at async (src\lib\api\with-mobile-auth.ts:74:14)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/driver/messages 500 in 1322ms (next.js: 126ms, proxy.ts: 7ms, application-code: 1188ms)
+ GET /api/mobile/driver/messages/route-thread 400 in 553ms (next.js: 111ms, proxy.ts: 6ms, application-code: 435ms)
+ GET /api/mobile/driver/messages/unread-count 200 in 1323ms (next.js: 104ms, proxy.ts: 6ms, application-code: 1213ms)
+ GET /api/mobile/driver/route 200 in 1259ms (next.js: 104ms, proxy.ts: 6ms, application-code: 1149ms)
+ GET /api/mobile/driver/tasks 200 in 815ms (next.js: 107ms, proxy.ts: 7ms, application-code: 701ms)
+ GET /api/mobile/driver/tracking-token 200 in 510ms (next.js: 127ms, proxy.ts: 9ms, application-code: 373ms)
+ GET /api/mobile/owner/compliance 200 in 848ms (next.js: 264ms, proxy.ts: 8ms, application-code: 576ms)
+ GET /api/mobile/owner/crm 200 in 2.1s (next.js: 111ms, proxy.ts: 6ms, application-code: 1940ms)
+ GET /api/mobile/owner/customers 200 in 1297ms (next.js: 127ms, proxy.ts: 6ms, application-code: 1163ms)
+ GET /api/mobile/owner/dashboard 200 in 2.7s (next.js: 163ms, proxy.ts: 10ms, application-code: 2.5s)
+[2026-09-16T17:47:52.294Z] ERROR: [withMobileAuth] handler error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.driverInvitation.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\drivers\route.ts:106:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET.allowedRoles (src\app\api\mobile\owner\drivers\route.ts:64:38)
+    at async (src\lib\api\with-mobile-auth.ts:74:14)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'DriverInvitation',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/drivers 500 in 1304ms (next.js: 125ms, proxy.ts: 6ms, application-code: 1173ms)
+ GET /api/mobile/owner/drivers/active 200 in 1321ms (next.js: 145ms, proxy.ts: 9ms, application-code: 1167ms)
+ GET /api/mobile/owner/fleet-positions 200 in 821ms (next.js: 122ms, proxy.ts: 13ms, application-code: 685ms)
+[2026-09-16T17:47:55.883Z] ERROR: [mobile/owner/fleet/messages GET] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\fleet\messages\route.ts:46:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\mobile\owner\fleet\messages\route.ts:45:38)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/fleet/messages 500 in 931ms (next.js: 138ms, proxy.ts: 6ms, application-code: 787ms)
+ GET /api/mobile/owner/fuel 200 in 569ms (next.js: 126ms, proxy.ts: 8ms, application-code: 436ms)
+ GET /api/mobile/owner/invoices 200 in 1244ms (next.js: 117ms, proxy.ts: 7ms, application-code: 1120ms)
+ GET /api/mobile/owner/loads 200 in 1143ms (next.js: 121ms, proxy.ts: 7ms, application-code: 1014ms)
+ GET /api/mobile/owner/maintenance 200 in 656ms (next.js: 107ms, proxy.ts: 8ms, application-code: 541ms)
+ GET /api/mobile/owner/map/vehicles 200 in 500ms (next.js: 109ms, proxy.ts: 6ms, application-code: 385ms)
+[2026-09-16T17:48:02.481Z] ERROR: [mobile/owner/payroll] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.payrollRecord.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\payroll\route.ts:40:23)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\mobile\owner\payroll\route.ts:39:20)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'PayrollRecord',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/payroll 500 in 1653ms (next.js: 107ms, proxy.ts: 7ms, application-code: 1539ms)
+ GET /api/mobile/owner/routes 200 in 721ms (next.js: 107ms, proxy.ts: 7ms, application-code: 607ms)
+ GET /api/mobile/owner/safety 200 in 888ms (next.js: 108ms, proxy.ts: 8ms, application-code: 772ms)
+ GET /api/mobile/owner/trucks 200 in 2.5s (next.js: 179ms, proxy.ts: 8ms, application-code: 2.3s)
+ GET /api/mobile/driver/dashboard 401 in 27ms (next.js: 7ms, proxy.ts: 6ms, application-code: 14ms)
+ GET /api/mobile/driver/dashboard 200 in 1634ms (next.js: 8ms, proxy.ts: 8ms, application-code: 1618ms)

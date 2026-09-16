@@ -1,0 +1,41 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+pre-flight: leftover marker rows after cleanup = 0
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\620-route-the-api-v1-surface\evidence\06-policy-capture.json
+tables reached by routed statements : 3; carrying bypass_rls_policy: 3; missing: []
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : FIXTURES (FleetMessage, marker-bodied)  (credential MASKED, never printed)
+fixtures: A1 d1f66fed-df11-41b3-8cab-827eba114385 · A2 93b8c260-f6f5-4519-874b-3700043eb8de · B1 57449626-080a-475c-8b08-973430c33fa4 · B2 c6deb88a-ed31-4dd4-876d-437650294cc9 · ownerB 00dc04fb-dff5-441c-824b-d11c64d560af
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."FleetMessage"
+DROPPED bypass_rls_policy ON public."User"
+DROPPED bypass_rls_policy ON public."dispatches"
+bypass_rls_policy now: 83 (was 86)
+  PASS  hook-control  {"callerSaw":"TC001","hookRecorded":1}
+  PASS  handler:audio-url:own  {"status":200,"url":"stub-presigned://quick-620/fixture-a1.m4a","tc001Observed":0,"driverErrors":[],"covers":"audio-url:36 — row RETURNED"}
+  PASS  handler:audio-url:foreign  {"status":404,"json":{"error":"Message not found"},"privilegedCounterRead":1,"tc001Observed":0}
+  PASS  handler:send:foreign-recipient  {"status":404,"json":{"error":"Recipient not found in tenant"},"privilegedCounterRead":1,"rowsWritten":0,"tc001Observed":0}
+  PASS  handler:send:own-recipient  {"verdict":"BLOCKED_BY_STAGING_DRIFT","status":500,"tc001Observed":0,"driverErrors":["42703: column \"isBroadcast\" of relation \"FleetMessage\" does not exist"],"statementsReached":"send:64 RETURNED the recipient (a 404 would have ended the handler); send:76 blocked by missing isBroadcast","afterCallbacksScheduled":0,"rowsWritten":0}
+  PASS  handler:thread  {"verdict":"BLOCKED_BY_STAGING_DRIFT","status":500,"tc001Observed":0,"driverErrors":["42703: column FleetMessage.isBroadcast does not exist"],"statementsReached":"thread:79 blocked (select isBroadcast); :105 and :118 not reached","afterCallbacksScheduled":0}
+  PASS  handler:conversations  {"verdict":"BLOCKED_BY_STAGING_DRIFT","status":500,"tc001Observed":0,"driverErrors":["42703: column FleetMessage.isBroadcast does not exist"],"statementsReached":"conversations:38 blocked (where/select isBroadcast); :74 and :94 not reached","afterCallbacksScheduled":0}
+  PASS  handler:broadcast  {"verdict":"BLOCKED_BY_STAGING_DRIFT","status":500,"tc001Observed":0,"driverErrors":["42703: column \"isBroadcast\" of relation \"FleetMessage\" does not exist"],"statementsReached":"broadcast:54 blocked (data isBroadcast)","afterCallbacksScheduled":0,"rowsWritten":0}
+  PASS  handler:stops:GET  {"verdict":"BLOCKED_BY_STAGING_DRIFT","status":500,"tc001Observed":0,"driverErrors":["42703: column FleetMessage.isBroadcast does not exist"],"statementsReached":"stop-ownership lookup passed (else 404); stops:49 blocked (select isBroadcast); :76 and :89 not reached","afterCallbacksScheduled":0}
+  PASS  handler:stops:POST  {"verdict":"BLOCKED_BY_STAGING_DRIFT","status":500,"tc001Observed":0,"driverErrors":["42703: column \"isBroadcast\" of relation \"FleetMessage\" does not exist"],"statementsReached":"stop lookup + driver user resolved (else 404/422); stops:201 blocked (data isBroadcast)","afterCallbacksScheduled":0,"rowsWritten":0}
+  PASS  shape:fleet-findMany-stop  {"own":1,"foreign":0,"privilegedCounterRead":1,"tc001Observed":0}
+  PASS  shape:fleet-findMany-or  {"withRoutePredicate":2,"withoutRoutePredicate":2,"privilegedFixtureRows":4,"tc001Observed":0}
+  PASS  shape:fleet-updateMany-mark-read  {"updatedCount":1,"ownMarkedRead":true,"foreignMarkedRead":false,"readAtResetAfter":true,"tc001Observed":0}
+  PASS  shape:fleet-insert-policy  {"ownInsertRowCount":1,"ownRowsWritten":1,"foreignInsertSqlstate":"42501","foreignCallerSaw":"P2010","foreignDriverCodes":["42501"],"foreignRowsWritten":0,"tc001Observed":0,"unprovenOnStaging":"Prisma create injection + createdById NULL (P2022 on the missing isBroadcast column)"}
+  PASS  shape:user-findMany  {"withRoutePredicate":["d27660ff-feef-43dd-b22c-07ee74b9ee01"],"withoutRoutePredicate":["d27660ff-feef-43dd-b22c-07ee74b9ee01"],"privilegedCounterRead":2,"tc001Observed":0}
+  PASS  shape:trip-findMany  {"withRoutePredicate":["d2ee6c42-6e23-44e9-beb0-483a18d52f9c"],"policyAloneNoPredicate":["d2ee6c42-6e23-44e9-beb0-483a18d52f9c"],"privilegedCounterRead":2,"tc001Observed":0}
+  PASS  table:FleetMessage  {"model":"FleetMessage","table":"FleetMessage","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":3,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":2,"verdict":"PROVEN","data":"FIXTURE rows only — staging holds 0 real FleetMessage rows"}}
+  PASS  table:User  {"model":"User","table":"User","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":6,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":4,"verdict":"PROVEN","data":"real staging rows"}}
+  PASS  table:Trip  {"model":"Trip","table":"dispatches","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN","data":"real staging rows"}}
+RESTORE: re-created 3; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
+FIXTURES: deleted; marker rows left 0
+exit 0

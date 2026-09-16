@@ -1,0 +1,21 @@
+ × tests/security/tenant-client-stop-access.test.ts > tenant-client-stop-access guard — per-site conversion > site-10-v1-stop-messages-route > mustContain: /import \{ getTenantPrisma \} from '@\/lib\/context\/tenant-context';/ 22ms
+   → expected 'import { NextRequest, NextResponse, a…' to match /import \{ getTenantPrisma \} from…/lib\
+ × tests/security/bypass-rls-flag-removal.test.ts > quick-587 — app.bypass_rls flag removal guard > 'app/api/v1/carrier/stops/[id]/message…' > RULE 2 — retained flags are still present and still on the bare client 19ms
+   → app/api/v1/carrier/stops/[id]/messages/route.ts: expected exactly 4 app.bypass_rls flag(s). These sit in out-of-scope transactions (FleetMessage / User / Trip / CarrierLoad); 12 of the 17 across all files touch a NON-EXEMPT model, so removing one would newly apply a tenantId filter — the hazard quick-586 found on stops/[id]/page.tsx. Removing them needs its own audit, not this task's conclusion.: expected +0 to be 4 // Object.is equality
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/security/bypass-rls-flag-removal.test.ts > quick-587 — app.bypass_rls flag removal guard > 'app/api/v1/carrier/stops/[id]/message…' > RULE 2 — retained flags are still present and still on the bare client
+AssertionError: app/api/v1/carrier/stops/[id]/messages/route.ts: expected exactly 4 app.bypass_rls flag(s). These sit in out-of-scope transactions (FleetMessage / User / Trip / CarrierLoad); 12 of the 17 across all files touch a NON-EXEMPT model, so removing one would newly apply a tenantId filter — the hazard quick-586 found on stops/[id]/page.tsx. Removing them needs its own audit, not this task's conclusion.: expected +0 to be 4 // Object.is equality
+ FAIL  tests/security/tenant-client-stop-access.test.ts > tenant-client-stop-access guard — per-site conversion > site-10-v1-stop-messages-route > mustContain: /import \{ getTenantPrisma \} from '@\/lib\/context\/tenant-context';/
+AssertionError: expected 'import { NextRequest, NextResponse, a…' to match /import \{ getTenantPrisma \} from…/lib\
+ Test Files  2 failed (2)
+      Tests  2 failed | 99 passed (101)
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 100 passed (101)
+GREEN AFTER UPDATE:  Test Files  2 passed (2)
+GREEN AFTER UPDATE:       Tests  101 passed (101)
+RULE-1 WITNESS (flag re-added in orgPrisma tx): ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+RULE-1 WITNESS (flag re-added in orgPrisma tx):  FAIL  tests/security/bypass-rls-flag-removal.test.ts > quick-587 — app.bypass_rls flag removal guard > 'app/api/v1/carrier/stops/[id]/message…' > RULE 1 — no tenant-scoped transaction sets app.bypass_rls
+RULE-1 WITNESS (flag re-added in orgPrisma tx):  FAIL  tests/security/bypass-rls-flag-removal.test.ts > quick-587 — app.bypass_rls flag removal guard > 'app/api/v1/carrier/stops/[id]/message…' > RULE 2 — retained flags are still present and still on the bare client
+RULE-1 WITNESS (flag re-added in orgPrisma tx):       Tests  2 failed | 27 passed (29)
+RESTORED:       Tests  29 passed (29)

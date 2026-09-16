@@ -1,0 +1,14 @@
+server log bytes total: 33312
+web run starts at byte 2037; mobile run starts at byte 22485
+TC001 mentions before web run (banner line only): 1
+TC001 mentions in web range [2037,22485): 12
+TC001 mentions in mobile range [22485,33312): 0
+q620-hook TC001 lines in mobile range: 0
+GET lines in mobile range (positive control that the range is not empty): 30
+hook control lines: 4 PASS, 0 FAIL
+mobile entries identical to quick-619 (role route status verdict): true
+/api/mobile/driver/messages 
+/api/mobile/driver/messages/route-thread 
+/api/mobile/owner/drivers 
+/api/mobile/owner/fleet/messages 
+/api/mobile/owner/payroll 

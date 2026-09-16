@@ -1,0 +1,47 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[click-target] supabase project : wyixpgunnjmzguhggocz (staging)  anon key MASKED eyJhbG...d7Zs
+[click-target] server : http://localhost:3000   log : C:\Users\sammy\AppData\Local\Temp\claude\c--Users-sammy-Projects-DriveCommand\7ffb4d48-f60e-4972-9bfd-b16757de729c\scratchpad\server-620.log
+logging in (password grant against staging Supabase) …
+  OWNER  alpha  userId d27660ff-feef-43dd-b22c-07ee74b9ee01  app_metadata.tenantId b5623cdd-dc19-4900-b75d-0ecfcaf191b8  role OWNER  token MASKED (914 chars)
+  DRIVER alpha  userId d606784c-9518-4fe1-a37e-449aaa8396f3  app_metadata.tenantId b5623cdd-dc19-4900-b75d-0ecfcaf191b8  role DRIVER  token MASKED (920 chars)
+  DRIVER beta   userId 63f7cc69-8140-4290-afab-5a34bded0017  app_metadata.tenantId 8c6136c4-eb7b-4a89-a524-d1d0e2c8d045  role DRIVER  token MASKED (919 chars)
+
+ROUTED mobile GET routes (derived from the pinned inventory): 28
+
+  200  pass            DRIVER /api/mobile/driver/dashboard
+  200  pass            DRIVER /api/mobile/driver/documents
+  200  pass            DRIVER /api/mobile/driver/hos
+  200  pass            DRIVER /api/mobile/driver/incidents
+  200  pass            DRIVER /api/mobile/driver/loads
+  500  fail            DRIVER /api/mobile/driver/messages
+  400  fail            DRIVER /api/mobile/driver/messages/route-thread
+  200  pass            DRIVER /api/mobile/driver/messages/unread-count
+  200  pass            DRIVER /api/mobile/driver/route
+  200  pass            DRIVER /api/mobile/driver/tasks
+  200  pass            DRIVER /api/mobile/driver/tracking-token
+  200  pass            OWNER  /api/mobile/owner/compliance
+  200  pass            OWNER  /api/mobile/owner/crm
+  200  pass            OWNER  /api/mobile/owner/customers
+  200  pass            OWNER  /api/mobile/owner/dashboard
+  500  fail            OWNER  /api/mobile/owner/drivers
+  200  pass            OWNER  /api/mobile/owner/drivers/active
+  200  pass            OWNER  /api/mobile/owner/fleet-positions
+  500  fail            OWNER  /api/mobile/owner/fleet/messages
+  200  pass            OWNER  /api/mobile/owner/fuel
+  200  pass            OWNER  /api/mobile/owner/invoices
+  200  pass            OWNER  /api/mobile/owner/loads
+  200  pass            OWNER  /api/mobile/owner/maintenance
+  200  pass            OWNER  /api/mobile/owner/map/vehicles
+  500  fail            OWNER  /api/mobile/owner/payroll
+  200  pass            OWNER  /api/mobile/owner/routes
+  200  pass            OWNER  /api/mobile/owner/safety
+  200  pass            OWNER  /api/mobile/owner/trucks
+
+ANTI-VACUITY:
+  PASS  FLOOR — at least 20 routed GET routes exercised — 28 >= 20
+  PASS  AUTH CONTROL — /api/mobile/driver/dashboard with NO Authorization returns 401 — status 401 (expected 401)
+  PASS  TENANT CONTROL — /api/mobile/driver/dashboard with a tenant-B driver token still answers 200 with tenant-B data — status 200; body {"activeLoad":null,"todayMiles":0,"stopsCompleted":0,"hosHoursRemaining":11,"recentAlerts":[]} — NOTE: staging is sparse, so an empty result here proves the route does not RAISE, not that it scopes
+  FAIL  ZERO TC001 across the correlated slices AND the whole log (independent measurements) — slices 0, whole log 13
+
+30 entries — pass 24 · fail 5 · not-reachable 0 · TC001 0
+written: C:\Users\sammy\Projects\DriveCommand\.planning\quick\620-route-the-api-v1-surface\evidence\07-mobile-click-through.json

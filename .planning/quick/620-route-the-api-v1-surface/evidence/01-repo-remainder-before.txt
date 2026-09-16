@@ -1,0 +1,20 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+repo-wide remainder: 59 statements in 31 files (tests: 5, excluded)
+by surface:
+  API_V1                 6 files   14 statements
+  LIB_SERVICES           6 files   11 statements
+  OWNER_PORTAL           4 files    7 statements
+  DRIVER_PORTAL          4 files    6 statements
+  API_DRIVER             2 files    6 statements
+  API_CRON               1 files    4 statements
+  API_AUTH               2 files    3 statements
+  API_DRIVER_PAY         1 files    2 statements
+  API_GPS                1 files    2 statements
+  API_INTEGRATIONS       2 files    2 statements
+  API_PUSH_TOKENS        1 files    1 statements
+  API_TRACK              1 files    1 statements
+  PASS  FLOOR — total statements >= 50 — 59 >= 50
+  PASS  POSITIVE CONTROL — lib/auth/supabase.ts still yields its ARRAY-FORM statement — 1 array-form at lines [164] >= 1
+  PASS  COUNTER-ASSERTION src/lib/geofencing/geofence-check.ts WAS READ — bytes=10398 parsed=true acquiresTenantClient=true
+  PASS  COUNTER-ASSERTION src/lib/geofencing/geofence-check.ts YIELDS ZERO — 0 === 0
+  PASS  ARITHMETIC — 59 at quick-620 start (quick-619 close) — measured 59 vs expected 59

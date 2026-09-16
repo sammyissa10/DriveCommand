@@ -1,0 +1,24 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+pre-flight: leftover marker rows after cleanup = 0
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\620-route-the-api-v1-surface\evidence\06-policy-capture.json
+tables reached by routed statements : 3; carrying bypass_rls_policy: 3; missing: []
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : FIXTURES (FleetMessage, marker-bodied)  (credential MASKED, never printed)
+fixtures: A1 0bb13c56-93ee-4f03-954f-334d02ae470d · A2 0a18905c-b193-4ed2-996e-5cc50bb2b3e9 · B1 c35b5fbd-0f6d-4a3c-b6a7-0c8667afe171 · B2 56d7941e-204e-42e5-942d-c006cdfe0ed1 · ownerB 00dc04fb-dff5-441c-824b-d11c64d560af
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."FleetMessage"
+DROPPED bypass_rls_policy ON public."User"
+DROPPED bypass_rls_policy ON public."dispatches"
+bypass_rls_policy now: 83 (was 86)
+
+!! --throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.
+RESTORE: re-created 3; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
+FIXTURES: deleted; marker rows left 0
+exit 3

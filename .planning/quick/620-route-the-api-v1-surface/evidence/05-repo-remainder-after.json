@@ -1,0 +1,373 @@
+{
+  "generated": "2026-09-16T17:21:32.567Z",
+  "method": "ts.createSourceFile per file, no Program, no type checker; INNERMOST CallExpression/TaggedTemplateExpression whose own literal children contain \"app.bypass_rls\". CRLF normalised. Test paths excluded and reported separately. Identical to 616-bypass-census.ts.",
+  "totals": {
+    "statements": 45,
+    "files": 25,
+    "testStatements": 5
+  },
+  "arithmetic": {
+    "censusLivePopulationAt616": 177,
+    "routedBy616": 2,
+    "liveAt617Start": 175,
+    "routedBy617": 67,
+    "liveAt618Start": 108,
+    "routedBy618": 16,
+    "liveAt619Start": 92,
+    "routedBy619": 33,
+    "liveAt620Start": 59,
+    "routedBy620": 14,
+    "expectedRemaining": 45,
+    "measuredRemaining": 45
+  },
+  "bySurface": {
+    "LIB_SERVICES": {
+      "files": 6,
+      "statements": 11
+    },
+    "DRIVER_PORTAL": {
+      "files": 4,
+      "statements": 6
+    },
+    "OWNER_PORTAL": {
+      "files": 4,
+      "statements": 7
+    },
+    "API_AUTH": {
+      "files": 2,
+      "statements": 3
+    },
+    "API_CRON": {
+      "files": 1,
+      "statements": 4
+    },
+    "API_DRIVER": {
+      "files": 2,
+      "statements": 6
+    },
+    "API_DRIVER_PAY": {
+      "files": 1,
+      "statements": 2
+    },
+    "API_GPS": {
+      "files": 1,
+      "statements": 2
+    },
+    "API_INTEGRATIONS": {
+      "files": 2,
+      "statements": 2
+    },
+    "API_PUSH_TOKENS": {
+      "files": 1,
+      "statements": 1
+    },
+    "API_TRACK": {
+      "files": 1,
+      "statements": 1
+    }
+  },
+  "antiVacuity": [
+    {
+      "name": "FLOOR — total statements >= 40",
+      "pass": true,
+      "detail": "45 >= 40"
+    },
+    {
+      "name": "POSITIVE CONTROL — lib/auth/supabase.ts still yields its ARRAY-FORM statement",
+      "pass": true,
+      "detail": "1 array-form at lines [164] >= 1"
+    },
+    {
+      "name": "COUNTER-ASSERTION src/app/api/v1/messages/thread/route.ts WAS READ",
+      "pass": true,
+      "detail": "bytes=5188 parsed=true acquiresTenantClient=true"
+    },
+    {
+      "name": "COUNTER-ASSERTION src/app/api/v1/messages/thread/route.ts YIELDS ZERO",
+      "pass": true,
+      "detail": "0 === 0"
+    },
+    {
+      "name": "OTHER SURFACES UNCHANGED — every non-API_V1 statement identical file:line before and after",
+      "pass": true,
+      "detail": "before 45 / after 45"
+    },
+    {
+      "name": "ARITHMETIC — 59 at quick-620 start − 14 routed from API_V1 = 45",
+      "pass": true,
+      "detail": "measured 45 vs expected 45"
+    }
+  ],
+  "statements": [
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 179,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 227,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 417,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 456,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 74,
+      "surface": "DRIVER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 86,
+      "surface": "DRIVER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-routes.ts",
+      "line": 202,
+      "surface": "DRIVER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(driver)/tasks/page.tsx",
+      "line": 148,
+      "surface": "DRIVER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(driver)/tasks/[id]/page.tsx",
+      "line": 95,
+      "surface": "DRIVER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(driver)/tasks/[id]/page.tsx",
+      "line": 207,
+      "surface": "DRIVER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+      "line": 24,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+      "line": 30,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+      "line": 91,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+      "line": 110,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+      "line": 153,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 137,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+      "line": 118,
+      "surface": "OWNER_PORTAL",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/auth/accept-invitation/route.ts",
+      "line": 155,
+      "surface": "API_AUTH",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/auth/accept-invitation/route.ts",
+      "line": 239,
+      "surface": "API_AUTH",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 154,
+      "surface": "API_AUTH",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 82,
+      "surface": "API_CRON",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 102,
+      "surface": "API_CRON",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 181,
+      "surface": "API_CRON",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 190,
+      "surface": "API_CRON",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver/gps-ping/route.ts",
+      "line": 69,
+      "surface": "API_DRIVER",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 66,
+      "surface": "API_DRIVER",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 92,
+      "surface": "API_DRIVER",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 105,
+      "surface": "API_DRIVER",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 209,
+      "surface": "API_DRIVER",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 219,
+      "surface": "API_DRIVER",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts",
+      "line": 60,
+      "surface": "API_DRIVER_PAY",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/driver-pay/me/settlements/[id]/dispute/route.ts",
+      "line": 108,
+      "surface": "API_DRIVER_PAY",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/gps/report/route.ts",
+      "line": 88,
+      "surface": "API_GPS",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/gps/report/route.ts",
+      "line": 120,
+      "surface": "API_GPS",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/integrations/motive/sync/route.ts",
+      "line": 54,
+      "surface": "API_INTEGRATIONS",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/integrations/samsara/sync/route.ts",
+      "line": 54,
+      "surface": "API_INTEGRATIONS",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/push-tokens/route.ts",
+      "line": 54,
+      "surface": "API_PUSH_TOKENS",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/app/api/track/[token]/route.ts",
+      "line": 50,
+      "surface": "API_TRACK",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/lib/auth/supabase.ts",
+      "line": 164,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": true
+    },
+    {
+      "file": "src/lib/driver-pay/require-driver.ts",
+      "line": 105,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/lib/notifications/audit-log.ts",
+      "line": 47,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/lib/notifications/send-push.ts",
+      "line": 49,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/lib/notifications/send-push.ts",
+      "line": 90,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/server/services/workflows/notifications.ts",
+      "line": 67,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    },
+    {
+      "file": "src/server/services/workflows/notifications.ts",
+      "line": 154,
+      "surface": "LIB_SERVICES",
+      "inArrayForm": false
+    }
+  ]
+}

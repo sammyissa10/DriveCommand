@@ -1,0 +1,25 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : HASHES staging (read-only)  (credential MASKED, never printed)
+[db-target] project : oqdhberkghtnszrkdvfm (PRODUCTION, READ-ONLY pg_policies SELECT)  host : aws-1-us-west-1.pooler.supabase.com:5432  role : postgres.oqdhberkghtnszrkdvfm  (credential MASKED)
+{
+  "staging": {
+    "label": "staging",
+    "count": 86,
+    "tables": "86 tables",
+    "sha256": "0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd",
+    "md5": "8d1d6cbda610a7e3a8f3a5582078b42c",
+    "sha256BareComma": "4b1739327821b66b03d18bc6c3909ef7db3ca3311a888ed8142224b9772c446a",
+    "md5BareComma": "29498ef6e52f51dcc02461a1abbb84b0"
+  },
+  "production": {
+    "label": "production",
+    "count": 86,
+    "tables": "86 tables",
+    "sha256": "0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd",
+    "md5": "8d1d6cbda610a7e3a8f3a5582078b42c",
+    "sha256BareComma": "4b1739327821b66b03d18bc6c3909ef7db3ca3311a888ed8142224b9772c446a",
+    "md5BareComma": "29498ef6e52f51dcc02461a1abbb84b0"
+  }
+}
+staging 86 0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd 29498ef6e52f51dcc02461a1abbb84b0
+prod    86 0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd 29498ef6e52f51dcc02461a1abbb84b0
+lists identical: true

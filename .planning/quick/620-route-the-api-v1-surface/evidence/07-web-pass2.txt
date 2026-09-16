@@ -1,0 +1,33 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+logging in …
+  SYSADMIN sysadmin@staging.test (User.isSystemAdmin = true)
+  tracking token: NONE — no seeded Load carries a trackingToken — the legacy "Load" table holds 0 row(s) on staging (scripts/seed-staging.ts populates the CARRIER "loads" table, not this one)
+
+PASS 2 surfaces:
+  200  pass           /carrier/driver-pay/settlements  
+  200  pass           /carrier/driver-pay/pending  
+  200  pass           /carrier/driver-pay/reports  
+  404  not-reachable  /carrier/driver-pay  
+  404  not-reachable  /carrier/reports  
+  200  pass           /carrier/reports/aging  
+  200  pass           /carrier/reports/performance  
+  200  pass           /carrier/reports/revenue  
+  200  pass           /carrier/reports/todays-trips  
+  200  pass           /checklists  
+  404  not-reachable  /checklists/playbooks  
+  404  not-reachable  /checklists/instances  
+  200  pass           /checklists/analytics  
+  200  pass           /checklists/automation  
+  200  pass           /settings/notifications  
+  200  pass           /automations  
+  200  pass           /admin-dashboard  
+  200  pass           /billing  
+  200  pass           /plans  
+  200  pass           /notifications  
+  200  pass           /admin-support  
+  404  not-reachable  /track/604-probe-no-seeded-token  
+  200  pass           /sign-up  
+  307  not-reachable  /onboarding  
+  200  pass           /onboarding/welcome  
+
+merged total 66 entries — pass 56 · fail 4 · not-reachable 6
