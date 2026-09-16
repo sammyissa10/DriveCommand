@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LifeBuoy, Ticket, Clock, CheckCircle } from 'lucide-react';
 import { AdminTicketList } from './ticket-list';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { logger } from '@/lib/logger';
 
 export default async function AdminSupportPage() {
@@ -21,7 +21,12 @@ export default async function AdminSupportPage() {
   // Fetch all tenant names for the Priority + Tenant filter dropdown
   let tenantOptions: { id: string; name: string }[] = [];
   try {
-    tenantOptions = await prisma.tenant.findMany({
+    // quick-615 — ROUTE. The filter dropdown lists EVERY tenant;
+    // `tenant_self_read` is `id = current_tenant_id()` with no second branch,
+    // so on the tenant connection this dropdown is empty. Reuses the existing
+    // reason — same job as `getAllTenants` and `tenant.repository.ts:96`.
+    const adminDbTenantFilter = await getAdminDb('sysadmin tenant listing');
+    tenantOptions = await adminDbTenantFilter.tenant.findMany({
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
     });

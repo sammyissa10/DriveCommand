@@ -4,7 +4,8 @@
  * Authentication: CRON_SECRET bearer token (timing-safe comparison)
  */
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+// quick-615 — the `prisma` import is gone: a grep proves zero remaining
+// `prisma.` usages. This route is no longer a two-mechanism file.
 import { getAdminDb } from '@/lib/db/admin-prisma';
 import { logger } from '@/lib/logger';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
@@ -21,8 +22,14 @@ export async function GET(request: NextRequest) {
   try {
     // Find RESOLVED tickets where updatedAt is older than 7 days
     // AND no TicketMessage from OWNER in the last 7 days (owner hasn't replied)
+    // quick-615 — ROUTE. The READ half of the two-mechanism file quick-602
+    // MEASURED raising `TC001` at runtime: line 57's acquisition covers only
+    // the write and is not in scope here. Same unit of work, so it REUSES that
+    // reason and mints nothing. Left unrouted, the sweep finds no stale tickets
+    // and reports `{success: true, closed: 0}` for ever.
+    const adminDbScan = await getAdminDb('auto-close stale ticket sweep');
     type RawTicket = { id: string; ticketNumber: string };
-    const tickets = await prisma.$queryRaw<RawTicket[]>`
+    const tickets = await adminDbScan.$queryRaw<RawTicket[]>`
       SELECT st.id, st."ticketNumber"
       FROM "SupportTicket" st
       WHERE st.status = 'RESOLVED'

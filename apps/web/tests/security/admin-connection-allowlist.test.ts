@@ -113,12 +113,23 @@ interface AllowlistEntry {
 }
 
 const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
-  'actions/support-tickets.ts': { calls: 3, minBytes: 15000 },
+  // quick-615 — 3 -> 4. ONE acquisition for `getAllTickets`, covering the
+  // all-tenant `SupportTicket` scan and all THREE of the `Promise.all` joins
+  // that decorate it (`User`, `Tenant`, and the `auth.users` display-name
+  // fallback, which fails 42501 on a GRANT and is fixed by one). The seven
+  // bypass-flagged statements and `:563` are deliberately untouched.
+  'actions/support-tickets.ts': { calls: 4, minBytes: 15000 },
   // quick-613 — 3 -> 7. The three pre-existing `automationRun` calls, plus the
   // three routed `AutomationRule` units of work (listing, detail read,
   // activation toggle), plus ONE shared acquisition in `manualTriggerRule`
   // serving both its `tenant.findUnique` and its `automationRule.findUnique`.
   'app/(admin)/actions/automations.ts': { calls: 7, minBytes: 4000 },
+  // quick-615 — NEW. Nine `NotificationSendLog` statements in two units of
+  // work (the send-log list+count pair, the seven-way delivery-statistics
+  // block). The file keeps its `prisma` import and stays MIXED on purpose: its
+  // other eight statements are on `NotificationTemplate` /
+  // `NotificationEmailConfig`, both RLS OFF, and must NOT be routed.
+  'app/(admin)/actions/notifications.ts': { calls: 2, minBytes: 9000 },
   'app/(admin)/actions/sysadmin-invoices.ts': { calls: 10, minBytes: 9000 },
   // quick-615 — 7 -> 12. quick-600 routed this file's seven MUTATIONS from a
   // design-doc-derived census; its fourteen cross-tenant READS stayed on the
@@ -128,9 +139,28 @@ const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
   // (`:123` under `adminDb`, `:198` under `adminDbSuspend`, `:239` under
   // `adminDbReactivate`) and therefore add no call at all.
   'app/(admin)/actions/tenants.ts': { calls: 12, minBytes: 15000 },
+  // quick-615 — NEW. Both units of work are tenantless: `getAllUsers` spans
+  // every tenant, and `updateUserProfile`'s input is `{userId, …}`. The update
+  // path shares ONE acquisition across read / write / compensating rollback /
+  // re-read.
+  'app/(admin)/actions/users.ts': { calls: 2, minBytes: 4000 },
+  // quick-615 — NEW. Four single-statement sysadmin server components. `.tsx`
+  // precedent: `app/track/[token]/page.tsx`, `app/(admin)/billing/[id]/page.tsx`.
+  'app/(admin)/admin-support/page.tsx': { calls: 1, minBytes: 3000 },
+  'app/(admin)/tenants/[id]/activation-progress-section.tsx': { calls: 1, minBytes: 2000 },
+  'app/(admin)/tenants/[id]/automation-runs-section.tsx': { calls: 1, minBytes: 2500 },
+  'app/(admin)/tenants/[id]/page.tsx': { calls: 1, minBytes: 11000 },
   'app/(admin)/billing/[id]/page.tsx': { calls: 1, minBytes: 4000 },
   'app/api/auth/accept-invitation/route.ts': { calls: 2, minBytes: 9000 },
-  'app/api/cron/auto-close-tickets/route.ts': { calls: 1, minBytes: 1500 },
+  // quick-615 — 1 -> 2. The READ half quick-602 measured raising TC001; line
+  // 57's acquisition was not in scope at line 25. Same unit of work, so it
+  // REUSES the existing reason and mints no new member.
+  'app/api/cron/auto-close-tickets/route.ts': { calls: 2, minBytes: 2500 },
+  // quick-615 — NEW. ONE acquisition for the four `candidateQuery` closures and
+  // ONE for the platform-scope rule lookup in `scheduleCronDrivenRule`. The two
+  // per-candidate dedup reads in the same helper went to
+  // `getTenantPrismaForOrg`, NOT here — they hold the loop variable.
+  'app/api/cron/automations/route.ts': { calls: 2, minBytes: 7000 },
   // quick-606 — four cron tenant sweeps routed off the bare client.
   'app/api/cron/carrier-auto-dispatch/route.ts': { calls: 1, minBytes: 3000 },
   'app/api/cron/carrier-compliance-alerts/route.ts': { calls: 1, minBytes: 5000 },
@@ -148,6 +178,11 @@ const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
   // for the byte-identical query. It cannot be tenant-scoped: an anonymous
   // caller has no tenant until the token resolves one.
   'app/track/[token]/page.tsx': { calls: 1, minBytes: 3000 },
+  // quick-615 — NEW. ONE acquisition at `runEvaluator`'s function scope serving
+  // its three all-tenant reads (`AppEvent` scan, per-event `AutomationRule`
+  // lookup, due-run queue). Its `:80` dedup read went to
+  // `getTenantPrismaForOrg`; its bypass-flagged transaction is untouched.
+  'lib/automations/evaluator.ts': { calls: 1, minBytes: 7000 },
   'lib/context/tenant-context.ts': { calls: 0, minBytes: 4000 },
   'lib/db/repositories/tenant.repository.ts': { calls: 2, minBytes: 1500 },
   'lib/email/send-sysadmin-invoice.ts': { calls: 1, minBytes: 2000 },
@@ -160,8 +195,16 @@ const KNOWN_NON_ALLOWLISTED_FILE = 'lib/db/prisma.ts';
 
 describe('quick-600 (B5) — getAdminDb import allowlist', () => {
   it('integrity floor: allowlist is non-trivial and internally consistent', () => {
-    expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(23);
-    expect(TOTAL_EXPECTED_CALLS).toBe(53); // quick-615: 48 + 5 in tenants.ts
+    // quick-615 — 23 -> 31 entries, 48 -> 66 calls. Eight new FILES (8 of the
+    // 11 cutover-blocker files; `tenants.ts`, `support-tickets.ts` and
+    // `auto-close-tickets` were already on the list, and `sysadmin-invoices.ts`
+    // turned out never to have been a blocker at all — its one apparent bare
+    // statement is a `typeof` in a return-type annotation). 18 new calls: 11 in
+    // the new files, 5 in `tenants.ts`, 1 each in `support-tickets.ts` and
+    // `auto-close-tickets`. Three further routed statements added NO call —
+    // they are receiver swaps onto an admin client already in scope.
+    expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(31);
+    expect(TOTAL_EXPECTED_CALLS).toBe(66);
   });
 
   it('walked a real, non-trivial corpus (anti-vacuity)', () => {

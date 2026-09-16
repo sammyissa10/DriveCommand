@@ -86,6 +86,52 @@ export const ADMIN_REASONS = [
   'sysadmin ticket status update',
   'sysadmin ticket reply',
   'sysadmin ticket thread read',
+  // quick-615 — the LIST, which was never routed while three of its siblings
+  // were. One acquisition covers the `SupportTicket` scan and all three of the
+  // `Promise.all` joins that decorate it, `auth.users` included: splitting one
+  // `Promise.all` across two connections is quick-561's "fixing one bell and
+  // leaving the other".
+  'sysadmin ticket listing',
+
+  // ── SysAdmin notification surface ─────────────────────────────────────────
+  // quick-615 — `NotificationSendLog` only. The other eight statements in
+  // `(admin)/actions/notifications.ts` are on `NotificationTemplate` /
+  // `NotificationEmailConfig`, both RLS-OFF under the Section 4.12 allowlist,
+  // and are DELIBERATELY left on the tenant connection: `app_user` holds full
+  // DML on them from the Phase 1 grants and nothing raises. That file stays
+  // MIXED on purpose — do not "finish the job".
+  'sysadmin notification send log listing',
+  'sysadmin notification delivery statistics',
+
+  // ── SysAdmin user administration ──────────────────────────────────────────
+  // quick-615 — neither of these ever has a tenant: `getAllUsers` spans every
+  // tenant, and `updateUserProfile`'s input is `{userId, …}`. The update path
+  // shares ONE acquisition across its read-before-write, its write, its
+  // COMPENSATING ROLLBACK and its re-read — a rollback that landed on a
+  // different connection from the write it reverses would be worse than the
+  // failure it is compensating for.
+  'sysadmin user listing',
+  'sysadmin user profile update',
+
+  // ── SysAdmin tenant-detail panels ─────────────────────────────────────────
+  // quick-615 — three server components under `(admin)/tenants/[id]/`, each a
+  // single statement, each rendering an ARBITRARY tenant for an operator who is
+  // not in it. The automation-run one is 614 §2.1 B-7's asymmetry: quick-613
+  // routed the `/automations` screen's run list and this byte-similar one was
+  // never in that task's census.
+  'sysadmin tenant activation progress read',
+  'sysadmin tenant automation run list',
+  'sysadmin tenant billing summary read',
+
+  // ── Automation scheduling (cron + evaluator) ──────────────────────────────
+  // quick-615 — the reads that DISCOVER which tenants are candidates, plus the
+  // platform-scope rule lookup that decides whether a sweep runs at all. Both
+  // run before any tenant is known. The per-candidate dedup reads in the same
+  // loops are NOT here: they hold the loop variable and went to
+  // `getTenantPrismaForOrg`, which is the whole point of separating the two
+  // classes.
+  'automation cron candidate sweep',
+  'automation evaluator scan',
 
   // ── BOOTSTRAP (pre-tenant / pre-auth reads — design §1.1 / §3.2) ──────────
   'tenant lookup by user id',

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 
 interface Props {
   tenantId: string;
@@ -17,7 +17,13 @@ const MILESTONES = [
 type MilestoneField = (typeof MILESTONES)[number]['field'];
 
 export async function ActivationProgressSection({ tenantId }: Props) {
-  const progress = await prisma.activationProgress.findUnique({
+  // quick-615 — ROUTE. A SysAdmin page rendering an ARBITRARY tenant: the
+  // `tenantId` prop selects which tenant is being administered, it is not the
+  // viewer's tenant, and the request carries none. `ActivationProgress` carries
+  // `tenant_isolation_policy`, so on the tenant connection this panel would
+  // report "No activation progress record found" for every tenant that has one.
+  const adminDbActivation = await getAdminDb('sysadmin tenant activation progress read');
+  const progress = await adminDbActivation.activationProgress.findUnique({
     where: { tenantId },
   });
 

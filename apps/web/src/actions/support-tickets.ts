@@ -237,8 +237,24 @@ export async function getAllTickets(filters?: {
 }) {
   await requireAdminAccess();
 
-  // Use $queryRaw — raw SQL bypasses RLS entirely, no set_config needed.
-  // SupportTicket has no RLS so this is safe for cross-tenant admin access.
+  // quick-615 — THE TWO SENTENCES THAT USED TO BE HERE WERE BOTH FALSE, and
+  // they are recorded rather than deleted because they are why this was never
+  // routed. They read: "Use $queryRaw — raw SQL bypasses RLS entirely, no
+  // set_config needed. SupportTicket has no RLS so this is safe for cross-tenant
+  // admin access."
+  //   (1) Raw SQL does NOT bypass RLS. The policy is applied by the PLANNER,
+  //       whatever route the statement took to reach it.
+  //   (2) `SupportTicket` DOES carry `tenant_isolation_policy` — measured in
+  //       614 §6 against `pg_policy`, not inferred.
+  // Same family as quick-610's `NotificationSendLog` comment: read
+  // `pg_class`/`pg_policy`, never a comment about them.
+  //
+  // ROUTE. ONE acquisition for the whole unit of work — the all-tenant
+  // `SupportTicket` scan below and all three of the `Promise.all` joins that
+  // decorate it. Splitting one `Promise.all` across two connections is
+  // quick-561's "fixing one bell and leaving the other".
+  const adminDbTicketList = await getAdminDb('sysadmin ticket listing');
+
   type RawTicket = {
     id: string; ticketNumber: string; tenantId: string; submittedBy: string;
     fromPage: string; category: SupportTicketCategory; priority: SupportTicketPriority;
@@ -268,7 +284,7 @@ export async function getAllTickets(filters?: {
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-  const tickets = await prisma.$queryRawUnsafe<RawTicket[]>(
+  const tickets = await adminDbTicketList.$queryRawUnsafe<RawTicket[]>(
     `SELECT * FROM "SupportTicket" ${whereClause} ORDER BY "createdAt" DESC`,
     ...params
   );
@@ -282,14 +298,20 @@ export async function getAllTickets(filters?: {
   type RawTenant = { id: string; name: string };
   type RawAuthUser = { id: string; email: string; raw_user_meta_data: { firstName?: string; lastName?: string } };
 
+  // quick-615 — the third element is the GRANT-class statement (614 §2.3). It
+  // is on the SAME acquisition as its two siblings deliberately: routing it
+  // elsewhere would not have helped anyway, because `auth.users` fails on a
+  // PRIVILEGE (42501), not on a missing tenant context, and the tripwire can
+  // never signal it. The remedy is a column-level grant on exactly these three
+  // columns — see `prisma/migrations/*_grant_auth_user_display_columns`.
   const [users, tenants, authUsers] = await Promise.all([
-    prisma.$queryRaw<RawUser[]>`
+    adminDbTicketList.$queryRaw<RawUser[]>`
       SELECT id, email, "firstName", "lastName" FROM "User" WHERE id = ANY(${userIds}::uuid[])
     `,
     tenantIds.length > 0
-      ? prisma.$queryRaw<RawTenant[]>`SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])`
+      ? adminDbTicketList.$queryRaw<RawTenant[]>`SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])`
       : Promise.resolve([] as RawTenant[]),
-    prisma.$queryRaw<RawAuthUser[]>`
+    adminDbTicketList.$queryRaw<RawAuthUser[]>`
       SELECT id, email, raw_user_meta_data FROM auth.users WHERE id = ANY(${userIds}::uuid[])
     `,
   ]);

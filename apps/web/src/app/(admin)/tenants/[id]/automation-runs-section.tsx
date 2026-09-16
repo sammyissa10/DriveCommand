@@ -1,13 +1,19 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 
 interface Props {
   tenantId: string;
 }
 
 export async function AutomationRunsSection({ tenantId }: Props) {
-  const runs = await prisma.automationRun.findMany({
+  // quick-615 — ROUTE. 614 §2.1 B-7's asymmetry, closed: quick-613 routed the
+  // `/automations` screen's run list and this byte-similar one on the tenant
+  // detail page was never in that task's census. Same reasoning as its twin — a
+  // sysadmin surface reading an arbitrary tenant. The `rule` select reaches
+  // `AutomationRule` as a join, so both tables are in play here, not just one.
+  const adminDbRuns = await getAdminDb('sysadmin tenant automation run list');
+  const runs = await adminDbRuns.automationRun.findMany({
     where: { tenantId },
     orderBy: { firedAt: 'desc' },
     take: 10,

@@ -1,7 +1,7 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { z } from 'zod';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -32,13 +32,20 @@ export type AdminUserRow = {
 
 /**
  * Get all non-sample, non-sysadmin users across every tenant.
- * Uses bare Prisma client (NOT getTenantPrisma) — intentional cross-tenant
- * read for sysadmin. Matches the pattern in actions/tenants.ts.
+ * quick-615 — this used to say "uses bare Prisma client … intentional
+ * cross-tenant read". The intent was right and the mechanism was not: the bare
+ * client is the TENANT connection, and after the `app_user` cutover it returns
+ * zero rows here. Cross-tenant reads go on `getAdminDb`. Matches the pattern in
+ * actions/tenants.ts, which quick-615 fixed in the same way.
  */
 export async function getAllUsers(): Promise<AdminUserRow[]> {
   await requireAdminAccess();
 
-  return prisma.user.findMany({
+  // quick-615 — ROUTE. Lists every user in EVERY tenant; `User` carries
+  // `tenant_isolation_policy` on `"tenantId"`, so under `app_user` with no
+  // tenant context this returns nothing at all.
+  const adminDbUserList = await getAdminDb('sysadmin user listing');
+  return adminDbUserList.user.findMany({
     where: { isSample: false, isSystemAdmin: false },
     select: {
       id: true,
@@ -98,8 +105,15 @@ export async function updateUserProfile(
   }
   const { userId, firstName, lastName, role, isActive } = parsed.data;
 
+  // quick-615 — ROUTE. ONE acquisition for the whole unit of work: the
+  // read-before-write, the update, the COMPENSATING ROLLBACK and the re-read.
+  // The input is `{userId, …}` — there is no tenant in hand anywhere in this
+  // function — and a rollback landing on a different connection from the write
+  // it reverses would be worse than the failure it is compensating for.
+  const adminDbUserUpdate = await getAdminDb('sysadmin user profile update');
+
   // Read-before-write: capture previous state for rollback + isActive transition check
-  const existing = await prisma.user.findUnique({
+  const existing = await adminDbUserUpdate.user.findUnique({
     where: { id: userId },
     select: {
       id: true, firstName: true, lastName: true, role: true,
@@ -112,7 +126,7 @@ export async function updateUserProfile(
   }
 
   // Apply Prisma update
-  await prisma.user.update({
+  await adminDbUserUpdate.user.update({
     where: { id: userId },
     data: { firstName, lastName, role, isActive },
   });
@@ -127,7 +141,7 @@ export async function updateUserProfile(
       if (sbErr) throw sbErr;
     } catch (err) {
       // Compensating rollback — restore previous Prisma state
-      await prisma.user.update({
+      await adminDbUserUpdate.user.update({
         where: { id: userId },
         data: {
           firstName: existing.firstName,
@@ -141,7 +155,7 @@ export async function updateUserProfile(
     }
   }
 
-  const updated = await prisma.user.findUnique({
+  const updated = await adminDbUserUpdate.user.findUnique({
     where: { id: userId },
     select: {
       id: true, firstName: true, lastName: true, email: true, role: true,

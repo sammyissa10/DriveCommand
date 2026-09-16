@@ -19,6 +19,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { runEvaluator } from '@/lib/automations/evaluator';
 import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
 import { verifyCronSecret, cronUnauthorizedResponse } from '@/lib/security/cron-auth';
@@ -42,6 +43,23 @@ export async function GET(request: NextRequest) {
   const failures = new CronFailures();
 
   try {
+    /**
+     * quick-615 — ROUTE. ONE acquisition serving all FOUR `candidateQuery`
+     * closures below. Each of them answers "WHICH tenants are candidates" —
+     * they run before any tenant is known, so there is no tenant client that
+     * could serve them, and under `app_user` they raise `TC001` (or, with the
+     * tripwire off, sweep nothing while reporting `ok: true`).
+     *
+     * It sits INSIDE this `try` on purpose: that is where the statements it
+     * serves already are, so an acquisition failure lands in exactly the catch
+     * a candidate-query failure lands in today. Control flow is unchanged.
+     *
+     * The per-candidate dedup reads inside `scheduleCronDrivenRule` are NOT on
+     * this client — they hold the loop variable and go to
+     * `getTenantPrismaForOrg`.
+     */
+    const adminDbCandidates = await getAdminDb('automation cron candidate sweep');
+
     // ── Cron-driven rule: no_progress_nudge ──────────────────────────────────
     // Fires for tenants created >23h ago with completionPct = 20 (only account_created done).
     // runOncePerTenant = true → check for existing run before creating.
@@ -50,7 +68,7 @@ export async function GET(request: NextRequest) {
       ruleKey: 'no_progress_nudge',
       candidateQuery: async () => {
         const threshold = new Date(Date.now() - 23 * 60 * 60 * 1000);
-        return prisma.activationProgress.findMany({
+        return adminDbCandidates.activationProgress.findMany({
           where: {
             completionPct: 20,
             accountCreatedAt: { lte: threshold },
@@ -68,7 +86,7 @@ export async function GET(request: NextRequest) {
     await scheduleCronDrivenRule(failures, {
       ruleKey: 'add_driver_nudge',
       candidateQuery: async () => {
-        return prisma.activationProgress.findMany({
+        return adminDbCandidates.activationProgress.findMany({
           where: {
             firstRealTruckAt: { not: null },
             firstRealDriverAt: null,
@@ -86,7 +104,7 @@ export async function GET(request: NextRequest) {
     await scheduleCronDrivenRule(failures, {
       ruleKey: 'dispatch_load_nudge',
       candidateQuery: async () => {
-        return prisma.activationProgress.findMany({
+        return adminDbCandidates.activationProgress.findMany({
           where: {
             firstRealDriverAt: { not: null },
             firstLoadInTransitAt: null,
@@ -108,7 +126,7 @@ export async function GET(request: NextRequest) {
       candidateQuery: async () => {
         const trialEndMin = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
         const trialEndMax = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
-        return prisma.subscription.findMany({
+        return adminDbCandidates.subscription.findMany({
           where: {
             trialEndsAt: { gte: trialEndMin, lte: trialEndMax },
             status: 'TRIALING',
@@ -167,7 +185,13 @@ async function scheduleCronDrivenRule(
 ): Promise<void> {
   const { ruleKey, windowHours, candidateQuery, runOncePerTenant = true } = opts;
 
-  const rule = await prisma.automationRule.findUnique({
+  // quick-615 — ROUTE. `AutomationRule` rows here are PLATFORM scope and this
+  // read happens before any tenant is known — it is what decides whether the
+  // sweep runs at all. Under `app_user` it raises, and with the tripwire off it
+  // returns null, at which point the route logs "rule not found or inactive"
+  // and skips every rule on the platform.
+  const adminDbRule = await getAdminDb('automation cron candidate sweep');
+  const rule = await adminDbRule.automationRule.findUnique({
     where: { key: ruleKey },
     select: { id: true, isActive: true },
   });

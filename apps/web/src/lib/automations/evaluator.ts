@@ -44,6 +44,7 @@
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { executeSendEmailAction } from '@/lib/automations/actions/send-email';
 
@@ -60,8 +61,26 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
   // Scan all AppEvents from the last 30 days. Per-event tracking (not a watermark)
   // ensures events are never permanently orphaned by cold-start or watermark advance.
   // The UNIQUE index on (eventId, ruleId) handles idempotency at the DB layer.
+  /**
+   * quick-615 — ROUTE. ONE acquisition at function scope serving the three
+   * cross-tenant reads in this function: the `AppEvent` scan below (:64), the
+   * per-event `AutomationRule` lookup (:73 — quick-613's site 8, left unrouted)
+   * and the due-run queue (:131, which also joins `AutomationRule`). All three
+   * read across EVERY tenant and none of them has a tenant to scope to: the
+   * event scan is what DISCOVERS the tenants.
+   *
+   * Deliberately at function scope rather than inside the `for (const event of
+   * events)` loop: acquiring per event would log one privileged-query line per
+   * AppEvent in a 30-day window. `runEvaluator` is one unit of work.
+   *
+   * NOT on this client: `:80`'s dedup read, which holds `event.tenantId` and
+   * goes to `getTenantPrismaForOrg`, and the bypass-flagged `$transaction`
+   * below, which is the Phase 0 bypass programme's to close, not this task's.
+   */
+  const adminDbEvaluator = await getAdminDb('automation evaluator scan');
+
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const events = await prisma.appEvent.findMany({
+  const events = await adminDbEvaluator.appEvent.findMany({
     where: { createdAt: { gt: thirtyDaysAgo } },
     orderBy: { createdAt: 'asc' },
   });
@@ -70,7 +89,7 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
 
   for (const event of events) {
     // Find active rules matching this event type
-    const rules = await prisma.automationRule.findMany({
+    const rules = await adminDbEvaluator.automationRule.findMany({
       where: { triggerEvent: event.eventType, isActive: true },
     });
 
@@ -128,7 +147,7 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
 
   // ── PATH 2: Execute due runs ──────────────────────────────────────────────────
   const now = new Date();
-  const dueRuns = await prisma.automationRun.findMany({
+  const dueRuns = await adminDbEvaluator.automationRun.findMany({
     where: {
       status: 'PENDING',
       scheduledAt: { lte: now },

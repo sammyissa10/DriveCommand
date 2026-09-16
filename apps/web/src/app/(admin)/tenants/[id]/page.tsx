@@ -13,7 +13,7 @@ import { ResendInvitationButton } from './resend-invitation-button';
 import { CopyTenantIdButton } from './copy-tenant-id-button';
 import { ResetPasswordButton } from './reset-password-button';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { heardAboutLabel } from '@/lib/onboarding/heard-about';
 import { AutomationRunsSection } from './automation-runs-section';
 import { ActivationProgressSection } from './activation-progress-section';
@@ -53,7 +53,13 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
   let subscription: { trialEndsAt: Date } | null = null;
   if (!fetchError && tenant) {
     billingHistory = await getSysAdminInvoices({ tenantId: id }).catch(() => []);
-    subscription = await prisma.subscription.findUnique({
+    // quick-615 — ROUTE. The sysadmin billing summary for an arbitrary tenant.
+    // NOTE, reported and NOT fixed here (out of scope, receiver-only task): the
+    // trailing `.catch(() => null)` swallows the failure, so before this change
+    // a `TC001` rendered as "no trial" rather than as an error — the
+    // `/dashboard` shape quick-610 measured. Worth its own task.
+    const adminDbBilling = await getAdminDb('sysadmin tenant billing summary read');
+    subscription = await adminDbBilling.subscription.findUnique({
       where: { tenantId: id },
       select: { trialEndsAt: true },
     }).catch(() => null);

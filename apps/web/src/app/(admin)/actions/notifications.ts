@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
+import { getAdminDb } from '@/lib/db/admin-prisma';
 import { NotificationSendStatus } from '@/generated/prisma';
 import type { VariableDef } from '@/lib/notifications/types';
 
@@ -246,14 +247,25 @@ export async function listNotificationSendLog(
 
   const where = buildSendLogWhere(params);
 
+  // quick-615 — ROUTE. `NotificationSendLog` carries `tenant_isolation_policy`,
+  // RLS enabled AND forced, and this list is cross-tenant by definition: the
+  // tenant filter is OPTIONAL and `where` is `{}` by default. Under `app_user`
+  // this page shows a send log with no sends.
+  //
+  // THE OTHER EIGHT STATEMENTS IN THIS FILE STAY ON `prisma` DELIBERATELY.
+  // They are on `NotificationTemplate` / `NotificationEmailConfig`, both RLS
+  // OFF under the Section 4.12 allowlist, with `app_user` holding full DML from
+  // the Phase 1 grants. Nothing raises and nothing under-reads. This file is
+  // MIXED on purpose — do not "finish the job".
+  const adminDbSendLog = await getAdminDb('sysadmin notification send log listing');
   const [rows, total] = await Promise.all([
-    prisma.notificationSendLog.findMany({
+    adminDbSendLog.notificationSendLog.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       skip,
       take: PAGE_SIZE,
     }),
-    prisma.notificationSendLog.count({ where }),
+    adminDbSendLog.notificationSendLog.count({ where }),
   ]);
 
   return { rows, total, page };
@@ -334,6 +346,10 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(now.getDate() - 30);
 
+  // quick-615 — ROUTE. Seven platform-wide statistics, ONE Promise.all, ONE
+  // unit of work, ONE acquisition. There is no tenant in this function at all.
+  const adminDbStats = await getAdminDb('sysadmin notification delivery statistics');
+
   const [
     sentToday,
     failedToday,
@@ -343,30 +359,30 @@ export async function getNotificationSendLogStats(): Promise<SendLogStats> {
     failedByTrigger,
     failedByTriggerAllTime,
   ] = await Promise.all([
-    prisma.notificationSendLog.count({
+    adminDbStats.notificationSendLog.count({
       where: { status: 'SENT', createdAt: { gte: todayStart } },
     }),
-    prisma.notificationSendLog.count({
+    adminDbStats.notificationSendLog.count({
       where: { status: 'FAILED', createdAt: { gte: todayStart } },
     }),
-    prisma.notificationSendLog.count({
+    adminDbStats.notificationSendLog.count({
       where: { status: 'SENT', createdAt: { gte: thirtyDaysAgo } },
     }),
-    prisma.notificationSendLog.count({
+    adminDbStats.notificationSendLog.count({
       where: { status: 'FAILED', createdAt: { gte: thirtyDaysAgo } },
     }),
     // quick-556: no date bound. A failure that scrolls out of a window while
     // still unresolved is a count that lies by expiring.
-    prisma.notificationSendLog.count({ where: { status: 'FAILED' } }),
+    adminDbStats.notificationSendLog.count({ where: { status: 'FAILED' } }),
     // Group FAILED rows by triggerKey in the last 24h to find the top offender
-    prisma.notificationSendLog.groupBy({
+    adminDbStats.notificationSendLog.groupBy({
       by: ['triggerKey'],
       where: { status: 'FAILED', createdAt: { gte: last24h } },
       _count: { triggerKey: true },
       orderBy: { _count: { triggerKey: 'desc' } },
       take: 1,
     }),
-    prisma.notificationSendLog.groupBy({
+    adminDbStats.notificationSendLog.groupBy({
       by: ['triggerKey'],
       where: { status: 'FAILED' },
       _count: { triggerKey: true },
