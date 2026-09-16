@@ -77,7 +77,12 @@ const FILES: FileSpec[] = [
   { path: 'app/api/driver/stops/[stopId]/messages/route.ts', retainedFlags: 5, removedFlags: 2, minBytes: 4000 },
   { path: 'app/api/mobile/carrier/driver/dispatches/[id]/expenses/route.ts', retainedFlags: 0, removedFlags: 1, minBytes: 3000 },
   { path: 'app/api/mobile/carrier/driver/stops/[stopId]/documents/route.ts', retainedFlags: 0, removedFlags: 2, minBytes: 3000 },
-  { path: 'app/api/v1/carrier/stops/[id]/messages/route.ts', retainedFlags: 4, removedFlags: 2, minBytes: 4000 },
+  // quick-620: the four retained flags (FleetMessage findMany/updateMany/create, User findMany)
+  // were ROUTED onto a getTenantPrismaForOrg client named `orgPrisma`, not merely deleted.
+  // The hazard RULE 2 warns about was checked per statement: three already carry tenantId,
+  // and the mark-read updateMany's ids come from the tenantId-filtered read. Proven on staging
+  // with bypass_rls_policy dropped (.planning/quick/620-*/evidence). retainedFlags 4 -> 0.
+  { path: 'app/api/v1/carrier/stops/[id]/messages/route.ts', retainedFlags: 0, removedFlags: 2, minBytes: 4000 },
 ];
 
 // quick-588 raised TOTAL_REMOVED 12→14 and lowered TOTAL_RETAINED 17→15 via
@@ -86,7 +91,8 @@ const FILES: FileSpec[] = [
 // new split-off User-only prisma.$transaction (Task 2) gains one, net zero
 // for that file.
 const TOTAL_REMOVED = 14;
-const TOTAL_RETAINED = 15;
+// quick-620 lowered TOTAL_RETAINED 15→11 (api/v1/carrier/stops/[id]/messages, 4 → 0).
+const TOTAL_RETAINED = 11;
 
 function read(rel: string): string {
   const src = readFileSync(join(SRC, rel), 'utf8').replace(/\r\n/g, '\n');
@@ -148,7 +154,8 @@ describe('quick-587 — app.bypass_rls flag removal guard', () => {
     it('RULE 1 — no tenant-scoped transaction sets app.bypass_rls', () => {
       const src = read(spec.path);
       const tenantTxs = transactionBodies(src).filter(
-        (t) => t.receiver === 'tenantPrisma' || t.receiver === 'db',
+        // quick-620: `orgPrisma` is the getTenantPrismaForOrg client in api/v1 stop messages.
+        (t) => t.receiver === 'tenantPrisma' || t.receiver === 'db' || t.receiver === 'orgPrisma',
       );
       const offenders = tenantTxs.filter((t) => t.body.includes(BYPASS));
       expect(

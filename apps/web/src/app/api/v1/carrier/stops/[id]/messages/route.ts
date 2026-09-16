@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse, after } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrisma, getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
@@ -45,8 +45,18 @@ export async function GET(
 
     if (!stop) return NextResponse.json({ error: 'Stop not found' }, { status: 404 });
 
-    const messages = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    /*
+     * quick-620: the FleetMessage and User reads/writes below were bare-prisma
+     * transactions under app.bypass_rls. They now run on their own tenant client,
+     * acquired from the verified session's tenantId. It is a separate client from
+     * the getTenantPrisma() one above because that one forwards userId into the
+     * audit-columns extension; userId is deliberately NOT passed here. The mark-read
+     * updateMany gains a tenantId predicate from the extension; its ids come from
+     * the tenantId-filtered read, so no row it would have updated is hidden. Every
+     * where clause is unchanged: RLS is the second layer, not a replacement.
+     */
+    const orgPrisma = await getTenantPrismaForOrg(tenantId);
+    const messages = await orgPrisma.$transaction(async (tx) => {
       return tx.fleetMessage.findMany({
         where: { tenantId, stopId },
         orderBy: { createdAt: 'asc' },
@@ -72,8 +82,7 @@ export async function GET(
       .map((m) => m.id);
 
     if (unreadIds.length > 0) {
-      await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await orgPrisma.$transaction(async (tx) => {
         await tx.fleetMessage.updateMany({
           where: { id: { in: unreadIds } },
           data: { readAt: new Date() },
@@ -85,8 +94,7 @@ export async function GET(
     const senderIds = new Set(messages.map((m) => m.senderId));
     const senderMap = new Map<string, string>();
     if (senderIds.size > 0) {
-      const users = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const users = await orgPrisma.$transaction(async (tx) => {
         return tx.user.findMany({
           where: { id: { in: Array.from(senderIds) }, tenantId },
           select: { id: true, firstName: true, lastName: true, email: true },
@@ -197,8 +205,12 @@ export async function POST(
       );
     }
 
-    const created = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    /*
+     * quick-620: tenant client for the FleetMessage write — see GET. userId is NOT
+     * passed, so FleetMessage.createdById stays as it was (unset).
+     */
+    const orgPrisma = await getTenantPrismaForOrg(tenantId);
+    const created = await orgPrisma.$transaction(async (tx) => {
       return tx.fleetMessage.create({
         data: {
           tenantId,

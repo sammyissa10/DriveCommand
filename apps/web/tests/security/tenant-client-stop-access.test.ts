@@ -199,7 +199,9 @@ const GROUP_1_2_SITES: Site[] = [
     path: 'src/app/api/v1/carrier/stops/[id]/messages/route.ts',
     minBytes: 5000,
     mustContain: [
-      /import \{ getTenantPrisma \} from '@\/lib\/context\/tenant-context';/,
+      // quick-620 added getTenantPrismaForOrg to this import for the routed FleetMessage/User
+      // transactions; the stop-ownership lookups below still use getTenantPrisma().
+      /import \{ getTenantPrisma, getTenantPrismaForOrg \} from '@\/lib\/context\/tenant-context';/,
       /const tenantPrisma = await getTenantPrisma\(\);\s*\n\s*const stop = await tenantPrisma\.\$transaction/,
       /const tenantPrisma = await getTenantPrisma\(\);\s*\n\s*const stopData = await tenantPrisma\.\$transaction/,
     ],
