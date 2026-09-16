@@ -204,7 +204,34 @@ const RLS_ALLOWLIST: Record<string, { calls: number; minBytes: number; why: stri
     minBytes: 2000,
     why: 'this file. It names the module in its own regexes, and never calls it.',
   },
+  'src/lib/db/extensions/__tests__/tenant-rls-finduniq-injection.test.ts': {
+    calls: 0,
+    minBytes: 4000,
+    why:
+      "quick-618's guard on the findUnique where-injection. It READS " +
+      "'src/lib/db/extensions/tenant-rls.ts' off disk as a path string — which is " +
+      'what this fence matched — and never imports or calls the function, hence ' +
+      'calls: 0. Added deliberately rather than by widening the pattern: the fence ' +
+      'is closed in BOTH directions, so a new referencing file is supposed to ' +
+      'fail until a human decides it belongs.',
+  },
 };
+
+/**
+ * ── A GAP THIS FENCE DOES NOT COVER, STATED RATHER THAN LEFT TO BE FOUND ────
+ *
+ * `FILES` is `scanTree('src')` + `scanTree('tests')`. It does NOT scan
+ * `scripts/`, and `scripts/audit/618-finduniq-probe.ts` genuinely imports
+ * `withTenantRLS` and calls it — it drives the real extension against staging,
+ * which is the whole point of that harness. So the fence's "closed" claim is
+ * closed over two of the three trees that can reach the module.
+ *
+ * Left as-is, deliberately: widening the corpus to `scripts/` would pull in a
+ * population of audit harnesses whose whole job is to exercise mechanisms
+ * directly, and the fence's value is that no FEATURE code applies the extension
+ * by hand. But "no file references it" is not what this guard proves, and a
+ * reader should not infer it.
+ */
 
 /**
  * ── LIST 2 — `createTenantClient`: NOW A CLOSED FENCE ──────────────────────

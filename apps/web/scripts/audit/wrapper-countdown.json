@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-16T04:59:18.456Z",
+  "generatedAt": "2026-09-16T05:41:44.762Z",
   "totals": {
-    "unmigratedUnits": 530,
-    "unmigratedCallSites": 534,
+    "unmigratedUnits": 544,
+    "unmigratedCallSites": 548,
     "withTenantContextCallSites": 0,
-    "filesScanned": 1691,
-    "filesWithUnmigratedUnits": 253
+    "filesScanned": 1692,
+    "filesWithUnmigratedUnits": 261
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -1111,11 +1111,25 @@
         "GET:27"
       ]
     },
+    "app/api/mobile/driver/loads/[id]/revert/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "PATCH:33"
+      ]
+    },
     "app/api/mobile/driver/loads/[id]/route.ts": {
       "units": 1,
       "callSites": 1,
       "names": [
         "GET:22"
+      ]
+    },
+    "app/api/mobile/driver/loads/[id]/status/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "POST:53"
       ]
     },
     "app/api/mobile/driver/loads/route.ts": {
@@ -1281,6 +1295,21 @@
         "POST:126"
       ]
     },
+    "app/api/mobile/owner/loads/[id]/assign-truck/route.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "PATCH:20"
+      ]
+    },
+    "app/api/mobile/owner/loads/[id]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:27",
+        "PATCH:131"
+      ]
+    },
     "app/api/mobile/owner/loads/route.ts": {
       "units": 2,
       "callSites": 2,
@@ -1325,6 +1354,14 @@
         "POST:22"
       ]
     },
+    "app/api/mobile/owner/routes/[id]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:18",
+        "PATCH:113"
+      ]
+    },
     "app/api/mobile/owner/routes/route.ts": {
       "units": 2,
       "callSites": 2,
@@ -1338,6 +1375,31 @@
       "callSites": 1,
       "names": [
         "GET:28"
+      ]
+    },
+    "app/api/mobile/owner/trucks/[id]/maintenance/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:14",
+        "POST:102"
+      ]
+    },
+    "app/api/mobile/owner/trucks/[id]/route.ts": {
+      "units": 2,
+      "callSites": 2,
+      "names": [
+        "GET:14",
+        "PATCH:122"
+      ]
+    },
+    "app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "GET:59",
+        "POST:147",
+        "PATCH:278"
       ]
     },
     "app/api/mobile/owner/trucks/route.ts": {

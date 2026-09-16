@@ -431,13 +431,21 @@ console.log(`findUnique/findUniqueOrThrow on NON-EXEMPT models (production): ${p
 console.log('  by projection:', JSON.stringify(out.byProjection));
 console.log(`HAZARDS (result cannot carry tenantId): ${hazards.length}`);
 console.log(`  LIVE   (receiver is a withTenantRLS client today): ${live.length}`);
-console.log(`  LATENT (bare client — becomes live when routed):   ${latent.length}`);
+console.log(`  LATENT (bare client — reaches it when routed):     ${latent.length}`);
 console.log(`  N/A    (getAdminDb — no tenant extension, ever):   ${notApplicable.length}`);
 console.log(`  of the LATENT, under src/app/api/mobile/:          ${mobile.length}`);
 console.log(`  findUniqueOrThrow among hazards:                   ${out.totals.findUniqueOrThrowHazards}`);
 console.log(`MASKED BY A NESTED tenantId (617 scan scores these SAFE): ${maskedByNested.length}`);
 console.log(`UNRESOLVABLE (spread/computed — reported, never scored): ${out.totals.unresolvable}`);
-console.log('\n--- LIVE (production defect TODAY) ---');
+/**
+ * LIVE/LATENT describe REACHABILITY — whether the post-check runs on this site —
+ * not whether the site is broken. Before quick-618's fix every LIVE row was a
+ * production defect; after it, LIVE means "reaches the fixed extension and is
+ * therefore correct", and LATENT means "will reach it when routed, and will also
+ * be correct". The label is kept because the reachability question is the one
+ * the remaining migration needs answered; the defect reading is not.
+ */
+console.log('\n--- LIVE (the post-check runs here) ---');
 for (const h of live)
   console.log(
     `  ${h.file}:${h.line}  ${h.op}  ${h.model}  recv=${h.recv}${h.viaParameter ? ` <- ${h.viaParameter}` : ''}`,
