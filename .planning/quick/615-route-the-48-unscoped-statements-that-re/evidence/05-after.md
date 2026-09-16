@@ -60,7 +60,7 @@ auth column grants to app_user/app_admin: **0**
 | site | lane | expectation | probe | result | counter-read | paired own-read |
 |---|---|---|---|---|---|---|
 | listNotificationSendLog + getDeliveryStatistics — NotificationSendLog | ADMIN — app_admin, no GUC | must SUCCEED — the grant is live | the routed statement on its new receiver | send_log_rows = **18** | — | — |
-| listNotificationSendLog + getDeliveryStatistics — NotificationSendLog | TENANT — app_user, GUC EMPTY (what a sysadmin/cron request carries) | must be TC001 | the OLD receiver, with the GUC a sysadmin/cron request actually carries | **ERROR [TC001]** tenant context is required: app.current_tenant_id is the EMPTY STRING | — | — |
+| listNotificationSendLog + getDeliveryStatistics — NotificationSendLog | TENANT — app_user, GUC EMPTY (what a sysadmin/cron request carries) | must be TC001 | the OLD receiver, with the GUC a sysadmin/cron request actually carries | **ERROR [TC001]** tenant context is required: app.current_tenant_id is UNSET | — | — |
 | listNotificationSendLog + getDeliveryStatistics — NotificationSendLog | TENANT — app_user, REAL tenant GUC | foreign must be 0, PAIRED with own > 0 | the old receiver under ANOTHER tenant's GUC — cross-tenant refusal | n = **0** | — | own (tenant B) rows readable on the SAME connection = **2** |
 
 ### `app/(admin)/actions/sysadmin-invoices.ts`

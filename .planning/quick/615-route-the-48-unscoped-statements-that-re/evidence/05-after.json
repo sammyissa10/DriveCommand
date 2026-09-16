@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-16T01:24:57.253Z",
+  "at": "2026-09-16T01:42:11.653Z",
   "project": "wyixpgunnjmzguhggocz",
   "mode": "after",
   "roles": {
@@ -408,9 +408,9 @@
       "values": null,
       "error": {
         "sqlstate": "TC001",
-        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+        "message": "tenant context is required: app.current_tenant_id is UNSET"
       },
-      "gucSeen": ""
+      "gucSeen": null
     },
     {
       "file": "app/(admin)/actions/notifications.ts",
