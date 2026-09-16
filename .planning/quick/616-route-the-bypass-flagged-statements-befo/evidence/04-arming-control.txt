@@ -1,0 +1,12 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  role : app_user  (credential MASKED)
+CHECK 1  shouldArmTripwire(<server DATABASE_URL>, 'on') = true  PASS
+         proves: the arming CONDITION prisma.ts evaluates at module scope was satisfied.
+         does NOT prove: that the set_config actually reached the pool.
+CHECK 1b shouldArmTripwire(<same string, PRODUCTION ref>, 'on') = false  PASS
+CHECK 1c shouldArmTripwire(<server DATABASE_URL>, 'off') = false  PASS
+CHECK 2  tripwire GUC reads back as "on"  PASS
+CHECK 2b unscoped read of "Truck" as app_user, tripwire ARMED -> TC001  PASS
+         proves: the tripwire MECHANISM is live on staging for app_user at this moment,
+         so a surface that ran an unscoped statement WOULD have produced a TC001 line.
+CHECK 3  same read, tripwire OFF -> silent, count = 0  PASS
+         proves: the raise is caused by the ARMING, not by the statement.

@@ -1,0 +1,202 @@
+[server-target] DATABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DIRECT_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DATABASE_URL_ADMIN -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] NEXT_PUBLIC_SUPABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] TENANT_CONTEXT_TRIPWIRE=on
+[server-target] DATABASE_URL role : app_user.wyixpgunnjmzguhggocz
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.142:3000
+- Environments: .env.local
+✓ Ready in 656ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ GET /sign-in 200 in 2.1s (next.js: 1512ms, proxy.ts: 60ms, application-code: 552ms)
+ POST /api/auth/login 200 in 2.7s (next.js: 768ms, proxy.ts: 17ms, application-code: 1938ms)
+ POST /api/auth/login 200 in 742ms (next.js: 7ms, proxy.ts: 10ms, application-code: 725ms)
+ POST /api/auth/login 200 in 1001ms (next.js: 3ms, proxy.ts: 2ms, application-code: 995ms)
+ GET /dashboard 200 in 4.9s (next.js: 2.7s, proxy.ts: 157ms, application-code: 2.0s)
+ GET /carrier/dashboard 200 in 5.7s (next.js: 1558ms, proxy.ts: 109ms, application-code: 4.1s)
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+○ Compiling /carrier/trips ...
+ GET /carrier/trips 200 in 12.9s (next.js: 4.9s, proxy.ts: 561ms, application-code: 7.4s)
+ GET /carrier/loads 200 in 3.1s (next.js: 1985ms, proxy.ts: 120ms, application-code: 973ms)
+ GET /carrier/clients 200 in 3.6s (next.js: 2.1s, proxy.ts: 117ms, application-code: 1379ms)
+ GET /carrier/contracts 200 in 2.3s (next.js: 1269ms, proxy.ts: 124ms, application-code: 880ms)
+ GET /carrier/facilities 200 in 2.2s (next.js: 1317ms, proxy.ts: 111ms, application-code: 773ms)
+ GET /carrier/templates 200 in 2.3s (next.js: 1545ms, proxy.ts: 104ms, application-code: 618ms)
+ GET /carrier/imports 200 in 3.2s (next.js: 1612ms, proxy.ts: 103ms, application-code: 1464ms)
+ GET /carrier/messages 200 in 2.6s (next.js: 1883ms, proxy.ts: 108ms, application-code: 634ms)
+ GET /drivers 200 in 3.6s (next.js: 2.4s, proxy.ts: 142ms, application-code: 1069ms)
+ GET /trucks 200 in 3.6s (next.js: 2.2s, proxy.ts: 113ms, application-code: 1202ms)
+ GET /loads 200 in 3.1s (next.js: 1897ms, proxy.ts: 115ms, application-code: 1063ms)
+ GET /routes 200 in 2.5s (next.js: 1433ms, proxy.ts: 108ms, application-code: 939ms)
+ GET /invoices 200 in 2.9s (next.js: 2.0s, proxy.ts: 101ms, application-code: 839ms)
+ GET /payroll 200 in 3.9s (next.js: 1186ms, proxy.ts: 112ms, application-code: 2.6s)
+○ Compiling /crm ...
+ GET /crm 200 in 8.6s (next.js: 5.0s, proxy.ts: 107ms, application-code: 3.5s)
+ GET /compliance 200 in 4.4s (next.js: 2.7s, proxy.ts: 216ms, application-code: 1503ms)
+○ Compiling /live-map ...
+ GET /live-map 200 in 5.9s (next.js: 4.0s, proxy.ts: 108ms, application-code: 1792ms)
+ GET /settings/operations 200 in 3.3s (next.js: 1982ms, proxy.ts: 314ms, application-code: 1018ms)
+ GET /support 200 in 2.5s (next.js: 1240ms, proxy.ts: 119ms, application-code: 1097ms)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /home 200 in 9.8s (next.js: 1785ms, proxy.ts: 220ms, application-code: 7.8s)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 4.1s (next.js: 2.7s, proxy.ts: 340ms, application-code: 1006ms)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-route 200 in 5.5s (next.js: 1961ms, proxy.ts: 103ms, application-code: 3.4s)
+ GET /documents 200 in 3.3s (next.js: 2.6s, proxy.ts: 106ms, application-code: 541ms)
+ GET /hours 200 in 2.5s (next.js: 1993ms, proxy.ts: 108ms, application-code: 448ms)
+[2026-09-16T03:11:20.703Z] INFO: [admin-db] privileged query {"reason":"auto-close stale ticket sweep"}
+ GET /api/cron/auto-close-tickets 200 in 2.3s (next.js: 1651ms, proxy.ts: 6ms, application-code: 599ms)
+[cron/automations] Starting evaluator run
+[2026-09-16T03:11:23.497Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[2026-09-16T03:11:23.498Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'no_progress_nudge' — 0 candidate tenant(s)
+[2026-09-16T03:11:23.649Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'add_driver_nudge' — 0 candidate tenant(s)
+[2026-09-16T03:11:23.795Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'dispatch_load_nudge' — 0 candidate tenant(s)
+[2026-09-16T03:11:23.940Z] INFO: [admin-db] privileged query {"reason":"automation cron candidate sweep"}
+[cron] Rule 'trial_ending_soon' — 0 candidate tenant(s)
+[2026-09-16T03:11:24.085Z] INFO: [admin-db] privileged query {"reason":"automation evaluator scan"}
+[evaluator] Path 1 — found 1 AppEvent(s) in last 30 days
+[evaluator] Path 2 — found 0 due PENDING run(s)
+[evaluator] Done — pendingCreated=0 executed=0 failed=0
+[cron/automations] Complete {
+  pendingCreated: 0,
+  executed: 0,
+  failed: 0,
+  failureCount: 0,
+  failures: []
+}
+ GET /api/cron/automations 200 in 2.8s (next.js: 1829ms, proxy.ts: 13ms, application-code: 919ms)
+[2026-09-16T03:11:25.475Z] INFO: [CRON] carrier-auto-dispatch: Starting nightly dispatch generation
+[2026-09-16T03:11:25.475Z] INFO: [admin-db] privileged query {"reason":"auto-dispatch generation tenant sweep"}
+[2026-09-16T03:11:25.548Z] INFO: [CRON] carrier-auto-dispatch: Found 2 active tenant(s)
+[2026-09-16T03:11:25.858Z] INFO: [CRON] carrier-auto-dispatch: Completed {"orgs_processed":0,"total_dispatches_created":0,"total_loads_created":0,"total_stops_created":0,"total_errors":0,"details":[],"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-auto-dispatch 200 in 1091ms (next.js: 691ms, proxy.ts: 7ms, application-code: 393ms)
+[2026-09-16T03:11:27.479Z] INFO: [CRON] carrier-compliance-alerts: Starting daily compliance check
+[2026-09-16T03:11:27.479Z] INFO: [admin-db] privileged query {"reason":"compliance alert tenant sweep"}
+[2026-09-16T03:11:27.552Z] INFO: [CRON] carrier-compliance-alerts: Found 2 active tenant(s)
+[2026-09-16T03:11:28.001Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045) — 0 alert(s) found
+[2026-09-16T03:11:28.437Z] INFO: [CRON] carrier-compliance-alerts: Tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8) — 0 alert(s) found
+[2026-09-16T03:11:28.439Z] INFO: [CRON] carrier-compliance-alerts: Completed {"orgs_processed":2,"total_alerts_found":0,"failureCount":0,"failures":[]}
+ GET /api/cron/carrier-compliance-alerts 200 in 2.2s (next.js: 1247ms, proxy.ts: 7ms, application-code: 972ms)
+[2026-09-16T03:11:29.617Z] INFO: [CRON] cleanup-quarantine: Starting
+[2026-09-16T03:11:30.549Z] INFO: [CRON] cleanup-quarantine: Completed {"success":true,"scanned":0,"deleted":0,"errors":0,"failureCount":0,"failures":[]}
+ GET /api/cron/cleanup-quarantine 200 in 1741ms (next.js: 798ms, proxy.ts: 3ms, application-code: 939ms)
+[2026-09-16T03:11:31.866Z] INFO: [CRON] digest-compliance-30day: Starting 30-day compliance digest
+[2026-09-16T03:11:31.866Z] INFO: [admin-db] privileged query {"reason":"compliance digest tenant sweep"}
+[2026-09-16T03:11:31.938Z] INFO: [CRON] digest-compliance-30day: Found 2 active tenant(s)
+[2026-09-16T03:11:33.310Z] INFO: [CRON] digest-compliance-30day: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-compliance-30day 200 in 2.4s (next.js: 934ms, proxy.ts: 7ms, application-code: 1457ms)
+[2026-09-16T03:11:34.761Z] INFO: [CRON] digest-daily-driver: Starting daily driver digest
+[2026-09-16T03:11:34.761Z] INFO: [admin-db] privileged query {"reason":"daily driver digest tenant sweep"}
+[2026-09-16T03:11:34.834Z] INFO: [CRON] digest-daily-driver: Found 2 active tenant(s)
+[2026-09-16T03:11:36.236Z] INFO: [CRON] digest-daily-driver: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":5,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-daily-driver 200 in 2.6s (next.js: 1069ms, proxy.ts: 7ms, application-code: 1485ms)
+[2026-09-16T03:11:37.710Z] INFO: [CRON] digest-weekly-owner: Starting weekly owner digest
+[2026-09-16T03:11:37.711Z] INFO: [admin-db] privileged query {"reason":"weekly owner digest tenant sweep"}
+[2026-09-16T03:11:37.785Z] INFO: [CRON] digest-weekly-owner: Found 2 active tenant(s)
+[2026-09-16T03:11:38.548Z] INFO: [CRON] digest-weekly-owner: Completed {"success":true,"processedTenants":2,"sent":0,"skipped":3,"failed":0,"failureCount":0,"failures":[]}
+ GET /api/cron/digest-weekly-owner 200 in 1955ms (next.js: 1086ms, proxy.ts: 7ms, application-code: 861ms)
+[2026-09-16T03:11:39.443Z] INFO: [admin-db] privileged query {"reason":"overdue invoice sweep"}
+[2026-09-16T03:11:42.612Z] INFO: [CRON] mark-overdue-invoices: Marked 0 invoice(s) overdue
+ GET /api/cron/mark-overdue-invoices 200 in 3.7s (next.js: 512ms, proxy.ts: 7ms, application-code: 3.2s)
+[2026-09-16T03:11:44.700Z] INFO: [CRON] purge-deleted: Starting
+[2026-09-16T03:11:44.701Z] INFO: [admin-db] privileged query {"reason":"soft-delete purge tenant sweep"}
+[2026-09-16T03:11:44.778Z] INFO: [CRON] purge-deleted: 2 active tenant(s)
+[2026-09-16T03:11:45.949Z] INFO: [CRON] purge-deleted: Completed {"totalPurged":0,"tenantsProcessed":2,"tenantsFound":2,"results":{"CarrierLoad":0,"Trip":0,"CarrierContract":0,"CarrierClient":0,"CarrierDriver":0,"CarrierTruck":0,"Route":0},"failureCount":0,"failures":[]}
+ GET /api/cron/purge-deleted 200 in 3.0s (next.js: 1695ms, proxy.ts: 11ms, application-code: 1268ms)
+[2026-09-16T03:11:47.504Z] INFO: [CRON] send-reminders: Starting daily reminder processing
+[2026-09-16T03:11:47.504Z] INFO: [admin-db] privileged query {"reason":"reminders cron tenant sweep"}
+[2026-09-16T03:11:47.576Z] INFO: [CRON] send-reminders: Found 2 active tenant(s)
+[2026-09-16T03:11:47.577Z] INFO: [CRON] send-reminders: Processing tenant Staging Beta Logistics (8c6136c4-eb7b-4a89-a524-d1d0e2c8d045)
+[2026-09-16T03:11:48.151Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-16T03:11:48.153Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-16T03:11:48.154Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-16T03:11:48.155Z] INFO: [CRON] send-reminders: Processing tenant Staging Alpha Carriers (b5623cdd-dc19-4900-b75d-0ecfcaf191b8)
+[2026-09-16T03:11:48.727Z] INFO: [CRON] send-reminders: Found 0 upcoming maintenance item(s)
+[2026-09-16T03:11:48.728Z] INFO: [CRON] send-reminders: Found 0 expiring document(s)
+[2026-09-16T03:11:48.729Z] INFO: [CRON] send-reminders: Found 0 expiring driver document(s)
+[2026-09-16T03:11:48.729Z] INFO: [CRON] send-reminders: Completed {"success":true,"processedTenants":2,"tenantsFound":2,"maintenance":{"sent":0,"skipped":0,"failed":0},"documents":{"sent":0,"skipped":0,"failed":0},"driverDocuments":{"sent":0,"skipped":0,"failed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/send-reminders 200 in 2.4s (next.js: 1173ms, proxy.ts: 9ms, application-code: 1237ms)
+[2026-09-16T03:11:51.060Z] INFO: [admin-db] privileged query {"reason":"trip reminder tenant sweep"}
+[2026-09-16T03:11:52.290Z] INFO: [CRON] trip-reminders: done {"tenantsProcessed":2,"tenantsFailed":0,"remindersSent":0,"failureCount":0,"failures":[]}
+ GET /api/cron/trip-reminders 200 in 3.2s (next.js: 1936ms, proxy.ts: 12ms, application-code: 1251ms)
+[2026-09-16T03:11:53.651Z] INFO: [CRON] workflow-digest: Starting daily digest sweep
+[2026-09-16T03:11:53.652Z] INFO: [admin-db] privileged query {"reason":"workflow digest active-tenant sweep"}
+[2026-09-16T03:11:53.728Z] INFO: [CRON] workflow-digest: 0 tenant(s) with active instances
+[2026-09-16T03:11:53.729Z] INFO: [CRON] workflow-digest: Complete {"tenantsSent":0,"tenantsSkipped":0,"tenantsErrored":0,"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-digest 200 in 1074ms (next.js: 975ms, proxy.ts: 9ms, application-code: 90ms)
+[2026-09-16T03:11:55.661Z] INFO: [CRON] workflow-notifications: Starting sweep
+[2026-09-16T03:11:55.662Z] INFO: [admin-db] privileged query {"reason":"workflow overdue-step sweep"}
+[2026-09-16T03:11:55.810Z] INFO: [CRON] workflow-notifications: Found 0 overdue step(s)
+[2026-09-16T03:11:55.810Z] INFO: [admin-db] privileged query {"reason":"workflow blocked-instance sweep"}
+[2026-09-16T03:11:55.893Z] INFO: [CRON] workflow-notifications: Found 0 instance(s) blocked >48h needing email escalation
+[2026-09-16T03:11:55.894Z] INFO: [CRON] workflow-notifications: Completed {"stats":{"overdueSent":0,"overdueErrors":0,"blockedEmailsSent":0,"blockedEmailErrors":0,"sweepsFailed":0},"failureCount":0,"failures":[]}
+ GET /api/cron/workflow-notifications 200 in 1800ms (next.js: 1534ms, proxy.ts: 12ms, application-code: 254ms)
+[2026-09-16T03:11:57.023Z] INFO: [WARMUP] Pinged successfully
+ GET /api/warmup 200 in 771ms (next.js: 674ms, proxy.ts: 6ms, application-code: 91ms)
+ POST /api/auth/login 200 in 1970ms (next.js: 24ms, proxy.ts: 19ms, application-code: 1927ms)
+ POST /api/auth/login 200 in 839ms (next.js: 8ms, proxy.ts: 6ms, application-code: 825ms)
+ POST /api/auth/login 200 in 1103ms (next.js: 3ms, proxy.ts: 3ms, application-code: 1097ms)
+ POST /api/auth/login 200 in 532ms (next.js: 10ms, proxy.ts: 5ms, application-code: 517ms)
+○ Compiling /carrier/driver-pay/settlements ...
+ GET /carrier/driver-pay/settlements 200 in 10.7s (next.js: 7.7s, proxy.ts: 121ms, application-code: 2.8s)
+ GET /carrier/driver-pay/pending 200 in 3.6s (next.js: 2.8s, proxy.ts: 111ms, application-code: 593ms)
+○ Compiling /carrier/driver-pay/reports ...
+ GET /carrier/driver-pay/reports 200 in 7.5s (next.js: 6.3s, proxy.ts: 119ms, application-code: 1131ms)
+ GET /carrier/driver-pay 404 in 3.0s (next.js: 2.8s, proxy.ts: 118ms, application-code: 58ms)
+ GET /carrier/reports 404 in 352ms (next.js: 39ms, proxy.ts: 233ms, application-code: 79ms)
+ GET /carrier/reports/aging 200 in 2.7s (next.js: 1988ms, proxy.ts: 232ms, application-code: 501ms)
+ GET /carrier/reports/performance 200 in 2.0s (next.js: 1419ms, proxy.ts: 117ms, application-code: 474ms)
+ GET /carrier/reports/revenue 200 in 3.0s (next.js: 2.0s, proxy.ts: 211ms, application-code: 732ms)
+○ Compiling /carrier/reports/todays-trips ...
+ GET /carrier/reports/todays-trips 200 in 3.9s (next.js: 3.2s, proxy.ts: 112ms, application-code: 567ms)
+ GET /checklists 200 in 2.4s (next.js: 1790ms, proxy.ts: 111ms, application-code: 542ms)
+ GET /checklists/playbooks 404 in 166ms (next.js: 12ms, proxy.ts: 99ms, application-code: 55ms)
+ GET /checklists/instances 404 in 208ms (next.js: 35ms, proxy.ts: 120ms, application-code: 53ms)
+ GET /checklists/analytics 200 in 2.6s (next.js: 1982ms, proxy.ts: 115ms, application-code: 549ms)
+ GET /checklists/automation 200 in 2.3s (next.js: 1696ms, proxy.ts: 121ms, application-code: 495ms)
+ GET /settings/notifications 200 in 5.4s (next.js: 3.0s, proxy.ts: 109ms, application-code: 2.4s)
+○ Compiling /automations ...
+[2026-09-16T03:13:19.299Z] INFO: [admin-db] privileged query {"reason":"sysadmin automation rule listing"}
+ GET /automations 200 in 8.7s (next.js: 7.0s, proxy.ts: 520ms, application-code: 1167ms)
+○ Compiling /admin-dashboard ...
+[2026-09-16T03:13:24.229Z] INFO: [admin-db] privileged query {"reason":"sysadmin platform metrics"}
+ GET /admin-dashboard 200 in 4.5s (next.js: 3.6s, proxy.ts: 118ms, application-code: 759ms)
+[2026-09-16T03:13:28.776Z] INFO: [admin-db] privileged query {"reason":"sysadmin invoice management"}
+ GET /billing 200 in 4.0s (next.js: 3.1s, proxy.ts: 159ms, application-code: 694ms)
+ GET /plans 200 in 2.5s (next.js: 1696ms, proxy.ts: 107ms, application-code: 717ms)
+[2026-09-16T03:13:34.927Z] INFO: [admin-db] privileged query {"reason":"sysadmin notification send log listing"}
+[2026-09-16T03:13:34.928Z] INFO: [admin-db] privileged query {"reason":"sysadmin notification delivery statistics"}
+ GET /notifications 200 in 3.5s (next.js: 2.3s, proxy.ts: 113ms, application-code: 1117ms)
+[2026-09-16T03:13:39.028Z] INFO: [admin-db] privileged query {"reason":"sysadmin ticket listing"}
+[2026-09-16T03:13:39.105Z] INFO: [admin-db] privileged query {"reason":"sysadmin tenant listing"}
+ GET /admin-support 200 in 3.1s (next.js: 2.5s, proxy.ts: 116ms, application-code: 432ms)
+[2026-09-16T03:13:43.697Z] INFO: [admin-db] privileged query {"reason":"public shipment tracking lookup"}
+ GET /track/604-probe-no-seeded-token 404 in 4.5s (next.js: 4.0s, proxy.ts: 3ms, application-code: 551ms)
+○ Compiling /sign-up/[[...sign-up]] ...
+ GET /sign-up 200 in 10.2s (next.js: 9.8s, proxy.ts: 4ms, application-code: 418ms)
+ GET /onboarding 307 in 2.9s (next.js: 2.4s, proxy.ts: 253ms, application-code: 301ms)
+[welcome] tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8 phase: HYDRATED
+[hydrateTenant] starting for tenantId: b5623cdd-dc19-4900-b75d-0ecfcaf191b8
+[hydrateTenant] already HYDRATED, skipping
+ GET /onboarding/welcome 200 in 5.5s (next.js: 2.8s, proxy.ts: 8ms, application-code: 2.7s)
+[?25h
