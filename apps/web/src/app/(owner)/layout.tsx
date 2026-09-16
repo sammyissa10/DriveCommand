@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { getSession, getRole } from "@/lib/auth/supabase";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
-import { prisma } from "@/lib/db/prisma";
+import { TX_OPTIONS } from "@/lib/db/prisma";
+import { getTenantPrismaForOrg } from "@/lib/context/tenant-context";
 import { TRPCReactProvider } from "@/trpc/Provider";
 
 // All owner-portal pages require auth — force dynamic rendering so Next.js
@@ -34,46 +35,43 @@ export default async function OwnerLayout({
     redirect("/unauthorized");
   }
 
-  // Fetch the tenant's business name to display in the sidebar
-  let tenantName: string | null = null;
-  try {
-    const rows = await prisma.$queryRaw<{ name: string }[]>`
-      SELECT name FROM "Tenant" WHERE id = ${session.tenantId}::uuid LIMIT 1
-    `;
-    tenantName = rows[0]?.name ?? null;
-  } catch {
-    // Non-fatal — sidebar falls back to "DriveCommand"
-  }
+  /*
+   * quick-621: the shell's three reads — tenant name, activation state, first-run tour
+   * flag — run on a tenant-scoped client. They were bare-prisma $queryRaw calls with no
+   * tenant GUC, so as app_user each one raised TC001 on a cold connection (or read 0 rows
+   * with the tripwire off). Each sat in a `catch {}` that rendered a default, so the
+   * portal rendered HTTP 200 with a blank name, the onboarding ribbon forced on and the
+   * tour suppressed, and nothing was logged. userId is deliberately NOT passed.
+   *
+   * A MISSING ROW keeps its deliberate default (no ActivationProgress row = onboarding
+   * not complete; no User row = tour not seen). A FAILED QUERY is no longer swallowed: it
+   * propagates to src/app/error.tsx, which logs it and renders an error page. A layout
+   * that renders as if its data loaded when it did not is the defect being removed here.
+   */
+  const db = await getTenantPrismaForOrg(session.tenantId);
+  const [tenant, activation, user] = await db.$transaction(async (tx) => {
+    // Tenant is extension-exempt; the id predicate and tenant_self_read isolate it.
+    const tenantRow = await tx.tenant.findUnique({
+      where: { id: session.tenantId },
+      select: { name: true },
+    });
+    const activationRow = await tx.activationProgress.findUnique({
+      where: { tenantId: session.tenantId },
+      select: { isActivated: true, congratsShownAt: true },
+    });
+    const userRow = await tx.user.findUnique({
+      where: { id: session.userId },
+      select: { onboardingTourSeen: true },
+    });
+    return [tenantRow, activationRow, userRow] as const;
+  }, TX_OPTIONS);
 
-  // Fetch onboarding completion status — default to false (incomplete) if row is missing or query errors.
-  // A missing ActivationProgress row means the tenant has not completed onboarding yet.
-  let onboardingComplete = false;
-  let congratsShownAt: string | null = null;
-  try {
-    const activationRows = await prisma.$queryRaw<{ isActivated: boolean; congratsShownAt: Date | null }[]>`
-      SELECT "isActivated", "congratsShownAt" FROM "ActivationProgress" WHERE "tenantId" = ${session.tenantId}::uuid LIMIT 1
-    `;
-    onboardingComplete = activationRows[0]?.isActivated ?? false;
-    congratsShownAt = activationRows[0]?.congratsShownAt
-      ? activationRows[0].congratsShownAt.toISOString()
-      : null;
-  } catch {
-    // Non-fatal — default to showing the ribbon (treat as incomplete)
-    onboardingComplete = false;
-    congratsShownAt = null;
-  }
-
-  // Per-user first-run tour flag. Fail-safe to `true` (do NOT auto-show) if the
-  // read errors — a nagging tour is worse than a missing one.
-  let tourSeen = true;
-  try {
-    const rows = await prisma.$queryRaw<{ onboardingTourSeen: boolean }[]>`
-      SELECT "onboardingTourSeen" FROM "User" WHERE id = ${session.userId}::uuid LIMIT 1
-    `;
-    tourSeen = rows[0]?.onboardingTourSeen ?? false;
-  } catch {
-    tourSeen = true;
-  }
+  const tenantName: string | null = tenant?.name ?? null;
+  const onboardingComplete = activation?.isActivated ?? false;
+  const congratsShownAt: string | null = activation?.congratsShownAt
+    ? activation.congratsShownAt.toISOString()
+    : null;
+  const tourSeen = user?.onboardingTourSeen ?? false;
 
   return (
     <TRPCReactProvider>
