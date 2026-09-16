@@ -244,3 +244,23 @@ Re-derived from `06-repo-remainder.json` joined to the census matrix, not transc
 **108 executable `app.bypass_rls` statements remain across 48 files.** `bypass_rls_policy` cannot be
 dropped and the `app_user` cutover stays blocked. This task removed 67 of 175 — 38 % — and it is the
 largest single reduction in the programme so far, but it is not the last one.
+
+---
+
+## 9. One thing `npm run build` changed that this task reverted
+
+The build regenerated two docs search indexes:
+
+```
+apps/web/.docs-data/admin-docs-search-index.json  | 98 +++++++++++---
+apps/web/src/lib/docs/search-index.json           | 74 ++++++++++-
+```
+
+The content is unrelated to anything here — a `/carrier/route-templates` → `/carrier/templates` route
+correction and new `document-import` entries. It is **pre-existing drift between the committed indexes
+and what the build generates**, surfaced by running the gate, not caused by it.
+
+**Reverted, not committed.** Shipping it inside a routing commit would be a change wearing a routing
+fix's clothes, which is the one thing this task exists to avoid. Reported here so the next person
+knows the drift is there and that a `npm run build` on a clean tree will keep producing it until
+somebody commits it deliberately.
