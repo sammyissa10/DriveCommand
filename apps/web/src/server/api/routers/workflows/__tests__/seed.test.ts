@@ -36,6 +36,13 @@ vi.mock('@/lib/db/prisma', () => {
   };
 });
 
+// quick-623: the seeder acquires a TENANT client and opens its transaction on it. The
+// mocked `prisma` above stands in for that client, so the tx and sentinel mocks are unchanged.
+vi.mock('@/lib/context/tenant-context', async () => {
+  const { prisma: mocked } = await import('@/lib/db/prisma');
+  return { getTenantPrismaForOrg: vi.fn(async () => mocked) };
+});
+
 vi.mock('@/lib/logger', async (importOriginal) => {
   // quick-603: spread the real module so a NEW export (serializeError) is not
   // hidden by the mock. A factory that returns only `{ logger }` makes vitest
@@ -167,6 +174,34 @@ describe('seedStarterPlaybooks', () => {
         isActive: true,
       },
     });
+  });
+
+  it('acquires the tenant client with the tenantId ONLY (no userId) before any statement', async () => {
+    vi.mocked(prisma.playbook.findFirst).mockResolvedValue({ id: 'existing-id' } as never);
+    const { getTenantPrismaForOrg } = await import('@/lib/context/tenant-context');
+
+    const { seedStarterPlaybooks } = await import(
+      '@/server/services/workflows/seedStarterPlaybooks'
+    );
+    await seedStarterPlaybooks(TENANT_ID);
+
+    expect(getTenantPrismaForOrg).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(getTenantPrismaForOrg).mock.calls[0]).toEqual([TENANT_ID]);
+    expect(
+      vi.mocked(getTenantPrismaForOrg).mock.invocationCallOrder[0],
+    ).toBeLessThan(vi.mocked(prisma.playbook.findFirst).mock.invocationCallOrder[0]);
+  });
+
+  it('propagates a failed transaction to the caller instead of resolving', async () => {
+    vi.mocked(prisma.playbook.findFirst).mockResolvedValue(null);
+    const tx = getTx();
+    tx.stepTemplate.create.mockResolvedValue({ id: 'step-tmpl-id' });
+    tx.playbook.create.mockRejectedValueOnce(new Error('42501 new row violates row-level security policy'));
+
+    const { seedStarterPlaybooks } = await import(
+      '@/server/services/workflows/seedStarterPlaybooks'
+    );
+    await expect(seedStarterPlaybooks(TENANT_ID)).rejects.toThrow('42501');
   });
 
   it('is idempotent — skips seeding when CDL Onboarding already exists', async () => {

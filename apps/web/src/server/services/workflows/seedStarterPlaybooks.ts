@@ -1,5 +1,6 @@
 import { PHOTO_ON_FAIL_KEY } from '@/lib/carrier/inspection-snapshot';
-import { prisma } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { Prisma } from '@/generated/prisma';
 
 type TxClient = Prisma.TransactionClient;
@@ -459,13 +460,22 @@ async function createPartnerSetup(tx: TxClient, tenantId: string): Promise<void>
  * Idempotent: if 'CDL Driver Onboarding' already exists for this tenant, returns immediately.
  * All creation is wrapped in a single transaction so partial failures are rolled back.
  *
+ * quick-623: the sentinel read and the transaction run on a TENANT client. Both ran on the
+ * bare `prisma` with no tenant GUC, so as app_user the sentinel raised TC001 (tripwire
+ * armed) or read 0 rows and the first INSERT raised 42501, and every caller logged that and
+ * carried on: a tenant silently got no starter playbooks. The transaction is passed INTO the
+ * three helpers, so scoping the place it is OPENED scopes all 24 writes; the helpers'
+ * signatures are unchanged (none has another caller). userId is deliberately NOT passed and
+ * every `tenantId` in the data stays. Failures THROW; the caller must not report success.
+ *
  * Step counts: CDL Driver Onboarding (9), Pre-Trip Inspection DVIR (12), New Partner Setup (6).
  *
  * @param tenantId - The UUID of the tenant to seed.
  */
 export async function seedStarterPlaybooks(tenantId: string): Promise<void> {
   // Idempotency check — 'CDL Driver Onboarding' is the sentinel
-  const existing = await prisma.playbook.findFirst({
+  const db = await getTenantPrismaForOrg(tenantId);
+  const existing = await db.playbook.findFirst({
     where: { tenantId, name: 'CDL Driver Onboarding' },
     select: { id: true },
   });
@@ -474,7 +484,7 @@ export async function seedStarterPlaybooks(tenantId: string): Promise<void> {
     return; // Already seeded — skip
   }
 
-  await prisma.$transaction(async (tx) => {
+  await db.$transaction(async (tx) => {
     const cdlPlaybookId = await createCDLDriverOnboarding(tx, tenantId);
     await createPreTripInspection(tx, tenantId);
     await createPartnerSetup(tx, tenantId);
@@ -496,5 +506,5 @@ export async function seedStarterPlaybooks(tenantId: string): Promise<void> {
         isActive: true,
       },
     });
-  });
+  }, TX_OPTIONS);
 }
