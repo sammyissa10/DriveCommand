@@ -1,0 +1,34 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\621-sweep-layouts-templates-middleware-provi\evidence\06-policy-capture.json
+tables the layout reads: 3; carrying bypass_rls_policy: 3
+logged in: owner@alpha.staging.test (Staging Alpha Carriers) · owner@beta.staging.test (Staging Beta Logistics)
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."Tenant"
+DROPPED bypass_rls_policy ON public."ActivationProgress"
+DROPPED bypass_rls_policy ON public."User"
+bypass_rls_policy now: 83 (was 86)
+  PASS  hook-control  {"callerSaw":"TC001","hookRecorded":1}
+  PASS  control:old-layout-raw-read  {"callerSaw":"P2010","hookRecorded":1,"meaning":"the old layout caught this and rendered tenantName = null"}
+  PASS  fn:owner-layout:tenant-A  {"shellProps":{"tenantName":"Staging Alpha Carriers","onboardingComplete":false,"congratsShownAt":null,"tourSeen":false},"privilegedTruth":{"tenantName":"Staging Alpha Carriers","onboardingComplete":false,"congratsShownAt":null,"tourSeen":false,"activationRowExists":true},"mismatches":[],"otherTenantName":"Staging Beta Logistics","tc001Observed":0,"driverErrors":[]}
+  PASS  fn:owner-layout:tenant-B  {"shellProps":{"tenantName":"Staging Beta Logistics","onboardingComplete":false,"congratsShownAt":null,"tourSeen":false},"privilegedTruth":{"tenantName":"Staging Beta Logistics","onboardingComplete":false,"congratsShownAt":null,"tourSeen":false,"activationRowExists":false},"mismatches":[],"otherTenantName":"Staging Alpha Carriers","tc001Observed":0,"driverErrors":[]}
+  PASS  fn:owner-layout:failure-propagates  {"rejected":"P2007:  Invalid `tx.tenant.findUnique()` invocation in C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\src\\app\\(owner)\\layout.tsx:54:39 51 const db = await getTenantPris","rendered":null,"meaning":"the pre-fix layout rendered defaults here with HTTP 200"}
+  PASS  fn:owner-layout:cross-tenant-user  {"shellProps":{"tenantName":"Staging Alpha Carriers","onboardingComplete":false,"congratsShownAt":null,"tourSeen":false},"tenantBOwnerRowTourSeen":false,"discriminating":"NO — B owner tourSeen is false on staging, so the default and a leaked read are indistinguishable; UNPROVEN BY DATA","tc001Observed":0}
+  PASS  table:Tenant  {"model":"Tenant","unscoped":{"raised":true,"sqlstate":"TC001"},"crossTenant":{"own":1,"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN"}}
+  PASS  table:ActivationProgress  {"model":"ActivationProgress","unscoped":{"raised":true,"sqlstate":"TC001"},"crossTenant":{"own":1,"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=1 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:User  {"model":"User","unscoped":{"raised":true,"sqlstate":"TC001"},"crossTenant":{"own":6,"foreignSeenByTenantA":0,"privilegedCounterRead":4,"verdict":"PROVEN"}}
+  PASS  http:A:/help  {"status":200,"ownTenantNameInHtml":true,"otherTenantNameInHtml":false,"workspaceFallbackInHtml":false,"hookTc001Lines":[],"logByteRange":[2432,2540]}
+  PASS  http:A:/carrier/dashboard  {"status":200,"ownTenantNameInHtml":true,"otherTenantNameInHtml":false,"workspaceFallbackInHtml":false,"hookTc001Lines":[],"logByteRange":[2540,2634]}
+  PASS  http:A:/dashboard  {"status":200,"ownTenantNameInHtml":true,"otherTenantNameInHtml":false,"workspaceFallbackInHtml":false,"hookTc001Lines":[],"logByteRange":[2634,2721]}
+  PASS  http:B:/help  {"status":200,"ownTenantNameInHtml":true,"otherTenantNameInHtml":false,"workspaceFallbackInHtml":false,"hookTc001Lines":[],"logByteRange":[2721,2801]}
+  PASS  http:B:/carrier/dashboard  {"status":200,"ownTenantNameInHtml":true,"otherTenantNameInHtml":false,"workspaceFallbackInHtml":false,"hookTc001Lines":[],"logByteRange":[2801,2894]}
+  PASS  http:B:/dashboard  {"status":200,"ownTenantNameInHtml":true,"otherTenantNameInHtml":false,"workspaceFallbackInHtml":false,"hookTc001Lines":[],"logByteRange":[2894,2980]}
+RESTORE: re-created 3; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
+exit 0

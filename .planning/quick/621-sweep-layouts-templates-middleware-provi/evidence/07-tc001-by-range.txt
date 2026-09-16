@@ -1,0 +1,14 @@
+server log bytes 33369; web run from 3098; mobile run from 22531
+all TC001 text mentions in whole log: 1
+10:[server-target] NODE_OPTIONS --require 620-tc001-driver-hook.js (fixed dual-form TC001 detector)
+[q620-hook] TC001 lines (in-process detector) whole log: 0
+  before web run (layout proof + login): 0
+  web range: 0
+  mobile range: 0
+GET lines web range: 66  mobile range: 30
+hook controls: 4 PASS / 0 FAIL
+mobile identical to quick-620: true
+web changed: OWNER_A /dashboard fail -> pass
+web changed: OWNER_A /carrier/dashboard fail -> pass
+web changed: OWNER_A /carrier/trips fail -> pass
+web changed: OWNER_A /crm fail -> pass

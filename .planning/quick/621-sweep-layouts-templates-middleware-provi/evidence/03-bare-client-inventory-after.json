@@ -1,0 +1,3599 @@
+{
+  "generated": "2026-09-16T18:08:32.735Z",
+  "label": "after",
+  "method": "see header — ts.createSourceFile per file, no Program; units rooted at the imported `prisma` identifier; tables via schema @@map + raw-SQL FROM/JOIN/INTO/UPDATE; RLS state measured on staging",
+  "totals": {
+    "units": 214,
+    "filesScanned": 1562,
+    "byCategory": {
+      "BLIND_UNRESOLVED": 8,
+      "CENSUS_VISIBLE": 40,
+      "BLIND_RLS": 125,
+      "BLIND_NO_RLS": 32,
+      "GUC_SCOPED": 9
+    }
+  },
+  "byFileKind": {
+    "SERVER_ACTION": {
+      "BLIND_UNRESOLVED": {
+        "units": 1,
+        "files": 1
+      },
+      "CENSUS_VISIBLE": {
+        "units": 6,
+        "files": 3
+      },
+      "BLIND_RLS": {
+        "units": 9,
+        "files": 4
+      },
+      "BLIND_NO_RLS": {
+        "units": 19,
+        "files": 5
+      }
+    },
+    "PAGE": {
+      "CENSUS_VISIBLE": {
+        "units": 10,
+        "files": 6
+      },
+      "BLIND_RLS": {
+        "units": 62,
+        "files": 16
+      }
+    },
+    "ROUTE_HANDLER": {
+      "BLIND_RLS": {
+        "units": 8,
+        "files": 7
+      },
+      "CENSUS_VISIBLE": {
+        "units": 19,
+        "files": 10
+      },
+      "GUC_SCOPED": {
+        "units": 2,
+        "files": 1
+      },
+      "BLIND_UNRESOLVED": {
+        "units": 2,
+        "files": 2
+      },
+      "BLIND_NO_RLS": {
+        "units": 12,
+        "files": 3
+      }
+    },
+    "LIBRARY": {
+      "CENSUS_VISIBLE": {
+        "units": 5,
+        "files": 3
+      },
+      "BLIND_RLS": {
+        "units": 46,
+        "files": 20
+      },
+      "BLIND_UNRESOLVED": {
+        "units": 5,
+        "files": 2
+      },
+      "GUC_SCOPED": {
+        "units": 7,
+        "files": 3
+      },
+      "BLIND_NO_RLS": {
+        "units": 1,
+        "files": 1
+      }
+    }
+  },
+  "antiVacuity": [
+    {
+      "name": "FLOOR — at least 100 bare-client units",
+      "pass": true,
+      "detail": "214"
+    },
+    {
+      "name": "POSITIVE WITNESS (owner)/layout.tsx BLIND_RLS === 0 (after)",
+      "pass": true,
+      "detail": "0 at lines [] tables []"
+    },
+    {
+      "name": "COUNTER-ASSERTION lib/context/tenant-context.ts WAS READ",
+      "pass": true,
+      "detail": "bytes=9963"
+    },
+    {
+      "name": "CENSUS_VISIBLE > 0 (the walker sees flagged units at all)",
+      "pass": true,
+      "detail": "40"
+    }
+  ],
+  "blindRls": [
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 609,
+      "kind": "SERVER_ACTION",
+      "shape": "$queryRaw``",
+      "tables": [
+        "SupportTicket",
+        "TicketMessage"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(auth)/sign-up/actions.tsx",
+      "line": 237,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "AppEvent"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 168,
+      "kind": "SERVER_ACTION",
+      "shape": "load.findMany",
+      "tables": [
+        "Load"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 174,
+      "kind": "SERVER_ACTION",
+      "shape": "fleetMessage.findMany",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 71,
+      "kind": "SERVER_ACTION",
+      "shape": "userNotificationPreference.findMany",
+      "tables": [
+        "UserNotificationPreference"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 81,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationSubscription.findMany",
+      "tables": [
+        "NotificationSubscription"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 185,
+      "kind": "SERVER_ACTION",
+      "shape": "userNotificationPreference.upsert",
+      "tables": [
+        "UserNotificationPreference"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 257,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationSubscription.upsert",
+      "tables": [
+        "NotificationSubscription"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 266,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationSubscription.deleteMany",
+      "tables": [
+        "NotificationSubscription"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/clients/[id]/page.tsx",
+      "line": 27,
+      "kind": "PAGE",
+      "shape": "carrierClient.findUnique",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/contracts/new/page.tsx",
+      "line": 20,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/contracts/[id]/page.tsx",
+      "line": 25,
+      "kind": "PAGE",
+      "shape": "carrierContract.findUnique",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/contracts/[id]/page.tsx",
+      "line": 36,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/facilities/[id]/page.tsx",
+      "line": 30,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findUnique",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/fleet/trucks/[id]/page.tsx",
+      "line": 46,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findUnique",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/fleet/trucks/[id]/page.tsx",
+      "line": 72,
+      "kind": "PAGE",
+      "shape": "trip.findFirst",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 20,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 21,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 22,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 41,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 46,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 56,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 62,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/page.tsx",
+      "line": 14,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 34,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 35,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 36,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 60,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 65,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 76,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 81,
+      "kind": "PAGE",
+      "shape": "carrierLoad.findUnique",
+      "tables": [
+        "loads"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 98,
+      "kind": "PAGE",
+      "shape": "carrierContract.findMany",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 111,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 160,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 25,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 29,
+      "kind": "PAGE",
+      "shape": "carrierContract.findMany",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 33,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 37,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 41,
+      "kind": "PAGE",
+      "shape": "route.findMany",
+      "tables": [
+        "Route"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 45,
+      "kind": "PAGE",
+      "shape": "trip.findMany",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 49,
+      "kind": "PAGE",
+      "shape": "carrierLoad.findMany",
+      "tables": [
+        "loads"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 62,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 22,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 23,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 24,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 44,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 49,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 54,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 59,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 31,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 32,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 33,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 45,
+      "kind": "PAGE",
+      "shape": "routeTemplate.findUnique",
+      "tables": [
+        "route_templates"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 69,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 74,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 79,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 85,
+      "kind": "PAGE",
+      "shape": "carrierContract.findMany",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 91,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 40,
+      "kind": "PAGE",
+      "shape": "trip.findUnique",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 54,
+      "kind": "PAGE",
+      "shape": "routeTemplate.findFirst",
+      "tables": [
+        "route_templates"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 71,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 154,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 169,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findFirst",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 176,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 189,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 194,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/plan/page.tsx",
+      "line": 27,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/plan/page.tsx",
+      "line": 48,
+      "kind": "PAGE",
+      "shape": "carrierLoad.findMany",
+      "tables": [
+        "loads"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+      "line": 81,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/checklists/instances/[id]/page.tsx",
+      "line": 10,
+      "kind": "PAGE",
+      "shape": "playbookInstance.findUnique",
+      "tables": [
+        "PlaybookInstance"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/settings/account/page.tsx",
+      "line": 29,
+      "kind": "PAGE",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/admin/tenants/[id]/users/route.ts",
+      "line": 23,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/admin/users/[id]/role/route.ts",
+      "line": 34,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/admin/users/[id]/role/route.ts",
+      "line": 52,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.update",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/dashboard/drivers-status/route.ts",
+      "line": 64,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$queryRaw()",
+      "tables": [
+        "DriverHOSEntry"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/dashboard/messages/route.ts",
+      "line": 33,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/pay-records/[id]/approve/route.ts",
+      "line": 19,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/pay-records/[id]/mark-paid/route.ts",
+      "line": 19,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/pay-records/[id]/void/route.ts",
+      "line": 19,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 37,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 46,
+      "kind": "LIBRARY",
+      "shape": "tenant.findUnique",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 82,
+      "kind": "LIBRARY",
+      "shape": "notificationLog.upsert",
+      "tables": [
+        "NotificationLog"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 103,
+      "kind": "LIBRARY",
+      "shape": "notificationLog.upsert",
+      "tables": [
+        "NotificationLog"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/document-types.ts",
+      "line": 27,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "carrier_document_types"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/facilities.ts",
+      "line": 72,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw``",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 240,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 277,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 321,
+      "kind": "LIBRARY",
+      "shape": "tenant.findUnique",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 402,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records",
+        "carrier_expenses",
+        "DriverInvitation",
+        "carrier_drivers",
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 503,
+      "kind": "LIBRARY",
+      "shape": "tenant.findUnique",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 593,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 51,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 60,
+      "kind": "LIBRARY",
+      "shape": "carrierDriver.findFirst",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 149,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 270,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 409,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 458,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 512,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 617,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 718,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 877,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 1009,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 1146,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 134,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [
+        "loads",
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 151,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [
+        "loads",
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 278,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [
+        "loads",
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/trips.ts",
+      "line": 217,
+      "kind": "LIBRARY",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/trips.ts",
+      "line": 228,
+      "kind": "LIBRARY",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/confirm-tenant-email.ts",
+      "line": 36,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/hydrate-tenant.ts",
+      "line": 26,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant",
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/hydrate-tenant.ts",
+      "line": 55,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/onboarding-flags.ts",
+      "line": 30,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "clients",
+        "contracts",
+        "loads",
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/onboarding-flags.ts",
+      "line": 57,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/provision-tenant.ts",
+      "line": 74,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant",
+        "User",
+        "Plan",
+        "Promo",
+        "Subscription",
+        "ActivationProgress"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/security/restricted-document-access.ts",
+      "line": 60,
+      "kind": "LIBRARY",
+      "shape": "document.findUnique",
+      "tables": [
+        "Document"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/api/routers/workflows/playbook.ts",
+      "line": 123,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Playbook",
+        "PlaybookStep"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/api/routers/workflows/stepInstance.ts",
+      "line": 117,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/api/routers/workflows/trigger.ts",
+      "line": 254,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/computeDispatchReadiness.ts",
+      "line": 119,
+      "kind": "LIBRARY",
+      "shape": "user.update",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/failInspectionItem.ts",
+      "line": 130,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+      "line": 235,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+      "line": 270,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/playbookStepService.ts",
+      "line": 42,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookStep"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/seedStarterPlaybooks.ts",
+      "line": 468,
+      "kind": "LIBRARY",
+      "shape": "playbook.findFirst",
+      "tables": [
+        "Playbook"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/seedStarterPlaybooks.ts",
+      "line": 477,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookTrigger"
+      ],
+      "category": "BLIND_RLS"
+    }
+  ],
+  "blindUnresolved": [
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 125,
+      "kind": "SERVER_ACTION",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/app/api/mobile/support/ticket/route.ts",
+      "line": 54,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/app/api/warmup/route.ts",
+      "line": 15,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/fleet-trucks.ts",
+      "line": 104,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 382,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 391,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 399,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 407,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    }
+  ],
+  "units": [
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 125,
+      "kind": "SERVER_ACTION",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 178,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "SupportTicket"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 226,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "SupportTicket"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 416,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "SupportTicket",
+        "TicketMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 455,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "SupportTicket",
+        "TicketMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/actions/support-tickets.ts",
+      "line": 609,
+      "kind": "SERVER_ACTION",
+      "shape": "$queryRaw``",
+      "tables": [
+        "SupportTicket",
+        "TicketMessage"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 34,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findMany",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 50,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findUniqueOrThrow",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 73,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.update",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 101,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.update",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 131,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationEmailConfig.findFirst",
+      "tables": [
+        "NotificationEmailConfig"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 170,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationEmailConfig.findFirst",
+      "tables": [
+        "NotificationEmailConfig"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 177,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationEmailConfig.update",
+      "tables": [
+        "NotificationEmailConfig"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/notifications.ts",
+      "line": 186,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationEmailConfig.create",
+      "tables": [
+        "NotificationEmailConfig"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/plans.ts",
+      "line": 16,
+      "kind": "SERVER_ACTION",
+      "shape": "plan.findMany",
+      "tables": [
+        "Plan"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/plans.ts",
+      "line": 21,
+      "kind": "SERVER_ACTION",
+      "shape": "plan.findUnique",
+      "tables": [
+        "Plan"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/plans.ts",
+      "line": 45,
+      "kind": "SERVER_ACTION",
+      "shape": "plan.create",
+      "tables": [
+        "Plan"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/plans.ts",
+      "line": 71,
+      "kind": "SERVER_ACTION",
+      "shape": "plan.update",
+      "tables": [
+        "Plan"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/promos.ts",
+      "line": 16,
+      "kind": "SERVER_ACTION",
+      "shape": "promo.findMany",
+      "tables": [
+        "Promo"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(admin)/actions/promos.ts",
+      "line": 35,
+      "kind": "SERVER_ACTION",
+      "shape": "promo.create",
+      "tables": [
+        "Promo"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(auth)/sign-up/actions.tsx",
+      "line": 237,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "AppEvent"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 73,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 168,
+      "kind": "SERVER_ACTION",
+      "shape": "load.findMany",
+      "tables": [
+        "Load"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-dashboard.ts",
+      "line": 174,
+      "kind": "SERVER_ACTION",
+      "shape": "fleetMessage.findMany",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(driver)/actions/driver-routes.ts",
+      "line": 201,
+      "kind": "SERVER_ACTION",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "carrier_drivers",
+        "dispatches"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(driver)/tasks/page.tsx",
+      "line": 147,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "StepInstance"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(driver)/tasks/[id]/page.tsx",
+      "line": 94,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "StepInstance"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(driver)/tasks/[id]/page.tsx",
+      "line": 206,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "StepInstance"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 65,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findMany",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 71,
+      "kind": "SERVER_ACTION",
+      "shape": "userNotificationPreference.findMany",
+      "tables": [
+        "UserNotificationPreference"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 81,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationSubscription.findMany",
+      "tables": [
+        "NotificationSubscription"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 185,
+      "kind": "SERVER_ACTION",
+      "shape": "userNotificationPreference.upsert",
+      "tables": [
+        "UserNotificationPreference"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 257,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationSubscription.upsert",
+      "tables": [
+        "NotificationSubscription"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/my-notifications.ts",
+      "line": 266,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationSubscription.deleteMany",
+      "tables": [
+        "NotificationSubscription"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 144,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findMany",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 186,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findUniqueOrThrow",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 306,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findUniqueOrThrow",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(owner)/actions/tenant-notification-settings.ts",
+      "line": 400,
+      "kind": "SERVER_ACTION",
+      "shape": "notificationTemplate.findMany",
+      "tables": [
+        "NotificationTemplate"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/clients/[id]/page.tsx",
+      "line": 27,
+      "kind": "PAGE",
+      "shape": "carrierClient.findUnique",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/contracts/new/page.tsx",
+      "line": 20,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/contracts/[id]/page.tsx",
+      "line": 25,
+      "kind": "PAGE",
+      "shape": "carrierContract.findUnique",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/contracts/[id]/page.tsx",
+      "line": 36,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+      "line": 23,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/carrier/dashboard/page.tsx",
+      "line": 29,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "carrier_trucks",
+        "carrier_drivers",
+        "loads",
+        "clients"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/carrier/facilities/[id]/page.tsx",
+      "line": 30,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findUnique",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/fleet/trucks/[id]/page.tsx",
+      "line": 46,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findUnique",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/fleet/trucks/[id]/page.tsx",
+      "line": 72,
+      "kind": "PAGE",
+      "shape": "trip.findFirst",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 20,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 21,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 22,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 41,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 46,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 56,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/new/page.tsx",
+      "line": 62,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/page.tsx",
+      "line": 14,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 34,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 35,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 36,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 60,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 65,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 76,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 81,
+      "kind": "PAGE",
+      "shape": "carrierLoad.findUnique",
+      "tables": [
+        "loads"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 98,
+      "kind": "PAGE",
+      "shape": "carrierContract.findMany",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 111,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/loads/[id]/page.tsx",
+      "line": 160,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 25,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 29,
+      "kind": "PAGE",
+      "shape": "carrierContract.findMany",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 33,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 37,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 41,
+      "kind": "PAGE",
+      "shape": "route.findMany",
+      "tables": [
+        "Route"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 45,
+      "kind": "PAGE",
+      "shape": "trip.findMany",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 49,
+      "kind": "PAGE",
+      "shape": "carrierLoad.findMany",
+      "tables": [
+        "loads"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/recently-deleted/page.tsx",
+      "line": 62,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+      "line": 90,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+      "line": 109,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "loads"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/carrier/stops/[id]/page.tsx",
+      "line": 152,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 22,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 23,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 24,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 44,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 49,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 54,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/new/page.tsx",
+      "line": 59,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 31,
+      "kind": "PAGE",
+      "shape": "carrierClient.count",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 32,
+      "kind": "PAGE",
+      "shape": "carrierDriver.count",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 33,
+      "kind": "PAGE",
+      "shape": "carrierTruck.count",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 45,
+      "kind": "PAGE",
+      "shape": "routeTemplate.findUnique",
+      "tables": [
+        "route_templates"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 69,
+      "kind": "PAGE",
+      "shape": "carrierClient.findMany",
+      "tables": [
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 74,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 79,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 85,
+      "kind": "PAGE",
+      "shape": "carrierContract.findMany",
+      "tables": [
+        "contracts"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/templates/[id]/page.tsx",
+      "line": 91,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 40,
+      "kind": "PAGE",
+      "shape": "trip.findUnique",
+      "tables": [
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 54,
+      "kind": "PAGE",
+      "shape": "routeTemplate.findFirst",
+      "tables": [
+        "route_templates"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 71,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 136,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 154,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 169,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findFirst",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 176,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 189,
+      "kind": "PAGE",
+      "shape": "carrierDriver.findMany",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/page.tsx",
+      "line": 194,
+      "kind": "PAGE",
+      "shape": "carrierTruck.findMany",
+      "tables": [
+        "carrier_trucks"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/plan/page.tsx",
+      "line": 27,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/plan/page.tsx",
+      "line": 48,
+      "kind": "PAGE",
+      "shape": "carrierLoad.findMany",
+      "tables": [
+        "loads"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+      "line": 81,
+      "kind": "PAGE",
+      "shape": "carrierFacility.findMany",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/carrier/trips/[id]/stops/page.tsx",
+      "line": 117,
+      "kind": "PAGE",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/(owner)/checklists/instances/[id]/page.tsx",
+      "line": 10,
+      "kind": "PAGE",
+      "shape": "playbookInstance.findUnique",
+      "tables": [
+        "PlaybookInstance"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/(owner)/settings/account/page.tsx",
+      "line": 29,
+      "kind": "PAGE",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/admin/tenants/[id]/users/route.ts",
+      "line": 23,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/admin/users/[id]/role/route.ts",
+      "line": 34,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/admin/users/[id]/role/route.ts",
+      "line": 52,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.update",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/auth/accept-invitation/route.ts",
+      "line": 154,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/auth/accept-invitation/route.ts",
+      "line": 238,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User",
+        "DriverInvitation",
+        "carrier_drivers"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 73,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 112,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User"
+      ],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "line": 153,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "ActivationProgress"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 81,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookNotification"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 101,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "StepInstance",
+        "PlaybookInstance",
+        "User",
+        "Tenant"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 180,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookInstance"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/cron/workflow-digest/route.ts",
+      "line": 189,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookNotification"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/driver/gps-ping/route.ts",
+      "line": 68,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "carrier_drivers",
+        "dispatches"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 65,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 91,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 104,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 208,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/driver/stops/[stopId]/messages/route.ts",
+      "line": 218,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "FleetMessage"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/gps/report/route.ts",
+      "line": 87,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Load",
+        "Route"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/gps/report/route.ts",
+      "line": 119,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "GPSLocation"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/integrations/motive/sync/route.ts",
+      "line": 53,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "TenantIntegration"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/integrations/samsara/sync/route.ts",
+      "line": 53,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "TenantIntegration"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/mobile/support/ticket/route.ts",
+      "line": 54,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/app/api/push-tokens/route.ts",
+      "line": 53,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PushToken"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/track/[token]/route.ts",
+      "line": 49,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "GPSLocation"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/app/api/user/grid-preferences/[gridId]/route.ts",
+      "line": 49,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridPreference.findUnique",
+      "tables": [
+        "grid_preference"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-preferences/[gridId]/route.ts",
+      "line": 122,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridPreference.upsert",
+      "tables": [
+        "grid_preference"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/route.ts",
+      "line": 30,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.findMany",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/route.ts",
+      "line": 91,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.findUnique",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/route.ts",
+      "line": 110,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.updateMany",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/route.ts",
+      "line": 123,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.create",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/[viewId]/route.ts",
+      "line": 38,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.findUnique",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/[viewId]/route.ts",
+      "line": 52,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.findUnique",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/[viewId]/route.ts",
+      "line": 72,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.updateMany",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/[viewId]/route.ts",
+      "line": 86,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.update",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/[viewId]/route.ts",
+      "line": 123,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.findUnique",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/user/grid-views/[gridId]/[viewId]/route.ts",
+      "line": 136,
+      "kind": "ROUTE_HANDLER",
+      "shape": "gridView.delete",
+      "tables": [
+        "grid_view"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/dashboard/drivers-status/route.ts",
+      "line": 64,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$queryRaw()",
+      "tables": [
+        "DriverHOSEntry"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/dashboard/messages/route.ts",
+      "line": 33,
+      "kind": "ROUTE_HANDLER",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/pay-records/[id]/approve/route.ts",
+      "line": 19,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/pay-records/[id]/mark-paid/route.ts",
+      "line": 19,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/v1/carrier/pay-records/[id]/void/route.ts",
+      "line": 19,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/app/api/warmup/route.ts",
+      "line": 15,
+      "kind": "ROUTE_HANDLER",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/auth/supabase.ts",
+      "line": 163,
+      "kind": "LIBRARY",
+      "shape": "$transaction([…])",
+      "tables": [
+        "User"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 37,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 46,
+      "kind": "LIBRARY",
+      "shape": "tenant.findUnique",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 82,
+      "kind": "LIBRARY",
+      "shape": "notificationLog.upsert",
+      "tables": [
+        "NotificationLog"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/automations/actions/send-email.ts",
+      "line": 103,
+      "kind": "LIBRARY",
+      "shape": "notificationLog.upsert",
+      "tables": [
+        "NotificationLog"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/document-types.ts",
+      "line": 27,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "carrier_document_types"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/facilities.ts",
+      "line": 72,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw``",
+      "tables": [
+        "facilities"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 240,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 277,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 321,
+      "kind": "LIBRARY",
+      "shape": "tenant.findUnique",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 402,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "driver_pay_records",
+        "carrier_expenses",
+        "DriverInvitation",
+        "carrier_drivers",
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 503,
+      "kind": "LIBRARY",
+      "shape": "tenant.findUnique",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-drivers.ts",
+      "line": 593,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/fleet-trucks.ts",
+      "line": 104,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw``",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 51,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 60,
+      "kind": "LIBRARY",
+      "shape": "carrierDriver.findFirst",
+      "tables": [
+        "carrier_drivers"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 149,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 270,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 409,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 458,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 512,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 617,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 718,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 877,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 1009,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/notifications.ts",
+      "line": 1146,
+      "kind": "LIBRARY",
+      "shape": "tenant.findFirst",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 134,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [
+        "loads",
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 151,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [
+        "loads",
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 278,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [
+        "loads",
+        "clients"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 382,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 391,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 399,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/reports.ts",
+      "line": 407,
+      "kind": "LIBRARY",
+      "shape": "$queryRaw()",
+      "tables": [],
+      "category": "BLIND_UNRESOLVED"
+    },
+    {
+      "file": "src/lib/carrier/trips.ts",
+      "line": 217,
+      "kind": "LIBRARY",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/carrier/trips.ts",
+      "line": 228,
+      "kind": "LIBRARY",
+      "shape": "user.findUnique",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/context/tenant-context.ts",
+      "line": 179,
+      "kind": "LIBRARY",
+      "shape": "$executeRawUnsafe()",
+      "tables": [],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/context/tenant-context.ts",
+      "line": 210,
+      "kind": "LIBRARY",
+      "shape": "$executeRawUnsafe()",
+      "tables": [],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/context/tenant-context.ts",
+      "line": 230,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/email/sender-config.ts",
+      "line": 151,
+      "kind": "LIBRARY",
+      "shape": "notificationEmailConfig.findFirst",
+      "tables": [
+        "NotificationEmailConfig"
+      ],
+      "category": "BLIND_NO_RLS"
+    },
+    {
+      "file": "src/lib/integrations/motive.ts",
+      "line": 115,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Truck"
+      ],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/integrations/motive.ts",
+      "line": 173,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "GPSLocation"
+      ],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/integrations/samsara.ts",
+      "line": 108,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Truck"
+      ],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/integrations/samsara.ts",
+      "line": 168,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "GPSLocation"
+      ],
+      "category": "GUC_SCOPED"
+    },
+    {
+      "file": "src/lib/notifications/send-push.ts",
+      "line": 48,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PushToken"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/lib/notifications/send-push.ts",
+      "line": 89,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PushToken"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/lib/onboarding/confirm-tenant-email.ts",
+      "line": 36,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/hydrate-tenant.ts",
+      "line": 26,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant",
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/hydrate-tenant.ts",
+      "line": 55,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/onboarding-flags.ts",
+      "line": 30,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "clients",
+        "contracts",
+        "loads",
+        "dispatches"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/onboarding-flags.ts",
+      "line": 57,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/onboarding/provision-tenant.ts",
+      "line": 74,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Tenant",
+        "User",
+        "Plan",
+        "Promo",
+        "Subscription",
+        "ActivationProgress"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/lib/security/restricted-document-access.ts",
+      "line": 60,
+      "kind": "LIBRARY",
+      "shape": "document.findUnique",
+      "tables": [
+        "Document"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/api/routers/workflows/playbook.ts",
+      "line": 123,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "Playbook",
+        "PlaybookStep"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/api/routers/workflows/stepInstance.ts",
+      "line": 117,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/api/routers/workflows/trigger.ts",
+      "line": 254,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/computeDispatchReadiness.ts",
+      "line": 119,
+      "kind": "LIBRARY",
+      "shape": "user.update",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/failInspectionItem.ts",
+      "line": 130,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+      "line": 235,
+      "kind": "LIBRARY",
+      "shape": "user.findFirst",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/generatePlaybookInstance.ts",
+      "line": 270,
+      "kind": "LIBRARY",
+      "shape": "user.findMany",
+      "tables": [
+        "User"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/notifications.ts",
+      "line": 66,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "User"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/server/services/workflows/notifications.ts",
+      "line": 153,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "StepInstance"
+      ],
+      "category": "CENSUS_VISIBLE"
+    },
+    {
+      "file": "src/server/services/workflows/playbookStepService.ts",
+      "line": 42,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookStep"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/seedStarterPlaybooks.ts",
+      "line": 468,
+      "kind": "LIBRARY",
+      "shape": "playbook.findFirst",
+      "tables": [
+        "Playbook"
+      ],
+      "category": "BLIND_RLS"
+    },
+    {
+      "file": "src/server/services/workflows/seedStarterPlaybooks.ts",
+      "line": 477,
+      "kind": "LIBRARY",
+      "shape": "$transaction(cb)",
+      "tables": [
+        "PlaybookTrigger"
+      ],
+      "category": "BLIND_RLS"
+    }
+  ]
+}

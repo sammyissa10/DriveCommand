@@ -1,0 +1,11 @@
+bare-client units: 214 in 1562 files scanned
+by category: {"BLIND_UNRESOLVED":8,"CENSUS_VISIBLE":40,"BLIND_RLS":125,"BLIND_NO_RLS":32,"GUC_SCOPED":9}
+by file kind (units / files):
+  LIBRARY              CENSUS_VISIBLE 5u/3f · BLIND_RLS 46u/20f · BLIND_UNRESOLVED 5u/2f · GUC_SCOPED 7u/3f · BLIND_NO_RLS 1u/1f
+  PAGE                 CENSUS_VISIBLE 10u/6f · BLIND_RLS 62u/16f
+  ROUTE_HANDLER        BLIND_RLS 8u/7f · CENSUS_VISIBLE 19u/10f · GUC_SCOPED 2u/1f · BLIND_UNRESOLVED 2u/2f · BLIND_NO_RLS 12u/3f
+  SERVER_ACTION        BLIND_UNRESOLVED 1u/1f · CENSUS_VISIBLE 6u/3f · BLIND_RLS 9u/4f · BLIND_NO_RLS 19u/5f
+  PASS  FLOOR — at least 100 bare-client units — 214
+  PASS  POSITIVE WITNESS (owner)/layout.tsx BLIND_RLS === 0 (after) — 0 at lines [] tables []
+  PASS  COUNTER-ASSERTION lib/context/tenant-context.ts WAS READ — bytes=9963
+  PASS  CENSUS_VISIBLE > 0 (the walker sees flagged units at all) — 40

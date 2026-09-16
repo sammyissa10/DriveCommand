@@ -1,0 +1,22 @@
+{
+  "generated": "2026-09-16T18:11:39.518Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "droppedPolicyTables": [
+    "Tenant",
+    "ActivationProgress",
+    "User"
+  ],
+  "threw": "--throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.",
+  "results": [],
+  "restore": {
+    "restoredCount": 3,
+    "liveCount": 86,
+    "onlyInBefore": [],
+    "onlyInAfter": [],
+    "sortedListIdentical": true,
+    "bodyMismatches": [],
+    "ok": true
+  }
+}

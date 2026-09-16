@@ -1,0 +1,251 @@
+{
+  "generated": "2026-09-16T18:16:50.745Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "droppedPolicyTables": [
+    "Tenant",
+    "ActivationProgress",
+    "User"
+  ],
+  "threw": null,
+  "results": [
+    {
+      "cell": "hook-control",
+      "ok": true,
+      "detail": {
+        "callerSaw": "TC001",
+        "hookRecorded": 1
+      }
+    },
+    {
+      "cell": "control:old-layout-raw-read",
+      "ok": true,
+      "detail": {
+        "callerSaw": "P2010",
+        "hookRecorded": 1,
+        "meaning": "the old layout caught this and rendered tenantName = null"
+      }
+    },
+    {
+      "cell": "fn:owner-layout:tenant-A",
+      "ok": true,
+      "detail": {
+        "shellProps": {
+          "tenantName": "Staging Alpha Carriers",
+          "onboardingComplete": false,
+          "congratsShownAt": null,
+          "tourSeen": false
+        },
+        "privilegedTruth": {
+          "tenantName": "Staging Alpha Carriers",
+          "onboardingComplete": false,
+          "congratsShownAt": null,
+          "tourSeen": false,
+          "activationRowExists": true
+        },
+        "mismatches": [],
+        "otherTenantName": "Staging Beta Logistics",
+        "tc001Observed": 0,
+        "driverErrors": []
+      }
+    },
+    {
+      "cell": "fn:owner-layout:tenant-B",
+      "ok": true,
+      "detail": {
+        "shellProps": {
+          "tenantName": "Staging Beta Logistics",
+          "onboardingComplete": false,
+          "congratsShownAt": null,
+          "tourSeen": false
+        },
+        "privilegedTruth": {
+          "tenantName": "Staging Beta Logistics",
+          "onboardingComplete": false,
+          "congratsShownAt": null,
+          "tourSeen": false,
+          "activationRowExists": false
+        },
+        "mismatches": [],
+        "otherTenantName": "Staging Alpha Carriers",
+        "tc001Observed": 0,
+        "driverErrors": []
+      }
+    },
+    {
+      "cell": "fn:owner-layout:failure-propagates",
+      "ok": true,
+      "detail": {
+        "rejected": "P2007:  Invalid `tx.tenant.findUnique()` invocation in C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\src\\app\\(owner)\\layout.tsx:54:39 51 const db = await getTenantPris",
+        "rendered": null,
+        "meaning": "the pre-fix layout rendered defaults here with HTTP 200"
+      }
+    },
+    {
+      "cell": "fn:owner-layout:cross-tenant-user",
+      "ok": true,
+      "detail": {
+        "shellProps": {
+          "tenantName": "Staging Alpha Carriers",
+          "onboardingComplete": false,
+          "congratsShownAt": null,
+          "tourSeen": false
+        },
+        "tenantBOwnerRowTourSeen": false,
+        "discriminating": "NO — B owner tourSeen is false on staging, so the default and a leaked read are indistinguishable; UNPROVEN BY DATA",
+        "tc001Observed": 0
+      }
+    },
+    {
+      "cell": "table:Tenant",
+      "ok": true,
+      "detail": {
+        "model": "Tenant",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "crossTenant": {
+          "own": 1,
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN"
+        }
+      }
+    },
+    {
+      "cell": "table:ActivationProgress",
+      "ok": true,
+      "detail": {
+        "model": "ActivationProgress",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "crossTenant": {
+          "own": 1,
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=1 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:User",
+      "ok": true,
+      "detail": {
+        "model": "User",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "crossTenant": {
+          "own": 6,
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 4,
+          "verdict": "PROVEN"
+        }
+      }
+    },
+    {
+      "cell": "http:A:/help",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ownTenantNameInHtml": true,
+        "otherTenantNameInHtml": false,
+        "workspaceFallbackInHtml": false,
+        "hookTc001Lines": [],
+        "logByteRange": [
+          2432,
+          2540
+        ]
+      }
+    },
+    {
+      "cell": "http:A:/carrier/dashboard",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ownTenantNameInHtml": true,
+        "otherTenantNameInHtml": false,
+        "workspaceFallbackInHtml": false,
+        "hookTc001Lines": [],
+        "logByteRange": [
+          2540,
+          2634
+        ]
+      }
+    },
+    {
+      "cell": "http:A:/dashboard",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ownTenantNameInHtml": true,
+        "otherTenantNameInHtml": false,
+        "workspaceFallbackInHtml": false,
+        "hookTc001Lines": [],
+        "logByteRange": [
+          2634,
+          2721
+        ]
+      }
+    },
+    {
+      "cell": "http:B:/help",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ownTenantNameInHtml": true,
+        "otherTenantNameInHtml": false,
+        "workspaceFallbackInHtml": false,
+        "hookTc001Lines": [],
+        "logByteRange": [
+          2721,
+          2801
+        ]
+      }
+    },
+    {
+      "cell": "http:B:/carrier/dashboard",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ownTenantNameInHtml": true,
+        "otherTenantNameInHtml": false,
+        "workspaceFallbackInHtml": false,
+        "hookTc001Lines": [],
+        "logByteRange": [
+          2801,
+          2894
+        ]
+      }
+    },
+    {
+      "cell": "http:B:/dashboard",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ownTenantNameInHtml": true,
+        "otherTenantNameInHtml": false,
+        "workspaceFallbackInHtml": false,
+        "hookTc001Lines": [],
+        "logByteRange": [
+          2894,
+          2980
+        ]
+      }
+    }
+  ],
+  "restore": {
+    "restoredCount": 3,
+    "liveCount": 86,
+    "onlyInBefore": [],
+    "onlyInAfter": [],
+    "sortedListIdentical": true,
+    "bodyMismatches": [],
+    "ok": true
+  }
+}
