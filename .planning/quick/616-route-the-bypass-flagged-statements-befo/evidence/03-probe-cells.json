@@ -1,0 +1,51 @@
+[
+  {
+    "site": "generateTicketNumber (BOTH copies) — NEW receiver",
+    "lane": "app_user · GUC EMPTY · tripwire ARMED · bypass_rls_policy DROPPED on SupportTicket",
+    "expectation": "nextval succeeds and STRICTLY INCREASES — a sequence is not RLS-governed, only GRANT USAGE gates it",
+    "observed": "nextval #1 = 4, nextval #2 = 5",
+    "counterRead": null,
+    "sqlstate": null,
+    "verdict": "PASS",
+    "note": "Two consecutive calls on the SAME connection, proving the race the two copies used to run is gone: the number is issued by the database, not computed from a read."
+  },
+  {
+    "site": "generateTicketNumber — OLD receiver, tripwire ARMED",
+    "lane": "app_user · GUC EMPTY · tripwire ARMED · bypass_rls_policy DROPPED",
+    "expectation": "TC001 — the tripwire refuses the statement before any policy is consulted",
+    "observed": "raised TC001",
+    "counterRead": null,
+    "sqlstate": "TC001",
+    "verdict": "PASS",
+    "note": "Recognised by CODE off the cause chain, never by message prose. This corrects the expectation this cell was written with: the bypass drop is not what the old read hits first once the tripwire is armed."
+  },
+  {
+    "site": "generateTicketNumber — OLD receiver, tripwire OFF (production today)",
+    "lane": "app_user · GUC EMPTY · tripwire OFF · bypass_rls_policy DROPPED",
+    "expectation": "ZERO ROWS and NO ERROR — admin-connection.md §9's predicted silent wrong answer: the old code falls to `if (!result) return \"TKT-0001\"` and collides on the second ticket",
+    "observed": "count = 0, max = null",
+    "counterRead": "privileged (postgres, separate connection): count = 2, max = \"TKT-9002\"",
+    "sqlstate": null,
+    "verdict": "PASS",
+    "note": "Scalar count, never rowCount. The zero is paired with a privileged own > 0, or it proves nothing."
+  },
+  {
+    "site": "generateTicketNumber — OLD receiver, REAL tenant GUC",
+    "lane": "app_user · GUC = tenant A · bypass_rls_policy DROPPED",
+    "expectation": "sees only tenant A rows (foreign === 0, own > 0) and therefore returns A's local maximum, NOT the global one — the read is structurally incapable of answering a GLOBAL sequence question under RLS",
+    "observed": "visible = 1, of which tenant B = 0, max seen = \"TKT-9001\"",
+    "counterRead": "privileged global: count = 2, max = \"TKT-9002\"",
+    "sqlstate": null,
+    "verdict": "PASS",
+    "note": "foreign === 0 PAIRED with own > 0. The local max differing from the privileged global max is the collision, made visible."
+  },
+  {
+    "site": "generateTicketNumber — NEW receiver, REAL tenant GUC",
+    "lane": "app_user · GUC = tenant A · bypass_rls_policy DROPPED",
+    "expectation": "identical behaviour — a sequence has no tenant dimension, so the GUC changes nothing",
+    "observed": "nextval = 6",
+    "counterRead": null,
+    "sqlstate": null,
+    "verdict": "PASS"
+  }
+]
