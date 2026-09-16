@@ -1,0 +1,241 @@
+{
+  "generated": "2026-09-16T20:39:05.046Z",
+  "results": [
+    {
+      "cell": "control:no-error",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "count#2",
+          "ok": true,
+          "value": 1
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""
+        ]
+      }
+    },
+    {
+      "cell": "evict:division-by-zero",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "count#2 on the SAME tenant client",
+          "ok": false,
+          "sqlstate": "TC001"
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 2,
+        "tc001": 1,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"",
+          "''"
+        ]
+      }
+    },
+    {
+      "cell": "evict:undefined-column",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT a missing column (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "count#2 on the SAME tenant client",
+          "ok": false,
+          "sqlstate": "TC001"
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 2,
+        "tc001": 1,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"",
+          "''"
+        ]
+      }
+    },
+    {
+      "cell": "evict:error-inside-transaction",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "$transaction(SELECT 1/0) (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 1
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""
+        ]
+      }
+    },
+    {
+      "cell": "evict:then-transaction",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "$transaction(count) on the SAME tenant client",
+          "ok": false,
+          "sqlstate": "TC001"
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 1,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"",
+          "''"
+        ]
+      }
+    },
+    {
+      "cell": "recover:reacquire-after-error",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "count#2 on a RE-ACQUIRED tenant client",
+          "ok": true,
+          "value": 1
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"",
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""
+        ]
+      }
+    },
+    {
+      "cell": "control:no-error",
+      "tripwire": "off",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "count#2",
+          "ok": true,
+          "value": 1
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""
+        ]
+      }
+    },
+    {
+      "cell": "evict:division-by-zero",
+      "tripwire": "off",
+      "steps": [
+        {
+          "step": "count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"",
+          "''"
+        ]
+      }
+    }
+  ]
+}

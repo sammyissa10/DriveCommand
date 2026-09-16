@@ -1,0 +1,77 @@
+request #2 /home as driver1@alpha.staging.test, byte range 18907,28587
+[q624]   52195 cid=5 backendPid=834878849 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   53081 cid=6 backendPid=834880265 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     52195 cid=5 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     53081 cid=6 ERROR 42703: column FleetMessage.isBroadcast does not exist
+===== RAISE on cid=7 backendPid=1197366881 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:16.474","2026-10-16 20:35:16.474","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=7 (oldest first):
+[q624]     53208 CONNECT-START
+[q624]     53472 SET app.current_tenant_id='' (session)
+[q624]     53473 SET app.tenant_context_tripwire='on' (session)
+[q624]     53473 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     53672 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     50753 cid=5 BEGIN
+[q624]     50822 cid=5 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     50891 cid=5 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     50959 cid=5 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     50960 cid=5 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     50961 cid=5 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     51085 cid=5 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     51085 cid=5 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     51153 cid=5 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     51366 cid=5 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     51429 cid=5 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     51430 cid=5 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     51431 cid=5 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     51563 cid=5 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     51565 cid=5 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     51629 cid=5 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     51831 cid=5 COMMIT
+[q624]     51894 cid=5 BEGIN
+[q624]     51957 cid=5 SET app.bypass_rls='on' (tx-local)
+[q624]     52019 cid=5 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     52076 cid=5 COMMIT
+[q624]     52133 cid=5 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     52195 cid=5 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     52195 cid=5 END
+[q624]     52258 cid=6 CONNECT-START
+[q624]     52542 cid=6 SET app.current_tenant_id='' (session)
+[q624]     52542 cid=6 SET app.tenant_context_tripwire='on' (session)
+[q624]     52542 cid=6 BEGIN
+[q624]     52735 cid=6 SET app.bypass_rls='on' (tx-local)
+[q624]     52806 cid=6 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     52884 cid=6 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     52956 cid=6 COMMIT
+[q624]     53017 cid=6 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     53081 cid=6 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     53081 cid=6 END
+[q624]     53208 cid=7 CONNECT-START
+[q624]     53472 cid=7 SET app.current_tenant_id='' (session)
+[q624]     53473 cid=7 SET app.tenant_context_tripwire='on' (session)
+[q624]     53473 cid=7 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     53672 cid=7 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   53672 cid=7 backendPid=1197366881 END (physical connection closed)
+[q624]   53739 cid=8 CONNECT-START
+[q624] post-raise read on cid=7 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624] post-raise read on cid=7 FAILED UNKNOWN (an aborted transaction answers 25P02)

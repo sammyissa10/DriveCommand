@@ -1,0 +1,2 @@
+?? .planning/quick/624-explain-the-home-tc001-raise-on-a-scoped/
+?? apps/web/scripts/audit/624-preconditions.ts

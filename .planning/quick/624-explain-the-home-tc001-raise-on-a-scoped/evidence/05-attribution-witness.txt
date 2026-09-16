@@ -1,0 +1,12 @@
+#1 [fixed350] /home 200  [q620-hook] TC001=0  RAISE blocks=0  non-TC001 errors=2
+#1 [fixed350] /my-load 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=2
+#2 [fixed350] /home 200  [q620-hook] TC001=0  RAISE blocks=0  non-TC001 errors=2
+#2 [fixed350] /my-load 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=2
+#3 [fixed350] /home 200  [q620-hook] TC001=0  RAISE blocks=0  non-TC001 errors=2
+#3 [fixed350] /my-load 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=2
+#1 [quiet] /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4
+#1 [quiet] /my-load 200  [q620-hook] TC001=0  RAISE blocks=0  non-TC001 errors=0
+#2 [quiet] /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4
+#2 [quiet] /my-load 200  [q620-hook] TC001=0  RAISE blocks=0  non-TC001 errors=0
+#3 [quiet] /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4
+#3 [quiet] /my-load 200  [q620-hook] TC001=0  RAISE blocks=0  non-TC001 errors=0

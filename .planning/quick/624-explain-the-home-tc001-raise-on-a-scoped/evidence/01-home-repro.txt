@@ -1,0 +1,14 @@
+login driver1@alpha.staging.test -> 200
+#1 /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4  GET lines=GET /home 200 in 9.5s (next.js: 1759ms, proxy.ts: 279ms, application-code: 7.5s)
+    [q624] post-raise read on cid=4 FAILED UNKNOWN (an aborted transaction answers 25P02)
+#2 /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4  GET lines=GET /home 200 in 4.0s (next.js: 15ms, proxy.ts: 304ms, application-code: 3.7s)
+    [q624] post-raise read on cid=7 FAILED UNKNOWN (an aborted transaction answers 25P02)
+#3 /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4  GET lines=GET /home 200 in 3.9s (next.js: 12ms, proxy.ts: 288ms, application-code: 3.6s)
+    [q624] post-raise read on cid=10 FAILED UNKNOWN (an aborted transaction answers 25P02)
+#4 /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4  GET lines=GET /home 200 in 4.1s (next.js: 15ms, proxy.ts: 314ms, application-code: 3.7s)
+    [q624] post-raise read on cid=13 FAILED UNKNOWN (an aborted transaction answers 25P02)
+#5 /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4  GET lines=GET /home 200 in 4.0s (next.js: 12ms, proxy.ts: 296ms, application-code: 3.7s)
+    [q624] post-raise read on cid=16 FAILED UNKNOWN (an aborted transaction answers 25P02)
+#6 /home 200  [q620-hook] TC001=1  RAISE blocks=1  non-TC001 errors=4  GET lines=GET /home 200 in 3.9s (next.js: 13ms, proxy.ts: 303ms, application-code: 3.6s)
+    [q624] post-raise read on cid=19 FAILED UNKNOWN (an aborted transaction answers 25P02)
+written C:\Users\sammy\Projects\DriveCommand\.planning\quick\624-explain-the-home-tc001-raise-on-a-scoped\evidence\01-home-repro.json

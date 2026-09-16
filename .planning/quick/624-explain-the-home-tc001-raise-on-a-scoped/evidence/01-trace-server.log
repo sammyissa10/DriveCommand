@@ -1,0 +1,1188 @@
+[server-target] DATABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DIRECT_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DATABASE_URL_ADMIN -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] NEXT_PUBLIC_SUPABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] TENANT_CONTEXT_TRIPWIRE=on
+[server-target] DATABASE_URL role : app_user.wyixpgunnjmzguhggocz
+[server-target] anon key present : true | length 208 | MASKED eyJhbG...d7Zs
+[server-target] SUPABASE_SERVICE_ROLE_KEY -> staging wyixpgunnjmzguhggocz, role service_role (MASKED)
+[server-target] CRON_SECRET generated for this run (MASKED, never written to a tracked file)
+[server-target] NODE_OPTIONS --require 624-guc-trace-hook.js (loads 620-tc001-driver-hook.js, then the connection tracer)
+[q624] trace hook installed pid=13268
+[q624]     427 cid=1 backendPid=834864502 ERROR T-C-0-0-1 sql=SELECT count(*) FROM "FleetMessage"
+[q624] ===== RAISE on cid=1 backendPid=834864502 =====
+[q624] message: tenant context is required: app.current_tenant_id is UNSET
+[q624] sql (full): SELECT count(*) FROM "FleetMessage"
+[q624] values: undefined
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\620-tc001-driver-hook.js:85:19
+[q624]   at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[q624] journal of cid=1 (oldest first):
+[q624]       298 SET app.tenant_context_tripwire='on' (session)
+[q624]       361 SELECT count(*) FROM "FleetMessage"  -> ERROR T-C-0-0-1
+[q624]       427 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] process-wide interleaving (last 40):
+[q624]       298 cid=1 SET app.tenant_context_tripwire='on' (session)
+[q624]       361 cid=1 SELECT count(*) FROM "FleetMessage"
+[q624]       427 cid=1 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] post-raise read on cid=1: guc=null backendPid=731979
+[q624]     489 cid=1 backendPid=834864502 END (physical connection closed)
+[q620-hook] control pid=13268 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q624] trace hook installed pid=20060
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[q624] trace hook installed pid=17228
+[q624]     886 cid=1 backendPid=834864794 ERROR T-C-0-0-1 sql=SELECT count(*) FROM "FleetMessage"
+[q624] ===== RAISE on cid=1 backendPid=834864794 =====
+[q624] message: tenant context is required: app.current_tenant_id is UNSET
+[q624] sql (full): SELECT count(*) FROM "FleetMessage"
+[q624] values: undefined
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\620-tc001-driver-hook.js:85:19
+[q624]   at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[q624] journal of cid=1 (oldest first):
+[q624]       752 SET app.tenant_context_tripwire='on' (session)
+[q624]       823 SELECT count(*) FROM "FleetMessage"  -> ERROR T-C-0-0-1
+[q624]       886 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] process-wide interleaving (last 40):
+[q624]       752 cid=1 SET app.tenant_context_tripwire='on' (session)
+[q624]       823 cid=1 SELECT count(*) FROM "FleetMessage"
+[q624]       886 cid=1 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624]     941 cid=1 backendPid=834864794 END (physical connection closed)
+[q620-hook] control pid=20060 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q624] post-raise read on cid=1 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624] trace hook installed pid=14892
+[q624]     534 cid=1 backendPid=1197349734 ERROR T-C-0-0-1 sql=SELECT count(*) FROM "FleetMessage"
+[q624] ===== RAISE on cid=1 backendPid=1197349734 =====
+[q624] message: tenant context is required: app.current_tenant_id is UNSET
+[q624] sql (full): SELECT count(*) FROM "FleetMessage"
+[q624] values: undefined
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\620-tc001-driver-hook.js:85:19
+[q624]   at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[q624] journal of cid=1 (oldest first):
+[q624]       406 SET app.tenant_context_tripwire='on' (session)
+[q624]       472 SELECT count(*) FROM "FleetMessage"  -> ERROR T-C-0-0-1
+[q624]       534 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] process-wide interleaving (last 40):
+[q624]       406 cid=1 SET app.tenant_context_tripwire='on' (session)
+[q624]       472 cid=1 SELECT count(*) FROM "FleetMessage"
+[q624]       534 cid=1 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] post-raise read on cid=1: guc=null backendPid=731979
+[q624]     592 cid=1 backendPid=1197349734 END (physical connection closed)
+[q620-hook] control pid=17228 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.1.10.35:3000
+- Environments: .env.local
+✓ Ready in 1012ms
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+[q624]    4325 cid=1 backendPid=1197350884 ERROR T-C-0-0-1 sql=SELECT count(*) FROM "FleetMessage"
+[q624] ===== RAISE on cid=1 backendPid=1197350884 =====
+[q624] message: tenant context is required: app.current_tenant_id is UNSET
+[q624] sql (full): SELECT count(*) FROM "FleetMessage"
+[q624] values: undefined
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\620-tc001-driver-hook.js:85:19
+[q624]   at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[q624] journal of cid=1 (oldest first):
+[q624]      4199 SET app.tenant_context_tripwire='on' (session)
+[q624]      4262 SELECT count(*) FROM "FleetMessage"  -> ERROR T-C-0-0-1
+[q624]      4325 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] process-wide interleaving (last 40):
+[q624]      4199 cid=1 SET app.tenant_context_tripwire='on' (session)
+[q624]      4262 cid=1 SELECT count(*) FROM "FleetMessage"
+[q624]      4325 cid=1 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624]    4378 cid=1 backendPid=1197350884 END (physical connection closed)
+[q620-hook] control pid=14892 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q624] post-raise read on cid=1 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624] trace hook installed pid=3856
+[q624]     433 cid=1 backendPid=834866862 ERROR T-C-0-0-1 sql=SELECT count(*) FROM "FleetMessage"
+[q624] ===== RAISE on cid=1 backendPid=834866862 =====
+[q624] message: tenant context is required: app.current_tenant_id is UNSET
+[q624] sql (full): SELECT count(*) FROM "FleetMessage"
+[q624] values: undefined
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\620-tc001-driver-hook.js:85:19
+[q624]   at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[q624] journal of cid=1 (oldest first):
+[q624]       300 SET app.tenant_context_tripwire='on' (session)
+[q624]       360 SELECT count(*) FROM "FleetMessage"  -> ERROR T-C-0-0-1
+[q624]       433 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] process-wide interleaving (last 40):
+[q624]       300 cid=1 SET app.tenant_context_tripwire='on' (session)
+[q624]       360 cid=1 SELECT count(*) FROM "FleetMessage"
+[q624]       433 cid=1 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624]     485 cid=1 backendPid=834866862 END (physical connection closed)
+[q620-hook] control pid=3856 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q624] post-raise read on cid=1 FAILED UNKNOWN (an aborted transaction answers 25P02)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[q624] trace hook installed pid=8040
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[q624] trace hook installed pid=12804
+[q624]   35012 cid=2 CONNECT-START
+ POST /api/auth/login 200 in 4.4s (next.js: 2.4s, proxy.ts: 219ms, application-code: 1841ms)
+[q624]   43723 cid=2 backendPid=1197360206 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   43724 cid=2 backendPid=1197360206 END (physical connection closed)
+[q624]   43801 cid=3 CONNECT-START
+[q624]   44651 cid=3 backendPid=834877658 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]   44651 cid=3 backendPid=834877658 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]   47185 cid=4 CONNECT-START
+ GET /home 200 in 9.5s (next.js: 1759ms, proxy.ts: 279ms, application-code: 7.5s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]   47653 cid=4 backendPid=834878646 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=4 backendPid=834878646 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:07.996","2026-10-16 20:35:07.996","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=4 (oldest first):
+[q624]     47185 CONNECT-START
+[q624]     47452 SET app.current_tenant_id='' (session)
+[q624]     47452 SET app.tenant_context_tripwire='on' (session)
+[q624]     47452 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     47653 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     42215 cid=2 BEGIN
+[q624]     42276 cid=2 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     42355 cid=2 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     42420 cid=2 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     42421 cid=2 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     42423 cid=2 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     42560 cid=2 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     42561 cid=2 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     42632 cid=2 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     42849 cid=2 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     42925 cid=2 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     42927 cid=2 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     42929 cid=2 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     43062 cid=2 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     43063 cid=2 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     43134 cid=2 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     43328 cid=2 COMMIT
+[q624]     43391 cid=2 BEGIN
+[q624]     43465 cid=2 SET app.bypass_rls='on' (tx-local)
+[q624]     43526 cid=2 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     43588 cid=2 COMMIT
+[q624]     43653 cid=2 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     43723 cid=2 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     43724 cid=2 END
+[q624]     43801 cid=3 CONNECT-START
+[q624]     44116 cid=3 SET app.current_tenant_id='' (session)
+[q624]     44117 cid=3 SET app.tenant_context_tripwire='on' (session)
+[q624]     44118 cid=3 BEGIN
+[q624]     44313 cid=3 SET app.bypass_rls='on' (tx-local)
+[q624]     44381 cid=3 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     44456 cid=3 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     44524 cid=3 COMMIT
+[q624]     44588 cid=3 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     44651 cid=3 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     44651 cid=3 END
+[q624]     47185 cid=4 CONNECT-START
+[q624]     47452 cid=4 SET app.current_tenant_id='' (session)
+[q624]     47452 cid=4 SET app.tenant_context_tripwire='on' (session)
+[q624]     47452 cid=4 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     47653 cid=4 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   47654 cid=4 backendPid=834878646 END (physical connection closed)
+[q624]   47712 cid=5 CONNECT-START
+[q624] post-raise read on cid=4 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624]   52195 cid=5 backendPid=834878849 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   52195 cid=5 backendPid=834878849 END (physical connection closed)
+[q624]   52258 cid=6 CONNECT-START
+[q624]   53081 cid=6 backendPid=834880265 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]   53081 cid=6 backendPid=834880265 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]   53208 cid=7 CONNECT-START
+ GET /home 200 in 4.0s (next.js: 15ms, proxy.ts: 304ms, application-code: 3.7s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]   53672 cid=7 backendPid=1197366881 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=7 backendPid=1197366881 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:16.474","2026-10-16 20:35:16.474","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=7 (oldest first):
+[q624]     53208 CONNECT-START
+[q624]     53472 SET app.current_tenant_id='' (session)
+[q624]     53473 SET app.tenant_context_tripwire='on' (session)
+[q624]     53473 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     53672 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     50753 cid=5 BEGIN
+[q624]     50822 cid=5 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     50891 cid=5 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     50959 cid=5 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     50960 cid=5 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     50961 cid=5 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     51085 cid=5 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     51085 cid=5 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     51153 cid=5 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     51366 cid=5 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     51429 cid=5 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     51430 cid=5 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     51431 cid=5 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     51563 cid=5 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     51565 cid=5 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     51629 cid=5 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     51831 cid=5 COMMIT
+[q624]     51894 cid=5 BEGIN
+[q624]     51957 cid=5 SET app.bypass_rls='on' (tx-local)
+[q624]     52019 cid=5 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     52076 cid=5 COMMIT
+[q624]     52133 cid=5 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     52195 cid=5 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     52195 cid=5 END
+[q624]     52258 cid=6 CONNECT-START
+[q624]     52542 cid=6 SET app.current_tenant_id='' (session)
+[q624]     52542 cid=6 SET app.tenant_context_tripwire='on' (session)
+[q624]     52542 cid=6 BEGIN
+[q624]     52735 cid=6 SET app.bypass_rls='on' (tx-local)
+[q624]     52806 cid=6 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     52884 cid=6 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     52956 cid=6 COMMIT
+[q624]     53017 cid=6 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     53081 cid=6 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     53081 cid=6 END
+[q624]     53208 cid=7 CONNECT-START
+[q624]     53472 cid=7 SET app.current_tenant_id='' (session)
+[q624]     53473 cid=7 SET app.tenant_context_tripwire='on' (session)
+[q624]     53473 cid=7 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     53672 cid=7 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   53672 cid=7 backendPid=1197366881 END (physical connection closed)
+[q624]   53739 cid=8 CONNECT-START
+[q624] post-raise read on cid=7 FAILED UNKNOWN (an aborted transaction answers 25P02)
+✓ Finished filesystem cache database compaction in 13.1s
+[q624]   58297 cid=8 backendPid=1197367081 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   58298 cid=8 backendPid=1197367081 END (physical connection closed)
+[q624]   58356 cid=9 CONNECT-START
+[q624]   59171 cid=9 backendPid=834882107 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]   59171 cid=9 backendPid=834882107 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]   59241 cid=10 CONNECT-START
+ GET /home 200 in 3.9s (next.js: 12ms, proxy.ts: 288ms, application-code: 3.6s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]   59699 cid=10 backendPid=1239588825 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=10 backendPid=1239588825 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:22.571","2026-10-16 20:35:22.571","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=10 (oldest first):
+[q624]     59241 CONNECT-START
+[q624]     59506 SET app.current_tenant_id='' (session)
+[q624]     59506 SET app.tenant_context_tripwire='on' (session)
+[q624]     59507 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     59699 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     56792 cid=8 BEGIN
+[q624]     56856 cid=8 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     56931 cid=8 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     57007 cid=8 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     57009 cid=8 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     57010 cid=8 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     57136 cid=8 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     57137 cid=8 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     57199 cid=8 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     57393 cid=8 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     57466 cid=8 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     57468 cid=8 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     57469 cid=8 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     57600 cid=8 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     57600 cid=8 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     57672 cid=8 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     57899 cid=8 COMMIT
+[q624]     57965 cid=8 BEGIN
+[q624]     58039 cid=8 SET app.bypass_rls='on' (tx-local)
+[q624]     58104 cid=8 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     58168 cid=8 COMMIT
+[q624]     58226 cid=8 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     58297 cid=8 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     58298 cid=8 END
+[q624]     58356 cid=9 CONNECT-START
+[q624]     58654 cid=9 SET app.current_tenant_id='' (session)
+[q624]     58654 cid=9 SET app.tenant_context_tripwire='on' (session)
+[q624]     58655 cid=9 BEGIN
+[q624]     58834 cid=9 SET app.bypass_rls='on' (tx-local)
+[q624]     58897 cid=9 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     58973 cid=9 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     59040 cid=9 COMMIT
+[q624]     59106 cid=9 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     59171 cid=9 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     59171 cid=9 END
+[q624]     59241 cid=10 CONNECT-START
+[q624]     59506 cid=10 SET app.current_tenant_id='' (session)
+[q624]     59506 cid=10 SET app.tenant_context_tripwire='on' (session)
+[q624]     59507 cid=10 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     59699 cid=10 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   59700 cid=10 backendPid=1239588825 END (physical connection closed)
+[q624]   59760 cid=11 CONNECT-START
+[q624] post-raise read on cid=10 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624]   64425 cid=11 backendPid=1239588978 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   64426 cid=11 backendPid=1239588978 END (physical connection closed)
+[q624]   64487 cid=12 CONNECT-START
+[q624]   65284 cid=12 backendPid=1239590686 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]   65284 cid=12 backendPid=1239590686 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]   65363 cid=13 CONNECT-START
+ GET /home 200 in 4.1s (next.js: 15ms, proxy.ts: 314ms, application-code: 3.7s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]   65852 cid=13 backendPid=1239591011 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=13 backendPid=1239591011 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:28.696","2026-10-16 20:35:28.696","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=13 (oldest first):
+[q624]     65363 CONNECT-START
+[q624]     65641 SET app.current_tenant_id='' (session)
+[q624]     65641 SET app.tenant_context_tripwire='on' (session)
+[q624]     65641 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     65852 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     62919 cid=11 BEGIN
+[q624]     62987 cid=11 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     63063 cid=11 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     63135 cid=11 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     63137 cid=11 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     63139 cid=11 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     63267 cid=11 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     63268 cid=11 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     63328 cid=11 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     63519 cid=11 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     63589 cid=11 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     63591 cid=11 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     63592 cid=11 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     63720 cid=11 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     63721 cid=11 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     63805 cid=11 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     64013 cid=11 COMMIT
+[q624]     64077 cid=11 BEGIN
+[q624]     64139 cid=11 SET app.bypass_rls='on' (tx-local)
+[q624]     64213 cid=11 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     64290 cid=11 COMMIT
+[q624]     64354 cid=11 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     64425 cid=11 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     64426 cid=11 END
+[q624]     64487 cid=12 CONNECT-START
+[q624]     64760 cid=12 SET app.current_tenant_id='' (session)
+[q624]     64761 cid=12 SET app.tenant_context_tripwire='on' (session)
+[q624]     64762 cid=12 BEGIN
+[q624]     64945 cid=12 SET app.bypass_rls='on' (tx-local)
+[q624]     65013 cid=12 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     65080 cid=12 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     65153 cid=12 COMMIT
+[q624]     65218 cid=12 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     65284 cid=12 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     65284 cid=12 END
+[q624]     65363 cid=13 CONNECT-START
+[q624]     65641 cid=13 SET app.current_tenant_id='' (session)
+[q624]     65641 cid=13 SET app.tenant_context_tripwire='on' (session)
+[q624]     65641 cid=13 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     65852 cid=13 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   65852 cid=13 backendPid=1239591011 END (physical connection closed)
+[q624]   65914 cid=14 CONNECT-START
+[q624] post-raise read on cid=13 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624]   70663 cid=14 backendPid=1239591214 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   70663 cid=14 backendPid=1239591214 END (physical connection closed)
+[q624]   70733 cid=15 CONNECT-START
+[q624]   71617 cid=15 backendPid=1239592962 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]   71617 cid=15 backendPid=1239592962 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]   71687 cid=16 CONNECT-START
+ GET /home 200 in 4.0s (next.js: 12ms, proxy.ts: 296ms, application-code: 3.7s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]   72131 cid=16 backendPid=1239593372 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=16 backendPid=1239593372 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:34.920","2026-10-16 20:35:34.920","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=16 (oldest first):
+[q624]     71687 CONNECT-START
+[q624]     71939 SET app.current_tenant_id='' (session)
+[q624]     71939 SET app.tenant_context_tripwire='on' (session)
+[q624]     71940 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     72131 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     69169 cid=14 BEGIN
+[q624]     69232 cid=14 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     69299 cid=14 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     69371 cid=14 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     69373 cid=14 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     69374 cid=14 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     69509 cid=14 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     69510 cid=14 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     69576 cid=14 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     69768 cid=14 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     69838 cid=14 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     69839 cid=14 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     69841 cid=14 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     69971 cid=14 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     69972 cid=14 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     70037 cid=14 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     70237 cid=14 COMMIT
+[q624]     70301 cid=14 BEGIN
+[q624]     70366 cid=14 SET app.bypass_rls='on' (tx-local)
+[q624]     70438 cid=14 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     70504 cid=14 COMMIT
+[q624]     70578 cid=14 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     70663 cid=14 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     70663 cid=14 END
+[q624]     70733 cid=15 CONNECT-START
+[q624]     71030 cid=15 SET app.current_tenant_id='' (session)
+[q624]     71030 cid=15 SET app.tenant_context_tripwire='on' (session)
+[q624]     71031 cid=15 BEGIN
+[q624]     71234 cid=15 SET app.bypass_rls='on' (tx-local)
+[q624]     71316 cid=15 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     71404 cid=15 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     71481 cid=15 COMMIT
+[q624]     71546 cid=15 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     71617 cid=15 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     71617 cid=15 END
+[q624]     71687 cid=16 CONNECT-START
+[q624]     71939 cid=16 SET app.current_tenant_id='' (session)
+[q624]     71939 cid=16 SET app.tenant_context_tripwire='on' (session)
+[q624]     71940 cid=16 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     72131 cid=16 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   72131 cid=16 backendPid=1239593372 END (physical connection closed)
+[q624]   72196 cid=17 CONNECT-START
+[q624] post-raise read on cid=16 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624]   76760 cid=17 backendPid=1239593569 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]   76760 cid=17 backendPid=1239593569 END (physical connection closed)
+[q624]   76827 cid=18 CONNECT-START
+[q624]   77627 cid=18 backendPid=1239595198 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]   77627 cid=18 backendPid=1239595198 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /home 200 in 3.9s (next.js: 13ms, proxy.ts: 303ms, application-code: 3.6s)
+[q624]   77696 cid=19 CONNECT-START
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]   78173 cid=19 backendPid=1239595492 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=19 backendPid=1239595492 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:35:41.038","2026-10-16 20:35:41.038","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=19 (oldest first):
+[q624]     77696 CONNECT-START
+[q624]     77979 SET app.current_tenant_id='' (session)
+[q624]     77979 SET app.tenant_context_tripwire='on' (session)
+[q624]     77979 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]     78173 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]     75253 cid=17 BEGIN
+[q624]     75327 cid=17 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]     75395 cid=17 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     75469 cid=17 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     75470 cid=17 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     75471 cid=17 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     75648 cid=17 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     75649 cid=17 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     75711 cid=17 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]     75908 cid=17 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]     75975 cid=17 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]     75977 cid=17 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]     75978 cid=17 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]     76108 cid=17 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]     76109 cid=17 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]     76180 cid=17 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]     76375 cid=17 COMMIT
+[q624]     76437 cid=17 BEGIN
+[q624]     76502 cid=17 SET app.bypass_rls='on' (tx-local)
+[q624]     76564 cid=17 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]     76631 cid=17 COMMIT
+[q624]     76697 cid=17 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]     76760 cid=17 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     76760 cid=17 END
+[q624]     76827 cid=18 CONNECT-START
+[q624]     77100 cid=18 SET app.current_tenant_id='' (session)
+[q624]     77100 cid=18 SET app.tenant_context_tripwire='on' (session)
+[q624]     77101 cid=18 BEGIN
+[q624]     77286 cid=18 SET app.bypass_rls='on' (tx-local)
+[q624]     77353 cid=18 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]     77425 cid=18 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]     77490 cid=18 COMMIT
+[q624]     77555 cid=18 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]     77626 cid=18 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]     77627 cid=18 END
+[q624]     77696 cid=19 CONNECT-START
+[q624]     77979 cid=19 SET app.current_tenant_id='' (session)
+[q624]     77979 cid=19 SET app.tenant_context_tripwire='on' (session)
+[q624]     77979 cid=19 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]     78173 cid=19 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]   78173 cid=19 backendPid=1239595492 END (physical connection closed)
+[q624]   78233 cid=20 CONNECT-START
+[q624] post-raise read on cid=19 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624]   88769 cid=20 backendPid=1239595756 END (physical connection closed)
+[q624]  413790 cid=21 CONNECT-START
+ POST /api/auth/login 200 in 1314ms (next.js: 4ms, proxy.ts: 4ms, application-code: 1306ms)
+ POST /api/auth/login 200 in 761ms (next.js: 6ms, proxy.ts: 3ms, application-code: 753ms)
+ POST /api/auth/login 200 in 828ms (next.js: 6ms, proxy.ts: 3ms, application-code: 820ms)
+○ Compiling /sign-in/[[...sign-in]] ...
+[q624]  436282 cid=21 backendPid=1197487821 END (physical connection closed)
+[q624] trace hook installed pid=13300
+ GET /sign-in 200 in 13.4s (next.js: 13.3s, proxy.ts: 4ms, application-code: 151ms)
+[q624]    3490 cid=1 backendPid=834992940 ERROR T-C-0-0-1 sql=SELECT count(*) FROM "FleetMessage"
+[q624] ===== RAISE on cid=1 backendPid=834992940 =====
+[q624] message: tenant context is required: app.current_tenant_id is UNSET
+[q624] sql (full): SELECT count(*) FROM "FleetMessage"
+[q624] values: undefined
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\620-tc001-driver-hook.js:85:19
+[q624]   at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[q624] journal of cid=1 (oldest first):
+[q624]      3366 SET app.tenant_context_tripwire='on' (session)
+[q624]      3427 SELECT count(*) FROM "FleetMessage"  -> ERROR T-C-0-0-1
+[q624]      3490 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624] process-wide interleaving (last 40):
+[q624]      3366 cid=1 SET app.tenant_context_tripwire='on' (session)
+[q624]      3427 cid=1 SELECT count(*) FROM "FleetMessage"
+[q624]      3490 cid=1 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is UNSET
+[q624]    3550 cid=1 backendPid=834992940 END (physical connection closed)
+[q620-hook] control pid=13300 callerSaw=T-C-0-0-1 hookRecorded=true Q620_HOOK_CONTROL=PASS
+[q624] post-raise read on cid=1 FAILED UNKNOWN (an aborted transaction answers 25P02)
+[q624]  450314 cid=22 CONNECT-START
+ POST /api/auth/login 200 in 1193ms (next.js: 4ms, proxy.ts: 4ms, application-code: 1186ms)
+[q624]  455745 cid=22 backendPid=834995243 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]  455745 cid=22 backendPid=834995243 END (physical connection closed)
+[q624]  455806 cid=23 CONNECT-START
+[q624]  456671 cid=23 backendPid=834996845 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]  456671 cid=23 backendPid=834996845 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]  456748 cid=24 CONNECT-START
+ GET /home 200 in 3.9s (next.js: 15ms, proxy.ts: 116ms, application-code: 3.8s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]  457252 cid=24 backendPid=1197501894 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=24 backendPid=1197501894 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:42:00.009","2026-10-16 20:42:00.009","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=24 (oldest first):
+[q624]    456748 CONNECT-START
+[q624]    457013 SET app.current_tenant_id='' (session)
+[q624]    457013 SET app.tenant_context_tripwire='on' (session)
+[q624]    457014 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]    457252 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]    454238 cid=22 BEGIN
+[q624]    454307 cid=22 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]    454379 cid=22 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    454444 cid=22 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    454446 cid=22 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    454447 cid=22 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    454585 cid=22 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    454587 cid=22 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    454674 cid=22 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]    454881 cid=22 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    454950 cid=22 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    454952 cid=22 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    454954 cid=22 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    455076 cid=22 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    455078 cid=22 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    455149 cid=22 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]    455352 cid=22 COMMIT
+[q624]    455416 cid=22 BEGIN
+[q624]    455478 cid=22 SET app.bypass_rls='on' (tx-local)
+[q624]    455539 cid=22 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]    455603 cid=22 COMMIT
+[q624]    455667 cid=22 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]    455745 cid=22 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    455745 cid=22 END
+[q624]    455806 cid=23 CONNECT-START
+[q624]    456138 cid=23 SET app.current_tenant_id='' (session)
+[q624]    456138 cid=23 SET app.tenant_context_tripwire='on' (session)
+[q624]    456139 cid=23 BEGIN
+[q624]    456340 cid=23 SET app.bypass_rls='on' (tx-local)
+[q624]    456407 cid=23 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]    456475 cid=23 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]    456538 cid=23 COMMIT
+[q624]    456604 cid=23 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]    456671 cid=23 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    456671 cid=23 END
+[q624]    456748 cid=24 CONNECT-START
+[q624]    457013 cid=24 SET app.current_tenant_id='' (session)
+[q624]    457013 cid=24 SET app.tenant_context_tripwire='on' (session)
+[q624]    457014 cid=24 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]    457252 cid=24 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]  457253 cid=24 backendPid=1197501894 END (physical connection closed)
+[q624]  457445 cid=25 CONNECT-START
+[q624] post-raise read on cid=24 FAILED UNKNOWN (an aborted transaction answers 25P02)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1595ms (next.js: 120ms, proxy.ts: 147ms, application-code: 1328ms)
+[q624]  461751 cid=25 backendPid=1197502130 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]  461751 cid=25 backendPid=1197502130 END (physical connection closed)
+[q624]  461815 cid=26 CONNECT-START
+[q624]  462612 cid=26 backendPid=1197503595 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]  462612 cid=26 backendPid=1197503595 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]  462678 cid=27 CONNECT-START
+ GET /home 200 in 3.6s (next.js: 11ms, proxy.ts: 104ms, application-code: 3.5s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]  463142 cid=27 backendPid=834998824 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=27 backendPid=834998824 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:42:06.028","2026-10-16 20:42:06.028","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=27 (oldest first):
+[q624]    462678 CONNECT-START
+[q624]    462939 SET app.current_tenant_id='' (session)
+[q624]    462939 SET app.tenant_context_tripwire='on' (session)
+[q624]    462940 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]    463142 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]    460288 cid=25 BEGIN
+[q624]    460355 cid=25 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]    460419 cid=25 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    460482 cid=25 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    460483 cid=25 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    460484 cid=25 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    460620 cid=25 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    460621 cid=25 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    460692 cid=25 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]    460904 cid=25 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    460971 cid=25 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    460973 cid=25 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    460975 cid=25 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    461097 cid=25 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    461097 cid=25 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    461165 cid=25 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]    461362 cid=25 COMMIT
+[q624]    461423 cid=25 BEGIN
+[q624]    461483 cid=25 SET app.bypass_rls='on' (tx-local)
+[q624]    461552 cid=25 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]    461622 cid=25 COMMIT
+[q624]    461687 cid=25 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]    461751 cid=25 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    461751 cid=25 END
+[q624]    461815 cid=26 CONNECT-START
+[q624]    462092 cid=26 SET app.current_tenant_id='' (session)
+[q624]    462093 cid=26 SET app.tenant_context_tripwire='on' (session)
+[q624]    462094 cid=26 BEGIN
+[q624]    462278 cid=26 SET app.bypass_rls='on' (tx-local)
+[q624]    462350 cid=26 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]    462416 cid=26 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]    462478 cid=26 COMMIT
+[q624]    462539 cid=26 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]    462612 cid=26 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    462612 cid=26 END
+[q624]    462678 cid=27 CONNECT-START
+[q624]    462939 cid=27 SET app.current_tenant_id='' (session)
+[q624]    462939 cid=27 SET app.tenant_context_tripwire='on' (session)
+[q624]    462940 cid=27 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]    463142 cid=27 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]  463142 cid=27 backendPid=834998824 END (physical connection closed)
+[q624]  463223 cid=28 CONNECT-START
+[q624] post-raise read on cid=27 FAILED UNKNOWN (an aborted transaction answers 25P02)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1343ms (next.js: 11ms, proxy.ts: 121ms, application-code: 1211ms)
+[q624]  467521 cid=28 backendPid=1197504042 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]  467521 cid=28 backendPid=1197504042 END (physical connection closed)
+[q624]  467581 cid=29 CONNECT-START
+[q624]  468420 cid=29 backendPid=835000281 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]  468421 cid=29 backendPid=835000281 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]  468490 cid=30 CONNECT-START
+ GET /home 200 in 3.8s (next.js: 32ms, proxy.ts: 199ms, application-code: 3.5s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]  468935 cid=30 backendPid=835000623 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=30 backendPid=835000623 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:42:11.779","2026-10-16 20:42:11.779","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=30 (oldest first):
+[q624]    468490 CONNECT-START
+[q624]    468743 SET app.current_tenant_id='' (session)
+[q624]    468743 SET app.tenant_context_tripwire='on' (session)
+[q624]    468743 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]    468935 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]    466051 cid=28 BEGIN
+[q624]    466122 cid=28 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]    466189 cid=28 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    466254 cid=28 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    466256 cid=28 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    466257 cid=28 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    466386 cid=28 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    466388 cid=28 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    466453 cid=28 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]    466646 cid=28 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    466714 cid=28 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    466717 cid=28 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    466718 cid=28 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    466855 cid=28 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    466856 cid=28 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    466918 cid=28 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]    467108 cid=28 COMMIT
+[q624]    467173 cid=28 BEGIN
+[q624]    467233 cid=28 SET app.bypass_rls='on' (tx-local)
+[q624]    467302 cid=28 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]    467373 cid=28 COMMIT
+[q624]    467437 cid=28 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]    467521 cid=28 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    467521 cid=28 END
+[q624]    467581 cid=29 CONNECT-START
+[q624]    467864 cid=29 SET app.current_tenant_id='' (session)
+[q624]    467865 cid=29 SET app.tenant_context_tripwire='on' (session)
+[q624]    467866 cid=29 BEGIN
+[q624]    468064 cid=29 SET app.bypass_rls='on' (tx-local)
+[q624]    468144 cid=29 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]    468220 cid=29 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]    468291 cid=29 COMMIT
+[q624]    468355 cid=29 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]    468420 cid=29 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    468421 cid=29 END
+[q624]    468490 cid=30 CONNECT-START
+[q624]    468743 cid=30 SET app.current_tenant_id='' (session)
+[q624]    468743 cid=30 SET app.tenant_context_tripwire='on' (session)
+[q624]    468743 cid=30 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]    468935 cid=30 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]  468935 cid=30 backendPid=835000623 END (physical connection closed)
+[q624]  469030 cid=31 CONNECT-START
+[q624] post-raise read on cid=30 FAILED UNKNOWN (an aborted transaction answers 25P02)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1323ms (next.js: 10ms, proxy.ts: 107ms, application-code: 1207ms)
+ POST /api/auth/login 200 in 640ms (next.js: 3ms, proxy.ts: 3ms, application-code: 634ms)
+[q624]  476919 cid=31 backendPid=1197505863 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]  476919 cid=31 backendPid=1197505863 END (physical connection closed)
+[q624]  476981 cid=32 CONNECT-START
+[q624]  477825 cid=32 backendPid=1197508457 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]  477825 cid=32 backendPid=1197508457 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]  477920 cid=33 CONNECT-START
+ GET /home 200 in 3.8s (next.js: 10ms, proxy.ts: 123ms, application-code: 3.7s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]  478396 cid=33 backendPid=1197508764 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=33 backendPid=1197508764 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:42:21.191","2026-10-16 20:42:21.191","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=33 (oldest first):
+[q624]    477920 CONNECT-START
+[q624]    478195 SET app.current_tenant_id='' (session)
+[q624]    478196 SET app.tenant_context_tripwire='on' (session)
+[q624]    478196 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]    478396 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]    475377 cid=31 BEGIN
+[q624]    475441 cid=31 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]    475514 cid=31 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    475579 cid=31 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    475581 cid=31 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    475583 cid=31 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    475738 cid=31 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    475740 cid=31 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    475801 cid=31 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]    476016 cid=31 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    476088 cid=31 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    476090 cid=31 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    476091 cid=31 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    476227 cid=31 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    476229 cid=31 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    476323 cid=31 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]    476515 cid=31 COMMIT
+[q624]    476588 cid=31 BEGIN
+[q624]    476655 cid=31 SET app.bypass_rls='on' (tx-local)
+[q624]    476721 cid=31 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]    476787 cid=31 COMMIT
+[q624]    476850 cid=31 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]    476919 cid=31 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    476919 cid=31 END
+[q624]    476981 cid=32 CONNECT-START
+[q624]    477275 cid=32 SET app.current_tenant_id='' (session)
+[q624]    477276 cid=32 SET app.tenant_context_tripwire='on' (session)
+[q624]    477277 cid=32 BEGIN
+[q624]    477470 cid=32 SET app.bypass_rls='on' (tx-local)
+[q624]    477550 cid=32 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]    477626 cid=32 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]    477689 cid=32 COMMIT
+[q624]    477757 cid=32 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]    477825 cid=32 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    477825 cid=32 END
+[q624]    477920 cid=33 CONNECT-START
+[q624]    478195 cid=33 SET app.current_tenant_id='' (session)
+[q624]    478196 cid=33 SET app.tenant_context_tripwire='on' (session)
+[q624]    478196 cid=33 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]    478396 cid=33 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]  478397 cid=33 backendPid=1197508764 END (physical connection closed)
+[q624]  478460 cid=34 CONNECT-START
+[q624] post-raise read on cid=33 FAILED UNKNOWN (an aborted transaction answers 25P02)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1026ms (next.js: 10ms, proxy.ts: 194ms, application-code: 821ms)
+[q624]  485533 cid=34 backendPid=835003631 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]  485534 cid=34 backendPid=835003631 END (physical connection closed)
+[q624]  485597 cid=35 CONNECT-START
+[q624]  486436 cid=35 backendPid=1197511266 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]  486436 cid=35 backendPid=1197511266 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]  486535 cid=36 CONNECT-START
+ GET /home 200 in 3.7s (next.js: 11ms, proxy.ts: 108ms, application-code: 3.6s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]  486979 cid=36 backendPid=1197511553 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=36 backendPid=1197511553 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:42:29.804","2026-10-16 20:42:29.804","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=36 (oldest first):
+[q624]    486535 CONNECT-START
+[q624]    486789 SET app.current_tenant_id='' (session)
+[q624]    486790 SET app.tenant_context_tripwire='on' (session)
+[q624]    486790 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]    486979 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]    484013 cid=34 BEGIN
+[q624]    484083 cid=34 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]    484162 cid=34 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    484227 cid=34 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    484229 cid=34 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    484230 cid=34 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    484357 cid=34 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    484358 cid=34 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    484419 cid=34 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]    484618 cid=34 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    484683 cid=34 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    484686 cid=34 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    484688 cid=34 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    484820 cid=34 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    484822 cid=34 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    484904 cid=34 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]    485113 cid=34 COMMIT
+[q624]    485177 cid=34 BEGIN
+[q624]    485246 cid=34 SET app.bypass_rls='on' (tx-local)
+[q624]    485331 cid=34 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]    485399 cid=34 COMMIT
+[q624]    485462 cid=34 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]    485533 cid=34 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    485534 cid=34 END
+[q624]    485597 cid=35 CONNECT-START
+[q624]    485911 cid=35 SET app.current_tenant_id='' (session)
+[q624]    485911 cid=35 SET app.tenant_context_tripwire='on' (session)
+[q624]    485912 cid=35 BEGIN
+[q624]    486112 cid=35 SET app.bypass_rls='on' (tx-local)
+[q624]    486179 cid=35 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]    486247 cid=35 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]    486311 cid=35 COMMIT
+[q624]    486372 cid=35 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]    486436 cid=35 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    486436 cid=35 END
+[q624]    486535 cid=36 CONNECT-START
+[q624]    486789 cid=36 SET app.current_tenant_id='' (session)
+[q624]    486790 cid=36 SET app.tenant_context_tripwire='on' (session)
+[q624]    486790 cid=36 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]    486979 cid=36 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]  486979 cid=36 backendPid=1197511553 END (physical connection closed)
+[q624]  487047 cid=37 CONNECT-START
+[q624] post-raise read on cid=36 FAILED UNKNOWN (an aborted transaction answers 25P02)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1123ms (next.js: 14ms, proxy.ts: 204ms, application-code: 906ms)
+[q624]  494137 cid=37 backendPid=835006035 ERROR 42703 sql=SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]  494137 cid=37 backendPid=835006035 END (physical connection closed)
+[q624]  494193 cid=38 CONNECT-START
+[q624]  495064 cid=38 backendPid=1197514123 ERROR 42703 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]  495064 cid=38 backendPid=1197514123 END (physical connection closed)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+[q624]  495181 cid=39 CONNECT-START
+ GET /home 200 in 3.8s (next.js: 6ms, proxy.ts: 210ms, application-code: 3.6s)
+[q620-hook] TC001 pid=14892 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Documen
+[q624]  495664 cid=39 backendPid=1197514484 ERROR T-C-0-0-1 sql=SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624] ===== RAISE on cid=39 backendPid=1197514484 =====
+[q624] message: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] sql (full): SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public"."Document"."driverId" = $2 AND "public"."Document"."expiryDate" > $3 AND "public"."Document"."expiryDate" <= $4) OFFSET $5) AS "sub"
+[q624] values: ["b5623cdd-dc19-4900-b75d-0ecfcaf191b8","d606784c-9518-4fe1-a37e-449aaa8396f3","2026-09-16 20:42:38.412","2026-10-16 20:42:38.412","0"]
+[q624] call-time stack:
+[q624]   at pg.Client.query (C:\Users\sammy\Projects\DriveCommand\apps\web\scripts\audit\624-guc-trace-hook.js:113:21)
+[q624]   at Object.callback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:431:16)
+[q624]   at PendingItem.queueCallback [as callback] (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:205:18)
+[q624]   at BoundPool._acquireClient (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:321:21)
+[q624]   at Client._connectionCallback (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-pool\index.js:293:21)
+[q624]   at Client._handleReadyForQuery (C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\client.js:350:14)
+[q624]   at Connection.emit (node:events:508:28)
+[q624]   at C:\Users\sammy\Projects\DriveCommand\node_modules\pg\lib\connection.js:115:12
+[q624]   at Parser.parse (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\parser.js:38:17)
+[q624]   at Socket.<anonymous> (C:\Users\sammy\Projects\DriveCommand\node_modules\pg-protocol\dist\index.js:11:42)
+[q624]   at Socket.emit (node:events:508:28)
+[q624]   at addChunk (node:internal/streams/readable:559:12)
+[q624]   at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[q624]   at Readable.push (node:internal/streams/readable:390:5)
+[q624]   at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+[q624]   at TCP.callbackTrampoline (node:internal/async_hooks:130:17)
+[q624] journal of cid=39 (oldest first):
+[q624]    495181 CONNECT-START
+[q624]    495457 SET app.current_tenant_id='' (session)
+[q624]    495457 SET app.tenant_context_tripwire='on' (session)
+[q624]    495457 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public  -> ERROR T-C-0-0-1
+[q624]    495664 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624] process-wide interleaving (last 40):
+[q624]    492632 cid=37 BEGIN
+[q624]    492695 cid=37 SELECT "public"."carrier_drivers"."id", "public"."carrier_drivers"."org_id", "public"."carrier_drivers"."user_id", "public"."carrier_drivers"."first_n
+[q624]    492763 cid=37 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    492830 cid=37 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    492832 cid=37 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    492833 cid=37 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    492988 cid=37 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    492990 cid=37 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    493054 cid=37 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN (NULL) OFFSET $1
+[q624]    493260 cid=37 SELECT "public"."dispatches"."id", "public"."dispatches"."org_id", "public"."dispatches"."route_template_id", "public"."dispatches"."primary_driver_id
+[q624]    493329 cid=37 SELECT "public"."carrier_trucks"."id", "public"."carrier_trucks"."unit_number", "public"."carrier_trucks"."display_name", "public"."carrier_trucks"."y
+[q624]    493331 cid=37 SELECT "public"."stops"."id", "public"."stops"."dispatch_id", "public"."stops"."load_id", "public"."stops"."sequence_order", "public"."stops"."stop_ty
+[q624]    493332 cid=37 SELECT "public"."loads"."id", "public"."loads"."org_id", "public"."loads"."dispatch_id", "public"."loads"."contract_id", "public"."loads"."client_id",
+[q624]    493475 cid=37 SELECT "public"."facilities"."id", "public"."facilities"."name", "public"."facilities"."city", "public"."facilities"."state", "public"."facilities"."l
+[q624]    493476 cid=37 SELECT "public"."carrier_documents"."id", "public"."carrier_documents"."document_type", "public"."carrier_documents"."filename", "public"."carrier_doc
+[q624]    493541 cid=37 SELECT "public"."clients"."id", "public"."clients"."name" FROM "public"."clients" WHERE "public"."clients"."id" IN ($1) OFFSET $2
+[q624]    493742 cid=37 COMMIT
+[q624]    493804 cid=37 BEGIN
+[q624]    493876 cid=37 SET app.bypass_rls='on' (tx-local)
+[q624]    493939 cid=37 SELECT "public"."carrier_drivers"."id" FROM "public"."carrier_drivers" WHERE ("public"."carrier_drivers"."user_id" = $1 AND "public"."carrier_drivers"
+[q624]    494004 cid=37 COMMIT
+[q624]    494070 cid=37 SELECT "public"."FleetMessage"."id", "public"."FleetMessage"."senderRole", "public"."FleetMessage"."body", "public"."FleetMessage"."createdAt" FROM "p
+[q624]    494137 cid=37 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    494137 cid=37 END
+[q624]    494193 cid=38 CONNECT-START
+[q624]    494489 cid=38 SET app.current_tenant_id='' (session)
+[q624]    494489 cid=38 SET app.tenant_context_tripwire='on' (session)
+[q624]    494490 cid=38 BEGIN
+[q624]    494698 cid=38 SET app.bypass_rls='on' (tx-local)
+[q624]    494768 cid=38 SELECT "public"."dispatches"."id" FROM "public"."dispatches" WHERE ("public"."dispatches"."primary_driver_id" = $1 AND "public"."dispatches"."org_id" 
+[q624]    494843 cid=38 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."stops"."id" FROM "public"."stops" WHERE ("public"."stops"."dispatch_id" = $1 AND "public"."sto
+[q624]    494930 cid=38 COMMIT
+[q624]    494992 cid=38 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."FleetMessage"."id" FROM "public"."FleetMessage" WHERE ("public"."FleetMessage"."tenantId" = $1
+[q624]    495064 cid=38 ERROR 42703: column FleetMessage.isBroadcast does not exist
+[q624]    495064 cid=38 END
+[q624]    495181 cid=39 CONNECT-START
+[q624]    495457 cid=39 SET app.current_tenant_id='' (session)
+[q624]    495457 cid=39 SET app.tenant_context_tripwire='on' (session)
+[q624]    495457 cid=39 SELECT COUNT(*) AS "_count$_all" FROM (SELECT "public"."Document"."id" FROM "public"."Document" WHERE ("public"."Document"."tenantId" = $1 AND "public
+[q624]    495664 cid=39 ERROR T-C-0-0-1: tenant context is required: app.current_tenant_id is the EMPTY STRING
+[q624]  495664 cid=39 backendPid=1197514484 END (physical connection closed)
+[q624]  495743 cid=40 CONNECT-START
+[q624] post-raise read on cid=39 FAILED UNKNOWN (an aborted transaction answers 25P02)
+Only plain objects can be passed to Client Components from Server Components. Decimal objects are not supported.
+  {id: ..., orgId: ..., dispatchId: ..., contractId: ..., clientId: ..., loadType: ..., referenceNumber: ..., bolNumber: ..., proNumber: ..., poNumber: ..., commodityDescription: ..., commodityWeightLbs: ..., commodityPieces: ..., commodityPallets: ..., hazmat: ..., hazmatClass: ..., rateType: ..., rateAmount: Decimal, currency: ..., brokerFlag: ..., carrierCost: ..., fuelSurcharge: ..., detentionAmount: ..., otherCharges: ..., totalRevenue: ..., status: ..., isSample: ..., specialInstructions: ..., notes: ..., pendingStopsJson: ..., totalMiles: ..., loadedMiles: ..., mileageSource: ..., createdById: ..., updatedById: ..., deletedAt: ..., deletedById: ..., createdAt: ..., updatedAt: ..., client: ..., stops: ...}
+                                                                                                                                                                                                                                                                                                                        ^^^^^^^
+ GET /my-load 200 in 1303ms (next.js: 10ms, proxy.ts: 347ms, application-code: 946ms)
+[q624]  508798 cid=40 backendPid=1197514637 END (physical connection closed)

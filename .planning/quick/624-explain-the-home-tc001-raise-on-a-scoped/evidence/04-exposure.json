@@ -1,0 +1,38 @@
+{
+ "totalStatements": 1825,
+ "byVerdict": {
+  "SCOPED": 1408,
+  "RAW_NO_TABLE_NAMED": 8,
+  "GUC_PLUMBING": 55,
+  "SILENT_ZERO_AT_BYPASS_DROP": 56,
+  "ADMIN_CONNECTION": 107,
+  "SILENT_ZERO_AT_CUTOVER": 155,
+  "NO_RLS_TABLE": 36
+ },
+ "exposed": 1342,
+ "exposedFiles": 281,
+ "exposedByClient": {
+  "TENANT_SESSION": 793,
+  "TX(TENANT_SESSION)": 71,
+  "TX(TENANT_ORG)": 248,
+  "TENANT_ORG": 195,
+  "MIXED(TENANT_ORG|TENANT_SESSION)": 20,
+  "MIXED(TX(TENANT_ORG)|TX(TENANT_SESSION))": 14,
+  "MIXED(TENANT_ORG|TX(TENANT_ORG))": 1
+ },
+ "exposedByFailure": {
+  "THROWN": 335,
+  "LOGGED": 799,
+  "SWALLOWED": 148,
+  "ERROR_RESPONSE": 60
+ },
+ "immune": {
+  "txSetsOwnGuc": 64,
+  "admin": 107,
+  "bypassFlagged": 2,
+  "noRlsOrRawNoTable": 44,
+  "gucPlumbing": 55,
+  "gatingAlready": 211
+ },
+ "scopedNotCounted": 0
+}

@@ -1,0 +1,31 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+control:no-error [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""]
+    count#1: ok 1
+    count#2: ok 1
+evict:division-by-zero [tripwire on]  connects=2 ends=2 tc001=1 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"","''"]
+    count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    count#2 on the SAME tenant client: ERROR TC001
+evict:undefined-column [tripwire on]  connects=2 ends=2 tc001=1 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"","''"]
+    count#1: ok 1
+    SELECT a missing column (caught): ERROR P2010
+    count#2 on the SAME tenant client: ERROR TC001
+evict:error-inside-transaction [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""]
+    count#1: ok 1
+    $transaction(SELECT 1/0) (caught): ERROR P2010
+    count#2 on the SAME tenant client: ok 1
+evict:then-transaction [tripwire on]  connects=2 ends=1 tc001=1 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"","''"]
+    count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    $transaction(count) on the SAME tenant client: ERROR TC001
+recover:reacquire-after-error [tripwire on]  connects=2 ends=1 tc001=0 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"","''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""]
+    count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    count#2 on a RE-ACQUIRED tenant client: ok 1
+control:no-error [tripwire off]  connects=1 ends=0 tc001=0 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\""]
+    count#1: ok 1
+    count#2: ok 1
+evict:division-by-zero [tripwire off]  connects=2 ends=1 tc001=0 gucSets=["''","\"b5623cdd-dc19-4900-b75d-0ecfcaf191b8\"","''"]
+    count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    count#2 on the SAME tenant client: ok 0
