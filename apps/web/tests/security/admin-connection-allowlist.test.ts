@@ -120,7 +120,14 @@ const ADMIN_ALLOWLIST: Record<string, AllowlistEntry> = {
   // serving both its `tenant.findUnique` and its `automationRule.findUnique`.
   'app/(admin)/actions/automations.ts': { calls: 7, minBytes: 4000 },
   'app/(admin)/actions/sysadmin-invoices.ts': { calls: 10, minBytes: 9000 },
-  'app/(admin)/actions/tenants.ts': { calls: 7, minBytes: 15000 },
+  // quick-615 — 7 -> 12. quick-600 routed this file's seven MUTATIONS from a
+  // design-doc-derived census; its fourteen cross-tenant READS stayed on the
+  // bare client. Five new acquisitions (tenant listing, platform metrics,
+  // tenant detail read, owner invitation resend, owner email change); the other
+  // three statements are RECEIVER SWAPS onto an admin client already in scope
+  // (`:123` under `adminDb`, `:198` under `adminDbSuspend`, `:239` under
+  // `adminDbReactivate`) and therefore add no call at all.
+  'app/(admin)/actions/tenants.ts': { calls: 12, minBytes: 15000 },
   'app/(admin)/billing/[id]/page.tsx': { calls: 1, minBytes: 4000 },
   'app/api/auth/accept-invitation/route.ts': { calls: 2, minBytes: 9000 },
   'app/api/cron/auto-close-tickets/route.ts': { calls: 1, minBytes: 1500 },
@@ -154,7 +161,7 @@ const KNOWN_NON_ALLOWLISTED_FILE = 'lib/db/prisma.ts';
 describe('quick-600 (B5) — getAdminDb import allowlist', () => {
   it('integrity floor: allowlist is non-trivial and internally consistent', () => {
     expect(Object.keys(ADMIN_ALLOWLIST).length).toBe(23);
-    expect(TOTAL_EXPECTED_CALLS).toBe(48); // quick-613: 44 + 4 in automations.ts
+    expect(TOTAL_EXPECTED_CALLS).toBe(53); // quick-615: 48 + 5 in tenants.ts
   });
 
   it('walked a real, non-trivial corpus (anti-vacuity)', () => {

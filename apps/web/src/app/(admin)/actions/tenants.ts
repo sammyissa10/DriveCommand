@@ -3,7 +3,10 @@
 import { getAppBaseUrl } from '@/lib/app-url';
 import { Prisma } from '@/generated/prisma';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+// quick-615 — `prisma` is no longer imported here: a grep proves ZERO remaining
+// `prisma.` usages in this file. `TX_OPTIONS` is still used (`deleteTenant`'s
+// admin transaction), so the module stays imported for that symbol alone.
+import { TX_OPTIONS } from '@/lib/db/prisma';
 import { getAdminDb } from '@/lib/db/admin-prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -29,7 +32,13 @@ async function requireAdminAccess() {
 export async function getAllTenants() {
   await requireAdminAccess();
 
-  const tenants = await prisma.tenant.findMany({
+  // quick-615 — ROUTE. Lists EVERY tenant. `tenant_self_read` is
+  // `USING (id = current_tenant_id())` with no second branch of any kind, so
+  // under `app_user` this returns zero tenants (or raises TC001 with the
+  // tripwire armed). Reuses the existing reason — `tenant.repository.ts:96`
+  // does the same job under the same name.
+  const adminDbList = await getAdminDb('sysadmin tenant listing');
+  const tenants = await adminDbList.tenant.findMany({
     select: {
       id: true,
       name: true,
@@ -120,7 +129,14 @@ export async function createTenant(formData: FormData) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    const invitation = await prisma.driverInvitation.create({
+    // quick-615 — RECEIVER SWAP, no new acquisition: `adminDb` above is still
+    // in scope and this is the same unit of work (create the tenant, invite its
+    // owner). quick-600's ROUTING-MANIFEST named this exact statement in
+    // advance — "`createTenant` (`:98`) also creates a `DriverInvitation` two
+    // statements later … Left untouched — reported, not silently expanded
+    // into. It will break at the `app_user` cutover exactly like its
+    // neighbours." This is that cutover.
+    const invitation = await adminDb.driverInvitation.create({
       data: {
         tenantId: tenant.id,
         email: validation.data.ownerEmail.toLowerCase().trim(),
@@ -195,7 +211,10 @@ export async function suspendTenant(tenantId: string) {
   });
 
   // Ban all tenant users in Supabase Auth and invalidate their sessions
-  const tenantUsers = await prisma.user.findMany({
+  // quick-615 — RECEIVER SWAP, no new acquisition: `adminDbSuspend` is still in
+  // scope seven lines above. Left on the bare client this returns ZERO users
+  // after the cutover and the suspension silently bans nobody.
+  const tenantUsers = await adminDbSuspend.user.findMany({
     where: { tenantId },
     select: { id: true },
   });
@@ -236,7 +255,9 @@ export async function reactivateTenant(tenantId: string) {
   });
 
   // Lift the Supabase Auth ban for all tenant users
-  const tenantUsers = await prisma.user.findMany({
+  // quick-615 — RECEIVER SWAP, no new acquisition: `adminDbReactivate` is still
+  // in scope seven lines above. Identical shape to `suspendTenant`.
+  const tenantUsers = await adminDbReactivate.user.findMany({
     where: { tenantId },
     select: { id: true },
   });
@@ -267,20 +288,25 @@ export async function getSystemMetrics() {
   const startOfDay = new Date(new Date().setUTCHours(0, 0, 0, 0));
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
+  // quick-615 — ROUTE. Four platform-wide counts, ONE Promise.all, ONE unit of
+  // work, ONE acquisition. There is no tenant here to scope to: these are
+  // totals over every tenant, and a tenant-scoped connection would report the
+  // sysadmin's own tenant's numbers as the platform's.
+  const adminDbMetrics = await getAdminDb('sysadmin platform metrics');
   const [totalTenants, activeLoadsToday, newSignupsThisWeek, openTickets] = await Promise.all([
-    prisma.tenant.count(),
-    prisma.load.count({
+    adminDbMetrics.tenant.count(),
+    adminDbMetrics.load.count({
       where: {
         status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
         createdAt: { gte: startOfDay },
       },
     }),
-    prisma.tenant.count({
+    adminDbMetrics.tenant.count({
       where: {
         createdAt: { gte: sevenDaysAgo },
       },
     }),
-    prisma.supportTicket.count({
+    adminDbMetrics.supportTicket.count({
       where: { status: 'OPEN' },
     }),
   ]);
@@ -294,7 +320,13 @@ export async function getSystemMetrics() {
 export async function getTenantById(tenantId: string) {
   await requireAdminAccess();
 
-  const tenant = await prisma.tenant.findUnique({
+  // quick-615 — ROUTE, not a tenant client. The `tenantId` argument selects
+  // WHICH tenant a sysadmin is administering; it is not the caller's tenant and
+  // the request carries none. Note the `_count` block reaches `User`, `Truck`
+  // and `Route` as real sub-selects — three tables that appear in no
+  // `prisma.<model>.` grep of this file.
+  const adminDbDetail = await getAdminDb('sysadmin tenant detail read');
+  const tenant = await adminDbDetail.tenant.findUnique({
     where: { id: tenantId },
     select: {
       id: true,
@@ -352,7 +384,12 @@ export async function resendOwnerInvitation(tenantId: string) {
   await requireAdminAccess();
 
   try {
-    const tenant = await prisma.tenant.findUnique({
+    // quick-615 — ROUTE. One acquisition for the whole unit of work: read the
+    // tenant, find its outstanding owner invitation, reset it. Splitting a
+    // read-then-write across two connections is how one half succeeds and the
+    // other silently sees nothing.
+    const adminDbResend = await getAdminDb('sysadmin owner invitation resend');
+    const tenant = await adminDbResend.tenant.findUnique({
       where: { id: tenantId },
       select: { name: true },
     });
@@ -361,7 +398,7 @@ export async function resendOwnerInvitation(tenantId: string) {
       return { success: false, error: 'Tenant not found' };
     }
 
-    const invitation = await prisma.driverInvitation.findFirst({
+    const invitation = await adminDbResend.driverInvitation.findFirst({
       where: { tenantId, role: 'OWNER', status: { in: ['PENDING', 'EXPIRED'] } },
       orderBy: { createdAt: 'desc' },
     });
@@ -373,7 +410,7 @@ export async function resendOwnerInvitation(tenantId: string) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    await prisma.driverInvitation.update({
+    await adminDbResend.driverInvitation.update({
       where: { id: invitation.id },
       data: { status: 'PENDING', expiresAt },
     });
@@ -468,8 +505,13 @@ export async function updateOwnerEmail(
   }
 
   try {
+    // quick-615 — ROUTE. This one is not a boundary call at all: the function's
+    // arguments are `(userId, newEmail)` and there is NO tenant in hand — the
+    // tenant is DERIVED from this very read, three lines below. A tenant client
+    // is impossible here by construction, not merely undesirable.
+    const adminDbOwnerEmail = await getAdminDb('sysadmin owner email change');
     // Get current email before updating
-    const user = await prisma.user.findUnique({
+    const user = await adminDbOwnerEmail.user.findUnique({
       where: { id: userId },
       select: { email: true, firstName: true, lastName: true, tenantId: true },
     });
@@ -477,7 +519,7 @@ export async function updateOwnerEmail(
 
     const oldEmail = user.email;
 
-    await prisma.user.update({
+    await adminDbOwnerEmail.user.update({
       where: { id: userId },
       data: { email: validation.data },
     });

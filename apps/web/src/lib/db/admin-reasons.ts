@@ -62,6 +62,25 @@ export const ADMIN_REASONS = [
   'sysadmin tenant profile update',
   'sysadmin tenant settings update',
   'sysadmin tenant delete',
+  // quick-615 — the READ half of the same surface. quick-600 routed this file's
+  // seven MUTATIONS (create, status change x2, profile, settings, trial,
+  // delete) from a design-doc-derived census and stated in its own
+  // ROUTING-MANIFEST that it "does not claim to have found every site"; the
+  // fourteen reads it left behind are all cross-tenant by construction — a
+  // sysadmin administering an ARBITRARY tenant, with `tenant_self_read` spelled
+  // `id = current_tenant_id()` and carrying no second branch that could ever
+  // have admitted them. Measured class: TC001 at the app_user cutover, and a
+  // SILENT ZERO with the tripwire off — a tenant list showing no tenants.
+  //
+  // `sysadmin tenant listing` above is REUSED by `getAllTenants` (:32) and by
+  // the support page's tenant filter: same job, and the union is a vocabulary,
+  // not a call-site register. Three more statements (`:123`, `:198`, `:239`)
+  // mint nothing at all — they are receiver swaps onto an admin client already
+  // in scope in their own function.
+  'sysadmin platform metrics',
+  'sysadmin tenant detail read',
+  'sysadmin owner invitation resend',
+  'sysadmin owner email change',
 
   // ── SysAdmin support ticket surface ───────────────────────────────────────
   'sysadmin ticket status update',
