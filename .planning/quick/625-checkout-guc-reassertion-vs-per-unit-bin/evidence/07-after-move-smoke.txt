@@ -1,0 +1,27 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+proto:evict:division-by-zero [tripwire on · unbatchFindUnique on · cache off]  connects=2 ends=1 tc001=0 gucSets=["''","A","A","''","A","A","A"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 1
+    carrierDriver.count (RLS only; A=3): ok 3
+    probe: ok {"guc":"A","drivers":3}
+shipped:evict:division-by-zero [tripwire on]  connects=4 ends=4 tc001=3 gucSets=["''","A","''","''","''"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ERROR TC001
+    carrierDriver.count (RLS only; A=3): ERROR TC001
+    probe: ERROR P2010
+proto:evict:division-by-zero [tripwire off · unbatchFindUnique on · cache off]  connects=2 ends=1 tc001=0 gucSets=["''","A","A","''","A","A","A"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 1
+    carrierDriver.count (RLS only; A=3): ok 3
+    probe: ok {"guc":"A","drivers":3}
+shipped:evict:division-by-zero [tripwire off]  connects=2 ends=1 tc001=0 gucSets=["''","A","''"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 0
+    carrierDriver.count (RLS only; A=3): ok 0
+    probe: ok {"guc":"''","drivers":0}
+
+__CONFIG__{"stack":"proto","max":1,"errors":true,"iterations":64,"ms":46777,"physicalConnects":17,"R1_carrierDriver_count":{"correct":64},"R2_guc_read":{"correct":64},"R3_tx_guc_read":{"correct":64},"R3_tx_count":{"correct":64},"unknownMessages":[]}

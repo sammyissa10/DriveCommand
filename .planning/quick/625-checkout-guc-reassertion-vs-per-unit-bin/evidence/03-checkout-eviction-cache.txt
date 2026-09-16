@@ -1,0 +1,124 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+proto:control:no-error [tripwire on · unbatchFindUnique on · cache on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    truck.count#2: ok 1
+    probe: ok {"guc":"A","drivers":3}
+proto:evict:division-by-zero [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","''","A"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 1
+    carrierDriver.count (RLS only; A=3): ok 3
+    probe: ok {"guc":"A","drivers":3}
+proto:evict:bare-client-error [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","''","''","A"]
+    truck.count#1: ok 1
+    BARE SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 1
+    probe: ok {"guc":"A","drivers":3}
+proto:evict:undefined-column [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","''","A"]
+    truck.count#1: ok 1
+    missing column (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 1
+    probe: ok {"guc":"A","drivers":3}
+proto:evict:then-interactive-transaction [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","''","A"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    $transaction(async tx => [truck.count, carrierDriver.count, probe]): ok [1,3,{"guc":"A","drivers":3}]
+proto:evict:then-batch-transaction [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","''","A"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    $transaction([truck.count, carrierDriver.count]): ok [1,3]
+proto:evict:other-tenant-error-then-A [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","B","''","A"]
+    A carrierDriver.count#1: ok 3
+    B SELECT 1/0 (caught): ERROR P2010
+    A carrierDriver.count#2 (A=3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+proto:socket-dies-at-checkout [tripwire on · unbatchFindUnique on · cache on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    truck.count#2 (socket destroyed at checkout): ok 1
+    truck.count#3: ok 1
+    probe: ok {"guc":"A","drivers":3}
+proto:bare-tx-sets-own-guc [tripwire on · unbatchFindUnique on · cache on]  connects=1 ends=0 tc001=0 gucSets=["''","''","A"]
+    BARE $transaction(set_config TRUE; carrierDriver.count; guc): ok [3,{"guc":"A","drivers":3}]
+proto:foreign-session-set-between [tripwire on · unbatchFindUnique on · cache on]  connects=1 ends=0 tc001=0 gucSets=["''","A","''","B","A"]
+    A carrierDriver.count#1: ok 3
+    BARE set_config(B, false): ok 1
+    A carrierDriver.count#2 (A=3): ok 3
+    A probe: ok {"guc":"A","drivers":3}
+proto:bare-after-tenant [tripwire on · unbatchFindUnique on · cache on]  connects=2 ends=2 tc001=2 gucSets=["''","A","''","''","''"]
+    tenant truck.count: ok 1
+    BARE carrierDriver.count: ERROR TC001
+    BARE probe: ERROR P2010
+proto:same-tick-findUnique-two-tenants [tripwire on · unbatchFindUnique on · cache on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A","B"]
+    setup ids: ok {"ida":true,"idb":true,"distinct":true}
+    A findUnique (same tick): ok "own row"
+    B findUnique (same tick): ok "own row"
+shipped:control:no-error [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    truck.count#1: ok 1
+    truck.count#2: ok 1
+    probe: ok {"guc":"A","drivers":3}
+shipped:evict:division-by-zero [tripwire on]  connects=4 ends=4 tc001=3 gucSets=["''","A","''","''","''"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ERROR TC001
+    carrierDriver.count (RLS only; A=3): ERROR TC001
+    probe: ERROR P2010
+shipped:evict:bare-client-error [tripwire on]  connects=3 ends=3 tc001=2 gucSets=["''","A","''","''"]
+    truck.count#1: ok 1
+    BARE SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ERROR TC001
+    probe: ERROR P2010
+shipped:evict:undefined-column [tripwire on]  connects=3 ends=3 tc001=2 gucSets=["''","A","''","''"]
+    truck.count#1: ok 1
+    missing column (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ERROR TC001
+    probe: ERROR P2010
+shipped:evict:then-interactive-transaction [tripwire on]  connects=2 ends=1 tc001=1 gucSets=["''","A","''"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    $transaction(async tx => [truck.count, carrierDriver.count, probe]): ERROR TC001
+shipped:evict:then-batch-transaction [tripwire on]  connects=2 ends=1 tc001=1 gucSets=["''","A","''"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    $transaction([truck.count, carrierDriver.count]): ERROR TC001
+shipped:evict:other-tenant-error-then-A [tripwire on]  connects=3 ends=3 tc001=2 gucSets=["''","A","B","''","''"]
+    A carrierDriver.count#1: ok 2
+    B SELECT 1/0 (caught): ERROR P2010
+    A carrierDriver.count#2 (A=3): ERROR TC001
+    A probe: ERROR P2010
+shipped:socket-dies-at-checkout [tripwire on]  connects=3 ends=3 tc001=2 gucSets=["''","A","''","''"]
+    truck.count#1: ok 1
+    truck.count#2 (socket destroyed at checkout): ERROR UNKNOWN
+    truck.count#3: ERROR TC001
+    probe: ERROR P2010
+shipped:bare-tx-sets-own-guc [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    BARE $transaction(set_config TRUE; carrierDriver.count; guc): ok [3,{"guc":"A","drivers":3}]
+shipped:foreign-session-set-between [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B"]
+    A carrierDriver.count#1: ok 3
+    BARE set_config(B, false): ok 1
+    A carrierDriver.count#2 (A=3): ok 2
+    A probe: ok {"guc":"B","drivers":2}
+shipped:bare-after-tenant [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A"]
+    tenant truck.count: ok 1
+    BARE carrierDriver.count: ok 3
+    BARE probe: ok {"guc":"A","drivers":3}
+shipped:same-tick-findUnique-two-tenants [tripwire on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A","B"]
+    setup ids: ok {"ida":true,"idb":true,"distinct":true}
+    A findUnique (same tick): ok "NULL (row exists)"
+    B findUnique (same tick): ok "own row"
+proto:evict:division-by-zero [tripwire off · unbatchFindUnique on · cache on]  connects=2 ends=1 tc001=0 gucSets=["''","A","''","A"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 1
+    carrierDriver.count (RLS only; A=3): ok 3
+    probe: ok {"guc":"A","drivers":3}
+shipped:evict:division-by-zero [tripwire off]  connects=2 ends=1 tc001=0 gucSets=["''","A","''"]
+    truck.count#1: ok 1
+    SELECT 1/0 (caught): ERROR P2010
+    truck.count#2 on the SAME tenant client: ok 0
+    carrierDriver.count (RLS only; A=3): ok 0
+    probe: ok {"guc":"''","drivers":0}
+proto:same-tick-findUnique-two-tenants [tripwire on · unbatchFindUnique off · cache on]  connects=1 ends=0 tc001=0 gucSets=["''","A","B","A"]
+    setup ids: ok {"ida":true,"idb":true,"distinct":true}
+    A findUnique (same tick): ok "own row"
+    B findUnique (same tick): ok "NULL (row exists)"

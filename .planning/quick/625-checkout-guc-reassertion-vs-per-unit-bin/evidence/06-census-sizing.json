@@ -1,0 +1,54 @@
+{
+  "census": ".planning/quick/623-fix-seedstarterplaybooks-tenant-scoping-/evidence/06-query-census.json",
+  "exposed": {
+    "rows": 1342,
+    "files": 281,
+    "units": 569,
+    "byCheckoutCoverage": {
+      "covered directly (autocommit model op, own checkout)": 924,
+      "covered via the $transaction context wrapper (checkout at BEGIN)": 334,
+      "covered only with unbatchFindUnique (same-tick DataLoader batching)": 74,
+      "covered via top-level $allOperations (raw)": 10
+    },
+    "byClient": {
+      "TENANT_SESSION": 793,
+      "TX(TENANT_SESSION)": 71,
+      "TX(TENANT_ORG)": 248,
+      "TENANT_ORG": 195,
+      "MIXED(TENANT_ORG|TENANT_SESSION)": 20,
+      "MIXED(TX(TENANT_ORG)|TX(TENANT_SESSION))": 14,
+      "MIXED(TENANT_ORG|TX(TENANT_ORG))": 1
+    },
+    "findUniqueOutsideTx": 74
+  },
+  "gating": {
+    "rows": 155,
+    "files": 52,
+    "units": 79,
+    "byClient": {
+      "BARE": 126,
+      "MIXED(BARE|TENANT_SESSION|TX(BARE))": 9,
+      "MIXED(TX(BARE)|TX(TENANT_SESSION))": 2,
+      "TX(BARE)": 18
+    },
+    "note": "SILENT_ZERO_AT_CUTOVER as scanned (155); quick-623 corrects to 144 by excluding 11 driver-pay rows",
+    "driverPayRows": 11
+  },
+  "bypassDrop": {
+    "rows": 56,
+    "units": 30,
+    "byClient": {
+      "TX(BARE)": 56
+    }
+  },
+  "immuneTxSetsOwnGuc": {
+    "rows": 64,
+    "units": 23
+  },
+  "perUnitBinding": {
+    "unitsToWrap_exposedPlusGating": 623,
+    "files_exposedPlusGating": 314,
+    "unitsWithAtLeastOneTxRow": 133,
+    "unitsWithFindUniqueOutsideTx": 63
+  }
+}

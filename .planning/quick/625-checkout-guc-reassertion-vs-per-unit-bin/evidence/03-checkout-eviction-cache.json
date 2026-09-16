@@ -1,0 +1,1056 @@
+{
+  "generated": "2026-09-16T21:34:27.051Z",
+  "results": [
+    {
+      "cell": "proto:control:no-error",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#2",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:evict:division-by-zero",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "carrierDriver.count (RLS only; A=3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:evict:bare-client-error",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "BARE SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:evict:undefined-column",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "missing column (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:evict:then-interactive-transaction",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "$transaction(async tx => [truck.count, carrierDriver.count, probe])",
+          "ok": true,
+          "value": [
+            1,
+            3,
+            {
+              "guc": "A",
+              "drivers": 3
+            }
+          ]
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:evict:then-batch-transaction",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "$transaction([truck.count, carrierDriver.count])",
+          "ok": true,
+          "value": [
+            1,
+            3
+          ]
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:evict:other-tenant-error-then-A",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "B SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "A carrierDriver.count#2 (A=3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:socket-dies-at-checkout",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#2 (socket destroyed at checkout)",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#3",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:bare-tx-sets-own-guc",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "BARE $transaction(set_config TRUE; carrierDriver.count; guc)",
+          "ok": true,
+          "value": [
+            3,
+            {
+              "guc": "A",
+              "drivers": 3
+            }
+          ]
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:foreign-session-set-between",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE set_config(B, false)",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "A carrierDriver.count#2 (A=3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "B",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:bare-after-tenant",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "tenant truck.count",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "BARE carrierDriver.count",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "BARE probe",
+          "ok": false,
+          "sqlstate": "P2010"
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 2,
+        "tc001": 2,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "''",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "proto:same-tick-findUnique-two-tenants",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "setup ids",
+          "ok": true,
+          "value": {
+            "ida": true,
+            "idb": true,
+            "distinct": true
+          }
+        },
+        {
+          "step": "A findUnique (same tick)",
+          "ok": true,
+          "value": "own row"
+        },
+        {
+          "step": "B findUnique (same tick)",
+          "ok": true,
+          "value": "own row"
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A",
+          "B"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "shipped:control:no-error",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#2",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:evict:division-by-zero",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "carrierDriver.count (RLS only; A=3)",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "probe",
+          "ok": false,
+          "sqlstate": "P2010"
+        }
+      ],
+      "obs": {
+        "connects": 4,
+        "ends": 4,
+        "tc001": 3,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "''",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:evict:bare-client-error",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "BARE SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "probe",
+          "ok": false,
+          "sqlstate": "P2010"
+        }
+      ],
+      "obs": {
+        "connects": 3,
+        "ends": 3,
+        "tc001": 2,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:evict:undefined-column",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "missing column (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "probe",
+          "ok": false,
+          "sqlstate": "P2010"
+        }
+      ],
+      "obs": {
+        "connects": 3,
+        "ends": 3,
+        "tc001": 2,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:evict:then-interactive-transaction",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "$transaction(async tx => [truck.count, carrierDriver.count, probe])",
+          "ok": false,
+          "sqlstate": "TC001"
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 1,
+        "gucSets": [
+          "''",
+          "A",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:evict:then-batch-transaction",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "$transaction([truck.count, carrierDriver.count])",
+          "ok": false,
+          "sqlstate": "TC001"
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 1,
+        "gucSets": [
+          "''",
+          "A",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:evict:other-tenant-error-then-A",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1",
+          "ok": true,
+          "value": 2
+        },
+        {
+          "step": "B SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "A carrierDriver.count#2 (A=3)",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "A probe",
+          "ok": false,
+          "sqlstate": "P2010"
+        }
+      ],
+      "obs": {
+        "connects": 3,
+        "ends": 3,
+        "tc001": 2,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "''",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:socket-dies-at-checkout",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "truck.count#2 (socket destroyed at checkout)",
+          "ok": false,
+          "sqlstate": "UNKNOWN"
+        },
+        {
+          "step": "truck.count#3",
+          "ok": false,
+          "sqlstate": "TC001"
+        },
+        {
+          "step": "probe",
+          "ok": false,
+          "sqlstate": "P2010"
+        }
+      ],
+      "obs": {
+        "connects": 3,
+        "ends": 3,
+        "tc001": 2,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:bare-tx-sets-own-guc",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "BARE $transaction(set_config TRUE; carrierDriver.count; guc)",
+          "ok": true,
+          "value": [
+            3,
+            {
+              "guc": "A",
+              "drivers": 3
+            }
+          ]
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:foreign-session-set-between",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "A carrierDriver.count#1",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE set_config(B, false)",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "A carrierDriver.count#2 (A=3)",
+          "ok": true,
+          "value": 2
+        },
+        {
+          "step": "A probe",
+          "ok": true,
+          "value": {
+            "guc": "B",
+            "drivers": 2
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:bare-after-tenant",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "tenant truck.count",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "BARE carrierDriver.count",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "BARE probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "shipped:same-tick-findUnique-two-tenants",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "setup ids",
+          "ok": true,
+          "value": {
+            "ida": true,
+            "idb": true,
+            "distinct": true
+          }
+        },
+        {
+          "step": "A findUnique (same tick)",
+          "ok": true,
+          "value": "NULL (row exists)"
+        },
+        {
+          "step": "B findUnique (same tick)",
+          "ok": true,
+          "value": "own row"
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A",
+          "B"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "proto:evict:division-by-zero",
+      "tripwire": "off",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "carrierDriver.count (RLS only; A=3)",
+          "ok": true,
+          "value": 3
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "A",
+            "drivers": 3
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "on",
+      "cache": "on"
+    },
+    {
+      "cell": "shipped:evict:division-by-zero",
+      "tripwire": "off",
+      "steps": [
+        {
+          "step": "truck.count#1",
+          "ok": true,
+          "value": 1
+        },
+        {
+          "step": "SELECT 1/0 (caught)",
+          "ok": false,
+          "sqlstate": "P2010"
+        },
+        {
+          "step": "truck.count#2 on the SAME tenant client",
+          "ok": true,
+          "value": 0
+        },
+        {
+          "step": "carrierDriver.count (RLS only; A=3)",
+          "ok": true,
+          "value": 0
+        },
+        {
+          "step": "probe",
+          "ok": true,
+          "value": {
+            "guc": "''",
+            "drivers": 0
+          }
+        }
+      ],
+      "obs": {
+        "connects": 2,
+        "ends": 1,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "''"
+        ]
+      },
+      "unbatchFindUnique": "n/a",
+      "cache": "n/a"
+    },
+    {
+      "cell": "proto:same-tick-findUnique-two-tenants",
+      "tripwire": "on",
+      "steps": [
+        {
+          "step": "setup ids",
+          "ok": true,
+          "value": {
+            "ida": true,
+            "idb": true,
+            "distinct": true
+          }
+        },
+        {
+          "step": "A findUnique (same tick)",
+          "ok": true,
+          "value": "own row"
+        },
+        {
+          "step": "B findUnique (same tick)",
+          "ok": true,
+          "value": "NULL (row exists)"
+        }
+      ],
+      "obs": {
+        "connects": 1,
+        "ends": 0,
+        "tc001": 0,
+        "gucSets": [
+          "''",
+          "A",
+          "B",
+          "A"
+        ]
+      },
+      "unbatchFindUnique": "off",
+      "cache": "on"
+    }
+  ]
+}

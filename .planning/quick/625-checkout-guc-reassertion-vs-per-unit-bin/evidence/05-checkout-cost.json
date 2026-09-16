@@ -1,0 +1,26 @@
+{
+  "generated": "2026-09-16T21:42:28.795Z",
+  "results": [
+    {
+      "stack": "shipped",
+      "n": 60,
+      "wireStatementsPerModelOp": 1,
+      "medianModelOpMs": 64.4,
+      "medianBareSelect1Ms": 63
+    },
+    {
+      "stack": "proto",
+      "n": 60,
+      "wireStatementsPerModelOp": 2,
+      "medianModelOpMs": 130.9,
+      "medianBareSelect1Ms": 127.3
+    },
+    {
+      "stack": "protoCache",
+      "n": 60,
+      "wireStatementsPerModelOp": 0,
+      "medianModelOpMs": 66.9,
+      "medianBareSelect1Ms": 64.9
+    }
+  ]
+}

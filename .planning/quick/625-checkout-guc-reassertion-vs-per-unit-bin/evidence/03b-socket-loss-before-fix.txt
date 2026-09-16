@@ -1,0 +1,8 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+proto:socket-dies-at-checkout [tripwire on · unbatchFindUnique on]  connects=undefined ends=undefined tc001=undefined gucSets=undefined
+    {"cell":"proto:socket-dies-at-checkout","tripwire":"on","error":"PROCESS DIED exit=1","stderr":["      throw er; // Unhandled 'error' event\r","Error: q625 forced socket loss\r","    at Immediate._onImmediate (C:\\Users\\sammy\\Projects\\DriveCommand\\apps\\web\\scripts\\audit\\625-checkout-eviction.ts:209:59)\r","    at process.processImmediate (node:internal/timers:504:21)\r","Emitted 'error' event on Client instance at:\r","    at Client._handleErrorEvent (C:\\Users\\sammy\\Projects\\DriveCommand\\node_modules\\pg\\lib\\client.js:390:10)\r"],"unbatchFindUnique":"on"}
+shipped:socket-dies-at-checkout [tripwire on]  connects=3 ends=3 tc001=2 gucSets=["''","A","''","''"]
+    truck.count#1: ok 1
+    truck.count#2 (socket destroyed at checkout): ERROR UNKNOWN
+    truck.count#3: ERROR TC001
+    probe: ERROR P2010
