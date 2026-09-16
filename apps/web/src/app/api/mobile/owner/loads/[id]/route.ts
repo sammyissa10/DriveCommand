@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { Prisma } from '@/generated/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
@@ -41,17 +42,24 @@ export async function GET(
   const { tenantId } = auth;
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617/618: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw —
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified auth.tenantId.
+     * userId is deliberately NOT passed: it would drive the audit-columns
+     * extension to start writing createdById/updatedById, a behaviour change a
+     * routing fix must not make (quick-610).
+     *
+     * quick-617 STOPPED this file because a findUnique below carries a top-level
+     * select that omits tenantId, and the old post-check read that as
+     * `undefined !== tenantId` and discarded the row FOR ITS OWN TENANT — which,
+     * with the `if (!x) return 404` that follows every one of them, would have
+     * made this route answer "not found" on every request. quick-618 moved the
+     * tenant predicate into the findUnique `where`, so the select no longer
+     * decides isolation and every select here is left byte-identical.
      */
-    const load = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const load = await tenantPrisma.$transaction(async (tx) => {
       return tx.load.findUnique({
         where: { id, tenantId },
         include: {
@@ -172,9 +180,35 @@ export async function PATCH(
     deliveryLng: Prisma.Decimal | null;
   } | null;
 
+  /*
+   * HOISTED OUT OF THE `try` BELOW, deliberately. This handler runs THREE
+   * sibling transactions in three separate `try` blocks, and the acquisition
+   * belongs to the handler, not to the first of them — `618-apply-routing.js`
+   * inserts one acquisition per handler at the first transaction it sees, which
+   * put this inside the first `try` and left the other two referring to a name
+   * out of scope. tsc caught it as TS2304 on both, which is precisely the
+   * backstop quick-617 said it was relying on.
+   */
+  const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+
   try {
-    existingLoad = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    /*
+     * quick-617/618: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw —
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified auth.tenantId.
+     * userId is deliberately NOT passed: it would drive the audit-columns
+     * extension to start writing createdById/updatedById, a behaviour change a
+     * routing fix must not make (quick-610).
+     *
+     * quick-617 STOPPED this file because a findUnique below carries a top-level
+     * select that omits tenantId, and the old post-check read that as
+     * `undefined !== tenantId` and discarded the row FOR ITS OWN TENANT — which,
+     * with the `if (!x) return 404` that follows every one of them, would have
+     * made this route answer "not found" on every request. quick-618 moved the
+     * tenant predicate into the findUnique `where`, so the select no longer
+     * decides isolation and every select here is left byte-identical.
+     */
+    existingLoad = await tenantPrisma.$transaction(async (tx) => {
       return tx.load.findUnique({
         where: { id, tenantId },
         select: {
@@ -202,8 +236,7 @@ export async function PATCH(
   if (body.status === 'INVOICED') {
     let invoiceCount: number;
     try {
-      invoiceCount = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      invoiceCount = await tenantPrisma.$transaction(async (tx) => {
         return tx.invoice.count({
           where: { loadId: id, status: { not: 'CANCELLED' } },
         });
@@ -239,9 +272,7 @@ export async function PATCH(
   }
 
   try {
-    const load = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const load = await tenantPrisma.$transaction(async (tx) => {
       // Validate driverId if provided and not null
       if (body.driverId !== undefined && body.driverId !== null) {
         const driver = await tx.user.findFirst({
