@@ -1,0 +1,43 @@
+CONFIRMED: extension is at HEAD (pre-fix) for this BEFORE run
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+
+=== MODE: rls_in_force ===
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  mode : rls_in_force  (credential MASKED, never printed)
+  CONTROL — foreign row visible to the DATABASE on this connection: 0  (expect 0 — RLS is refusing it)
+  PASS  findUnique         selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUnique         selectWithTenantId    cross -> null  counterRead=1
+  FAIL  findUnique         selectWithoutTenantId own   -> null  keys=null expected=["id","make"]
+  PASS  findUnique         selectWithoutTenantId cross -> null  counterRead=1
+  PASS  findUnique         noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUnique         noSelect              cross -> null  counterRead=1
+  PASS  findUniqueOrThrow  selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUniqueOrThrow  selectWithTenantId    cross -> throw:NotFound  counterRead=1
+  FAIL  findUniqueOrThrow  selectWithoutTenantId own   -> throw:TenantIsolationViolation  keys=null expected=["id","make"]
+  PASS  findUniqueOrThrow  selectWithoutTenantId cross -> throw:NotFound  counterRead=1
+  PASS  findUniqueOrThrow  noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUniqueOrThrow  noSelect              cross -> throw:NotFound  counterRead=1
+
+=== MODE: rls_not_in_force ===
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  mode : rls_not_in_force  (credential MASKED, never printed)
+  CONTROL — foreign row visible to the DATABASE on this connection: 1  (expect 1 — bypass is on, the DB refuses nothing)
+  PASS  findUnique         selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUnique         selectWithTenantId    cross -> null  counterRead=1
+  FAIL  findUnique         selectWithoutTenantId own   -> null  keys=null expected=["id","make"]
+  PASS  findUnique         selectWithoutTenantId cross -> null  counterRead=1
+  PASS  findUnique         noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUnique         noSelect              cross -> null  counterRead=1
+  PASS  findUniqueOrThrow  selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUniqueOrThrow  selectWithTenantId    cross -> throw:TenantIsolationViolation  counterRead=1
+  FAIL  findUniqueOrThrow  selectWithoutTenantId own   -> throw:TenantIsolationViolation  keys=null expected=["id","make"]
+  PASS  findUniqueOrThrow  selectWithoutTenantId cross -> throw:TenantIsolationViolation  counterRead=1
+  PASS  findUniqueOrThrow  noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUniqueOrThrow  noSelect              cross -> throw:TenantIsolationViolation  counterRead=1
+
+CELLS: 24   PASS: 20   FAIL: 4
+FAILING CELLS:
+  {"mode":"rls_in_force","method":"findUnique","shape":"selectWithoutTenantId","direction":"own","outcome":"null","resultKeys":null,"expectedKeys":["id","make"],"shapeUnchanged":null,"counterRead":1,"pass":false}
+  {"mode":"rls_in_force","method":"findUniqueOrThrow","shape":"selectWithoutTenantId","direction":"own","outcome":"throw:TenantIsolationViolation","resultKeys":null,"expectedKeys":["id","make"],"shapeUnchanged":null,"counterRead":1,"sqlstate":"UNKNOWN","pass":false}
+  {"mode":"rls_not_in_force","method":"findUnique","shape":"selectWithoutTenantId","direction":"own","outcome":"null","resultKeys":null,"expectedKeys":["id","make"],"shapeUnchanged":null,"counterRead":1,"pass":false}
+  {"mode":"rls_not_in_force","method":"findUniqueOrThrow","shape":"selectWithoutTenantId","direction":"own","outcome":"throw:TenantIsolationViolation","resultKeys":null,"expectedKeys":["id","make"],"shapeUnchanged":null,"counterRead":1,"sqlstate":"UNKNOWN","pass":false}
+
+[exited with code 0]

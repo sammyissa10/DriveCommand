@@ -1,0 +1,499 @@
+{
+  "generatedAt": "2026-09-16T05:54:01.281Z",
+  "cells": [
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "selectWithTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "selectWithTenantId",
+      "direction": "cross",
+      "outcome": "null",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "selectWithoutTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make"
+      ],
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "selectWithoutTenantId",
+      "direction": "cross",
+      "outcome": "null",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "noSelect",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "archivedAt",
+        "createdAt",
+        "createdById",
+        "documentMetadata",
+        "id",
+        "inMaintenance",
+        "isDispatchReady",
+        "isSample",
+        "licensePlate",
+        "make",
+        "model",
+        "odometer",
+        "tenantId",
+        "updatedAt",
+        "updatedById",
+        "vin",
+        "year"
+      ],
+      "expectedKeys": null,
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "noSelect",
+      "direction": "cross",
+      "outcome": "null",
+      "resultKeys": null,
+      "expectedKeys": null,
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithTenantId",
+      "direction": "cross",
+      "outcome": "throw:NotFound",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "sqlstate": "P2025",
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithoutTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make"
+      ],
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithoutTenantId",
+      "direction": "cross",
+      "outcome": "throw:NotFound",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "sqlstate": "P2025",
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "noSelect",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "archivedAt",
+        "createdAt",
+        "createdById",
+        "documentMetadata",
+        "id",
+        "inMaintenance",
+        "isDispatchReady",
+        "isSample",
+        "licensePlate",
+        "make",
+        "model",
+        "odometer",
+        "tenantId",
+        "updatedAt",
+        "updatedById",
+        "vin",
+        "year"
+      ],
+      "expectedKeys": null,
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "noSelect",
+      "direction": "cross",
+      "outcome": "throw:NotFound",
+      "resultKeys": null,
+      "expectedKeys": null,
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "sqlstate": "P2025",
+      "pass": true
+    },
+    {
+      "mode": "rls_in_force",
+      "method": "findUnique",
+      "shape": "compoundUnique",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "createdAt",
+        "customBlockJson",
+        "customHtmlCache",
+        "customSubject",
+        "id",
+        "isActive",
+        "tenantId",
+        "triggerKey",
+        "updatedAt"
+      ],
+      "expectedKeys": null,
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "selectWithTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "selectWithTenantId",
+      "direction": "cross",
+      "outcome": "null",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "selectWithoutTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make"
+      ],
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "selectWithoutTenantId",
+      "direction": "cross",
+      "outcome": "null",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "noSelect",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "archivedAt",
+        "createdAt",
+        "createdById",
+        "documentMetadata",
+        "id",
+        "inMaintenance",
+        "isDispatchReady",
+        "isSample",
+        "licensePlate",
+        "make",
+        "model",
+        "odometer",
+        "tenantId",
+        "updatedAt",
+        "updatedById",
+        "vin",
+        "year"
+      ],
+      "expectedKeys": null,
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "noSelect",
+      "direction": "cross",
+      "outcome": "null",
+      "resultKeys": null,
+      "expectedKeys": null,
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithTenantId",
+      "direction": "cross",
+      "outcome": "throw:NotFound",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make",
+        "tenantId"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "sqlstate": "P2025",
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithoutTenantId",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "id",
+        "make"
+      ],
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "selectWithoutTenantId",
+      "direction": "cross",
+      "outcome": "throw:NotFound",
+      "resultKeys": null,
+      "expectedKeys": [
+        "id",
+        "make"
+      ],
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "sqlstate": "P2025",
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "noSelect",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "archivedAt",
+        "createdAt",
+        "createdById",
+        "documentMetadata",
+        "id",
+        "inMaintenance",
+        "isDispatchReady",
+        "isSample",
+        "licensePlate",
+        "make",
+        "model",
+        "odometer",
+        "tenantId",
+        "updatedAt",
+        "updatedById",
+        "vin",
+        "year"
+      ],
+      "expectedKeys": null,
+      "shapeUnchanged": true,
+      "counterRead": 1,
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUniqueOrThrow",
+      "shape": "noSelect",
+      "direction": "cross",
+      "outcome": "throw:NotFound",
+      "resultKeys": null,
+      "expectedKeys": null,
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "sqlstate": "P2025",
+      "pass": true
+    },
+    {
+      "mode": "rls_not_in_force",
+      "method": "findUnique",
+      "shape": "compoundUnique",
+      "direction": "own",
+      "outcome": "row",
+      "resultKeys": [
+        "createdAt",
+        "customBlockJson",
+        "customHtmlCache",
+        "customSubject",
+        "id",
+        "isActive",
+        "tenantId",
+        "triggerKey",
+        "updatedAt"
+      ],
+      "expectedKeys": null,
+      "shapeUnchanged": null,
+      "counterRead": 1,
+      "pass": true
+    }
+  ]
+}

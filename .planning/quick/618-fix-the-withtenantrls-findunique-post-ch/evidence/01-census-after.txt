@@ -1,0 +1,76 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+files scanned: 1693   EXEMPT_MODELS lifted: 27
+findUnique/findUniqueOrThrow on NON-EXEMPT models (production): 125
+  by projection: {"NO_PROJECTION":63,"SELECT_HAS_TENANTID":6,"SELECT_OMITS_TENANTID":56,"OMIT_STRIPS_TENANTID":0,"UNRESOLVABLE":0}
+HAZARDS (result cannot carry tenantId): 56
+  LIVE   (receiver is a withTenantRLS client today): 37
+  LATENT (bare client — reaches it when routed):     12
+  N/A    (getAdminDb — no tenant extension, ever):   7
+  of the LATENT, under src/app/api/mobile/:          0
+  findUniqueOrThrow among hazards:                   1
+MASKED BY A NESTED tenantId (617 scan scores these SAFE): 0
+UNRESOLVABLE (spread/computed — reported, never scored): 0
+
+--- LIVE (the post-check runs here) ---
+  src/app/(driver)/my-tickets/[id]/page.tsx:105  findUnique  SupportTicket  recv=prisma
+  src/app/(owner)/actions/driver-route-joins.ts:199  findUnique  DriverRouteJoin  recv=prisma
+  src/app/(owner)/actions/driver-route-joins.ts:303  findUnique  DriverRouteJoin  recv=prisma
+  src/app/(owner)/actions/invoices.ts:254  findUnique  Invoice  recv=prisma
+  src/app/(owner)/actions/invoices.ts:289  findUnique  Invoice  recv=prisma
+  src/app/(owner)/actions/loads.ts:273  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/loads.ts:370  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/loads.ts:409  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/loads.ts:437  findUnique  User  recv=prisma
+  src/app/(owner)/actions/loads.ts:514  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/loads.ts:575  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/loads.ts:621  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/loads.ts:779  findUnique  Load  recv=prisma
+  src/app/(owner)/actions/maintenance.ts:162  findUnique  Truck  recv=prisma
+  src/app/(owner)/actions/payments.ts:52  findUnique  Route  recv=prisma
+  src/app/(owner)/actions/payroll.ts:200  findUnique  PayrollRecord  recv=prisma
+  src/app/(owner)/actions/route-analytics.ts:43  findUnique  Route  recv=prisma
+  src/app/(owner)/actions/routes.ts:294  findUnique  Route  recv=prisma
+  src/app/(owner)/carrier/fleet/drivers/[id]/compensation/page.tsx:34  findUnique  User  recv=prisma
+  src/app/(owner)/invoices/new/page.tsx:61  findUnique  Load  recv=prisma
+  src/app/(owner)/invoices/[id]/page.tsx:74  findUnique  Customer  recv=prisma
+  src/app/(owner)/live-map/actions.ts:202  findUnique  Truck  recv=db
+  src/app/(owner)/support/[id]/page.tsx:107  findUnique  SupportTicket  recv=prisma
+  src/app/api/mobile/driver/loads/[id]/revert/route.ts:70  findUnique  Load  recv=tx
+  src/app/api/mobile/driver/loads/[id]/status/route.ts:103  findUnique  Load  recv=tx
+  src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts:66  findUnique  Load  recv=tx
+  src/app/api/mobile/owner/loads/[id]/route.ts:212  findUnique  Load  recv=tx
+  src/app/api/mobile/owner/routes/[id]/route.ts:166  findUnique  Route  recv=tx
+  src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts:51  findUnique  Truck  recv=tx
+  src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts:177  findUnique  Truck  recv=tx
+  src/app/api/mobile/owner/trucks/[id]/route.ts:222  findUnique  Truck  recv=tx
+  src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts:95  findUnique  Truck  recv=tx
+  src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts:225  findUnique  Truck  recv=tx
+  src/lib/email/send-fleet-message-notifications.ts:131  findUnique  User  recv=prisma
+  src/lib/notifications/digests/compliance-30day-payload.ts:79  findUnique  User  recv=tenantPrisma <- buildCompliance30DayPayload(arg 0)
+  src/lib/notifications/digests/daily-driver-payload.ts:63  findUnique  User  recv=tenantPrisma <- buildDailyDriverPayload(arg 0)
+  src/lib/notifications/digests/weekly-owner-payload.ts:68  findUnique  User  recv=tenantPrisma <- buildWeeklyOwnerPayload(arg 0)
+
+--- LATENT (becomes live on routing) ---
+  src/app/(owner)/actions/tenant-notification-settings.ts:306  findUniqueOrThrow  NotificationTemplate  recv=prisma
+  src/app/(owner)/checklists/instances/[id]/page.tsx:10  findUnique  PlaybookInstance  recv=prisma
+  src/app/(owner)/settings/account/page.tsx:29  findUnique  User  recv=prisma
+  src/app/api/auth/login/route.ts:114  findUnique  User  recv=tx
+  src/app/api/auth/login/route.ts:155  findUnique  ActivationProgress  recv=tx
+  src/lib/carrier/trips.ts:217  findUnique  User  recv=prisma
+  src/lib/carrier/trips.ts:228  findUnique  User  recv=prisma
+  src/lib/notifications/notification-deduplication.ts:31  findUnique  NotificationLog  recv=prisma
+  src/lib/onboarding/activation-tracker.ts:74  findUnique  ActivationProgress  recv=tx
+  src/lib/onboarding/activation-tracker.ts:96  findUnique  ActivationProgress  recv=tx
+  src/server/services/workflows/notifications.ts:63  findUnique  User  recv=tx
+  src/server/services/workflows/notifications.ts:252  findUnique  StepInstance  recv=tx
+
+--- NOT APPLICABLE (admin connection) ---
+  src/app/(admin)/actions/automations.ts:118  findUnique  AutomationRule  recv=adminDbRead
+  src/app/(admin)/actions/sysadmin-invoices.ts:372  findUnique  SysAdminInvoice  recv=adminDb
+  src/app/(admin)/actions/tenants.ts:630  findUnique  Subscription  recv=adminDb
+  src/app/(admin)/actions/users.ts:116  findUnique  User  recv=adminDbUserUpdate
+  src/app/(admin)/billing/[id]/page.tsx:40  findUnique  SysAdminInvoice  recv=adminDb
+  src/app/(admin)/tenants/[id]/page.tsx:62  findUnique  Subscription  recv=adminDbBilling
+  src/app/api/cron/automations/route.ts:196  findUnique  AutomationRule  recv=adminDbRule
+
+written: ../../.planning/quick/618-fix-the-withtenantrls-findunique-post-ch/evidence/01-census.json

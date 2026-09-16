@@ -1,0 +1,14 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+findUnique/findUniqueOrThrow on non-exempt models: 125
+  SINGLE_SCALAR    107
+  MULTI_SCALAR     15
+  COMPOUND_UNIQUE  3
+  NON_LITERAL      0
+
+COMPOUND_UNIQUE sites (the shape the staging probe did NOT exercise):
+  src/app/(owner)/actions/tenant-notification-settings.ts:191  keys=tenantId_triggerKey
+  src/app/(owner)/actions/tenant-notification-settings.ts:445  keys=tenantId_triggerKey_userId
+  src/lib/notifications/dispatcher.ts:111  keys=tenantId_triggerKey
+
+NON_LITERAL sites (where built elsewhere — cannot be classified statically):
+  (none)

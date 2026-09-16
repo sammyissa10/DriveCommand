@@ -1,0 +1,39 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+
+=== MODE: rls_in_force ===
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  mode : rls_in_force  (credential MASKED, never printed)
+  CONTROL — foreign row visible to the DATABASE on this connection: 0  (expect 0 — RLS is refusing it)
+  PASS  COMPOUND_UNIQUE tenantId_triggerKey -> row  privilegedCounterRead=1  fixturesLeft=0
+  PASS  findUnique         selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUnique         selectWithTenantId    cross -> null  counterRead=1
+  PASS  findUnique         selectWithoutTenantId own   -> row  keys=["id","make"] expected=["id","make"]
+  PASS  findUnique         selectWithoutTenantId cross -> null  counterRead=1
+  PASS  findUnique         noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUnique         noSelect              cross -> null  counterRead=1
+  PASS  findUniqueOrThrow  selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUniqueOrThrow  selectWithTenantId    cross -> throw:NotFound  counterRead=1
+  PASS  findUniqueOrThrow  selectWithoutTenantId own   -> row  keys=["id","make"] expected=["id","make"]
+  PASS  findUniqueOrThrow  selectWithoutTenantId cross -> throw:NotFound  counterRead=1
+  PASS  findUniqueOrThrow  noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUniqueOrThrow  noSelect              cross -> throw:NotFound  counterRead=1
+  PASS  findUnique         compoundUnique        own   -> row  keys=["createdAt","customBlockJson","customHtmlCache","customSubject","id","isActive","tenantId","triggerKey","updatedAt"] (full row)
+
+=== MODE: rls_not_in_force ===
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : app_user.wyixpgunnjmzguhggocz  mode : rls_not_in_force  (credential MASKED, never printed)
+  CONTROL — foreign row visible to the DATABASE on this connection: 1  (expect 1 — bypass is on, the DB refuses nothing)
+  PASS  COMPOUND_UNIQUE tenantId_triggerKey -> row  privilegedCounterRead=1  fixturesLeft=0
+  PASS  findUnique         selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUnique         selectWithTenantId    cross -> null  counterRead=1
+  PASS  findUnique         selectWithoutTenantId own   -> row  keys=["id","make"] expected=["id","make"]
+  PASS  findUnique         selectWithoutTenantId cross -> null  counterRead=1
+  PASS  findUnique         noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUnique         noSelect              cross -> null  counterRead=1
+  PASS  findUniqueOrThrow  selectWithTenantId    own   -> row  keys=["id","make","tenantId"] expected=["id","make","tenantId"]
+  PASS  findUniqueOrThrow  selectWithTenantId    cross -> throw:NotFound  counterRead=1
+  PASS  findUniqueOrThrow  selectWithoutTenantId own   -> row  keys=["id","make"] expected=["id","make"]
+  PASS  findUniqueOrThrow  selectWithoutTenantId cross -> throw:NotFound  counterRead=1
+  PASS  findUniqueOrThrow  noSelect              own   -> row  keys=["archivedAt","createdAt","createdById","documentMetadata","id","inMaintenance","isDispatchReady","isSample","licensePlate","make","model","odometer","tenantId","updatedAt","updatedById","vin","year"] (full row)
+  PASS  findUniqueOrThrow  noSelect              cross -> throw:NotFound  counterRead=1
+  PASS  findUnique         compoundUnique        own   -> row  keys=["createdAt","customBlockJson","customHtmlCache","customSubject","id","isActive","tenantId","triggerKey","updatedAt"] (full row)
+
+CELLS: 26   PASS: 26   FAIL: 0
