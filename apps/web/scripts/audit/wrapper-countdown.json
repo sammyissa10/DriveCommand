@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-16T05:41:44.762Z",
+  "generatedAt": "2026-09-16T17:03:53.536Z",
   "totals": {
-    "unmigratedUnits": 544,
-    "unmigratedCallSites": 548,
+    "unmigratedUnits": 561,
+    "unmigratedCallSites": 569,
     "withTenantContextCallSites": 0,
     "filesScanned": 1692,
-    "filesWithUnmigratedUnits": 261
+    "filesWithUnmigratedUnits": 269
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -33,6 +33,13 @@
         "softDeleteRecords:15",
         "restoreRecords:105",
         "permanentlyDeleteRecords:149"
+      ]
+    },
+    "actions/doc-feedback.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "submitDocFeedback:15"
       ]
     },
     "app/(driver)/actions/driver-dashboard.ts": {
@@ -1598,7 +1605,7 @@
     },
     "lib/automations/evaluator.ts": {
       "units": 1,
-      "callSites": 2,
+      "callSites": 3,
       "names": [
         "runEvaluator:57"
       ]
@@ -1978,6 +1985,20 @@
         "legacySendOwnerReplyNotification:125"
       ]
     },
+    "lib/email/send-geofence-alert.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "legacySendGeofenceAlert:50"
+      ]
+    },
+    "lib/geofencing/geofence-check.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "checkGeofenceAndAlert:33"
+      ]
+    },
     "lib/notifications/check-expiring-documents.ts": {
       "units": 1,
       "callSites": 1,
@@ -1999,6 +2020,20 @@
         "findUpcomingMaintenance:27"
       ]
     },
+    "lib/notifications/send-push.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "sendPushToOrg:121"
+      ]
+    },
+    "lib/onboarding/activation-tracker.ts": {
+      "units": 1,
+      "callSites": 2,
+      "names": [
+        "recordActivationEvent:60"
+      ]
+    },
     "lib/routes/assignable-drivers.ts": {
       "units": 1,
       "callSites": 1,
@@ -2006,15 +2041,31 @@
         "listRouteAssignableDrivers:39"
       ]
     },
+    "lib/security/audit-log.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "writeAuditLog:86"
+      ]
+    },
+    "server/api/routers/workflows/analytics.ts": {
+      "units": 3,
+      "callSites": 3,
+      "names": [
+        "(anonymous):22",
+        "(anonymous):68",
+        "(anonymous):107"
+      ]
+    },
     "server/api/routers/workflows/instance.ts": {
       "units": 5,
-      "callSites": 5,
+      "callSites": 6,
       "names": [
         "(anonymous):44",
         "(anonymous):85",
-        "(anonymous):123",
-        "(anonymous):138",
-        "(anonymous):168"
+        "(anonymous):127",
+        "(anonymous):142",
+        "(anonymous):172"
       ]
     },
     "server/api/routers/workflows/playbook.ts": {
@@ -2099,9 +2150,23 @@
     },
     "server/services/workflows/generatePlaybookInstance.ts": {
       "units": 1,
-      "callSites": 1,
+      "callSites": 2,
       "names": [
         "generatePlaybookInstance:18"
+      ]
+    },
+    "server/services/workflows/notifications.ts": {
+      "units": 8,
+      "callSites": 8,
+      "names": [
+        "getTenantName:51",
+        "getTruckLabel:82",
+        "findDispatchers:98",
+        "findAdminEmails:109",
+        "writeAuditRow:120",
+        "sendStepOverdue:231",
+        "sendInstanceBlocked:323",
+        "sendInstanceBlockedEmail:564"
       ]
     },
     "server/services/workflows/playbookStepService.ts": {
