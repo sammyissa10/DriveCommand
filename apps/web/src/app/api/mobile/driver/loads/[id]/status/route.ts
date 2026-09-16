@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse, forbiddenResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import type { LoadStatus } from '@/generated/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
@@ -86,17 +87,18 @@ export async function POST(
   const newDriverStatus = requestedDriverStatus as DriverStatus;
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617/618: tenant-scoped client — see the note in the sibling
+     * `revert/route.ts`. /api/mobile/* sends no x-tenant-id (DEC-11), so
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified
+     * auth.tenantId; userId is deliberately NOT passed (quick-610).
+     *
+     * quick-617 STOPPED this file on the findUnique below, whose top-level
+     * select omits tenantId; quick-618 moved the tenant predicate into the
+     * `where`, so the select is left byte-identical.
      */
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const result = await tenantPrisma.$transaction(async (tx) => {
       // Fetch current load
       const load = await tx.load.findUnique({
         where: { id, tenantId },
