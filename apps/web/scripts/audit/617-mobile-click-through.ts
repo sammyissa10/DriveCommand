@@ -105,6 +105,20 @@ function logSize(): number {
     return 0;
   }
 }
+/** quick-624 — see 604-click-through.ts waitForLogQuiet: quiet for 1.5 s, capped at 20 s. */
+async function waitForLogQuiet(quietMs = 1500, capMs = 20_000): Promise<void> {
+  const start = Date.now();
+  let last = logSize();
+  let stableSince = Date.now();
+  while (Date.now() - start < capMs) {
+    await new Promise((res) => setTimeout(res, 100));
+    const now = logSize();
+    if (now !== last) {
+      last = now;
+      stableSince = Date.now();
+    } else if (Date.now() - stableSince >= quietMs) return;
+  }
+}
 function statSize(p: string): number {
   return statSync(p).size;
 }
@@ -145,8 +159,9 @@ async function visit(route: string, role: string, token: string | null): Promise
   } catch (e) {
     error = (e as Error).message;
   }
-  // give the server a moment to flush its log before slicing
-  await new Promise((res) => setTimeout(res, 120));
+  // quick-624: close the window only once the server log has stopped growing. A fixed 120 ms let a late hook
+  // line fall into the NEXT request's window (quick-623 blamed /my-load for /home's raise the same way).
+  await waitForLogQuiet();
   const after = logSize();
   const slice = logSlice(before, after);
   const verdict: Entry['verdict'] =

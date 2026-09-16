@@ -284,6 +284,35 @@ function logSlice(from: number, to: number): string {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * quick-624 — CLOSE A REQUEST'S LOG WINDOW ONLY WHEN THE SERVER HAS GONE QUIET.
+ *
+ * Both call sites used to wait a FIXED 350 ms after the response. The server writes some lines later than that
+ * — `/home`'s `[q620-hook] TC001` line landed after its own `GET /home 200` line and outside the 350 ms — so
+ * the raise was counted in the NEXT request's window and quick-623's run blamed `/my-load`, a route that never
+ * raised. A detector that names the wrong route is worse than one that names none. The window now closes only
+ * after the log has not grown for `LOG_QUIET_MS`, capped at `LOG_QUIET_CAP_MS` so a chatty server cannot hang
+ * the run; the cap being hit is recorded on the entry, because then attribution is not guaranteed.
+ */
+const LOG_QUIET_MS = 1500;
+const LOG_QUIET_CAP_MS = 20_000;
+async function waitForLogQuiet(): Promise<{ quietAfterMs: number; capped: boolean }> {
+  const start = Date.now();
+  let last = logSize();
+  let stableSince = Date.now();
+  while (Date.now() - start < LOG_QUIET_CAP_MS) {
+    await sleep(100);
+    const now = logSize();
+    if (now !== last) {
+      last = now;
+      stableSince = Date.now();
+    } else if (Date.now() - stableSince >= LOG_QUIET_MS) {
+      return { quietAfterMs: Date.now() - start, capped: false };
+    }
+  }
+  return { quietAfterMs: Date.now() - start, capped: true };
+}
+
 // ---------------------------------------------------------------------------
 // Verdict / SQLSTATE recovery
 // ---------------------------------------------------------------------------
@@ -397,6 +426,8 @@ type Entry = {
   logByteRange: [number, number];
   logTc001Mentions: number;
   bodyExcerpt: string;
+  /** quick-624 (additive, optional): how long the window stayed open, and whether the quiet cap was hit. */
+  logWindow?: { quietAfterMs: number; capped: boolean };
   /**
    * quick-605 (additive, optional). Named substrings searched in the FULL
    * response body and the FULL correlated log slice — not in `bodyExcerpt`,
@@ -435,8 +466,8 @@ async function visit(
   } catch (e) {
     transportError = String((e as Error)?.message ?? e);
   }
-  // Give the server a moment to flush its log for this request.
-  await sleep(350);
+  // quick-624: close the window when the log is QUIET, not after a fixed 350 ms (see waitForLogQuiet).
+  const quiet = await waitForLogQuiet();
   const to = logSize();
   const slice = logSlice(from, to);
   const tc001 = (slice.match(/TC001/g) ?? []).length;
@@ -496,6 +527,7 @@ async function visit(
     logByteRange: [from, to],
     logTc001Mentions: tc001,
     bodyExcerpt: body.slice(0, 2048),
+    logWindow: quiet,
   };
   const markerKeys = Object.keys(markerSpecs);
   if (markerKeys.length) {
@@ -1037,7 +1069,8 @@ async function request(
   } catch (e) {
     text = `TRANSPORT_ERROR ${String((e as Error)?.message ?? e)}`;
   }
-  await sleep(350);
+  // quick-624: same fix as the GET path — close the window on a quiet log, not a fixed 350 ms.
+  await waitForLogQuiet();
   const to = logSize();
   return { status, text, from, to, slice: logSlice(from, to) };
 }
