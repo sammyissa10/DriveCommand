@@ -169,23 +169,74 @@ export function withTenantRLS(tenantId: string) {
                   : { tenantId };
                 break;
 
-              // findUnique/findUniqueOrThrow require unique-field-only where clauses,
-              // so we cannot add tenantId directly. Instead, run the query then verify
-              // the result belongs to this tenant.
-              case 'findUnique': {
-                const result = await query(args);
-                if (result && (result as any).tenantId !== tenantId) {
-                  return null; // Treat cross-tenant record as not found
-                }
-                return result;
-              }
-
+              /**
+               * findUnique / findUniqueOrThrow (quick-618).
+               *
+               * THE TENANT PREDICATE GOES IN THE `where`, exactly as `update`,
+               * `delete` and `upsert` below already put it there.
+               *
+               * This case used to read "findUnique/findUniqueOrThrow require
+               * unique-field-only where clauses, so we cannot add tenantId
+               * directly", and post-checked `result.tenantId` instead. That
+               * sentence has been false since Prisma 5 made `extendedWhereUnique`
+               * GA: `XWhereUniqueInput` carries every scalar field, and requires
+               * only that AT LEAST ONE unique identifier be present — additional
+               * non-unique filters are allowed. Two things in this repo already
+               * depended on that being true, which is how the stale comment
+               * survived: the `update` case twenty lines below spreads `tenantId`
+               * into a `WhereUniqueInput` and ships, and `(owner)/live-map/actions.ts`
+               * writes `truck.findUnique({ where: { id, tenantId }, … })` by hand.
+               *
+               * WHAT THE POST-CHECK DID WRONG. `result.tenantId !== tenantId` is
+               * `undefined !== tenantId` whenever the caller passes a top-level
+               * `select` that does not name the column — which is TRUE — so the
+               * row was discarded FOR ITS OWN TENANT. 56 call sites on this tree
+               * pass such a select; 27 of them were reaching this line. Every one
+               * is followed by `if (!x) return 404 / null / throw`, so the symptom
+               * is a permanent "not found" that looks exactly like correct
+               * isolation. `findUniqueOrThrow` was worse: it raised "Tenant
+               * isolation violation" for a legitimate row.
+               *
+               * WHY NOT "FORCE tenantId INTO THE SELECT AND STRIP IT AFTER". That
+               * also works, but it makes the extension rewrite the caller's
+               * projection and then un-rewrite the result — and it has to
+               * remember whether the caller asked for the column, or stripping
+               * deletes a field they wanted. It also needs a special case for
+               * `omit`, which Prisma forbids alongside `select`. Injecting into
+               * the `where` needs no memory, touches no projection, and leaves
+               * the caller's result shape identical by construction.
+               *
+               * WHY NOT "JUST SKIP THE POST-CHECK". On its own that removes the
+               * only application-layer guard on exactly the queries the injection
+               * was believed unable to reach. It is safe only BECAUSE the
+               * injection above now reaches them — which is what makes this the
+               * two changes together rather than either alone.
+               *
+               * INDEPENDENT OF RLS. This is a Prisma-level predicate compiled
+               * into the SQL, so it holds with the GUC unset, with `app.bypass_rls`
+               * on, and on a role carrying BYPASSRLS — i.e. on production's bare
+               * connection today, where the post-check was the ONLY layer.
+               * Strictly stronger than what it replaces: a cross-tenant row is
+               * now never returned by the database, rather than being fetched
+               * into the process and then dropped.
+               *
+               * The post-check is KEPT as a second layer, but it may only speak
+               * when it can actually see the column. `tenantId === undefined`
+               * means "not projected", never "belongs to someone else", and
+               * conflating those two was the defect.
+               */
+              case 'findUnique':
               case 'findUniqueOrThrow': {
+                a.where = { ...a.where, tenantId };
                 const result = await query(args);
-                if (result && (result as any).tenantId !== tenantId) {
-                  throw new Error(
-                    `Tenant isolation violation: record belongs to another tenant`
-                  );
+                const resultTenantId = (result as any)?.tenantId;
+                if (result && resultTenantId !== undefined && resultTenantId !== tenantId) {
+                  if (operation === 'findUniqueOrThrow') {
+                    throw new Error(
+                      `Tenant isolation violation: record belongs to another tenant`
+                    );
+                  }
+                  return null; // Treat cross-tenant record as not found
                 }
                 return result;
               }

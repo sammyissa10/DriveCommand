@@ -191,20 +191,32 @@ export function withTenantRLSBound(tenantId: string) {
                 a.where = a.where ? { AND: [{ tenantId }, a.where] } : { tenantId };
                 break;
 
-              case 'findUnique': {
-                const result = await bind(() => query(args));
-                if (result && (result as { tenantId?: string }).tenantId !== tenantId) {
-                  return null;
-                }
-                return result;
-              }
-
+              /**
+               * quick-618 — kept byte-for-byte in step with the shipped
+               * extension's `findUnique` case, for the same reason EXEMPT_MODELS
+               * is: this prototype exists so the BINDING mechanism can be
+               * measured, and a second, stale isolation rule would make the
+               * measurement about the wrong difference. Read the long note in
+               * `tenant-rls.ts` for why the predicate moved into the `where`;
+               * in short, `extendedWhereUnique` has been GA since Prisma 5 and
+               * the post-check discarded a row for its OWN tenant whenever the
+               * caller's top-level `select` omitted `tenantId`.
+               *
+               * If this prototype ever ships, it must not reintroduce the defect
+               * the shipped file just had removed.
+               */
+              case 'findUnique':
               case 'findUniqueOrThrow': {
+                a.where = { ...(a.where as object), tenantId };
                 const result = await bind(() => query(args));
-                if (result && (result as { tenantId?: string }).tenantId !== tenantId) {
-                  throw new Error(
-                    `Tenant isolation violation: record belongs to another tenant`,
-                  );
+                const resultTenantId = (result as { tenantId?: string } | null)?.tenantId;
+                if (result && resultTenantId !== undefined && resultTenantId !== tenantId) {
+                  if (operation === 'findUniqueOrThrow') {
+                    throw new Error(
+                      `Tenant isolation violation: record belongs to another tenant`,
+                    );
+                  }
+                  return null;
                 }
                 return result;
               }
