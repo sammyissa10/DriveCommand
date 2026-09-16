@@ -65,7 +65,10 @@ const targets = allFiles
 const HANDLER = /^export\s+(?:async\s+function|const)\s+(GET|POST|PATCH|PUT|DELETE)\b/;
 const TENANT_PREDICATE = /\btenantId\b|\borgId\b/g;
 
-const FIRST_COMMENT = (indent, expr) =>
+// Eight of the 38 files are written WITHOUT statement semicolons. An inserted
+// `…;` in one of them is a style regression in a diff a human has to read, so
+// the file's own convention is detected and followed.
+const FIRST_COMMENT = (indent, expr, semi) =>
   [
     `${indent}/*`,
     `${indent} * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id`,
@@ -75,12 +78,12 @@ const FIRST_COMMENT = (indent, expr) =>
     `${indent} * this routing task declines to make. Every where clause is unchanged:`,
     `${indent} * RLS is the second layer, not a replacement for the first.`,
     `${indent} */`,
-    `${indent}const tenantPrisma = await getTenantPrismaForOrg(${expr});`,
+    `${indent}const tenantPrisma = await getTenantPrismaForOrg(${expr})${semi}`,
   ];
 
-const NEXT_COMMENT = (indent, expr) => [
+const NEXT_COMMENT = (indent, expr, semi) => [
   `${indent}// quick-617: tenant-scoped client — see the first handler in this file.`,
-  `${indent}const tenantPrisma = await getTenantPrismaForOrg(${expr});`,
+  `${indent}const tenantPrisma = await getTenantPrismaForOrg(${expr})${semi}`,
 ];
 
 const results = [];
@@ -102,6 +105,8 @@ for (const rel of targets) {
     .filter((m) => m !== '$transaction');
   // The `prisma` binding is DROPPED only when the file makes no other use of it.
   const keepPrismaImport = otherPrismaUse.length > 0;
+  // The file's own statement-semicolon convention, read off its prisma import.
+  const semi = /^import \{ prisma, TX_OPTIONS \} from '@\/lib\/db\/prisma';$/m.test(text) ? ';' : '';
   const tenantExpr = /const\s*\{[^}]*\btenantId\b[^}]*\}\s*=\s*auth/.test(text)
     ? 'tenantId'
     : /\bauth\.tenantId\b/.test(text)
@@ -187,7 +192,9 @@ for (const rel of targets) {
     .sort((a, b) => b.at - a.at)
     .forEach((ins, n) => {
       const isFirst = n === insertions.length - 1; // back-to-front: the LAST applied is the first in the file
-      const block = isFirst ? FIRST_COMMENT(ins.indent, tenantExpr) : NEXT_COMMENT(ins.indent, tenantExpr);
+      const block = isFirst
+        ? FIRST_COMMENT(ins.indent, tenantExpr, semi)
+        : NEXT_COMMENT(ins.indent, tenantExpr, semi);
       lines.splice(ins.at, 0, ...block);
     });
 
@@ -225,6 +232,18 @@ for (const rel of targets) {
   }
   if (stillImportsPrisma && !keepPrismaImport) problems.push('still imports the bare prisma binding');
   if (!stillImportsPrisma && keepPrismaImport) problems.push('dropped the prisma binding a non-transaction call still needs');
+  // A botched patch to this script once wrote the literal text `undefined` into
+  // thirteen files (an interpolated argument that was never threaded through).
+  // tsc caught nothing, because `fooundefined` is a valid identifier suffix in
+  // some positions. Assert the emitted acquisition line is EXACTLY right.
+  const emitted = [...out.matchAll(/const tenantPrisma = await getTenantPrismaForOrg\(([^)]*)\)(.?)/g)];
+  for (const [, expr, tail] of emitted) {
+    if (expr !== tenantExpr) problems.push(`emitted acquisition argument is "${expr}", expected "${tenantExpr}"`);
+    if (tail !== semi && tail !== '\n' && tail !== '') {
+      problems.push(`emitted acquisition line ends with ${JSON.stringify(tail)}, expected ${JSON.stringify(semi)}`);
+    }
+  }
+  if (/undefined/.test(out) && !/undefined/.test(text)) problems.push('the transform introduced the literal text "undefined"');
 
   if (problems.length) {
     results.push({ file: rel, ok: false, problems, before, after });

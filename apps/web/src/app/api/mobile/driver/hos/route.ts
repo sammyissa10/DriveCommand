@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withMobileAuth } from '@/lib/api/with-mobile-auth'
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
+import { TX_OPTIONS } from '@/lib/db/prisma'
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context'
 import type { HOSStatus, HOSEntry, HOSData } from '@drivecommand/types'
 
 const VALID_STATUSES: HOSStatus[] = ['OFF_DUTY', 'SLEEPER_BERTH', 'DRIVING', 'ON_DUTY']
@@ -17,17 +18,16 @@ export const GET = withMobileAuth(
   async (req: NextRequest, { auth }) => {
     const { driverId, tenantId } = auth
 
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
      */
-    const data = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId)
+    const data = await tenantPrisma.$transaction(async (tx) => {
       // Today's UTC boundaries
       const now = new Date()
       const startOfDay = new Date(now)
@@ -163,16 +163,9 @@ export const POST = withMobileAuth(
     const requestedStatus = status as HOSStatus
     const notesStr = typeof notes === 'string' ? notes : undefined
 
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
-     */
-    const newEntry = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
-
+    // quick-617: tenant-scoped client — see the first handler in this file.
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId)
+    const newEntry = await tenantPrisma.$transaction(async (tx) => {
       // Find the current open entry
       const openEntry = await tx.driverHOSEntry.findFirst({
         where: { driverId, tenantId, endTime: null },

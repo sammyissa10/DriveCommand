@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withMobileAuth } from '@/lib/api/with-mobile-auth'
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
+import { TX_OPTIONS } from '@/lib/db/prisma'
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context'
 
 /**
  * GET /api/mobile/driver/dashboard
@@ -18,17 +19,16 @@ export const GET = withMobileAuth(
   async (req: NextRequest, { auth }) => {
     const { driverId, tenantId } = auth
 
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
+    /*
+     * quick-617: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw.
+     * userId is deliberately NOT passed — it would make the audit-columns
+     * extension start writing createdById/updatedById, a behaviour change
+     * this routing task declines to make. Every where clause is unchanged:
+     * RLS is the second layer, not a replacement for the first.
      */
-    const data = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId)
+    const data = await tenantPrisma.$transaction(async (tx) => {
       // Active load: first load in any in-progress status for this driver
       const activeLoad = await tx.load.findFirst({
         where: {
