@@ -688,10 +688,44 @@ function main() {
       detail: `${files.length} >= ${FLOOR_FILES}`,
     });
   } else {
+    /**
+     * AFTER mode asserts SET EQUALITY against the STOPPED-AND-REPORTED files,
+     * not `=== 0`.
+     *
+     * `=== 0` would be the right assertion for a task that routed all 47. This
+     * one routed 39 and stopped 8, for a measured reason (the `findUnique` +
+     * top-level-`select` hazard, 01-inventory.md §7). Relaxing the check to
+     * `<= 16` to make it green would be exactly the weakening this repo forbids;
+     * naming WHICH sixteen is STRONGER than `=== 0` over the routed set, because
+     * it fails in BOTH directions:
+     *
+     *   - a routed file that kept its bypass appears in `unexpected`;
+     *   - a stopped file that was routed anyway appears in `missing` — which
+     *     would mean somebody shipped a route that returns null for its own
+     *     tenant, the one outcome the stop exists to prevent.
+     *
+     * The stopped set is read from the PINNED BEFORE artefact, so it cannot be
+     * edited into agreement with whatever the tree happens to contain.
+     */
+    const pinned = JSON.parse(
+      readFileSync(resolve(EVIDENCE_DIR, '01-inventory.json'), 'utf8'),
+    ) as { findUniqueSelectHazards: { file: string }[] };
+    const stopped = [...new Set(pinned.findUniqueSelectHazards.map((h) => h.file))].sort();
+    const remaining = [...new Set(statements.map((s) => s.file))].sort();
+    const unexpected = remaining.filter((f) => !stopped.includes(f));
+    const missing = stopped.filter((f) => !remaining.includes(f));
     checks.push({
-      name: 'AFTER: zero executable bypass statements under api/mobile/**',
-      pass: statements.length === 0,
-      detail: `${statements.length} === 0${statements.length ? ` — still at ${statements.map((s) => `${s.file}:${s.line}`).join(', ')}` : ''}`,
+      name: 'AFTER: the ONLY remaining bypass statements are in the 8 stopped-and-reported files',
+      pass: unexpected.length === 0 && missing.length === 0,
+      detail:
+        `${statements.length} statements in ${remaining.length} files; ` +
+        `unexpected (routed file that kept a bypass): ${JSON.stringify(unexpected)}; ` +
+        `missing (stopped file that was routed anyway): ${JSON.stringify(missing)}`,
+    });
+    checks.push({
+      name: 'AFTER: the routed population is gone — 83 before, 16 stopped, 67 routed',
+      pass: statements.length === 16,
+      detail: `${statements.length} === 16 (83 - 67)`,
     });
   }
 

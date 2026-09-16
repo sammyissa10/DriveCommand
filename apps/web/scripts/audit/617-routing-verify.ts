@@ -670,7 +670,117 @@ const CELLS: Record<string, () => Promise<CellResult>> = {
   },
 };
 
+/**
+ * THE PER-TABLE CELL, `--cell table:<Model>`.
+ *
+ * Three questions per model, in ONE cold process, IN THIS ORDER, because the
+ * first is the only one that must run before any tenant context exists:
+ *
+ *   A  UNSCOPED — the bare client, no tenant context, as the FIRST
+ *      tenant-touching statement of the process. MUST raise TC001. This is the
+ *      per-table arming proof AND the proof that a policy is consulted at all,
+ *      and it works on an EMPTY table: the policy expression is evaluated at
+ *      scan setup, not per row (quick-610). With bypass_rls_policy DROPPED, the
+ *      only policy left standing is tenant_isolation_policy.
+ *   B  SCOPED — a tenant client. MUST NOT raise, and returns a count.
+ *   C  CROSS-TENANT — the same client counting the OTHER tenant's rows. MUST be
+ *      0, and is reported UNPROVEN unless the privileged counter-read shows the
+ *      foreign rows EXIST and the own count is > 0. An empty foreign set makes a
+ *      0 worth nothing; `own > 0` is what makes it evidence.
+ */
+async function tableCell(modelPascal: string): Promise<CellResult> {
+  const camel = modelPascal.charAt(0).toLowerCase() + modelPascal.slice(1);
+  const detail: Record<string, unknown> = { model: modelPascal };
+
+  // A — must be FIRST. Bare client, no tenant context.
+  process.env.DATABASE_URL = APP_USER_URL;
+  process.env.TENANT_CONTEXT_TRIPWIRE = 'on';
+  const { prisma } = await import('../../src/lib/db/prisma');
+  try {
+    const n = await (prisma as any)[camel].count();
+    detail.unscoped = { raised: false, count: n };
+  } catch (e) {
+    detail.unscoped = { raised: true, sqlstate: sqlstateOf(e) };
+  }
+  const unscopedOk = (detail.unscoped as any).raised && (detail.unscoped as any).sqlstate === 'TC001';
+
+  // B — scoped.
+  let own: number | null = null;
+  let scopedThrew: string | null = null;
+  try {
+    const p = await realTenantClient(TENANT_A);
+    own = await (p as any).$transaction(async (tx: any) => tx[camel].count());
+    detail.scopedOwn = own;
+  } catch (e) {
+    scopedThrew = sqlstateOf(e);
+    detail.scopedOwn = { threw: true, sqlstate: scopedThrew, message: (e as Error).message?.slice(0, 200) };
+  }
+
+  // C — cross-tenant, with the privileged counter-read that makes a 0 mean something.
+  let foreign: number | null = null;
+  let counter = 0;
+  const tenantCol = modelPascal === 'Tenant' ? null : 'tenantId';
+  if (tenantCol) {
+    try {
+      counter = await privileged(
+        async (c) =>
+          Number(
+            (
+              await c.query(
+                `SELECT count(*)::int AS n FROM "${modelPascal}" WHERE "${tenantCol}" = $1`,
+                [TENANT_B],
+              )
+            ).rows[0].n,
+          ),
+      );
+    } catch {
+      counter = -1; // table name is not the model name, or the column differs
+    }
+    try {
+      const p2 = await realTenantClient(TENANT_A);
+      foreign = await (p2 as any).$transaction(async (tx: any) =>
+        tx[camel].count({ where: { [tenantCol]: TENANT_B } }),
+      );
+    } catch (e) {
+      foreign = -1;
+      detail.crossTenantThrew = sqlstateOf(e);
+    }
+  }
+  const crossProven = tenantCol !== null && foreign === 0 && counter > 0 && (own ?? 0) > 0;
+  detail.crossTenant = {
+    foreignSeenByTenantA: foreign,
+    privilegedCounterRead: counter,
+    verdict: crossProven
+      ? 'PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)'
+      : tenantCol === null
+        ? 'N/A — Tenant has no tenantId column and is an EXEMPT_MODEL'
+        : `UNPROVEN BY NAME — own=${own} foreign=${foreign} foreignRowsOnStaging=${counter}`,
+  };
+
+  return {
+    cell: `table:${modelPascal}`,
+    // The cell PASSES on the two questions every table can answer regardless of
+    // how sparse staging is. The cross-tenant half is reported by name and never
+    // silently counted as a pass.
+    ok: unscopedOk && scopedThrew === null,
+    detail,
+  };
+}
+
 async function runCell(name: string) {
+  if (name.startsWith('table:')) {
+    try {
+      const r = await tableCell(name.slice('table:'.length));
+      process.stdout.write('\n__CELL__' + JSON.stringify(r) + '\n');
+    } catch (e) {
+      process.stdout.write(
+        '\n__CELL__' +
+          JSON.stringify({ cell: name, ok: false, detail: { threw: true, sqlstate: sqlstateOf(e), message: (e as Error).message?.slice(0, 300) } }) +
+          '\n',
+      );
+    }
+    process.exit(0);
+  }
   const fn = CELLS[name];
   if (!fn) refuse(`unknown cell "${name}". Known: ${Object.keys(CELLS).join(', ')}`);
   try {
@@ -729,14 +839,26 @@ async function gucProbe() {
 // --run — capture, drop, probe, restore in a finally
 // ---------------------------------------------------------------------------
 
-/** Tables reached by the routed statements. Scope of the DROP. */
+/**
+ * Models reached by the ROUTED statements — the scope of the DROP.
+ *
+ * The 8 STOPPED-AND-REPORTED files are EXCLUDED: they still carry their bypass
+ * flag, so dropping the policy under them would be probing code this task
+ * deliberately did not change, and a failure there would be attributed to the
+ * routing rather than to the stop.
+ */
 function affectedTables(singleFile: boolean): string[] {
   if (singleFile) return ['DriverIncident'];
-  const inv = JSON.parse(
-    readFileSync(resolve(EVIDENCE_DIR, '01-inventory.json'), 'utf8'),
-  ) as { statements: { operations: { modelPascal: string }[] }[] };
+  const inv = JSON.parse(readFileSync(resolve(EVIDENCE_DIR, '01-inventory.json'), 'utf8')) as {
+    statements: { file: string; operations: { modelPascal: string }[] }[];
+    findUniqueSelectHazards: { file: string }[];
+  };
+  const stopped = new Set(inv.findUniqueSelectHazards.map((h) => h.file));
   const models = new Set<string>();
-  for (const s of inv.statements) for (const o of s.operations) models.add(o.modelPascal);
+  for (const s of inv.statements) {
+    if (stopped.has(s.file)) continue;
+    for (const o of s.operations) models.add(o.modelPascal);
+  }
   // Prisma model name === table name for every model this surface touches
   // (checked against pg_tables; none of them carry an @@map).
   return [...models].sort();
@@ -768,7 +890,16 @@ async function run(opts: { singleFile: boolean; throwAfterDrop: boolean }) {
         '--throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.',
       );
     }
-    for (const c of ['guc-visible', 'unscoped-raises', 'own-read', 'foreign-read', 'own-write-audit-null', 'finduniq-select-hazard']) {
+    const named = [
+      'guc-visible',
+      'unscoped-raises',
+      'own-read',
+      'foreign-read',
+      'own-write-audit-null',
+      'finduniq-select-hazard',
+    ];
+    const perTable = opts.singleFile ? [] : wanted.map((t) => `table:${t}`);
+    for (const c of [...named, ...perTable]) {
       const r = spawnCell(c);
       results.push(r);
       console.log(`  ${r.ok ? 'PASS' : 'FAIL'}  ${r.cell}  ${JSON.stringify(r.detail)}`);

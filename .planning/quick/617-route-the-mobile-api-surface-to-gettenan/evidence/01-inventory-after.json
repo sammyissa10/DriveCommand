@@ -1,0 +1,986 @@
+{
+  "generated": "2026-09-16T04:36:25.732Z",
+  "mode": "AFTER",
+  "method": "ts.createSourceFile per file, no Program, no type checker. INNERMOST CallExpression/TaggedTemplateExpression whose own literal children contain \"app.bypass_rls\". CRLF normalised before offsets. Comments are not AST nodes.",
+  "scope": "apps/web/src/app/api/mobile/** (tests excluded)",
+  "totals": {
+    "files": 8,
+    "statements": 16,
+    "writes": 10,
+    "writesWhereUserIdWouldChangeBehaviour": 10,
+    "pureReadStatements": 7
+  },
+  "subSurfaces": {
+    "driver": {
+      "files": 2,
+      "statements": 2
+    },
+    "owner": {
+      "files": 6,
+      "statements": 14
+    }
+  },
+  "antiVacuity": [
+    {
+      "name": "AFTER: the ONLY remaining bypass statements are in the 8 stopped-and-reported files",
+      "pass": true,
+      "detail": "16 statements in 8 files; unexpected (routed file that kept a bypass): []; missing (stopped file that was routed anyway): []"
+    },
+    {
+      "name": "AFTER: the routed population is gone — 83 before, 16 stopped, 67 routed",
+      "pass": true,
+      "detail": "16 === 16 (83 - 67)"
+    },
+    {
+      "name": "POSITIVE WITNESS (AFTER) src/app/api/mobile/driver/hos/route.ts was READ and now acquires a tenant client",
+      "pass": true,
+      "detail": "bytes=7645 getTenantPrismaForOrg=true"
+    },
+    {
+      "name": "COUNTER-ASSERTION src/app/api/mobile/carrier/driver/dispatches/route.ts WAS READ",
+      "pass": true,
+      "detail": "bytes=4396 parsed=true getTenantPrismaForOrg=true"
+    },
+    {
+      "name": "COUNTER-ASSERTION src/app/api/mobile/carrier/driver/dispatches/route.ts YIELDS ZERO",
+      "pass": true,
+      "detail": "0 executable statements === 0"
+    },
+    {
+      "name": "SCHEMA CONTROL positive — DriverIncident carries createdById/updatedById",
+      "pass": true,
+      "detail": "{\"createField\":\"createdById\",\"updateField\":\"updatedById\"}"
+    },
+    {
+      "name": "SCHEMA CONTROL negative — CarrierDocument carries neither convention",
+      "pass": true,
+      "detail": "{\"createField\":null,\"updateField\":null}"
+    },
+    {
+      "name": "AUDIT-SET CONTROL — both sets lifted non-empty with a known member",
+      "pass": true,
+      "detail": "EXEMPT_AUDIT=19 CREATE_ONLY=3 EXEMPT_RLS=27"
+    }
+  ],
+  "filesScanned": 82,
+  "statements": [
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/revert/route.ts",
+      "line": 59,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "driver",
+      "transactionReceiver": "prisma",
+      "transactionLine": 58,
+      "operations": [
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 62,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "update",
+          "isWrite": true,
+          "line": 92,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/status/route.ts",
+      "line": 98,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "POST",
+      "subSurface": "driver",
+      "transactionReceiver": "prisma",
+      "transactionLine": 97,
+      "operations": [
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 101,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "update",
+          "isWrite": true,
+          "line": 123,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts",
+      "line": 55,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 54,
+      "operations": [
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 58,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 69,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": true
+        },
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "update",
+          "isWrite": true,
+          "line": 80,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "line": 53,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "GET",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 52,
+      "operations": [
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 55,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "line": 177,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 176,
+      "operations": [
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 178,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "line": 206,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 205,
+      "operations": [
+        {
+          "model": "invoice",
+          "modelPascal": "Invoice",
+          "operation": "count",
+          "isWrite": false,
+          "line": 207,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "line": 243,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 242,
+      "operations": [
+        {
+          "model": "user",
+          "modelPascal": "User",
+          "operation": "findFirst",
+          "isWrite": false,
+          "line": 247,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "load",
+          "modelPascal": "Load",
+          "operation": "update",
+          "isWrite": true,
+          "line": 275,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+      "line": 44,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "GET",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 43,
+      "operations": [
+        {
+          "model": "route",
+          "modelPascal": "Route",
+          "operation": "findFirst",
+          "isWrite": false,
+          "line": 46,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+      "line": 140,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 139,
+      "operations": [
+        {
+          "model": "route",
+          "modelPascal": "Route",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 143,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "user",
+          "modelPascal": "User",
+          "operation": "findFirst",
+          "isWrite": false,
+          "line": 153,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findFirst",
+          "isWrite": false,
+          "line": 164,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "route",
+          "modelPascal": "Route",
+          "operation": "update",
+          "isWrite": true,
+          "line": 181,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "line": 39,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "GET",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 38,
+      "operations": [
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 42,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "maintenanceEvent",
+          "modelPascal": "MaintenanceEvent",
+          "operation": "findMany",
+          "isWrite": false,
+          "line": 48,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "line": 157,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "POST",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 156,
+      "operations": [
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 160,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "maintenanceEvent",
+          "modelPascal": "MaintenanceEvent",
+          "operation": "create",
+          "isWrite": true,
+          "line": 166,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": true,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+      "line": 40,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "GET",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 39,
+      "operations": [
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 41,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": true
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+      "line": 202,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 201,
+      "operations": [
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 205,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "update",
+          "isWrite": true,
+          "line": 212,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "line": 84,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "GET",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 83,
+      "operations": [
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 86,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "scheduledService",
+          "modelPascal": "ScheduledService",
+          "operation": "findMany",
+          "isWrite": false,
+          "line": 92,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "line": 206,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "POST",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 205,
+      "operations": [
+        {
+          "model": "truck",
+          "modelPascal": "Truck",
+          "operation": "findUnique",
+          "isWrite": false,
+          "line": 208,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "scheduledService",
+          "modelPascal": "ScheduledService",
+          "operation": "create",
+          "isWrite": true,
+          "line": 228,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": true,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": true,
+          "selectNamesTenantId": false
+        }
+      ]
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "line": 319,
+      "shape": "tagged-template",
+      "callee": "tx.$executeRaw",
+      "enclosingFunction": "PATCH",
+      "subSurface": "owner",
+      "transactionReceiver": "prisma",
+      "transactionLine": 318,
+      "operations": [
+        {
+          "model": "scheduledService",
+          "modelPascal": "ScheduledService",
+          "operation": "findFirst",
+          "isWrite": false,
+          "line": 322,
+          "whereHasTenantPredicate": true,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "scheduledService",
+          "modelPascal": "ScheduledService",
+          "operation": "update",
+          "isWrite": true,
+          "line": 328,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": false,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        },
+        {
+          "model": "maintenanceEvent",
+          "modelPascal": "MaintenanceEvent",
+          "operation": "create",
+          "isWrite": true,
+          "line": 334,
+          "whereHasTenantPredicate": false,
+          "dataSuppliesCreateField": false,
+          "dataSuppliesUpdateField": false,
+          "dataHasTenantScalar": true,
+          "dataHasTenantRelationConnect": false,
+          "hasSelect": false,
+          "selectNamesTenantId": false
+        }
+      ]
+    }
+  ],
+  "writeVerdicts": [
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/revert/route.ts",
+      "statementLine": 59,
+      "opLine": 92,
+      "model": "Load",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on Load"
+    },
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/status/route.ts",
+      "statementLine": 98,
+      "opLine": 123,
+      "model": "Load",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on Load"
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts",
+      "statementLine": 55,
+      "opLine": 80,
+      "model": "Load",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on Load"
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "statementLine": 243,
+      "opLine": 275,
+      "model": "Load",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on Load"
+    },
+    {
+      "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+      "statementLine": 140,
+      "opLine": 181,
+      "model": "Route",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on Route"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "statementLine": 157,
+      "opLine": 166,
+      "model": "MaintenanceEvent",
+      "operation": "create",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate createdById + updatedById on MaintenanceEvent"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+      "statementLine": 202,
+      "opLine": 212,
+      "model": "Truck",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on Truck"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "statementLine": 206,
+      "opLine": 228,
+      "model": "ScheduledService",
+      "operation": "create",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate createdById + updatedById on ScheduledService"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "statementLine": 319,
+      "opLine": 328,
+      "model": "ScheduledService",
+      "operation": "update",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate updatedById on ScheduledService"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "statementLine": 319,
+      "opLine": 334,
+      "model": "MaintenanceEvent",
+      "operation": "create",
+      "createField": "createdById",
+      "updateField": "updatedById",
+      "exemptAudit": false,
+      "createOnlyAudit": false,
+      "exemptRls": false,
+      "dataSuppliesCreateField": false,
+      "dataSuppliesUpdateField": false,
+      "userIdWouldChangeBehaviour": true,
+      "reason": "passing userId would newly populate createdById + updatedById on MaintenanceEvent"
+    }
+  ],
+  "rlsInjectionNarrows": [
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/revert/route.ts",
+      "opLine": 92,
+      "model": "Load",
+      "operation": "update",
+      "injectionClass": "MERGE-WHERE",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/status/route.ts",
+      "opLine": 123,
+      "model": "Load",
+      "operation": "update",
+      "injectionClass": "MERGE-WHERE",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts",
+      "opLine": 69,
+      "model": "Truck",
+      "operation": "findUnique",
+      "injectionClass": "POST-HOC-CHECK (no where change)",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "opLine": 207,
+      "model": "Invoice",
+      "operation": "count",
+      "injectionClass": "AND-INJECT-WHERE",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "opLine": 275,
+      "model": "Load",
+      "operation": "update",
+      "injectionClass": "MERGE-WHERE",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+      "opLine": 181,
+      "model": "Route",
+      "operation": "update",
+      "injectionClass": "MERGE-WHERE",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+      "opLine": 212,
+      "model": "Truck",
+      "operation": "update",
+      "injectionClass": "MERGE-WHERE",
+      "successPathChanges": false
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "opLine": 328,
+      "model": "ScheduledService",
+      "operation": "update",
+      "injectionClass": "MERGE-WHERE",
+      "successPathChanges": false
+    }
+  ],
+  "findUniqueSelectHazards": [
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/revert/route.ts",
+      "opLine": 62,
+      "model": "Load",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/driver/loads/[id]/status/route.ts",
+      "opLine": 101,
+      "model": "Load",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/assign-truck/route.ts",
+      "opLine": 58,
+      "model": "Load",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/loads/[id]/route.ts",
+      "opLine": 178,
+      "model": "Load",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/routes/[id]/route.ts",
+      "opLine": 143,
+      "model": "Route",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "opLine": 42,
+      "model": "Truck",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/maintenance/route.ts",
+      "opLine": 160,
+      "model": "Truck",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/route.ts",
+      "opLine": 205,
+      "model": "Truck",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "opLine": 86,
+      "model": "Truck",
+      "operation": "findUnique"
+    },
+    {
+      "file": "src/app/api/mobile/owner/trucks/[id]/scheduled-service/route.ts",
+      "opLine": 208,
+      "model": "Truck",
+      "operation": "findUnique"
+    }
+  ],
+  "relationFormTenantWrites": [],
+  "schemaRegistrySize": 96
+}

@@ -1,17 +1,399 @@
 {
-  "generated": "2026-09-16T04:25:44.544Z",
+  "generated": "2026-09-16T04:39:31.690Z",
   "database": "wyixpgunnjmzguhggocz (staging)",
   "role": "app_user",
   "tripwire": "on",
-  "mode": "single-file",
+  "mode": "surface",
   "droppedPolicyTables": [
-    "DriverIncident"
+    "Customer",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "FleetMessage",
+    "FuelRecord",
+    "Invoice",
+    "Load",
+    "PayrollRecord",
+    "Route",
+    "RouteStop",
+    "ScheduledService",
+    "StepInstance",
+    "SupportTicket",
+    "Tenant",
+    "Truck",
+    "User"
   ],
   "tablesWithoutBypassPolicy": [],
-  "threw": "--throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.",
-  "results": [],
+  "threw": null,
+  "results": [
+    {
+      "cell": "guc-visible",
+      "ok": true,
+      "detail": {
+        "readBack": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+        "expected": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+        "role": "app_user"
+      }
+    },
+    {
+      "cell": "unscoped-raises",
+      "ok": true,
+      "detail": {
+        "raised": true,
+        "sqlstate": "TC001"
+      }
+    },
+    {
+      "cell": "own-read",
+      "ok": true,
+      "detail": {
+        "own": 1
+      }
+    },
+    {
+      "cell": "foreign-read",
+      "ok": true,
+      "detail": {
+        "foreignSeenByTenantA": 0,
+        "privilegedCounterRead": 1
+      }
+    },
+    {
+      "cell": "own-write-audit-null",
+      "ok": true,
+      "detail": {
+        "id": "9d80db33-4e65-4b40-a993-c55e333bb45e",
+        "createdById": null,
+        "updatedById": null,
+        "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+      }
+    },
+    {
+      "cell": "finduniq-select-hazard",
+      "ok": true,
+      "detail": {
+        "selectWithoutTenantId": null,
+        "selectWithTenantId": {
+          "id": "617a0000-0000-4000-8000-00000000000a",
+          "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+        },
+        "noSelect": {
+          "id": "617a0000-0000-4000-8000-00000000000a"
+        },
+        "privilegedCounterRead": 1,
+        "hazardConfirmed": true
+      }
+    },
+    {
+      "cell": "table:Customer",
+      "ok": true,
+      "detail": {
+        "model": "Customer",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Document",
+      "ok": true,
+      "detail": {
+        "model": "Document",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"
+        }
+      }
+    },
+    {
+      "cell": "table:DriverHOSEntry",
+      "ok": true,
+      "detail": {
+        "model": "DriverHOSEntry",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:DriverIncident",
+      "ok": true,
+      "detail": {
+        "model": "DriverIncident",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 2,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"
+        }
+      }
+    },
+    {
+      "cell": "table:DriverInvitation",
+      "ok": true,
+      "detail": {
+        "model": "DriverInvitation",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:FleetMessage",
+      "ok": true,
+      "detail": {
+        "model": "FleetMessage",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:FuelRecord",
+      "ok": true,
+      "detail": {
+        "model": "FuelRecord",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Invoice",
+      "ok": true,
+      "detail": {
+        "model": "Invoice",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Load",
+      "ok": true,
+      "detail": {
+        "model": "Load",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:PayrollRecord",
+      "ok": true,
+      "detail": {
+        "model": "PayrollRecord",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Route",
+      "ok": true,
+      "detail": {
+        "model": "Route",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:RouteStop",
+      "ok": true,
+      "detail": {
+        "model": "RouteStop",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:ScheduledService",
+      "ok": true,
+      "detail": {
+        "model": "ScheduledService",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:StepInstance",
+      "ok": true,
+      "detail": {
+        "model": "StepInstance",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:SupportTicket",
+      "ok": true,
+      "detail": {
+        "model": "SupportTicket",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Tenant",
+      "ok": true,
+      "detail": {
+        "model": "Tenant",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": null,
+          "privilegedCounterRead": 0,
+          "verdict": "N/A — Tenant has no tenantId column and is an EXEMPT_MODEL"
+        }
+      }
+    },
+    {
+      "cell": "table:Truck",
+      "ok": true,
+      "detail": {
+        "model": "Truck",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"
+        }
+      }
+    },
+    {
+      "cell": "table:User",
+      "ok": true,
+      "detail": {
+        "model": "User",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 6,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 4,
+          "verdict": "PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"
+        }
+      }
+    }
+  ],
   "restore": {
-    "restoredCount": 1,
+    "restoredCount": 18,
     "liveCount": 86,
     "onlyInBefore": [],
     "onlyInAfter": [],

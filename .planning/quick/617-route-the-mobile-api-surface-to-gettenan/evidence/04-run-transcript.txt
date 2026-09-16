@@ -1,0 +1,61 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\617-route-the-mobile-api-surface-to-gettenan\evidence\04-policy-capture.json
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : FIXTURES ensure (privileged)  (credential MASKED, never printed)
+fixtures present: 2 (expect 2)
+tables reached by routed statements : 18
+  carrying bypass_rls_policy (DROP) : 18 — ["Customer","Document","DriverHOSEntry","DriverIncident","DriverInvitation","FleetMessage","FuelRecord","Invoice","Load","PayrollRecord","Route","RouteStop","ScheduledService","StepInstance","SupportTicket","Tenant","Truck","User"]
+  NOT carrying one (nothing to drop): 0 — []
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."Customer"
+DROPPED bypass_rls_policy ON public."Document"
+DROPPED bypass_rls_policy ON public."DriverHOSEntry"
+DROPPED bypass_rls_policy ON public."DriverIncident"
+DROPPED bypass_rls_policy ON public."DriverInvitation"
+DROPPED bypass_rls_policy ON public."FleetMessage"
+DROPPED bypass_rls_policy ON public."FuelRecord"
+DROPPED bypass_rls_policy ON public."Invoice"
+DROPPED bypass_rls_policy ON public."Load"
+DROPPED bypass_rls_policy ON public."PayrollRecord"
+DROPPED bypass_rls_policy ON public."Route"
+DROPPED bypass_rls_policy ON public."RouteStop"
+DROPPED bypass_rls_policy ON public."ScheduledService"
+DROPPED bypass_rls_policy ON public."StepInstance"
+DROPPED bypass_rls_policy ON public."SupportTicket"
+DROPPED bypass_rls_policy ON public."Tenant"
+DROPPED bypass_rls_policy ON public."Truck"
+DROPPED bypass_rls_policy ON public."User"
+bypass_rls_policy now: 68 (was 86)
+  PASS  guc-visible  {"readBack":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","expected":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8","role":"app_user"}
+  PASS  unscoped-raises  {"raised":true,"sqlstate":"TC001"}
+  PASS  own-read  {"own":1}
+  PASS  foreign-read  {"foreignSeenByTenantA":0,"privilegedCounterRead":1}
+  PASS  own-write-audit-null  {"id":"9d80db33-4e65-4b40-a993-c55e333bb45e","createdById":null,"updatedById":null,"tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8"}
+  PASS  finduniq-select-hazard  {"selectWithoutTenantId":null,"selectWithTenantId":{"id":"617a0000-0000-4000-8000-00000000000a","tenantId":"b5623cdd-dc19-4900-b75d-0ecfcaf191b8"},"noSelect":{"id":"617a0000-0000-4000-8000-00000000000a"},"privilegedCounterRead":1,"hazardConfirmed":true}
+  PASS  table:Customer  {"model":"Customer","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Document  {"model":"Document","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"}}
+  PASS  table:DriverHOSEntry  {"model":"DriverHOSEntry","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:DriverIncident  {"model":"DriverIncident","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":2,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"}}
+  PASS  table:DriverInvitation  {"model":"DriverInvitation","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:FleetMessage  {"model":"FleetMessage","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:FuelRecord  {"model":"FuelRecord","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Invoice  {"model":"Invoice","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Load  {"model":"Load","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:PayrollRecord  {"model":"PayrollRecord","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Route  {"model":"Route","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:RouteStop  {"model":"RouteStop","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:ScheduledService  {"model":"ScheduledService","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:StepInstance  {"model":"StepInstance","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:SupportTicket  {"model":"SupportTicket","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Tenant  {"model":"Tenant","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":null,"privilegedCounterRead":0,"verdict":"N/A — Tenant has no tenantId column and is an EXEMPT_MODEL"}}
+  PASS  table:Truck  {"model":"Truck","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"}}
+  PASS  table:User  {"model":"User","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":6,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":4,"verdict":"PROVEN (foreign 0 paired with own > 0 and a non-empty foreign set)"}}
+RESTORE: re-created 18; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : FIXTURES teardown (privileged)  (credential MASKED, never printed)
+fixtures left: 0 (must be 0)
