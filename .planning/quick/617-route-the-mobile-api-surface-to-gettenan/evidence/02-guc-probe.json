@@ -1,0 +1,70 @@
+{
+  "generated": "2026-09-16T04:22:29.481Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "results": [
+    {
+      "cell": "guc-visible",
+      "ok": true,
+      "detail": {
+        "readBack": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+        "expected": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+        "role": "app_user"
+      }
+    },
+    {
+      "cell": "unscoped-raises",
+      "ok": true,
+      "detail": {
+        "raised": true,
+        "sqlstate": "TC001"
+      }
+    },
+    {
+      "cell": "own-read",
+      "ok": true,
+      "detail": {
+        "own": 1
+      }
+    },
+    {
+      "cell": "foreign-read",
+      "ok": true,
+      "detail": {
+        "foreignSeenByTenantA": 0,
+        "privilegedCounterRead": 1
+      }
+    },
+    {
+      "cell": "finduniq-select-hazard",
+      "ok": true,
+      "detail": {
+        "selectWithoutTenantId": null,
+        "selectWithTenantId": {
+          "id": "617a0000-0000-4000-8000-00000000000a",
+          "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+        },
+        "noSelect": {
+          "id": "617a0000-0000-4000-8000-00000000000a"
+        },
+        "privilegedCounterRead": 1,
+        "hazardConfirmed": true
+      }
+    },
+    {
+      "cell": "finduniq-select-hazard-truck",
+      "ok": true,
+      "detail": {
+        "truckId": "610a0000-0000-4610-8000-000000000001",
+        "selectWithoutTenantId": null,
+        "selectWithTenantId": {
+          "id": "610a0000-0000-4610-8000-000000000001",
+          "tenantId": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+        },
+        "hazardConfirmed": true,
+        "note": "pre-existing row, not a fixture"
+      }
+    }
+  ]
+}
