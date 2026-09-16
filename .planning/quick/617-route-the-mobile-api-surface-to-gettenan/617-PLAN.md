@@ -250,12 +250,11 @@ across several exported handlers:
 `owner/drivers/invite/route.ts` additionally touches Supabase Auth user creation — see the
 `project_supabase_auth_email_global_unique` memory — and is the most likely genuine stop-and-report.
 
-### H. A correction to the brief the executor must resolve, not paper over
+### H. TWO recorded hashes of the same list, under two algorithms — reconcile, do not assume
 
 The orchestrator's brief states the staging sorted-table-list hash as
-`29498ef6e52f51dcc02461a1abbb84b0` — **32 hex characters, i.e. an MD5.** Planning grepped the whole
-`.planning` tree for that string and found **no matches**. quick-616's own evidence
-(`evidence/05-bypass-policy-count.txt`) records a **sha256**:
+`29498ef6e52f51dcc02461a1abbb84b0` — 32 hex characters, i.e. **MD5 length**. quick-616's own harness
+records a **sha256** in `evidence/05-bypass-policy-count.txt`:
 
 ```
 sha256(before) : 0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd
@@ -265,10 +264,34 @@ VERDICT: PASS — 86 before, 86 after, identical sorted list
 
 and `616-routing-verify.ts:339` computes `sortedTableListSha256` with `createHash('sha256')`.
 
-**Task 4 must re-derive the hash from staging AND from production itself and record both, and must
-state plainly which of the two figures the brief's value reconciles with, if either.** Neither
-remembered value is authoritative. Do not adopt the brief's hash and do not assume quick-616's
-carries over — re-measure, then compare to both.
+**Both are real.** The brief's value is recorded at `.planning/STATE.md:966`, from the orchestrator's
+own independent re-verification of quick-616 against production as the untouched reference — a
+different algorithm over what is presumably the same list. So there is no contradiction to resolve,
+but there IS a trap: **`617-routing-verify.ts`, inherited from `616-routing-verify.ts`, computes
+sha256 and will never print the brief's figure.** An executor comparing its output against the brief
+will see a mismatch that means nothing.
+
+**Task 4 therefore: re-derive the sorted table list from staging AND from production, hash it under
+BOTH algorithms, and record all four values.** State whether staging matches production — that is the
+claim that matters — and state which recorded figure each algorithm reproduces. Do not adopt a
+remembered hash as ground truth, and do not read an algorithm mismatch as drift.
+
+### H-bis. A method warning, earned during planning, that binds Tasks 1, 3 and 6
+
+Planning initially reported that `29498ef6` **appeared nowhere in the repo**, on the strength of a
+content search over `.planning/` that returned "No matches found". That was wrong. A repo-wide
+`grep -rn` found it immediately, at `.planning/STATE.md:966` — **a single line 7,362 characters
+long**, which the first instrument silently declined to match. The plan above has been corrected in
+place; this note records why.
+
+The lesson is this repo's recurring one wearing a new instrument: **the failure mode of a bad scan is
+an empty result, and an empty result is indistinguishable from a true absence.** Any scan in this
+task that concludes "zero" — Task 1's counter-assertion, Task 3's post-edit
+`grep -c "app.bypass_rls"`, Task 5's TC001 count, Task 6's repo-wide remainder — must carry a
+**positive control in the same run**: a pattern known to be present, asserted found, by the same
+instrument over the same corpus. A zero with no paired non-zero is not a measurement. Prefer
+`grep -rn` over an editor-integrated search for any absence claim, and state which instrument produced
+each number.
 
 ### I. The baseline is captured and pinned
 
@@ -681,12 +704,17 @@ into `04-policy-capture.json` **before** dropping anything. Then drop only those
 **Never verify by count.** 86 restored policies on the wrong 86 tables is a passing count and a
 broken database.
 
-**Record the hash discrepancy (fact H).** The brief states `29498ef6e52f51dcc02461a1abbb84b0` (MD5
-length); quick-616's evidence records sha256
-`0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd`; planning found the brief's value
-nowhere in the repo. **Print both the staging and the production sha256 you measured, state whether
-they match each other, and state plainly which — if either — the brief's figure reconciles with.** Do
-not adopt a remembered hash as ground truth.
+**Hash BOTH algorithms (fact H).** Two figures are on record for the same list: the brief's
+`29498ef6e52f51dcc02461a1abbb84b0` (MD5 length, from `.planning/STATE.md:966`, the orchestrator's
+independent re-verification against production) and quick-616's harness sha256
+`0fa356b932f1d8859d938883977c9e459fb477f7277957c22a59e176d443f8cd`. They are not in conflict — they
+are two algorithms over what should be one list. **The harness you inherit computes sha256 only and
+will never print the brief's figure**, so a naive comparison produces a mismatch that means nothing.
+
+Compute, for staging and for production, **both** md5 and sha256 of the sorted table list — four
+values — and record all four. State (i) whether staging equals production, which is the claim that
+matters, and (ii) which recorded figure each algorithm reproduces. Do not adopt a remembered hash as
+ground truth and do not read an algorithm mismatch as drift.
 
 **4d — Teardown. DO NOT USE `process.kill`.** quick-616's SIGINT proof terminated unconditionally on
 Windows — no handler, no `finally` — and left staging at 85 policies. Use the two replacements
