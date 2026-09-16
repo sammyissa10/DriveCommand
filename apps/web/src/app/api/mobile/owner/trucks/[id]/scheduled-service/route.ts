@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -73,16 +74,24 @@ export async function GET(
   const { id } = await params;
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by validateMobileToken() above. tenantId comes from the verified JWT.
+    /*
+     * quick-617/618: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw —
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified auth.tenantId.
+     * userId is deliberately NOT passed: it would drive the audit-columns
+     * extension to start writing createdById/updatedById, a behaviour change a
+     * routing fix must not make (quick-610).
+     *
+     * quick-617 STOPPED this file because a findUnique below carries a top-level
+     * select that omits tenantId, and the old post-check read that as
+     * `undefined !== tenantId` and discarded the row FOR ITS OWN TENANT — which,
+     * with the `if (!x) return 404` that follows every one of them, would have
+     * made this route answer "not found" on every request. quick-618 moved the
+     * tenant predicate into the findUnique `where`, so the select no longer
+     * decides isolation and every select here is left byte-identical.
      */
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const result = await tenantPrisma.$transaction(async (tx) => {
       const truck = await tx.truck.findUnique({
         where: { id, tenantId, archivedAt: null },
         select: { odometer: true },
@@ -195,16 +204,24 @@ export async function POST(
   }
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by validateMobileToken() above. tenantId comes from the verified JWT.
+    /*
+     * quick-617/618: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw —
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified auth.tenantId.
+     * userId is deliberately NOT passed: it would drive the audit-columns
+     * extension to start writing createdById/updatedById, a behaviour change a
+     * routing fix must not make (quick-610).
+     *
+     * quick-617 STOPPED this file because a findUnique below carries a top-level
+     * select that omits tenantId, and the old post-check read that as
+     * `undefined !== tenantId` and discarded the row FOR ITS OWN TENANT — which,
+     * with the `if (!x) return 404` that follows every one of them, would have
+     * made this route answer "not found" on every request. quick-618 moved the
+     * tenant predicate into the findUnique `where`, so the select no longer
+     * decides isolation and every select here is left byte-identical.
      */
-    const service = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const service = await tenantPrisma.$transaction(async (tx) => {
       const truck = await tx.truck.findUnique({
         where: { id, tenantId, archivedAt: null },
         select: { odometer: true },
@@ -308,16 +325,24 @@ export async function PATCH(
   }
 
   try {
-    /**
-     * @bypass_rls reason: mobile-api
-     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     * SAFETY: Gated by validateMobileToken() above. tenantId comes from the verified JWT.
+    /*
+     * quick-617/618: tenant-scoped client. /api/mobile/* sends no x-tenant-id
+     * (DEC-11), so the header-reading getTenantPrisma() would throw —
+     * getTenantPrismaForOrg takes validateMobileToken()'s verified auth.tenantId.
+     * userId is deliberately NOT passed: it would drive the audit-columns
+     * extension to start writing createdById/updatedById, a behaviour change a
+     * routing fix must not make (quick-610).
+     *
+     * quick-617 STOPPED this file because a findUnique below carries a top-level
+     * select that omits tenantId, and the old post-check read that as
+     * `undefined !== tenantId` and discarded the row FOR ITS OWN TENANT — which,
+     * with the `if (!x) return 404` that follows every one of them, would have
+     * made this route answer "not found" on every request. quick-618 moved the
+     * tenant predicate into the findUnique `where`, so the select no longer
+     * decides isolation and every select here is left byte-identical.
      */
-    const outcome = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+    const outcome = await tenantPrisma.$transaction(async (tx) => {
       // Find the scheduled service — must be non-completed and belong to this truck/tenant
       const svc = await tx.scheduledService.findFirst({
         where: { id: serviceId, tenantId, truckId: id, isCompleted: false },
