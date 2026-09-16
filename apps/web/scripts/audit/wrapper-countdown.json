@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-16T18:29:17.572Z",
+  "generatedAt": "2026-09-16T20:14:29.103Z",
   "totals": {
-    "unmigratedUnits": 567,
-    "unmigratedCallSites": 577,
+    "unmigratedUnits": 568,
+    "unmigratedCallSites": 578,
     "withTenantContextCallSites": 0,
     "filesScanned": 1693,
-    "filesWithUnmigratedUnits": 275
+    "filesWithUnmigratedUnits": 276
   },
   "files": {
     "__tests__/security/tenant-header-forgery.test.ts": {
@@ -2216,6 +2216,13 @@
       "callSites": 1,
       "names": [
         "reorderPlaybookSteps:12"
+      ]
+    },
+    "server/services/workflows/seedStarterPlaybooks.ts": {
+      "units": 1,
+      "callSites": 1,
+      "names": [
+        "seedStarterPlaybooks:475"
       ]
     },
     "server/services/workflows/skipStep.ts": {
