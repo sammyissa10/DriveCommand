@@ -194,7 +194,7 @@ PDF generation runs in a Server Action (`.tsx` extension required for JSX syntax
 | Package | Version | Purpose |
 |---|---|---|
 | `bcryptjs` | `^3.0.3` | Password hashing (legacy — passwords now managed by Supabase Auth) |
-| `date-fns` | `^4.1.0` | Date formatting and calculations (e.g. document expiry diffs) |
+| `date-fns` | `^4.2.1` | Date formatting and calculations (e.g. document expiry diffs) |
 | `nanoid` | `^5.1.6` | Short unique ID generation (email IDs, tracking tokens) |
 | `sonner` | `^2.0.7` | Toast notification system — `<Toaster />` in root layout |
 | `@tanstack/react-table` | `^8.21.3` | Data tables with sorting and filtering in list views |

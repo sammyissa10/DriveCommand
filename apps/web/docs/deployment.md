@@ -50,21 +50,20 @@ All other variables (`ADMIN_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC
 
 ## Build Command
 
-Defined in `vercel.json`:
+The build command is defined in `package.json`:
 
 ```json
-{
-  "buildCommand": "node scripts/migrate.mjs && prisma generate && next build"
-}
+"build": "npm run build:search-index && npm run build:admin-search && prisma generate && next build"
 ```
 
-This runs three steps in sequence:
+This runs in sequence:
 
-1. **`node scripts/migrate.mjs`** — runs SQL migration files atomically. Fails fast with a non-zero exit code if any migration fails (which stops the Vercel build).
-2. **`prisma generate`** — generates the Prisma client to `src/generated/prisma/`.
-3. **`next build`** — compiles the Next.js application.
+1. **`npm run build:search-index`** — generates the help-centre search index.
+2. **`npm run build:admin-search`** — generates the admin search index.
+3. **`prisma generate`** — generates the Prisma client to `src/generated/prisma/`.
+4. **`next build`** — compiles the Next.js application.
 
-If any step fails, the build fails and the current deployment is not replaced.
+Migrations are applied separately by `node scripts/migrate.mjs` before the build. If any step fails, the build fails and the current deployment is not replaced.
 
 ---
 
@@ -84,9 +83,7 @@ Defined in `vercel.json`. Vercel schedules these automatically:
 
 | Path | Schedule | Purpose |
 |---|---|---|
-| `/api/cron/send-reminders` | Daily at 14:00 UTC (`0 14 * * *`) | Sends document expiry alerts and maintenance reminder emails to owners |
-| `/api/warmup` | Daily at 08:00 UTC (`0 8 * * *`) | Keeps serverless functions warm to reduce cold start latency |
-| `/api/cron/auto-close-tickets` | Daily at 02:00 UTC (`0 2 * * *`) | Auto-closes support tickets that have been resolved for 7+ days |
+| `/api/cron/cleanup-quarantine` | Hourly (`0 * * * *`) | Cleans up quarantined document imports |
 
 Cron routes are protected by checking the `Authorization: Bearer <CRON_SECRET>` header. Vercel injects this header automatically when triggering cron jobs.
 
@@ -131,7 +128,7 @@ After deploying:
 The `DATABASE_URL` may be wrong or unreachable from Vercel's build environment. Confirm the Supabase project is not paused and the connection string is correct.
 
 **502 / Function timeout errors in production**
-The serverless function may be hitting cold start latency. The warmup cron at 08:00 UTC mitigates this. If the issue persists, check Vercel's function duration limits.
+The serverless function may be hitting cold start latency. If the issue persists, check Vercel's function duration limits.
 
 **"Invalid DATABASE_URL" or Prisma P1000 errors**
 Ensure `DATABASE_URL` uses the Session Mode pooler (port 6543). The direct connection (port 5432) is not supported in Vercel's serverless environment.

@@ -77,7 +77,7 @@ Throws `Error('Unauthorized: Authentication required')` if there is no session. 
 Throws if the session role is not in `allowedRoles`. Returns the matched role.
 
 **`isSystemAdmin(): Promise<boolean>`**
-Runs a `$queryRaw` SELECT to check `User.isSystemAdmin` in the database. **Makes a DB call — use sparingly.**
+Reads `session.isSystemAdmin` from the current Supabase session. No database call.
 
 **`getCurrentUser()`**
 Fetches the User record via a `bypass_rls` transaction. **Makes a DB call — use sparingly.**

@@ -43,7 +43,7 @@ npx prisma generate
 
 ## Schema Overview — Models
 
-The schema has 37 models covering all platform features.
+The schema has 96 models covering all platform features.
 
 | Model | Purpose | Key Fields |
 |---|---|---|
@@ -84,6 +84,63 @@ The schema has 37 models covering all platform features.
 | `TenantIntegration` | Third-party integration config | `id`, `tenantId`, `provider`, `category`, `enabled`, `configJson` (JSONB) |
 | `SupportTicket` | Help ticket from tenant owner or driver | `id`, `ticketNumber` (unique, TKT-NNNN), `tenantId`, `category`, `priority`, `status` |
 | `TicketMessage` | Message thread on a support ticket | `id`, `ticketId`, `senderType` (OWNER/ADMIN), `body` |
+| `CarrierClient` | Carrier-ops shipper/client (`clients` table) | `id`, `orgId`, `name`, `status`, `email?`, `phone?`, `mcNumber?`, `paymentTerms?`, `creditLimit?` |
+| `CarrierClientContact` | Contact person for a CarrierClient | `id`, `orgId`, `clientId`, `name`, `role?`, `isMain` |
+| `CarrierContract` | Rate contract between carrier and client | `id`, `orgId`, `clientId`, `contractNumber`, `contractType`, `rateType`, `baseRate`, `status` |
+| `CarrierFacility` | Pickup/delivery location (`facilities` table) | `id`, `orgId`, `name`, `facilityType`, `addressLine1`, `city`, `state`, `zip`, `latitude?`, `longitude?`, `isDriverResidence` |
+| `CarrierDriver` | Carrier-ops driver profile (`carrier_drivers` table) | `id`, `orgId`, `userId?`, `firstName`, `lastName`, `cdlExpiry?`, `payModel`, `payRate`, `status` |
+| `CarrierTruck` | Carrier-ops vehicle (`carrier_trucks` table) | `id`, `orgId`, `vehicleId`, `unitNumber`, `year?`, `make?`, `model?`, `vin?`, `status`, `licenseExpiry?`, `registrationExpiry?`, `insuranceExpiry?` |
+| `CarrierTruckDefect` | Vehicle defect from pre-trip inspection (`carrier_truck_defects` table) | `id`, `orgId`, `truckId`, `dispatchId?`, `stepInstanceId?`, `itemName`, `isCritical`, `status` (open/resolved) |
+| `RouteTemplate` | Reusable route template (`route_templates` table) | `id`, `orgId`, `templateName`, `clientId`, `contractId?`, `scheduleType`, `equipmentType`, `active`, `endStopPolicy?`, `endStopFacilityId?` |
+| `RouteTemplateStop` | Stop on a route template (`route_template_stops` table) | `id`, `routeTemplateId`, `sequenceOrder`, `stopType`, `facilityId`, `bolRequired`, `podRequired` |
+| `RouteMatrixCache` | Cached OSRM distance matrix for a set of facilities | `id`, `facilitySetHash`, `matrixJson`, `computedAt` |
+| `Trip` | Dispatched trip/run (`dispatches` table) | `id`, `orgId`, `primaryDriverId`, `truckId`, `scheduledDeparture`, `status`, `inspectionRequired?`, `inspectionOverriddenById?`, `inspectionOverriddenReason?` |
+| `CarrierLoad` | Load/shipment on a trip (`loads` table) | `id`, `orgId`, `dispatchId?`, `clientId`, `bolNumber?`, `rateAmount?`, `status`, `totalRevenue?` |
+| `CarrierStop` | Stop on a trip (`stops` table) | `id`, `dispatchId`, `loadId?`, `sequenceOrder`, `stopType`, `facilityId`, `status`, `isEndStop`, `appointmentStart?`, `appointmentEnd?`, `arrivedAt?` |
+| `CarrierDocument` | Document attached to a carrier entity | `id`, `parentType`, `parentId`, `documentType`, `fileUrl`, `filename`, `uploadedBy`, `verified` |
+| `CarrierExpense` | Expense on a trip or load | `id`, `orgId`, `dispatchId?`, `loadId?`, `expenseType`, `amount`, `paidBy`, `driverId?` |
+| `CarrierCatalogMeta` | Lookup table for carrier enum display labels | `id`, `enumGroup`, `enumValue`, `displayLabel`, `sortOrder`, `active` |
+| `DocumentImport` | Document import session (rate confirmation, invoice, tender) | `id`, `tenantId`, `originalName`, `sourceFileKeys` (JSONB), `status` (8-state lifecycle), `sha256Hex`, `extractedAt?`, `reviewedExtraction` (JSONB), `resolutionProvenance` (JSONB) |
+| `DocumentImportPage` | Per-page extraction cache for a DocumentImport | `id`, `importId`, `pageNumber`, `extractedJson` (JSONB), `extractedAt` |
+| `FacilityExternalReference` | Learned external facility code for T1 resolution | `id`, `tenantId`, `facilityId`, `clientId`, `externalCode`, `resolvedVia` (T1/T2/T3/T4) |
+| `DocumentProfile` | Tenant document profile with alias learning and defaults | `id`, `tenantId`, `clientId?`, `profileName`, `aliases` (JSONB), `defaultEndStopPolicy?`, `homeBaseFacilityId?`, `autoCreateRouteTemplates` |
+| `InAppNotification` | In-app notification delivered to a user | `id`, `orgId`, `userId?`, `type` (InAppNotificationType), `title`, `message`, `entityType`, `entityId`, `read` |
+| `StepTemplate` | Reusable checklist step definition | `id`, `tenantId`, `name`, `stepType`, `assigneeRole`, `defaultConfig` (JSONB), `isActive` |
+| `Playbook` | Workflow checklist definition | `id`, `tenantId`, `name`, `entityType` (PlaybookEntityType), `category` (PlaybookCategory), `isActive` |
+| `PlaybookStep` | Step belonging to a Playbook | `id`, `playbookId`, `stepTemplateId`, `sequence`, `isDispatchBlocker`, `overrideConfig` (JSONB) |
+| `PlaybookInstance` | Runtime instance of a Playbook for a specific entity | `id`, `tenantId`, `playbookId`, `entityType`, `entityId`, `status` (InstanceStatus), `isDispatchReady` |
+| `StepInstance` | Runtime state of one step within a PlaybookInstance | `id`, `playbookInstanceId`, `stepTemplateId?`, `status` (StepStatus), `assigneeRole`, `completedAt?`, `result` (JSONB) |
+| `PlaybookNotification` | Notification sent for a playbook event | `id`, `tenantId`, `playbookInstanceId`, `stepInstanceId?`, `notificationType`, `channel`, `recipientUserId` |
+| `PlaybookTrigger` | Auto-start rule for a Playbook on an event | `id`, `playbookId`, `tenantId`, `triggerEvent`, `conditions` (JSONB), `isActive` |
+| `DispatchOverrideAudit` | Audit record for a dispatcher override (inspection, driver readiness) | `id`, `tenantId`, `dispatchId`, `userId`, `reason`, `entityType` (DRIVER/VEHICLE/INSPECTION) |
+| `Plan` | Subscription plan tier | `id`, `key`, `name`, `monthlyPriceCents`, `yearlyPriceCents?`, `maxTrucks?`, `maxUsers?`, `isActive` |
+| `Promo` | Promotional code for trial extensions or discounts | `id`, `code`, `bonusTrialDays`, `discountPct?`, `activeFrom`, `activeTo`, `maxRedemptions?`, `isActive` |
+| `Subscription` | Tenant subscription to a Plan | `id`, `tenantId` (unique), `planId`, `promoId?`, `status` (SubscriptionStatus), `trialEndsAt`, `stripeCustomerId?`, `stripeSubscriptionId?`, `cancelAtPeriodEnd` |
+| `ActivationProgress` | Onboarding activation milestones for a tenant | `id`, `tenantId` (unique), `firstRealTruckAt?`, `firstRealDriverAt?`, `firstLoadDeliveredAt?`, `completionPct`, `isActivated` |
+| `AutomationRule` | Platform or tenant automation rule | `id`, `key` (unique), `triggerEvent`, `conditionsJson`, `actionsJson`, `scope` (SYSTEM/TENANT), `tenantId?`, `isActive`, `runOncePerTenant` |
+| `AutomationRun` | Execution record for an AutomationRule | `id`, `ruleId?`, `tenantId`, `triggeredBy`, `status` (AutomationRunStatus), `resultJson?`, `firedAt`, `errorMessage?` |
+| `AppEvent` | Analytics / audit event log | `id`, `tenantId`, `userId?`, `eventType`, `properties` (JSONB), `createdAt` |
+| `TenantMetricsDaily` | Daily usage metrics per tenant | `id`, `tenantId`, `date`, `dauCount`, `sessionCount`, `loadsCreated`, `loadsInTransit`, `storageBytes`, `seatsUsed` |
+| `TenantHealthScore` | Computed health score for a tenant | `id`, `tenantId` (unique), `score`, `topFactorsJson`, `computedAt` |
+| `DriverCompensationTemplate` | Reusable pay template for a driver | `id`, `tenantId`, `driverId`, `employmentType`, `payType`, `baseRate`, `rateUnit`, `effectiveFrom`, `effectiveTo?` |
+| `LoadDriverAssignment` | Driver assignment and pay details for a load | `id`, `tenantId`, `loadId`, `driverId`, `driverRole`, `payType`, `baseRate`, `payStatus`, `settlementId?` |
+| `LoadPayComponent` | Individual pay line item within a LoadDriverAssignment | `id`, `tenantId`, `assignmentId`, `loadId`, `driverId`, `componentType`, `category`, `quantity`, `rate`, `grossAmount`, `isTaxable` |
+| `DriverBonus` | One-time or installment bonus for a driver | `id`, `tenantId`, `driverId`, `bonusType`, `amount`, `triggerDate`, `settlementId?`, `isTaxable` |
+| `DriverDeduction` | Recurring deduction from a driver's pay | `id`, `tenantId`, `driverId`, `deductionType`, `schedule`, `amountPerPeriod`, `totalAmount?`, `amountCollected`, `startsOn`, `endsOn?`, `paused` |
+| `DriverSettlement` | Driver pay period settlement | `id`, `tenantId`, `driverId`, `periodStart`, `periodEnd`, `status` (DriverSettlementStatus), `grossTaxable`, `totalDeductions`, `netPay`, `finalizedAt?`, `paidAt?` |
+| `PayComponentAttachment` | File attached to a LoadPayComponent | `id`, `tenantId`, `componentId`, `assignmentId`, `storageKey`, `filename`, `uploadedBy` |
+| `DriverDispute` | Driver-raised dispute against a pay component | `id`, `tenantId`, `driverId`, `targetType`, `targetId`, `issueCategory`, `driverMessage`, `status` (DisputeStatus), `resolvedAt?` |
+| `DriverPayAuditLog` | Append-only audit log for driver pay changes | `id`, `tenantId`, `entityType`, `entityId`, `action`, `previousValue?`, `newValue?`, `actorId?` |
+| `DocFeedback` | Helpful/not-helpful feedback on help-centre articles | `id`, `tenantId`, `userId`, `docSlug`, `helpful`, `comment?` |
+| `NotificationTemplate` | Platform-level notification template per trigger key | `id`, `triggerKey` (unique), `category`, `displayName`, `defaultSubject`, `defaultBlockJson`, `defaultHtmlCache?`, `isActive`, `inAppEnabled`, `pushEnabled` |
+| `TenantNotificationSettings` | Per-tenant overrides for a NotificationTemplate | `id`, `tenantId`, `triggerKey`, `isActive`, `customSubject?`, `customBlockJson?` |
+| `NotificationSubscription` | User subscription to a notification trigger | `id`, `tenantId`, `triggerKey`, `userId` |
+| `UserNotificationPreference` | Per-user channel preferences (email/inApp/push) per trigger | `id`, `userId`, `triggerKey`, `tenantId`, `emailEnabled`, `inAppEnabled`, `pushEnabled` |
+| `NotificationSendLog` | Audit log of every notification send attempt | `id`, `tenantId`, `triggerKey`, `recipientUserId?`, `channel`, `status` (NotificationSendStatus), `idempotencyKey`, `sentAt?` |
+| `NotificationEmailConfig` | Global singleton email-from config | `id`, `singletonKey`, `fromName`, `fromEmail`, `replyTo?` |
+| `AuditLog` | Append-only PII-access and restricted-operation audit log | `id`, `tenantId`, `userId`, `action`, `resourceType`, `resourceId`, `fieldName?`, `ipAddress?`, `createdAt` |
+| `GridPreference` | Per-user DataGrid column layout and density preferences | `id`, `userId`, `gridId`, `columnOrder`, `columnWidths`, `hiddenColumns`, `density`, `pageSize` |
+| `GridView` | Saved named grid view (filters, sort, columns) | `id`, `gridId`, `userId`, `name`, `isDefault`, `state` (JSONB) |
 
 ---
 
