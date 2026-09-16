@@ -18,7 +18,9 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { runEvaluator } from '@/lib/automations/evaluator';
-import { prisma } from '@/lib/db/prisma';
+// quick-615 — the `prisma` import is gone: a grep proves zero remaining
+// `prisma.` usages in this route. Nothing is left on this path to inherit the
+// session-scope tenant GUC these loops write (quick-602).
 import { getAdminDb } from '@/lib/db/admin-prisma';
 import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { CronFailures, cronStatus } from '@/lib/cron/failure-report';
@@ -205,10 +207,33 @@ async function scheduleCronDrivenRule(
   console.log(`[cron] Rule '${ruleKey}' — ${candidates.length} candidate tenant(s)`);
 
   for (const { tenantId } of candidates) {
+    /**
+     * quick-615 — CORRECT, not ROUTE. `tenantId` is the LOOP VARIABLE, and the
+     * create at the bottom of this same body already runs on
+     * `getTenantPrismaForOrg(tenantId)`. A tenant client demonstrably serves
+     * these two dedup reads, so `getAdminDb` must not: routing a statement to
+     * the bypassing connection that a scoped one can serve is the one thing
+     * `admin-prisma.ts`'s NOT-LIST names outright. No `userId` is passed —
+     * `getTenantPrisma()` would forward one into the audit-columns extension
+     * and start writing `createdById`/`updatedById` (quick-610).
+     *
+     * THE DOUBLE ACQUISITION IS DELIBERATE AND IS NOT AN OVERSIGHT. This
+     * acquisition is here, beside its statement and OUTSIDE the `try` below,
+     * because the existing one at the bottom is INSIDE that `try`, whose
+     * `catch` calls `failures.record(...)` and lets the loop continue. Hoisting
+     * one shared acquisition above the `try` would move an `await` that can
+     * throw from outside the recorder's reach to inside it — changing which
+     * failures are attributed to which tenant and which iteration `continue`s.
+     * That is a behaviour change wearing a routing fix's clothes. The cost is
+     * one extra `set_config` round trip per candidate; correct error
+     * attribution is worth one statement.
+     */
+    const tenantDbDedup = await getTenantPrismaForOrg(tenantId);
+
     // Dedup check
     if (runOncePerTenant) {
       // Lifetime dedup: skip if this tenant has any run ever for this rule
-      const existing = await prisma.automationRun.findFirst({
+      const existing = await tenantDbDedup.automationRun.findFirst({
         where: { ruleId: rule.id, tenantId },
         select: { id: true },
       });
@@ -219,7 +244,7 @@ async function scheduleCronDrivenRule(
       // (scheduledAt), to prevent duplicates if the evaluator is delayed.
       const wh = windowHours ?? 20;
       const windowStart = new Date(Date.now() - wh * 60 * 60 * 1000);
-      const recentRun = await prisma.automationRun.findFirst({
+      const recentRun = await tenantDbDedup.automationRun.findFirst({
         where: {
           ruleId: rule.id,
           tenantId,

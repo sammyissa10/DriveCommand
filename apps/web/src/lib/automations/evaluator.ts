@@ -96,7 +96,19 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
     for (const rule of rules) {
       // runOncePerTenant: skip if this tenant already has any run for this rule
       if (rule.runOncePerTenant) {
-        const existing = await prisma.automationRun.findFirst({
+        /**
+         * quick-615 — CORRECT, not ROUTE. `event.tenantId` is in hand and :227
+         * in this same file already uses `getTenantPrismaForOrg(run.tenantId)`
+         * — a tenant client demonstrably serves this. No `userId` (quick-610).
+         *
+         * Acquired HERE rather than hoisted, for the same reason as the cron's
+         * dedup reads: this statement sits ABOVE the `try` whose `catch`
+         * swallows the idempotent-duplicate case, and moving an `await` that
+         * can throw across that boundary would change which failures are
+         * swallowed as "already scheduled".
+         */
+        const tenantDbDedup = await getTenantPrismaForOrg(event.tenantId);
+        const existing = await tenantDbDedup.automationRun.findFirst({
           where: { ruleId: rule.id, tenantId: event.tenantId },
           select: { id: true },
         });
