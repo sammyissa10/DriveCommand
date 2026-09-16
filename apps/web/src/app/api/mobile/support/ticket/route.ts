@@ -26,34 +26,34 @@ const createTicketSchema = z.object({
 
 // ─── Ticket number helper ────────────────────────────────────────────────────
 
+/**
+ * The GLOBAL ticket number, from a real sequence (quick-616, audit item B7).
+ *
+ * The twin of `src/actions/support-tickets.ts`'s `generateTicketNumber`; read
+ * that one's header for the full argument. Two points specific to THIS copy:
+ *
+ * ─── THE ANNOTATION THIS REPLACES WAS FALSE, IN TWO PLACES ─────────────────
+ *
+ * It carried `@bypass_rls reason: mobile-api` with
+ * `SCOPE: Accesses only data belonging to the authenticated user's tenant` over
+ * `supportTicket.findFirst({ orderBy: { ticketNumber: 'desc' } })` — a query
+ * with NO tenant predicate at all, i.e. a cross-tenant maximum. Its web twin
+ * was annotated `cross-tenant` and was correct: same function, two copies, two
+ * annotations, one of them wrong. Its `SAFETY: Gated by validateMobileToken()
+ * above` was false too — this is a module-level helper and there is no
+ * `validateMobileToken()` above it. An annotation is a CLAIM, never a verdict
+ * (quick-606).
+ *
+ * ─── THE RACE WAS BETWEEN THESE TWO FILES ──────────────────────────────────
+ *
+ * Both copies did read-max-then-insert with no lock against a GLOBAL unique
+ * index. They now draw from the same sequence and can no longer disagree.
+ */
 async function generateTicketNumber(): Promise<string> {
-  /**
-   * @bypass_rls reason: mobile-api
-   * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
-   *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
-   * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-   *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-   * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
-   */
-  const result = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.supportTicket.findFirst({
-      orderBy: { ticketNumber: 'desc' },
-      select: { ticketNumber: true },
-    });
-  }, TX_OPTIONS);
-
-  if (!result) {
-    return 'TKT-0001';
-  }
-
-  const match = result.ticketNumber.match(/^TKT-(\d+)$/);
-  if (!match) {
-    return 'TKT-0001';
-  }
-
-  const next = parseInt(match[1], 10) + 1;
-  return `TKT-${String(next).padStart(4, '0')}`;
+  const [row] = await prisma.$queryRaw<{ n: bigint }[]>`
+    SELECT nextval('public.support_ticket_number_seq') AS n
+  `;
+  return `TKT-${String(row.n).padStart(4, '0')}`;
 }
 
 // ─── Route handler ───────────────────────────────────────────────────────────

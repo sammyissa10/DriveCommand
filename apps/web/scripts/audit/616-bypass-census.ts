@@ -160,7 +160,7 @@ function enclosingName(node: ts.Node, sf: ts.SourceFile): string {
     if (ts.isFunctionDeclaration(cur) && cur.name) return cur.name.text;
     if (ts.isMethodDeclaration(cur) && ts.isIdentifier(cur.name)) return cur.name.text;
     if (ts.isArrowFunction(cur) || ts.isFunctionExpression(cur)) {
-      const p = cur.parent;
+      const p: ts.Node = cur.parent;
       // ONLY a DIRECT initializer names the unit. `const x = await prisma.$transaction(async tx => …)`
       // must NOT be read as "the function is called x" — that is the transaction's RESULT
       // variable, and taking it produced enclosing names like `result` and `tickets`.
@@ -308,6 +308,8 @@ import {
   classify,
   CATEGORY_ORDER,
   OVERRIDE_KEYS,
+  ROUTED_AND_REMOVED,
+  CENSUS_TOTAL_BEFORE_ROUTING,
   type Category,
   type Receiver,
 } from './616-census-classification';
@@ -409,6 +411,24 @@ function main() {
   // falls to the default — a misclassification that looks like a clean run.
   const keys = new Set(records.map((r) => `${r.file}:${r.line}`));
   const orphanOverrides = OVERRIDE_KEYS.filter((k) => !keys.has(k));
+  // Task 2's routing, asserted as a MOVE rather than an absence. A shorter list
+  // alone passes identically whether a statement was routed or simply deleted
+  // along with the read it protected (quick-566 / quick-599's union rule).
+  const stillPresent = ROUTED_AND_REMOVED.filter((k) => keys.has(k));
+  checks.push({
+    name: 'ROUTED STATEMENTS ARE GONE',
+    pass: stillPresent.length === 0,
+    detail:
+      stillPresent.length === 0
+        ? `${ROUTED_AND_REMOVED.length} routed statements absent: ${ROUTED_AND_REMOVED.join(', ')}`
+        : `STILL PRESENT: ${stillPresent.join(', ')}`,
+  });
+  checks.push({
+    name: 'REMOVED + REMAINING RECONCILES',
+    pass: records.length + ROUTED_AND_REMOVED.length === CENSUS_TOTAL_BEFORE_ROUTING,
+    detail: `${records.length} remaining + ${ROUTED_AND_REMOVED.length} routed = ${records.length + ROUTED_AND_REMOVED.length} (must be ${CENSUS_TOTAL_BEFORE_ROUTING}). Anything else means something ELSE changed.`,
+  });
+
   checks.push({
     name: 'NO ORPHAN CLASSIFICATION OVERRIDE',
     pass: orphanOverrides.length === 0,

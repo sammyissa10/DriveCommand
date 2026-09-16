@@ -1,9 +1,9 @@
 {
-  "generated": "2026-09-16T02:50:19.338Z",
+  "generated": "2026-09-16T03:04:55.088Z",
   "method": "ts.createSourceFile per file, no Program, no type checker. A statement is a CallExpression or TaggedTemplateExpression whose own literal children contain \"app.bypass_rls\". Comments are not AST nodes and are excluded by construction. Test paths (__tests__/, *.test.*, *.spec.*) excluded and reported separately. scripts/ and prisma/ are outside src/ and are reported separately.",
   "scope": "apps/web/src, excluding test paths and src/generated",
   "totals": {
-    "statements": 177,
+    "statements": 175,
     "files": 87,
     "testStatements": 5,
     "testFiles": 2
@@ -12,7 +12,7 @@
     {
       "name": "FLOOR statements",
       "pass": true,
-      "detail": "177 >= 150"
+      "detail": "175 >= 150"
     },
     {
       "name": "FLOOR files",
@@ -40,9 +40,19 @@
       "detail": "0 executable statements === 0"
     },
     {
+      "name": "ROUTED STATEMENTS ARE GONE",
+      "pass": true,
+      "detail": "2 routed statements absent: src/actions/support-tickets.ts:99, src/app/api/mobile/support/ticket/route.ts:39"
+    },
+    {
+      "name": "REMOVED + REMAINING RECONCILES",
+      "pass": true,
+      "detail": "175 remaining + 2 routed = 177 (must be 177). Anything else means something ELSE changed."
+    },
+    {
       "name": "NO ORPHAN CLASSIFICATION OVERRIDE",
       "pass": true,
-      "detail": "all 35 overrides matched a statement"
+      "detail": "all 33 overrides matched a statement"
     },
     {
       "name": "RECONCILIATION SOURCE transcription adds to 211/103",
@@ -117,8 +127,8 @@
         "statements": 5
       },
       "CROSS_TENANT": {
-        "files": 1,
-        "statements": 1
+        "files": 0,
+        "statements": 0
       },
       "DECORATIVE": {
         "files": 0,
@@ -130,7 +140,7 @@
       },
       "TOTAL": {
         "files": 15,
-        "statements": 45
+        "statements": 44
       }
     },
     "DRIVER_PORTAL": {
@@ -351,8 +361,8 @@
         "statements": 0
       },
       "CROSS_TENANT": {
-        "files": 1,
-        "statements": 1
+        "files": 0,
+        "statements": 0
       },
       "DECORATIVE": {
         "files": 0,
@@ -364,7 +374,7 @@
       },
       "TOTAL": {
         "files": 47,
-        "statements": 84
+        "statements": 83
       }
     },
     "API_PUSH_TOKENS": {
@@ -453,17 +463,17 @@
       "files": 103
     },
     "nowTotals": {
-      "statements": 177,
+      "statements": 175,
       "files": 87
     },
-    "disappeared": 34,
+    "disappeared": 36,
     "appeared": 0,
     "perFile": [
       {
         "file": "src/actions/support-tickets.ts",
         "then": 8,
-        "now": 5,
-        "delta": -3,
+        "now": 4,
+        "delta": -4,
         "priorCategories": [
           "CROSS_TENANT:8"
         ]
@@ -584,6 +594,16 @@
         "delta": -1,
         "priorCategories": [
           "CROSS_TENANT:1"
+        ]
+      },
+      {
+        "file": "src/app/api/mobile/support/ticket/route.ts",
+        "then": 2,
+        "now": 1,
+        "delta": -1,
+        "priorCategories": [
+          "CROSS_TENANT:1",
+          "DECORATIVE_GUC_GAP:1"
         ]
       },
       {
@@ -813,25 +833,7 @@
     },
     {
       "file": "src/actions/support-tickets.ts",
-      "line": 99,
-      "shape": "tagged-template",
-      "callee": "tx.$executeRaw",
-      "enclosingFunction": "generateTicketNumber",
-      "inArrayForm": false,
-      "annotationReason": "cross-tenant",
-      "annotationScope": "Read-only query on SupportTicket.ticketNumber — no tenant data accessed.",
-      "surface": "LIB_SERVICES",
-      "category": "CROSS_TENANT",
-      "routingNeeded": "B7. `SupportTicket_ticketNumber_key` is a GLOBAL unique index, so the read is genuinely cross-tenant. admin-connection.md §9: an admin connection is the WRONG fix — `CREATE SEQUENCE` + `GRANT USAGE` removes the cross-tenant read AND the live race between the two copies in one change. ROUTED BY quick-616.",
-      "receiver": "POLICY_FIX",
-      "annotationVerifies": true,
-      "annotationNote": "`cross-tenant` VERIFIES: the query is `findFirst({ orderBy: { ticketNumber: desc } })` with no `where` at all, which is exactly what the annotation claims.",
-      "alreadyAcquiresTenantClient": false,
-      "inNamedSubset": true
-    },
-    {
-      "file": "src/actions/support-tickets.ts",
-      "line": 170,
+      "line": 179,
       "shape": "tagged-template",
       "callee": "tx.$executeRaw",
       "enclosingFunction": "createSupportTicket",
@@ -849,7 +851,7 @@
     },
     {
       "file": "src/actions/support-tickets.ts",
-      "line": 218,
+      "line": 227,
       "shape": "tagged-template",
       "callee": "tx.$executeRaw",
       "enclosingFunction": "getMyTickets",
@@ -867,7 +869,7 @@
     },
     {
       "file": "src/actions/support-tickets.ts",
-      "line": 408,
+      "line": 417,
       "shape": "tagged-template",
       "callee": "tx.$executeRaw",
       "enclosingFunction": "getTicketById",
@@ -885,7 +887,7 @@
     },
     {
       "file": "src/actions/support-tickets.ts",
-      "line": 447,
+      "line": 456,
       "shape": "tagged-template",
       "callee": "tx.$executeRaw",
       "enclosingFunction": "addOwnerReply",
@@ -2955,31 +2957,13 @@
     },
     {
       "file": "src/app/api/mobile/support/ticket/route.ts",
-      "line": 39,
-      "shape": "tagged-template",
-      "callee": "tx.$executeRaw",
-      "enclosingFunction": "generateTicketNumber",
-      "inArrayForm": false,
-      "annotationReason": "mobile-api",
-      "annotationScope": "Accesses only data belonging to the authenticated user's tenant.",
-      "surface": "MOBILE_API",
-      "category": "CROSS_TENANT",
-      "routingNeeded": "B7, second copy. Same sequence. ROUTED BY quick-616.",
-      "receiver": "POLICY_FIX",
-      "annotationVerifies": false,
-      "annotationNote": "FALSE. Annotated `reason: mobile-api` with `SCOPE: Accesses only data belonging to the authenticated user tenant`, over `supportTicket.findFirst({ orderBy: { ticketNumber: desc } })` with NO tenant predicate at all — a cross-tenant maximum. Its web twin at actions/support-tickets.ts:99 is annotated `cross-tenant` and is correct. Same function, two copies, two annotations, one of them wrong. Also false in its SAFETY line: the helper is module-level and is not \"gated by validateMobileToken() above\".",
-      "alreadyAcquiresTenantClient": false,
-      "inNamedSubset": true
-    },
-    {
-      "file": "src/app/api/mobile/support/ticket/route.ts",
       "line": 97,
       "shape": "tagged-template",
       "callee": "tx.$executeRaw",
       "enclosingFunction": "POST",
       "inArrayForm": false,
-      "annotationReason": "mobile-api",
-      "annotationScope": "Accesses only data belonging to the authenticated user's tenant.",
+      "annotationReason": "mobile-api` with",
+      "annotationScope": "Accesses only data belonging to the authenticated user's tenant` over",
       "surface": "MOBILE_API",
       "category": "TENANT_KNOWN_UNSCOPED",
       "routingNeeded": "Acquire a tenant client — getTenantPrismaForOrg(tenantId[, userId]) — and delete the set_config line in the same edit. Wrapper-migration programme.",

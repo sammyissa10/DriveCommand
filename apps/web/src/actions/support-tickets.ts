@@ -85,38 +85,47 @@ export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3K
 
 // ─── Helper to generate ticket number ──────────────────────
 
+/**
+ * The GLOBAL ticket number, from a real sequence (quick-616, audit item B7).
+ *
+ * ─── WHAT THIS REPLACED, AND WHY NOT AN ADMIN CONNECTION ───────────────────
+ *
+ * This used to be `supportTicket.findFirst({ orderBy: { ticketNumber: 'desc' } })`
+ * with no `where` at all, inside a `$transaction` whose only purpose was to
+ * scope `set_config('app.bypass_rls','on',TRUE)`. `SupportTicket_ticketNumber_key`
+ * is a GLOBAL unique index, so the read genuinely had to span tenants — which
+ * is why it carried a truthful `@bypass_rls reason: cross-tenant`.
+ *
+ * `docs/audits/admin-connection.md` §9 is explicit that routing it onto the
+ * admin connection is the WRONG fix: it papers over a data-model problem and
+ * leaves the LIVE RACE between this copy and its mobile twin
+ * (`api/mobile/support/ticket/route.ts`) — read-max-then-insert, no lock, two
+ * entry points. A sequence removes the cross-tenant read AND the race in one
+ * change.
+ *
+ * ─── THE CUTOVER SYMPTOM THIS REMOVES ──────────────────────────────────────
+ *
+ * Under `app_user` with an empty tenant GUC the old read returned ZERO ROWS,
+ * not an error, so the `if (!result) return 'TKT-0001'` branch below would have
+ * fired for EVERY ticket and collided on the second one. A silent wrong answer,
+ * which is the worse failure mode.
+ *
+ * ─── ONE DEFINITION IN TWO PLACES, DELIBERATELY ────────────────────────────
+ *
+ * The mobile copy is a separate module (a server action cannot serve
+ * `/api/mobile/*` — no cookie, no `x-tenant-id`). Both now call the SAME
+ * sequence, so the two copies can no longer disagree about what the next number
+ * is, which is the property the shared helper never had.
+ *
+ * A sequence is not transactional: a rolled-back insert consumes its number and
+ * leaves a gap. Ticket numbers are identifiers, not a count. A gap beats a
+ * collision.
+ */
 async function generateTicketNumber(): Promise<string> {
-  /**
-   * @bypass_rls reason: cross-tenant
-   * WHY: Ticket numbers (TKT-NNNN) must be globally unique across all tenants.
-   *      Checking the latest ticket number requires querying the SupportTicket table
-   *      across all tenants to find the highest sequential number.
-   * SCOPE: Read-only query on SupportTicket.ticketNumber — no tenant data accessed.
-   * SAFETY: Returns only the ticketNumber field (select: { ticketNumber: true }),
-   *         no sensitive tenant data is exposed.
-   */
-  const result = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    // Find latest ticket number
-    const latest = await tx.supportTicket.findFirst({
-      orderBy: { ticketNumber: 'desc' },
-      select: { ticketNumber: true },
-    });
-    return latest;
-  }, TX_OPTIONS);
-
-  if (!result) {
-    return 'TKT-0001';
-  }
-
-  // Parse number from "TKT-NNNN" format
-  const match = result.ticketNumber.match(/^TKT-(\d+)$/);
-  if (!match) {
-    return 'TKT-0001';
-  }
-
-  const next = parseInt(match[1], 10) + 1;
-  return `TKT-${String(next).padStart(4, '0')}`;
+  const [row] = await prisma.$queryRaw<{ n: bigint }[]>`
+    SELECT nextval('public.support_ticket_number_seq') AS n
+  `;
+  return `TKT-${String(row.n).padStart(4, '0')}`;
 }
 
 // ─── Server Actions ──────────────────────────────────────────

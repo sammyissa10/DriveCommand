@@ -131,7 +131,7 @@ const LINE_OVERRIDES: Record<string, Verdict> = {
   },
 
   // ─── BROKEN_POLICY (c) — SupportTicket cannot admit a NULL-tenant row ───
-  'src/actions/support-tickets.ts:170': {
+  'src/actions/support-tickets.ts:179': {
     category: 'BROKEN_POLICY',
     receiver: 'POLICY_FIX',
     routingNeeded:
@@ -139,7 +139,7 @@ const LINE_OVERRIDES: Record<string, Verdict> = {
     annotationVerifies: true,
     inNamedSubset: true,
   },
-  'src/actions/support-tickets.ts:218': {
+  'src/actions/support-tickets.ts:227': {
     category: 'BROKEN_POLICY',
     receiver: 'POLICY_FIX',
     routingNeeded:
@@ -147,14 +147,14 @@ const LINE_OVERRIDES: Record<string, Verdict> = {
     annotationVerifies: true,
     inNamedSubset: true,
   },
-  'src/actions/support-tickets.ts:408': {
+  'src/actions/support-tickets.ts:417': {
     category: 'BROKEN_POLICY',
     receiver: 'POLICY_FIX',
     routingNeeded:
       'Design §3.1 item 5. `getTicketById` — `tenantId: session.tenantId ?? undefined` DELETES the predicate rather than matching nothing, and it must reach null-tenant tickets.',
     inNamedSubset: true,
   },
-  'src/actions/support-tickets.ts:447': {
+  'src/actions/support-tickets.ts:456': {
     category: 'BROKEN_POLICY',
     receiver: 'POLICY_FIX',
     routingNeeded:
@@ -187,25 +187,18 @@ const LINE_OVERRIDES: Record<string, Verdict> = {
   },
 
   // ─── CROSS_TENANT — the global ticket sequence, 2 sites (B7) ────────────
-  'src/actions/support-tickets.ts:99': {
-    category: 'CROSS_TENANT',
-    receiver: 'POLICY_FIX',
-    routingNeeded:
-      'B7. `SupportTicket_ticketNumber_key` is a GLOBAL unique index, so the read is genuinely cross-tenant. admin-connection.md §9: an admin connection is the WRONG fix — `CREATE SEQUENCE` + `GRANT USAGE` removes the cross-tenant read AND the live race between the two copies in one change. ROUTED BY quick-616.',
-    annotationVerifies: true,
-    annotationNote:
-      '`cross-tenant` VERIFIES: the query is `findFirst({ orderBy: { ticketNumber: desc } })` with no `where` at all, which is exactly what the annotation claims.',
-    inNamedSubset: true,
-  },
-  'src/app/api/mobile/support/ticket/route.ts:39': {
-    category: 'CROSS_TENANT',
-    receiver: 'POLICY_FIX',
-    routingNeeded: 'B7, second copy. Same sequence. ROUTED BY quick-616.',
-    annotationVerifies: false,
-    annotationNote:
-      'FALSE. Annotated `reason: mobile-api` with `SCOPE: Accesses only data belonging to the authenticated user tenant`, over `supportTicket.findFirst({ orderBy: { ticketNumber: desc } })` with NO tenant predicate at all — a cross-tenant maximum. Its web twin at actions/support-tickets.ts:99 is annotated `cross-tenant` and is correct. Same function, two copies, two annotations, one of them wrong. Also false in its SAFETY line: the helper is module-level and is not "gated by validateMobileToken() above".',
-    inNamedSubset: true,
-  },
+  //
+  // ROUTED AND REMOVED BY quick-616 Task 2. Both `generateTicketNumber` copies
+  // now call `nextval('public.support_ticket_number_seq')` and carry no bypass
+  // flag, so neither has a record in the census any more. Recorded here rather
+  // than deleted silently, because the ONLY thing distinguishing "routed" from
+  // "somebody deleted the flag and left the cross-tenant read" is a written
+  // account of which it was.
+  //
+  //   src/actions/support-tickets.ts:99            CROSS_TENANT, annotation VERIFIED true
+  //   src/app/api/mobile/support/ticket/route.ts:39 CROSS_TENANT, annotation MEASURED FALSE
+  //
+  // See ROUTED_AND_REMOVED below, which the census asserts against the count.
 
   // ─── DECORATIVE — the 13 whose GUC is already set ───────────────────────
   'src/app/api/v1/carrier/stops/[id]/messages/route.ts:49': {
@@ -396,3 +389,17 @@ export function classify(s: {
 
 /** Exported so the census can assert every override actually matched a statement. */
 export const OVERRIDE_KEYS = Object.keys(LINE_OVERRIDES);
+
+/**
+ * Statements quick-616 Task 2 ROUTED, at the line they held in the 177-statement
+ * census taken before the routing. The census asserts that NONE of these is
+ * still present, and that the total fell by exactly this many — so "routed" and
+ * "the walker stopped seeing them" cannot be confused.
+ */
+export const ROUTED_AND_REMOVED = [
+  'src/actions/support-tickets.ts:99',
+  'src/app/api/mobile/support/ticket/route.ts:39',
+] as const;
+
+/** The census total measured BEFORE Task 2's routing, committed in e56fd1d0. */
+export const CENSUS_TOTAL_BEFORE_ROUTING = 177;
