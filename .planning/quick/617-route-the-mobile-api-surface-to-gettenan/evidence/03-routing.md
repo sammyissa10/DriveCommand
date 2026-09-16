@@ -12,7 +12,7 @@ applying the pattern proven in `02-single-file-proof.md` unchanged.
 |---|---:|---:|---|---:|---|
 | `driver/incidents` (Task 2) | 1 | 2 | 5 → 7 | 0 | `956fe987` |
 | `support` | 1 | 1 | 4 → 5 | 0 | `4f868357` |
-| `driver` (remaining) | 13 | 19 | 60 → 62 | 0 | `9447e6eb` |
+| `driver` (remaining) | 13 | 19 | 60 → 62 | 0 | `ea5abef2` |
 | `owner` | 24 | 47 | 158 → 164 | 0 | `8816b2ef` |
 | **routed total** | **39** | **69 lines / 67 statements** | **227 → 238** | **0** | |
 | **stopped and reported** | **8** | **16 statements untouched** | unchanged | 16 | — |
