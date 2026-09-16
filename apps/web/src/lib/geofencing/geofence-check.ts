@@ -7,20 +7,19 @@
  *
  * All operations are fire-and-forget — errors logged, never thrown.
  *
- * @bypass_rls reason: system-operation
- * WHY: GPS ping processing is a system-level operation triggered by the GPS report
- *      endpoint (/api/gps/report), which has no user session — only a device token.
- *      The tenantId and driverId come from the validated GPS device token, not from
- *      an HTTP session context that RLS could use.
- * SCOPE: Reads Load + related models for the driver's active load, then writes
- *        Load.status and creates notifications — all scoped to tenantId + driverId.
- * SAFETY: tenantId and driverId are extracted from a cryptographically verified
- *         device/driver token by the GPS endpoint before calling this function.
- *         All write operations update only records matching tenantId + driverId.
+ * TENANT SOURCE (quick-619): `params.tenantId`, which /api/gps/report extracts
+ * from a verified device token before calling this function — there is no user
+ * session on this path, which is why it used to run on `app.bypass_rls`. That was
+ * never necessary: the tenant is in hand, so one `getTenantPrismaForOrg(tenantId)`
+ * client serves all eight statements, the RLS policies see the same tenant the
+ * `where` clauses already name, and every `tenantId` predicate below is kept.
+ * `userId` is deliberately not passed (quick-610/617): the `Load` and `RouteStop`
+ * updates would otherwise start populating `updatedById`.
  */
 
 import { distance, point } from '@turf/turf';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendGeofenceAlert } from '@/lib/email/send-geofence-alert';
 import { logger } from '@/lib/logger';
 import { geocodeAddress } from '@/lib/geo/geocode';
@@ -41,9 +40,13 @@ export async function checkGeofenceAndAlert(params: {
   try {
     const { tenantId, driverId, truckId, latitude, longitude } = params;
 
+    // quick-619: one tenant client for every statement in this function. Inside
+    // the try, so an acquisition failure is logged and swallowed exactly as a
+    // query failure was — this function never throws to the GPS endpoint.
+    const tenantPrisma = await getTenantPrismaForOrg(tenantId);
+
     // Find active load for this driver/truck with relevant status
-    const load = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const load = await tenantPrisma.$transaction(async (tx) => {
       return tx.load.findFirst({
         where: {
           tenantId,
@@ -77,8 +80,7 @@ export async function checkGeofenceAndAlert(params: {
         if (coords) {
           ({ lat: pickupLat, lng: pickupLng } = coords);
           // Cache geocoded coordinates for future pings
-          await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tenantPrisma.$transaction(async (tx) => {
             await tx.load.update({
               where: { id: load.id },
               data: { pickupLat: pickupLat!, pickupLng: pickupLng! },
@@ -93,8 +95,7 @@ export async function checkGeofenceAndAlert(params: {
 
         if (distKm <= GEOFENCE_RADIUS_KM) {
           // Advance status and mark alert as sent (atomic)
-          await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tenantPrisma.$transaction(async (tx) => {
             await tx.load.update({
               where: { id: load.id },
               data: {
@@ -134,8 +135,7 @@ export async function checkGeofenceAndAlert(params: {
         const coords = await geocodeAddress(load.destination);
         if (coords) {
           ({ lat: deliveryLat, lng: deliveryLng } = coords);
-          await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tenantPrisma.$transaction(async (tx) => {
             await tx.load.update({
               where: { id: load.id },
               data: { deliveryLat: deliveryLat!, deliveryLng: deliveryLng! },
@@ -149,8 +149,7 @@ export async function checkGeofenceAndAlert(params: {
         const distKm = distance(truckPoint, deliveryPoint, { units: 'kilometers' });
 
         if (distKm <= GEOFENCE_RADIUS_KM) {
-          await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tenantPrisma.$transaction(async (tx) => {
             await tx.load.update({
               where: { id: load.id },
               data: {
@@ -180,8 +179,7 @@ export async function checkGeofenceAndAlert(params: {
     }
 
     // ── RouteStop geofence (auto-arrive at next pending stop) ──────────
-    const route = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const route = await tenantPrisma.$transaction(async (tx) => {
       return tx.route.findFirst({
         where: {
           driverId,
@@ -210,8 +208,7 @@ export async function checkGeofenceAndAlert(params: {
         if (coords) {
           ({ lat: stopLat, lng: stopLng } = coords);
           // Cache geocoded coordinates on RouteStop row
-          await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tenantPrisma.$transaction(async (tx) => {
             await tx.routeStop.update({
               where: { id: nextStop.id },
               data: { lat: stopLat!, lng: stopLng! },
@@ -226,8 +223,7 @@ export async function checkGeofenceAndAlert(params: {
         const distKm = distance(stopTruckPoint, stopPoint, { units: 'kilometers' });
 
         if (distKm <= GEOFENCE_RADIUS_KM) {
-          await prisma.$transaction(async (tx) => {
-            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tenantPrisma.$transaction(async (tx) => {
             await tx.routeStop.update({
               where: { id: nextStop.id },
               data: {

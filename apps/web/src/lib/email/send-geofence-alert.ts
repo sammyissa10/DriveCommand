@@ -5,7 +5,8 @@
  * two weeks of stable production operation.
  */
 
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { TX_OPTIONS } from '@/lib/db/prisma';
+import { getTenantPrismaForOrg } from '@/lib/context/tenant-context';
 import { sendEmail } from './resend-client';
 import { GeofenceArrivalAlert } from '@/emails/geofence-arrival-alert';
 import { dispatchNotification } from '@/lib/notifications/dispatcher';
@@ -47,9 +48,12 @@ export async function sendGeofenceAlert(data: GeofenceAlertData): Promise<void> 
 
 /** Legacy implementation — preserved as fallback. Original Phase-20 code. */
 async function legacySendGeofenceAlert(data: GeofenceAlertData): Promise<void> {
-  // Find dispatcher email addresses (bypass RLS — called from non-session context)
-  const dispatchers = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+  // Find dispatcher email addresses. quick-619: this runs without a session
+  // (it is reached from the GPS geofence check), which is why it used the bypass;
+  // the tenant was always in hand as `data.tenantId`, so a tenant client scopes it
+  // and the `tenantId` predicate below is kept. No userId (quick-610).
+  const tenantPrisma = await getTenantPrismaForOrg(data.tenantId);
+  const dispatchers = await tenantPrisma.$transaction(async (tx) => {
     return tx.user.findMany({
       where: {
         tenantId: data.tenantId,
