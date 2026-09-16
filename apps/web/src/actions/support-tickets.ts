@@ -302,8 +302,23 @@ export async function getAllTickets(filters?: {
   // is on the SAME acquisition as its two siblings deliberately: routing it
   // elsewhere would not have helped anyway, because `auth.users` fails on a
   // PRIVILEGE (42501), not on a missing tenant context, and the tripwire can
-  // never signal it. The remedy is a column-level grant on exactly these three
-  // columns — see `prisma/migrations/*_grant_auth_user_display_columns`.
+  // never signal it.
+  //
+  // THIS IS THE ONE STATEMENT IN quick-615 WHOSE TEXT CHANGED, and it changed
+  // only because no receiver on this database can execute the original. It read
+  //     SELECT id, email, raw_user_meta_data FROM auth.users WHERE id = ANY(...)
+  // The intended fix was a column-level grant on exactly those three columns.
+  // It was written, applied to staging, and MEASURED TO BE HALF A NO-OP:
+  // `GRANT USAGE ON SCHEMA auth` from `postgres` — the role every migration
+  // here runs as — emits `WARNING: no privileges were granted for "auth"` and
+  // does nothing, because `pg_namespace.nspacl` gives it `U` WITHOUT GRANT
+  // OPTION. The column grant landed and was unusable without the schema gate.
+  // See `prisma/migrations/20260915170000_auth_user_display_definer_function`.
+  //
+  // `public.auth_user_display(uuid[])` returns the SAME three columns, with the
+  // same names and types, for the same id array. `app_admin` holds EXECUTE on
+  // that one function and NO `auth` privilege of any kind — strictly narrower
+  // than the grant that was attempted. NEVER widen its projection.
   const [users, tenants, authUsers] = await Promise.all([
     adminDbTicketList.$queryRaw<RawUser[]>`
       SELECT id, email, "firstName", "lastName" FROM "User" WHERE id = ANY(${userIds}::uuid[])
@@ -312,7 +327,7 @@ export async function getAllTickets(filters?: {
       ? adminDbTicketList.$queryRaw<RawTenant[]>`SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])`
       : Promise.resolve([] as RawTenant[]),
     adminDbTicketList.$queryRaw<RawAuthUser[]>`
-      SELECT id, email, raw_user_meta_data FROM auth.users WHERE id = ANY(${userIds}::uuid[])
+      SELECT id, email, raw_user_meta_data FROM public.auth_user_display(${userIds}::uuid[])
     `,
   ]);
 

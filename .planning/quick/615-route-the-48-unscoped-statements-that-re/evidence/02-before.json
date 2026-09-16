@@ -1,0 +1,1203 @@
+{
+  "at": "2026-09-16T01:17:31.912Z",
+  "project": "wyixpgunnjmzguhggocz",
+  "mode": "before",
+  "roles": {
+    "admin": "app_admin",
+    "tenant": "app_user",
+    "privileged": "postgres"
+  },
+  "tripwire": "on",
+  "grantDelta": [
+    {
+      "table": "ActivationProgress",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [],
+      "missing": [
+        "SELECT"
+      ]
+    },
+    {
+      "table": "AppEvent",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "INSERT",
+        "SELECT"
+      ],
+      "missing": []
+    },
+    {
+      "table": "AutomationRule",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "SELECT",
+        "UPDATE"
+      ],
+      "missing": []
+    },
+    {
+      "table": "AutomationRun",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "missing": []
+    },
+    {
+      "table": "DriverInvitation",
+      "needed": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "held": [
+        "SELECT"
+      ],
+      "missing": [
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    {
+      "table": "Load",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "SELECT"
+      ],
+      "missing": []
+    },
+    {
+      "table": "NotificationSendLog",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [],
+      "missing": [
+        "SELECT"
+      ]
+    },
+    {
+      "table": "Route",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [],
+      "missing": [
+        "SELECT"
+      ]
+    },
+    {
+      "table": "Subscription",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "SELECT",
+        "UPDATE"
+      ],
+      "missing": []
+    },
+    {
+      "table": "SupportTicket",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "SELECT",
+        "UPDATE"
+      ],
+      "missing": []
+    },
+    {
+      "table": "Tenant",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "DELETE",
+        "INSERT",
+        "SELECT",
+        "UPDATE"
+      ],
+      "missing": []
+    },
+    {
+      "table": "TicketMessage",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "INSERT",
+        "SELECT"
+      ],
+      "missing": []
+    },
+    {
+      "table": "Truck",
+      "needed": [
+        "SELECT"
+      ],
+      "held": [
+        "SELECT"
+      ],
+      "missing": []
+    },
+    {
+      "table": "User",
+      "needed": [
+        "SELECT",
+        "UPDATE"
+      ],
+      "held": [
+        "SELECT"
+      ],
+      "missing": [
+        "UPDATE"
+      ]
+    }
+  ],
+  "auth": {
+    "app_admin_auth_usage": false,
+    "app_user_auth_usage": false,
+    "columnGrants": []
+  },
+  "bypassCount": 86,
+  "bypassTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "AutomationRule",
+    "AutomationRun",
+    "Customer",
+    "CustomerInteraction",
+    "DispatchOverrideAudit",
+    "DocFeedback",
+    "Document",
+    "DriverHOSEntry",
+    "DriverIncident",
+    "DriverInvitation",
+    "DriverRouteJoin",
+    "ExpenseCategory",
+    "ExpenseTemplate",
+    "ExpenseTemplateItem",
+    "FleetMessage",
+    "FuelRecord",
+    "GPSLocation",
+    "Invoice",
+    "InvoiceItem",
+    "Load",
+    "MaintenanceEvent",
+    "NotificationLog",
+    "NotificationSendLog",
+    "NotificationSubscription",
+    "PayrollRecord",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PlaybookStep",
+    "PlaybookTrigger",
+    "PushToken",
+    "Route",
+    "RouteDriver",
+    "RouteExpense",
+    "RoutePayment",
+    "RouteStop",
+    "SafetyEvent",
+    "ScheduledService",
+    "StepInstance",
+    "StepTemplate",
+    "Subscription",
+    "SupportTicket",
+    "SysAdminInvoice",
+    "SysAdminInvoiceItem",
+    "Tag",
+    "TagAssignment",
+    "Tenant",
+    "TenantHealthScore",
+    "TenantIntegration",
+    "TenantMetricsDaily",
+    "TenantNotificationSettings",
+    "TicketMessage",
+    "Truck",
+    "User",
+    "UserNotificationPreference",
+    "audit_log",
+    "carrier_compliance_alert_log",
+    "carrier_document_types",
+    "carrier_drivers",
+    "carrier_expenses",
+    "carrier_truck_defects",
+    "carrier_trucks",
+    "client_contacts",
+    "clients",
+    "contracts",
+    "dispatches",
+    "document_import_pages",
+    "document_imports",
+    "document_profiles",
+    "driver_bonuses",
+    "driver_compensation_templates",
+    "driver_deductions",
+    "driver_disputes",
+    "driver_pay_audit_logs",
+    "driver_pay_records",
+    "driver_settlements",
+    "facilities",
+    "facility_external_references",
+    "in_app_notifications",
+    "load_driver_assignments",
+    "load_pay_components",
+    "loads",
+    "pay_component_attachments",
+    "route_templates"
+  ],
+  "tenants": [
+    {
+      "id": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+      "name": "Staging Alpha Carriers"
+    },
+    {
+      "id": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "name": "Staging Beta Logistics"
+    }
+  ],
+  "tenantA": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8",
+  "tenantB": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+  "systemRule": {
+    "id": "394a8cc3-38b6-4843-8bae-7337e0c8594e",
+    "key": "activation_celebration"
+  },
+  "systemAtEntry": 6,
+  "systemAtExit": 6,
+  "fixtures": [
+    {
+      "name": "ActivationProgress(B)",
+      "status": "created",
+      "detail": "tenant B (tenant A already carries the single pre-existing row)"
+    },
+    {
+      "name": "AppEvent(B)",
+      "status": "created",
+      "detail": "1 row, eventType='quick615.fixture'"
+    },
+    {
+      "name": "AutomationRun(A)",
+      "status": "created",
+      "detail": "1 row on SYSTEM rule activation_celebration"
+    },
+    {
+      "name": "DriverInvitation(A)",
+      "status": "created",
+      "detail": "1 PENDING row"
+    },
+    {
+      "name": "NotificationSendLog(A)",
+      "status": "created",
+      "detail": "1 SENT row"
+    },
+    {
+      "name": "SupportTicket(A)",
+      "status": "created",
+      "detail": "1 OPEN ticket"
+    },
+    {
+      "name": "TicketMessage(A)",
+      "status": "created",
+      "detail": "1 OWNER message"
+    },
+    {
+      "name": "Route(A)",
+      "status": "created",
+      "detail": "1 route"
+    },
+    {
+      "name": "Subscription(A)",
+      "status": "created",
+      "detail": "1 TRIALING-window row"
+    },
+    {
+      "name": "AutomationRun(B)",
+      "status": "created",
+      "detail": "1 row on SYSTEM rule activation_celebration"
+    },
+    {
+      "name": "DriverInvitation(B)",
+      "status": "created",
+      "detail": "1 PENDING row"
+    },
+    {
+      "name": "NotificationSendLog(B)",
+      "status": "created",
+      "detail": "1 SENT row"
+    },
+    {
+      "name": "SupportTicket(B)",
+      "status": "created",
+      "detail": "1 OPEN ticket"
+    },
+    {
+      "name": "TicketMessage(B)",
+      "status": "created",
+      "detail": "1 OWNER message"
+    },
+    {
+      "name": "Route(B)",
+      "status": "created",
+      "detail": "1 route"
+    },
+    {
+      "name": "Subscription(B)",
+      "status": "created",
+      "detail": "1 TRIALING-window row"
+    },
+    {
+      "name": "Load(A,B)",
+      "status": "skipped",
+      "detail": "Load_customerId_fkey needs a Customer and Customer is zero-row on staging; reported UNPROVEN rather than fabricated"
+    },
+    {
+      "name": "auth.users",
+      "status": "skipped",
+      "detail": "DELIBERATE — no identity is ever fabricated. Staging already holds 9 real rows, so the cell is not vacuous."
+    }
+  ],
+  "files": [
+    "app/(admin)/actions/notifications.ts",
+    "app/(admin)/actions/sysadmin-invoices.ts",
+    "app/(admin)/actions/tenants.ts",
+    "app/(admin)/actions/users.ts",
+    "app/(admin)/admin-support/page.tsx",
+    "app/(admin)/tenants/[id]/activation-progress-section.tsx",
+    "app/(admin)/tenants/[id]/automation-runs-section.tsx",
+    "app/(admin)/tenants/[id]/page.tsx",
+    "actions/support-tickets.ts",
+    "app/api/cron/auto-close-tickets/route.ts",
+    "app/api/cron/automations/route.ts",
+    "lib/automations/evaluator.ts"
+  ],
+  "probes": [
+    {
+      "file": "app/(admin)/actions/notifications.ts",
+      "site": "listNotificationSendLog + getDeliveryStatistics — NotificationSendLog",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO GRANT YET",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table NotificationSendLog"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/actions/notifications.ts",
+      "site": "listNotificationSendLog + getDeliveryStatistics — NotificationSendLog",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is UNSET"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/actions/notifications.ts",
+      "site": "listNotificationSendLog + getDeliveryStatistics — NotificationSendLog",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 2,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/actions/sysadmin-invoices.ts",
+      "site": ":83 — Awaited<ReturnType<typeof prisma.sysAdminInvoice.create>>",
+      "lane": "ADMIN",
+      "expectation": "NO PROBE — NOT A RUNTIME STATEMENT",
+      "label": "a type query in a return-type annotation; erased by the compiler, issues no SQL",
+      "rows": null,
+      "values": null,
+      "error": null,
+      "gucSeen": null,
+      "unproven": "nothing to probe — 614 §2.1 B-2 is a type, not a statement. The file holds ZERO runtime bare statements and 10 getAdminDb calls."
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "getAllTenants / getTenantById — Tenant + the _count sub-selects (User, Truck, Route)",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — Route is UNGRANTED",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table Route"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "getAllTenants / getTenantById — Tenant + the _count sub-selects (User, Truck, Route)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "getAllTenants / getTenantById — Tenant + the _count sub-selects (User, Truck, Route)",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own tenant (B) still readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "getSystemMetrics — Load + SupportTicket platform counts",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "loads": 0,
+        "open_tickets": 2
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "getSystemMetrics — Load + SupportTicket platform counts",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "getSystemMetrics — Load + SupportTicket platform counts",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "createTenant :123 — DriverInvitation INSERT (receiver swap onto adminDb)",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO INSERT GRANT YET",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table DriverInvitation"
+      },
+      "gucSeen": null,
+      "counterRead": {
+        "label": "DriverInvitation rows on staging (unchanged — every probe is rolled back)",
+        "value": 2
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "createTenant :123 — DriverInvitation INSERT (receiver swap onto adminDb)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "counterRead": {
+        "label": "DriverInvitation rows on staging (unchanged — every probe is rolled back)",
+        "value": 2
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "resendOwnerInvitation :376 — DriverInvitation UPDATE",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO UPDATE GRANT YET",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table DriverInvitation"
+      },
+      "gucSeen": null,
+      "counterRead": {
+        "label": "tenant A's invitations still present",
+        "value": 1
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "resendOwnerInvitation :376 — DriverInvitation UPDATE",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "counterRead": {
+        "label": "tenant A's invitations still present",
+        "value": 1
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "updateOwnerEmail :472/:480 — User SELECT then UPDATE",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO UPDATE GRANT YET",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table User"
+      },
+      "gucSeen": null,
+      "counterRead": {
+        "label": "the user row still exists",
+        "value": 1
+      }
+    },
+    {
+      "file": "app/(admin)/actions/tenants.ts",
+      "site": "updateOwnerEmail :472/:480 — User SELECT then UPDATE",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "counterRead": {
+        "label": "the user row still exists",
+        "value": 1
+      }
+    },
+    {
+      "file": "app/(admin)/actions/users.ts",
+      "site": "getAllUsers — User across every tenant, joined to Tenant.name",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "users_visible": 10,
+        "tenant_names_visible": 10
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/actions/users.ts",
+      "site": "getAllUsers — User across every tenant, joined to Tenant.name",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/actions/users.ts",
+      "site": "getAllUsers — User across every tenant, joined to Tenant.name",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 4,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/actions/users.ts",
+      "site": "updateUserProfile :115/:130 — User UPDATE (and its compensating rollback)",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO UPDATE GRANT YET",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table User"
+      },
+      "gucSeen": null,
+      "counterRead": {
+        "label": "the user row still exists",
+        "value": 1
+      }
+    },
+    {
+      "file": "app/(admin)/actions/users.ts",
+      "site": "updateUserProfile :115/:130 — User UPDATE (and its compensating rollback)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": "",
+      "counterRead": {
+        "label": "the user row still exists",
+        "value": 1
+      }
+    },
+    {
+      "file": "app/(admin)/admin-support/page.tsx",
+      "site": ":24 — the ticket filter tenant dropdown",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "tenants": 2
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/admin-support/page.tsx",
+      "site": ":24 — the ticket filter tenant dropdown",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/admin-support/page.tsx",
+      "site": ":24 — the ticket filter tenant dropdown",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own tenant (B) still readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/activation-progress-section.tsx",
+      "site": ":20 — ActivationProgress for an ARBITRARY tenant",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO GRANT YET",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table ActivationProgress"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/activation-progress-section.tsx",
+      "site": ":20 — ActivationProgress for an ARBITRARY tenant",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/activation-progress-section.tsx",
+      "site": ":20 — ActivationProgress for an ARBITRARY tenant",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/automation-runs-section.tsx",
+      "site": ":10 — AutomationRun joined to AutomationRule, for an ARBITRARY tenant",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "runs_visible": 1,
+        "rule_keys_visible": 1
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/automation-runs-section.tsx",
+      "site": ":10 — AutomationRun joined to AutomationRule, for an ARBITRARY tenant",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/automation-runs-section.tsx",
+      "site": ":10 — AutomationRun joined to AutomationRule, for an ARBITRARY tenant",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/page.tsx",
+      "site": ":56 — Subscription.trialEndsAt for an ARBITRARY tenant",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "n": 1
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/page.tsx",
+      "site": ":56 — Subscription.trialEndsAt for an ARBITRARY tenant",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/(admin)/tenants/[id]/page.tsx",
+      "site": ":56 — Subscription.trialEndsAt for an ARBITRARY tenant",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "actions/support-tickets.ts",
+      "site": "getAllTickets :271/:286/:290 — SupportTicket scan + User and Tenant joins",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "tickets": 2,
+        "users": 10,
+        "tenants": 2
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "actions/support-tickets.ts",
+      "site": "getAllTickets :271/:286/:290 — SupportTicket scan + User and Tenant joins",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "actions/support-tickets.ts",
+      "site": "getAllTickets :271/:286/:290 — SupportTicket scan + User and Tenant joins",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "actions/support-tickets.ts",
+      "site": ":292 — auth.users, the GRANT class",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — NO auth USAGE, NO table grant",
+      "label": "the three display columns the statement already reads",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for schema auth"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "actions/support-tickets.ts",
+      "site": ":292 — auth.users, the GRANT class",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be 42501, NOT TC001 — a privilege problem, which the tripwire can never signal",
+      "label": "the same three columns on the tenant connection",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for schema auth"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "actions/support-tickets.ts",
+      "site": "auth.users — THE COUNTER-ASSERTION",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 BEFORE **and** AFTER — the column grant names three columns and no more",
+      "label": "encrypted_password is REFUSED on the very connection that can read the display columns",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for schema auth"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "app/api/cron/auto-close-tickets/route.ts",
+      "site": ":25 — the real stale-ticket scan (SupportTicket + a TicketMessage NOT EXISTS)",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/api/cron/auto-close-tickets/route.ts",
+      "site": ":25 — the real stale-ticket scan (SupportTicket + a TicketMessage NOT EXISTS)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/api/cron/auto-close-tickets/route.ts",
+      "site": ":25 — the real stale-ticket scan (SupportTicket + a TicketMessage NOT EXISTS)",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) ticket messages readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "site": "the four candidateQuery sweeps — ActivationProgress + Subscription (ADMIN class)",
+      "lane": "ADMIN",
+      "expectation": "must be 42501 — ActivationProgress is UNGRANTED",
+      "label": "the routed statement on its new receiver",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "42501",
+        "message": "permission denied for table ActivationProgress"
+      },
+      "gucSeen": null
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "site": "the four candidateQuery sweeps — ActivationProgress + Subscription (ADMIN class)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "site": ":170 — the platform-scope AutomationRule lookup (ADMIN class)",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "n": 1
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "site": ":170 — the platform-scope AutomationRule lookup (ADMIN class)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "site": ":187/:198 — the per-candidate dedup reads (TENANT class)",
+      "lane": "TENANT_REAL",
+      "expectation": "must SUCCEED on the NEW receiver — a tenant client serves it",
+      "label": "getTenantPrismaForOrg(tenantId) with the loop variable's own GUC",
+      "rows": 1,
+      "values": {
+        "n": 1
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "file": "app/api/cron/automations/route.ts",
+      "site": ":187/:198 — the per-candidate dedup reads (TENANT class)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001 — the OLD receiver, which is what a cron process carries",
+      "label": "the bare client, no GUC",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "lib/automations/evaluator.ts",
+      "site": ":64/:73/:131 — AppEvent scan, rule lookup, due-run queue (ADMIN class)",
+      "lane": "ADMIN",
+      "expectation": "must SUCCEED",
+      "label": "the routed statement on its new receiver",
+      "rows": 1,
+      "values": {
+        "events": 2,
+        "rules": 6,
+        "runs": 2
+      },
+      "error": null,
+      "gucSeen": null
+    },
+    {
+      "file": "lib/automations/evaluator.ts",
+      "site": ":64/:73/:131 — AppEvent scan, rule lookup, due-run queue (ADMIN class)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001",
+      "label": "the OLD receiver, with the GUC a sysadmin/cron request actually carries",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    },
+    {
+      "file": "lib/automations/evaluator.ts",
+      "site": ":64/:73/:131 — AppEvent scan, rule lookup, due-run queue (ADMIN class)",
+      "lane": "TENANT_REAL",
+      "expectation": "foreign must be 0, PAIRED with own > 0",
+      "label": "the old receiver under ANOTHER tenant's GUC — cross-tenant refusal",
+      "rows": 1,
+      "values": {
+        "n": 0
+      },
+      "error": null,
+      "gucSeen": "8c6136c4-eb7b-4a89-a524-d1d0e2c8d045",
+      "pairedOwn": {
+        "label": "own (tenant B) rows readable on the SAME connection",
+        "value": 1,
+        "error": null
+      }
+    },
+    {
+      "file": "lib/automations/evaluator.ts",
+      "site": ":80 — the per-event dedup read (TENANT class)",
+      "lane": "TENANT_REAL",
+      "expectation": "must SUCCEED on the NEW receiver — a tenant client serves it",
+      "label": "getTenantPrismaForOrg(event.tenantId)",
+      "rows": 1,
+      "values": {
+        "n": 1
+      },
+      "error": null,
+      "gucSeen": "b5623cdd-dc19-4900-b75d-0ecfcaf191b8"
+    },
+    {
+      "file": "lib/automations/evaluator.ts",
+      "site": ":80 — the per-event dedup read (TENANT class)",
+      "lane": "TENANT_EMPTY",
+      "expectation": "must be TC001 — the OLD receiver",
+      "label": "the bare client, no GUC",
+      "rows": null,
+      "values": null,
+      "error": {
+        "sqlstate": "TC001",
+        "message": "tenant context is required: app.current_tenant_id is the EMPTY STRING"
+      },
+      "gucSeen": ""
+    }
+  ]
+}
