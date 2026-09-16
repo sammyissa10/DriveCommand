@@ -55,6 +55,26 @@ async function main() {
     if (r.rows.length < 2) console.log('  <- NOT usable: needs a row in BOTH tenants');
   }
 
+  /**
+   * The COMPOUND-UNIQUE model. `618-where-shapes.ts` found 3 call sites keyed on
+   * `tenantId_triggerKey` / `tenantId_triggerKey_userId`, and the probe needs a
+   * REAL row to prove the positive half — that Prisma both accepts the shape AND
+   * returns the row — rather than only that it did not throw over an empty set.
+   */
+  const tns = await c.query(
+    `SELECT "tenantId", "triggerKey" FROM "TenantNotificationSettings"
+      WHERE "tenantId" = $1 ORDER BY "triggerKey" LIMIT 5`,
+    [TENANT_A],
+  );
+  const tnsTotal = await c.query(`SELECT count(*)::int AS n FROM "TenantNotificationSettings"`);
+  console.log(`\nTenantNotificationSettings (compound unique tenantId_triggerKey):`);
+  console.log(`  total rows on staging : ${tnsTotal.rows[0].n}`);
+  console.log(`  rows for tenant A     : ${tns.rowCount}`);
+  for (const r of tns.rows) console.log(`    triggerKey=${r.triggerKey}`);
+  if (tns.rowCount === 0) {
+    console.log('  <- the positive half of the compound-unique cell is UNPROVABLE on this data');
+  }
+
   await c.end();
 }
 

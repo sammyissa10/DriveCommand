@@ -38,10 +38,23 @@
  * `rls_in_force` and every cross-tenant PASS in it would be the database's
  * doing, not the extension's.
  *
+ * ── THE COMPOUND-UNIQUE CELL, AND THE ONE THING THIS SCRIPT WRITES ──────────
+ *
+ * `618-where-shapes.ts` measured the real `where` population: 107 SINGLE_SCALAR,
+ * 15 MULTI_SCALAR and 3 COMPOUND_UNIQUE. That last shape matters BECAUSE of this
+ * fix — the old code never touched `a.where` on a findUnique, the new code
+ * spreads `tenantId` into it, so those three sites now emit a compound unique
+ * PLUS a top-level scalar. One of them is `dispatcher.ts:111`, on the path every
+ * notification takes. `TenantNotificationSettings` is empty on staging, so that
+ * cell CREATES one marker row on the privileged connection, reads it back
+ * through the extension, and deletes it in a `finally`, asserting `left 0`.
+ *
+ * So: this script writes ONE staging row and removes it. Everything else is a
+ * pre-existing row. PRODUCTION IS NEVER OPENED AT ALL.
+ *
  * Rules carried from 616/617: positive staging refusal; `[db-target]` to STDERR
  * with the credential MASKED; SQLSTATE off the CAUSE CHAIN; every zero paired
- * with a privileged counter-read. NOTHING IS WRITTEN — every row read here
- * already existed, and production is never opened at all.
+ * with a privileged counter-read.
  */
 import { config as loadEnv } from 'dotenv';
 import { Pool, Client as PgClient } from 'pg';
@@ -58,6 +71,8 @@ const TENANT_A = 'b5623cdd-dc19-4900-b75d-0ecfcaf191b8';
 const TENANT_B = '8c6136c4-eb7b-4a89-a524-d1d0e2c8d045';
 const TRUCK_A = '610a0000-0000-4610-8000-000000000001';
 const TRUCK_B = '610a0000-0000-4610-8000-000000000002';
+/** A MARKER key, not a real trigger: teardown deletes exactly this and can touch nothing else. */
+const COMPOUND_TRIGGER_KEY = "quick-618.fixture.safe-to-delete";
 
 const APP_ROOT = resolve(__dirname, '../..');
 const REPO_ROOT = resolve(APP_ROOT, '../..');
@@ -98,9 +113,12 @@ const APP_USER_URL = staging(
 const DIRECT_URL = staging(process.env.STAGING_DIRECT_URL, 'STAGING_DIRECT_URL');
 
 type Mode = 'rls_in_force' | 'rls_not_in_force';
-type Shape = 'selectWithTenantId' | 'selectWithoutTenantId' | 'noSelect';
+type Shape = 'selectWithTenantId' | 'selectWithoutTenantId' | 'noSelect' | 'compoundUnique';
 
-const SELECTS: Record<Shape, Record<string, boolean> | undefined> = {
+/** The three PROJECTION shapes driven through the matrix. `compoundUnique` is a
+ *  WHERE shape, not a projection, and is exercised in its own cell below. */
+type ProjectionShape = Exclude<Shape, 'compoundUnique'>;
+const SELECTS: Record<ProjectionShape, Record<string, boolean> | undefined> = {
   selectWithTenantId: { id: true, make: true, tenantId: true },
   selectWithoutTenantId: { id: true, make: true },
   noSelect: undefined,
@@ -186,7 +204,7 @@ async function run(mode: Mode): Promise<Cell[]> {
   const cells: Cell[] = [];
 
   for (const method of ['findUnique', 'findUniqueOrThrow'] as const) {
-    for (const shape of Object.keys(SELECTS) as Shape[]) {
+    for (const shape of Object.keys(SELECTS) as ProjectionShape[]) {
       const select = SELECTS[shape];
       for (const direction of ['own', 'cross'] as const) {
         const id = direction === 'own' ? TRUCK_A : TRUCK_B;
@@ -252,6 +270,104 @@ async function run(mode: Mode): Promise<Cell[]> {
       }
     }
   }
+
+  /**
+   * ── THE COMPOUND-UNIQUE CELL ────────────────────────────────────────────
+   *
+   * Everything above uses `where: { id }`. `618-where-shapes.ts` measured the
+   * real population: 107 SINGLE_SCALAR, 15 MULTI_SCALAR and **3 COMPOUND_UNIQUE**
+   * — `TenantNotificationSettings` keyed on `tenantId_triggerKey` (x2) and
+   * `tenantId_triggerKey_userId`.
+   *
+   * That shape matters here specifically BECAUSE OF THIS FIX. The old code never
+   * touched `a.where` on a findUnique; the new code spreads `tenantId` into it.
+   * So for these three sites the emitted where becomes
+   *
+   *     { tenantId_triggerKey: { tenantId, triggerKey }, tenantId }
+   *
+   * — a compound unique PLUS a top-level scalar. Under extendedWhereUnique that
+   * is legal, but "legal per the docs" is not a measurement, and if Prisma
+   * rejected it these three previously-working call sites would throw. One of
+   * them is `dispatcher.ts:111`, on the path every notification takes.
+   *
+   * Read-only: the row is looked up, never written.
+   */
+  /**
+   * `TenantNotificationSettings` is EMPTY on staging (measured by
+   * `618-fixtures.ts`: total rows 0). Reading a key that is not there would only
+   * show that Prisma did not THROW — the negative half — and would leave the
+   * question that actually matters unproven: does the injected scalar AND
+   * correctly with the compound key, or does it exclude the row?
+   *
+   * So this cell CREATES one row on the privileged connection, reads it back
+   * through the extension, and deletes it, asserting `left 0`. The model needs
+   * only `tenantId` (FK to an existing Tenant) and `triggerKey`, so the fixture
+   * has no FK chain. Teardown is in a `finally`; the delete is keyed on the
+   * fixture's own marker trigger key and can touch nothing else.
+   */
+  let compound: { outcome: string; keys: string[] | null; error?: string } | undefined;
+  let exists = 0;
+  let left = -1;
+  try {
+    // `updatedAt` is `@updatedAt` — Prisma populates it in the CLIENT, so the
+    // column carries no database default and raw SQL must supply it. The first
+    // run of this cell failed 23502 on exactly that, and wrote nothing.
+    await priv.query(
+      `INSERT INTO "TenantNotificationSettings" ("tenantId", "triggerKey", "isActive", "updatedAt")
+       VALUES ($1, $2, true, now()) ON CONFLICT DO NOTHING`,
+      [TENANT_A, COMPOUND_TRIGGER_KEY],
+    );
+    const c0 = await priv.query(
+      `SELECT count(*)::int AS n FROM "TenantNotificationSettings" WHERE "tenantId" = $1 AND "triggerKey" = $2`,
+      [TENANT_A, COMPOUND_TRIGGER_KEY],
+    );
+    exists = c0.rows[0].n as number;
+
+    try {
+      const row = (await (db as any).tenantNotificationSettings.findUnique({
+        where: { tenantId_triggerKey: { tenantId: TENANT_A, triggerKey: COMPOUND_TRIGGER_KEY } },
+      })) as Record<string, unknown> | null;
+      compound = {
+        outcome: row === null ? 'null' : 'row',
+        keys: row ? Object.keys(row).sort() : null,
+      };
+    } catch (e) {
+      compound = { outcome: 'THROW', keys: null, error: (e as Error).message.split('\n')[0] };
+    }
+  } finally {
+    await priv.query(
+      `DELETE FROM "TenantNotificationSettings" WHERE "tenantId" = $1 AND "triggerKey" = $2`,
+      [TENANT_A, COMPOUND_TRIGGER_KEY],
+    );
+    const c1 = await priv.query(
+      `SELECT count(*)::int AS n FROM "TenantNotificationSettings" WHERE "tenantId" = $1 AND "triggerKey" = $2`,
+      [TENANT_A, COMPOUND_TRIGGER_KEY],
+    );
+    left = c1.rows[0].n as number;
+  }
+
+  // PASS needs BOTH halves: Prisma accepted the compound key alongside the
+  // injected scalar (no THROW), AND the own-tenant row came back (not excluded
+  // by the injection). Paired with a privileged counter-read of 1, and fixtures
+  // left 0.
+  const compoundPass = compound!.outcome === 'row' && exists === 1 && left === 0;
+  console.log(
+    `  ${compoundPass ? 'PASS' : 'FAIL'}  COMPOUND_UNIQUE tenantId_triggerKey -> ${compound!.outcome}` +
+      `  privilegedCounterRead=${exists}  fixturesLeft=${left}${compound!.error ? `  error=${compound!.error}` : ''}`,
+  );
+  cells.push({
+    mode,
+    method: 'findUnique',
+    shape: 'compoundUnique' as Shape,
+    direction: 'own',
+    outcome: compound.outcome,
+    resultKeys: compound.keys,
+    expectedKeys: null,
+    shapeUnchanged: null,
+    counterRead: exists,
+    sqlstate: compound.error,
+    pass: compoundPass,
+  });
 
   await base.$disconnect().catch(() => {});
   await priv.end();
