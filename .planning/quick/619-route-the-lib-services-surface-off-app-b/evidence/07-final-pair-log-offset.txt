@@ -1,0 +1,1 @@
+log offset at start of final pair: 39930

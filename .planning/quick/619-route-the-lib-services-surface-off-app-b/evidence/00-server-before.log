@@ -1,0 +1,222 @@
+[server-target] DATABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DIRECT_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] DATABASE_URL_ADMIN -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] NEXT_PUBLIC_SUPABASE_URL -> staging wyixpgunnjmzguhggocz (credential MASKED)
+[server-target] TENANT_CONTEXT_TRIPWIRE=on
+[server-target] DATABASE_URL role : app_user.wyixpgunnjmzguhggocz
+[server-target] anon key present : true | length 208 | MASKED eyJhbG...d7Zs
+[server-target] SUPABASE_SERVICE_ROLE_KEY -> staging wyixpgunnjmzguhggocz, role service_role (MASKED)
+[server-target] CRON_SECRET generated for this run (MASKED, never written to a tracked file)
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.1.10.35:3000
+- Environments: .env.local
+✓ Ready in 5.5s
+[@sentry/nextjs] DEPRECATION WARNING: disableLogger is deprecated and will be removed in a future version. Use webpack.treeshake.removeDebugLogging instead. (Not supported with Turbopack.)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+ GET /api/mobile/driver/dashboard 200 in 10.5s (next.js: 6.1s, proxy.ts: 419ms, application-code: 3.9s)
+ GET /api/mobile/driver/documents 200 in 1608ms (next.js: 495ms, proxy.ts: 17ms, application-code: 1096ms)
+○ Compiling /api/mobile/driver/hos ...
+ GET /api/mobile/driver/hos 200 in 5.3s (next.js: 3.3s, proxy.ts: 13ms, application-code: 1901ms)
+ GET /api/mobile/driver/incidents 200 in 1918ms (next.js: 727ms, proxy.ts: 9ms, application-code: 1182ms)
+ GET /api/mobile/driver/loads 200 in 2.6s (next.js: 788ms, proxy.ts: 19ms, application-code: 1841ms)
+[2026-09-16T16:14:20.486Z] ERROR: [withMobileAuth] handler error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\driver\messages\route.ts:43:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET.allowedRoles (src\app\api\mobile\driver\messages\route.ts:32:38)
+    at async (src\lib\api\with-mobile-auth.ts:74:14)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/driver/messages 500 in 13.0s (next.js: 1128ms, proxy.ts: 15ms, application-code: 11.9s)
+ GET /api/mobile/driver/messages/route-thread 400 in 736ms (next.js: 456ms, proxy.ts: 25ms, application-code: 254ms)
+ GET /api/mobile/driver/messages/unread-count 200 in 3.5s (next.js: 546ms, proxy.ts: 8ms, application-code: 3.0s)
+ GET /api/mobile/driver/route 200 in 1599ms (next.js: 80ms, proxy.ts: 9ms, application-code: 1510ms)
+ GET /api/mobile/driver/tasks 200 in 1422ms (next.js: 93ms, proxy.ts: 11ms, application-code: 1318ms)
+ GET /api/mobile/driver/tracking-token 200 in 1085ms (next.js: 96ms, proxy.ts: 6ms, application-code: 983ms)
+ GET /api/mobile/owner/compliance 200 in 2.2s (next.js: 221ms, proxy.ts: 7ms, application-code: 1993ms)
+ GET /api/mobile/owner/crm 200 in 3.2s (next.js: 1187ms, proxy.ts: 9ms, application-code: 1988ms)
+ GET /api/mobile/owner/customers 200 in 1473ms (next.js: 97ms, proxy.ts: 8ms, application-code: 1369ms)
+ GET /api/mobile/owner/dashboard 200 in 1483ms (next.js: 90ms, proxy.ts: 11ms, application-code: 1382ms)
+[2026-09-16T16:14:50.607Z] ERROR: [withMobileAuth] handler error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.driverInvitation.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\drivers\route.ts:106:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET.allowedRoles (src\app\api\mobile\owner\drivers\route.ts:64:38)
+    at async (src\lib\api\with-mobile-auth.ts:74:14)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'DriverInvitation',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/drivers 500 in 1053ms (next.js: 90ms, proxy.ts: 6ms, application-code: 957ms)
+ GET /api/mobile/owner/drivers/active 200 in 1277ms (next.js: 77ms, proxy.ts: 5ms, application-code: 1195ms)
+ GET /api/mobile/owner/fleet-positions 200 in 1035ms (next.js: 88ms, proxy.ts: 7ms, application-code: 939ms)
+[2026-09-16T16:14:55.052Z] ERROR: [mobile/owner/fleet/messages GET] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.fleetMessage.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\fleet\messages\route.ts:46:27)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\mobile\owner\fleet\messages\route.ts:45:38)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'FleetMessage',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/fleet/messages 500 in 1714ms (next.js: 203ms, proxy.ts: 7ms, application-code: 1505ms)
+ GET /api/mobile/owner/fuel 200 in 1274ms (next.js: 85ms, proxy.ts: 6ms, application-code: 1183ms)
+ GET /api/mobile/owner/invoices 200 in 1270ms (next.js: 94ms, proxy.ts: 5ms, application-code: 1171ms)
+ GET /api/mobile/owner/loads 200 in 2.1s (next.js: 87ms, proxy.ts: 5ms, application-code: 1988ms)
+ GET /api/mobile/owner/maintenance 200 in 1799ms (next.js: 126ms, proxy.ts: 7ms, application-code: 1666ms)
+ GET /api/mobile/owner/map/vehicles 200 in 1238ms (next.js: 111ms, proxy.ts: 5ms, application-code: 1121ms)
+[2026-09-16T16:15:04.980Z] ERROR: [mobile/owner/payroll] error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.payrollRecord.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at zr.handleRequestError (src\generated\prisma\runtime\client.js:69:8172)
+    at zr.handleAndLogRequestError (src\generated\prisma\runtime\client.js:69:7467)
+    at zr.request (src\generated\prisma\runtime\client.js:69:7174)
+    at async a (src\generated\prisma\runtime\client.js:79:5816)
+    at async (src\app\api\mobile\owner\payroll\route.ts:40:23)
+    at async Proxy._transactionWithCallback (src\generated\prisma\runtime\client.js:79:4390)
+    at async GET (src\app\api\mobile\owner\payroll\route.ts:39:20)
+  67 | ...
+  68 | ...
+> 69 | ...t u=s?{modelName:s,...t.meta}:t.meta;throw new w.PrismaClientKnownRequestError(l,{code:...
+     |                                               ^
+  70 | ...
+  71 | ...
+  72 | ... {
+  code: 'P2022',
+  meta: {
+    modelName: 'PayrollRecord',
+    driverAdapterError: Error [DriverAdapterError]: ColumnNotFound
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:43522)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:42651)
+        at async e.interpretNode (src\generated\prisma\runtime\client.js:15:45151)
+        at async e.run (src\generated\prisma\runtime\client.js:15:42242)
+        at async e.execute (src\generated\prisma\runtime\client.js:61:815)
+        at async qt.request (src\generated\prisma\runtime\client.js:62:2327)
+        at async Object.singleLoader (src\generated\prisma\runtime\client.js:69:6569)
+      13 | ...
+      14 | ...
+    > 15 | ...r(let o of n){let s=Sa(o,r.sqlCommenter),a=await this.#l(s,r.queryable,()=>r.queryable....
+         |                                               ^
+      16 | ...
+      17 | ...
+      18 | ... {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+ GET /api/mobile/owner/payroll 500 in 1501ms (next.js: 158ms, proxy.ts: 7ms, application-code: 1336ms)
+ GET /api/mobile/owner/routes 200 in 1826ms (next.js: 99ms, proxy.ts: 5ms, application-code: 1722ms)
+ GET /api/mobile/owner/safety 200 in 1307ms (next.js: 100ms, proxy.ts: 7ms, application-code: 1199ms)
+ GET /api/mobile/owner/trucks 200 in 2.8s (next.js: 91ms, proxy.ts: 6ms, application-code: 2.7s)
+ GET /api/mobile/driver/dashboard 401 in 28ms (next.js: 12ms, proxy.ts: 5ms, application-code: 11ms)
+ GET /api/mobile/driver/dashboard 200 in 1847ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1836ms)

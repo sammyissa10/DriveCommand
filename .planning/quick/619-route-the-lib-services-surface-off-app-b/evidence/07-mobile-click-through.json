@@ -1,0 +1,398 @@
+{
+  "generated": "2026-09-16T16:55:33.213Z",
+  "supabaseProject": "wyixpgunnjmzguhggocz (staging)",
+  "base": "http://localhost:3000",
+  "serverLog": "C:\\Users\\sammy\\AppData\\Local\\Temp\\claude\\c--Users-sammy-Projects-DriveCommand\\ffea56ec-74d0-4860-af35-4b8039f22203\\scratchpad\\server-619-after.log",
+  "totals": {
+    "entries": 30,
+    "pass": 24,
+    "fail": 5,
+    "notReachable": 0,
+    "tc001": 0,
+    "wholeLogTc001": 0
+  },
+  "antiVacuity": [
+    {
+      "name": "FLOOR — at least 20 routed GET routes exercised",
+      "pass": true,
+      "detail": "28 >= 20"
+    },
+    {
+      "name": "AUTH CONTROL — /api/mobile/driver/dashboard with NO Authorization returns 401",
+      "pass": true,
+      "detail": "status 401 (expected 401)"
+    },
+    {
+      "name": "TENANT CONTROL — /api/mobile/driver/dashboard with a tenant-B driver token still answers 200 with tenant-B data",
+      "pass": true,
+      "detail": "status 200; body {\"activeLoad\":null,\"todayMiles\":0,\"stopsCompleted\":0,\"hosHoursRemaining\":11,\"recentAlerts\":[]} — NOTE: staging is sparse, so an empty result here proves the route does not RAISE, not that it scopes"
+    },
+    {
+      "name": "ZERO TC001 across the correlated slices AND the whole log (independent measurements)",
+      "pass": true,
+      "detail": "slices 0, whole log 0"
+    }
+  ],
+  "entries": [
+    {
+      "route": "/api/mobile/driver/dashboard",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        58962,
+        59063
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"activeLoad\":null,\"todayMiles\":0,\"stopsCompleted\":0,\"hosHoursRemaining\":11,\"recentAlerts\":[]}"
+    },
+    {
+      "route": "/api/mobile/driver/documents",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        59063,
+        59166
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"documents\":[]}"
+    },
+    {
+      "route": "/api/mobile/driver/hos",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        59166,
+        59265
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"currentStatus\":\"OFF_DUTY\",\"currentStatusSince\":\"2026-09-16T00:00:00.000Z\",\"timeInCurrentStatus\":60850,\"todayEntries\":[],\"drivingMinutesToday\":0,\"onDutyMinutesToday\":0,\"hoursUntil14Limit\":14,\"hoursUntil11DriveLimit\":11}"
+    },
+    {
+      "route": "/api/mobile/driver/incidents",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        59265,
+        59369
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"incidents\":[]}"
+    },
+    {
+      "route": "/api/mobile/driver/loads",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        59369,
+        59470
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"loads\":[],\"pagination\":{\"page\":1,\"limit\":50,\"total\":0,\"totalPages\":0}}"
+    },
+    {
+      "route": "/api/mobile/driver/messages",
+      "role": "DRIVER",
+      "status": 500,
+      "verdict": "fail",
+      "logByteRange": [
+        59470,
+        61508
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Internal server error\"}"
+    },
+    {
+      "route": "/api/mobile/driver/messages/route-thread",
+      "role": "DRIVER",
+      "status": 400,
+      "verdict": "fail",
+      "logByteRange": [
+        61508,
+        61626
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"routeId query param is required\"}"
+    },
+    {
+      "route": "/api/mobile/driver/messages/unread-count",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        61626,
+        61743
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"count\":0}"
+    },
+    {
+      "route": "/api/mobile/driver/route",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        61743,
+        61844
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"route\":null}"
+    },
+    {
+      "route": "/api/mobile/driver/tasks",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        61844,
+        61946
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"stepInstances\":[]}"
+    },
+    {
+      "route": "/api/mobile/driver/tracking-token",
+      "role": "DRIVER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        61946,
+        62056
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"trackingToken\":null}"
+    },
+    {
+      "route": "/api/mobile/owner/compliance",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        62056,
+        62161
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"summary\":{\"expiredCount\":0,\"expiringSoonCount\":0,\"totalDriversTracked\":0,\"totalTrucksTracked\":1},\"alerts\":[],\"pagination\":{\"page\":1,\"limit\":50,\"total\":0,\"totalPages\":0}}"
+    },
+    {
+      "route": "/api/mobile/owner/crm",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        62161,
+        62259
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"stats\":{\"total\":0,\"active\":0,\"vip\":0,\"revenue\":0,\"loads\":0},\"customers\":[],\"pagination\":{\"page\":1,\"limit\":50,\"total\":0,\"totalPages\":0}}"
+    },
+    {
+      "route": "/api/mobile/owner/customers",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        62259,
+        62363
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "[]"
+    },
+    {
+      "route": "/api/mobile/owner/dashboard",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        62363,
+        62465
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"kpis\":{\"activeLoadsCount\":0,\"driversOnDutyCount\":0,\"revenueThisMonth\":0,\"openAlertsCount\":0},\"activeLoads\":[],\"driverStatuses\":[{\"id\":\"d606784c-9518-4fe1-a37e-449aaa8396f3\",\"name\":\"Dee Driverone\",\"hosStatus\":null,\"acti"
+    },
+    {
+      "route": "/api/mobile/owner/drivers",
+      "role": "OWNER",
+      "status": 500,
+      "verdict": "fail",
+      "logByteRange": [
+        62465,
+        64503
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Internal server error\"}"
+    },
+    {
+      "route": "/api/mobile/owner/drivers/active",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        64503,
+        64614
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "[{\"id\":\"d606784c-9518-4fe1-a37e-449aaa8396f3\",\"name\":\"Dee Driverone\"},{\"id\":\"e6d6b098-83af-4021-9ce5-53cd21818860\",\"name\":\"Dex Drivertwo\"}]"
+    },
+    {
+      "route": "/api/mobile/owner/fleet-positions",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        64614,
+        64723
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "[]"
+    },
+    {
+      "route": "/api/mobile/owner/fleet/messages",
+      "role": "OWNER",
+      "status": 500,
+      "verdict": "fail",
+      "logByteRange": [
+        64723,
+        66718
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Internal server error\"}"
+    },
+    {
+      "route": "/api/mobile/owner/fuel",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        66718,
+        66818
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"entries\":[]}"
+    },
+    {
+      "route": "/api/mobile/owner/invoices",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        66818,
+        66921
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"stats\":{\"total\":0,\"draft\":0,\"overdue\":0,\"outstandingAmount\":0,\"paidAmount\":0},\"invoices\":[]}"
+    },
+    {
+      "route": "/api/mobile/owner/loads",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        66921,
+        67021
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"loads\":[],\"pagination\":{\"page\":1,\"limit\":50,\"total\":0,\"totalPages\":0}}"
+    },
+    {
+      "route": "/api/mobile/owner/maintenance",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        67021,
+        67128
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"services\":[]}"
+    },
+    {
+      "route": "/api/mobile/owner/map/vehicles",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        67128,
+        67235
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"vehicles\":[]}"
+    },
+    {
+      "route": "/api/mobile/owner/payroll",
+      "role": "OWNER",
+      "status": 500,
+      "verdict": "fail",
+      "logByteRange": [
+        67235,
+        69284
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Internal server error\"}"
+    },
+    {
+      "route": "/api/mobile/owner/routes",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        69284,
+        69385
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"routes\":[],\"pagination\":{\"page\":1,\"limit\":50,\"total\":0,\"totalPages\":0}}"
+    },
+    {
+      "route": "/api/mobile/owner/safety",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        69385,
+        69483
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"alerts\":[],\"summary\":{\"highCount\":0,\"mediumCount\":0,\"lowCount\":0,\"totalCount\":0}}"
+    },
+    {
+      "route": "/api/mobile/owner/trucks",
+      "role": "OWNER",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        69483,
+        69583
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"trucks\":[{\"id\":\"610a0000-0000-4610-8000-000000000001\",\"make\":\"Fixture\",\"model\":\"Q610\",\"year\":2020,\"licensePlate\":\"Q610-ALPHA\",\"odometer\":0,\"inMaintenance\":false,\"status\":\"Ready to Use\",\"variant\":\"green\"}],\"pagination\":"
+    },
+    {
+      "route": "/api/mobile/driver/dashboard",
+      "role": "NO-TOKEN",
+      "status": 401,
+      "verdict": "unauthorised-control",
+      "logByteRange": [
+        69583,
+        69686
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "route": "/api/mobile/driver/dashboard",
+      "role": "DRIVER-tenantB",
+      "status": 200,
+      "verdict": "pass",
+      "logByteRange": [
+        69686,
+        69788
+      ],
+      "logTc001Mentions": 0,
+      "bodyPreview": "{\"activeLoad\":null,\"todayMiles\":0,\"stopsCompleted\":0,\"hosHoursRemaining\":11,\"recentAlerts\":[]}"
+    }
+  ]
+}

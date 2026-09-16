@@ -1,0 +1,26 @@
+[db-target] project : wyixpgunnjmzguhggocz (staging)  role : app_user.wyixpgunnjmzguhggocz  (credential MASKED)
+
+quick-619 — arming counter-assertion, four parts (copy of 617-arming-control.ts, evidence path changed)
+================================================
+1   shouldArmTripwire(<the server's exact DATABASE_URL>, 'on')          -> true   PASS
+    proves: the arming CONDITION prisma.ts evaluates at module scope was satisfied.
+    does NOT prove: that the set_config reached the pool.
+2   the same string with the PRODUCTION ref                             -> false   PASS
+    proves: the gate is a gate. A function that says yes to everything satisfies 1 identically.
+3   the same string, TENANT_CONTEXT_TRIPWIRE='off'                      -> false   PASS
+    proves: the flag half is live too.
+4   tripwire GUC read back on a fresh app_user connection               -> "on"   PASS
+4b  unscoped SELECT count(*) FROM "Truck" with it ARMED                 -> TC001   PASS
+    proves: the MECHANISM is live on staging for app_user AT THIS MOMENT, so a surface that
+    ran an unscoped statement WOULD have produced a TC001 line. Meaningful over an EMPTY table
+    on purpose — the policy expression is evaluated at scan setup, not per row (quick-610).
+4c  the same read with the tripwire 'off'                               -> silent, count=0   PASS
+    proves: the raise is caused by the ARMING, not by the statement. Without this half,
+    "unscoped => TC001" could be a property of the read.
+
+VERDICT: ARMED — all four parts pass
+
+WHAT THIS DOES NOT PROVE: that every request in the run ran on a connection that had been
+armed. The GUC is session scope on a max:1 pool and pool.on('connect') fires per physical
+connection; nothing outside the process can read another session's GUC. The argument is
+circumstantial in exactly that one respect, and it is stated rather than glossed.

@@ -1,0 +1,36 @@
+{
+  "generated": "2026-09-16T16:27:54.750Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "droppedPolicyTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "audit_log",
+    "AutomationRun",
+    "DocFeedback",
+    "Load",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PushToken",
+    "Route",
+    "RouteStop",
+    "StepInstance",
+    "StepTemplate",
+    "Tenant",
+    "Truck",
+    "User"
+  ],
+  "threw": "--throw-after-drop: deliberate throw between the DROP and the probes, to prove the finally restores.",
+  "results": [],
+  "restore": {
+    "restoredCount": 17,
+    "liveCount": 86,
+    "onlyInBefore": [],
+    "onlyInAfter": [],
+    "sortedListIdentical": true,
+    "bodyMismatches": [],
+    "ok": true
+  }
+}

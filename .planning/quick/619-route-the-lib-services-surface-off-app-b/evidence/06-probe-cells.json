@@ -1,0 +1,412 @@
+{
+  "generated": "2026-09-16T16:38:28.765Z",
+  "database": "wyixpgunnjmzguhggocz (staging)",
+  "role": "app_user",
+  "tripwire": "on",
+  "droppedPolicyTables": [
+    "ActivationProgress",
+    "AppEvent",
+    "audit_log",
+    "AutomationRun",
+    "DocFeedback",
+    "Load",
+    "Playbook",
+    "PlaybookInstance",
+    "PlaybookNotification",
+    "PushToken",
+    "Route",
+    "RouteStop",
+    "StepInstance",
+    "StepTemplate",
+    "Tenant",
+    "Truck",
+    "User"
+  ],
+  "threw": null,
+  "results": [
+    {
+      "cell": "hook-control",
+      "ok": true,
+      "detail": {
+        "callerSaw": "TC001",
+        "hookRecorded": 1
+      }
+    },
+    {
+      "cell": "fn:checkGeofenceAndAlert",
+      "ok": true,
+      "detail": {
+        "tc001Observed": 0,
+        "geofenceErrorLogged": 0,
+        "activeLoadsForThisDriverTruck": 0,
+        "covers": "statement 1 of 8 only (the active-load read, which returned none) — the 7 update/stop statements were not reached on this data"
+      }
+    },
+    {
+      "cell": "fn:sendPushToOrg",
+      "ok": true,
+      "detail": {
+        "tc001Observed": 0,
+        "errorLogged": 0,
+        "tokensForTenantOnStaging": 0,
+        "covers": "the token read (statement 1 of 2); cleanup needs a real device receipt error"
+      }
+    },
+    {
+      "cell": "fn:recordActivationEvent",
+      "ok": true,
+      "detail": {
+        "tc001Observed": 0,
+        "failureLogged": 0,
+        "progressRowExists": true,
+        "firstRealClientAtAlreadySet": true,
+        "appEventsBefore": 1,
+        "appEventsAfter": 1,
+        "progressRowUnchanged": true
+      }
+    },
+    {
+      "cell": "shape:activationProgress-where-tenantId",
+      "ok": true,
+      "detail": {
+        "privilegedCounterRead": 1,
+        "resultKeys": [
+          "completionPct",
+          "isActivated"
+        ],
+        "expectedKeys": [
+          "completionPct",
+          "isActivated"
+        ]
+      }
+    },
+    {
+      "cell": "fn:sendInstanceBlocked",
+      "ok": true,
+      "detail": {
+        "tc001Observed": 0,
+        "failureLogged": 0,
+        "covers": "the PlaybookInstance read (0 rows on staging, so \"not found\" is the expected outcome); no push or audit row reached"
+      }
+    },
+    {
+      "cell": "fn:security-writeAuditLog",
+      "ok": true,
+      "detail": {
+        "threw": null,
+        "tc001Observed": 0,
+        "rowWrittenForTenantA": 1,
+        "fixturesDeleted": 1,
+        "fixturesLeft": 0
+      }
+    },
+    {
+      "cell": "own-write-audit-null",
+      "ok": true,
+      "detail": {
+        "threw": null,
+        "updatedByIdAfter": null,
+        "updatedAtTouchedByPrisma": true,
+        "updatedAtRestored": true
+      }
+    },
+    {
+      "cell": "table:ActivationProgress",
+      "ok": true,
+      "detail": {
+        "model": "ActivationProgress",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=1 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:AppEvent",
+      "ok": true,
+      "detail": {
+        "model": "AppEvent",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=1 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:AuditLog",
+      "ok": true,
+      "detail": {
+        "model": "AuditLog",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:AutomationRun",
+      "ok": true,
+      "detail": {
+        "model": "AutomationRun",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:DocFeedback",
+      "ok": true,
+      "detail": {
+        "model": "DocFeedback",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Load",
+      "ok": true,
+      "detail": {
+        "model": "Load",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Playbook",
+      "ok": true,
+      "detail": {
+        "model": "Playbook",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:PlaybookInstance",
+      "ok": true,
+      "detail": {
+        "model": "PlaybookInstance",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:PlaybookNotification",
+      "ok": true,
+      "detail": {
+        "model": "PlaybookNotification",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:PushToken",
+      "ok": true,
+      "detail": {
+        "model": "PushToken",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Route",
+      "ok": true,
+      "detail": {
+        "model": "Route",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:RouteStop",
+      "ok": true,
+      "detail": {
+        "model": "RouteStop",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:StepInstance",
+      "ok": true,
+      "detail": {
+        "model": "StepInstance",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:StepTemplate",
+      "ok": true,
+      "detail": {
+        "model": "StepTemplate",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 0,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 0,
+          "verdict": "UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"
+        }
+      }
+    },
+    {
+      "cell": "table:Tenant",
+      "ok": true,
+      "detail": {
+        "model": "Tenant",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN"
+        }
+      }
+    },
+    {
+      "cell": "table:Truck",
+      "ok": true,
+      "detail": {
+        "model": "Truck",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 1,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 1,
+          "verdict": "PROVEN"
+        }
+      }
+    },
+    {
+      "cell": "table:User",
+      "ok": true,
+      "detail": {
+        "model": "User",
+        "unscoped": {
+          "raised": true,
+          "sqlstate": "TC001"
+        },
+        "scopedOwn": 6,
+        "crossTenant": {
+          "foreignSeenByTenantA": 0,
+          "privilegedCounterRead": 4,
+          "verdict": "PROVEN"
+        }
+      }
+    }
+  ],
+  "restore": {
+    "restoredCount": 17,
+    "liveCount": 86,
+    "onlyInBefore": [],
+    "onlyInAfter": [],
+    "sortedListIdentical": true,
+    "bodyMismatches": [],
+    "ok": true
+  }
+}

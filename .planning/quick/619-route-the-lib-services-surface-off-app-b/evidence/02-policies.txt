@@ -1,0 +1,66 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  (READ-ONLY, credential MASKED)
+[db-target] PRODUCTION  host : aws-1-us-west-1.pooler.supabase.com:5432  role : postgres.oqdhberkghtnszrkdvfm  (READ-ONLY, credential MASKED)
+
+### DocFeedback   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### AutomationRun   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### User   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### Load   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### Route   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### RouteStop   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### ActivationProgress   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### AppEvent   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### PlaybookInstance   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### Playbook   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### StepInstance   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### StepTemplate   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### PlaybookNotification   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### Tenant   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_bootstrap_insert INSERT  USING -  CHECK (id = current_tenant_id())
+  [staging] tenant_self_read SELECT  USING (id = current_tenant_id())  CHECK -
+  [staging] tenant_self_update UPDATE  USING (id = current_tenant_id())  CHECK (id = current_tenant_id())
+
+### Truck   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### PushToken   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### audit_log   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] audit_log_append_policy INSERT  USING -  CHECK true
+  [staging] tenant_isolation_policy SELECT  USING (tenant_id = current_tenant_id())  CHECK -
+
+### SupportTicket   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK -
+
+### NotificationSendLog   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING ("tenantId" = current_tenant_id())  CHECK ("tenantId" = current_tenant_id())
+
+### carrier_drivers   rls={"relrowsecurity":true,"relforcerowsecurity":true}   staging==production: true
+  [staging] tenant_isolation_policy ALL  USING (org_id = current_tenant_id())  CHECK (org_id = current_tenant_id())

@@ -1,0 +1,56 @@
+npm warn config ignoring workspace config at C:\Users\sammy\Projects\DriveCommand\apps\web/.npmrc
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : RUN  (credential MASKED, never printed)
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : CAPTURE (read-only)  (credential MASKED, never printed)
+bypass_rls_policy: 86 policies on 86 tables
+captured DDL for all 86 → C:\Users\sammy\Projects\DriveCommand\.planning\quick\619-route-the-lib-services-surface-off-app-b\evidence\06-policy-capture.json
+tables reached by routed statements : 17; carrying bypass_rls_policy: 17; missing: []
+[db-target] project : wyixpgunnjmzguhggocz (staging)  host : aws-0-us-west-1.pooler.supabase.com:5432  role : postgres.wyixpgunnjmzguhggocz  lane : DROP (scoped)  (credential MASKED, never printed)
+DROPPED bypass_rls_policy ON public."ActivationProgress"
+DROPPED bypass_rls_policy ON public."AppEvent"
+DROPPED bypass_rls_policy ON public."audit_log"
+DROPPED bypass_rls_policy ON public."AutomationRun"
+DROPPED bypass_rls_policy ON public."DocFeedback"
+DROPPED bypass_rls_policy ON public."Load"
+DROPPED bypass_rls_policy ON public."Playbook"
+DROPPED bypass_rls_policy ON public."PlaybookInstance"
+DROPPED bypass_rls_policy ON public."PlaybookNotification"
+DROPPED bypass_rls_policy ON public."PushToken"
+DROPPED bypass_rls_policy ON public."Route"
+DROPPED bypass_rls_policy ON public."RouteStop"
+DROPPED bypass_rls_policy ON public."StepInstance"
+DROPPED bypass_rls_policy ON public."StepTemplate"
+DROPPED bypass_rls_policy ON public."Tenant"
+DROPPED bypass_rls_policy ON public."Truck"
+DROPPED bypass_rls_policy ON public."User"
+bypass_rls_policy now: 69 (was 86)
+  PASS  hook-control  {"callerSaw":"TC001","hookRecorded":1}
+  PASS  fn:checkGeofenceAndAlert  {"tc001Observed":0,"geofenceErrorLogged":0,"activeLoadsForThisDriverTruck":0,"covers":"statement 1 of 8 only (the active-load read, which returned none) — the 7 update/stop statements were not reached on this data"}
+  PASS  fn:sendPushToOrg  {"tc001Observed":0,"errorLogged":0,"tokensForTenantOnStaging":0,"covers":"the token read (statement 1 of 2); cleanup needs a real device receipt error"}
+  PASS  fn:recordActivationEvent  {"tc001Observed":0,"failureLogged":0,"progressRowExists":true,"firstRealClientAtAlreadySet":true,"appEventsBefore":1,"appEventsAfter":1,"progressRowUnchanged":true}
+  PASS  shape:activationProgress-where-tenantId  {"privilegedCounterRead":1,"resultKeys":["completionPct","isActivated"],"expectedKeys":["completionPct","isActivated"]}
+  PASS  fn:sendInstanceBlocked  {"tc001Observed":0,"failureLogged":0,"covers":"the PlaybookInstance read (0 rows on staging, so \"not found\" is the expected outcome); no push or audit row reached"}
+  PASS  fn:security-writeAuditLog  {"threw":null,"tc001Observed":0,"rowWrittenForTenantA":1,"fixturesDeleted":1,"fixturesLeft":0}
+  PASS  own-write-audit-null  {"threw":null,"updatedByIdAfter":null,"updatedAtTouchedByPrisma":true,"updatedAtRestored":true}
+  PASS  table:ActivationProgress  {"model":"ActivationProgress","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=1 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:AppEvent  {"model":"AppEvent","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=1 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:AuditLog  {"model":"AuditLog","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:AutomationRun  {"model":"AutomationRun","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:DocFeedback  {"model":"DocFeedback","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Load  {"model":"Load","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Playbook  {"model":"Playbook","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:PlaybookInstance  {"model":"PlaybookInstance","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:PlaybookNotification  {"model":"PlaybookNotification","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:PushToken  {"model":"PushToken","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Route  {"model":"Route","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:RouteStop  {"model":"RouteStop","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:StepInstance  {"model":"StepInstance","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:StepTemplate  {"model":"StepTemplate","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":0,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":0,"verdict":"UNPROVEN BY NAME — own=0 foreign=0 foreignRowsOnStaging=0"}}
+  PASS  table:Tenant  {"model":"Tenant","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN"}}
+  PASS  table:Truck  {"model":"Truck","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":1,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":1,"verdict":"PROVEN"}}
+  PASS  table:User  {"model":"User","unscoped":{"raised":true,"sqlstate":"TC001"},"scopedOwn":6,"crossTenant":{"foreignSeenByTenantA":0,"privilegedCounterRead":4,"verdict":"PROVEN"}}
+RESTORE: re-created 17; live now 86
+  sorted list identical : true
+  only in before        : []
+  only in after         : []
+  body mismatches       : []
+  VERDICT               : PASS
