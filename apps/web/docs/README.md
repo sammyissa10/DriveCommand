@@ -15,7 +15,7 @@ This is the **web app** (`apps/web`) within a Turborepo monorepo. See [Monorepo 
 | Database | PostgreSQL via Supabase |
 | ORM | Prisma 7 with @prisma/adapter-pg |
 | Styling | Tailwind CSS + shadcn/ui |
-| Auth | Custom AES-256-GCM session cookie |
+| Auth | Supabase Auth (`@supabase/ssr`) |
 | Email | Gmail SMTP via Nodemailer |
 | File Storage | Cloudflare R2 / AWS S3 |
 | AI | Anthropic Claude (document reading, profit predictor) |
