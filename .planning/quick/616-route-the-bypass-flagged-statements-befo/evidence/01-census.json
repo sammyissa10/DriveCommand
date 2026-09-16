@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-16T03:04:55.088Z",
+  "generated": "2026-09-16T03:35:12.530Z",
   "method": "ts.createSourceFile per file, no Program, no type checker. A statement is a CallExpression or TaggedTemplateExpression whose own literal children contain \"app.bypass_rls\". Comments are not AST nodes and are excluded by construction. Test paths (__tests__/, *.test.*, *.spec.*) excluded and reported separately. scripts/ and prisma/ are outside src/ and are reported separately.",
   "scope": "apps/web/src, excluding test paths and src/generated",
   "totals": {

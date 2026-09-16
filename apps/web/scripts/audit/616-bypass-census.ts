@@ -38,6 +38,14 @@
  *                     bytes, parsed, and its prose line located) and yields
  *                     ZERO statements. Without the "was read" half, a walker
  *                     that skipped the file entirely passes identically.
+ *   ORPHAN OVERRIDE   every hand-written classification override must match a
+ *                     real statement. A drifted line number silently stops
+ *                     applying and the statement falls to the default.
+ *
+ * Note that the two counter-assertions above PASS on a completely broken walker
+ * — a walker that returns nothing satisfies "yields zero" perfectly. That is
+ * why each counter-assertion is paired with a floor and a positive witness; a
+ * counter-assertion is never sufficient on its own.
  */
 
 import * as ts from 'typescript';

@@ -1,5 +1,40 @@
 # `app.bypass_rls` call classification
 
+> ## ⚠ SUPERSEDED — 2026-09-15 (quick-616)
+>
+> **This document's 211 / 103 and its two-category DECORATIVE/CROSS_TENANT split are both stale.**
+> Read `.planning/quick/616-route-the-bypass-flagged-statements-befo/evidence/01-census.md` and its
+> machine-readable companion `01-census.json` for the current population. Nothing below has been
+> deleted — **§3 and §4's per-file tables are the reconciliation's INPUT** and are transcribed
+> verbatim into `apps/web/scripts/audit/616-audit211-transcription.json`, which the census refuses
+> to run unless it still adds to exactly 211 / 103.
+>
+> **What changed, and why:**
+>
+> | | this document (2026-09-12) | quick-616 (2026-09-15) |
+> |---|---|---|
+> | executable statements / files | **211 / 103** | **177 / 87**, and **175** after quick-616's own routing |
+> | method | `grep` + an `awk` comment heuristic | `ts.createSourceFile`, innermost-candidate filter, comments excluded by construction |
+> | categories | DECORATIVE 161 · CROSS_TENANT 50 | BOOTSTRAP 1 · BROKEN_POLICY 9 · CROSS_TENANT 2 → **0** · DECORATIVE 13 · **TENANT_KNOWN_UNSCOPED 152** |
+>
+> **The 34 disappearances are all attributed** — quick-600 `0c08a959` (24), quick-601 `a30de408` (9),
+> quick-596 `a7d52a8c` (1). None unaccounted. Two of them needed `git blame` rather than
+> `git log -S`, which is blind to a statement that became a comment.
+>
+> **The category axis changed on purpose, and this document's own calibration is why.** §2 states it:
+> *"A wrong DECORATIVE is a production outage at cutover; a wrong CROSS_TENANT is wasted effort."*
+> That bias is correct for the question this document was asked — *does this need a privileged
+> connection* — and it is why its CROSS_TENANT count is 50 where quick-616's is 2.
+> `docs/audits/bypass-replacement-design.md` §1 re-asked the question as *what replaces the bypass*
+> and quick-616 uses that precedence, adding a fifth category for the split **this document already
+> measured and named** in §2 under "the number that actually matters": 15 sites survive the cutover,
+> 145 do not. Those 145 became `TENANT_KNOWN_UNSCOPED`, because "delete one line" and "acquire a
+> tenant client where none is acquired today" are different jobs with different owners.
+>
+> **Its §5 cost estimate is also stale** in one specific way worth naming: the privileged connection
+> it describes as "plumbing that does not exist" was built by quick-600 as `getAdminDb` /
+> `app_admin`, and quick-600/613/615 routed the genuinely cross-tenant population onto it.
+
 **Date:** 2026-09-12
 **Status:** ANALYSIS ONLY. No application code, configuration, migration or database object was changed by the work that produced this document. No database connection was opened; every claim below is derived from source files and migration SQL in the repository.
 **Scope:** `apps/web/src`, excluding `__tests__`.
